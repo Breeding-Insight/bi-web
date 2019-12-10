@@ -9,11 +9,8 @@
                     |
                     <a v-on:click="logOut">Logout</a>
                 </div>
-                <router-view/>
             </div>
-            <div v-if="!loggedIn">
-                <Login/>
-            </div>
+            <router-view/>
         </div>
         <footer class="footer">
             <div class="content has-text-centered">
@@ -27,17 +24,41 @@
 
 <script lang="ts">
     import { Component, Vue } from 'vue-property-decorator';
-    import { LOGIN, LOGOUT } from '@/store/mutation-types';
-    import Login from '@/views/Login.vue';
+    import { LOGIN, LOGOUT, REQUESTED_PATH } from '@/store/mutation-types';
 
     @Component({
-        components: { Login }
+        watch: {
+            $route(to, from) {
+                document.title = to.meta.title + ' | Breeding Insight Platform' || 'Breeding Insight Platform'
+            },
+            loggedIn(isLoggedIn) {
+                if(!isLoggedIn) {
+                    this.$router.push('/login');
+                }
+            }
+        }
     })
     export default class App extends Vue {
         public loading: boolean = false;
 
+        mounted () {
+            const currentRoute = window.location.pathname;
+            if(!this.$store.state.loggedIn && currentRoute !== '/login') {
+                this.$store.commit(REQUESTED_PATH, {path: currentRoute});
+                this.$router.push('/login');
+            } else if(this.$store.state.loggedIn && currentRoute === '/login') {
+                this.$router.push('/');
+            } else {
+                document.title = this.$route.meta.title + ' | Breeding Insight Platform' || 'Breeding Insight Platform'
+            }
+        }
+
         get loggedIn () {
             return this.$store.state.loggedIn;
+        }
+
+        get requestedPath () {
+            return this.$store.state.requestedPath;
         }
 
         logOut (): void {

@@ -36,7 +36,7 @@
 
 <script lang="ts">
     import { Component, Vue } from 'vue-property-decorator';
-    import { LOGIN } from '@/store/mutation-types';
+    import { LOGIN, REQUESTED_PATH } from '@/store/mutation-types';
 
     @Component
     export default class Login extends Vue {
@@ -44,6 +44,13 @@
 
         logIn (): void {
             this.$store.commit(LOGIN);
+            if(this.$store.state.requestedPath) {
+                const requestedPath = this.$store.state.requestedPath;
+                this.$store.commit(REQUESTED_PATH, {path: undefined});
+                this.$router.push(requestedPath);
+            } else {
+                this.$router.push('/');
+            }
         }
     }
 </script>

@@ -1,6 +1,6 @@
 import { MutationTree } from 'vuex';
 import { User, RootState } from '@/store/types';
-import { ERROR_STATE, LOGIN, LOGOUT } from '@/store/mutation-types';
+import { ERROR_STATE, LOGIN, LOGOUT, REQUESTED_PATH } from '@/store/mutation-types';
 
 export const mutations: MutationTree<RootState> = {
   [LOGIN] (state, user: User) {
@@ -18,5 +18,8 @@ export const mutations: MutationTree<RootState> = {
   [ERROR_STATE] (state, payload: any) {
     state.apiError = payload.apiError;
     state.apiUnavailable = payload.apiUnavailable;
+  },
+  [REQUESTED_PATH] (state, payload: any) {
+    state.requestedPath = payload.path;
   }
 };

@@ -9,4 +9,5 @@ export interface RootState {
   user?: User;
   apiError: boolean;
   apiUnavailable: boolean;
+  requestedPath?: String;
 }
