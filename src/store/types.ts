@@ -1,7 +1,7 @@
 export interface User {
-  id: String;
-  name: String;
-  roles: String[];
+  id: string;
+  name: string;
+  roles: string[];
 }
 
 export interface RootState {
@@ -9,5 +9,5 @@ export interface RootState {
   user?: User;
   apiError: boolean;
   apiUnavailable: boolean;
-  requestedPath?: String;
+  requestedPath?: string;
 }
