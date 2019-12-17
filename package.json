@@ -8,34 +8,18 @@
     },
     "cz-customizable": {
       "config": "./.cz-config.js"
-    },
-    "validate-commit-msg": {
-      "types": [
-        "feat",
-        "fix",
-        "docs",
-        "style",
-        "refactor",
-        "perf",
-        "test",
-        "chore",
-        "revert",
-        "WIP"
-      ],
-      "warnOnFail": false,
-      "maxSubjectLength": 100,
-      "subjectPattern": "^[A-Z]+-[0-9]+ - .*",
-      "subjectPatternErrorMsg": "Subject must be in format 'ABC-12 - Short Commit Message'",
-      "helpMessage": ""
     }
   },
   "scripts": {
-    "init": "validate-commit-msg",
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "test:unit": "vue-cli-service test:unit",
     "test:e2e": "vue-cli-service test:e2e",
     "lint": "vue-cli-service lint"
+  },
+  "commit-msg": {
+    "regex": "^[a-zA-Z]+\\([a-zA-Z]+\\): [A-Z]+-[0-9]+ - .*",
+    "error-message": "commit aborted: use 'npx git-cz' instead of 'git commit'\n and the trello card must precede the subject, e.g. 'ABC-12 - Subject Line'"
   },
   "dependencies": {
     "core-js": "^3.4.3",
@@ -61,17 +45,16 @@
     "@vue/test-utils": "1.0.0-beta.29",
     "axios": "^0.18.0",
     "chai": "^4.1.2",
+    "commit-msg-regex": "^1.2.2",
     "commitizen": "^4.0.3",
     "cz-customizable": "^6.2.0",
     "cz-customizable-ghooks": "^1.5.0",
     "eslint": "^5.16.0",
     "eslint-plugin-vue": "^5.0.0",
     "ghooks": "^2.0.4",
-    "husky": "^3.1.0",
     "node-sass": "^4.12.0",
     "sass-loader": "^8.0.0",
     "typescript": "~3.5.3",
-    "validate-commit-msg": "^2.14.0",
     "vue-cli-plugin-axios": "0.0.4",
     "vue-template-compiler": "^2.6.10"
   }
