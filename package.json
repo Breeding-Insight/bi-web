@@ -10,11 +10,13 @@
       "config": "./.cz-config.js"
     }
   },
+  "devport": "8080",
   "scripts": {
-    "serve": "vue-cli-service serve",
-    "build": "npm audit &. /dev/null && vue-cli-service build || echo 'build failed because vulnerabilities found in npm modules\n run npm audit for more information'",
+    "serve": "vue-cli-service serve --port $npm_package_devport",
+    "build": "npm audit &> /dev/null && vue-cli-service build || echo 'build failed because vulnerabilities found in npm modules\n run npm audit for more information'",
     "test:unit": "vue-cli-service test:unit",
     "test:e2e": "vue-cli-service test:e2e",
+    "test:accessibility": "npx pa11y -T 99999 http://localhost:$npm_package_devport",
     "lint": "vue-cli-service lint"
   },
   "commit-msg": {
