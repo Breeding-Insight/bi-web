@@ -2,6 +2,14 @@
   "name": "bi-web",
   "version": "0.1.0",
   "private": true,
+  "scripts": {
+    "build": "npm audit > /dev/null && vue-cli-service build || echo 'build failed because vulnerabilities found in npm modules\n run npm audit for more information'",
+    "lint": "vue-cli-service lint",
+    "serve": "npx sort-package-json && vue-cli-service serve --port $npm_package_devport",
+    "test:accessibility": "npx pa11y -T 99999 http://localhost:$npm_package_devport",
+    "test:e2e": "vue-cli-service test:e2e",
+    "test:unit": "vue-cli-service test:unit"
+  },
   "config": {
     "commitizen": {
       "path": "./node_modules/cz-customizable"
@@ -9,19 +17,6 @@
     "cz-customizable": {
       "config": "./.cz-config.js"
     }
-  },
-  "devport": "8080",
-  "scripts": {
-    "serve": "vue-cli-service serve --port $npm_package_devport",
-    "build": "npm audit > /dev/null && vue-cli-service build || echo 'build failed because vulnerabilities found in npm modules\n run npm audit for more information'",
-    "test:unit": "vue-cli-service test:unit",
-    "test:e2e": "vue-cli-service test:e2e",
-    "test:accessibility": "npx pa11y -T 99999 http://localhost:$npm_package_devport",
-    "lint": "vue-cli-service lint"
-  },
-  "commit-msg": {
-    "regex": "^[a-zA-Z]+\\([a-zA-Z]+\\): [A-Z]+-[0-9]+ - .*",
-    "error-message": "commit aborted: use 'npx git-cz' instead of 'git commit'\n and the trello card must precede the subject, e.g. 'ABC-12 - Subject Line'"
   },
   "dependencies": {
     "core-js": "^3.4.3",
@@ -59,5 +54,10 @@
     "typescript": "~3.5.3",
     "vue-cli-plugin-axios": "0.0.4",
     "vue-template-compiler": "^2.6.10"
-  }
+  },
+  "commit-msg": {
+    "regex": "^[a-zA-Z]+\\([a-zA-Z]+\\): [A-Z]+-[0-9]+ - .*",
+    "error-message": "commit aborted: use 'npx git-cz' instead of 'git commit'\n and the trello card must precede the subject, e.g. 'ABC-12 - Subject Line'"
+  },
+  "devport": "8080"
 }
