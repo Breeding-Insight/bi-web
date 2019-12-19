@@ -25,6 +25,11 @@ npm run test:unit
 npm run test:e2e
 ```
 
+### Run accessibility test
+```
+npm run test:accessibility
+```
+
 ### Lints and fixes files
 ```
 npm run lint
