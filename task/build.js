@@ -4,7 +4,7 @@ const ora = require('ora');
 (async () => {
   let spinner = ora({prefixText: ' ', color: 'yellow'});
   try {
-    spinner.start('checking for node modules vulnerabilities');
+    spinner = spinner.start('checking for node modules vulnerabilities');
     let {exitCode} = await execa('npm', ['audit']);
     if (exitCode === 0) {
       spinner = spinner.clear()
