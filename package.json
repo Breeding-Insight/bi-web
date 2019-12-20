@@ -8,7 +8,7 @@
     "lint": "node $npm_package_task_path/lint.js",
     "test:accessibility": "npx pa11y -T 99999 http://localhost:$npm_package_devport",
     "test:e2e": "vue-cli-service test:e2e",
-    "test:unit": "vue-cli-service test:unit"
+    "test:unit": "node $npm_package_task_path/testUnit.js"
   },
   "config": {
     "commitizen": {
