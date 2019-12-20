@@ -4,9 +4,8 @@
   "private": true,
   "scripts": {
     "build": "node $npm_package_task_path/build.js",
-    "foo": "node $npm_package_task_path/serve.js",
+    "serve": "node $npm_package_task_path/serve.js",
     "lint": "node $npm_package_task_path/lint.js",
-    "serve": "npx sort-package-json && vue-cli-service serve --port $npm_package_devport",
     "test:accessibility": "npx pa11y -T 99999 http://localhost:$npm_package_devport",
     "test:e2e": "vue-cli-service test:e2e",
     "test:unit": "vue-cli-service test:unit"
