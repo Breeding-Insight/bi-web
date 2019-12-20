@@ -35,6 +35,12 @@ npm run test:accessibility
 npm run lint
 ```
 
+### Dependency Cleanup
+Easily identify unused packages for deletion or packages in need of upgrading.
+```
+npx npm-check
+```
+
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
 

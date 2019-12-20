@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "build": "npm audit > /dev/null && vue-cli-service build || echo 'build failed because vulnerabilities found in npm modules\n run npm audit for more information'",
+    "build": "node $npm_package_task_path/build.js",
     "lint": "vue-cli-service lint",
     "serve": "npx sort-package-json && vue-cli-service serve --port $npm_package_devport",
     "test:accessibility": "npx pa11y -T 99999 http://localhost:$npm_package_devport",
@@ -49,9 +49,12 @@
     "cz-customizable-ghooks": "^1.5.0",
     "eslint": "^5.16.0",
     "eslint-plugin-vue": "^5.0.0",
+    "execa": "^4.0.0",
     "ghooks": "^2.0.4",
     "node-sass": "^4.12.0",
+    "ora": "^4.0.3",
     "sass-loader": "^8.0.0",
+    "shelljs": "^0.8.3",
     "typescript": "~3.5.3",
     "vue-cli-plugin-axios": "0.0.4",
     "vue-template-compiler": "^2.6.10"
@@ -60,5 +63,6 @@
     "regex": "^[a-zA-Z]+\\([a-zA-Z]+\\): [A-Z]+-[0-9]+ - .*",
     "error-message": "commit aborted: use 'npx git-cz' instead of 'git commit'\n and the trello card must precede the subject, e.g. 'ABC-12 - Subject Line'"
   },
-  "devport": "8080"
+  "devport": "8080",
+  "task_path": "./task"
 }
