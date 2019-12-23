@@ -1,7 +1,8 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '@/views/Home.vue'
-import Login from '@/views/Login.vue';
+import Login from '@/views/Login.vue'
+import StyleGuide from '@/views/StyleGuide.vue';
 
 Vue.use(VueRouter);
 
@@ -21,6 +22,14 @@ const routes = [
       title: 'Login',
     },
     component: Login
+  },
+    {
+    path: '/styleguide',
+    name: 'style-guide',
+    meta: {
+      title: 'Style Guide',
+    },
+    component: StyleGuide
   },
   {
     path: '/about',

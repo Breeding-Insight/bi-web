@@ -1,23 +1,24 @@
 <template>
     <div id="app">
-        <div class="container is-fluid">
+        <header class="container is-fluid">
             <div v-if="loggedIn">
-                <div id="nav">
-                    <router-link to="/">Home</router-link>
-                    |
-                    <router-link to="/about">About</router-link>
-                    |
-                    <a v-on:click="logOut">Logout</a>
-                </div>
+                <nav role="navigation" aria-label="main navigation">
+                    <ul>
+                        <li><router-link to="/">Home</router-link></li>
+                        <li><router-link to="/about">About</router-link></li>
+                        <li><router-link to="/styleguide">Style Guide</router-link></li>
+                        <li><a v-on:click="logOut">Logout</a></li>
+                    </ul>
+                </nav>
             </div>
+        </header>
+        <main class="container is-fluid">
             <router-view/>
-        </div>
+        </main>
         <footer class="footer">
-            <div class="content has-text-centered">
-                <p>
-                    <strong>&copy; Breeding Insight</strong>
-                </p>
-            </div>
+            <p class="has-text-centered">
+                <strong>&copy; Breeding Insight</strong>
+            </p>
         </footer>
     </div>
 </template>

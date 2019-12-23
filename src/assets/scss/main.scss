@@ -10,13 +10,16 @@ $applegreen: #C1ED2F;
 $turquoise: #3FB3B6;
 $pending: $applegreen;
 $pending-invert: #363636;
-$custom-colors: $pending;
+$custom-colors: (
+  "pending": ($pending, $pending-invert)
+);
 
 // Update Bulma's global variables
 $family-sans-serif: "Source Sans Pro", "Segoe UI", "Ubuntu", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
 $primary: $purple;
 $info: $turquoise;
 $family-heading: "Fira Sans", "Segoe UI", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+
 
 
 // Update some of Bulma's component variables
@@ -30,39 +33,5 @@ $family-heading: "Fira Sans", "Segoe UI", "Helvetica Neue", "Helvetica", "Arial"
   font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
   color: #363636;  //$grey-darker
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-
-  > .container {
-    padding-bottom: 3rem;
-  }
-
 }
-
-#nav {
-  padding: 30px;
-
-  a {
-    font-weight: bold;
-    color: #2c3e50;
-
-    &.router-link-exact-active {
-      color: #42b983;
-    }
-  }
-}
-
-.card.auth {
-  .eauth img {
-    width: 200px;
-    padding: 0;
-  }
-
-  .idp {
-    margin-top: 10px;
-  }
-}
-
