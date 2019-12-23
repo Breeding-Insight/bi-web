@@ -1,7 +1,7 @@
 <template>
     <div id="app">
         <div class="container is-fluid">
-            <div v-if="loggedIn">
+            <!-- <div v-if="loggedIn">
                 <div id="nav">
                     <router-link to="/">Home</router-link>
                     |
@@ -9,16 +9,18 @@
                     |
                     <a v-on:click="logOut">Logout</a>
                 </div>
-            </div>
+            </div> -->
             <router-view/>
         </div>
-        <footer class="footer">
+
+        <!-- <footer class="footer">
             <div class="content has-text-centered">
                 <p>
                     <strong>&copy; Breeding Insight</strong>
                 </p>
             </div>
-        </footer>
+        </footer> -->
+
     </div>
 </template>
 
@@ -32,9 +34,11 @@
                 document.title = to.meta.title + ' | Breeding Insight Platform' || 'Breeding Insight Platform'
             },
             loggedIn(isLoggedIn) {
+                /*
                 if(!isLoggedIn) {
                     this.$router.push('/login');
                 }
+                */
             }
         }
     })
@@ -43,6 +47,7 @@
 
         mounted () {
             const currentRoute = window.location.pathname;
+            /*
             if(!this.$store.state.loggedIn && currentRoute !== '/login') {
                 this.$store.commit(REQUESTED_PATH, {path: currentRoute});
                 this.$router.push('/login');
@@ -51,6 +56,9 @@
             } else {
                 document.title = this.$route.meta.title + ' | Breeding Insight Platform' || 'Breeding Insight Platform'
             }
+            */
+            document.title = this.$route.meta.title + ' | Breeding Insight Platform' || 'Breeding Insight Platform'
+
         }
 
         get loggedIn () {
