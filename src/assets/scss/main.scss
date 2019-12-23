@@ -9,13 +9,15 @@ $purple: #763FCE;
 $applegreen: #C1ED2F;
 $turquoise: #3FB3B6;
 $pending: $applegreen;
-$custom-colors: "pending";
+$pending-invert: #363636;
+$custom-colors: $pending;
 
 // Update Bulma's global variables
 $family-sans-serif: "Source Sans Pro", "Segoe UI", "Ubuntu", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
 $primary: $purple;
 $info: $turquoise;
 $family-heading: "Fira Sans", "Segoe UI", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+
 
 // Update some of Bulma's component variables
 
