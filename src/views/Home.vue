@@ -64,7 +64,7 @@ export default {
     },
     methods: {
       orcidLogin() {
-        window.open("https://sandbox.orcid.org/oauth/authorize?client_id=[YOUR CLIENT ID]response_type=code&scope=/authenticate&show_login=false&redirect_uri=https://yourwebsite.edu/RedirectURI", "_blank", "toolbar=no, scrollbars=yes, width=500, height=600, top=500, left=500");
+        window.open("http://localhost:8081/sso/start", "_blank", "toolbar=no, scrollbars=yes, width=500, height=600, top=500, left=500");
       }
     }
   }
