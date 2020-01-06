@@ -3,20 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "postinstall": "git config core.hooksPath .githooks",
     "build": "node $npm_package_task_path/build.js",
     "serve": "node $npm_package_task_path/serve.js",
     "lint": "node $npm_package_task_path/lint.js",
     "test:accessibility": "node $npm_package_task_path/testAccessibility.js --port $npm_package_devport --config $npm_package_task_path/.pa11yTargets.json --out $npm_package_task_path/log/pa11yResults.json",
     "test:e2e": "node $npm_package_task_path/testE2e.js",
     "test:unit": "node $npm_package_task_path/testUnit.js"
-  },
-  "config": {
-    "commitizen": {
-      "path": "./node_modules/cz-customizable"
-    },
-    "cz-customizable": {
-      "config": "./.cz-config.js"
-    }
   },
   "dependencies": {
     "bulma": "^0.8.0",
@@ -45,13 +38,9 @@
     "axios": "^0.18.0",
     "chai": "^4.1.2",
     "commit-msg-regex": "^1.2.2",
-    "commitizen": "^4.0.3",
-    "cz-customizable": "^6.2.0",
-    "cz-customizable-ghooks": "^1.5.0",
     "eslint": "^5.16.0",
     "eslint-plugin-vue": "^5.0.0",
     "execa": "^4.0.0",
-    "ghooks": "^2.0.4",
     "json-beautify": "^1.1.1",
     "node-sass": "^4.12.0",
     "ora": "^4.0.3",
