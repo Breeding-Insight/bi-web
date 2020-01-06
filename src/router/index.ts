@@ -1,7 +1,8 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '@/views/Home.vue'
-import Login from '@/views/Login.vue';
+import Login from '@/views/Login.vue'
+import UserHome from '@/views/UserHome.vue'
 
 Vue.use(VueRouter);
 
@@ -13,6 +14,14 @@ const routes = [
       title: 'Welcome',
     },
     component: Home
+  },
+  {
+    path: '/userhome',
+    name: 'userhome',
+    meta: {
+      title: 'Welcome',
+    },
+    component: UserHome
   },
   {
     path: '/login',

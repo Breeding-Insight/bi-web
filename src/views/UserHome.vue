@@ -1,0 +1,74 @@
+<template>
+  <div class="userhome">
+    <nav class="level">
+      <div class="level-left">
+        <div class="level-item">
+          <img alt="Breeding Insight Logo" src="../assets/img/bi-logo.svg" style="height: 100px;">
+        </div>
+      </div>
+      <div class="level-right">
+        <div class="level-item has-text-right">
+          <p class="title">Program Name</p>
+        </div>
+      </div>
+    </nav>
+    <div class="is-divider"></div>
+    <div class="columns">
+      <div class="column is-three-fifths">
+        <p class="title has-text-left">Welcome, User Name!</p>
+        <div class="columns is-mobile">
+          <div class="column">
+            <p class="has-text-left title is-6">Last activity:</p>
+             <div class="columns is-mobile">
+               <div class="column is-narrow">
+                  <p class="has-text-left">Data entry for trial Y4-03-10</p>
+               </div>
+               <div class="column is-narrow">
+                 <b-button class="button is-primary">RESUME</b-button>
+               </div>
+             </div>
+          </div>
+          <div class="column">
+            <p class="has-text-left title is-6">Most common tasks:</p>
+            <p class="has-text-left">Inventory</p>
+            <p class="has-text-left">Trial Y4--02-10</p>
+            <p class="has-text-left">Trial Y4-01-01</p>
+            <p class="has-text-left">Experiments</p>
+          </div>
+        </div>
+
+        <div class="columns is-mobile">
+          <div class="column">
+            <p class="has-text-left title is-6">Program Activity Log</p>
+            <p class="has-text-left">Username | Type of activity here, data changed, etc. | 2019-12-12 4:08pm</p>
+            <p class="has-text-left">Username | Type of activity here, data changed, etc. | 2019-12-12 4:08pm</p>
+            <p class="has-text-left">Username | Type of activity here, data changed, etc. | 2019-12-12 4:08pm</p>
+            <p class="has-text-left">Username | Type of activity here, data changed, etc. | 2019-12-12 4:08pm</p>
+            <p class="has-text-left">Username | Type of activity here, data changed, etc. | 2019-12-12 4:08pm</p>
+          </div>
+        </div>
+      </div>
+      <div class="column">
+        <div class="card">
+          <div class="card-content">
+            <div class="media">
+              <div class="media-left">
+                <figure class="image is-48x48">
+                  <img src="https://bulma.io/images/placeholders/96x96.png" alt="Placeholder image">
+                </figure>
+              </div>
+              <div class="media-content">
+                <p class="title is-4">John Smith</p>
+                <p class="subtitle is-6">@johnsmith</p>
+              </div>
+            </div>
+          </div>
+          <footer class="card-footer">
+            <a href="#" class="card-footer-item">Edit</a>
+          </footer>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</template>

@@ -7,6 +7,8 @@
                     |
                     <router-link to="/about">About</router-link>
                     |
+                    <router-link to="/userhome">UserHome</router-link>
+                    |
                     <a v-on:click="logOut">Logout</a>
                 </div>
             </div> -->
@@ -58,7 +60,6 @@
             }
             */
             document.title = this.$route.meta.title + ' | Breeding Insight Platform' || 'Breeding Insight Platform'
-
         }
 
         get loggedIn () {

@@ -21,6 +21,7 @@
   "dependencies": {
     "buefy": "^0.8.8",
     "bulma": "^0.8.0",
+    "bulma-divider": "^0.2.0",
     "core-js": "^3.4.3",
     "vue": "^2.6.10",
     "vue-class-component": "^7.0.2",

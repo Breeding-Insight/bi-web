@@ -3,19 +3,85 @@
     <div class="columns is-mobile">
       <img class="column is-2 is-offset-5" alt="Breeding Insight Logo" src="../assets/img/bi-logo.svg">
     </div>
+    <div class="is-divider"></div>
     <nav class="level">
       <p class="level-item has-text-centered">Combining genomics and informatics to accelerate genetic gains</p>
     </nav>
+    <div class="is-divider"></div>
     <div class="columns">
-      <div class="column">
-        <p>Part of a Breeding Insight program?</p>
-        <b-button class="button is-primary" @click="isLoginModalActive = true">LOG IN</b-button>
+      <div class="column is-three-fifths">
+        <div class="columns is-mobile">
+          <div class="column is-narrow">
+            <p class="has-text-left">Part of a Breeding Insight program?</p>
+          </div>
+          <div class="column is-narrow">
+            <b-button class="button is-primary" @click="isLoginModalActive = true">LOG IN</b-button>
+          </div>
+        </div>
+        <div class="columns is-mobile">
+          <div class="column is-narrow">
+            <p class="has-text-left title is-5">Our current specialty breeding programs:</p>
+          </div>
+        </div>
+
+        <div class="tile is-ancestor">
+          <div class="tile is-4 is-vertical is-parent">
+            <div class="tile is-child box has-background-grey-lighter">
+              <div class="columns is-mobile">
+                <div class="column">
+                  <p class="has-text-left title is-5">BLUEBERRY</p>
+                </div>
+                <div class="column">
+                  <img class="is-pulled-right" alt="Breeding Insight Logo" src="../assets/img/icon-blueberry.png" style="height: 80px; ">
+                </div>
+              </div>
+            </div>
+            <div class="tile is-child box has-background-grey-lighter">
+              <div class="columns is-mobile">
+                <div class="column">
+                  <p class="has-text-left title is-5">SALMONIDS</p>
+                </div>
+                <div class="column">
+                  <img class="is-pulled-right" alt="Breeding Insight Logo" src="../assets/img/icon-trout.png" style="height: 60px; ">
+                </div>
+              </div>
+            </div>
+            <div class="tile is-child box has-background-grey-lighter">
+              <div class="columns is-mobile">
+                <div class="column">
+                  <p class="has-text-left title is-5">SWEET POTATO</p>
+                </div>
+                <div class="column">
+                  <img class="is-pulled-right" alt="Breeding Insight Logo" src="../assets/img/icon-sweetpotato.png" style="height: 60px; ">
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="tile is-4 is-vertical is-parent">
+            <div class="tile is-child box has-background-grey-lighter">
+              <div class="column">
+                <p class="has-text-left title is-5">ALFALFA</p>
+              </div>
+              <div class="column">
+                <img class="is-pulled-right" alt="Breeding Insight Logo" src="../assets/img/icon-alfalfa.png" style="height: 80px; ">
+              </div>
+            </div>
+            <div class="tile is-child box has-background-grey-lighter">
+              <div class="column">
+                <p class="has-text-left title is-5">GRAPE</p>
+              </div>
+              <div class="column">
+                <img class="is-pulled-right" alt="Breeding Insight Logo" src="../assets/img/icon-grape.png" style="height: 80px; ">
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
       <div class="column">
-        <h5 class="title is-5">Our Mission</h5>
-        <p>By combining genomics with the powerful tools of informatics, breeding for genetic gain has undergone a revolution. But due to high-costs, some smaller breeding programs have been left behind. The mission of the Breeding Insight team is to make high-tech breeding a reality for smaller programs.</p>
+        <h5 class="title is-5 has-text-left">Our Mission</h5>
+        <p class="has-text-left">By combining genomics with the powerful tools of informatics, breeding for genetic gain has undergone a revolution. But due to high-costs, some smaller breeding programs have been left behind. The mission of the Breeding Insight team is to make high-tech breeding a reality for smaller programs.</p>
         <br>
-        <p>Breeding Insight is funded by the U.S. Department of Agriculture (USDA) Agricultural Research Service (ARS) through Cornell University. The USDA ARS delivers scientific solutions to national and global agricultural challenges. As a global leader in agricultural discovery through scientific excellence, ARS is committed to delivering cutting-edge, scientific tools and innovative solutions for American farmers, producers, industry, and communities to support the nourishment and well-being of all people; sustaining our nation’s agroecosystems and natural resources; and ensuring the economic competitiveness and excellence of our agriculture.</p>
+        <p class="has-text-left">Breeding Insight is funded by the U.S. Department of Agriculture (USDA) Agricultural Research Service (ARS) through Cornell University. The USDA ARS delivers scientific solutions to national and global agricultural challenges. As a global leader in agricultural discovery through scientific excellence, ARS is committed to delivering cutting-edge, scientific tools and innovative solutions for American farmers, producers, industry, and communities to support the nourishment and well-being of all people; sustaining our nation’s agroecosystems and natural resources; and ensuring the economic competitiveness and excellence of our agriculture.</p>
       </div>
     </div>
     <b-modal :active.sync="isLoginModalActive">
@@ -64,7 +130,7 @@ export default {
     },
     methods: {
       orcidLogin() {
-        window.open("http://localhost:8081/sso/start", "_blank", "toolbar=no, scrollbars=yes, width=500, height=600, top=500, left=500");
+        window.location = "http://localhost:8081/sso/start"
       }
     }
   }
