@@ -1,37 +1,46 @@
 <template>
-    <div class="login">
-        <section class="hero">
-            <div class="hero-body">
-                <div class="container">
-                    <h1 class="title">
-                        Welcome to the Breeding Insight Platform!
-                    </h1>
-                    <p>To continue, please log in</p>
-                </div>
+  <div class="login">
+    <section class="hero">
+      <div class="hero-body">
+        <div class="container">
+          <h1 class="title">
+            Welcome to the Breeding Insight Platform!
+          </h1>
+          <p>To continue, please log in</p>
+        </div>
+      </div>
+    </section>
+    <section>
+      <div class="columns is-centered">
+        <div class="column is-half">
+          <div class="card auth">
+            <div class="card-content">
+              <div class="columns is-centered">
+                <figure class="image eauth">
+                  <img
+                    src="../assets/img/eauth.svg"
+                    alt="eAuth logo"
+                    class="column"
+                  >
+                </figure>
+              </div>
+              <div>
+                <button
+                  class="button is-primary"
+                  @click="logIn"
+                >
+                  Login via eAuth >
+                </button>
+              </div>
+              <div class="idp">
+                <small>Don't have an eAuth account? <a href="#">Login via BIP ></a></small>
+              </div>
             </div>
-        </section>
-        <section>
-            <div class="columns is-centered">
-                <div class="column is-half">
-                    <div class="card auth">
-                        <div class="card-content">
-                            <div class="columns is-centered">
-                                <figure class="image eauth">
-                                    <img src="../assets/img/eauth.svg" alt="eAuth logo" class="column"/>
-                                </figure>
-                            </div>
-                            <div>
-                                <button class="button is-primary" v-on:click="logIn">Login via eAuth ></button>
-                            </div>
-                            <div class="idp">
-                                <small>Don't have an eAuth account? <a href="#">Login via BIP ></a></small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
 </template>
 
 <script lang="ts">

@@ -1,42 +1,92 @@
-@import 'bulma/bulma';
+@charset "utf-8";
 
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
+// Import a Google Font
+@import url('https://fonts.googleapis.com/css?family=Fira+Sans:400,600,700');
+@import url('https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600');
 
-  > .container {
-    padding-bottom: 3rem;
-  }
+// Override Bulma default colors
+$red: #E20057;
+$yellow: #FFCC21;
+$green: #2AB14E;
+$blue: #1B64DD;
 
-}
+// Custom colors
+$purple: #763FCE;
+$magenta: #9c27b0;
+$applegreen: #C1ED2F;
+$turquoise: #3FB3B6;
+$pending: $applegreen;
+$pending-invert: #363636;
+$custom-colors: (
+  "pending": ($pending, $pending-invert)
+);
 
-#nav {
-  padding: 30px;
+// Update Bulma's global variables
+$family-sans-serif: "Source Sans Pro", "Segoe UI", "Ubuntu", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+$primary: $purple;
+$info: $turquoise;
+$family-heading: "Fira Sans", "Segoe UI", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+$code: $magenta;
 
-  a {
-    font-weight: bold;
-    color: #2c3e50;
 
-    &.router-link-exact-active {
-      color: #42b983;
+// Update some of Bulma's component variables
+
+//Enable this import line when Bulma is in a local folder called "bulma"
+//@import 'bulma/bulma';
+// Enable this import line instead when Bulma is in package.json
+@import '../../../node_modules/bulma/bulma.sass';
+
+// Overrides that can't be done with variables go here
+// may be broken out into a separate file later
+
+main {
+  p,
+  dl,
+  ol,
+  ul,
+  blockquote,
+  pre,
+  table {
+    &:not(last-child) {
+    margin-bottom: 1em;
     }
   }
 }
 
-.card.auth {
-  .eauth img {
-    width: 200px;
-    padding: 0;
-  }
-
-  .idp {
-    margin-top: 10px;
-  }
+ul {
+  list-style: disc outside;
+  margin-left: 2em;
+  ul {
+      list-style-type: circle;
+      margin-top: .5em;
+      }
 }
 
+ol {
+    list-style-position: outside;
+    margin-left: 2em;
+    margin-top: 1em;
+}
+
+li {
+    margin-bottom: .5em;
+}
+
+
+// Custom styles go here, may be broken out into a seperate file later
+#app {
+  font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: #363636;  //$grey-darker
+}
+
+.tagline {
+  border-top: 1px #363636 solid;
+  border-bottom: 1px #363636 solid;
+  padding: 2em;
+    p {
+      text-align: center;
+      width: 100%;
+    }
+}

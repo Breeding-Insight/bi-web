@@ -26,7 +26,13 @@ module.exports = {
     { value: 'WIP', name: 'WIP:      Work in progress' },
   ],
 
-  scopes: [{ name: 'Home' }, { name: 'Style' }, { name: 'API' }, { name: 'Config'}],
+  scopes: [
+    { name: 'Home' },
+    { name: 'Style' },
+    { name: 'API' },
+    { name: 'Config'},
+    {name: 'Taskrunner'}
+  ],
 
   allowTicketNumber: false,
   isTicketNumberRequired: false,

@@ -1,29 +1,36 @@
 <template>
     <div id="app">
-        <div class="container is-fluid">
-            <!-- <div v-if="loggedIn">
-                <div id="nav">
-                    <router-link to="/">Home</router-link>
-                    |
-                    <router-link to="/about">About</router-link>
-                    |
-                    <router-link to="/userhome">UserHome</router-link>
-                    |
-                    <a v-on:click="logOut">Logout</a>
-                </div>
-            </div> -->
-            <router-view/>
-        </div>
-
-        <!-- <footer class="footer">
-            <div class="content has-text-centered">
-                <p>
-                    <strong>&copy; Breeding Insight</strong>
-                </p>
+        <header class="container">
+            <div v-if="loggedIn">
+                <nav class="navbar" role="navigation" aria-label="main navigation">
+                    <div class="navbar-menu">
+                        <ul class="navbar-start">
+                            <li class="navbar-item"><router-link to="/">Home</router-link></li>
+                            <li class="navbar-item"><router-link to="/about">About</router-link></li>
+                            <li class="navbar-item"><router-link to="/styleguide">Style Guide</router-link></li>
+                            <li class="navbar-item"><a v-on:click="logOut">Logout</a></li>
+                        </ul>
+                    </div>
+                </nav>
             </div>
-        </footer> -->
-
+        </header>
+        <main class="container">
+            <router-view/>
+        </main>
+        <footer class="footer">
+            <p class="has-text-centered">
+                <strong>&copy; Breeding Insight</strong>
+            </p>
+        </footer>
     </div>
+    <footer class="footer">
+      <div class="content has-text-centered">
+        <p>
+          <strong>&copy; Breeding Insight</strong>
+        </p>
+      </div>
+    </footer>
+  </div>
 </template>
 
 <script lang="ts">
