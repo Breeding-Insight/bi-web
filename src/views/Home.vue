@@ -100,6 +100,8 @@
           </section>
         </div>
     </b-modal>
+
+    <LoginFailedDialog v-bind:isFailedLoginModalActive="isFailedLoginModalActive"></LoginFailedDialog>
   </div>
 
   <!-- <div class="home">
@@ -122,16 +124,22 @@ export default {
 </script> -->
 
 <script>
+  import LoginFailedDialog from '../components/LoginFailedDialog.vue';
+
   export default {
     data() {
       return {
         isLoginModalActive: false,
+        isFailedLoginModalActive: false,
       }
     },
     methods: {
       orcidLogin() {
         window.location = "http://localhost:8081/sso/start"
       }
+    },
+    components: {
+      LoginFailedDialog
     }
   }
 </script>
