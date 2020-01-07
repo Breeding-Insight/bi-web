@@ -36,6 +36,7 @@
 <script lang="ts">
     import { Component, Vue } from 'vue-property-decorator';
     import { LOGIN, LOGOUT, REQUESTED_PATH } from '@/store/mutation-types';
+    import * as api from '@/util/api';
 
     @Component({
         watch: {
@@ -43,11 +44,11 @@
                 document.title = to.meta.title + ' | Breeding Insight Platform' || 'Breeding Insight Platform'
             },
             loggedIn(isLoggedIn) {
-                /*
+
                 if(!isLoggedIn) {
-                    this.$router.push('/login');
+                    this.$router.push('/');
                 }
-                */
+
             }
         }
     })
@@ -56,16 +57,25 @@
 
         mounted () {
             const currentRoute = window.location.pathname;
-            /*
-            if(!this.$store.state.loggedIn && currentRoute !== '/login') {
+
+            api.call({url: 'http://localhost:8081/userinfo'})
+            .then((response) => {
+              console.log(response);
+              this.$store.commit(LOGIN, {'id': response.data.orcid, 'name': response.data.name, 'roles':[] });
+              this.$router.push('/userhome');
+
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+
+            if(!this.$store.state.loggedIn && currentRoute !== '/') {
                 this.$store.commit(REQUESTED_PATH, {path: currentRoute});
-                this.$router.push('/login');
-            } else if(this.$store.state.loggedIn && currentRoute === '/login') {
                 this.$router.push('/');
             } else {
                 document.title = this.$route.meta.title + ' | Breeding Insight Platform' || 'Breeding Insight Platform'
             }
-            */
+
             document.title = this.$route.meta.title + ' | Breeding Insight Platform' || 'Breeding Insight Platform'
         }
 
