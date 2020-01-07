@@ -31,10 +31,10 @@ $code: $magenta;
 
 // Update some of Bulma's component variables
 
-
-@import 'bulma/bulma';
+//Enable this import line when Bulma is in a local folder called "bulma"
+//@import 'bulma/bulma';
 // Enable this import line instead when Bulma is in package.json
-// @import '../node_modules/bulma/bulma.sass';
+@import '../../../node_modules/bulma/bulma.sass';
 
 // Overrides that can't be done with variables go here
 // may be broken out into a separate file later
