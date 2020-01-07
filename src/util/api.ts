@@ -4,7 +4,7 @@ import { ERROR_STATE, LOGOUT } from './../store/mutation-types';
 
 export function call (config: any) {
     config.xsrfCookieName = 'phylo-token';
-    //config.xsrfHeaderName = 'X-XSRF-TOKEN';
+    //config.xsrfHeaderName = '_xsrf';
     config.withCredentials = true;
 
     return new Promise(((resolve, reject) => {

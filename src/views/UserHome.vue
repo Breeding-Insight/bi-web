@@ -15,7 +15,7 @@
     <div class="is-divider"></div>
     <div class="columns">
       <div class="column is-three-fifths">
-        <p class="title has-text-left">Welcome, User Name!</p>
+        <p class="title has-text-left">Welcome, {{ username }}!</p>
         <div class="columns is-mobile">
           <div class="column">
             <p class="has-text-left title is-6">Last activity:</p>
@@ -58,8 +58,8 @@
                 </figure>
               </div>
               <div class="media-content">
-                <p class="title is-4">John Smith</p>
-                <p class="subtitle is-6">@johnsmith</p>
+                <p class="title is-4">{{ username }}</p>
+                <p class="subtitle is-6">{{ orcid }}</p>
               </div>
             </div>
           </div>
@@ -72,3 +72,14 @@
   </div>
 
 </template>
+
+
+<script lang="ts">
+    import { Component, Vue } from 'vue-property-decorator';
+
+    @Component
+    export default class UserHome extends Vue {
+       public username: string = this.$store.state.user.name;
+       public orcid: string = this.$store.state.user.id;
+    }
+</script>

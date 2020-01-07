@@ -1,11 +1,37 @@
+@charset "utf-8";
+
+// Import a Google Font
+@import url('https://fonts.googleapis.com/css?family=Fira+Sans:400,600,700');
+@import url('https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600');
+
+// Custom colors
+$purple: #763FCE;
+$applegreen: #C1ED2F;
+$turquoise: #3FB3B6;
+$pending: $applegreen;
+$pending-invert: #363636;
+$custom-colors: $pending;
+
+// Update Bulma's global variables
+$family-sans-serif: "Source Sans Pro", "Segoe UI", "Ubuntu", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+$primary: $purple;
+$info: $turquoise;
+$family-heading: "Fira Sans", "Segoe UI", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+
+
+// Update some of Bulma's component variables
+
+
 @import 'bulma/bulma';
+// Enable this import line instead when Bulma is in package.json
+// @import '../node_modules/bulma/bulma.sass';
 
 #app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
+  font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  color: #2c3e50;
+  color: #363636;  //$grey-darker
   min-height: 100vh;
   display: flex;
   flex-direction: column;
