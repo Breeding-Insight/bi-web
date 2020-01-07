@@ -37,7 +37,6 @@
     "argparse": "^1.0.10",
     "axios": "^0.18.0",
     "chai": "^4.1.2",
-    "commit-msg-regex": "^1.2.2",
     "eslint": "^5.16.0",
     "eslint-plugin-vue": "^5.0.0",
     "execa": "^4.0.0",
@@ -51,10 +50,6 @@
     "typescript": "~3.5.3",
     "vue-cli-plugin-axios": "0.0.4",
     "vue-template-compiler": "^2.6.10"
-  },
-  "commit-msg": {
-    "regex": "^[a-zA-Z]+\\([a-zA-Z]+\\): [A-Z]+-[0-9]+ - .*",
-    "error-message": "commit aborted: use 'npx git-cz' instead of 'git commit'\n and the trello card must precede the subject, e.g. 'ABC-12 - Subject Line'"
   },
   "devport": "8080",
   "task_path": "./task"
