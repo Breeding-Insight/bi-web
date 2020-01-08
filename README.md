@@ -46,7 +46,11 @@ the relative paths to the pages to be tested: e.g. "home" or "group/info".
 
 The results of the tests are stored as JSON in the file task/pa11yResults.json.
 
-The test points to http://localhost, so for dev work simply run:
+The test points to http://localhost, so for dev work simply start the dev server
+```
+npm run serve
+```
+and run the accessibility tests:
 ```
 npm run test:accessibility
 ```
