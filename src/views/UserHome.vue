@@ -12,6 +12,15 @@
         </div>
       </div>
     </nav>
+    <nav class="navbar" role="navigation" aria-label="main navigation">
+      <div class="navbar-end">
+        <div class="navbar-item">
+          <div class="buttons">
+            <b-button @click="logout">LOG OUT</b-button>
+          </div>
+        </div>
+      </div>
+    </nav>
     <div class="is-divider"></div>
     <div class="columns">
       <div class="column is-three-fifths">
@@ -73,13 +82,27 @@
 
 </template>
 
-
 <script lang="ts">
-    import { Component, Vue } from 'vue-property-decorator';
+  import { Component, Vue } from 'vue-property-decorator';
+  import { LOGOUT } from '@/store/mutation-types';
+  import * as api from '@/util/api';
 
-    @Component
-    export default class UserHome extends Vue {
-       public username: string = this.$store.state.user.name;
-       public orcid: string = this.$store.state.user.id;
+  @Component
+  export default class UserHome extends Vue {
+
+    public username: string = this.$store.state.user.name;
+    public orcid: string = this.$store.state.user.id;
+
+    logout() {
+      api.call({url: 'http://localhost:8081/logout'})
+      .then((response) => {
+        //console.log(response);
+        this.$store.commit(LOGOUT);
+        this.$router.push('/');
+      })
+      .catch((error) => {
+        //console.log(error);
+      });
     }
+  }
 </script>
