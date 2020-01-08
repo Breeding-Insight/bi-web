@@ -83,19 +83,25 @@
 </template>
 
 <script lang="ts">
-  import { Component, Vue } from 'vue-property-decorator';
   import { LOGOUT } from '@/store/mutation-types';
   import * as api from '@/util/api';
+  import { Component, Prop, Vue } from 'vue-property-decorator'
 
   @Component
   export default class UserHome extends Vue {
 
-    public username: string = this.$store.state.user.name;
-    public orcid: string = this.$store.state.user.id;
+    // Computed properties
+    get username(): string {
+      return this.$store.state.user ? this.$store.state.user.name : '';
+    }
 
+    get orcid(): boolean {
+      return this.$store.state.user ? this.$store.state.user.id : '';
+    }
+
+    // Methods
     logout() {
-      window.location = "http://localhost:8081/logout"
-
+      window.location.href = "http://localhost:8081/logout"
     }
   }
 </script>
