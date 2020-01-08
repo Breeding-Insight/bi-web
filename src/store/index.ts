@@ -2,6 +2,7 @@ import Vue from 'vue';
 import Vuex, { StoreOptions } from 'vuex';
 import { RootState } from './types';
 import { mutations } from './mutations';
+import {actions} from './actions';
 
 Vue.use(Vuex);
 
@@ -10,11 +11,13 @@ const store: StoreOptions<RootState> = {
     state: {
         apiError: false,
         apiUnavailable: false,
+        loginFailed: false,
         loggedIn: false,
         requestedPath: undefined,
         user: undefined
     },
     mutations,
+    actions
 };
 
 export default new Vuex.Store(store);

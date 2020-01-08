@@ -101,7 +101,15 @@
         </div>
     </b-modal>
 
-    <LoginFailedDialog v-bind:isFailedLoginModalActive="isFailedLoginModalActive"></LoginFailedDialog>
+    <!-- Login Failed Modal -->
+    <b-modal :active.sync="isFailedLoginModalActive">
+        <div class="modal-card" style="width: auto">
+            <section class="modal-card-body">
+                <p class="is-size-1 has-text-danger">Login Failed</p>
+                <p>We were not able to log you in successfully. Contact a system admin for assistance.</p>
+            </section>
+        </div>
+    </b-modal>
   </div>
 
   <!-- <div class="home">
@@ -124,22 +132,28 @@ export default {
 </script> -->
 
 <script>
-  import LoginFailedDialog from '../components/LoginFailedDialog.vue';
-
   export default {
     data() {
       return {
-        isLoginModalActive: false,
-        isFailedLoginModalActive: false,
+        isLoginModalActive: false
+      }
+    },
+    computed: {
+      isFailedLoginModalActive: {
+        get() {
+            // If the user just attempted login, and they are unauthorized for userinfo, warn them
+            const newLogin = this.$route.query['new-login'] == 'true';
+            return this.$store.state.loginFailed && newLogin;
+        }, 
+        set() {
+          this.$store.dispatch('clearLoginFailed');
+        }
       }
     },
     methods: {
       orcidLogin() {
         window.location = "http://localhost:8081/sso/start"
       }
-    },
-    components: {
-      LoginFailedDialog
     }
   }
 </script>

@@ -28,7 +28,7 @@
 
 <script lang="ts">
     import { Component, Vue } from 'vue-property-decorator';
-    import { LOGIN, LOGOUT, REQUESTED_PATH } from '@/store/mutation-types';
+    import { LOGIN, LOGOUT, REQUESTED_PATH, ERROR_STATE } from '@/store/mutation-types';
     import * as api from '@/util/api';
 
     @Component({
@@ -59,6 +59,12 @@
 
             })
             .catch((error) => {
+
+              // Check if it is a 401
+              if (error.response && error.response.status === 401) {
+                this.$store.commit(ERROR_STATE, {'loginFailed': true});
+              }
+
               console.log(error);
             });
 
