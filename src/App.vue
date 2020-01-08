@@ -1,6 +1,6 @@
 <template>
     <div id="app">
-        <header class="container is-fluid">
+        <header class="container">
             <div v-if="loggedIn">
                 <nav role="navigation" aria-label="main navigation">
                     <ul>
@@ -12,7 +12,7 @@
                 </nav>
             </div>
         </header>
-        <main class="container is-fluid">
+        <main class="container">
             <router-view/>
         </main>
         <footer class="footer">
