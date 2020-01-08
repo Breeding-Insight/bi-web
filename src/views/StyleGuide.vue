@@ -12,4 +12,9 @@
     <p>I am not sure why there is not a bottom margin on a paragraph before a header. Will check on that.</p>
     <p>More information on typestyles to come.</p>
   </section>
+  <section class="section">
+    <h2>Resources</h2>
+        <p>Semantic markup: https://html.com/semantic-markup/</p>
+        <p>Bulma documentation: 
+  </section>
 </template>
