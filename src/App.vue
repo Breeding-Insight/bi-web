@@ -48,7 +48,7 @@
                 if(!isLoggedIn) {
                     this.$router.push('/');
                 }
-
+                
             }
         }
     })
@@ -60,17 +60,18 @@
 
             api.call({url: 'http://localhost:8081/userinfo'})
             .then((response) => {
-              console.log(response);
+              //console.log(response);
               this.$store.commit(LOGIN, {'id': response.data.orcid, 'name': response.data.name, 'roles':[] });
               this.$router.push('/userhome');
 
             })
             .catch((error) => {
-              console.log(error);
+              console.log("/userinfo error");
             });
 
             if(!this.$store.state.loggedIn && currentRoute !== '/') {
                 this.$store.commit(REQUESTED_PATH, {path: currentRoute});
+
                 this.$router.push('/');
             } else {
                 document.title = this.$route.meta.title + ' | Breeding Insight Platform' || 'Breeding Insight Platform'
