@@ -131,30 +131,33 @@ export default {
 }
 </script> -->
 
-<script>
-  export default {
-    data() {
-      return {
-        isLoginModalActive: false
-      }
-    },
-    computed: {
-      isFailedLoginModalActive: {
-        get() {
-            // If the user just attempted login, and they are unauthorized for userinfo, warn them
+<script lang="ts">
+
+  import { LOGOUT } from '@/store/mutation-types';
+  import * as api from '@/util/api';
+  import { Component, Prop, Vue } from 'vue-property-decorator'
+
+  @Component
+  export default class Home extends Vue {
+
+    public isLoginModalActive: boolean = false;
+
+    // Computed properties
+    get isFailedLoginModalActive(): boolean {
+      // If the user just attempted login, and they are unauthorized for userinfo, warn them
             const newLogin = this.$route.query['new-login'] == 'true';
             return this.$store.state.loginFailed && newLogin;
-        }, 
-        set() {
-          this.$store.dispatch('clearLoginFailed');
-        }
-      }
-    },
-    methods: {
-      orcidLogin() {
-        window.location = "http://localhost:8081/sso/start"
-      }
     }
+
+    set isFailedLoginModalActive(disable: boolean) {
+      this.$store.dispatch('clearLoginFailed');
+    }
+
+    // Methods
+    orcidLogin() {
+      window.location.href = "http://localhost:8081/sso/start";
+    }
+
   }
 </script>
 
