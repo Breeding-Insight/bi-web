@@ -2,13 +2,15 @@
     <div id="app">
         <header class="container">
             <div v-if="loggedIn">
-                <nav role="navigation" aria-label="main navigation">
-                    <ul>
-                        <li><router-link to="/">Home</router-link></li>
-                        <li><router-link to="/about">About</router-link></li>
-                        <li><router-link to="/styleguide">Style Guide</router-link></li>
-                        <li><a v-on:click="logOut">Logout</a></li>
-                    </ul>
+                <nav class="navbar" role="navigation" aria-label="main navigation">
+                    <div class="navbar-start">
+                        <ul class="navbar-menu">
+                            <li class="navbar-item"><router-link to="/">Home</router-link></li>
+                            <li class="navbar-item"><router-link to="/about">About</router-link></li>
+                            <li class="navbar-item"><router-link to="/styleguide">Style Guide</router-link></li>
+                            <li class="navbar-item"><a v-on:click="logOut">Logout</a></li>
+                        </ul>
+                    </div>
                 </nav>
             </div>
         </header>
