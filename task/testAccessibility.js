@@ -72,7 +72,7 @@ const out = args.out || './task/log/pa11yResults.json';
     fs.writeFileSync(`${out}`, jsonBeautify(results, null, 2, 80), 'utf8');
 
     // check for accessibility exceptions
-    if (results.find(result => result.typeCode === 1)) {
+    if (!results[0].issues.find(result => result.typeCode === 1)) {
       spinner = spinner.clear()
         .succeed('accessibility tests done');
     } else {

@@ -52,5 +52,5 @@
     "vue-template-compiler": "^2.6.10"
   },
   "devport": "8080",
-  "task_path": "./task"
+  "task_path": "./util"
 }
