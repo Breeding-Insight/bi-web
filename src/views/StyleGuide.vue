@@ -1,5 +1,14 @@
 <template>
   <section class="style-guide section">
+  <!-- Note, this logo and tagline should go into the main header, to be applied to all pages. I couldn't figure out how to get the image to resolve in Vue where the header is. Can we have header templates? -->
+    <div class="level">
+        <div class="level-item">
+            <img src="../assets/img/bi-logo.svg" alt="Breeding Insight Logo" width="232" role="logo" />
+        </div>
+    </div>
+    <div class="level tagline">
+        <p>Tagline goes here</p>
+    </div>
     <h1 class="title">Breeding Insight Style Guide</h1>
     <div class="columns">
         <div class="column">

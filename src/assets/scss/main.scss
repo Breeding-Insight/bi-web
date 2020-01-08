@@ -29,9 +29,24 @@ $family-heading: "Fira Sans", "Segoe UI", "Helvetica Neue", "Helvetica", "Arial"
 // Enable this import line instead when Bulma is in package.json
 // @import '../node_modules/bulma/bulma.sass';
 
+// Overrides that can't be done with variables go here
+// may be broken out into a separate file later
+
+
+// Custom styles go here, may be broken out into a seperate file later
 #app {
   font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: #363636;  //$grey-darker
+}
+
+.tagline {
+  border-top: 1px #363636 solid;
+  border-bottom: 1px #363636 solid;
+  padding: 2em;
+    p {
+      text-align: center;
+      width: 100%;
+    }
 }

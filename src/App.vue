@@ -3,8 +3,8 @@
         <header class="container">
             <div v-if="loggedIn">
                 <nav class="navbar" role="navigation" aria-label="main navigation">
-                    <div class="navbar-start">
-                        <ul class="navbar-menu">
+                    <div class="navbar-menu">
+                        <ul class="navbar-start">
                             <li class="navbar-item"><router-link to="/">Home</router-link></li>
                             <li class="navbar-item"><router-link to="/about">About</router-link></li>
                             <li class="navbar-item"><router-link to="/styleguide">Style Guide</router-link></li>
