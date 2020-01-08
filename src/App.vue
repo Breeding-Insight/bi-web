@@ -30,6 +30,7 @@
     import { Component, Vue } from 'vue-property-decorator';
     import { LOGIN, LOGOUT, REQUESTED_PATH, ERROR_STATE } from '@/store/mutation-types';
     import * as api from '@/util/api';
+    import { AxiosResponse, AxiosPromise } from 'axios';
 
     @Component({
         watch: {
@@ -52,7 +53,7 @@
             const currentRoute = window.location.pathname;
 
             api.call({url: 'http://localhost:8081/userinfo'})
-            .then((response) => {
+            .then((response: any) => {
               //console.log(response);
               this.$store.commit(LOGIN, {'id': response.data.orcid, 'name': response.data.name, 'roles':[] });
               this.$router.push('/userhome');
@@ -63,8 +64,6 @@
               if (error.response && error.response.status === 401) {
                 this.$store.commit(ERROR_STATE, {'loginFailed': true});
               }
-
-              console.log(error);
             });
 
             if(!this.$store.state.loggedIn && currentRoute !== '/') {
