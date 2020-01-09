@@ -1,7 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '@/views/Home.vue'
-import Login from '@/views/Login.vue'
 import UserHome from '@/views/UserHome.vue'
 import StyleGuide from '@/views/StyleGuide.vue';
 
@@ -23,22 +22,6 @@ const routes = [
       title: 'Welcome',
     },
     component: UserHome
-  },
-  {
-    path: '/login',
-    name: 'login',
-    meta: {
-      title: 'Login',
-    },
-    component: Login
-  },
-    {
-    path: '/styleguide',
-    name: 'style-guide',
-    meta: {
-      title: 'Style Guide',
-    },
-    component: StyleGuide
   },
   {
     path: '/about',
