@@ -32,6 +32,39 @@ $family-heading: "Fira Sans", "Segoe UI", "Helvetica Neue", "Helvetica", "Arial"
 // Overrides that can't be done with variables go here
 // may be broken out into a separate file later
 
+main {
+  p,
+  dl,
+  ol,
+  ul,
+  blockquote,
+  pre,
+  table {
+    &:not(last-child) {
+    margin-bottom: 1em;
+    }
+  }
+}
+
+ul {
+  list-style: disc outside;
+  margin-left: 2em;
+  ul {
+      list-style-type: circle;
+      margin-top: .5em;
+      }
+}
+
+ol {
+    list-style-position: outside;
+    margin-left: 2em;
+    margin-top: 1em;
+}
+
+li {
+    margin-bottom: .5em;
+}
+
 
 // Custom styles go here, may be broken out into a seperate file later
 #app {
