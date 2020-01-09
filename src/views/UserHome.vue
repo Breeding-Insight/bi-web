@@ -100,17 +100,8 @@
     }
 
     // Methods
-    logout(): void {
-        const component = this;
-        api.call({url: 'http://localhost:8081/logout'})
-        .then((response) => {
-          //console.log(response);
-          component.$store.commit(LOGOUT);
-          component.$router.push('/');
-        })
-        .catch((error) => {
-          //console.log(error);
-        });
-      }
+    logout() {
+      window.location.href = "http://localhost:8081/logout"
+    }
   }
 </script>
