@@ -14,7 +14,7 @@
       </div>
     </div>
     <div class="level tagline">
-      <p>Tagline goes here</p>
+      <p class="is-marginless">Tagline goes here</p>
     </div>
     <h1 class="title">
       Breeding Insight Style Guide
