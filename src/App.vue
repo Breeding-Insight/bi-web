@@ -56,33 +56,49 @@
     export default class App extends Vue {
         public loading: boolean = false;
 
-        mounted () {
-            const currentRoute = window.location.pathname;
-
+        beforeCreate() {
+            
+            //Get the user info
             api.call({url: 'http://localhost:8081/userinfo'})
             .then((response: any) => {
-              //console.log(response);
-              this.$store.commit(LOGIN, {'id': response.data.orcid, 'name': response.data.name, 'roles':[] });
-              this.$router.push('/userhome');
-
+                console.log(response);
+                this.$store.commit(LOGIN, {'id': response.data.orcid, 'name': response.data.name, 'roles':[] });
             })
             .catch((error) => {
+                // Check if it is a 401
+                if (error.response && error.response.status === 401) {
+                    this.$store.commit(ERROR_STATE, {'loginFailed': true});
+                }
+            }).finally(() => this.directUser());
+            
+        }
 
-              // Check if it is a 401
-              if (error.response && error.response.status === 401) {
-                this.$store.commit(ERROR_STATE, {'loginFailed': true});
-              }
-            });
+        directUser() {
+            // Directs the user to the appropriate route based on the logged in status, roles, and destination
 
+            const currentRoute = window.location.pathname;
+
+            // Check they have access to the route they are supposed to have access to
+            //TODO: Have a better way to check protected routes
             if(!this.$store.state.loggedIn && currentRoute !== '/') {
-                this.$store.commit(REQUESTED_PATH, {path: currentRoute});
 
+                // If they are not logged in and are trying to access a protected resource, send them home
+                this.$store.commit(REQUESTED_PATH, {path: currentRoute});
                 this.$router.push('/');
-            } else {
+
+            } else if (this.$store.state.loggedIn && currentRoute == '/'){
+
+                // If they are trying to go to the home page, and they are logged in, send them to user home
+                this.$router.replace('/userhome');
+            }
+            else {
+
+                // Let them do what they want if the page is unprotected
                 document.title = this.$route.meta.title + ' | Breeding Insight Platform' || 'Breeding Insight Platform'
             }
 
             document.title = this.$route.meta.title + ' | Breeding Insight Platform' || 'Breeding Insight Platform'
+
         }
 
         get loggedIn () {
