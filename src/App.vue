@@ -54,7 +54,6 @@
             //Get the user info
             api.call({url: 'http://localhost:8081/userinfo'})
             .then((response: any) => {
-                console.log(response);
                 this.$store.commit(LOGIN, {'id': response.data.orcid, 'name': response.data.name, 'roles':[] });
             })
             .catch((error) => {
