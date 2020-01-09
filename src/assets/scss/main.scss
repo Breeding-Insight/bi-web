@@ -4,8 +4,15 @@
 @import url('https://fonts.googleapis.com/css?family=Fira+Sans:400,600,700');
 @import url('https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600');
 
+// Override Bulma default colors
+$red: #E20057;
+$yellow: #FFCC21;
+$green: #2AB14E;
+$blue: #1B64DD;
+
 // Custom colors
 $purple: #763FCE;
+$magenta: #9c27b0;
 $applegreen: #C1ED2F;
 $turquoise: #3FB3B6;
 $pending: $applegreen;
@@ -19,7 +26,7 @@ $family-sans-serif: "Source Sans Pro", "Segoe UI", "Ubuntu", "Helvetica Neue", "
 $primary: $purple;
 $info: $turquoise;
 $family-heading: "Fira Sans", "Segoe UI", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
-
+$code: $magenta;
 
 
 // Update some of Bulma's component variables

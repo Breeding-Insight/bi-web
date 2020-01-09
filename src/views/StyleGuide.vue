@@ -9,7 +9,6 @@
           src="../assets/img/bi-logo.svg" 
           alt="Breeding Insight home" 
           width="232" 
-          role="logo" 
         >
         </a>
       </div>
@@ -82,18 +81,19 @@
         <div class="column is-two-thirds-desktop is-half-tablet">
                 <form>
         <div class="field">
-          <label class="label">Name</label>
+          <label class="label" for="breedername">Name</label>
           <div class="control">
             <input 
               class="input" 
               type="text" 
               placeholder="Text input"
+              id="breedername"
             >
           </div>
         </div>
 
         <div class="field">
-          <label class="label">Email</label>
+          <label class="label" for="useremail">Email</label>
           <p class="help is-danger">
             This email is invalid
           </p>
@@ -102,69 +102,55 @@
               class="input is-danger" 
               type="email" 
               placeholder="Email input" 
+              id="useremail"
               value="hello@"
             >
           </div>
         </div>
 
         <div class="field">
-          <label class="label">Subject</label>
+          <label class="label" for="subject">Subject</label>
           <div class="control">
             <div class="select">
-              <select>
-                <option>Select dropdown</option>
-                <option>With options</option>
+              <select id="subject">
+                <option value="select dropdowns">Select dropdown</option>
+                <option value="with options">With options</option>
               </select>
             </div>
           </div>
         </div>
 
         <div class="field">
-          <label class="label">Message</label>
+          <label class="label" for="message">Message</label>
           <div class="control">
             <textarea
               class="textarea" 
               placeholder="Textarea"
+              id="message"
             ></textarea>
           </div>
         </div>
 
         <div class="field">
           <div class="control">
-            <label class="checkbox">
-              <input type="checkbox">
+            <label class="checkbox" for="terms">
+              <input 
+                type="checkbox"
+                id="terms"
+              >
               I agree to the <a href="#">terms and conditions</a>
-            </label>
-          </div>
-        </div>
-
-        <div class="field">
-          <div class="control">
-            <label class="radio">
-              <input 
-                type="radio" 
-                name="question"
-              >
-              Yes
-            </label>
-            <label class="radio">
-              <input 
-                type="radio"
-                name="question"
-              >
-              No
             </label>
           </div>
         </div>
 
         <div class="field is-grouped">
           <div class="control">
-            <button class="button is-primary">
+            <button class="button is-primary" value="submit">
               Submit
             </button>
           </div>
           <div class="control">
-            <button class="button is-link is-light">
+            <button class="button is-link is-light" value="cancel">
               Cancel
             </button>
           </div>
