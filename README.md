@@ -34,5 +34,5 @@ npm run lint
 See [Configuration Reference](https://cli.vuejs.org/config/).
 
 ## Style and layout
-A guide to visual design conventions and writing style can be found at `/styleguide`. 
-If you are running the app locally, the style guide URL is `localhost:8080/styleguide`.
+A guide to visual design conventions and writing style can be found at `/styleguide` after authentication. 
+For example, if you are running the app locally on port 8080, the style guide URL would be [http://localhost:8080/styleguide].
