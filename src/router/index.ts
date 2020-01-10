@@ -24,6 +24,14 @@ const routes = [
     component: UserHome
   },
   {
+    path: '/styleguide',
+    name: 'style-guide',
+    meta: {
+      title: 'Style Guide',
+    },
+    component: StyleGuide
+  },
+  {
     path: '/about',
     name: 'about',
     meta: {
