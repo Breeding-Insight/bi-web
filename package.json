@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "build": "node $npm_package_task_path/build.js",
-    "postinstall": "git config core.hooksPath .githooks && mkdir -p $npm_package_task_path/log",
+    "postinstall": "git config core.hooksPath $npm_package_task_path/hooks && mkdir -p $npm_package_task_path/log",
     "lint": "node $npm_package_task_path/lint.js",
     "serve": "node $npm_package_task_path/serve.js",
     "test:accessibility": "node $npm_package_task_path/testAccessibility.js --port $npm_package_devport --config $npm_package_task_path/.pa11yTargets.json --out $npm_package_task_path/log/pa11yResults.json",
