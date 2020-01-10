@@ -79,36 +79,35 @@
       </div>
       <div class="column">
         <h5 class="title is-5 has-text-left">Our Mission</h5>
-        <p class="has-text-left">By combining genomics with the powerful tools of informatics, breeding for genetic gain has undergone a revolution. But due to high-costs, some smaller breeding programs have been left behind. The mission of the Breeding Insight team is to make high-tech breeding a reality for smaller programs.</p>
-        <br>
-        <p class="has-text-left">Breeding Insight is funded by the U.S. Department of Agriculture (USDA) Agricultural Research Service (ARS) through Cornell University. The USDA ARS delivers scientific solutions to national and global agricultural challenges. As a global leader in agricultural discovery through scientific excellence, ARS is committed to delivering cutting-edge, scientific tools and innovative solutions for American farmers, producers, industry, and communities to support the nourishment and well-being of all people; sustaining our nation’s agroecosystems and natural resources; and ensuring the economic competitiveness and excellence of our agriculture.</p>
+          <p>By combining genomics with the powerful tools of informatics, breeding for genetic gain has undergone a revolution. But due to high-costs, some smaller breeding programs have been left behind. The mission of the Breeding Insight team is to make high-tech breeding a reality for smaller programs.</p>
+          <br>
+          <p>Breeding Insight is funded by the U.S. Department of Agriculture (USDA) Agricultural Research Service (ARS) through Cornell University. The USDA ARS delivers scientific solutions to national and global agricultural challenges. As a global leader in agricultural discovery through scientific excellence, ARS is committed to delivering cutting-edge, scientific tools and innovative solutions for American farmers, producers, industry, and communities to support the nourishment and well-being of all people; sustaining our nation’s agroecosystems and natural resources; and ensuring the economic competitiveness and excellence of our agriculture.</p>
       </div>
     </div>
     <b-modal :active.sync="isLoginModalActive">
-       <div class="modal-card" style="width: auto">
-          <!-- <header class="modal-card-head">
-              <p class="modal-card-title">Login</p>
-          </header> -->
-          <section class="modal-card-body">
-            <p>Breeding Insight uses ORCID to confirm your identification.</p>
-            <br>
-            <b-button id="connect-orcid-button" @click="orcidLogin">
-              <img id="orcid-id-icon" src="https://orcid.org/sites/default/files/images/orcid_24x24.png" width="24" height="24" alt="ORCID iD icon"/>
-              Register or Connect your ORCID iD
-            </b-button>
-
-          </section>
-        </div>
+      <div class="modal-card" style="width: auto">
+        <!-- <header class="modal-card-head">
+            <p class="modal-card-title">Login</p>
+        </header> -->
+        <section class="modal-card-body has-text-centered">
+          <p class>Breeding Insight uses ORCID to confirm your identification.</p>
+          <br>
+          <b-button id="connect-orcid-button" @click="orcidLogin">
+            <img id="orcid-id-icon" src="https://orcid.org/sites/default/files/images/orcid_24x24.png" width="24" height="24" alt="ORCID iD icon"/>
+            Register or Connect your ORCID iD
+          </b-button>
+        </section>
+      </div>
     </b-modal>
 
     <!-- Login Failed Modal -->
     <b-modal :active.sync="isFailedLoginModalActive">
-        <div class="modal-card" style="width: auto">
-            <section class="modal-card-body">
-                <p class="is-size-1 has-text-danger">Login Failed</p>
-                <p>We were not able to log you in successfully. Contact a system admin for assistance.</p>
-            </section>
-        </div>
+      <div class="modal-card" style="width: auto">
+        <section class="modal-card-body has-text-centered">
+          <p class="is-size-1 has-text-danger">Login Failed</p>
+          <p>We were not able to log you in successfully. Contact a system admin for assistance.</p>
+        </section>
+      </div>
     </b-modal>
   </div>
 
