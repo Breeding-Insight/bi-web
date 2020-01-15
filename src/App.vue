@@ -51,7 +51,7 @@
         beforeCreate() {
             
             //Get the user info
-            api.call({url: 'http://localhost:8082/userinfo'})
+            api.call({url: 'http://localhost:8081/userinfo'})
             .then((response: any) => {
                 this.$store.commit(LOGIN, {'id': response.data.orcid, 'name': response.data.name, 'roles':[] });
             })
