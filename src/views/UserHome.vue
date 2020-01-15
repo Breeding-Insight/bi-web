@@ -24,13 +24,13 @@
     <div class="is-divider"></div>
     <div class="columns">
       <div class="column is-three-fifths">
-        <p class="title has-text-left">Welcome, {{ username }}!</p>
+        <p class="title">Welcome, {{ username }}!</p>
         <div class="columns is-mobile">
           <div class="column">
-            <p class="has-text-left title is-6">Last activity:</p>
+            <p class="title is-6">Last activity:</p>
              <div class="columns is-mobile">
                <div class="column is-narrow">
-                  <p class="has-text-left">Data entry for trial Y4-03-10</p>
+                  <p>Data entry for trial Y4-03-10</p>
                </div>
                <div class="column is-narrow">
                  <b-button class="button is-primary">RESUME</b-button>
@@ -38,22 +38,22 @@
              </div>
           </div>
           <div class="column">
-            <p class="has-text-left title is-6">Most common tasks:</p>
-            <p class="has-text-left">Inventory</p>
-            <p class="has-text-left">Trial Y4--02-10</p>
-            <p class="has-text-left">Trial Y4-01-01</p>
-            <p class="has-text-left">Experiments</p>
+            <p class="title is-6">Most common tasks:</p>
+            <p>Inventory</p>
+            <p>Trial Y4--02-10</p>
+            <p>Trial Y4-01-01</p>
+            <p>Experiments</p>
           </div>
         </div>
 
         <div class="columns is-mobile">
           <div class="column">
-            <p class="has-text-left title is-6">Program Activity Log</p>
-            <p class="has-text-left">Username | Type of activity here, data changed, etc. | 2019-12-12 4:08pm</p>
-            <p class="has-text-left">Username | Type of activity here, data changed, etc. | 2019-12-12 4:08pm</p>
-            <p class="has-text-left">Username | Type of activity here, data changed, etc. | 2019-12-12 4:08pm</p>
-            <p class="has-text-left">Username | Type of activity here, data changed, etc. | 2019-12-12 4:08pm</p>
-            <p class="has-text-left">Username | Type of activity here, data changed, etc. | 2019-12-12 4:08pm</p>
+            <p class="title is-6">Program Activity Log</p>
+            <p>Username | Type of activity here, data changed, etc. | 2019-12-12 4:08pm</p>
+            <p>Username | Type of activity here, data changed, etc. | 2019-12-12 4:08pm</p>
+            <p>Username | Type of activity here, data changed, etc. | 2019-12-12 4:08pm</p>
+            <p>Username | Type of activity here, data changed, etc. | 2019-12-12 4:08pm</p>
+            <p>Username | Type of activity here, data changed, etc. | 2019-12-12 4:08pm</p>
           </div>
         </div>
       </div>
