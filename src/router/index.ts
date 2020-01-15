@@ -4,6 +4,9 @@ import Home from '@/views/Home.vue'
 import UserHome from '@/views/UserHome.vue'
 import StyleGuide from '@/views/StyleGuide.vue'
 import UserManagement from '@/views/UserManagement.vue'
+import store from '@/store/index.ts';
+import { LOGIN, LOGOUT, REQUESTED_PATH, ERROR_STATE } from '@/store/mutation-types';
+import * as api from '@/util/api';
 
 Vue.use(VueRouter);
 
@@ -58,5 +61,47 @@ const router = new VueRouter({
   base: process.env.BASE_URL,
   routes
 })
+
+router.beforeEach((to, from, next) => {
+
+  // TODO: Check if the page is a protected resource, if not, let them through
+  // If page is protected, check if they are logged in. 
+  // TODO: Check if their token has expired. 
+  if (!store.state.loggedIn) {
+
+    //Get the user info
+    api.call({url: 'http://localhost:8081/userinfo'})
+    .then((response: any) => {
+
+        store.commit(LOGIN, {'id': response.data.orcid, 'name': response.data.name, 'roles':[] });
+
+        // If they are logged in and trying to go home, send them to user home
+        if (to.path == '/') next('/userhome')
+        else next();
+    })
+    .catch((error) => {
+
+        // Check if it is a 401
+        if (error.response && error.response.status === 401) {
+            store.commit(ERROR_STATE, {'loginFailed': true});
+        }
+
+        // If logged in fail, send them to the home page
+        if (to.path != '/') next('/')
+        else next();
+        
+    });
+
+  } else {
+    // If the user is trying to go home and they are logged in, send them to user home. 
+    if (to.path == '/' && store.state.loggedIn) next('/userhome')
+    else next();
+  }
+
+  // Set page title
+  document.title = to.meta.title + ' | Breeding Insight Platform' || 'Breeding Insight Platform'
+
+});
+
 
 export default router
