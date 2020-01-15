@@ -7,6 +7,7 @@ import UserManagement from '@/views/UserManagement.vue'
 import store from '@/store/index.ts';
 import { LOGIN, LOGOUT, REQUESTED_PATH, ERROR_STATE } from '@/store/mutation-types';
 import * as api from '@/util/api';
+import { BiResponse } from '@/model/BiResponse';
 
 Vue.use(VueRouter);
 
@@ -70,10 +71,11 @@ router.beforeEach((to, from, next) => {
   if (!store.state.loggedIn) {
 
     //Get the user info
-    api.call({url: 'http://localhost:8081/userinfo'})
+    api.call({url: 'http://localhost:8081/bi/v1/userinfo'})
     .then((response: any) => {
-
-        store.commit(LOGIN, {'id': response.data.orcid, 'name': response.data.name, 'roles':[] });
+      
+        let biResponse = new BiResponse(response.data);
+        store.commit(LOGIN, {'id': biResponse.result.orcid, 'name': biResponse.result.name, 'roles':[] });
 
         // If they are logged in and trying to go home, send them to user home
         if (to.path == '/') next('/userhome')
