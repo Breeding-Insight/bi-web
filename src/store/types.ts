@@ -10,5 +10,6 @@ export interface RootState {
   apiError: boolean;
   apiUnavailable: boolean;
   loginFailed: boolean;
+  loginServerError: boolean;
   requestedPath?: string;
 }

@@ -51,14 +51,17 @@
         beforeCreate() {
             
             //Get the user info
-            api.call({url: 'http://localhost:8081/userinfo'})
+            api.call({url: 'http://localhost:8082/userinfo'})
             .then((response: any) => {
                 this.$store.commit(LOGIN, {'id': response.data.orcid, 'name': response.data.name, 'roles':[] });
             })
             .catch((error) => {
                 // Check if it is a 401
-                if (error.response && error.response.status === 401) {
+                if (error.status && error.response && error.response.status === 401) {
                     this.$store.commit(ERROR_STATE, {'loginFailed': true});
+                } else {
+                    // Login failed, and we are having other issues besides
+                    this.$store.commit(ERROR_STATE, {'loginFailed': true, 'loginServerError': true});
                 }
             }).finally(() => this.directUser());
             

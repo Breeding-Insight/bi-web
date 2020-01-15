@@ -109,6 +109,16 @@
         </section>
       </div>
     </b-modal>
+
+    <!-- Login Failed Server Error Modal -->
+    <b-modal :active.sync="isLoginServerErrorModalActive">
+      <div class="modal-card" style="width: auto">
+        <section class="modal-card-body has-text-centered">
+          <p class="is-size-1 has-text-danger">Server Error: Login Failed</p>
+          <p>We were not able to log you into the system because of an issue with our server.</p>
+        </section>
+      </div>
+    </b-modal>
   </div>
 
   <!-- <div class="home">
@@ -144,11 +154,21 @@ export default {
     // Computed properties
     get isFailedLoginModalActive(): boolean {
       // If the user just attempted login, and they are unauthorized for userinfo, warn them
-            const newLogin = this.$route.query['new-login'] == 'true';
-            return this.$store.state.loginFailed && newLogin;
+      const newLogin = this.$route.query['new-login'] == 'true';
+      return (this.$store.state.loginFailed && newLogin && !this.$store.state.loginServerError);
+    }
+
+    get isLoginServerErrorModalActive(): boolean {
+      // If the user just tried to log in, and there was an error with the endpoint, warn them. 
+      const newLogin = this.$route.query['new-login'] == 'true';
+      return (this.$store.state.loginFailed && newLogin && this.$store.state.loginServerError);
     }
 
     set isFailedLoginModalActive(disable: boolean) {
+      this.$store.dispatch('clearLoginFailed');
+    }
+
+    set isLoginServerErrorModalActive(disable: boolean) {
       this.$store.dispatch('clearLoginFailed');
     }
 

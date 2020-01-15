@@ -12,6 +12,7 @@ const store: StoreOptions<RootState> = {
         apiError: false,
         apiUnavailable: false,
         loginFailed: false,
+        loginServerError: false,
         loggedIn: false,
         requestedPath: undefined,
         user: undefined
