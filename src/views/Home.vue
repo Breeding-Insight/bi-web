@@ -174,7 +174,7 @@ export default {
 
     // Methods
     orcidLogin() {
-      window.location.href = "http://localhost:8081/sso/start";
+      window.location.href = process.env.VUE_APP_BI_API_ROOT+'/sso/start';
     }
 
   }

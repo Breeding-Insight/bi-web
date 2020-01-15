@@ -49,9 +49,9 @@
         public loading: boolean = false;
 
         beforeCreate() {
-            
+
             //Get the user info
-            api.call({url: 'http://localhost:8081/userinfo'})
+            api.call({url: process.env.VUE_APP_BI_API_ROOT+'/userinfo'})
             .then((response: any) => {
                 this.$store.commit(LOGIN, {'id': response.data.orcid, 'name': response.data.name, 'roles':[] });
             })
@@ -104,7 +104,7 @@
         }
 
         logOut (): void {
-            window.location.href = "http://localhost:8081/logout"; 
+            window.location.href = process.env.VUE_APP_BI_API_ROOT+'/logout';
         }
     }
 </script>
