@@ -3,7 +3,6 @@
         <div class="container is-fluid">
             <section class="section">
                 <h1 class="title">User Management</h1>
-
                 <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
                     <thead>
                         <tr>
@@ -13,14 +12,41 @@
                             <th>Manage User</th>
                         </tr>
                     </thead>
-                    <tbody v-bind:key="user.email" v-for="user of users">
-                        <tr class="is-vcentered">
-                            <td>{{ user.name }}</td>
-                            <td>{{ user.email }}</td>
-                            <td>{{ user.roles }}</td>
+                    <tbody>
+                        <tr>
                             <td>
-                                <b-button class="is-primary">Edit</b-button>
-                                <b-button class="is-danger">Delete</b-button>
+                                <input class="input" type="text" v-model="newUserInputs.name">
+                            </td>
+                            <td>
+                                <input class="input" type="email" v-model="newUserInputs.email">
+                            </td>
+                            <td></td>
+                            <td class="is-centered">
+                                <b-button class="is-primary" v-on:click="addUser">Create User</b-button>
+                            </td>
+                        </tr>
+                        <tr v-bind:key="user.data.id" v-for="(user, index) in users">
+                            <td v-if="user.edit">
+                                <input type="text" class="input" v-model="user.editData.name" placeholder="User Name">
+                            </td>
+                            <td v-else>{{ user.data.name }}</td>
+                            <td v-if="user.edit">
+                                <input type="text" class="input" v-model="user.editData.email" placeholder="User Email">
+                            </td>
+                            <td v-else>
+                                {{ user.data.email }}
+                            </td>
+                            <td v-if="user.edit">
+                                <input type="text" class="input" v-model="user.editData.roles" placeholder="Roles">
+                            </td>
+                            <td v-else>
+                                {{ user.data.roles }}
+                            </td>
+                            <td>
+                                <b-button class="is-primary" v-on:click="user.toggleEdit()" v-if="!user.edit">Edit</b-button>
+                                <b-button class="is-primary" v-on:click="updateUser(index)" v-else>Confirm</b-button>
+                                <b-button class="is-danger" v-on:click="deleteUser(user.data.id)" v-if="!user.edit">Delete</b-button>
+                                <b-button class="is-danger" v-on:click="user.toggleEdit()" v-else>Cancel</b-button>
                             </td>
                         </tr>
                     </tbody>
@@ -28,16 +54,139 @@
             </section>
         </div>
     </div>
+
 </template>
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator'
+import * as api from '@/util/api'
+import { BiResponse } from '@/model/BiResponse'
+import SuccessNotification from "@/components/notifications/SuccessNotification.vue"
+import { TableRow } from '@/model/view_models/TableRow.ts'
+import { User } from '@/model/User.ts'
 
-  @Component
+
+  @Component({
+      components: {SuccessNotification}
+  })
   export default class UserManagement extends Vue {
+    public users: Array<Object> = [];
+    public newUserInputs = {
+        name: null,
+        email: null
+    }
 
-      public users: Array<Object> = [{'name': 'Chris', 'email': 'ct447@cornell.edu', roles: 'Admin'}];
+    mounted() {
+        this.getUsers();
+    }
 
+    getUsers() {
+
+        api.call({ url: 'http://localhost:8081/bi/v1/users', method: 'get' })
+        .then((response: any) => {
+            const biResponse = new BiResponse(response.data);
+
+            // Parse our users into the vue users param
+            this.users = biResponse.result.data.map((user: any) => {
+                const data = new User(user.id, user.name, user.email, user.roles);
+                const editable = true;
+                return new TableRow(editable, data);
+            });
+        })
+        .catch((error) => {
+            // Display error that users cannot be loaded
+            this.$emit('show-error-notification', 'Error while trying to load users');
+            throw error;
+        })
+
+    }
+
+    deleteUser(selectedId: Number) {
+
+        api.call({ url: `http://localhost:8081/bi/v1/users/${selectedId}`, method: 'delete'})
+        .then((response) => {
+            // Reload users
+            this.getUsers();
+            // Show notification
+            this.$emit('show-success-notification', 'User successfully deleted');
+
+        }).catch((error) => {
+            // Display error
+            this.$emit('show-error-notification', 'Unable to delete user');
+            throw error;
+        })
+
+    }
+
+    addUser() {
+
+        // Check that our inputs are good
+        if (this.newUserInputs.name == null){
+            // TODO: Outline input
+
+            // Show error
+            this.$emit('show-error-notification', 'Please enter user name');
+            return
+        } 
+        else if (this.newUserInputs.email == null){
+            // TODO: Outline input
+
+            // Show error
+            this.$emit('show-error-notification', 'Please enter user email');
+            return
+        }
+
+        // Construct request body
+        const body = {'name': this.newUserInputs.name, 'email': this.newUserInputs.email};
+
+        // Make api request
+        api.call({ url: 'http://localhost:8081/bi/v1/users', method: 'post', data: body})
+            .then((response) => {
+                // Reload users
+                this.getUsers();
+                // Show success notification
+                this.$emit('show-success-notification', 'User successfully created');
+
+            }).catch((error) => {
+                // Look for email conflict and display error
+                if (error.response.status == 409) {
+                    this.$emit('show-error-notification', 'A user with that email already exists');
+                }
+                else {
+                    // Something else went wrong
+                    this.$emit('show-error-notification', 'Unable to create user');
+                }
+                throw error;
+            });
+        
+    }
+
+    updateUser(rowIndex: number, userId: string) {
+
+        // Get our user 
+        const editRow: TableRow<User> = this.users[rowIndex] as TableRow<User>;
+
+        // Confirm our changes in our data model
+        editRow.confirmChanges();
+
+        // Construct body
+        const user: User = editRow.data;
+        const body = {'name': user.name, 'email': user.email};
+
+        api.call({ url: `http://localhost:8081/bi/v1/users/${editRow.data.id}`, method: 'put', data: body})
+            .then((response) => {
+                // Reload users
+                this.getUsers();
+                // Show success notification
+                this.$emit('show-success-notification', 'User successfully updated');
+            }).catch((error) => {
+                // Display error
+                this.$emit('show-error-notification', 'Unable to update user');
+                throw error;
+            });
+    }
 
   }
+
+  
 </script>
