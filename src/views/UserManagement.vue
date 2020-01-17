@@ -43,10 +43,27 @@
                                 {{ user.data.roles }}
                             </td>
                             <td>
-                                <b-button class="is-primary" v-on:click="user.toggleEdit()" v-if="!user.edit">Edit</b-button>
-                                <b-button class="is-primary" v-on:click="updateUser(index)" v-else>Confirm</b-button>
-                                <b-button class="is-danger" v-on:click="deleteUser(user.data.id)" v-if="!user.edit">Delete</b-button>
-                                <b-button class="is-danger" v-on:click="user.toggleEdit()" v-else>Cancel</b-button>
+                                <button class="button" v-on:click="user.toggleEdit()" v-if="!user.edit">
+                                    <span class="icon is-small">
+                                        <EditIcon size="1.5x" class="has-text-primary"></EditIcon>
+                                    </span>
+                                </button>
+                                <button class="button" v-on:click="updateUser(index)" v-else>
+                                    <span class="icon is-small">
+                                        <CheckSquareIcon size="1.5x" class="has-text-success"></CheckSquareIcon>
+                                    </span>
+                                </button>
+                                
+                                <button class="button" v-on:click="deleteUser(user.data.id)" v-if="!user.edit">
+                                    <span class="icon is-small">
+                                        <DeleteIcon size="1.5x" class="has-text-danger"></DeleteIcon>
+                                    </span>
+                                </button>
+                                <button class="button" v-on:click="user.cancelEdit()" v-else>
+                                    <span class="icon is-small">
+                                        <XIcon size="1.5x" class="has-text-danger"></XIcon>
+                                    </span>
+                                </button>
                             </td>
                         </tr>
                     </tbody>
@@ -64,10 +81,11 @@ import { BiResponse } from '@/model/BiResponse'
 import SuccessNotification from "@/components/notifications/SuccessNotification.vue"
 import { TableRow } from '@/model/view_models/TableRow.ts'
 import { User } from '@/model/User.ts'
+import { EditIcon, DeleteIcon, CheckSquareIcon, XIcon } from 'vue-feather-icons'
 
 
   @Component({
-      components: {SuccessNotification}
+      components: {SuccessNotification, EditIcon, DeleteIcon, CheckSquareIcon, XIcon}
   })
   export default class UserManagement extends Vue {
     public users: Array<Object> = [];

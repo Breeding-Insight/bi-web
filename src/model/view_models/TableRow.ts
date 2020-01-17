@@ -33,4 +33,9 @@ export class TableRow<T extends Object> {
             this.edit = !this.edit;
         }
     }
+
+    cancelEdit() {
+        this.toggleEdit();
+        this.revertChanges();
+    }
 }
