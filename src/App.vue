@@ -23,19 +23,13 @@
             </p>
         </footer>
     </div>
-    <footer class="footer">
-      <div class="content has-text-centered">
-        <p>
-          <strong>&copy; Breeding Insight</strong>
-        </p>
-      </div>
-    </footer>
-  </div>
 </template>
 
 <script lang="ts">
     import { Component, Vue } from 'vue-property-decorator';
-    import { LOGIN, LOGOUT, REQUESTED_PATH } from '@/store/mutation-types';
+    import { LOGIN, LOGOUT, REQUESTED_PATH, ERROR_STATE } from '@/store/mutation-types';
+    import * as api from '@/util/api';
+    import { AxiosResponse, AxiosPromise } from 'axios';
 
     @Component({
         watch: {
@@ -43,25 +37,62 @@
                 document.title = to.meta.title + ' | Breeding Insight Platform' || 'Breeding Insight Platform'
             },
             loggedIn(isLoggedIn) {
+
                 if(!isLoggedIn) {
-                    this.$router.push('/login');
+                    this.$router.push('/');
                 }
+                
             }
         }
     })
     export default class App extends Vue {
         public loading: boolean = false;
 
-        mounted () {
+        beforeCreate() {
+
+            //Get the user info
+            api.call({url: process.env.VUE_APP_BI_API_ROOT+'/userinfo'})
+            .then((response: any) => {
+                this.$store.commit(LOGIN, {'id': response.data.orcid, 'name': response.data.name, 'roles':[] });
+            })
+            .catch((error) => {
+                // Check if it is a 401
+                if (error.status && error.response && error.response.status === 401) {
+                    this.$store.commit(ERROR_STATE, {'loginFailed': true});
+                } else {
+                    // Login failed, and we are having other issues besides
+                    this.$store.commit(ERROR_STATE, {'loginFailed': true, 'loginServerError': true});
+                }
+            }).finally(() => this.directUser());
+            
+        }
+
+        directUser() {
+            // Directs the user to the appropriate route based on the logged in status, roles, and destination
+
             const currentRoute = window.location.pathname;
-            if(!this.$store.state.loggedIn && currentRoute !== '/login') {
+
+            // Check they have access to the route they are supposed to have access to
+            //TODO: Have a better way to check protected routes
+            if(!this.$store.state.loggedIn && currentRoute !== '/') {
+
+                // If they are not logged in and are trying to access a protected resource, send them home
                 this.$store.commit(REQUESTED_PATH, {path: currentRoute});
-                this.$router.push('/login');
-            } else if(this.$store.state.loggedIn && currentRoute === '/login') {
                 this.$router.push('/');
-            } else {
+
+            } else if (this.$store.state.loggedIn && currentRoute == '/'){
+
+                // If they are trying to go to the home page, and they are logged in, send them to user home
+                this.$router.replace('/userhome');
+            }
+            else {
+
+                // Let them do what they want if the page is unprotected
                 document.title = this.$route.meta.title + ' | Breeding Insight Platform' || 'Breeding Insight Platform'
             }
+
+            document.title = this.$route.meta.title + ' | Breeding Insight Platform' || 'Breeding Insight Platform'
+
         }
 
         get loggedIn () {
@@ -73,7 +104,7 @@
         }
 
         logOut (): void {
-            this.$store.commit(LOGOUT);
+            window.location.href = process.env.VUE_APP_BI_API_ROOT+'/logout';
         }
     }
 </script>

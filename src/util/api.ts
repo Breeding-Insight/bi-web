@@ -3,8 +3,8 @@ import axios from 'axios';
 import { ERROR_STATE, LOGOUT } from './../store/mutation-types';
 
 export function call (config: any) {
-    config.xsrfCookieName = 'xsrf_token';
-    config.xsrfHeaderName = 'X-XSRF-TOKEN';
+    config.xsrfCookieName = 'phylo-token';
+    //config.xsrfHeaderName = '_xsrf';
     config.withCredentials = true;
 
     return new Promise(((resolve, reject) => {
