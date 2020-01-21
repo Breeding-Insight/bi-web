@@ -1,20 +1,23 @@
 # bi-web
 
 ## Project setup
+Install all dependencies.
 ```
 npm install
 ```
-This installs all dependencies and configures git to prepend branch names to
-commit messages.  Master, develop, and test branch names are excluded.
-
-The path to the scripts used for taskrunning is set in package.json with the
+Configure git to prepend branch names to commit messages.  Master, develop, and
+test branch names are excluded.
+```
+npm run githooks
+```
+Set the path to the scripts used for task-running in package.json with the
 field"task_path".
 
 ### Compiles and hot-reloads for development
 ```
 npm run serve
 ```
-The port used by the dev server is set in package.json with the field "devport".
+Set the port used by the dev server with the value of the "devport" field in package.json.
 
 ### Compiles and minifies for production
 ```
