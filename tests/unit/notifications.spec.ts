@@ -1,31 +1,21 @@
 import { mount, createLocalVue } from '@vue/test-utils'
 import App from '@/App.vue'
 import UserManagement from '@/views/UserManagement.vue'
-import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Vuex from 'vuex'
-import Buefy from 'buefy';
+import localVue from './index'
 
  // Test the notifications are show when custom event is emitted
 describe('notifications display', () => {
 
-    // Need to set up a full mount so we can emit the event from 
-    // child component
-    Vue.use(VueRouter);
-    const localVue = createLocalVue();
-    localVue.use(VueRouter);
+    // We want to go to the home route to test the emit
     const router = new VueRouter({
         routes: [{
             path: '/usermanagement', 
             component: UserManagement
         }]});
     
-    // Set up vuex so we can log in
-    localVue.use(Vuex);
     const store = new Vuex.Store({'state': {'loggedIn': true}});
-
-    // Setup beufy
-    localVue.use(Buefy); 
 
     // Set the route to get our child component
     router.push('usermanagement');
