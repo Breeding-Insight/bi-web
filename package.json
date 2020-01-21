@@ -9,9 +9,10 @@
     "serve": "node $npm_package_task_path/serve.js",
     "test:accessibility": "node $npm_package_task_path/testAccessibility.js --port $npm_package_devport --config $npm_package_task_path/.pa11yTargets.json --out $npm_package_task_path/log/pa11yResults.json",
     "test:e2e": "node $npm_package_task_path/testE2e.js",
-    "test:unit": "node $npm_package_task_path/testUnit.js"
+    "test:unit": "jest"
   },
   "dependencies": {
+    "@types/jest": "^24.9.0",
     "buefy": "^0.8.8",
     "bulma": "^0.8.0",
     "bulma-divider": "^0.2.0",
@@ -25,7 +26,7 @@
     "vuex-class": "^0.3.2"
   },
   "devDependencies": {
-    "@types/chai": "^4.2.5",
+    "@types/chai": "^4.2.7",
     "@types/mocha": "^5.2.4",
     "@vue/cli-plugin-babel": "^4.1.0",
     "@vue/cli-plugin-e2e-cypress": "^4.1.0",
@@ -36,14 +37,18 @@
     "@vue/cli-plugin-vuex": "^4.1.0",
     "@vue/cli-service": "^4.1.0",
     "@vue/eslint-config-typescript": "^4.0.0",
-    "@vue/test-utils": "1.0.0-beta.29",
+    "@vue/test-utils": "^1.0.0-beta.29",
     "argparse": "^1.0.10",
     "axios": "^0.18.0",
+    "babel-core": "^7.0.0-bridge.0",
+    "babel-jest": "^24.9.0",
+    "babel-preset-env": "^1.7.0",
     "bulma": "^0.8.0",
     "chai": "^4.1.2",
     "eslint": "^5.16.0",
     "eslint-plugin-vue": "^5.0.0",
     "execa": "^4.0.0",
+    "jest": "^24.9.0",
     "json-beautify": "^1.1.1",
     "node-sass": "^4.12.0",
     "ora": "^4.0.3",
@@ -51,9 +56,29 @@
     "pa11y-reporter-json": "^1.0.0",
     "sass-loader": "^8.0.0",
     "shelljs": "^0.8.3",
+    "ts-jest": "^24.3.0",
     "typescript": "~3.5.3",
     "vue-cli-plugin-axios": "0.0.4",
+    "vue-jest": "^3.0.5",
     "vue-template-compiler": "^2.6.10"
+  },
+  "jest": {
+    "moduleFileExtensions": [
+      "js",
+      "ts",
+      "json",
+      "vue"
+    ],
+    "transform": {
+      ".*\\.(vue)$": "vue-jest",
+      "^.+\\.tsx?$": "ts-jest",
+      "^.+\\.js$": "<rootDir>/node_modules/babel-jest"
+    },
+    "moduleNameMapper": {
+      "^@/(.*)$": "<rootDir>/src/$1"
+    },
+    "testRegex": "(/tests/unit/.*\\.(test|spec))\\.(jsx?|tsx?)$",
+    "testURL": "http://localhost:8080/"
   },
   "devport": "8080",
   "task_path": "./task"
