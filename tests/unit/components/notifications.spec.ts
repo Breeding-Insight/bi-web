@@ -1,9 +1,9 @@
-import { mount, createLocalVue } from '@vue/test-utils'
+import { mount } from '@vue/test-utils'
 import App from '@/App.vue'
 import UserManagement from '@/views/UserManagement.vue'
 import VueRouter from 'vue-router'
 import Vuex from 'vuex'
-import localVue from './index'
+import localVue from '../index'
 
  // Test the notifications are show when custom event is emitted
 describe('notifications display', () => {

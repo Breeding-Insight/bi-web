@@ -1,6 +1,6 @@
-import { mount, createLocalVue, shallowMount } from '@vue/test-utils'
+import { shallowMount } from '@vue/test-utils'
 import Home from '@/views/Home.vue'
-import localVue from './index'
+import localVue from '../index'
 import Vuex from 'vuex'
 import VueRouter from 'vue-router'
 import router from '@/router'
