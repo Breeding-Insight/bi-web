@@ -21,7 +21,7 @@ RUN ["mkdir", "/home/host/biweb"]
 WORKDIR /home/${CONT_USERNAME}/biweb
 
 # Install the app dependencies and configuration
-COPY --chown=host:host ["babel.config.js", ".browserslistrc", "cypress.json", ".eslintrc.js", ".npmrc", "tsconfig.json", "vue.config.js", "./"]
+COPY --chown=host:host ["babel.config.js", ".browserslistrc", "cypress.json", ".eslintrc.js", ".npmrc", "tsconfig.json", "vue.config.js", ".env.development","./"]
 COPY --chown=host:host ["package.json", "/home/host/biweb/package.json"]
 RUN ["npm", "install"]
 
