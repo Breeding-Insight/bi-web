@@ -101,7 +101,7 @@
 
     // Methods
     logout(): void {
-      window.location.href = process.env.VUE_APP_BI_API_ROOT+'/bi/v1/logout'
+      window.location.href = process.env.VUE_APP_BI_API_ROOT+'/logout'
     }
   }
 </script>

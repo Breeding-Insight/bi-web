@@ -45,7 +45,7 @@
                             <td>
                                 <button class="button" title="Edit User" v-on:click="user.toggleEdit()" v-if="!user.edit">
                                     <span class="icon is-small">
-                                        <EditIcon size="1.5x" class="has-text-primary" aria-hidden="true"></EditIcon>
+                                        <EditIcon size="1.5x" class="has-text-link" aria-hidden="true"></EditIcon>
                                         <span class="is-sr-only">Edit User</span>
                                     </span>
                                 </button>
@@ -104,7 +104,7 @@ import { EditIcon, DeleteIcon, CheckSquareIcon, XIcon } from 'vue-feather-icons'
 
     getUsers() {
 
-        api.call({ url: `${process.env.VUE_APP_BI_API_ROOT}/bi/v1/users`, method: 'get' })
+        api.call({ url: `${process.env.VUE_APP_BI_API_V1_PATH}/users`, method: 'get' })
         .then((response: any) => {
             const biResponse = new BiResponse(response.data);
 
@@ -125,7 +125,7 @@ import { EditIcon, DeleteIcon, CheckSquareIcon, XIcon } from 'vue-feather-icons'
 
     deleteUser(selectedId: Number) {
 
-        api.call({ url: `${process.env.VUE_APP_BI_API_ROOT}/bi/v1/users/${selectedId}`, method: 'delete'})
+        api.call({ url: `${process.env.VUE_APP_BI_API_V1_PATH}/users/${selectedId}`, method: 'delete'})
         .then((response) => {
             // Reload users
             this.getUsers();
@@ -162,7 +162,7 @@ import { EditIcon, DeleteIcon, CheckSquareIcon, XIcon } from 'vue-feather-icons'
         const body = {'name': this.newUserInputs.name, 'email': this.newUserInputs.email};
 
         // Make api request
-        api.call({ url: `${process.env.VUE_APP_BI_API_ROOT}/bi/v1/users`, method: 'post', data: body})
+        api.call({ url: `${process.env.VUE_APP_BI_API_V1_PATH}/users`, method: 'post', data: body})
             .then((response) => {
                 // Reload users
                 this.getUsers();
@@ -188,23 +188,27 @@ import { EditIcon, DeleteIcon, CheckSquareIcon, XIcon } from 'vue-feather-icons'
         // Get our user 
         const editRow: TableRow<User> = this.users[rowIndex] as TableRow<User>;
 
-        // Confirm our changes in our data model
-        editRow.confirmChanges();
-
         // Construct body
-        const user: User = editRow.data;
+        const user: User = editRow.editData;
         const body = {'name': user.name, 'email': user.email};
 
-        api.call({ url: `${process.env.VUE_APP_BI_API_ROOT}/bi/v1/users/${editRow.data.id}`, method: 'put', data: body})
+        api.call({ url: `${process.env.VUE_APP_BI_API_V1_PATH}/users/${editRow.data.id}`, method: 'put', data: body})
             .then((response) => {
                 // Reload users
                 this.getUsers();
+
+                // Close the edit state
+                editRow.confirmChanges();
+
                 // Show success notification
                 this.$emit('show-success-notification', 'User successfully updated');
+
             }).catch((error) => {
                 // Display error
                 this.$emit('show-error-notification', 'Unable to update user');
-                throw error;
+
+                // We let the inputs stay open so they can make changes
+
             });
     }
 

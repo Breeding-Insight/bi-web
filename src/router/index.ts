@@ -71,7 +71,7 @@ router.beforeEach((to, from, next) => {
   if (!store.state.loggedIn) {
 
     //Get the user info
-    api.call({url: `${process.env.VUE_APP_BI_API_ROOT}/bi/v1/userinfo`})
+    api.call({url: `${process.env.VUE_APP_BI_API_V1_PATH}/userinfo`})
     .then((response: any) => {
       
         let biResponse = new BiResponse(response.data);
