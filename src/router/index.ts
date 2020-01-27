@@ -74,23 +74,23 @@ router.beforeEach((to, from, next) => {
     api.call({url: `${process.env.VUE_APP_BI_API_V1_PATH}/userinfo`})
     .then((response: any) => {
       
-        let biResponse = new BiResponse(response.data);
-        store.commit(LOGIN, {'id': biResponse.result.orcid, 'name': biResponse.result.name, 'roles':[] });
+      let biResponse = new BiResponse(response.data);
+      store.commit(LOGIN, {'id': biResponse.result.orcid, 'name': biResponse.result.name, 'roles':[] });
 
-        // If they are logged in and trying to go home, send them to user home
-        if (to.path == '/') next('/userhome')
-        else next();
+      // If they are logged in and trying to go home, send them to user home
+      if (to.path == '/') next('/userhome')
+      else next();
     })
     .catch((error) => {
 
-        // Check if it is a 401
-        if (error.response && error.response.status === 401) {
-            store.commit(ERROR_STATE, {'loginFailed': true});
-        }
+      // Check if it is a 401
+      if (error.response && error.response.status === 401) {
+          store.commit(ERROR_STATE, {'loginFailed': true});
+      }
 
-        // If logged in fail, send them to the home page
-        if (to.path != '/') next('/')
-        else next();
+      // If logged in fail, send them to the home page
+      if (to.path != '/') next('/')
+      else next();
         
     });
 
