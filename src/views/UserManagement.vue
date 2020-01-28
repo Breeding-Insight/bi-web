@@ -170,8 +170,9 @@ export default class UserManagement extends Vue {
         this.$emit('show-success-notification', 'User successfully created');
 
       }).catch((error) => {
+        
         // Look for email conflict and display error
-        if (error.response.status == 409) {
+        if (error.response && error.response.status == 409) {
             this.$emit('show-error-notification', 'A user with that email already exists');
         }
         else {
