@@ -166,6 +166,11 @@ export default class UserManagement extends Vue {
       .then((response) => {
         // Reload users
         this.getUsers();
+        
+        // Clear the new user field
+        this.newUserInputs.email = null;
+        this.newUserInputs.name = null;
+
         // Show success notification
         this.$emit('show-success-notification', 'User successfully created');
 
