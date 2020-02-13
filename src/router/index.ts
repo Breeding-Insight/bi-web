@@ -85,6 +85,7 @@ router.beforeEach((to, from, next) => {
 
       // Check if it is a 401
       if (error.response && error.response.status === 401) {
+          Vue.$log.info(`Unauthorized login, ${error.response}`);
           store.commit(ERROR_STATE, {'loginFailed': true});
       }
 
