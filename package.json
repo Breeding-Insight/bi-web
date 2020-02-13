@@ -4,13 +4,31 @@
   "private": true,
   "scripts": {
     "build": "node $npm_package_task_path/build.js",
-    "postinstall": "mkdir -p $npm_package_task_path/log",
     "githooks": "git config core.hooksPath $npm_package_task_path/hooks",
+    "postinstall": "mkdir -p $npm_package_task_path/log",
     "lint": "node $npm_package_task_path/lint.js",
     "serve": "node $npm_package_task_path/serve.js",
     "test:accessibility": "node $npm_package_task_path/testAccessibility.js --port $npm_package_devport --config $npm_package_task_path/.pa11yTargets.json --out $npm_package_task_path/log/pa11yResults.json",
     "test:e2e": "node $npm_package_task_path/testE2e.js",
     "test:unit": "jest"
+  },
+  "jest": {
+    "moduleFileExtensions": [
+      "js",
+      "ts",
+      "json",
+      "vue"
+    ],
+    "moduleNameMapper": {
+      "^@/(.*)$": "<rootDir>/src/$1"
+    },
+    "testRegex": "(/tests/unit/.*\\.(test|spec))\\.(jsx?|tsx?)$",
+    "testURL": "http://localhost:8080/",
+    "transform": {
+      ".*\\.(vue)$": "vue-jest",
+      "^.+\\.tsx?$": "ts-jest",
+      "^.+\\.js$": "<rootDir>/node_modules/babel-jest"
+    }
   },
   "dependencies": {
     "@types/jest": "^24.9.0",
@@ -62,24 +80,6 @@
     "vue-cli-plugin-axios": "0.0.4",
     "vue-jest": "^3.0.5",
     "vue-template-compiler": "^2.6.10"
-  },
-  "jest": {
-    "moduleFileExtensions": [
-      "js",
-      "ts",
-      "json",
-      "vue"
-    ],
-    "transform": {
-      ".*\\.(vue)$": "vue-jest",
-      "^.+\\.tsx?$": "ts-jest",
-      "^.+\\.js$": "<rootDir>/node_modules/babel-jest"
-    },
-    "moduleNameMapper": {
-      "^@/(.*)$": "<rootDir>/src/$1"
-    },
-    "testRegex": "(/tests/unit/.*\\.(test|spec))\\.(jsx?|tsx?)$",
-    "testURL": "http://localhost:8080/"
   },
   "devport": "8080",
   "task_path": "./task"

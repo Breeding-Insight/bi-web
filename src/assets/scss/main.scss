@@ -17,8 +17,10 @@ $applegreen: #C1ED2F;
 $turquoise: #3FB3B6;
 $pending: $applegreen;
 $pending-invert: #363636;
+$error: $red;
+$error-invert: #FFFFFF;
 $custom-colors: (
-  "pending": ($pending, $pending-invert)
+  "pending": ($pending, $pending-invert), "error": ($error, $error-invert)
 );
 
 // Update Bulma's global variables
