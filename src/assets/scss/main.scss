@@ -31,6 +31,9 @@ $info: $turquoise;
 $family-heading: "Fira Sans", "Segoe UI", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
 $code: $magenta;
 
+$footer-padding: 1rem 2.5rem;
+$level-item-spacing: 2rem;
+//$margin-right: 2 rem;
 
 // Update some of Bulma's component variables
 
@@ -107,4 +110,16 @@ li {
 
 .no-padding {
   padding-top: 0em;
+}
+
+.pad-right-2 {
+  padding-right: 2rem;
+}
+
+.top-align {
+  vertical-align: text-top;
+}
+
+.bottom-align {
+  vertical-align: text-bottom;
 }
