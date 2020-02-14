@@ -115,7 +115,7 @@ export default class UserManagement extends Vue {
         return new TableRow(editable, data);
       });
 
-      this.$log.debug(this.users);
+      Vue.$log.debug(this.users);
     })
     .catch((error) => {
       // Display error that users cannot be loaded
