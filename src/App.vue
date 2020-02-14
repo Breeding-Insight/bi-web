@@ -30,9 +30,45 @@
       />
     </main>
     <footer class="footer">
-      <p class="has-text-centered">
-          <strong>&copy; 2020 Breeding Insight</strong>
-      </p>
+      <div class="level">
+        <div class="level-left">
+          <div class="level-item">
+            <a href="/">Terms of Use</a>
+          </div>
+          <div class="level-item">
+            <a href="/">Privacy Policy</a>
+          </div>
+          <div class="level-item">
+            <a href="/">Contact Us</a>
+          </div>
+          <div class="level-item">
+            <a href="/">About</a>
+          </div>
+        </div>
+        
+        <div class="level-right">
+
+          <div class="level-item">
+            <strong>&copy; 2020 Breeding Insight</strong>
+            <!--<p class="bottom-align">Funded by the USDA through Cornell University</p>-->
+          </div>
+          <div class="level-item">
+            <img 
+            src="./assets/img/usda.svg" 
+            alt="USDA Logo" 
+            width="110" 
+            >
+          </div>
+          <div class="level-item">
+            <img 
+            src="./assets/img/cornell_seal.svg" 
+            alt="Cornell University Logo" 
+            width="80" 
+            >
+          </div>
+          
+        </div>
+      </div>
     </footer>
       
   </div>
