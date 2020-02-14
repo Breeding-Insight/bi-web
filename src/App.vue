@@ -15,6 +15,7 @@
                       <li class="navbar-item"><router-link to="/about">About</router-link></li>
                       <li class="navbar-item"><router-link to="/styleguide">Style Guide</router-link></li>
                       <li class="navbar-item"><router-link to="/usermanagement">Manage Users</router-link></li>
+                      <li class="navbar-item"><router-link to="/program-management">Program Management</router-link></li>
                       <li class="navbar-item"><a v-on:click="logOut">Logout</a></li>
                   </ul>
               </div>
@@ -30,7 +31,7 @@
     </main>
     <footer class="footer">
       <p class="has-text-centered">
-          <strong>&copy; Breeding Insight</strong>
+          <strong>&copy; 2020 Breeding Insight</strong>
       </p>
     </footer>
       

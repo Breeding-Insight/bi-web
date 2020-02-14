@@ -15,6 +15,7 @@ $purple: #763FCE;
 $magenta: #9c27b0;
 $applegreen: #C1ED2F;
 $turquoise: #3FB3B6;
+$darkmenu: #4a4a4a;
 $pending: $applegreen;
 $pending-invert: #363636;
 $error: $red;
@@ -91,4 +92,19 @@ li {
       text-align: center;
       width: 100%;
     }
+}
+
+.header-title {
+  border-bottom: 1px #363636 solid;
+  padding-left: 2.5em;
+  padding-right: 2.5em;
+  margin-bottom: 0em;
+}
+
+.side-menu {
+  background-color: $darkmenu;
+}
+
+.no-padding {
+  padding-top: 0em;
 }
