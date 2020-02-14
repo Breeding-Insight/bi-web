@@ -4,6 +4,7 @@ import Home from '@/views/Home.vue'
 import UserHome from '@/views/UserHome.vue'
 import StyleGuide from '@/views/StyleGuide.vue'
 import UserManagement from '@/views/UserManagement.vue'
+import ProgramManagement from '@/views/ProgramManagement.vue'
 import store from '@/store/index.ts';
 import { LOGIN, LOGOUT, REQUESTED_PATH, ERROR_STATE } from '@/store/mutation-types';
 import * as api from '@/util/api';
@@ -54,6 +55,14 @@ const routes = [
       title: 'User Management'
     }, 
     component: UserManagement
+  },
+  {
+    path: '/program-management', 
+    name: 'program-management', 
+    meta: {
+      title: 'Program Management'
+    }, 
+    component: ProgramManagement
   }
 ]
 
