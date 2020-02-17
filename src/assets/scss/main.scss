@@ -30,6 +30,8 @@ $primary: $purple;
 $info: $turquoise;
 $family-heading: "Fira Sans", "Segoe UI", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
 $code: $magenta;
+$menu-item-color: white;
+$menu-label-color: white;
 
 $footer-padding: 1rem 2.5rem;
 $level-item-spacing: 2rem;
@@ -107,6 +109,10 @@ main li {
   background-color: $darkmenu;
   min-height: 95vh;
   padding: 1em 1em 1em 1em;
+}
+
+.side-menu-body {
+  height:100%;
 }
 
 .no-padding {
