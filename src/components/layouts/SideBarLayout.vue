@@ -1,5 +1,5 @@
 <template>
-  <main>
+  <div>
     <div class="level header-title is-marginless">
       <div class="level-left">
         <div class="level-item">
@@ -19,16 +19,18 @@
 
     <div class="columns is-marginless">
       <b-menu class="column is-one-quarter side-menu">
-        <b-menu-list label="Menu">
-          <b-menu-item label="Home" tag="router-link" to="/" class="is-white"></b-menu-item>
-          <b-menu-item label="Manage Users" tag="router-link" to="/usermanagement"></b-menu-item>
-          <b-menu-item label="Trials and Experiments"></b-menu-item>
-          <b-menu-item label="Germplasm Inventory"></b-menu-item>
-          <b-menu-item label="Ontology Management"></b-menu-item>
-          <b-menu-item label="Labels"></b-menu-item>
-          <b-menu-item label="Reports"></b-menu-item>
-          <b-menu-item label="Program Management" tag="router-link" to="/program-management"></b-menu-item>
-        </b-menu-list>
+        <div class="side-menu-body">
+          <b-menu-list label="Menu">
+            <b-menu-item label="Home" tag="router-link" to="/"></b-menu-item>
+            <b-menu-item label="Manage Users" tag="router-link" to="/usermanagement"></b-menu-item>
+            <b-menu-item label="Trials and Experiments"></b-menu-item>
+            <b-menu-item label="Germplasm Inventory"></b-menu-item>
+            <b-menu-item label="Ontology Management"></b-menu-item>
+            <b-menu-item label="Labels"></b-menu-item>
+            <b-menu-item label="Reports"></b-menu-item>
+            <b-menu-item label="Program Management" tag="router-link" to="/program-management"></b-menu-item>
+          </b-menu-list>
+        </div>
       </b-menu>
       <div class="column">
         <section class="section">
@@ -38,7 +40,7 @@
         </section>
       </div>
     </div>
-  </main>
+  </div>
 </template>
 
 <script lang="ts">
