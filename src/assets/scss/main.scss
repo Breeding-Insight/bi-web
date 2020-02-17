@@ -59,7 +59,7 @@ main {
   }
 }
 
-ul {
+main ul {
   list-style: disc outside;
   margin-left: 2em;
   ul {
@@ -68,13 +68,13 @@ ul {
       }
 }
 
-ol {
+main ol {
     list-style-position: outside;
     margin-left: 2em;
     margin-top: 1em;
 }
 
-li {
+main li {
     margin-bottom: .5em;
 }
 
