@@ -99,14 +99,19 @@ main li {
 
 .header-title {
   border-bottom: 1px #363636 solid;
-  padding-left: 2.5em;
-  padding-right: 2.5em;
+  padding: 0em 2.5em 0em 2.5em;
   margin-bottom: 0em;
 }
 
 .side-menu {
   background-color: $darkmenu;
+  min-height:90vh;
 }
+
+.side-menu-body {
+  padding: 1em 1em 1em 1em;
+}
+
 
 .no-padding {
   padding-top: 0em;
