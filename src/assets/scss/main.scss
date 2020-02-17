@@ -42,6 +42,14 @@ $menu-nested-list-padding-left: 0;
 
 $footer-padding: 1rem 2.5rem;
 $level-item-spacing: 2rem;
+
+$tabs-boxed-link-radius: 1px;
+$tabs-link-active-color: $turquoise;
+$tabs-boxed-link-hover-border-bottom-color: $turquoise;
+$tabs-border-bottom-color: $turquoise;
+$tabs-boxed-link-active-border-color: $turquoise;
+$tabs-boxed-link-border-width: 3px;
+
 //$margin-right: 2 rem;
 
 // Update some of Bulma's component variables
@@ -84,7 +92,8 @@ main ol {
 }
 
 main li {
-    margin-bottom: .5em;
+  // messed up tab style, figure out how to handle
+  //margin-bottom: .5em;
 }
 
 
@@ -105,6 +114,18 @@ main li {
       width: 100%;
     }
 }
+
+nav.tabs li.is-active {
+  border-top: 2px $turquoise solid;
+  li {
+    margin-bottom: 0em;
+  }
+}
+
+.tab-content {
+  margin-left: 2em;
+}
+
 
 .header-title {
   border-bottom: 1px #363636 solid;
