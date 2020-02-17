@@ -1,17 +1,5 @@
 <template>
   <div class="userhome">
-    <nav class="level">
-      <div class="level-left">
-        <div class="level-item">
-          <img alt="Breeding Insight Logo" src="../assets/img/bi-logo.svg" style="height: 100px;">
-        </div>
-      </div>
-      <div class="level-right">
-        <div class="level-item has-text-right">
-          <p class="title">Program Name</p>
-        </div>
-      </div>
-    </nav>
     <nav class="navbar" role="navigation" aria-label="main navigation">
       <div class="navbar-end">
         <div class="navbar-item">
