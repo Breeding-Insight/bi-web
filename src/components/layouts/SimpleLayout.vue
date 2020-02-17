@@ -35,7 +35,7 @@
                 </router-link>
               </li>
               <li class="navbar-item">
-                <a @click="this.$emit('logout')">
+                <a @click="$emit('logout')">
                   Logout
                 </a>
               </li>
@@ -44,7 +44,12 @@
         </nav>
       </div>
     </header>
-    <slot></slot>
+    <main>
+      <section class="section">
+        <slot></slot>
+      </section>
+    </main>
+
   </div>
 
 </template>

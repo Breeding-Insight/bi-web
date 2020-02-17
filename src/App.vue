@@ -6,7 +6,7 @@
       <InfoNotification ref="infoNotification" class="is-marginless"></InfoNotification>
     </div>
     
-    <component v-bind:is="layout" @logout="logOut">
+    <component v-bind:is="layout" v-bind:username="username" @logout="logOut">
       <main>
         <router-view
             @show-success-notification="showSuccessNotification"
@@ -109,6 +109,10 @@ export default class App extends Vue {
 
   get loggedIn () {
     return this.$store.state.loggedIn;
+  }
+
+  get username(): string {
+    return this.$store.state.user ? this.$store.state.user.name : '';
   }
 
   get requestedPath () {

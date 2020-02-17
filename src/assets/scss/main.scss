@@ -33,6 +33,13 @@ $code: $magenta;
 $menu-item-color: white;
 $menu-label-color: white;
 
+$menu-item-active-background-color: none;
+$menu-item-radius: 0;
+$menu-item-hover-background-color: $turquoise;
+$menu-item-hover-color: white;
+$menu-nested-list-padding-left: 0;
+
+
 $footer-padding: 1rem 2.5rem;
 $level-item-spacing: 2rem;
 //$margin-right: 2 rem;
@@ -108,12 +115,18 @@ main li {
 .side-menu {
   background-color: $darkmenu;
   min-height: 95vh;
-  padding: 1em 1em 1em 1em;
+  padding: 1em 1em 1em 0;
+  li {
+    padding: 0.25em 0 0.25em 0;
+    a {
+      padding-left: 2em;
+      &.is-active,&.router-link-active {
+        border-left: 5px solid $turquoise;
+      }
+    }
+  }
 }
 
-.side-menu-body {
-  height:100%;
-}
 
 .no-padding {
   padding-top: 0em;
