@@ -1,14 +1,5 @@
 <template>
   <div class="userhome">
-    <nav class="navbar" role="navigation" aria-label="main navigation">
-      <div class="navbar-end">
-        <div class="navbar-item">
-          <div class="buttons">
-            <b-button @click="logout">LOG OUT</b-button>
-          </div>
-        </div>
-      </div>
-    </nav>
     <div class="is-divider"></div>
     <div class="columns">
       <div class="column is-three-fifths">

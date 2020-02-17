@@ -18,25 +18,47 @@
     </div>
 
     <div class="columns is-marginless">
-      <b-menu class="column is-one-quarter side-menu">
-        <div class="side-menu-body">
-          <b-menu-list label="Menu">
-            <b-menu-item label="Home" tag="router-link" to="/"></b-menu-item>
-            <b-menu-item label="Manage Users" tag="router-link" to="/usermanagement"></b-menu-item>
-            <b-menu-item label="Trials and Experiments"></b-menu-item>
-            <b-menu-item label="Germplasm Inventory"></b-menu-item>
-            <b-menu-item label="Ontology Management"></b-menu-item>
-            <b-menu-item label="Labels"></b-menu-item>
-            <b-menu-item label="Reports"></b-menu-item>
-            <b-menu-item label="Program Management" tag="router-link" to="/program-management"></b-menu-item>
-          </b-menu-list>
-        </div>
-      </b-menu>
+      <aside class="menu side-menu column is-one-fifth">
+        <ul class="menu-list">
+          <li><router-link to="/userhome">Home</router-link></li>
+          <li><router-link to="/usermanagement">Manage Users</router-link></li>
+          <li><a>Trials and Experiments</a></li>
+          <li><a>Germplasm Inventory</a></li>
+          <li><a>Ontology Management</a></li>
+          <li><a>Labels</a></li>
+          <li><a>Reports</a></li>
+          <li>
+            <a
+              v-bind:class="{ 'is-active': programManagementActive }"
+              @click="programManagementActive = !programManagementActive"
+            >
+              Program Management
+              <MoreVerticalIcon v-if="!programManagementActive" class="is-pulled-right"></MoreVerticalIcon>
+              <MoreHorizontalIcon v-if="programManagementActive" class="is-pulled-right"></MoreHorizontalIcon>
+            </a>
+            <ul v-show="programManagementActive">
+              <li><a>Locations</a></li>
+              <li><a>Users</a></li>
+              <li><a>Roles</a></li>
+              <li><a>Permissions</a></li>
+            </ul>
+          </li>
+        </ul>
+      </aside>
       <div class="column">
-        <section class="section">
-          <div class="container">
-            <slot></slot>
+        <div class="level">
+          <div class="level-left"></div>
+          <div class="level-right">
+            <div class="level-item">
+              <p>Logged in as <b>{{username}}</b></p>
+            </div>
+            <div class="level-item">
+              <button class="button is-outlined is-primary" @click="$emit('logout')">Log out</button>
+            </div>
           </div>
+        </div>
+        <section class="section">
+          <slot></slot>
         </section>
       </div>
     </div>
@@ -44,10 +66,17 @@
 </template>
 
 <script lang="ts">
-  import { Component, Vue } from 'vue-property-decorator'
+  import {Component, Prop, Vue} from 'vue-property-decorator'
+  import { MoreVerticalIcon, MoreHorizontalIcon } from 'vue-feather-icons'
 
-  @Component
+
+  @Component( {
+    components: {MoreVerticalIcon, MoreHorizontalIcon}
+  })
   export default class SideBarMaster extends Vue {
+    programManagementActive: boolean =  true;
+    @Prop()
+    username!: string;
   }
 
 </script>
