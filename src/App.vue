@@ -6,29 +6,16 @@
       <InfoNotification ref="infoNotification" class="is-marginless"></InfoNotification>
     </div>
     
-    <header class="container">
-      <div v-if="loggedIn">
-          <nav class="navbar" role="navigation" aria-label="main navigation">
-              <div class="navbar-menu">
-                  <ul class="navbar-start">
-                      <li class="navbar-item"><router-link to="/">Home</router-link></li>
-                      <li class="navbar-item"><router-link to="/about">About</router-link></li>
-                      <li class="navbar-item"><router-link to="/styleguide">Style Guide</router-link></li>
-                      <li class="navbar-item"><router-link to="/usermanagement">Manage Users</router-link></li>
-                      <li class="navbar-item"><router-link to="/program-management">Program Management</router-link></li>
-                      <li class="navbar-item"><a v-on:click="logOut">Logout</a></li>
-                  </ul>
-              </div>
-          </nav>
-      </div>
-    </header>
-    <main class="container">
-      <router-view 
-          @show-success-notification="showSuccessNotification"
-          @show-info-notification="showInfoNotification"
-          @show-error-notification="showErrorNotification"
-      />
-    </main>
+    <component v-bind:is="layout" @logout="logOut">
+      <main>
+        <router-view
+            @show-success-notification="showSuccessNotification"
+            @show-info-notification="showInfoNotification"
+            @show-error-notification="showErrorNotification"
+        />
+      </main>
+    </component>
+
     <footer class="footer">
       <div class="level">
         <nav>
@@ -84,6 +71,8 @@ import { Component, Vue } from 'vue-property-decorator';
 import SuccessNotification from "@/components/notifications/SuccessNotification.vue"
 import InfoNotification from "@/components/notifications/InfoNotification.vue"
 import ErrorNotification from "@/components/notifications/ErrorNotification.vue"
+import SideBarLayout from "@/components/layouts/SideBarLayout.vue";
+import SimpleLayout from "@/components/layouts/SimpleLayout.vue";
 
 @Component({
   watch: {
@@ -95,8 +84,19 @@ import ErrorNotification from "@/components/notifications/ErrorNotification.vue"
               this.$router.push('/');
           }             
       }
-  }, 
-  components: {SuccessNotification, InfoNotification, ErrorNotification}, 
+  },
+  computed: {
+    layout() {
+      return this.$route.meta.layout ? `${this.$route.meta.layout}Layout` : 'simpleLayout';
+    }
+  },
+  components: {
+    SuccessNotification,
+    InfoNotification,
+    ErrorNotification,
+    simpleLayout: SimpleLayout,
+    sideBarLayout: SideBarLayout
+  },
 })
 export default class App extends Vue {
   public loading: boolean = false;

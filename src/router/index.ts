@@ -12,12 +12,18 @@ import { BiResponse } from '@/model/BiResponse';
 
 Vue.use(VueRouter);
 
+const layouts = {
+  sideBar: 'sideBar',
+  simple: 'simple'
+}
+
 const routes = [
   {
     path: '/',
     name: 'home',
     meta: {
       title: 'Welcome',
+      layout: layouts.simple
     },
     component: Home
   },
@@ -26,6 +32,7 @@ const routes = [
     name: 'userhome',
     meta: {
       title: 'Welcome',
+      layout: layouts.sideBar
     },
     component: UserHome
   },
@@ -34,6 +41,7 @@ const routes = [
     name: 'style-guide',
     meta: {
       title: 'Style Guide',
+      layout: layouts.simple
     },
     component: StyleGuide
   },
@@ -42,6 +50,7 @@ const routes = [
     name: 'about',
     meta: {
       title: 'About',
+      layout: layouts.sideBar
     },
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
@@ -52,7 +61,8 @@ const routes = [
     path: '/usermanagement', 
     name: 'usermanagement', 
     meta: {
-      title: 'User Management'
+      title: 'User Management',
+      layout: layouts.sideBar
     }, 
     component: UserManagement
   },
@@ -60,7 +70,8 @@ const routes = [
     path: '/program-management', 
     name: 'program-management', 
     meta: {
-      title: 'Program Management'
+      title: 'Program Management',
+      layout: layouts.sideBar
     }, 
     component: ProgramManagement
   }
