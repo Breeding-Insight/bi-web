@@ -65,8 +65,9 @@
         </nav>
       </div>
 
-      <main>
-        <div class="column">
+
+      <div class="column">
+        <main>
           <div class="level is-mobile">
             <div class="level-left"></div>
             <div class="level-right">
@@ -81,8 +82,9 @@
           <section class="section">
             <slot></slot>
           </section>
-        </div>
-      </main>
+        </main>
+      </div>
+
     </div>
   </div>
 </template>
