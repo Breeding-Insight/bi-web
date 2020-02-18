@@ -1,75 +1,77 @@
 <template>
   <div class="usermanagement">
     <h1 id="userTableLabel" class="title">User Management</h1>
-    <table role="grid" aria-labelledby="userTableLabel" class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
-      <thead>
+    <div class="table-container">
+      <table role="grid" aria-labelledby="userTableLabel" class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
+        <thead>
         <tr>
-            <th>User Name</th>
-            <th>Email</th>
-            <th>Roles</th>
-            <th>Manage User</th>
+          <th>User Name</th>
+          <th>Email</th>
+          <th>Roles</th>
+          <th>Manage User</th>
         </tr>
-      </thead>
-      <tbody>
+        </thead>
+        <tbody>
         <tr>
-            <td>
-                <input title="New User Name" class="input" type="text" v-model="newUserInputs.name">
-            </td>
-            <td>
-                <input title="New User Email" class="input" type="email" v-model="newUserInputs.email">
-            </td>
-            <td></td>
-            <td class="is-centered">
-                <button class="button is-primary" v-on:click="addUser" id="addUserBtn">Create User</button>
-            </td>
+          <td>
+            <input title="New User Name" class="input" type="text" v-model="newUserInputs.name">
+          </td>
+          <td>
+            <input title="New User Email" class="input" type="email" v-model="newUserInputs.email">
+          </td>
+          <td></td>
+          <td class="is-centered">
+            <button class="button is-primary" v-on:click="addUser" id="addUserBtn">Create User</button>
+          </td>
         </tr>
         <tr v-bind:key="user.data.id" v-for="(user, index) in users">
-            <td v-if="user.edit">
-                <input type="text" class="input" v-model="user.editData.name" placeholder="User Name">
-            </td>
-            <td v-else>{{ user.data.name }}</td>
-            <td v-if="user.edit">
-                <input type="text" class="input" v-model="user.editData.email" placeholder="User Email">
-            </td>
-            <td v-else>
-                {{ user.data.email }}
-            </td>
-            <td v-if="user.edit">
-                <input type="text" class="input" v-model="user.editData.roles" placeholder="Roles">
-            </td>
-            <td v-else>
-                {{ user.data.roles }}
-            </td>
-            <td>
-                <button class="button" title="Edit User" v-on:click="user.toggleEdit()" v-if="!user.edit">
+          <td v-if="user.edit">
+            <input type="text" class="input" v-model="user.editData.name" placeholder="User Name">
+          </td>
+          <td v-else>{{ user.data.name }}</td>
+          <td v-if="user.edit">
+            <input type="text" class="input" v-model="user.editData.email" placeholder="User Email">
+          </td>
+          <td v-else>
+            {{ user.data.email }}
+          </td>
+          <td v-if="user.edit">
+            <input type="text" class="input" v-model="user.editData.roles" placeholder="Roles">
+          </td>
+          <td v-else>
+            {{ user.data.roles }}
+          </td>
+          <td>
+            <button class="button" title="Edit User" v-on:click="user.toggleEdit()" v-if="!user.edit">
                     <span class="icon is-small">
                         <EditIcon size="1.5x" class="has-text-link" aria-hidden="true"></EditIcon>
                         <span class="is-sr-only">Edit User</span>
                     </span>
-                </button>
-                <button class="button"  title="Confirm User" v-on:click="updateUser(index)" v-else>
+            </button>
+            <button class="button"  title="Confirm User" v-on:click="updateUser(index)" v-else>
                     <span class="icon is-small">
                         <CheckSquareIcon size="1.5x" class="has-text-success" aria-hidden="true"></CheckSquareIcon>
                         <span class="is-sr-only">Confirm Edits</span>
                     </span>
-                </button>
+            </button>
 
-                <button class="button" title="Delete User" v-on:click="deleteUser(user.data.id)" v-if="!user.edit">
+            <button class="button" title="Delete User" v-on:click="deleteUser(user.data.id)" v-if="!user.edit">
                     <span class="icon is-small">
                         <DeleteIcon size="1.5x" class="has-text-danger" aria-hidden="true"></DeleteIcon>
                         <span class="is-sr-only">Delete User</span>
                     </span>
-                </button>
-                <button class="button" title="Cancel Edit" v-on:click="user.cancelEdit()" v-else>
+            </button>
+            <button class="button" title="Cancel Edit" v-on:click="user.cancelEdit()" v-else>
                     <span class="icon is-small">
                         <XIcon size="1.5x" class="has-text-danger" aria-hidden="true"></XIcon>
                         <span class="is-sr-only">Cancel Edit</span>
                     </span>
-                </button>
-            </td>
+            </button>
+          </td>
         </tr>
-      </tbody>
-    </table>
+        </tbody>
+      </table>
+    </div>
   </div>
 
 </template>

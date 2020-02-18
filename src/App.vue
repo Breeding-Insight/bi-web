@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div id="app" class="has-navbar-fixed-top-touch">
     <div style="position:fixed;top:1px;z-index:9999;left:1px;right:1px;">
       <SuccessNotification ref="successNotification" class="is-marginless"></SuccessNotification>
       <ErrorNotification ref="errorNotification" class="is-marginless"></ErrorNotification>
@@ -7,13 +7,11 @@
     </div>
     
     <component v-bind:is="layout" v-bind:username="username" @logout="logOut">
-      <main>
         <router-view
             @show-success-notification="showSuccessNotification"
             @show-info-notification="showInfoNotification"
             @show-error-notification="showErrorNotification"
         />
-      </main>
     </component>
 
     <footer class="footer">
