@@ -35,7 +35,7 @@ $menu-label-color: white;
 
 $menu-item-active-background-color: none;
 $menu-item-radius: 0;
-$menu-item-hover-background-color: $turquoise;
+$menu-item-hover-background-color: $info;
 $menu-item-hover-color: white;
 $menu-nested-list-padding-left: 0;
 
@@ -96,6 +96,10 @@ main li {
   //margin-bottom: .5em;
 }
 
+footer {
+  flex-shrink:0;
+}
+
 
 // Custom styles go here, may be broken out into a seperate file later
 #app {
@@ -103,6 +107,21 @@ main li {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: #363636;  //$grey-darker
+  display:flex;
+  min-height:100vh;
+  flex-direction: column;
+  &.has-navbar-fixed-top-touch {
+    @extend body.has-navbar-fixed-top-touch;
+  }
+}
+
+.sidebarlayout {
+  display: flex;
+  flex-direction: column;
+  flex: 1 0 auto;
+  & > .columns {
+    flex: 1 0 auto;
+  }
 }
 
 .tagline {
@@ -129,20 +148,31 @@ nav.tabs li.is-active {
 
 .header-title {
   border-bottom: 1px #363636 solid;
-  padding: 0em 2.5em 0em 2.5em;
-  margin-bottom: 0em;
+  padding: 0 2.5em 0 2.5em;
+  margin-bottom: 0;
+  @include until($desktop) {
+    padding: .5em 2.5em .5em 1em;
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    z-index: 30;
+    background-color: white;
+  }
+  & .navbar-hamburger {
+    padding-top: .5em;
+  }
 }
 
 .side-menu {
   background-color: $darkmenu;
-  min-height: 95vh;
   padding: 1em 1em 1em 0;
   li {
     padding: 0.25em 0 0.25em 0;
     a {
       padding-left: 2em;
       &.is-active,&.router-link-active {
-        border-left: 5px solid $turquoise;
+        border-left: 5px solid $info;
       }
     }
   }
