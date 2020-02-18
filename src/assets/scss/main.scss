@@ -63,6 +63,11 @@ $tabs-boxed-link-border-width: 3px;
 // may be broken out into a separate file later
 
 main {
+  /*
+  a {
+    text-decoration: underline;
+  }
+  */
   p,
   dl,
   ol,
@@ -178,6 +183,17 @@ nav.tabs li.is-active {
   }
 }
 
+.new-form {
+  background-color: $primary-light;
+  padding: 1.5em 1.5em 1.5em 1.5em;
+  border-top: 2px solid $grey-lighter;
+  border-bottom: 2px solid $grey-lighter;
+  margin-bottom: 1em;
+}
+
+.edit-table-row {
+  background-color: $primary-light;
+}
 
 .no-padding {
   padding-top: 0em;

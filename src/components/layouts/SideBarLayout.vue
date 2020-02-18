@@ -54,7 +54,7 @@
                   <MoreHorizontalIcon v-if="programManagementActive" class="is-pulled-right"></MoreHorizontalIcon>
                 </a>
                 <ul v-show="programManagementActive">
-                  <li><a>Locations</a></li>
+                  <li><router-link to="/program-management">Locations</router-link></li>
                   <li><a>Users</a></li>
                   <li><a>Roles</a></li>
                   <li><a>Permissions</a></li>
