@@ -49,6 +49,7 @@ $tabs-boxed-link-hover-border-bottom-color: $turquoise;
 $tabs-border-bottom-color: $turquoise;
 $tabs-boxed-link-active-border-color: $turquoise;
 $tabs-boxed-link-border-width: 3px;
+$modal-background-background-color: rgba(black, 0.12);
 
 //$margin-right: 2 rem;
 
@@ -193,8 +194,14 @@ nav.tabs li.is-active {
 
 .edit-table-row {
   background-color: $primary-light;
+  
+.orcidBtn {
+  margin-bottom: 7em;
 }
 
+.modal-background {
+  backdrop-filter: blur(5px);
+}
 .no-padding {
   padding-top: 0em;
 }
