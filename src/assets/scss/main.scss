@@ -147,10 +147,13 @@ nav.tabs li.is-active {
   }
 }
 
+.table td {
+  vertical-align: middle;
+}
+
 .tab-content {
   margin-left: 2em;
 }
-
 
 .header-title {
   border-bottom: 1px #363636 solid;

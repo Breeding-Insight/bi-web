@@ -1,5 +1,6 @@
 <template>
   <div class="program-management">
+    <WarningModal v-on:submit="modalDeleteHandler()" v-on:cancel="modalCancelHandler()" ref="warningModal"></WarningModal>
     <h1 class="title">Program Management</h1>
     <p class="is-size-5 has-text-weight-bold"> Program Name Here </p>
     <section>
@@ -86,7 +87,7 @@
           </section>
         </b-tab-item>
         <b-tab-item label="Users">
-          <section class="new-form" v-if="new_user_active">
+          <form class="new-form" v-if="new_user_active">
             <div class="columns">
               <div class="column is-two-fifths">
                 <div class="field">
@@ -98,12 +99,15 @@
                 </div>
               </div>
               <div class="column is-two-fifths">
-                <div class="field">
+                <div class="field" v-if="!email_error">
                   <label class="label">Email</label>
                   <div class="control">
-                    <input class="input" type="text" placeholder="email@email.com">
+                    <input class="input" type="text" placeholder="email@email.com" v-model="email">
                   </div>
                   <p class="help">New users will receive an email at this address to activate their account.</p>
+                </div>
+                <div class="field" v-else>
+                  <label class="label">Email Error</label>
                 </div>
               </div>
               <div class="column is-one-fifth">
@@ -134,9 +138,10 @@
                     </span>
                   </button>
                   <button class="button" v-on:click="cancelNewUser()">Cancel</button>
+                  
               </div>
             </div>
-          </section>
+          </form>
           <section>
             <table role="grid" aria-labelledby="userTableLabel" class="table is-striped is-narrow is-hoverable is-fullwidth">
               <thead>
@@ -179,7 +184,7 @@
                       {{ user.data.roles[0] }}
                   </td>
                   <td>
-                    <button class="button is-pulled-right" title="Delete Location" v-on:click="deleteUser(user.data.id)" v-if="!user.edit">
+                    <button class="button is-pulled-right" title="Delete Location" v-on:click="displayWarning()" v-if="!user.edit">
                       <span class="icon is-small">
                         <Trash2Icon size="1.5x" class="has-text-danger" aria-hidden="true"></Trash2Icon>
                         <span class="is-sr-only">Delete User</span>
@@ -232,16 +237,25 @@
   import { User } from '@/model/User.ts'
   import { Location } from '@/model/Location.ts'
   import { Role } from '@/model/Role.ts'
+  import WarningModal from "@/components/modals/WarningModal.vue"
 
   @Component({
-    components: {SideBarMaster, PlusCircleIcon, EditIcon, Trash2Icon, ArrowDownIcon, ArrowUpIcon, CheckCircleIcon, XSquareIcon }
+    components: {SideBarMaster, PlusCircleIcon, EditIcon, Trash2Icon, ArrowDownIcon, ArrowUpIcon, CheckCircleIcon, XSquareIcon, WarningModal }
   })
   export default class ProgramManagement extends Vue {
     public locations: Array<Object> = [];
     public users: Array<Object> = [];
     public roles: Array<Object> = [];
 
+    public $refs!: {
+      warningModal: WarningModal
+    };
+
     public new_user_active: boolean = false;
+
+    public email:string = '';
+
+    public email_error:boolean = false;
 
     mounted() {
       this.getLocations();
@@ -275,7 +289,8 @@
     }
 
     saveUser() {
-      
+      console.log("save user");
+      this.email_error = true;
     }
 
     cancelNewUser() {
@@ -285,6 +300,28 @@
 
     updateLocation() {
     }
+
+    displayWarning() {
+      this.showWarningModal("Remove user's access to Program name?",
+                            "Program-related data collected by this user will not be affected by this change.");
+    }
+
+    modalDeleteHandler() {
+      this.$refs.warningModal.active = false;
+      // TODO: deleteUser
+    }
+
+    modalCancelHandler() {
+      this.$refs.warningModal.active = false;
+    }
+
+    showWarningModal(msg_title: string, msg_body: string) {
+      this.$refs.warningModal.active = true;
+      this.$refs.warningModal.msg_title = msg_title;
+      this.$refs.warningModal.msg_body = msg_body;
+      this.$refs.warningModal.btn_submit_txt = "Yes, remove";
+    }
+
 
   }
 </script>
