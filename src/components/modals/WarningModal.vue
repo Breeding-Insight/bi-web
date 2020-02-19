@@ -3,9 +3,16 @@
     <div class="modal-card" style="width: 400px">
       <div class="message is-danger">
         <div class="message-body">
-          <h3 class="is-size-5 has-text-weight-bold">
-            {{msg_title}}
-          </h3>
+          <div class="columns">
+            <div class="column is-narrow">
+              <alert-triangle-icon size="1.5x"></alert-triangle-icon>
+            </div>
+            <div class="column">
+              <h3 class="is-size-5 has-text-weight-bold">
+                {{msg_title}}
+              </h3>
+            </div>
+          </div>
           <p>
             {{msg_body}}
           </p>
