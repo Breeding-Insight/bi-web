@@ -291,7 +291,6 @@
       this.new_user_active = false;
     }
 
-
     updateLocation() {
     }
 
