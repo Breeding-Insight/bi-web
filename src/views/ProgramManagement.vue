@@ -166,31 +166,30 @@
                 </tr>
               </thead>
               <tbody>
-                <tr v-bind:key="user.data.id" v-for="(user, index) in users">
-                  <td class="edit-table-row" v-if="user.edit">
+                <!-- v-bind:class="{'is-selected':(user))}"-->
+                <tr v-bind:key="user.data.id" v-for="(user, index) in users" v-bind:class="[user.edit ? is-selected : '']">
+                  <td v-if="user.edit">
                     <input type="text" class="input" v-model="user.editData.name" placeholder="User Name">
                   </td>
                   <td v-else>{{ user.data.name }}</td>
-                  <td class="edit-table-row" v-if="user.edit">
+                  <td v-if="user.edit">
                       <input type="text" class="input" v-model="user.editData.email" placeholder="User Email">
                   </td>
                   <td v-else>
                       {{ user.data.email }}
                   </td>
-                  <td class="edit-table-row" v-if="user.edit">
+                  <td v-if="user.edit">
                       <input type="text" class="input" v-model="user.editData.roles" placeholder="Roles">
                   </td>
                   <td v-else>
                       {{ user.data.roles[0] }}
                   </td>
-                  <td>
-                    <button class="button is-pulled-right" title="Delete Location" v-on:click="displayWarning()" v-if="!user.edit">
-                      <span class="icon is-small">
-                        <Trash2Icon size="1.5x" class="has-text-danger" aria-hidden="true"></Trash2Icon>
-                        <span class="is-sr-only">Delete User</span>
-                      </span>
-                    </button>
-                    <button class="button is-pulled-right" title="Cancel Edit" v-on:click="user.cancelEdit()" v-else>
+                  <td class="has-text-right">
+                    
+                    <a class="margin-right-2" v-on:click="user.toggleEdit()" v-if="!user.edit">Edit</a>
+                    <a class="" v-on:click="displayWarning()" v-if="!user.edit">Deactivate</a>
+                    
+                    <button class="button is-pulled-right" title="Cancel Edit" v-on:click="user.cancelEdit()" v-if="user.edit">
                       <span class="icon is-small is-light">
                         <XSquareIcon size="1.5x" aria-hidden="true"></XSquareIcon>
                         <span class="is-sr-only">Cancel Edit</span>
@@ -199,13 +198,8 @@
                         Cancel
                       </span>
                     </button>
-                    <button class="button is-pulled-right" title="Edit Location" v-on:click="user.toggleEdit()" v-if="!user.edit">
-                      <span class="icon is-small">
-                        <EditIcon size="1.5x" class="has-text-link" aria-hidden="true"></EditIcon>
-                        <span class="is-sr-only">Edit Location</span>
-                      </span>
-                    </button>
-                    <button class="button is-pulled-right is-primary"  title="Confirm Location" v-on:click="updateUser(index)" v-else>
+                    
+                    <button class="button is-pulled-right is-primary"  title="Confirm Location" v-on:click="updateUser(index)" v-if="user.edit">
                       <span class="icon is-small">
                         <CheckCircleIcon size="1.5x" aria-hidden="true"></CheckCircleIcon>
                         <span class="is-sr-only">Confirm Edits</span>
