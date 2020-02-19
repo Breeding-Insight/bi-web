@@ -90,12 +90,25 @@
             <p class="modal-card-title">Login</p>
         </header> -->
         <section class="modal-card-body has-text-centered">
-          <p class>Breeding Insight uses ORCID to confirm your identification.</p>
-          <br>
-          <b-button id="connect-orcid-button" @click="orcidLogin">
+          <h1 class="is-size-5 has-text-primary">Welcome to Breeding Insight!</h1>
+          <p>To access to your breeding program, please log in.</p>
+          <b-button id="connect-orcid-button" @click="orcidLogin" class="orcidBtn">
             <img id="orcid-id-icon" src="https://orcid.org/sites/default/files/images/orcid_24x24.png" width="24" height="24" alt="ORCID iD icon"/>
             Register or Connect your ORCID iD
           </b-button>
+          <p class="is-size-7">
+            Breeding Insight is collecting your ORCID iD to confirm your identity and authenticate
+            the Breeding Insight application. When you click
+            the “Authorize” button, we will ask you to share your iD using an authenticated
+            process: either by
+            <a href="https://support.orcid.org/hc/articles/360006897454">registering for an ORCID iD</a>
+            or, if you already have one, by
+            <a href="https://support.orcid.org/hc/articles/360006971613">signing into your ORCID account</a>,
+            then granting us permission to get your ORCID iD. We do this
+            to ensure that you are correctly identified and securely connecting your ORCID iD.
+            Learn more about
+            <a href="https://orcid.org/blog/2017/02/20/whats-so-special-about-signing">What’s so special about signing in</a>.
+          </p>
         </section>
       </div>
     </b-modal>
