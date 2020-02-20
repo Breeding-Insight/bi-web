@@ -2,6 +2,7 @@
   <BaseModal
     v-bind:active="active"
     v-on:close-modal="$emit('close-modal')"
+    v-bind:body-class="bodyClass"
   >
     <slot></slot>
   </BaseModal>
@@ -18,6 +19,8 @@
   export default class InfoModal extends Vue {
     @Prop()
     active!: boolean;
+    @Prop()
+    bodyClass!: Object;
   }
 
 </script>
