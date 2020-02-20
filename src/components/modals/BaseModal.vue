@@ -11,7 +11,7 @@
       <button
           class="delete"
           aria-label="close"
-          @click="$emit('closeModal')"
+          @click="$emit('close-modal')"
       />
     </header>
     <section class="modal-card-body has-text-centered">
@@ -28,7 +28,7 @@
   @Component
   export default class BaseModal extends Vue {
     @Prop()
-    public active: boolean = false;
+    active!: boolean;
   }
 
 </script>

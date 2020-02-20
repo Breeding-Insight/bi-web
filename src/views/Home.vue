@@ -147,8 +147,8 @@
       </div>
     </div>
     <BaseModal
-      v-bind:active.sync="isLoginModalActive"
-      v-on:closeModal="isLoginModalActive = !isLoginModalActive"
+      v-bind:active="isLoginModalActive"
+      v-on:close-modal="isLoginModalActive = !isLoginModalActive"
     >
       <h1 class="is-size-5 has-text-primary">
         Welcome to Breeding Insight!
@@ -186,14 +186,13 @@
     </BaseModal>
 
     <!-- Login Failed Modal -->
-    <b-modal :active.sync="isFailedLoginModalActive">
-      <div class="modal-card" style="width: auto">
-        <section class="modal-card-body has-text-centered">
-          <p class="is-size-1 has-text-danger">Login Failed</p>
-          <p>We were not able to log you in successfully. Contact a system admin for assistance.</p>
-        </section>
-      </div>
-    </b-modal>
+    <InfoModal
+        v-bind:active="isFailedLoginModalActive"
+        v-on:close-modal="isFailedLoginModalActive = !isFailedLoginModalActive"
+    >
+      <p class="is-size-1 has-text-danger">Login Failed</p>
+      <p>We were not able to log you in successfully. Contact a system admin for assistance.</p>
+    </InfoModal>
 
     <!-- Login Failed Server Error Modal -->
     <b-modal :active.sync="isLoginServerErrorModalActive">
@@ -231,9 +230,10 @@ export default {
   import * as api from '@/util/api';
   import { Component, Prop, Vue } from 'vue-property-decorator'
   import BaseModal from "@/components/modals/BaseModal.vue";
+  import InfoModal from "@/components/modals/InfoModal.vue";
 
   @Component({
-    components: {BaseModal}
+    components: {InfoModal, BaseModal}
   })
   export default class Home extends Vue {
 
