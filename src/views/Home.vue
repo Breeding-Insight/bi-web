@@ -148,6 +148,7 @@
     </div>
     <BaseModal
       v-bind:active="isLoginModalActive"
+      v-bind:body-class="'has-text-centered'"
       v-on:close-modal="isLoginModalActive = !isLoginModalActive"
     >
       <h1 class="is-size-5 has-text-primary">
@@ -188,6 +189,7 @@
     <!-- Login Failed Modal -->
     <InfoModal
         v-bind:active="isFailedLoginModalActive"
+        v-bind:body-class="'has-text-centered'"
         v-on:close-modal="isFailedLoginModalActive = !isFailedLoginModalActive"
     >
       <p class="is-size-1 has-text-danger">Login Failed</p>

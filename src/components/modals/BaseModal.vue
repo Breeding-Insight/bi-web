@@ -14,7 +14,10 @@
           @click="$emit('close-modal')"
       />
     </header>
-    <section class="modal-card-body has-text-centered">
+    <section
+      class="modal-card-body"
+      v-bind:class="bodyClass"
+    >
       <slot></slot>
     </section>
   </div>
@@ -29,6 +32,8 @@
   export default class BaseModal extends Vue {
     @Prop()
     active!: boolean;
+    @Prop()
+    bodyClass!: Object;
   }
 
 </script>
