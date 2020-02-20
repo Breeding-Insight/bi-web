@@ -1,48 +1,43 @@
 <template>
-  <b-modal v-bind:active.sync="active">
-    <div class="modal-card" style="width: 400px">
-      <section class="modal-card-body">
-        <div class="message is-danger">
-          <div class="message-body">
-            <div class="columns">
-              <div class="column is-narrow">
+  <BaseModal
+      v-bind:active="active"
+      v-on:close-modal="$emit('cancel')"
+    >
+      <div class="message is-danger">
+        <div class="message-body">
+          <article class="media">
+            <figure class="media-left">
+              <p class="image is-24x24">
                 <alert-triangle-icon size="1.5x"></alert-triangle-icon>
-              </div>
-              <div class="column">
+              </p>
+            </figure>
+            <div class="media-content">
+              <div class="content">
                 <h3 class="is-5 title has-text-danger">
-                  {{msg_title}}
+                  {{msgTitle}}
                 </h3>
               </div>
             </div>
-            <p>
-              {{msg_body}}
-            </p>
-            <div class="columns">
-              <div class="column is-whole has-text-centered buttons">
-                <button v-on:click="$emit('submit')" class="button is-danger"><strong>{{btn_submit_txt}}</strong></button>
-                <button v-on:click="$emit('cancel')" class="button">{{btn_cancel_txt}}</button>
-              </div>
-            </div>
-          </div>
+          </article>
+          <slot></slot>
         </div>
-      </section>
-    </div>
-  </b-modal>
+      </div>
+  </BaseModal>
 </template>
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { AlertTriangleIcon } from 'vue-feather-icons'
+import BaseModal from '@/components/modals/BaseModal.vue';
 
 @Component({
-  components: {AlertTriangleIcon}
+  components: {AlertTriangleIcon, BaseModal}
 })
 export default class WarningModal extends Vue {
-  public active: boolean = false;
-  public msg_title : string = 'Message Title';
-  public msg_body: string = 'Message Body';
-  public btn_submit_txt: string = 'Submit';
-  public btn_cancel_txt: string = 'Cancel';
+  @Prop()
+  active!: boolean;
+  @Prop()
+  msgTitle! : string;
 }
 
 </script>
