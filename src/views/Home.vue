@@ -171,7 +171,7 @@
         >
         Register or Connect your ORCID iD
       </b-button>
-      <p class="is-size-7">
+      <p class="is-size-7 has-text-left">
         Breeding Insight is collecting your ORCID iD to confirm your identity and authenticate
         the Breeding Insight application. When you click
         the “Authorize” button, we will ask you to share your iD using an authenticated
