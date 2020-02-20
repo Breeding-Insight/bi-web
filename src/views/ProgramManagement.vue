@@ -1,6 +1,22 @@
 <template>
   <div class="program-management">
-    <WarningModal v-on:submit="modalDeleteHandler()" v-on:cancel="modalCancelHandler()" ref="warningModal"></WarningModal>
+    <WarningModal v-on:submit="modalDeleteHandler()" 
+                  v-on:cancel="modalCancelHandler()"  
+                  v-bind:active="deactivateActive"
+                  v-bind:msg-title="deactivateWarningTitle"
+                  >
+      <section>
+        <p class="has-text-black">
+        {{deactivateWarningBody}}
+        </p>
+      </section>
+      <div class="columns">
+        <div class="column is-whole has-text-centered buttons">
+          <button v-on:click="modalDeleteHandler()" class="button is-danger"><strong>Yes, remove</strong></button>
+          <button v-on:click="modalCancelHandler()" class="button">Cancel</button>
+        </div>
+      </div>              
+    </WarningModal>
     <h1 class="title">Program Management</h1>
     <p class="is-size-5 has-text-weight-bold"> Program Name Here </p>
     <section>
@@ -241,11 +257,10 @@
     public users: Array<Object> = [];
     public roles: Array<Object> = [];
 
-    public $refs!: {
-      warningModal: WarningModal
-    };
-
     public new_user_active: boolean = false;
+    public deactivateActive: boolean = false;
+    public deactivateWarningTitle: string = "Remove user's access to Program name?";
+    public deactivateWarningBody: string = "Program-related data collected by this user will not be affected by this change.";
 
     public email:string = '';
 
@@ -295,24 +310,18 @@
     }
 
     displayWarning() {
-      this.showWarningModal("Remove user's access to Program name?",
-                            "Program-related data collected by this user will not be affected by this change.");
+      this.deactivateActive = true;
     }
 
     modalDeleteHandler() {
-      this.$refs.warningModal.active = false;
+      console.log('delete');
+      this.deactivateActive = false;
       // TODO: deleteUser
     }
 
     modalCancelHandler() {
-      this.$refs.warningModal.active = false;
-    }
-
-    showWarningModal(msg_title: string, msg_body: string) {
-      this.$refs.warningModal.active = true;
-      this.$refs.warningModal.msg_title = msg_title;
-      this.$refs.warningModal.msg_body = msg_body;
-      this.$refs.warningModal.btn_submit_txt = "Yes, remove";
+      console.log('cancel');
+      this.deactivateActive = false;
     }
 
 
