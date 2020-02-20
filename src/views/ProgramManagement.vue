@@ -203,7 +203,7 @@
                   <td class="has-text-right">
                     
                     <a class="margin-right-2" v-on:click="user.toggleEdit()" v-if="!user.edit">Edit</a>
-                    <a class="" v-on:click="displayWarning()" v-if="!user.edit">Deactivate</a>
+                    <a class="" v-on:click="displayWarning(index)" v-if="!user.edit">Deactivate</a>
                     
                     <button class="button is-pulled-right" title="Cancel Edit" v-on:click="user.cancelEdit()" v-if="user.edit">
                       <span class="icon is-small is-light">
@@ -261,9 +261,9 @@
     public deactivateActive: boolean = false;
     public deactivateWarningTitle: string = "Remove user's access to Program name?";
     public deactivateWarningBody: string = "Program-related data collected by this user will not be affected by this change.";
+    public programName: string = "Program Name";
 
     public email:string = '';
-
     public email_error:boolean = false;
 
     mounted() {
@@ -309,7 +309,11 @@
     updateLocation() {
     }
 
-    displayWarning() {
+    displayWarning(rowIndex: number, userId: string) {
+      // Get the username
+      const editRow: TableRow<User> = this.users[rowIndex] as TableRow<User>;
+      const user: User = editRow.editData;
+      this.deactivateWarningTitle = "Remove " + user.name + "'s access to " + this.programName + "?";
       this.deactivateActive = true;
     }
 
