@@ -147,6 +147,10 @@ footer {
     }
 }
 
+.modal-card .message.is-danger {
+  background-color: white;
+}
+
 nav.tabs li.is-active {
   border-top: 2px $turquoise solid;
   li {
