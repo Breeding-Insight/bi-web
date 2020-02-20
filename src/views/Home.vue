@@ -1,13 +1,19 @@
 <template>
   <div class="home">
     <div class="columns is-mobile">
-      <img class="column is-2 is-offset-5" alt="Breeding Insight Logo" src="../assets/img/bi-logo.svg">
+      <img
+        class="column is-2 is-offset-5"
+        alt="Breeding Insight Logo"
+        src="../assets/img/bi-logo.svg"
+      >
     </div>
-    <div class="is-divider"></div>
+    <div class="is-divider" />
     <nav class="level">
-      <p class="level-item has-text-centered">Combining genomics and informatics to accelerate genetic gains</p>
+      <p class="level-item has-text-centered">
+        Combining genomics and informatics to accelerate genetic gains
+      </p>
     </nav>
-    <div class="is-divider"></div>
+    <div class="is-divider" />
     <div class="columns">
       <div class="column is-three-fifths">
         <div class="columns is-mobile">
@@ -15,12 +21,19 @@
             <p>Part of a Breeding Insight program?</p>
           </div>
           <div class="column is-narrow">
-            <b-button class="button is-primary" @click="isLoginModalActive = true">LOG IN</b-button>
+            <b-button
+              class="button is-primary"
+              @click="isLoginModalActive = true"
+            >
+              LOG IN
+            </b-button>
           </div>
         </div>
         <div class="columns is-mobile">
           <div class="column is-narrow">
-            <p class="title is-5">Our current specialty breeding programs:</p>
+            <p class="title is-5">
+              Our current specialty breeding programs:
+            </p>
           </div>
         </div>
 
@@ -29,30 +42,51 @@
             <div class="tile is-child box has-background-grey-lighter">
               <div class="columns is-mobile">
                 <div class="column">
-                  <p class="title is-5">BLUEBERRY</p>
+                  <p class="title is-5">
+                    BLUEBERRY
+                  </p>
                 </div>
                 <div class="column">
-                  <img class="is-pulled-right" alt="Blueberry Icon" src="../assets/img/icon-blueberry.png" style="height: 80px; ">
-                </div>
-              </div>
-            </div>
-            <div class="tile is-child box has-background-grey-lighter">
-              <div class="columns is-mobile">
-                <div class="column">
-                  <p class="title is-5">SALMONIDS</p>
-                </div>
-                <div class="column">
-                  <img class="is-pulled-right" alt="Trout Icon" src="../assets/img/icon-trout.png" style="height: 60px; ">
+                  <img
+                    class="is-pulled-right"
+                    alt="Blueberry Icon"
+                    src="../assets/img/icon-blueberry.png"
+                    style="height: 80px; "
+                  >
                 </div>
               </div>
             </div>
             <div class="tile is-child box has-background-grey-lighter">
               <div class="columns is-mobile">
                 <div class="column">
-                  <p class="title is-5">SWEET POTATO</p>
+                  <p class="title is-5">
+                    SALMONIDS
+                  </p>
                 </div>
                 <div class="column">
-                  <img class="is-pulled-right" alt="Sweet Potato Icon" src="../assets/img/icon-sweetpotato.png" style="height: 60px; ">
+                  <img
+                    class="is-pulled-right"
+                    alt="Trout Icon"
+                    src="../assets/img/icon-trout.png"
+                    style="height: 60px; "
+                  >
+                </div>
+              </div>
+            </div>
+            <div class="tile is-child box has-background-grey-lighter">
+              <div class="columns is-mobile">
+                <div class="column">
+                  <p class="title is-5">
+                    SWEET POTATO
+                  </p>
+                </div>
+                <div class="column">
+                  <img
+                    class="is-pulled-right"
+                    alt="Sweet Potato Icon"
+                    src="../assets/img/icon-sweetpotato.png"
+                    style="height: 60px; "
+                  >
                 </div>
               </div>
             </div>
@@ -60,58 +94,96 @@
           <div class="tile is-4 is-vertical is-parent">
             <div class="tile is-child box has-background-grey-lighter">
               <div class="column">
-                <p class="title is-5">ALFALFA</p>
+                <p class="title is-5">
+                  ALFALFA
+                </p>
               </div>
               <div class="column">
-                <img class="is-pulled-right" alt="Alfalfa Icon" src="../assets/img/icon-alfalfa.png" style="height: 80px; ">
+                <img
+                  class="is-pulled-right"
+                  alt="Alfalfa Icon"
+                  src="../assets/img/icon-alfalfa.png"
+                  style="height: 80px; "
+                >
               </div>
             </div>
             <div class="tile is-child box has-background-grey-lighter">
               <div class="column">
-                <p class="title is-5">GRAPE</p>
+                <p class="title is-5">
+                  GRAPE
+                </p>
               </div>
               <div class="column">
-                <img class="is-pulled-right" alt="Grape Icon" src="../assets/img/icon-grape.png" style="height: 80px; ">
+                <img
+                  class="is-pulled-right"
+                  alt="Grape Icon"
+                  src="../assets/img/icon-grape.png"
+                  style="height: 80px; "
+                >
               </div>
             </div>
           </div>
         </div>
       </div>
       <div class="column">
-        <h5 class="title is-5">Our Mission</h5>
-          <p>By combining genomics with the powerful tools of informatics, breeding for genetic gain has undergone a revolution. But due to high-costs, some smaller breeding programs have been left behind. The mission of the Breeding Insight team is to make high-tech breeding a reality for smaller programs.</p>
-          <br>
-          <p>Breeding Insight is funded by the U.S. Department of Agriculture (USDA) Agricultural Research Service (ARS) through Cornell University. The USDA ARS delivers scientific solutions to national and global agricultural challenges. As a global leader in agricultural discovery through scientific excellence, ARS is committed to delivering cutting-edge, scientific tools and innovative solutions for American farmers, producers, industry, and communities to support the nourishment and well-being of all people; sustaining our nation’s agroecosystems and natural resources; and ensuring the economic competitiveness and excellence of our agriculture.</p>
+        <h5 class="title is-5">
+          Our Mission
+        </h5>
+        <p>
+          By combining genomics with the powerful tools of informatics, breeding for genetic gain has undergone
+          a revolution. But due to high-costs, some smaller breeding programs have been left behind. The mission
+          of the Breeding Insight team is to make high-tech breeding a reality for smaller programs.
+        </p>
+        <br>
+        <p>
+          Breeding Insight is funded by the U.S. Department of Agriculture (USDA) Agricultural
+          Research Service (ARS) through Cornell University. The USDA ARS delivers scientific solutions
+          to national and global agricultural challenges. As a global leader in agricultural discovery through
+          scientific excellence, ARS is committed to delivering cutting-edge, scientific tools and innovative
+          solutions for American farmers, producers, industry, and communities to support the nourishment
+          and well-being of all people; sustaining our nation’s agroecosystems and natural resources; and
+          ensuring the economic competitiveness and excellence of our agriculture.
+        </p>
       </div>
     </div>
-    <b-modal :active.sync="isLoginModalActive">
-      <div class="modal-card" style="width: auto">
-        <!-- <header class="modal-card-head">
-            <p class="modal-card-title">Login</p>
-        </header> -->
-        <section class="modal-card-body has-text-centered">
-          <h1 class="is-size-5 has-text-primary">Welcome to Breeding Insight!</h1>
-          <p>To access to your breeding program, please log in.</p>
-          <b-button id="connect-orcid-button" @click="orcidLogin" class="orcidBtn">
-            <img id="orcid-id-icon" src="https://orcid.org/sites/default/files/images/orcid_24x24.png" width="24" height="24" alt="ORCID iD icon"/>
-            Register or Connect your ORCID iD
-          </b-button>
-          <p class="is-size-7">
-            Breeding Insight is collecting your ORCID iD to confirm your identity and authenticate
-            the Breeding Insight application. When you click
-            the “Authorize” button, we will ask you to share your iD using an authenticated
-            process: either by
-            <a href="https://support.orcid.org/hc/articles/360006897454">registering for an ORCID iD</a>
-            or, if you already have one, by
-            <a href="https://support.orcid.org/hc/articles/360006971613">signing into your ORCID account</a>,
-            then granting us permission to get your ORCID iD. We do this
-            to ensure that you are correctly identified and securely connecting your ORCID iD.
-            Learn more about
-            <a href="https://orcid.org/blog/2017/02/20/whats-so-special-about-signing">What’s so special about signing in</a>.
-          </p>
-        </section>
-      </div>
-    </b-modal>
+    <BaseModal
+      v-bind:active.sync="isLoginModalActive"
+      v-on:closeModal="isLoginModalActive = !isLoginModalActive"
+    >
+      <h1 class="is-size-5 has-text-primary">
+        Welcome to Breeding Insight!
+      </h1>
+      <p>
+        To access to your breeding program, please log in.
+      </p>
+      <b-button
+          id="connect-orcid-button"
+          class="orcidBtn"
+          @click="orcidLogin"
+      >
+        <img
+            id="orcid-id-icon"
+            src="https://orcid.org/sites/default/files/images/orcid_24x24.png"
+            width="24"
+            height="24"
+            alt="ORCID iD icon"
+        >
+        Register or Connect your ORCID iD
+      </b-button>
+      <p class="is-size-7">
+        Breeding Insight is collecting your ORCID iD to confirm your identity and authenticate
+        the Breeding Insight application. When you click
+        the “Authorize” button, we will ask you to share your iD using an authenticated
+        process: either by
+        <a href="https://support.orcid.org/hc/articles/360006897454">registering for an ORCID iD</a>
+        or, if you already have one, by
+        <a href="https://support.orcid.org/hc/articles/360006971613">signing into your ORCID account</a>,
+        then granting us permission to get your ORCID iD. We do this
+        to ensure that you are correctly identified and securely connecting your ORCID iD.
+        Learn more about
+        <a href="https://orcid.org/blog/2017/02/20/whats-so-special-about-signing">What’s so special about signing in</a>.
+      </p>
+    </BaseModal>
 
     <!-- Login Failed Modal -->
     <b-modal :active.sync="isFailedLoginModalActive">
@@ -158,8 +230,11 @@ export default {
   import { LOGOUT } from '@/store/mutation-types';
   import * as api from '@/util/api';
   import { Component, Prop, Vue } from 'vue-property-decorator'
+  import BaseModal from "@/components/modals/BaseModal.vue";
 
-  @Component
+  @Component({
+    components: {BaseModal}
+  })
   export default class Home extends Vue {
 
     public isLoginModalActive: boolean = false;
