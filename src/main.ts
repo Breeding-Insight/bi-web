@@ -6,9 +6,11 @@ import store from './store';
 import './assets/scss/main.scss';
 import Buefy from 'buefy';
 import VueLogger from 'vuejs-logger';
+import Vuelidate from 'vuelidate';
 
 Vue.config.productionTip = false;
-Vue.use(Buefy)
+Vue.use(Buefy);
+Vue.use(Vuelidate);
 
 // Global components example
 //import LoginFailedDialog from './components/LoginFailedDialog.vue';

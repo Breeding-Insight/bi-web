@@ -115,8 +115,17 @@ footer {
   flex-shrink:0;
 }
 
+.field.field--error {
+  & span.form-error {
+    display: block;
+  }
+}
 
-// Custom styles go here, may be broken out into a seperate file later
+span.form-error:not(.field--error) {
+  display: none;
+}
+
+  // Custom styles go here, may be broken out into a seperate file later
 #app {
   font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -143,10 +152,10 @@ footer {
   border-top: 1px #363636 solid;
   border-bottom: 1px #363636 solid;
   padding: 2em;
-    p {
-      text-align: center;
-      width: 100%;
-    }
+  p {
+    text-align: center;
+    width: 100%;
+  }
 }
 
 .modal-card .message.is-danger {
@@ -211,6 +220,10 @@ nav.tabs li.is-active {
   border-top: 2px solid $grey-lighter;
   border-bottom: 2px solid $grey-lighter;
   margin-bottom: 1em;
+}
+
+.edit-table-row {
+  background-color: $primary-light;
 }
 
 .orcidBtn {
