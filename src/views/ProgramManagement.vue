@@ -1,10 +1,23 @@
 <template>
   <div class="program-management">
     <WarningModal
-      ref="warningModal"
-      @submit="modalDeleteHandler()"
-      @cancel="modalCancelHandler()"
-    />
+      v-on:submit="modalDeleteHandler()" 
+      v-on:cancel="modalCancelHandler()" 
+      v-bind:active="deactivateActive"
+      v-bind:msg-title="deactivateWarningTitle"
+    >
+      <section>
+        <p class="has-text-black">
+        {{deactivateWarningBody}}
+        </p>
+      </section>
+      <div class="columns">
+        <div class="column is-whole has-text-centered buttons">
+          <button v-on:click="modalDeleteHandler()" class="button is-danger"><strong>Yes, remove</strong></button>
+          <button v-on:click="modalCancelHandler()" class="button">Cancel</button>
+        </div>
+      </div>              
+    </WarningModal>
     <h1 class="title">
       Program Management
     </h1>
