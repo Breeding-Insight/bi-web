@@ -182,8 +182,7 @@
                 </tr>
               </thead>
               <tbody>
-                <!-- v-bind:class="{'is-selected':(user))}"-->
-                <tr v-bind:key="user.data.id" v-for="(user, index) in users" v-bind:class="[user.edit ? is-selected : '']">
+                <tr v-bind:key="user.data.id" v-for="(user, index) in users" v-bind:class="{'is-selected': (user.edit == true)}">
                   <td v-if="user.edit">
                     <input type="text" class="input" v-model="user.editData.name" placeholder="User Name">
                   </td>
