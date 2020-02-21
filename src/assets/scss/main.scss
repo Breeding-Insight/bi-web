@@ -57,6 +57,8 @@ $modal-card-head-radius:0;
 $modal-card-body-padding:0 3em 3em 3em;
 $modal-card-head-background-color:white;
 $modal-card-head-border-bottom:none;
+//$table-row-active-background-color: $primary-light;
+// TODO: see if we can get this working instead of using css stuff below
 
 //$margin-right: 2 rem;
 
@@ -166,6 +168,11 @@ nav.tabs li.is-active {
   margin-left: 2em;
 }
 
+// TODO: see if we can get this in bulma variable
+.table tr.is-selected {
+  background-color: $primary-light;
+}
+
 .header-title {
   border-bottom: 1px #363636 solid;
   padding: 0 2.5em 0 2.5em;
@@ -206,10 +213,6 @@ nav.tabs li.is-active {
   margin-bottom: 1em;
 }
 
-.edit-table-row {
-  background-color: $primary-light;
-}
-  
 .orcidBtn {
   margin-bottom: 7em;
 }
