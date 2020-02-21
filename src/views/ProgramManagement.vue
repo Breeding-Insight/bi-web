@@ -335,12 +335,6 @@
     public deactivateWarningBody: string = "Program-related data collected by this user will not be affected by this change.";
     public programName: string = "Program Name";
 
-<<<<<<< HEAD
-    public email:string = '';
-=======
->>>>>>> [PRO-43] added validation. Started to make html into components
-    public email_error:boolean = false;
-
     mounted() {
       this.getLocations();
       this.getUsers();
