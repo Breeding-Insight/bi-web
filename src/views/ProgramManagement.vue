@@ -294,9 +294,6 @@
           </section>
 
         </b-tab-item>
-        <b-tab-item label="Roles">
-          <a href="google.com">Test</a>
-        </b-tab-item>
       </b-tabs>
     </section>
   </div>
