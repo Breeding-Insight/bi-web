@@ -12,7 +12,10 @@
           <ProgramLocationsTable/>
         </b-tab-item>
         <b-tab-item label="Users">
-          <ProgramUsersTable/>
+          <ProgramUsersTable v-on:show-success-notification="showSuccessNotification"
+                             v-on:show-error-notification="showErrorNotification"
+          >
+          </ProgramUsersTable>
         </b-tab-item>
       </b-tabs>
     </section>
@@ -28,7 +31,8 @@
   @Component({
     components: {
       ProgramUsersTable, ProgramLocationsTable,
-      SideBarMaster}
+      SideBarMaster,
+      }
   })
   export default class ProgramManagement extends Vue {
     
@@ -40,7 +44,15 @@
 
     }
 
+    showSuccessNotification(msg: string) {
+      console.log('showSuccess');
+      this.$emit('show-success-notification', msg);
+    }
 
+    showErrorNotification(msg: string) {
+      console.log('showError');
+      this.$emit('show-error-notification', msg);
+    }
 
   }
 </script>
