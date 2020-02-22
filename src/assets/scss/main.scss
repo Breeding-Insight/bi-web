@@ -180,6 +180,9 @@ nav.tabs li.is-active {
 // TODO: see if we can get this in bulma variable
 .table tr.is-selected {
   background-color: $primary-light;
+  td {
+    color:black;
+  }
 }
 
 .header-title {
