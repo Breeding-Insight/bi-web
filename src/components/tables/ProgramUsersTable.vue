@@ -143,14 +143,14 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
-import WarningModal from '@/components/modals/WarningModal.vue';
+import { Component, Prop, Vue } from 'vue-property-decorator'
+import WarningModal from '@/components/modals/WarningModal.vue'
 import { PlusCircleIcon, CheckCircleIcon, XSquareIcon } from 'vue-feather-icons'
 import {validationMixin} from "vuelidate";
-import InputError from "@/components/forms/InputError.vue";
-import InputField from "@/components/forms/InputField.vue";
-import NewDataRowForm from "@/components/forms/NewDataRowForm.vue";
-import {Validations} from 'vuelidate-property-decorators';
+import InputError from "@/components/forms/InputError.vue"
+import InputField from "@/components/forms/InputField.vue"
+import NewDataRowForm from "@/components/forms/NewDataRowForm.vue"
+import {Validations} from 'vuelidate-property-decorators'
 import {required, email} from 'vuelidate/lib/validators'
 import {ProgramUser} from "@/model/ProgramUser.ts"
 import { TableRow } from '@/model/view_models/TableRow.ts'
@@ -162,7 +162,8 @@ import { User } from '@/model/User.ts'
   components: { NewDataRowForm,
                 InputError, InputField,
                 WarningModal, 
-                PlusCircleIcon, CheckCircleIcon, XSquareIcon }
+                PlusCircleIcon, CheckCircleIcon, XSquareIcon,
+                 }
 })
 export default class ProgramUsersTable extends Vue {
 
@@ -199,17 +200,40 @@ export default class ProgramUsersTable extends Vue {
     this.newUserActive = true;
   }
 
+  updateUser(rowIndex: number, userId: string) {
+    console.log('update');
+
+    // Get our user 
+    const editRow: TableRow<User> = this.users[rowIndex] as TableRow<User>;
+
+    // Construct body
+    const user: User = editRow.editData;
+    const body = {'name': user.name, 'email': user.email};
+
+    // replace with api call
+    editRow.confirmChanges();
+    editRow.toggleEdit();
+    this.$emit('show-success-notification', 'User successfully updated');
+  }
+
   saveUser() {
     console.log("save user");
 
     this.$v.$touch();
     if (this.$v.$anyError){
+      this.$emit('show-error-notification', 'Fix Invalid Fields');
       return;
     }
     else {
+      // replace with api call
+      this.users.push(new TableRow(true, new User('3', this.newUser.name, this.newUser.email, [this.newUser.role])));
+      this.$emit('show-success-notification', 'Success! ' + this.newUser.name + ' added.');
+      this.newUserActive = false;
+
       // Check all of our fields to see if they were required
       this.newUser = new ProgramUser();
       this.$v.$reset();
+
     }
   }
 
