@@ -25,7 +25,12 @@
     >
       <div class="columns">
         <div class="column is-two-fifths">
-          <InputField v-model="newLocation.name" :field-error.sync="$v.newLocation.name.$error">
+          <InputField
+            v-model="newLocation.name"
+            :field-error.sync="$v.newLocation.name.$error"
+            :field-type="'text'"
+            :placeholder="'New Location Name'"
+          >
             <template v-slot:label>Name</template>
             <template v-slot:errors>
               <InputError>Name is required</InputError>

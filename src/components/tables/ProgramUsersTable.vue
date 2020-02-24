@@ -25,7 +25,12 @@
     >
       <div class="columns">
         <div class="column is-two-fifths">
-          <InputField v-model="newUser.name" :field-error.sync="$v.newUser.name.$error">
+          <InputField
+            v-model="newUser.name"
+            :field-error.sync="$v.newUser.name.$error"
+            :field-type="'text'"
+            :placeholder="'New User Name'"
+          >
             <template v-slot:label>Name</template>
             <template v-slot:errors>
               <InputError>Name is required</InputError>
@@ -36,7 +41,12 @@
           </InputField>
         </div>
         <div class="column is-two-fifths">
-          <InputField v-model="newUser.email" :field-error.sync="$v.newUser.email.$error">
+          <InputField
+            v-model="newUser.email"
+            :field-error.sync="$v.newUser.email.$error"
+            :field-type="'email'"
+            :placeholder="'New User Email'"
+          >
             <template v-slot:label>Email</template>
             <template v-slot:errors>
               <InputError v-bind:hidden-indication.sync="$v.newUser.email.required">
@@ -56,13 +66,13 @@
             <label class="label">Role</label>
             <div class="control is-expanded">
               <div class="select is-fullwidth">
-                <select v-model="$v.newUser.role.$model">
+                <select v-model="newUser.role">
                   <option disabled value="">Select a role</option>
                   <option
                       v-for="role in roles"
-                      v-bind:key="role.data.id"
+                      v-bind:key="role.id"
                   >
-                    {{ role.data.name }}
+                    {{ role.name }}
                   </option>
                 </select>
               </div>
@@ -155,6 +165,7 @@ import {required, email} from 'vuelidate/lib/validators'
 import {ProgramUser} from "@/model/ProgramUser.ts"
 import { TableRow } from '@/model/view_models/TableRow.ts'
 import { User } from '@/model/User.ts'
+import {Role} from "@/model/Role";
 
 
 @Component({
@@ -173,6 +184,7 @@ export default class ProgramUsersTable extends Vue {
   private newUserActive: boolean = false;
   private deactivateWarningTitle: string = "Remove user's access to Program name?";
   private newUser: ProgramUser = new ProgramUser();
+  private roles: Array<Role> = [new Role('1', 'Breeder'), new Role('2', 'Field Manager')];
 
   private programName: string = "Program Name";
 
