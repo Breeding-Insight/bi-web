@@ -188,23 +188,34 @@
 
     <!-- Login Failed Modal -->
     <InfoModal
-        v-bind:active="isFailedLoginModalActive"
-        v-bind:body-class="'has-text-centered'"
-        v-on:close-modal="isFailedLoginModalActive = !isFailedLoginModalActive"
+        :active="isFailedLoginModalActive"
+        @cancel="isFailedLoginModalActive = !isFailedLoginModalActive"
+        :msg-title="'Login Failed'"
     >
-      <p class="is-size-1 has-text-danger">Login Failed</p>
-      <p>We were not able to log you in successfully. Contact a system admin for assistance.</p>
+      <p class="has-text-black">
+        Verify your login credentials, and if the issue persists
+        <a href="#!">contact your breeding program leader</a> or
+        <a href="#!">Breeding Insight support</a>.
+      </p>
     </InfoModal>
 
-    <!-- Login Failed Server Error Modal -->
-    <b-modal :active.sync="isLoginServerErrorModalActive">
-      <div class="modal-card" style="width: auto">
-        <section class="modal-card-body has-text-centered">
-          <p class="is-size-1 has-text-danger">Server Error: Login Failed</p>
-          <p>We were not able to log you into the system because of an issue with our server.</p>
-        </section>
-      </div>
-    </b-modal>
+    <WarningModal
+        :active.sync="isLoginServerErrorModalActive"
+        :msg-title="'Server Error: Login Failed'"
+        @cancel="isLoginServerErrorModalActive = !isLoginServerErrorModalActive"
+    >
+      <section>
+        <p class="has-text-black">
+          This applications was unable to establish a connection with ORCID. Please try again.
+        </p>
+        <p class="has-text-black">
+          If you continue to experience problems, try
+          <a href="http://status.orcid.org/">checking the ORCID status page</a>.
+          If all else fails,
+          <a href="#!">contact Breeding Insight support</a>.
+        </p>
+      </section>
+    </WarningModal>
   </div>
 
   <!-- <div class="home">
@@ -227,15 +238,13 @@ export default {
 </script> -->
 
 <script lang="ts">
-
-  import { LOGOUT } from '@/store/mutation-types';
-  import * as api from '@/util/api';
   import { Component, Prop, Vue } from 'vue-property-decorator'
   import BaseModal from "@/components/modals/BaseModal.vue";
   import InfoModal from "@/components/modals/InfoModal.vue";
+  import WarningModal from "@/components/modals/WarningModal.vue";
 
   @Component({
-    components: {InfoModal, BaseModal}
+    components: {InfoModal, BaseModal, WarningModal}
   })
   export default class Home extends Vue {
 
@@ -251,7 +260,7 @@ export default {
     get isLoginServerErrorModalActive(): boolean {
       // If the user just tried to log in, and there was an error with the endpoint, warn them. 
       const newLogin = this.$route.query['new-login'] == 'true';
-      return (this.$store.state.loginFailed && newLogin && this.$store.state.loginServerError);
+      return (!this.$store.state.loginFailed && newLogin && this.$store.state.loginServerError);
     }
 
     set isFailedLoginModalActive(disable: boolean) {

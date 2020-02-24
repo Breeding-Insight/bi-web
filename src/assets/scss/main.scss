@@ -158,7 +158,7 @@ span.form-error:not(.field--error) {
   }
 }
 
-.modal-card .message.is-danger {
+.modal-card .message.is-info, .modal-card .message.is-danger {
   background-color: white;
 }
 
