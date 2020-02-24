@@ -35,8 +35,7 @@
       }
   })
   export default class ProgramManagement extends Vue {
-    
-    private saveEndpoint: string = `${process.env.VUE_APP_BI_API_V1_PATH}/programs`;
+
     // get this when endpoint is implmented
     private programName: string = "Program Name";
 

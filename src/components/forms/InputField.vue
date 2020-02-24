@@ -8,8 +8,8 @@
           :value="value"
           @input="$emit('input', $event.target.value)"
           class="input"
-          type="text"
-          placeholder="New Name Here"
+          :type="fieldType"
+          :placeholder="placeholder"
       >
       <slot name="errors"></slot>
       <p class="help">
@@ -28,6 +28,10 @@
     value!: any;
     @Prop()
     fieldError!: boolean;
+    @Prop()
+    fieldType!: string;
+    @Prop()
+    placeholder!: string;
   }
 
 </script>
