@@ -152,7 +152,7 @@
       v-on:close-modal="isLoginModalActive = !isLoginModalActive"
     >
       <h1 class="is-size-5 has-text-primary">
-        Welcome to Breeding Insight!
+        Welcome back to Breeding Insight!
       </h1>
       <p>
         To access to your breeding program, please log in.
@@ -162,27 +162,28 @@
           class="orcidBtn"
           @click="orcidLogin"
       >
+        SIGN IN with ORCID
         <img
             id="orcid-id-icon"
             src="https://orcid.org/sites/default/files/images/orcid_24x24.png"
             width="24"
             height="24"
+            class="is-pulled-right"
             alt="ORCID iD icon"
         >
-        Register or Connect your ORCID iD
       </b-button>
       <p class="is-size-7 has-text-left">
-        Breeding Insight is collecting your ORCID iD to confirm your identity and authenticate
-        the Breeding Insight application. When you click
-        the “Authorize” button, we will ask you to share your iD using an authenticated
-        process: either by
-        <a href="https://support.orcid.org/hc/articles/360006897454">registering for an ORCID iD</a>
-        or, if you already have one, by
-        <a href="https://support.orcid.org/hc/articles/360006971613">signing into your ORCID account</a>,
-        then granting us permission to get your ORCID iD. We do this
-        to ensure that you are correctly identified and securely connecting your ORCID iD.
-        Learn more about
-        <a href="https://orcid.org/blog/2017/02/20/whats-so-special-about-signing">What’s so special about signing in</a>.
+        To acknowledge that you have used your iD and that it has been authenticated, we display
+        the ORCID iD icon
+        <img
+            id="orcid-id-icon2"
+            src="https://orcid.org/sites/default/files/images/orcid_24x24.png"
+            width="16"
+            height="16"
+            alt="ORCID iD icon"
+        >
+        alongside your name in our application. Learn more in
+        <a href="">How should an ORCID iD be displayed</a>.
       </p>
     </BaseModal>
 
@@ -280,6 +281,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
+
 #connect-orcid-button{
 	border: 1px solid #D3D3D3;
 	padding: .3em;
@@ -301,7 +303,7 @@ export default {
 
 #orcid-id-icon{
 	display: block;
-	margin: 0 .5em 0 0;
+	margin: 0 .5em 0 .5em;
 	padding: 0;
 	float: left;
 }
