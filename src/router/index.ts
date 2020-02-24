@@ -107,6 +107,8 @@ router.beforeEach((to, from, next) => {
       if (error.response && error.response.status === 401) {
           Vue.$log.info(`Unauthorized login, ${error.response}`);
           store.commit(ERROR_STATE, {'loginFailed': true});
+      } else {
+        store.commit(ERROR_STATE, {'loginFailed': false, 'loginServerError':true});
       }
 
       // If logged in fail, send them to the home page
