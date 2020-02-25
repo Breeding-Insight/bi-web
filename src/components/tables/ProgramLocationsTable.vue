@@ -1,5 +1,5 @@
 <template>
-  <section>
+  <section id="locationTableLabel">
     <WarningModal
       v-on:submit="modalDeleteHandler()" 
       v-on:cancel="modalCancelHandler()" 
