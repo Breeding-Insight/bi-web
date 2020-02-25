@@ -114,6 +114,8 @@ export default class UserManagement extends Vue {
         const editable = true;
         return new TableRow(editable, data);
       });
+
+      Vue.$log.debug(this.users);
     })
     .catch((error) => {
       // Display error that users cannot be loaded
@@ -175,14 +177,16 @@ export default class UserManagement extends Vue {
         this.$emit('show-success-notification', 'User successfully created');
 
       }).catch((error) => {
-        
+
         // Look for email conflict and display error
         if (error.response && error.response.status == 409) {
-            this.$emit('show-error-notification', 'A user with that email already exists');
+          Vue.$log.info('Email already exists');
+          this.$emit('show-error-notification', 'A user with that email already exists');
         }
         else {
-            // Something else went wrong
-            this.$emit('show-error-notification', 'Unable to create user');
+          // Something else went wrong
+          Vue.$log.fatal(error);
+          this.$emit('show-error-notification', 'Unable to create user');
         }
         throw error;
       }); 
