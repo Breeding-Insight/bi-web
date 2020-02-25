@@ -9,7 +9,10 @@
     <section>
       <b-tabs type="is-boxed">
         <b-tab-item label="Locations">
-          <ProgramLocationsTable/>
+          <ProgramLocationsTable v-on:show-success-notification="showSuccessNotification"
+                                 v-on:show-error-notification="showErrorNotification"
+          >
+          </ProgramLocationsTable>
         </b-tab-item>
         <b-tab-item label="Users">
           <ProgramUsersTable v-on:show-success-notification="showSuccessNotification"
