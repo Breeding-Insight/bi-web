@@ -104,7 +104,9 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-bind:key="user.data.id" v-for="(user, index) in users" v-bind:class="{'is-selected': (user.edit == true)}">
+        <tr v-bind:key="user.data.id" v-for="(user, index) in users"
+            v-bind:class="{'is-new': (user.new == true)}"
+        >
           <td v-if="user.edit">
             <input type="text" class="input" v-model="user.editData.name" placeholder="User Name">
           </td>
@@ -116,7 +118,18 @@
               {{ user.data.email }}
           </td>
           <td v-if="user.edit">
-              <input type="text" class="input" v-model="user.editData.roles" placeholder="Roles">
+              <!--<input type="text" class="input" v-model="user.editData.roles" placeholder="Roles">-->
+              <div class="select is-fullwidth">
+                <select v-model="newUser.role">
+                  <option disabled value="">Select a role</option>
+                  <option
+                      v-for="role in roles"
+                      v-bind:key="role.id"
+                  >
+                    {{ role.name }}
+                  </option>
+                </select>
+              </div>
           </td>
           <td v-else>
               {{ user.data.roles[0] }}
@@ -156,17 +169,16 @@
 import { Component, Prop, Vue } from 'vue-property-decorator'
 import WarningModal from '@/components/modals/WarningModal.vue'
 import { PlusCircleIcon, CheckCircleIcon, XSquareIcon } from 'vue-feather-icons'
-import {validationMixin} from "vuelidate";
+import { validationMixin } from "vuelidate";
 import InputError from "@/components/forms/InputError.vue"
 import InputField from "@/components/forms/InputField.vue"
 import NewDataRowForm from "@/components/forms/NewDataRowForm.vue"
-import {Validations} from 'vuelidate-property-decorators'
-import {required, email} from 'vuelidate/lib/validators'
+import { Validations } from 'vuelidate-property-decorators'
+import { required, email } from 'vuelidate/lib/validators'
 import {ProgramUser} from "@/model/ProgramUser.ts"
 import { TableRow } from '@/model/view_models/TableRow.ts'
 import { User } from '@/model/User.ts'
 import {Role} from "@/model/Role";
-
 
 @Component({
   mixins: [validationMixin],
@@ -178,13 +190,15 @@ import {Role} from "@/model/Role";
 })
 export default class ProgramUsersTable extends Vue {
 
-  private users: Array<Object> = [];
+  private users: Array<TableRow<User>> = [];
 
   private deactivateActive: boolean = false;
   private newUserActive: boolean = false;
   private deactivateWarningTitle: string = "Remove user's access to Program name?";
   private newUser: ProgramUser = new ProgramUser();
   private roles: Array<Role> = [new Role('1', 'Breeder'), new Role('2', 'Field Manager')];
+  private deleteIndex: number = -1;
+  private currentNewRow: TableRow<User> | null = null;
 
   private programName: string = "Program Name";
 
@@ -202,6 +216,7 @@ export default class ProgramUsersTable extends Vue {
   }
 
    getUsers() {
+    // TODO: api call
     // stubbed for now
     this.users.push(new TableRow(true, new User('1', 'Ann Other Budy', 'Ann.otherbudy@usda.gov', ['Field Manager'])));
     this.users.push(new TableRow(true, new User('2', 'Ima Fyne Breeder', 'ima.breeder@usda.gov', ['Breeder'])));
@@ -212,35 +227,45 @@ export default class ProgramUsersTable extends Vue {
     this.newUserActive = true;
   }
 
-  updateUser(rowIndex: number, userId: string) {
-    console.log('update');
-
-    // Get our user 
-    const editRow: TableRow<User> = this.users[rowIndex] as TableRow<User>;
-
-    // Construct body
-    const user: User = editRow.editData;
-    const body = {'name': user.name, 'email': user.email};
-
-    // replace with api call
+  updateUser(rowIndex: number) {
+    // TODO: api call
+    const editRow: TableRow<User> = this.users[rowIndex];
     editRow.confirmChanges();
     editRow.toggleEdit();
+
+    this.clearNewRow();
     this.$emit('show-success-notification', 'User successfully updated');
   }
 
   saveUser() {
-    console.log("save user");
-
     this.$v.$touch();
     if (this.$v.$anyError){
       this.$emit('show-error-notification', 'Fix Invalid Fields');
       return;
     }
     else {
-      // replace with api call
-      this.users.push(new TableRow(true, new User('3', this.newUser.name, this.newUser.email, [this.newUser.role])));
-      this.$emit('show-success-notification', 'Success! ' + this.newUser.name + ' added.');
-      this.newUserActive = false;
+      // TODO: api call
+      // some index management here for now just to allow the stub to work
+      let id: Number = Number(1);
+
+      if (this.users.length > 0) {
+        const editRow: TableRow<User> = this.users[this.users.length-1];
+        const user: User = editRow.editData;
+        id = Number(user.id)+1;
+      }
+
+      if (this.newUser.name != undefined && this.newUser.email != undefined) {
+        const newUser: User = new User(id.toString(), this.newUser.name, this.newUser.email, []);
+        const newRow: TableRow<User> = new TableRow(true, newUser);
+        newRow.toggleNew();
+        this.users.push(newRow);
+
+        this.clearNewRow();
+        this.currentNewRow = newRow;
+
+        this.$emit('show-success-notification', 'Success! ' + this.newUser.name + ' added.');
+        this.newUserActive = false;
+      }
 
       // Check all of our fields to see if they were required
       this.newUser = new ProgramUser();
@@ -250,29 +275,37 @@ export default class ProgramUsersTable extends Vue {
   }
 
   cancelNewUser() {
-    console.log('canceling edit');
     this.newUser = new ProgramUser();
     this.$v.$reset();
     this.newUserActive = false;
   }
 
-  displayWarning(rowIndex: number, userId: string) {
+  displayWarning(rowIndex: number) {
     // Get the username
-    const editRow: TableRow<User> = this.users[rowIndex] as TableRow<User>;
+    const editRow: TableRow<User> = this.users[rowIndex];
     const user: User = editRow.editData;
+    this.deleteIndex = rowIndex;
     this.deactivateWarningTitle = "Remove " + user.name + "'s access to " + this.programName + "?";
     this.deactivateActive = true;
   }
 
   modalDeleteHandler() {
-    console.log('delete');
     this.deactivateActive = false;
-    // TODO: deleteUser
+
+   // TODO: api call
+    this.clearNewRow();
+    this.users.splice(this.deleteIndex, 1);
   }
 
   modalCancelHandler() {
-    console.log('cancel');
     this.deactivateActive = false;
+  }
+
+  clearNewRow() {
+     if (this.currentNewRow != null) {
+      this.currentNewRow.toggleNew();
+      this.currentNewRow = null;
+    }
   }
 
 }

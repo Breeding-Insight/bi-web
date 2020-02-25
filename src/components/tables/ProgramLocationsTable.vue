@@ -73,7 +73,9 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-bind:key="location.data.id" v-for="(location, index) in locations" v-bind:class="{'is-selected': (location.edit == true)}">
+          <tr v-bind:key="location.data.id" v-for="(location, index) in locations" 
+              v-bind:class="{'is-selected': (location.edit == true), 'is-new': (location.new == true)}"
+          >
             <td v-if="location.edit">
               <input type="text" class="input" v-model="location.editData.name" placeholder="Location Name">
             </td>
@@ -85,7 +87,7 @@
             <td class="has-text-right">
               
               <a class="margin-right-2" v-on:click="location.toggleEdit()" v-if="!location.edit">Edit</a>
-              <a class="" v-on:click="displayWarning(index)" v-if="!location.edit">Deactivate</a>
+              <a class="" v-on:click="displayWarning(index)" v-if="!location.edit">Remove</a>
               
               <button class="button is-pulled-right" title="Cancel Edit" v-on:click="location.cancelEdit()" v-if="location.edit">
                 <span class="icon is-small is-light">
@@ -97,7 +99,7 @@
                 </span>
               </button>
               
-              <button class="button is-pulled-right is-primary"  title="Confirm Location" v-on:click="updateUser(index)" v-if="location.edit">
+              <button class="button is-pulled-right is-primary"  title="Confirm Location" v-on:click="updateLocation(index)" v-if="location.edit">
                 <span class="icon is-small">
                   <CheckCircleIcon size="1.5x" aria-hidden="true"></CheckCircleIcon>
                   <span class="is-sr-only">Confirm Edits</span>
@@ -122,7 +124,9 @@
           You can also add, edit, and delete locations from this panel.  
         </div>
         <div class="column">
-          <button class="button is-primary has-text-weight-bold is-pulled-right">
+          <button class="button is-primary has-text-weight-bold is-pulled-right"
+                  @click="createLocation()" v-if="!newLocationActive"
+          >
             <span class="icon is-small">
               <PlusCircleIcon
                 size="1.5x"
@@ -163,10 +167,12 @@ import {ProgramLocation} from "@/model/ProgramLocation.ts"
 })
 export default class ProgramLocationsTable extends Vue {
 
-  private locations: Array<Object> = [];
+  private locations: Array<TableRow<Location>> = [];
   private deactivateActive: boolean = false;
   private newLocationActive: boolean = false;
   private deactivateWarningTitle: string = "Remove location from Program name?";
+  private deleteIndex = -1;
+  private currentNewRow: TableRow<Location> | null = null;
 
   private newLocation: ProgramLocation = new ProgramLocation();
   private programName: string = "Program Name";
@@ -183,6 +189,7 @@ export default class ProgramLocationsTable extends Vue {
   }
 
   getLocations() {
+    // TODO: api call
     this.locations.push(new TableRow(true, new Location('1', 'Alternate greenhouse', '3')));
     this.locations.push(new TableRow(true, new Location('2', 'Better labeling for locations', '10')));
     this.locations.push(new TableRow(true, new Location('3', 'capitalization', '3')));
@@ -192,19 +199,47 @@ export default class ProgramLocationsTable extends Vue {
     this.newLocationActive = true;
   }
 
+  updateLocation(rowIndex: number) {
+    // TODO: api call
+    const editRow: TableRow<Location> = this.locations[rowIndex];
+    editRow.confirmChanges();
+    editRow.toggleEdit();
 
-  updateLocation() {
+    this.clearNewRow();
+    this.$emit('show-success-notification', 'Location successfully updated');
 
   }
 
   saveLocation() {
-    console.log("save location");
-
     this.$v.$touch();
     if (this.$v.$anyError){
+      this.$emit('show-error-notification', 'Fix Invalid Fields');
       return;
     }
     else {
+      // TODO: api call
+      // some index management here for now just to allow the stub to work
+      let id: Number = Number(1);
+
+      if (this.locations.length > 0) {
+        const editRow: TableRow<Location> = this.locations[this.locations.length-1];
+        const location: Location = editRow.editData;
+        id = Number(location.id)+1;
+      }
+
+      if (this.newLocation.name != undefined) {
+        const newLocation: Location = new Location(id.toString(), this.newLocation.name, '');
+        const newRow: TableRow<Location> = new TableRow(true, newLocation);
+        newRow.toggleNew();
+        this.locations.push(newRow);
+
+        this.clearNewRow();
+        this.currentNewRow = newRow;
+
+        this.$emit('show-success-notification', 'Success! ' + this.newLocation.name + ' added.');
+        this.newLocationActive = false;
+      }
+      
       // Check all of our fields to see if they were required
       this.newLocation = new ProgramLocation();
       this.$v.$reset();
@@ -212,29 +247,37 @@ export default class ProgramLocationsTable extends Vue {
   }
 
   cancelNewLocation() {
-    console.log('canceling edit');
     this.newLocation = new ProgramLocation();
     this.$v.$reset();
     this.newLocationActive = false;
   }
 
-  displayWarning(rowIndex: number, userId: string) {
+  displayWarning(rowIndex: number) {
     // Get the location
-    const editRow: TableRow<Location> = this.locations[rowIndex] as TableRow<Location>;
+    const editRow: TableRow<Location> = this.locations[rowIndex];
     const location: Location = editRow.editData;
+    this.deleteIndex = rowIndex;
     this.deactivateWarningTitle = "Remove " + location.name + " from " + this.programName + "?";
     this.deactivateActive = true;
   }
 
   modalDeleteHandler() {
-    console.log('delete');
     this.deactivateActive = false;
-    // TODO: deleteUser
+
+    // TODO: api call
+    this.clearNewRow();
+    this.locations.splice(this.deleteIndex, 1);
   }
 
   modalCancelHandler() {
-    console.log('cancel');
     this.deactivateActive = false;
+  }
+
+  clearNewRow() {
+     if (this.currentNewRow != null) {
+      this.currentNewRow.toggleNew();
+      this.currentNewRow = null;
+    }
   }
 
 }
