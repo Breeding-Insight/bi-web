@@ -193,7 +193,7 @@
         @cancel="isFailedLoginModalActive = !isFailedLoginModalActive"
         :msg-title="'Login Failed'"
     >
-      <p class="has-text-black">
+      <p class="has-text-dark">
         Verify your login credentials, and if the issue persists
         <a href="#!">contact your breeding program leader</a> or
         <a href="#!">Breeding Insight support</a>.
@@ -206,10 +206,10 @@
         @cancel="isLoginServerErrorModalActive = !isLoginServerErrorModalActive"
     >
       <section>
-        <p class="has-text-black">
+        <p class="has-text-dark">
           This applications was unable to establish a connection with ORCID. Please try again.
         </p>
-        <p class="has-text-black">
+        <p class="has-text-dark">
           If you continue to experience problems, try
           <a href="http://status.orcid.org/">checking the ORCID status page</a>.
           If all else fails,

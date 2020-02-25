@@ -7,7 +7,7 @@
       v-bind:msg-title="deactivateWarningTitle"
     >
       <section>
-        <p class="has-text-black">
+        <p class="has-text-dark">
           Program-related data referencing this location will not be affected by this change.
         </p>
       </section>
