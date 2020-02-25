@@ -105,7 +105,7 @@
       </thead>
       <tbody>
         <tr v-bind:key="user.data.id" v-for="(user, index) in users"
-            v-bind:class="{'is-new': (user.new == true)}"
+            v-bind:class="{'is-selected': (user.edit == true), 'is-new': (user.new == true)}"
         >
           <td v-if="user.edit">
             <input type="text" class="input" v-model="user.editData.name" placeholder="User Name">
