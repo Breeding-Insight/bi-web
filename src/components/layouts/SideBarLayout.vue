@@ -14,7 +14,7 @@
           </div>
           <div class="level-item is-hidden-desktop is-pulled-left">
             <a role="button"
-               class="navbar-hamburger has-text-black"
+               class="navbar-hamburger has-text-dark"
                aria-label="menu"
                aria-expanded="false"
                @click="sideMenuShownMobile = !sideMenuShownMobile"
