@@ -1,5 +1,5 @@
 <template>
-  <section>
+  <section id="programUserTableLabel">
     <WarningModal
       v-on:submit="modalDeleteHandler()" 
       v-on:cancel="modalCancelHandler()" 
