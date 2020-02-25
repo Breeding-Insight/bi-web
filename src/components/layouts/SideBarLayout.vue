@@ -32,7 +32,7 @@
     <div class="columns is-marginless">
       <div
           class="column side-menu is-one-quarter"
-          v-bind:class="{ 'is-hidden-touch': !sideMenuShownMobile }"
+          :class="{ 'is-hidden-touch': !sideMenuShownMobile }"
       >
         <nav role="navigation" aria-label="main navigation">
           <aside id="sideMenu" class="menu">
@@ -56,8 +56,6 @@
                 <ul v-show="programManagementActive">
                   <li><router-link to="/program-management">Locations</router-link></li>
                   <li><a>Users</a></li>
-                  <li><a>Roles</a></li>
-                  <li><a>Permissions</a></li>
                 </ul>
               </li>
             </ul>

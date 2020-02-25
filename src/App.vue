@@ -16,23 +16,25 @@
 
     <footer class="footer">
       <div class="level">
-        <nav>
-          <div class="level-left">
-            <div class="level-item">
-              <a href="/">Terms of Use</a>
+        <div class="level-left">
+          <nav class="level-item">
+            <div class="level">
+              <div class="level-item">
+                <a href="/">Terms of Use</a>
+              </div>
+              <div class="level-item">
+                <a href="/">Privacy Policy</a>
+              </div>
+              <div class="level-item">
+                <a href="/">Contact Us</a>
+              </div>
+              <div class="level-item">
+                <a href="/">About</a>
+              </div>
             </div>
-            <div class="level-item">
-              <a href="/">Privacy Policy</a>
-            </div>
-            <div class="level-item">
-              <a href="/">Contact Us</a>
-            </div>
-            <div class="level-item">
-              <a href="/">About</a>
-            </div>
-          </div>
-        </nav>
-        
+          </nav>
+        </div>
+
         <div class="level-right">
 
           <div class="level-item">
