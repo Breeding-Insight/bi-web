@@ -94,7 +94,7 @@
           <th>
             <button class="button is-primary has-text-weight-bold is-pulled-right" v-on:click="createUser()" v-if="!newUserActive">
               <span class="icon is-small">
-                <PlusCircleIcon size="1.5x" aria-role="presentation"></PlusCircleIcon>
+                <PlusCircleIcon size="1.5x" aria-hidden="true"></PlusCircleIcon>
               </span>
               <span>
                 New User
@@ -141,7 +141,7 @@
             
             <button class="button is-pulled-right" title="Cancel Edit" v-on:click="user.cancelEdit()" v-if="user.edit">
               <span class="icon is-small is-light">
-                <XSquareIcon size="1.5x" aria-role="presentation"></XSquareIcon>
+                <XSquareIcon size="1.5x" aria-hidden="true"></XSquareIcon>
                 <span class="is-sr-only">Cancel Edit</span>
               </span>
               <span>
@@ -151,7 +151,7 @@
             
             <button class="button is-pulled-right is-primary"  title="Confirm Location" v-on:click="updateUser(index)" v-if="user.edit">
               <span class="icon is-small">
-                <CheckCircleIcon size="1.5x" aria-role="presentation"></CheckCircleIcon>
+                <CheckCircleIcon size="1.5x" aria-hidden="true"></CheckCircleIcon>
                 <span class="is-sr-only">Confirm Edits</span>
               </span>
               <span>

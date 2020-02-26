@@ -44,26 +44,26 @@
           <td>
             <button class="button" title="Edit User" v-on:click="user.toggleEdit()" v-if="!user.edit">
                     <span class="icon is-small">
-                        <EditIcon size="1.5x" class="has-text-link" aria-role="presentation"></EditIcon>
+                        <EditIcon size="1.5x" class="has-text-link" aria-hidden="true"></EditIcon>
                         <span class="is-sr-only">Edit User</span>
                     </span>
             </button>
             <button class="button"  title="Confirm User" v-on:click="updateUser(index)" v-else>
                     <span class="icon is-small">
-                        <CheckSquareIcon size="1.5x" class="has-text-success" aria-role="presentation"></CheckSquareIcon>
+                        <CheckSquareIcon size="1.5x" class="has-text-success" aria-hidden="true"></CheckSquareIcon>
                         <span class="is-sr-only">Confirm Edits</span>
                     </span>
             </button>
 
             <button class="button" title="Delete User" v-on:click="deleteUser(user.data.id)" v-if="!user.edit">
                     <span class="icon is-small">
-                        <DeleteIcon size="1.5x" class="has-text-danger" aria-role="presentation"></DeleteIcon>
+                        <DeleteIcon size="1.5x" class="has-text-danger" aria-hidden="true"></DeleteIcon>
                         <span class="is-sr-only">Delete User</span>
                     </span>
             </button>
             <button class="button" title="Cancel Edit" v-on:click="user.cancelEdit()" v-else>
                     <span class="icon is-small">
-                        <XIcon size="1.5x" class="has-text-danger" aria-role="presentation"></XIcon>
+                        <XIcon size="1.5x" class="has-text-danger" aria-hidden="true"></XIcon>
                         <span class="is-sr-only">Cancel Edit</span>
                     </span>
             </button>
