@@ -20,6 +20,7 @@
       >
         <slot></slot>
       </section>
+      <footer class="modal-card-foot"/>
     </div>
   </div>
 
