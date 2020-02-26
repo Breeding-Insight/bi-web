@@ -166,19 +166,20 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator'
+import {Component, Prop, Vue} from 'vue-property-decorator'
+import {PlusCircleIcon, CheckCircleIcon, XSquareIcon} from 'vue-feather-icons'
+import {validationMixin} from 'vuelidate'
+import {Validations} from 'vuelidate-property-decorators'
+import {required, email} from 'vuelidate/lib/validators'
+
 import WarningModal from '@/components/modals/WarningModal.vue'
-import { PlusCircleIcon, CheckCircleIcon, XSquareIcon } from 'vue-feather-icons'
-import { validationMixin } from "vuelidate";
-import InputError from "@/components/forms/InputError.vue"
-import InputField from "@/components/forms/InputField.vue"
-import NewDataRowForm from "@/components/forms/NewDataRowForm.vue"
-import { Validations } from 'vuelidate-property-decorators'
-import { required, email } from 'vuelidate/lib/validators'
-import {ProgramUser} from "@/model/ProgramUser.ts"
-import { TableRow } from '@/model/view_models/TableRow.ts'
-import { User } from '@/model/User.ts'
-import {Role} from "@/model/Role";
+import InputError from '@/components/forms/InputError.vue'
+import InputField from '@/components/forms/InputField.vue'
+import NewDataRowForm from '@/components/forms/NewDataRowForm.vue'
+import {ProgramUser} from '@/model/ProgramUser'
+import {TableRow} from '@/model/view_models/TableRow'
+import {User} from '@/model/User'
+import {Role} from '@/model/Role'
 
 @Component({
   mixins: [validationMixin],

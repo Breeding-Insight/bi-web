@@ -67,12 +67,12 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
-import SuccessNotification from "@/components/notifications/SuccessNotification.vue"
-import InfoNotification from "@/components/notifications/InfoNotification.vue"
-import ErrorNotification from "@/components/notifications/ErrorNotification.vue"
-import SideBarLayout from "@/components/layouts/SideBarLayout.vue";
-import SimpleLayout from "@/components/layouts/SimpleLayout.vue";
+import { Component, Vue } from 'vue-property-decorator'
+import SuccessNotification from '@/components/notifications/SuccessNotification.vue'
+import InfoNotification from '@/components/notifications/InfoNotification.vue'
+import ErrorNotification from '@/components/notifications/ErrorNotification.vue'
+import SideBarLayout from '@/components/layouts/SideBarLayout.vue'
+import SimpleLayout from '@/components/layouts/SimpleLayout.vue'
 
 @Component({
   watch: {

@@ -1,5 +1,5 @@
 import { shallowMount } from '@vue/test-utils'
-import Home from '@/views/Home.vue'
+import Index from '@/views/Index.vue'
 import localVue from '../index'
 import Vuex from 'vuex'
 import VueRouter from 'vue-router'
@@ -12,7 +12,7 @@ describe('login failed displays display when appropriate', () => {
   const router = new VueRouter({
     routes: [{
       path: '/', 
-      component: Home
+      component: Index
     }]
   });
 
@@ -24,7 +24,7 @@ describe('login failed displays display when appropriate', () => {
     // Set up vuex so we can log in
     const store = new Vuex.Store({'state': {'loginFailed': true, 'loginServerError': false}});
 
-    const wrapper = shallowMount(Home, { router, localVue, store});
+    const wrapper = shallowMount(Index, { router, localVue, store});
     
     // Make sure our server error modal is not shown
     expect((wrapper.vm as any).isLoginServerErrorModalActive).toBe(false);
@@ -37,7 +37,7 @@ describe('login failed displays display when appropriate', () => {
     // Set up vuex so we can log in
     const store = new Vuex.Store({'state': {'loginFailed': true, 'loginServerError': true}});
 
-    const wrapper = shallowMount(Home, { router, localVue, store});
+    const wrapper = shallowMount(Index, { router, localVue, store});
     
     // Check our login failed modal is not show
     expect((wrapper.vm as any).isFailedLoginModalActive).toBe(false);
@@ -57,7 +57,7 @@ describe('login failed models do not display when not intended', () => {
     // Set error state to be login failed error
     const store = new Vuex.Store({'state': {'loginFailed': true, 'loginServerError': false}});
 
-    const wrapper = shallowMount(Home, { router, localVue, store});
+    const wrapper = shallowMount(Index, { router, localVue, store});
         
     // Check our login failed modal is not show
     expect((wrapper.vm as any).isFailedLoginModalActive).toBe(false);
@@ -70,7 +70,7 @@ describe('login failed models do not display when not intended', () => {
     // Set error state to be login failed error
     const store = new Vuex.Store({'state': {'loginFailed': true, 'loginServerError': true}});
 
-    const wrapper = shallowMount(Home, { router, localVue, store});
+    const wrapper = shallowMount(Index, { router, localVue, store});
         
     // Check our login failed modal is not show
     expect((wrapper.vm as any).isFailedLoginModalActive).toBe(false);

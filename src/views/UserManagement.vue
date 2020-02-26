@@ -80,7 +80,7 @@
 import { Component, Prop, Vue } from 'vue-property-decorator'
 import * as api from '@/util/api'
 import { BiResponse } from '@/model/BiResponse'
-import SuccessNotification from "@/components/notifications/SuccessNotification.vue"
+import SuccessNotification from '@/components/notifications/SuccessNotification.vue'
 import { TableRow } from '@/model/view_models/TableRow.ts'
 import { User } from '@/model/User.ts'
 import { EditIcon, DeleteIcon, CheckSquareIcon, XIcon } from 'vue-feather-icons'
