@@ -38,10 +38,15 @@
         <div class="level-right">
 
           <div class="level-item">
-            <p class="has-text-right">
-            <strong>&copy; 2020 Breeding Insight</strong>
-            <br>
-            Funded by the USDA through Cornell University
+            <p class="has-text-right is-hidden-touch">
+              <strong>&copy; 2020 Breeding Insight</strong>
+              <br>
+              Funded by the USDA through Cornell University
+            </p>
+            <p class="has-text-centered is-hidden-desktop">
+              <strong>&copy; 2020 Breeding Insight</strong>
+              <br>
+              Funded by the USDA through Cornell University
             </p>
           </div>
           <div class="level-item">
