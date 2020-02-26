@@ -20,12 +20,12 @@
                 </router-link>
               </li>
               <li class="navbar-item">
-                <router-link to="/styleguide">
+                <router-link to="/style-guide">
                   Style Guide
                 </router-link>
               </li>
               <li class="navbar-item">
-                <router-link to="/usermanagement">
+                <router-link to="/user-management">
                   Manage Users
                 </router-link>
               </li>

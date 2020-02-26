@@ -37,8 +37,8 @@
         <nav role="navigation" aria-label="main navigation">
           <aside id="sideMenu" class="menu">
             <ul class="menu-list">
-              <li><router-link to="/userhome">Home</router-link></li>
-              <li><router-link to="/usermanagement">Manage Users</router-link></li>
+              <li><router-link to="/user-home">Home</router-link></li>
+              <li><router-link to="/user-management">Manage Users</router-link></li>
               <li><a>Trials and Experiments</a></li>
               <li><a>Germplasm Inventory</a></li>
               <li><a>Ontology Management</a></li>

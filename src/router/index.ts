@@ -28,8 +28,8 @@ const routes = [
     component: Home
   },
   {
-    path: '/userhome',
-    name: 'userhome',
+    path: '/user-home',
+    name: 'user-home',
     meta: {
       title: 'Welcome',
       layout: layouts.sideBar
@@ -37,7 +37,7 @@ const routes = [
     component: UserHome
   },
   {
-    path: '/styleguide',
+    path: '/style-guide',
     name: 'style-guide',
     meta: {
       title: 'Style Guide',
@@ -58,8 +58,8 @@ const routes = [
     component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
   },
   {
-    path: '/usermanagement', 
-    name: 'usermanagement', 
+    path: '/user-management',
+    name: 'user-management',
     meta: {
       title: 'User Management',
       layout: layouts.sideBar
@@ -98,7 +98,7 @@ router.beforeEach((to, from, next) => {
       store.commit(LOGIN, {'id': biResponse.result.orcid, 'name': biResponse.result.name, 'roles':[] });
 
       // If they are logged in and trying to go home, send them to user home
-      if (to.path == '/') next('/userhome')
+      if (to.path == '/') next('/user-home')
       else next();
     })
     .catch((error) => {
@@ -119,7 +119,7 @@ router.beforeEach((to, from, next) => {
 
   } else {
     // If the user is trying to go home and they are logged in, send them to user home. 
-    if (to.path == '/' && store.state.loggedIn) next('/userhome')
+    if (to.path == '/' && store.state.loggedIn) next('/user-home')
     else next();
   }
 
