@@ -70,7 +70,7 @@
             <div class="level-left"></div>
             <div class="level-right">
               <div class="level-item">
-                <p>Logged in as <b>{{username}}</b></p>
+                <p>Logged in as <strong>{{username}}</strong></p>
               </div>
               <div class="level-item">
                 <button class="button is-outlined is-primary" @click="$emit('logout')">Log out</button>
