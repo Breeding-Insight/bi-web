@@ -50,13 +50,11 @@ $tabs-boxed-link-active-border-color: $turquoise;
 $tabs-boxed-link-border-width: 3px;
 $modal-background-background-color: rgba(black, 0.3);
 $modal-content-width: 500px;
-$message-radius: 0px;
-$message-header-radius: 0px;
 $message-body-radius: 0px;
-$modal-card-head-radius:0;
-$modal-card-body-padding:0 3em 3em 3em;
+$modal-card-body-padding:0 3em 1em 3em;
 $modal-card-head-background-color:white;
 $modal-card-head-border-bottom:none;
+$modal-card-foot-border-top:none;
 //$table-row-active-background-color: $primary-light;
 // TODO: see if we can get this working instead of using css stuff below
 
