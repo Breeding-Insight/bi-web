@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
+import Index from '@/views/Index.vue'
 import Home from '@/views/Home.vue'
-import UserHome from '@/views/UserHome.vue'
 import StyleGuide from '@/views/StyleGuide.vue'
 import UserManagement from '@/views/UserManagement.vue'
 import ProgramManagement from '@/views/ProgramManagement.vue'
@@ -25,16 +25,16 @@ const routes = [
       title: 'Welcome',
       layout: layouts.simple
     },
-    component: Home
+    component: Index
   },
   {
-    path: '/user-home',
-    name: 'user-home',
+    path: '/home',
+    name: 'home',
     meta: {
       title: 'Welcome',
       layout: layouts.sideBar
     },
-    component: UserHome
+    component: Home
   },
   {
     path: '/style-guide',
@@ -98,7 +98,7 @@ router.beforeEach((to, from, next) => {
       store.commit(LOGIN, {'id': biResponse.result.orcid, 'name': biResponse.result.name, 'roles':[] });
 
       // If they are logged in and trying to go home, send them to user home
-      if (to.path == '/') next('/user-home')
+      if (to.path == '/') next('/home')
       else next();
     })
     .catch((error) => {
@@ -119,7 +119,7 @@ router.beforeEach((to, from, next) => {
 
   } else {
     // If the user is trying to go home and they are logged in, send them to user home. 
-    if (to.path == '/' && store.state.loggedIn) next('/user-home')
+    if (to.path == '/' && store.state.loggedIn) next('/home')
     else next();
   }
 
