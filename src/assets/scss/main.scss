@@ -15,9 +15,9 @@ $purple: #763FCE;
 $magenta: #9c27b0;
 $applegreen: #C1ED2F;
 $turquoise: #3FB3B6;
-$darkmenu: #4a4a4a;
+$darkmenu: #4a4a4a; // $grey-dark, can't specify here because variables not loaded
 $pending: $applegreen;
-$pending-invert: #363636;
+$pending-invert: #363636; // $grey-darker
 $error: $red;
 $error-invert: #FFFFFF;
 $custom-colors: (
