@@ -3,8 +3,9 @@ import VueRouter from 'vue-router'
 import Index from '@/views/Index.vue'
 import Home from '@/views/Home.vue'
 import StyleGuide from '@/views/StyleGuide.vue'
-import UserManagement from '@/views/UserManagement.vue'
 import ProgramManagement from '@/views/ProgramManagement.vue'
+import AdminProgramManagement from '@/views/AdminProgramManagement.vue'
+import AdminUserManagement from '@/views/AdminUserManagement.vue'
 import store from '@/store/index.ts';
 import { LOGIN, LOGOUT, REQUESTED_PATH, ERROR_STATE } from '@/store/mutation-types';
 import * as api from '@/util/api';
@@ -13,7 +14,8 @@ import { BiResponse } from '@/model/BiResponse';
 Vue.use(VueRouter);
 
 const layouts = {
-  sideBar: 'sideBar',
+  adminSideBar: 'adminSideBar',
+  userSideBar: 'userSideBar',
   simple: 'simple'
 }
 
@@ -32,7 +34,7 @@ const routes = [
     name: 'home',
     meta: {
       title: 'Welcome',
-      layout: layouts.sideBar
+      layout: layouts.userSideBar
     },
     component: Home
   },
@@ -50,7 +52,7 @@ const routes = [
     name: 'about',
     meta: {
       title: 'About',
-      layout: layouts.sideBar
+      layout: layouts.userSideBar
     },
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
@@ -58,22 +60,31 @@ const routes = [
     component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
   },
   {
-    path: '/user-management',
-    name: 'user-management',
+    path: '/admin', 
+    name: 'admin', 
     meta: {
-      title: 'User Management',
-      layout: layouts.sideBar
+      title: 'System Administration',
+      layout: layouts.adminSideBar
     }, 
-    component: UserManagement
+    component: AdminProgramManagement
   },
   {
-    path: '/program-management', 
-    name: 'program-management', 
+    path: '/admin-user-management',
+    name: 'admin-user-management',
     meta: {
-      title: 'Program Management',
-      layout: layouts.sideBar
+      title: 'Admin User Management',
+      layout: layouts.adminSideBar
     }, 
-    component: ProgramManagement
+    component: AdminUserManagement
+  },
+  {
+    path: '/admin-program-management',
+    name: 'admin-program-management',
+    meta: {
+      title: 'Admin Program Management',
+      layout: layouts.adminSideBar
+    }, 
+    component: AdminProgramManagement
   }
 ]
 

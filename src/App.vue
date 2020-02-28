@@ -76,8 +76,10 @@ import { Component, Vue } from 'vue-property-decorator'
 import SuccessNotification from '@/components/notifications/SuccessNotification.vue'
 import InfoNotification from '@/components/notifications/InfoNotification.vue'
 import ErrorNotification from '@/components/notifications/ErrorNotification.vue'
-import SideBarLayout from '@/components/layouts/SideBarLayout.vue'
 import SimpleLayout from '@/components/layouts/SimpleLayout.vue'
+import AdminSideBarLayout from './components/layouts/AdminSideBarLayout.vue'
+import UserSideBarLayout from './components/layouts/UserSideBarLayout.vue'
+import { User } from './model/User'
 
 @Component({
   watch: {
@@ -100,7 +102,8 @@ import SimpleLayout from '@/components/layouts/SimpleLayout.vue'
     InfoNotification,
     ErrorNotification,
     simpleLayout: SimpleLayout,
-    sideBarLayout: SideBarLayout
+    adminSideBarLayout: AdminSideBarLayout,
+    userSideBarLayout: UserSideBarLayout
   },
 })
 export default class App extends Vue {

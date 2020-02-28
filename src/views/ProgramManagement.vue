@@ -27,14 +27,12 @@
 
 <script lang="ts">
   import { Component, Prop, Vue } from 'vue-property-decorator'
-  import SideBarMaster from '@/components/layouts/SideBarLayout.vue'
   import ProgramUsersTable from '@/components/program/ProgramUsersTable.vue';
   import ProgramLocationsTable from '@/components/program/ProgramLocationsTable.vue';
 
   @Component({
     components: {
-      ProgramUsersTable, ProgramLocationsTable,
-      SideBarMaster,
+      ProgramUsersTable, ProgramLocationsTable
       }
   })
   export default class ProgramManagement extends Vue {
