@@ -38,9 +38,10 @@
 <script lang="ts">
   import {Component, Prop, Vue} from 'vue-property-decorator'
   import BaseSideBarLayout from '@/components/layouts/BaseSideBarLayout.vue';
+  import { MoreVerticalIcon, MoreHorizontalIcon } from 'vue-feather-icons'
 
   @Component( {
-    components: {BaseSideBarLayout}
+    components: {BaseSideBarLayout, MoreVerticalIcon, MoreHorizontalIcon}
   })
   export default class AdminSideBarLayout extends Vue {
     programManagementActive: boolean =  true;

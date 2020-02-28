@@ -19,55 +19,52 @@
       </div>              
     </WarningModal>
     <NewDataRowForm
-      v-if="newUserActive"
+      v-if="newProgramActive"
       @submit="saveUser"
       @cancel="cancelNewUser"
     >
       <div class="columns">
-        <div class="column is-two-fifths">
+        <div class="column is-one-third">
           <InputField
-            v-model="newUser.name"
-            :field-error.sync="$v.newUser.name.$error"
+            v-model="newProgram.name"
+            :field-error.sync="$v.newProgram.name.$error"
             :field-type="'text'"
-            :placeholder="'New User Name'"
+            :placeholder="'Program Name'"
           >
-            <template v-slot:label>Name</template>
+            <template v-slot:label>Program Name</template>
             <template v-slot:errors>
               <InputError>Name is required</InputError>
             </template>
             <template v-slot:help>
-              Full name as preferred. All Unicode special characters accepted.
+              Name of program. All Unicode special characters accepted.
             </template>
           </InputField>
         </div>
-        <div class="column is-two-fifths">
-          <InputField
-            v-model="newUser.email"
-            :field-error.sync="$v.newUser.email.$error"
-            :field-type="'email'"
-            :placeholder="'New User Email'"
-          >
-            <template v-slot:label>Email</template>
-            <template v-slot:errors>
-              <InputError v-bind:hidden-indication.sync="$v.newUser.email.required">
-                Email is required
-              </InputError>
-              <InputError v-bind:hidden-indication.sync="$v.newUser.email.email">
-                Must be in email format
-              </InputError>
-            </template>
-            <template v-slot:help>
-              New users will receive an email at this address to activate their account.
-            </template>
-          </InputField>
-        </div>
-        <div class="column is-one-fifth">
+        <div class="column is-one-third">
           <div class="field">
-            <label class="label">Role</label>
+            <label class="label">Species</label>
             <div class="control is-expanded">
               <div class="select is-fullwidth">
-                <select v-model="newUser.role">
-                  <option disabled value="">Select a role</option>
+                <select v-model="newProgram.species">
+                  <option disabled value="">Select a species</option>
+                  <option
+                      v-for="s in species"
+                      v-bind:key="s.id"
+                  >
+                    {{ s.name }}
+                  </option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="column is-one-third">
+          <div class="field">
+            <label class="label">Program Manager</label>
+            <div class="control is-expanded">
+              <div class="select is-fullwidth">
+                <select v-model="newProgram.manager">
+                  <option disabled value="">Select a user</option>
                   <option
                       v-for="role in roles"
                       v-bind:key="role.id"
@@ -93,7 +90,7 @@
             # Users
           </th>
           <th>
-            <button class="button is-primary has-text-weight-bold is-pulled-right" v-on:click="createUser()" v-if="!newUserActive">
+            <button class="button is-primary has-text-weight-bold is-pulled-right" v-on:click="createUser()" v-if="!newProgramActive">
               <span class="icon is-small">
                 <PlusCircleIcon size="1.5x" aria-hidden="true"></PlusCircleIcon>
               </span>
@@ -106,17 +103,17 @@
       </thead>
       <tbody>
         
-          <tr v-bind:key="user.data.id" v-for="(user, index) in users"
-              v-bind:class="{'is-selected': (user.edit == true), 'is-new': (user.new == true)}"
+          <tr v-bind:key="program.data.id" v-for="(program, index) in programs"
+              v-bind:class="{'is-selected': (program.edit == true), 'is-new': (program.new == true)}"
           >
-            <template v-if="user.edit">
+            <template v-if="program.edit">
 
               <td colspan="3">
                 
               </td>
               <td class="has-text-right">
                 
-                <button class="button is-pulled-right" title="Cancel Edit" v-on:click="user.cancelEdit()">
+                <button class="button is-pulled-right" title="Cancel Edit" v-on:click="program.cancelEdit()">
                   <span class="icon is-small is-light">
                     <XSquareIcon size="1.5x" aria-hidden="true"></XSquareIcon>
                     <span class="is-sr-only">Cancel Edit</span>
@@ -138,11 +135,11 @@
               </td>
             </template>
             <template v-else>
-              <td>{{ user.data.name }}</td>
-              <td>{{ user.data.email }}</td>
-              <td>{{ user.data.roles[0] }}</td>
+              <td>{{ program.data.name }}</td>
+              <td>{{ program.data.species }}</td>
+              <td>{{ program.data.numUsers }}</td>
               <td class="has-text-right">
-                <a class="margin-right-2" v-on:click="user.toggleEdit()">Edit</a>
+                <a class="margin-right-2" v-on:click="program.toggleEdit()">Edit</a>
                 <a class="" v-on:click="displayWarning(index)">Deactivate</a>
               </td>
             </template>
@@ -165,8 +162,9 @@ import InputField from '@/components/forms/InputField.vue'
 import NewDataRowForm from '@/components/forms/NewDataRowForm.vue'
 import {ProgramUser} from '@/model/ProgramUser'
 import {TableRow} from '@/model/view_models/TableRow'
-import {User} from '@/model/User'
+import {Program} from '@/model/Program'
 import {Role} from '@/model/Role'
+import {Species} from '@/model/Species'
 
 @Component({
   mixins: [validationMixin],
@@ -178,24 +176,26 @@ import {Role} from '@/model/Role'
 })
 export default class AdminProgramsTable extends Vue {
 
-  private users: Array<TableRow<User>> = [];
+  private programs: Array<TableRow<Program>> = [];
 
   private deactivateActive: boolean = false;
-  private newUserActive: boolean = false;
-  private deactivateWarningTitle: string = "Remove user's access to Program name?";
-  private newUser: ProgramUser = new ProgramUser();
-  private roles: Array<Role> = [new Role('1', 'Breeder'), new Role('2', 'Field Manager')];
+  private newProgramActive: boolean = false;
+  private deactivateWarningTitle: string = "Remove program from system?";
+  private newProgram: ProgramUser = new ProgramUser();
+  private roles: Array<Role> = [new Role('1', 'Bob Reed'), new Role('2', 'Will Smith'), new Role('3', 'Kevin Jones')];
+  private species: Array<Species> = [new Species('1', 'Grape'), new Species('2','Sweet Potato'), new Species('3','Blueberry')];
+
   private deleteIndex: number = -1;
-  private currentNewRow: TableRow<User> | null = null;
+  private currentNewRow: TableRow<Program> | null = null;
 
   private programName: string = "Program Name";
 
   @Validations()
   validations = {
-    newUser : {
+    newProgram : {
       name: {required},
-      email: {required, email},
-      role: {}
+      species: {},
+      manager: {}
     }
   }
 
@@ -206,18 +206,18 @@ export default class AdminProgramsTable extends Vue {
    getUsers() {
     // TODO: api call
     // stubbed for now
-    this.users.push(new TableRow(true, new User('1', 'Ann Other Budy', 'Ann.otherbudy@usda.gov', ['Field Manager'])));
-    this.users.push(new TableRow(true, new User('2', 'Ima Fyne Breeder', 'ima.breeder@usda.gov', ['Breeder'])));
-    this.users.push(new TableRow(true, new User('3', 'Somme Bodie', 'somme.bodie@usda.gov', ['Field Worker'])));
+    this.programs.push(new TableRow(true, new Program('1', 'Lance Grape Program', 'lance@cornell.edu', '5')));
+    this.programs.push(new TableRow(true, new Program('2', 'Phil Sweet Potato Program', 'phil@usda.gov', '2')));
+    this.programs.push(new TableRow(true, new Program('3', 'Some Other Program', 'some.program@usda.gov', '10')));
   }
 
   createUser() {
-    this.newUserActive = true;
+    this.newProgramActive = true;
   }
 
   updateUser(rowIndex: number) {
     // TODO: api call
-    const editRow: TableRow<User> = this.users[rowIndex];
+    const editRow: TableRow<Program> = this.programs[rowIndex];
     editRow.confirmChanges();
     editRow.toggleEdit();
 
@@ -236,42 +236,42 @@ export default class AdminProgramsTable extends Vue {
       // some index management here for now just to allow the stub to work
       let id: Number = Number(1);
 
-      if (this.users.length > 0) {
-        const editRow: TableRow<User> = this.users[this.users.length-1];
-        const user: User = editRow.editData;
+      if (this.programs.length > 0) {
+        const editRow: TableRow<Program> = this.programs[this.programs.length-1];
+        const user: Program = editRow.editData;
         id = Number(user.id)+1;
       }
 
-      if (this.newUser.name != undefined && this.newUser.email != undefined) {
-        const newUser: User = new User(id.toString(), this.newUser.name, this.newUser.email, []);
-        const newRow: TableRow<User> = new TableRow(true, newUser);
+      if (this.newProgram.name != undefined && this.newProgram.email != undefined) {
+        const newProgram: Program = new Program(id.toString(), this.newProgram.name, this.newProgram.email, '1');
+        const newRow: TableRow<Program> = new TableRow(true, newProgram);
         newRow.toggleNew();
-        this.users.push(newRow);
+        this.programs.push(newRow);
 
         this.clearNewRow();
         this.currentNewRow = newRow;
 
-        this.$emit('show-success-notification', 'Success! ' + this.newUser.name + ' added.');
-        this.newUserActive = false;
+        this.$emit('show-success-notification', 'Success! ' + this.newProgram.name + ' added.');
+        this.newProgramActive = false;
       }
 
       // Check all of our fields to see if they were required
-      this.newUser = new ProgramUser();
+      this.newProgram = new ProgramUser();
       this.$v.$reset();
 
     }
   }
 
   cancelNewUser() {
-    this.newUser = new ProgramUser();
+    this.newProgram = new ProgramUser();
     this.$v.$reset();
-    this.newUserActive = false;
+    this.newProgramActive = false;
   }
 
   displayWarning(rowIndex: number) {
     // Get the username
-    const editRow: TableRow<User> = this.users[rowIndex];
-    const user: User = editRow.editData;
+    const editRow: TableRow<Program> = this.programs[rowIndex];
+    const user: Program = editRow.editData;
     this.deleteIndex = rowIndex;
     this.deactivateWarningTitle = "Remove " + user.name + "'s access to " + this.programName + "?";
     this.deactivateActive = true;
@@ -280,9 +280,9 @@ export default class AdminProgramsTable extends Vue {
   modalDeleteHandler() {
     this.deactivateActive = false;
 
-   // TODO: api call
+    // TODO: api call
     this.clearNewRow();
-    this.users.splice(this.deleteIndex, 1);
+    this.programs.splice(this.deleteIndex, 1);
   }
 
   modalCancelHandler() {
@@ -290,7 +290,7 @@ export default class AdminProgramsTable extends Vue {
   }
 
   clearNewRow() {
-     if (this.currentNewRow != null) {
+    if (this.currentNewRow != null) {
       this.currentNewRow.toggleNew();
       this.currentNewRow = null;
     }

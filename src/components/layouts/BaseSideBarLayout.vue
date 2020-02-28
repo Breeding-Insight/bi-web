@@ -31,7 +31,7 @@
 
     <div class="columns is-marginless">
       <div
-          class="column side-menu is-one-quarter"
+          class="column side-menu is-one-fifth"
           :class="{ 'is-hidden-touch': !sideMenuShownMobile }"
       >
         <nav role="navigation" aria-label="main navigation">
@@ -67,11 +67,11 @@
 
 <script lang="ts">
   import {Component, Prop, Watch, Vue} from 'vue-property-decorator'
-  import { MoreVerticalIcon, MoreHorizontalIcon, MenuIcon } from 'vue-feather-icons'
+  import { MenuIcon } from 'vue-feather-icons'
 
 
   @Component( {
-    components: {MoreVerticalIcon, MoreHorizontalIcon, MenuIcon}
+    components: {MenuIcon}
   })
   export default class SideBarMaster extends Vue {
     sideMenuShownMobile: boolean = false;
