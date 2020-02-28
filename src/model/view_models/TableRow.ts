@@ -1,8 +1,8 @@
 export class TableRow<T extends Object> {
   data!: T;
   edit: boolean;
-  editable: boolean;
   new: boolean;
+  editable: boolean;
   nameError: boolean;
   emailError: boolean;
   editData!: T;
@@ -13,6 +13,7 @@ export class TableRow<T extends Object> {
     this.editable = editable;
     this.new = false;
     this.edit = false;
+    this.new = false;
     this.nameError = false;
     this.emailError = false;
     this.data = data;

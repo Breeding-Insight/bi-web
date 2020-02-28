@@ -85,6 +85,15 @@ const routes = [
       layout: layouts.adminSideBar
     }, 
     component: AdminProgramManagement
+  },
+  {
+    path: '/program-management',
+    name: 'program-management',
+    meta: {
+      title: 'Program Management',
+      layout: layouts.userSideBar
+    }, 
+    component: ProgramManagement
   }
 ]
 
