@@ -1,5 +1,5 @@
 <template>
-  <div class="usermanagement">
+  <div class="admin-user-management">
     <h1 id="userTableLabel" class="title">User Management</h1>
     <div class="table-container">
       <table role="grid" aria-labelledby="userTableLabel" class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
@@ -89,7 +89,7 @@ import { EditIcon, DeleteIcon, CheckSquareIcon, XIcon } from 'vue-feather-icons'
 @Component({
   components: {SuccessNotification, EditIcon, DeleteIcon, CheckSquareIcon, XIcon}
 })
-export default class UserManagement extends Vue {
+export default class AdminUserManagement extends Vue {
   public users: Array<Object> = [];
   public newUserInputs = {
     name: null,

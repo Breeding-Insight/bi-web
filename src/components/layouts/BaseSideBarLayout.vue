@@ -24,7 +24,7 @@
           </div>
         </div>
         <div class="level-right">
-          <h1 class="title has-text-primary">Program Name</h1>
+          <h1 class="title has-text-primary">{{title}}</h1>
         </div>
       </div>
     </header>
@@ -36,29 +36,7 @@
       >
         <nav role="navigation" aria-label="main navigation">
           <aside id="sideMenu" class="menu">
-            <ul class="menu-list">
-              <li><router-link to="/home">Home</router-link></li>
-              <li><router-link to="/user-management">Manage Users</router-link></li>
-              <li><a>Trials and Experiments</a></li>
-              <li><a>Germplasm Inventory</a></li>
-              <li><a>Ontology Management</a></li>
-              <li><a>Labels</a></li>
-              <li><a>Reports</a></li>
-              <li>
-                <a
-                    v-bind:class="{ 'is-active': programManagementActive }"
-                    @click="programManagementActive = !programManagementActive"
-                >
-                  Program Management
-                  <MoreVerticalIcon v-if="!programManagementActive" class="is-pulled-right"></MoreVerticalIcon>
-                  <MoreHorizontalIcon v-if="programManagementActive" class="is-pulled-right"></MoreHorizontalIcon>
-                </a>
-                <ul v-show="programManagementActive">
-                  <li><router-link to="/program-management">Locations</router-link></li>
-                  <li><a>Users</a></li>
-                </ul>
-              </li>
-            </ul>
+            <slot name="menu"></slot>
           </aside>
         </nav>
       </div>
@@ -78,7 +56,7 @@
             </div>
           </div>
           <section class="section">
-            <slot></slot>
+            <slot name="content"></slot>
           </section>
         </main>
       </div>
@@ -96,11 +74,13 @@
     components: {MoreVerticalIcon, MoreHorizontalIcon, MenuIcon}
   })
   export default class SideBarMaster extends Vue {
-    programManagementActive: boolean =  true;
     sideMenuShownMobile: boolean = false;
 
     @Prop()
     username!: string;
+
+    @Prop()
+    title!: string;
 
     @Watch('$route')
     onUrlChange(){
@@ -109,7 +89,3 @@
   }
 
 </script>
-
-<style>
-
-</style>
