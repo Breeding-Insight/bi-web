@@ -1,5 +1,5 @@
 <template>
-  <section id="programUserTableLabel">
+  <section id="adminUserTableLabel">
     <WarningModal
       v-on:submit="modalDeleteHandler()" 
       v-on:cancel="modalCancelHandler()" 
@@ -81,7 +81,7 @@
         </div>
       </div>
     </NewDataRowForm>
-      <table role="grid" aria-labelledby="userTableLabel" class="table is-striped is-narrow is-hoverable is-fullwidth">
+      <table role="grid" aria-labelledby="adminUserTableLabel" class="table is-striped is-narrow is-hoverable is-fullwidth">
         <thead>
         <tr>
           <th>User Name</th>
@@ -100,20 +100,6 @@
         </tr>
         </thead>
         <tbody>
-          <!--
-        <tr>
-          <td>
-            <input title="New User Name" class="input" type="text" v-model="newUserInputs.name">
-          </td>
-          <td>
-            <input title="New User Email" class="input" type="email" v-model="newUserInputs.email">
-          </td>
-          <td></td>
-          <td class="is-centered">
-            <button class="button is-primary" v-on:click="addUser" id="addUserBtn">Create User</button>
-          </td>
-        </tr>
-        -->
         <tr v-bind:key="user.data.id" v-for="(user, index) in users"
             v-bind:class="{'is-selected': (user.edit == true), 'is-new': (user.new == true)}"
         >
@@ -255,7 +241,7 @@ export default class AdminUsersTable extends Vue {
         return new TableRow(editable, data);
       });
 
-      //Vue.$log.debug(this.users);
+      Vue.$log.debug(this.users);
     })
     .catch((error) => {
       // Display error that users cannot be loaded
@@ -285,24 +271,6 @@ export default class AdminUsersTable extends Vue {
 
   addUser() {
 
-    /*
-    // Check that our inputs are good
-    if (this.newUserInputs.name == null){
-      // TODO: Outline input
-
-      // Show error
-      this.$emit('show-error-notification', 'Please enter user name');
-      return
-    } 
-    else if (this.newUserInputs.email == null){
-      // TODO: Outline input
-
-      // Show error
-      this.$emit('show-error-notification', 'Please enter user email');
-      return
-    }
-    */
-
     // Construct request body
     const body = {'name': this.newUser.name, 'email': this.newUser.email};
 
@@ -311,10 +279,6 @@ export default class AdminUsersTable extends Vue {
       .then((response) => {
         // Reload users
         this.getUsers();
-        
-        // Clear the new user field
-        //this.newUserInputs.email = null;
-        //this.newUserInputs.name = null;
 
         // Show success notification
         this.$emit('show-success-notification', 'User successfully created');
@@ -323,12 +287,12 @@ export default class AdminUsersTable extends Vue {
 
         // Look for email conflict and display error
         if (error.response && error.response.status == 409) {
-          //Vue.$log.info('Email already exists');
+          Vue.$log.info('Email already exists');
           this.$emit('show-error-notification', 'A user with that email already exists');
         }
         else {
           // Something else went wrong
-          //Vue.$log.fatal(error);
+          Vue.$log.fatal(error);
           this.$emit('show-error-notification', 'Unable to create user');
         }
         throw error;
@@ -383,8 +347,6 @@ export default class AdminUsersTable extends Vue {
     const user: User = editRow.editData;
     console.log(user.id);
     this.deleteUser(user.id);
-
-    //this.users.splice(this.deleteIndex, 1);
   }
 
   modalCancelHandler() {
@@ -397,10 +359,6 @@ export default class AdminUsersTable extends Vue {
       this.currentNewRow = null;
     }
   }
-
-
-
 }
-
   
 </script>
