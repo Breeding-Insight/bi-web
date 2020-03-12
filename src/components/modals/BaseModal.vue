@@ -4,7 +4,7 @@
       class="modal"
       v-bind:class="{ 'is-active': active }"
   >
-    <div class="modal-background" />
+    <div class="modal-background" v-on:click="$emit('close-modal')" />
     <div class="modal-card">
       <header class="modal-card-head">
         <div class="modal-card-title" />
