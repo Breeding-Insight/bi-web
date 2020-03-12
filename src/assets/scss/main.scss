@@ -248,6 +248,12 @@ nav.tabs li.is-active {
   margin-bottom: 1em;
 }
 
+// hack for now
+.span-verticial-middle {
+  vertical-align: middle;
+  padding-bottom: 0.15em;
+}
+
 .edit-table-row {
   background-color: $primary-light;
 }
