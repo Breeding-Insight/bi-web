@@ -42,40 +42,36 @@
           </InputField>
         </div>
         <div class="column is-one-third">
-          <div class="field">
-            <label class="label">Species</label>
-            <div class="control is-expanded">
-              <div class="select is-fullwidth">
-                <select v-model="newProgram.species">
-                  <option disabled value="">Select a species</option>
-                  <option
-                      v-for="s in species"
-                      v-bind:key="s.id"
-                  >
-                    {{ s.name }}
-                  </option>
-                </select>
-              </div>
-            </div>
-          </div>
+          <SelectField
+            v-model="newProgram.speciesId"
+            :field-error.sync="$v.newProgram.speciesId.$error"
+            :options="species"
+            :placeholder="'Select a species'"
+          >
+            <template v-slot:label>Species</template>
+            <template v-slot:errors>
+              <InputError>Species is required</InputError>
+            </template>
+            <template v-slot:help>
+              Name of species.
+            </template>
+          </SelectField>
         </div>
         <div class="column is-one-third">
-          <div class="field">
-            <label class="label">Program Manager</label>
-            <div class="control is-expanded">
-              <div class="select is-fullwidth">
-                <select v-model="newProgram.manager">
-                  <option disabled value="">Select a user</option>
-                  <option
-                      v-for="role in roles"
-                      v-bind:key="role.id"
-                  >
-                    {{ role.name }}
-                  </option>
-                </select>
-              </div>
-            </div>
-          </div>
+          <SelectField
+            v-model="newProgram.managerId"
+            :field-error.sync="$v.newProgram.managerId.$error"
+            :options="managers"
+            :placeholder="'Select a Program Manager'"
+          >
+            <template v-slot:label>Program Manager</template>
+            <template v-slot:errors>
+              <InputError>Program manager is required</InputError>
+            </template>
+            <template v-slot:help>
+              Name of program manager.
+            </template>
+          </SelectField>
         </div>
       </div>
     </NewDataRowForm>
@@ -105,10 +101,11 @@
       <tbody>
         <template v-for="(program, index) in programs">
           <tr v-bind:key="program.data.id" 
+              v-bind:class="{'is-new': (program.new == true)}" 
           >
             <!-- always display table row data -->
             <td>{{ program.data.name }}</td>
-            <td>{{ program.data.species }}</td>
+            <td>{{ getSpeciesName(program.data.speciesId) }}</td>
             <td>{{ program.data.numUsers }}</td>
             <td class="has-text-right">
               <a  v-on:click="program.toggleEdit()">Edit</a>
@@ -125,19 +122,19 @@
               <a class="" v-on:click="displayWarning(index)">Deactivate</a>
             </td>
           </tr>
-          <tr v-bind:key="program.data.id" v-if="program.edit"
-              v-bind:class="{'is-selected': (program.edit == true), 'is-new': (program.new == true)}" 
+          <tr v-bind:key="'edit'+program.editData.id" v-if="program.edit"
+              v-bind:class="{'is-selected': (program.edit == true)}" 
           >
             <td colspan="4">
               <EditDataRowForm
-                @submit="saveEdit"
-                @cancel="program.toggleEdit()"
+                @submit="updateProgram(index)"
+                @cancel="cancelEdit(program, index)"
               >
                 <div class="columns">
                   <div class="column is-one-third">
                     <InputField
-                      v-model="newProgram.name"
-                      :field-error.sync="$v.newProgram.name.$error"
+                      v-model="program.editData.name"
+                      :field-error.sync="$v.programs.$each[index].editData.name.$error"
                       :field-type="'text'"
                       :placeholder="'Program Name'"
                     >
@@ -151,40 +148,38 @@
                     </InputField>
                   </div>
                   <div class="column is-one-third">
-                    <div class="field">
-                      <label class="label">Species</label>
-                      <div class="control is-expanded">
-                        <div class="select is-fullwidth">
-                          <select v-model="newProgram.species">
-                            <option disabled value="">Select a species</option>
-                            <option
-                                v-for="s in species"
-                                v-bind:key="s.id"
-                            >
-                              {{ s.name }}
-                            </option>
-                          </select>
-                        </div>
-                      </div>
-                    </div>
+                    <SelectField
+                      v-model="program.editData.speciesId"
+                      :field-error.sync="$v.programs.$each[index].editData.speciesId.$error"
+                      :options="species"
+                      :placeholder="'Select a species'"
+                      :selectedId="program.editData.speciesId"
+                    >
+                      <template v-slot:label>Species</template>
+                      <template v-slot:errors>
+                        <InputError>Species is required</InputError>
+                      </template>
+                      <template v-slot:help>
+                        Name of species.
+                      </template>
+                    </SelectField>
                   </div>
                   <div class="column is-one-third">
-                    <div class="field">
-                      <label class="label">Program Manager</label>
-                      <div class="control is-expanded">
-                        <div class="select is-fullwidth">
-                          <select v-model="newProgram.manager">
-                            <option disabled value="">Select a user</option>
-                            <option
-                                v-for="role in roles"
-                                v-bind:key="role.id"
-                            >
-                              {{ role.name }}
-                            </option>
-                          </select>
-                        </div>
-                      </div>
-                    </div>
+                    <SelectField
+                      v-model="program.editData.managerId"
+                      :field-error.sync="$v.programs.$each[index].editData.managerId.$error"
+                      :options="managers"
+                      :placeholder="'Select a Program Manager'"
+                      :selectedId="program.editData.managerId"
+                    >
+                      <template v-slot:label>Program Manager</template>
+                      <template v-slot:errors>
+                        <InputError>Program manager is required</InputError>
+                      </template>
+                      <template v-slot:help>
+                        Name of program manager.
+                      </template>
+                    </SelectField>
                   </div>
                 </div>
               </EditDataRowForm>
@@ -206,17 +201,18 @@ import {required, email} from 'vuelidate/lib/validators'
 import WarningModal from '@/components/modals/WarningModal.vue'
 import InputError from '@/components/forms/InputError.vue'
 import InputField from '@/components/forms/InputField.vue'
+import SelectField from '@/components/forms/SelectField.vue'
 import NewDataRowForm from '@/components/forms/NewDataRowForm.vue'
 import EditDataRowForm from '@/components/forms/EditDataRowForm.vue'
 import {Program} from '@/model/Program'
 import {TableRow} from '@/model/view_models/TableRow'
-import {Role} from '@/model/Role'
+import {ProgramUser} from '@/model/ProgramUser'
 import {Species} from '@/model/Species'
 
 @Component({
   mixins: [validationMixin],
   components: { NewDataRowForm, EditDataRowForm,
-                InputError, InputField,
+                InputError, InputField, SelectField,
                 WarningModal, 
                 PlusCircleIcon, CheckCircleIcon, XSquareIcon, ChevronRightIcon, ChevronDownIcon
               }
@@ -229,8 +225,11 @@ export default class AdminProgramsTable extends Vue {
   private newProgramActive: boolean = false;
   private deactivateWarningTitle: string = "Remove program from system?";
   private newProgram: Program = new Program();
-  private roles: Array<Role> = [new Role('1', 'Bob Reed'), new Role('2', 'Will Smith'), new Role('3', 'Kevin Jones')];
-  private species: Array<Species> = [new Species('1', 'Grape'), new Species('2','Sweet Potato'), new Species('3','Blueberry')];
+  private managers: Array<ProgramUser> = [];
+  private species: Array<Species> = [];
+
+  private speciesMap: Map<string, Species> = new Map();
+  private programUsersMap: Map<string, ProgramUser> = new Map();
 
   private deleteIndex: number = -1;
   private currentNewRow: TableRow<Program> | null = null;
@@ -241,21 +240,48 @@ export default class AdminProgramsTable extends Vue {
   validations = {
     newProgram : {
       name: {required},
-      species: {required},
-      manager: {required}
+      speciesId: {required},
+      managerId: {required}
+    },
+    programs : {
+      $each: {
+        editData: {
+          name: {required},
+          speciesId: {required},
+          managerId: {required}
+        }
+      }
     }
   }
 
-   mounted() {
+  mounted() {
     this.getPrograms();
+    this.getSpecies();
+    this.getProgramUsers();
   }
 
    getPrograms() {
     // TODO: api call
     // stubbed for now
-    this.programs.push(new TableRow(true, new Program('1', 'Lance Grape Program', 'lance@cornell.edu', '5')));
-    this.programs.push(new TableRow(true, new Program('2', 'Phil Sweet Potato Program', 'phil@usda.gov', '2')));
-    this.programs.push(new TableRow(true, new Program('3', 'Some Other Program', 'some.program@usda.gov', '10')));
+    this.programs.push(new TableRow(true, new Program('1', 'Lance Grape Program', '1', '5', '1')));
+    this.programs.push(new TableRow(true, new Program('2', 'Phil Sweet Potato Program', '2', '2', '2')));
+    this.programs.push(new TableRow(true, new Program('3', 'Some Other Program', '3', '10', '3')));
+  }
+
+  getSpecies() {
+    // TODO: api call to get data
+    this.speciesMap.set('1', new Species('1', 'Grape'));
+    this.speciesMap.set('2', new Species('2', 'Sweet Potato'));
+    this.speciesMap.set('3', new Species('3', 'Blueberry'));
+    this.species = Array.from(this.speciesMap.values());
+  }
+
+  getProgramUsers() {
+    // TODO: api call to get data
+    this.programUsersMap.set('1', new ProgramUser('1', 'Bob Smith'));
+    this.programUsersMap.set('2', new ProgramUser('2', 'John Anderson'));
+    this.programUsersMap.set('3', new ProgramUser('3', 'Matt Thompson'));
+    this.managers = Array.from(this.programUsersMap.values());
   }
 
   createProgram() {
@@ -264,17 +290,31 @@ export default class AdminProgramsTable extends Vue {
 
   updateProgram(rowIndex: number) {
     // TODO: api call
-    const editRow: TableRow<Program> = this.programs[rowIndex];
-    editRow.confirmChanges();
-    editRow.toggleEdit();
 
-    this.clearNewRow();
-    this.$emit('show-success-notification', 'Program successfully updated');
+    this.$v.programs.$each[rowIndex].editData.$touch();
+    if (this.$v.programs.$each[rowIndex].editData.$anyError){
+      this.$emit('show-error-notification', 'Fix Invalid Fields');
+      return;
+    }
+    else {
+      // Check all of our fields to see if they were required
+      // this.newProgram = new Program();
+      this.$v.programs.$each[rowIndex].editData.$reset();
+
+      const editRow: TableRow<Program> = this.programs[rowIndex];
+      editRow.confirmChanges();
+      editRow.toggleEdit();
+
+      console.log(editRow.data.speciesId);
+
+      this.clearNewRow();
+      this.$emit('show-success-notification', 'Success! ' + editRow.data.name + ' updated.');
+    }
   }
 
   saveProgram() {
-    this.$v.$touch();
-    if (this.$v.$anyError){
+    this.$v.newProgram.$touch();
+    if (this.$v.newProgram.$anyError){
       this.$emit('show-error-notification', 'Fix Invalid Fields');
       return;
     }
@@ -289,8 +329,8 @@ export default class AdminProgramsTable extends Vue {
         id = Number(user.id)+1;
       }
 
-      if (this.newProgram.name != undefined && this.newProgram.species != undefined) {
-        const newProgram: Program = new Program(id.toString(), this.newProgram.name, this.newProgram.species, '1');
+      if (this.newProgram.name != undefined && this.newProgram.speciesId != undefined && this.newProgram.managerId != undefined) {
+        const newProgram: Program = new Program(id.toString(), this.newProgram.name, this.newProgram.speciesId, '1', this.newProgram.managerId);
         const newRow: TableRow<Program> = new TableRow(true, newProgram);
         newRow.toggleNew();
         this.programs.push(newRow);
@@ -304,14 +344,14 @@ export default class AdminProgramsTable extends Vue {
 
       // Check all of our fields to see if they were required
       this.newProgram = new Program();
-      this.$v.$reset();
+      this.$v.newProgram.$reset();
 
     }
   }
 
   cancelNewProgram() {
     this.newProgram = new Program();
-    this.$v.$reset();
+    this.$v.newProgram.$reset();
     this.newProgramActive = false;
   }
 
@@ -342,8 +382,16 @@ export default class AdminProgramsTable extends Vue {
     }
   }
 
-  saveEdit() {
-    
+  cancelEdit(program: TableRow<Program>, rowIndex: number) {
+    program.toggleEdit();
+    program.revertChanges();
+    // clear form
+    this.$v.programs.$each[rowIndex].editData.$reset();
+  }
+
+
+  getSpeciesName(id: string): string {
+    return this.speciesMap.get(id)!.name;
   }
 
 }

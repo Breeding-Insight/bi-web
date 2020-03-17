@@ -303,7 +303,7 @@ export default class ProgramUsersTable extends Vue {
   }
 
   clearNewRow() {
-     if (this.currentNewRow != null) {
+    if (this.currentNewRow != null) {
       this.currentNewRow.toggleNew();
       this.currentNewRow = null;
     }
