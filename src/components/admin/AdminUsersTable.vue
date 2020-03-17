@@ -24,7 +24,7 @@
       @cancel="cancelNewUser"
     >
       <div class="columns">
-        <div class="column is-two-fifths">
+        <div class="column is-one-half">
           <InputField
             v-model="newUser.name"
             :field-error.sync="$v.newUser.name.$error"
@@ -40,7 +40,7 @@
             </template>
           </InputField>
         </div>
-        <div class="column is-two-fifths">
+        <div class="column is-one-half">
           <InputField
             v-model="newUser.email"
             :field-error.sync="$v.newUser.email.$error"
@@ -61,24 +61,6 @@
             </template>
           </InputField>
         </div>
-        <div class="column is-one-fifth">
-          <div class="field">
-            <label class="label">Role</label>
-            <div class="control is-expanded">
-              <div class="select is-fullwidth">
-                <select v-model="newUser.role">
-                  <option disabled value="">Select a role</option>
-                  <option
-                      v-for="role in roles"
-                      v-bind:key="role.id"
-                  >
-                    {{ role.name }}
-                  </option>
-                </select>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
     </NewDataRowForm>
       <table role="grid" aria-labelledby="adminUserTableLabel" class="table is-striped is-narrow is-hoverable is-fullwidth">
@@ -86,7 +68,6 @@
         <tr>
           <th>User Name</th>
           <th>Email</th>
-          <th>Roles</th>
           <th>
             <button class="button is-primary has-text-weight-bold is-pulled-right" v-on:click="createUser()" v-if="!newUserActive">
               <span class="icon is-small">
@@ -112,12 +93,6 @@
           </td>
           <td v-else>
             {{ user.data.email }}
-          </td>
-          <td v-if="user.edit">
-            <input type="text" class="input" v-model="user.editData.roles" placeholder="Roles">
-          </td>
-          <td v-else>
-            {{ user.data.roles }}
           </td>
            <td class="has-text-right">
             
@@ -159,7 +134,6 @@ import SuccessNotification from '@/components/notifications/SuccessNotification.
 import { TableRow } from '@/model/view_models/TableRow.ts'
 import NewDataRowForm from '@/components/forms/NewDataRowForm.vue'
 import { User } from '@/model/User.ts'
-import {Role} from '@/model/Role'
 import { EditIcon, DeleteIcon, CheckSquareIcon, XIcon, XSquareIcon, CheckCircleIcon, PlusCircleIcon } from 'vue-feather-icons'
 import WarningModal from '@/components/modals/WarningModal.vue'
 
@@ -181,17 +155,14 @@ export default class AdminUsersTable extends Vue {
   private newUserActive: boolean = false;
   private deactivateWarningTitle: string = "Remove user's access to Program name?";
   private newUser: ProgramUser = new ProgramUser();
-  private roles: Array<Role> = [new Role('1', 'Breeder'), new Role('2', 'Field Manager')];
   private deleteIndex: number = -1;
-  private currentNewRow: TableRow<User> | null = null;
-
+  private newEmail: string= "";
 
   @Validations()
   validations = {
     newUser : {
       name: {required},
       email: {required, email},
-      role: {}
     }
   }
 
@@ -216,8 +187,9 @@ export default class AdminUsersTable extends Vue {
       return;
     }
     else {
-      // TODO: api call
       this.addUser();
+      this.newUser = new ProgramUser();
+      this.$v.$reset();
       this.newUserActive = false;
     }
   }
@@ -236,9 +208,13 @@ export default class AdminUsersTable extends Vue {
 
       // Parse our users into the vue users param
       this.users = biResponse.result.data.map((user: any) => {
-        const data = new User(user.id, user.name, user.email, user.roles);
+        const data = new User(user.id, user.name, user.email);
         const editable = true;
-        return new TableRow(editable, data);
+        const newUser = new TableRow(editable, data);
+        if (user.email === this.newEmail) {
+          newUser.toggleNew();
+        }
+        return newUser;
       });
 
       Vue.$log.debug(this.users);
@@ -256,6 +232,7 @@ export default class AdminUsersTable extends Vue {
     console.log(selectedId);
     api.call({ url: `${process.env.VUE_APP_BI_API_V1_PATH}/users/${selectedId}`, method: 'delete'})
     .then((response) => {
+      this.clearNewRow();
       // Reload users
       this.getUsers();
       // Show notification
@@ -273,7 +250,8 @@ export default class AdminUsersTable extends Vue {
 
     // Construct request body
     const body = {'name': this.newUser.name, 'email': this.newUser.email};
-
+    
+    this.setNewRow(this.newUser.email!);
     // Make api request
     api.call({ url: `${process.env.VUE_APP_BI_API_V1_PATH}/users`, method: 'post', data: body})
       .then((response) => {
@@ -310,6 +288,8 @@ export default class AdminUsersTable extends Vue {
 
     api.call({ url: `${process.env.VUE_APP_BI_API_V1_PATH}/users/${editRow.data.id}`, method: 'put', data: body})
       .then((response) => {
+        this.clearNewRow();
+
         // Reload users
         this.getUsers();
 
@@ -318,6 +298,7 @@ export default class AdminUsersTable extends Vue {
 
         // Show success notification
         this.$emit('show-success-notification', 'User successfully updated');
+
 
       }).catch((error) => {
         // Display error
@@ -339,10 +320,6 @@ export default class AdminUsersTable extends Vue {
 
   modalDeleteHandler() {
     this.deactivateActive = false;
-
-    // TODO: api call
-    this.clearNewRow();
-
     const editRow: TableRow<User> = this.users[this.deleteIndex];
     const user: User = editRow.editData;
     console.log(user.id);
@@ -354,11 +331,13 @@ export default class AdminUsersTable extends Vue {
   }
 
   clearNewRow() {
-     if (this.currentNewRow != null) {
-      this.currentNewRow.toggleNew();
-      this.currentNewRow = null;
-    }
+    this.newEmail = "";
   }
+
+  setNewRow(email: string) {
+    this.newEmail = email;
+  }
+
 }
   
 </script>
