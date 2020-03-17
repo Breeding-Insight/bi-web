@@ -59,6 +59,18 @@
         </div>
       </div>
     </NewDataRowForm>
+    <BaseTable
+        v-bind:data="programs"
+        @submit="$log.debug('submitted')"
+        @cancel="$log.debug('canceled')"
+    >
+      <template v-slot:columns="rowData">
+        <TableRowColumn name="name">{{rowData.name}}</TableRowColumn>
+        <TableRowColumn name="name">{{rowData.species}}</TableRowColumn>
+        <TableRowColumn name="name">{{rowData.numUsers}}</TableRowColumn>
+      </template>
+      <template v-slot:edit-form></template>
+    </BaseTable>
     <table role="grid" aria-labelledby="adminProgramTableLabel" class="table is-striped is-narrow is-hoverable is-fullwidth">
       <thead>
         <tr>
@@ -175,13 +187,16 @@ import {Program} from '@/model/Program'
 import {TableRow} from '@/model/view_models/TableRow'
 import {User} from '@/model/User'
 import {Species} from '@/model/Species'
+import BaseTable from "@/components/tables/BaseTable.vue";
+import TableRowColumn from "@/components/tables/TableRowColumn.vue";
 
 @Component({
   mixins: [validationMixin],
   components: { NewDataRowForm, EditDataRowForm,
                 InputError, InputField, SelectField,
                 WarningModal, 
-                PlusCircleIcon, CheckCircleIcon, XSquareIcon, ChevronRightIcon, ChevronDownIcon
+                PlusCircleIcon, CheckCircleIcon, XSquareIcon, ChevronRightIcon, ChevronDownIcon,
+                BaseTable
               }
 })
 export default class AdminProgramsTable extends Vue {
