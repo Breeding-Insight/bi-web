@@ -110,12 +110,12 @@
             <td class="has-text-right">
               <a  v-on:click="program.toggleEdit()">Edit</a>
               <template v-if="program.edit">
-                <span class="icon is-small margin-right-2 span-verticial-middle">
+                <span class="icon is-small margin-right-2 has-vertical-align-middle">
                   <ChevronDownIcon size="1x" aria-hidden="true"></ChevronDownIcon>
                 </span>
               </template>
               <template v-else>
-                <span class="icon is-small margin-right-2 span-verticial-middle">
+                <span class="icon is-small margin-right-2 has-vertical-align-middle">
                   <ChevronRightIcon size="1x" aria-hidden="true"></ChevronRightIcon>
                 </span>
               </template>
