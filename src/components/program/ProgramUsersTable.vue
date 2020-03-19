@@ -132,7 +132,7 @@
               </div>
           </td>
           <td v-else>
-              {{ user.data.roles[0] }}
+              {{ user.data.role.name }}
           </td>
           <td class="has-text-right">
             
@@ -191,7 +191,7 @@ import {Role} from '@/model/Role'
 })
 export default class ProgramUsersTable extends Vue {
 
-  private users: Array<TableRow<User>> = [];
+  private users: Array<TableRow<ProgramUser>> = [];
 
   private deactivateActive: boolean = false;
   private newUserActive: boolean = false;
@@ -199,7 +199,7 @@ export default class ProgramUsersTable extends Vue {
   private newUser: ProgramUser = new ProgramUser();
   private roles: Array<Role> = [new Role('1', 'Breeder'), new Role('2', 'Field Manager')];
   private deleteIndex: number = -1;
-  private currentNewRow: TableRow<User> | null = null;
+  private currentNewRow: TableRow<ProgramUser> | null = null;
 
   private programName: string = "Program Name";
 
@@ -208,7 +208,7 @@ export default class ProgramUsersTable extends Vue {
     newUser : {
       name: {required},
       email: {required, email},
-      role: {}
+      role: {required}
     }
   }
 
@@ -219,9 +219,9 @@ export default class ProgramUsersTable extends Vue {
    getUsers() {
     // TODO: api call
     // stubbed for now
-    this.users.push(new TableRow(true, new User('1', 'Ann Other Budy', 'Ann.otherbudy@usda.gov', ['Field Manager'])));
-    this.users.push(new TableRow(true, new User('2', 'Ima Fyne Breeder', 'ima.breeder@usda.gov', ['Breeder'])));
-    this.users.push(new TableRow(true, new User('3', 'Somme Bodie', 'somme.bodie@usda.gov', ['Field Worker'])));
+    this.users.push(new TableRow(true, new ProgramUser('1', 'Ann Other Budy', 'Ann.otherbudy@usda.gov', this.roles[0])));
+    this.users.push(new TableRow(true, new ProgramUser('2', 'Ima Fyne Breeder', 'ima.breeder@usda.gov', this.roles[0])));
+    this.users.push(new TableRow(true, new ProgramUser('3', 'Somme Bodie', 'somme.bodie@usda.gov', this.roles[1])));
   }
 
   createUser() {
@@ -230,7 +230,7 @@ export default class ProgramUsersTable extends Vue {
 
   updateUser(rowIndex: number) {
     // TODO: api call
-    const editRow: TableRow<User> = this.users[rowIndex];
+    const editRow: TableRow<ProgramUser> = this.users[rowIndex];
     editRow.confirmChanges();
     editRow.toggleEdit();
 
@@ -250,14 +250,14 @@ export default class ProgramUsersTable extends Vue {
       let id: Number = Number(1);
 
       if (this.users.length > 0) {
-        const editRow: TableRow<User> = this.users[this.users.length-1];
-        const user: User = editRow.editData;
+        const editRow: TableRow<ProgramUser> = this.users[this.users.length-1];
+        const user: ProgramUser = editRow.editData;
         id = Number(user.id)+1;
       }
 
-      if (this.newUser.name != undefined && this.newUser.email != undefined) {
-        const newUser: User = new User(id.toString(), this.newUser.name, this.newUser.email, []);
-        const newRow: TableRow<User> = new TableRow(true, newUser);
+      if (this.newUser.name != undefined && this.newUser.email != undefined && this.newUser.role != undefined) {
+        const newUser: ProgramUser = new ProgramUser(id.toString(), this.newUser.name, this.newUser.email, this.newUser.role);
+        const newRow: TableRow<ProgramUser> = new TableRow(true, newUser);
         newRow.toggleNew();
         this.users.push(newRow);
 
@@ -283,8 +283,8 @@ export default class ProgramUsersTable extends Vue {
 
   displayWarning(rowIndex: number) {
     // Get the username
-    const editRow: TableRow<User> = this.users[rowIndex];
-    const user: User = editRow.editData;
+    const editRow: TableRow<ProgramUser> = this.users[rowIndex];
+    const user: ProgramUser = editRow.editData;
     this.deleteIndex = rowIndex;
     this.deactivateWarningTitle = "Remove " + user.name + "'s access to " + this.programName + "?";
     this.deactivateActive = true;
