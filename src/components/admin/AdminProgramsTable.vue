@@ -25,7 +25,7 @@
       @cancel="cancelNewProgram"
     >
       <div class="columns">
-        <div class="column is-one-third">
+        <div class="column is-one-half">
           <InputField
             v-model="newProgram.name"
             :field-error.sync="$v.newProgram.name.$error"
@@ -41,7 +41,7 @@
             </template>
           </InputField>
         </div>
-        <div class="column is-one-third">
+        <div class="column is-one-half">
           <SelectField
             v-model="newProgram.speciesId"
             :field-error.sync="$v.newProgram.speciesId.$error"
@@ -54,22 +54,6 @@
             </template>
             <template v-slot:help>
               Name of species.
-            </template>
-          </SelectField>
-        </div>
-        <div class="column is-one-third">
-          <SelectField
-            v-model="newProgram.managerId"
-            :field-error.sync="$v.newProgram.managerId.$error"
-            :options="managers"
-            :placeholder="'Select a Program Manager'"
-          >
-            <template v-slot:label>Program Manager</template>
-            <template v-slot:errors>
-              <InputError>Program manager is required</InputError>
-            </template>
-            <template v-slot:help>
-              Name of program manager.
             </template>
           </SelectField>
         </div>
@@ -131,7 +115,7 @@
                 @cancel="cancelEdit(program, index)"
               >
                 <div class="columns">
-                  <div class="column is-one-third">
+                  <div class="column is-one-half">
                     <InputField
                       v-model="program.editData.name"
                       :field-error.sync="$v.programs.$each[index].editData.name.$error"
@@ -147,7 +131,7 @@
                       </template>
                     </InputField>
                   </div>
-                  <div class="column is-one-third">
+                  <div class="column is-one-half">
                     <SelectField
                       v-model="program.editData.speciesId"
                       :field-error.sync="$v.programs.$each[index].editData.speciesId.$error"
@@ -161,23 +145,6 @@
                       </template>
                       <template v-slot:help>
                         Name of species.
-                      </template>
-                    </SelectField>
-                  </div>
-                  <div class="column is-one-third">
-                    <SelectField
-                      v-model="program.editData.managerId"
-                      :field-error.sync="$v.programs.$each[index].editData.managerId.$error"
-                      :options="managers"
-                      :placeholder="'Select a Program Manager'"
-                      :selectedId="program.editData.managerId"
-                    >
-                      <template v-slot:label>Program Manager</template>
-                      <template v-slot:errors>
-                        <InputError>Program manager is required</InputError>
-                      </template>
-                      <template v-slot:help>
-                        Name of program manager.
                       </template>
                     </SelectField>
                   </div>
@@ -225,11 +192,9 @@ export default class AdminProgramsTable extends Vue {
   private newProgramActive: boolean = false;
   private deactivateWarningTitle: string = "Remove program from system?";
   private newProgram: Program = new Program();
-  private managers: Array<User> = [];
   private species: Array<Species> = [];
 
   private speciesMap: Map<string, Species> = new Map();
-  private programUsersMap: Map<string, User> = new Map();
 
   private deleteIndex: number = -1;
   private currentNewRow: TableRow<Program> | null = null;
@@ -241,14 +206,12 @@ export default class AdminProgramsTable extends Vue {
     newProgram : {
       name: {required},
       speciesId: {required},
-      managerId: {required}
     },
     programs : {
       $each: {
         editData: {
           name: {required},
           speciesId: {required},
-          managerId: {required}
         }
       }
     }
@@ -257,7 +220,6 @@ export default class AdminProgramsTable extends Vue {
   mounted() {
     this.getPrograms();
     this.getSpecies();
-    this.getProgramUsers();
   }
 
    getPrograms() {
@@ -274,14 +236,6 @@ export default class AdminProgramsTable extends Vue {
     this.speciesMap.set('2', new Species('2', 'Sweet Potato'));
     this.speciesMap.set('3', new Species('3', 'Blueberry'));
     this.species = Array.from(this.speciesMap.values());
-  }
-
-  getProgramUsers() {
-    // TODO: api call to get data
-    this.programUsersMap.set('1', new User('1', 'Bob Smith'));
-    this.programUsersMap.set('2', new User('2', 'John Anderson'));
-    this.programUsersMap.set('3', new User('3', 'Matt Thompson'));
-    this.managers = Array.from(this.programUsersMap.values());
   }
 
   createProgram() {
@@ -329,8 +283,8 @@ export default class AdminProgramsTable extends Vue {
         id = Number(user.id)+1;
       }
 
-      if (this.newProgram.name != undefined && this.newProgram.speciesId != undefined && this.newProgram.managerId != undefined) {
-        const newProgram: Program = new Program(id.toString(), this.newProgram.name, this.newProgram.speciesId, '1', this.newProgram.managerId);
+      if (this.newProgram.name != undefined && this.newProgram.speciesId != undefined) {
+        const newProgram: Program = new Program(id.toString(), this.newProgram.name, this.newProgram.speciesId, '1');
         const newRow: TableRow<Program> = new TableRow(true, newProgram);
         newRow.toggleNew();
         this.programs.push(newRow);
