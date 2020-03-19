@@ -186,12 +186,18 @@ nav.tabs li.is-active {
   td {
     color:$dark;
   }
+  a {
+    color:$link;
+  }
 }
 
 .table.is-striped tbody tr:not(.is-selected):nth-child(2n).is-new {
   background-color: $success-light;
   td {
     color:$dark;
+  }
+  a {
+    color:$link;
   }
 }
 
