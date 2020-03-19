@@ -224,6 +224,9 @@ nav.tabs li.is-active {
 .side-menu {
   background-color: $darkmenu;
   padding: 1em 1em 1em 0;
+  p {
+    padding-left: 2em;
+  }
   li {
     padding: 0.25em 0 0.25em 0;
     a {
