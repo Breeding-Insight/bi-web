@@ -59,19 +59,57 @@
         </div>
       </div>
     </NewDataRowForm>
+    <button class="button is-primary has-text-weight-bold is-pulled-right" v-on:click="createProgram()" v-if="!newProgramActive">
+      <span class="icon is-small">
+        <PlusCircleIcon size="1.5x" aria-hidden="true"></PlusCircleIcon>
+      </span>
+      <span>
+        New Program
+      </span>
+    </button>
     <BaseTable
-        v-bind:data="programs"
-        @submit="$log.debug('submitted')"
-        @cancel="$log.debug('canceled')"
+        v-bind:records.sync="programs"
+        v-bind:rowValidations="updateValidations"
+        v-on:submit="updateProgram($event)"
+        v-on:cancel="$log.error('canceled')"
     >
-      <template v-slot:columns="rowData">
-        <TableRowColumn name="name">{{rowData.name}}</TableRowColumn>
-        <TableRowColumn name="name">{{rowData.species}}</TableRowColumn>
-        <TableRowColumn name="name">{{rowData.numUsers}}</TableRowColumn>
+      <template v-slot:columns="slotProps">
+        <TableRowColumn name="name">{{slotProps.data.name}}</TableRowColumn>
+        <TableRowColumn name="species">{{slotProps.data.species}}</TableRowColumn>
+        <TableRowColumn name="numUsers">{{slotProps.data.numUsers}}</TableRowColumn>
       </template>
-      <template v-slot:edit-form></template>
+      <template v-slot:edit="{editData, validation}">
+        <div class="columns">
+          <div class="column is-one-third">
+            <BasicInputField
+                v-model="editData.name"
+                v-bind:field-error="validation.editData.name.$error"
+                v-bind:field-name="'Program Name'"
+                v-bind:field-help="'Name of program. All Unicode special characters accepted.'"
+            />
+          </div>
+          <div class="column is-one-third">
+            <BasicSelectField
+                v-model="editData.speciesId"
+                v-bind:field-error="validation.editData.speciesId.$error"
+                v-bind:options="species"
+                v-bind:selectedId="editData.speciesId"
+                v-bind:field-name="'Species'"
+            />
+          </div>
+          <div class="column is-one-third">
+            <BasicSelectField
+                v-model="editData.managerId"
+                v-bind:field-error="validation.editData.managerId.$error"
+                v-bind:options="managers"
+                v-bind:selectedId="editData.managerId"
+                v-bind:field-name="'Program Manager'"
+            />
+          </div>
+        </div>
+      </template>
     </BaseTable>
-    <table role="grid" aria-labelledby="adminProgramTableLabel" class="table is-striped is-narrow is-hoverable is-fullwidth">
+    <!--<table role="grid" aria-labelledby="adminProgramTableLabel" class="table is-striped is-narrow is-hoverable is-fullwidth">
       <thead>
         <tr>
           <th>
@@ -99,7 +137,7 @@
           <tr v-bind:key="program.data.id" 
               v-bind:class="{'is-new': (program.new == true && program.edit == false), 'is-selected': (program.edit == true)}" 
           >
-            <!-- always display table row data -->
+            &lt;!&ndash; always display table row data &ndash;&gt;
             <td>{{ program.data.name }}</td>
             <td>{{ getSpeciesName(program.data.speciesId) }}</td>
             <td>{{ program.data.numUsers }}</td>
@@ -166,7 +204,7 @@
           </tr>
         </template>
       </tbody>
-    </table>
+    </table>-->
   </section>
 </template>
 
@@ -189,6 +227,8 @@ import {User} from '@/model/User'
 import {Species} from '@/model/Species'
 import BaseTable from "@/components/tables/BaseTable.vue";
 import TableRowColumn from "@/components/tables/TableRowColumn.vue";
+import BasicInputField from "@/components/forms/BasicInputField.vue";
+import BasicSelectField from "@/components/forms/BasicSelectField.vue";
 
 @Component({
   mixins: [validationMixin],
@@ -196,7 +236,7 @@ import TableRowColumn from "@/components/tables/TableRowColumn.vue";
                 InputError, InputField, SelectField,
                 WarningModal, 
                 PlusCircleIcon, CheckCircleIcon, XSquareIcon, ChevronRightIcon, ChevronDownIcon,
-                BaseTable
+                BaseTable, TableRowColumn, BasicInputField, BasicSelectField
               }
 })
 export default class AdminProgramsTable extends Vue {
@@ -232,6 +272,12 @@ export default class AdminProgramsTable extends Vue {
     }
   }
 
+  updateValidations = {
+    name: {required},
+    speciesId: {required},
+    managerId: {required}
+  }
+
   mounted() {
     this.getPrograms();
     this.getSpecies();
@@ -260,25 +306,15 @@ export default class AdminProgramsTable extends Vue {
   updateProgram(rowIndex: number) {
     // TODO: api call
 
-    this.$v.programs.$each[rowIndex].editData.$touch();
-    if (this.$v.programs.$each[rowIndex].editData.$anyError){
-      this.$emit('show-error-notification', 'Fix Invalid Fields');
-      return;
-    }
-    else {
-      // Check all of our fields to see if they were required
-      // this.newProgram = new Program();
-      this.$v.programs.$each[rowIndex].editData.$reset();
+    const editRow: TableRow<Program> = this.programs[rowIndex];
+    editRow.confirmChanges();
+    editRow.toggleEdit();
 
-      const editRow: TableRow<Program> = this.programs[rowIndex];
-      editRow.confirmChanges();
-      editRow.toggleEdit();
+    console.log(editRow.data.speciesId);
 
-      console.log(editRow.data.speciesId);
-
-      this.clearNewRow();
-      this.$emit('show-success-notification', 'Success! ' + editRow.data.name + ' updated.');
-    }
+    //TODO: See if this is needed
+    //this.clearNewRow();
+    this.$emit('show-success-notification', 'Success! ' + editRow.data.name + ' updated.');
   }
 
   saveProgram() {

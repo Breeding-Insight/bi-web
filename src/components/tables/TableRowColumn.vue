@@ -14,7 +14,6 @@
     // Knows its own value
     @Prop()
     name!: string;
-
     // Contains information on its edit component
     //columnData!: any;
   }

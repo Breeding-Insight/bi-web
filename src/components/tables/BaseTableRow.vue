@@ -1,4 +1,3 @@
-import {ChevronDownIcon} from "vue-feather-icons";
 <template>
   <tr>
     <slot></slot>

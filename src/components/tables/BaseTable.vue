@@ -11,13 +11,12 @@
         <th>
           # Users
         </th>
-        <th>
-          Test
-        </th>
+        <th></th>
+        <th></th>
       </tr>
     </thead>
     <tbody>
-      <template v-for="(row, index) in data">
+      <template v-for="(row, index) in records">
         <BaseTableRow
           v-bind:key="'row' + index"
           v-bind:row-data="row"
@@ -25,7 +24,7 @@
           @cancel="$log.error('row delete')"
         >
           <slot
-            v-bind="row.data"
+            v-bind:data="row.data"
             name="columns"
           />
         </BaseTableRow>
@@ -36,10 +35,13 @@
           >
             <td colspan="4">
               <EditDataRowForm
-                @submit="this.$emit('submit')"
-                @cancel="this.$emit('cancel')"
+                @submit="validateAndSubmit(index)"
+                @cancel="$emit('cancel')"
               >
-                <slot name="editForm" />
+                <slot
+                  v-bind:editData="row.editData"
+                  v-bind:validation="getValidations(index)"
+                  name="edit" />
               </EditDataRowForm>
             </td>
           </tr>
@@ -55,6 +57,7 @@
   import BaseTableRow from "@/components/tables/BaseTableRow.vue"
   import {TableRow} from "@/model/view_models/TableRow"
   import EditDataRowForm from '@/components/forms/EditDataRowForm.vue'
+  import {Validations} from "vuelidate-property-decorators";
 
   @Component({
     components: { BaseTableRow, EditDataRowForm }
@@ -63,6 +66,44 @@
     //<slot name="table-row" v-bind:row-data="program"></slot>
     // Knows all of the data
     @Prop()
-    data!: Array<TableRow<any>>;
+    records!: Array<TableRow<any>>;
+    @Prop()
+    rowValidations!: Object;
+
+    @Validations()
+    validations() {
+      if (this.rowValidations) {
+        return {
+          records: {
+            $each: {
+              editData: {
+                ...this.rowValidations
+              }
+            }
+          }
+        }
+      }
+
+      return {}
+    }
+
+    getValidations(index: number) {
+      return this.$v.records.$each[index];
+    }
+
+    validateAndSubmit(rowIndex: number) {
+
+      this.$v.records.$each[rowIndex].editData.$touch();
+      if (this.$v.records.$each[rowIndex].editData.$anyError){
+        //TODO: Send this to the front
+        //this.$emit('show-error-notification', 'Fix Invalid Fields');
+        return;
+      }
+      else {
+        // Check all of our fields to see if they were required
+        this.$v.records.$each[rowIndex].editData.$reset();
+        this.$emit('submit', rowIndex);
+      }
+    }
   }
 </script>
