@@ -85,7 +85,7 @@
       <tbody>
         <template v-for="(program, index) in programs">
           <tr v-bind:key="program.data.id" 
-              v-bind:class="{'is-new': (program.new == true)}" 
+              v-bind:class="{'is-new': (program.new == true && program.edit == false), 'is-selected': (program.edit == true)}" 
           >
             <!-- always display table row data -->
             <td>{{ program.data.name }}</td>
