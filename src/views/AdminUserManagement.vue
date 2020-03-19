@@ -1,7 +1,7 @@
 <template>
   <div class="admin-user-management">
     <h1 class="title">
-      User Management
+      Users
     </h1>
     <AdminUsersTable v-on:show-success-notification="showSuccessNotification"
                      v-on:show-error-notification="showErrorNotification"

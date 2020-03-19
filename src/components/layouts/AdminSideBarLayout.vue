@@ -5,9 +5,12 @@
     v-on:logout="logout"
   >
   <template v-slot:menu>
+    <p class="menu-label">
+      Admin
+    </p>
     <ul class="menu-list">
-      <li><router-link to="/admin">Program Management</router-link></li>
-      <li><router-link to="/admin-user-management">User Management</router-link></li>
+      <li><router-link to="/admin">Programs</router-link></li>
+      <li><router-link to="/admin-user-management">Users</router-link></li>
     </ul>
   </template>
   <template v-slot:content>
