@@ -181,9 +181,10 @@ nav.tabs li.is-active {
 
 // TODO: see if we can get this in bulma variable
 .table tr.is-selected {
+  border-left: 5px solid $primary;
   background-color: $primary-light;
   td {
-    color:black;
+    color:$dark;
   }
 }
 
