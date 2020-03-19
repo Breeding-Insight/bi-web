@@ -206,7 +206,7 @@ import NewDataRowForm from '@/components/forms/NewDataRowForm.vue'
 import EditDataRowForm from '@/components/forms/EditDataRowForm.vue'
 import {Program} from '@/model/Program'
 import {TableRow} from '@/model/view_models/TableRow'
-import {ProgramUser} from '@/model/ProgramUser'
+import {User} from '@/model/User'
 import {Species} from '@/model/Species'
 
 @Component({
@@ -225,11 +225,11 @@ export default class AdminProgramsTable extends Vue {
   private newProgramActive: boolean = false;
   private deactivateWarningTitle: string = "Remove program from system?";
   private newProgram: Program = new Program();
-  private managers: Array<ProgramUser> = [];
+  private managers: Array<User> = [];
   private species: Array<Species> = [];
 
   private speciesMap: Map<string, Species> = new Map();
-  private programUsersMap: Map<string, ProgramUser> = new Map();
+  private programUsersMap: Map<string, User> = new Map();
 
   private deleteIndex: number = -1;
   private currentNewRow: TableRow<Program> | null = null;
@@ -278,9 +278,9 @@ export default class AdminProgramsTable extends Vue {
 
   getProgramUsers() {
     // TODO: api call to get data
-    this.programUsersMap.set('1', new ProgramUser('1', 'Bob Smith'));
-    this.programUsersMap.set('2', new ProgramUser('2', 'John Anderson'));
-    this.programUsersMap.set('3', new ProgramUser('3', 'Matt Thompson'));
+    this.programUsersMap.set('1', new User('1', 'Bob Smith'));
+    this.programUsersMap.set('2', new User('2', 'John Anderson'));
+    this.programUsersMap.set('3', new User('3', 'Matt Thompson'));
     this.managers = Array.from(this.programUsersMap.values());
   }
 

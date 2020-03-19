@@ -143,8 +143,6 @@ import {required, email} from 'vuelidate/lib/validators'
 import InputError from '@/components/forms/InputError.vue'
 import InputField from '@/components/forms/InputField.vue'
 
-import {ProgramUser} from '@/model/ProgramUser'
-
 
 @Component({
   components: {SuccessNotification, EditIcon, DeleteIcon, InputField, InputError, NewDataRowForm,
@@ -154,7 +152,7 @@ export default class AdminUsersTable extends Vue {
   private deactivateActive: boolean = false;
   private newUserActive: boolean = false;
   private deactivateWarningTitle: string = "Remove user's access to Program name?";
-  private newUser: ProgramUser = new ProgramUser();
+  private newUser: User = new User();
   private deleteIndex: number = -1;
   private newEmail: string= "";
 
@@ -188,14 +186,14 @@ export default class AdminUsersTable extends Vue {
     }
     else {
       this.addUser();
-      this.newUser = new ProgramUser();
+      this.newUser = new User();
       this.$v.$reset();
       this.newUserActive = false;
     }
   }
 
   cancelNewUser() {
-    this.newUser = new ProgramUser();
+    this.newUser = new User();
     this.$v.$reset();
     this.newUserActive = false;
   }
