@@ -75,12 +75,12 @@
     >
       <template v-slot:columns="slotProps">
         <TableRowColumn name="name">{{slotProps.data.name}}</TableRowColumn>
-        <TableRowColumn name="species">{{slotProps.data.species}}</TableRowColumn>
+        <TableRowColumn name="species">{{getSpeciesName(slotProps.data.speciesId)}}</TableRowColumn>
         <TableRowColumn name="numUsers">{{slotProps.data.numUsers}}</TableRowColumn>
       </template>
       <template v-slot:edit="{editData, validation}">
         <div class="columns">
-          <div class="column is-one-third">
+          <div class="column is-one-half">
             <BasicInputField
                 v-model="editData.name"
                 v-bind:field-error="validation.editData.name.$error"
@@ -88,22 +88,13 @@
                 v-bind:field-help="'Name of program. All Unicode special characters accepted.'"
             />
           </div>
-          <div class="column is-one-third">
+          <div class="column is-one-half">
             <BasicSelectField
                 v-model="editData.speciesId"
                 v-bind:field-error="validation.editData.speciesId.$error"
                 v-bind:options="species"
                 v-bind:selectedId="editData.speciesId"
                 v-bind:field-name="'Species'"
-            />
-          </div>
-          <div class="column is-one-third">
-            <BasicSelectField
-                v-model="editData.managerId"
-                v-bind:field-error="validation.editData.managerId.$error"
-                v-bind:options="managers"
-                v-bind:selectedId="editData.managerId"
-                v-bind:field-name="'Program Manager'"
             />
           </div>
         </div>
@@ -256,26 +247,9 @@ export default class AdminProgramsTable extends Vue {
 
   private programName: string = "Program Name";
 
-  @Validations()
-  validations = {
-    newProgram : {
-      name: {required},
-      speciesId: {required},
-    },
-    programs : {
-      $each: {
-        editData: {
-          name: {required},
-          speciesId: {required},
-        }
-      }
-    }
-  }
-
   updateValidations = {
     name: {required},
-    speciesId: {required},
-    managerId: {required}
+    speciesId: {required}
   }
 
   mounted() {
