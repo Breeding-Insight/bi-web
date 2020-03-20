@@ -3,7 +3,7 @@
     <WarningModal
       v-bind:active="deactivateActive"
       v-bind:msg-title="deactivateWarningTitle"
-      v-on:cancel="modalCancelHandler()" 
+      v-on:cancel="deactivateActive = !deactivateActive"
     >
       <section>
         <p class="has-text-dark">
@@ -15,7 +15,7 @@
           <button v-on:click="modalDeleteHandler()" 
           class="button is-danger"><strong>Yes, remove</strong>
           </button>
-          <button v-on:click="modalCancelHandler()" class="button">Cancel</button>
+          <button v-on:click="deactivateActive = !deactivateActive" class="button">Cancel</button>
         </div>
       </div>              
     </WarningModal>
@@ -208,11 +208,17 @@ export default class AdminProgramsTable extends Vue {
     this.newProgramActive = false;
   }
 
-  displayWarning(rowIndex: number) {
-    const program: Program = this.programs[rowIndex];
-    this.deleteIndex = rowIndex;
-    this.deactivateWarningTitle = "Remove " + program.name + " from the system ?";
-    this.deactivateActive = true;
+  displayWarning(programId: string) {
+
+    const deleteIndex = this.programs.findIndex(program => program.id === programId);
+
+    if (deleteIndex){
+      this.deleteIndex = deleteIndex;
+      this.deactivateWarningTitle = "Remove " + this.programs[deleteIndex].name + " from the system ?";
+      this.deactivateActive = true;
+    } else {
+      this.$log.error('Could not find object to delete')
+    }
   }
 
   modalDeleteHandler() {
@@ -220,10 +226,6 @@ export default class AdminProgramsTable extends Vue {
 
     // TODO: api call
     this.programs.splice(this.deleteIndex, 1);
-  }
-
-  modalCancelHandler() {
-    this.deactivateActive = false;
   }
 
   getSpeciesName(id: string): string {
