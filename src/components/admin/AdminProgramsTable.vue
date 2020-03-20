@@ -63,7 +63,7 @@
         v-bind:rowValidations="programValidations"
         v-bind:editable="true"
         v-on:submit="updateProgram($event)"
-        v-on:cancel="$log.error('canceled')"
+        v-on:remove="displayWarning($event)"
     >
       <template v-slot:columns="slotProps">
         <TableRowColumn name="name">{{slotProps.data.name}}</TableRowColumn>
@@ -92,102 +92,6 @@
         </div>
       </template>
     </BaseTable>
-    <!--<table role="grid" aria-labelledby="adminProgramTableLabel" class="table is-striped is-narrow is-hoverable is-fullwidth">
-      <thead>
-        <tr>
-          <th>
-            Name
-          </th>
-          <th>
-            Species</th>
-          <th>
-            # Users
-          </th>
-          <th>
-            <button class="button is-primary has-text-weight-bold is-pulled-right" v-on:click="createProgram()" v-if="!newProgramActive">
-              <span class="icon is-small">
-                <PlusCircleIcon size="1.5x" aria-hidden="true"></PlusCircleIcon>
-              </span>
-              <span>
-                New Program
-              </span>
-            </button>
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        <template v-for="(program, index) in programs">
-          <tr v-bind:key="program.data.id" 
-              v-bind:class="{'is-new': (program.new == true && program.edit == false), 'is-selected': (program.edit == true)}" 
-          >
-            &lt;!&ndash; always display table row data &ndash;&gt;
-            <td>{{ program.data.name }}</td>
-            <td>{{ getSpeciesName(program.data.speciesId) }}</td>
-            <td>{{ program.data.numUsers }}</td>
-            <td class="has-text-right">
-              <a  v-on:click="program.toggleEdit()">Edit</a>
-              <template v-if="program.edit">
-                <span class="icon is-small margin-right-2 has-vertical-align-middle">
-                  <ChevronDownIcon size="1x" aria-hidden="true"></ChevronDownIcon>
-                </span>
-              </template>
-              <template v-else>
-                <span class="icon is-small margin-right-2 has-vertical-align-middle">
-                  <ChevronRightIcon size="1x" aria-hidden="true"></ChevronRightIcon>
-                </span>
-              </template>
-              <a class="" v-on:click="displayWarning(index)">Deactivate</a>
-            </td>
-          </tr>
-          <tr v-bind:key="'edit'+program.editData.id" v-if="program.edit"
-              v-bind:class="{'is-selected': (program.edit == true)}" 
-          >
-            <td colspan="4">
-              <EditDataRowForm
-                @submit="updateProgram(index)"
-                @cancel="cancelEdit(program, index)"
-              >
-                <div class="columns">
-                  <div class="column is-one-half">
-                    <InputField
-                      v-model="program.editData.name"
-                      :field-error.sync="$v.programs.$each[index].editData.name.$error"
-                      :field-type="'text'"
-                      :placeholder="'Program Name'"
-                    >
-                      <template v-slot:label>Program Name</template>
-                      <template v-slot:errors>
-                        <InputError>Name is required</InputError>
-                      </template>
-                      <template v-slot:help>
-                        Name of program. All Unicode special characters accepted.
-                      </template>
-                    </InputField>
-                  </div>
-                  <div class="column is-one-half">
-                    <SelectField
-                      v-model="program.editData.speciesId"
-                      :field-error.sync="$v.programs.$each[index].editData.speciesId.$error"
-                      :options="species"
-                      :placeholder="'Select a species'"
-                      :selectedId="program.editData.speciesId"
-                    >
-                      <template v-slot:label>Species</template>
-                      <template v-slot:errors>
-                        <InputError>Species is required</InputError>
-                      </template>
-                      <template v-slot:help>
-                        Name of species.
-                      </template>
-                    </SelectField>
-                  </div>
-                </div>
-              </EditDataRowForm>
-            </td>
-          </tr>
-        </template>
-      </tbody>
-    </table>-->
   </section>
 </template>
 

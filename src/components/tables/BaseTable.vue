@@ -20,8 +20,8 @@
         <BaseTableRow
           v-bind:key="'row' + index"
           v-bind:row-data="row"
-          @edit="row.toggleEdit()"
-          @cancel="$log.error('row delete')"
+          v-on:edit="row.toggleEdit()"
+          v-on:remove="$emit('remove', row.data.id)"
         >
           <slot
             v-bind:data="row.data"

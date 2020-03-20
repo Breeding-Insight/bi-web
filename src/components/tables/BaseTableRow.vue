@@ -7,7 +7,7 @@
         <span class="icon is-small margin-right-2 span-verticial-middle">
           <ChevronRightIcon size="1x" aria-hidden="true"></ChevronRightIcon>
         </span>
-        <a class="" v-on:click="$emit('cancel')">Deactivate</a>
+        <a class="" v-on:click="$emit('remove')">Deactivate</a>
       </td>
     </template>
   </tr>
