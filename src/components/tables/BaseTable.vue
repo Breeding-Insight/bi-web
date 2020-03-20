@@ -16,7 +16,7 @@
       </tr>
     </thead>
     <tbody>
-      <template v-for="(row, index) in records">
+      <template v-for="(row, index) in tableRows">
         <BaseTableRow
           v-bind:key="'row' + index"
           v-bind:row-data="row"
@@ -53,7 +53,7 @@
 
 <script lang="ts">
 
-  import { Component, Prop, Vue } from 'vue-property-decorator'
+  import {Component, Prop, Vue, Watch} from 'vue-property-decorator'
   import BaseTableRow from "@/components/tables/BaseTableRow.vue"
   import {TableRow} from "@/model/view_models/TableRow"
   import EditDataRowForm from '@/components/forms/EditDataRowForm.vue'
@@ -67,15 +67,28 @@
     //<slot name="table-row" v-bind:row-data="program"></slot>
     // Knows all of the data
     @Prop()
-    records!: Array<TableRow<any>>;
+    records!: Array<any>;
     @Prop()
     rowValidations!: Object;
+    @Prop()
+    editable!: boolean;
+
+    private tableRows: Array<TableRow<any>> = new Array<TableRow<any>>();
+
+    @Watch('records', {immediate: true, deep:true})
+    updateTableRows() {
+      const rowArray = new Array<TableRow<any>>();
+      for (const record of this.records){
+        rowArray.push(new TableRow<any>(this.editable, record));
+      }
+      this.tableRows = rowArray;
+    }
 
     @Validations()
     validations() {
       if (this.rowValidations) {
         return {
-          records: {
+          tableRows: {
             $each: {
               editData: {
                 ...this.rowValidations
@@ -88,22 +101,29 @@
       return {}
     }
 
+    rowExists(record: Object) {
+      console.log(this.tableRows.find(row => row === record));
+      return this.tableRows.find(row => row === record);
+    }
+
     getValidations(index: number) {
-      return this.$v.records.$each[index];
+      return this.$v.tableRows.$each[index];
     }
 
     validateAndSubmit(rowIndex: number) {
 
-      this.$v.records.$each[rowIndex].editData.$touch();
-      if (this.$v.records.$each[rowIndex].editData.$anyError){
+      this.$v.tableRows.$each[rowIndex].editData.$touch();
+      if (this.$v.tableRows.$each[rowIndex].editData.$anyError){
         //TODO: Send this to the front
         //this.$emit('show-error-notification', 'Fix Invalid Fields');
         return;
       }
       else {
         // Check all of our fields to see if they were required
-        this.$v.records.$each[rowIndex].editData.$reset();
-        this.$emit('submit', rowIndex);
+        this.$v.tableRows.$each[rowIndex].editData.$reset();
+        const editedRecord = this.tableRows[rowIndex].editData;
+        //this.resetAllRowStates();
+        this.$emit('submit', editedRecord);
       }
     }
 
@@ -111,7 +131,15 @@
       record.toggleEdit();
       record.revertChanges();
       // clear form
-      this.$v.records.$each[rowIndex].editData.$reset();
+      this.$v.tableRows.$each[rowIndex].editData.$reset();
     }
+
+    resetAllRowStates() {
+
+      for (const record of this.tableRows){
+        record.clearNewState();
+      }
+    }
+
   }
 </script>

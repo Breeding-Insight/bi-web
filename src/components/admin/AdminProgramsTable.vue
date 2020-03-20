@@ -61,6 +61,7 @@
     <BaseTable
         v-bind:records.sync="programs"
         v-bind:rowValidations="programValidations"
+        v-bind:editable="true"
         v-on:submit="updateProgram($event)"
         v-on:cancel="$log.error('canceled')"
     >
@@ -214,16 +215,17 @@ import BasicSelectField from "@/components/forms/BasicSelectField.vue";
 
 @Component({
   mixins: [validationMixin],
-  components: { NewDataRowForm, EditDataRowForm,
-                InputError, InputField, SelectField,
-                WarningModal, 
-                PlusCircleIcon, CheckCircleIcon, XSquareIcon, ChevronRightIcon, ChevronDownIcon,
-                BaseTable, TableRowColumn, BasicInputField, BasicSelectField
-              }
+  components: {
+    NewDataRowForm, EditDataRowForm,
+    InputError, InputField, SelectField,
+    WarningModal,
+    PlusCircleIcon, CheckCircleIcon, XSquareIcon, ChevronRightIcon, ChevronDownIcon,
+    BaseTable, TableRowColumn, BasicInputField, BasicSelectField
+  }
 })
 export default class AdminProgramsTable extends Vue {
 
-  private programs: Array<TableRow<Program>> = [];
+  private programs: Array<Program> = [];
 
   private deactivateActive: boolean = false;
   private newProgramActive: boolean = false;
@@ -234,7 +236,6 @@ export default class AdminProgramsTable extends Vue {
   private speciesMap: Map<string, Species> = new Map();
 
   private deleteIndex: number = -1;
-  private currentNewRow: TableRow<Program> | null = null;
 
   private programName: string = "Program Name";
 
@@ -251,9 +252,9 @@ export default class AdminProgramsTable extends Vue {
    getPrograms() {
     // TODO: api call
     // stubbed for now
-    this.programs.push(new TableRow(true, new Program('1', 'Lance Grape Program', '1', '5', '1')));
-    this.programs.push(new TableRow(true, new Program('2', 'Phil Sweet Potato Program', '2', '2', '2')));
-    this.programs.push(new TableRow(true, new Program('3', 'Some Other Program', '3', '10', '3')));
+    this.programs.push(new Program('1', 'Lance Grape Program', '1', '5', '1'));
+    this.programs.push(new Program('2', 'Phil Sweet Potato Program', '2', '2', '2'));
+    this.programs.push(new Program('3', 'Some Other Program', '3', '10', '3'));
   }
 
   getSpecies() {
@@ -264,40 +265,25 @@ export default class AdminProgramsTable extends Vue {
     this.species = Array.from(this.speciesMap.values());
   }
 
-  updateProgram(rowIndex: number) {
+  updateProgram(updatedProgram: Program) {
     // TODO: api call
 
-    const editRow: TableRow<Program> = this.programs[rowIndex];
-    editRow.confirmChanges();
-    editRow.toggleEdit();
+    //temporary until api call
+    const progIndex = this.programs.findIndex(program => program.id === updatedProgram.id);
+    Vue.set(this.programs, progIndex, updatedProgram);
 
-    console.log(editRow.data.speciesId);
-
-    //TODO: See if this is needed
-    //this.clearNewRow();
-    this.$emit('show-success-notification', 'Success! ' + editRow.data.name + ' updated.');
+    this.$emit('show-success-notification', 'Success! ' + updatedProgram.name + ' updated.');
   }
 
   saveProgram() {
 
     // TODO: api call
     // some index management here for now just to allow the stub to work
-    let id: Number = Number(1);
 
-    if (this.programs.length > 0) {
-      const editRow: TableRow<Program> = this.programs[this.programs.length-1];
-      const user: Program = editRow.editData;
-      id = Number(user.id)+1;
-    }
 
     if (this.newProgram.name != undefined && this.newProgram.speciesId != undefined) {
-      const newProgram: Program = new Program(id.toString(), this.newProgram.name, this.newProgram.speciesId, '1');
-      const newRow: TableRow<Program> = new TableRow(true, newProgram);
-      newRow.toggleNew();
-      this.programs.push(newRow);
-
-      this.clearNewRow();
-      this.currentNewRow = newRow;
+      const newProgram: Program = new Program(this.uuidv4(), this.newProgram.name, this.newProgram.speciesId, '1');
+      this.programs.push(newProgram);
 
       this.$emit('show-success-notification', 'Success! ' + this.newProgram.name + ' added.');
       this.newProgramActive = false;
@@ -308,14 +294,20 @@ export default class AdminProgramsTable extends Vue {
 
   }
 
+  uuidv4() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+      var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+      return v.toString(16);
+    });
+  }
+
   cancelNewProgram() {
     this.newProgram = new Program();
     this.newProgramActive = false;
   }
 
   displayWarning(rowIndex: number) {
-    const editRow: TableRow<Program> = this.programs[rowIndex];
-    const program: Program = editRow.editData;
+    const program: Program = this.programs[rowIndex];
     this.deleteIndex = rowIndex;
     this.deactivateWarningTitle = "Remove " + program.name + " from the system ?";
     this.deactivateActive = true;
@@ -325,19 +317,11 @@ export default class AdminProgramsTable extends Vue {
     this.deactivateActive = false;
 
     // TODO: api call
-    this.clearNewRow();
     this.programs.splice(this.deleteIndex, 1);
   }
 
   modalCancelHandler() {
     this.deactivateActive = false;
-  }
-
-  clearNewRow() {
-    if (this.currentNewRow != null) {
-      this.currentNewRow.toggleNew();
-      this.currentNewRow = null;
-    }
   }
 
   getSpeciesName(id: string): string {

@@ -1,5 +1,5 @@
 <template>
-  <tr>
+  <tr v-bind:class="{'is-new': (rowData.new == true && rowData.edit == false), 'is-selected': (rowData.edit == true)}" >
     <slot></slot>
     <template v-if="rowData.editable">
       <td class="has-text-right">
@@ -25,5 +25,9 @@
     // Knows its row values and its column objects
     @Prop()
     rowData!: any;
+
+    mounted() {
+      this.$emit('new');
+    }
   }
 </script>
