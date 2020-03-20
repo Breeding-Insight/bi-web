@@ -36,7 +36,7 @@
             <td colspan="4">
               <EditDataRowForm
                 @submit="validateAndSubmit(index)"
-                @cancel="$emit('cancel')"
+                @cancel="cancelEdit(row, index)"
               >
                 <slot
                   v-bind:editData="row.editData"
@@ -58,6 +58,7 @@
   import {TableRow} from "@/model/view_models/TableRow"
   import EditDataRowForm from '@/components/forms/EditDataRowForm.vue'
   import {Validations} from "vuelidate-property-decorators";
+  import {Program} from "@/model/Program";
 
   @Component({
     components: { BaseTableRow, EditDataRowForm }
@@ -104,6 +105,13 @@
         this.$v.records.$each[rowIndex].editData.$reset();
         this.$emit('submit', rowIndex);
       }
+    }
+
+    cancelEdit(record: TableRow<any>, rowIndex: number) {
+      record.toggleEdit();
+      record.revertChanges();
+      // clear form
+      this.$v.records.$each[rowIndex].editData.$reset();
     }
   }
 </script>
