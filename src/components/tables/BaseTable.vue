@@ -74,12 +74,21 @@
     editable!: boolean;
 
     private tableRows: Array<TableRow<any>> = new Array<TableRow<any>>();
+    private finishedInitialPopulate: boolean = false;
 
     @Watch('records', {immediate: true, deep:true})
     updateTableRows() {
       const rowArray = new Array<TableRow<any>>();
       for (const record of this.records){
-        rowArray.push(new TableRow<any>(this.editable, record));
+        const newTableRow = new TableRow<any>(this.editable, record);
+        //TODO: Make this so it checks if table has initially loaded yet
+        if (this.finishedInitialPopulate){
+          if (!this.rowExists(record)){
+            newTableRow.toggleNew();
+          }
+        }
+
+        rowArray.push(newTableRow);
       }
       this.tableRows = rowArray;
     }
@@ -101,9 +110,12 @@
       return {}
     }
 
-    rowExists(record: Object) {
-      console.log(this.tableRows.find(row => row === record));
-      return this.tableRows.find(row => row === record);
+    updated() {
+      this.finishedInitialPopulate = true;
+    }
+
+    rowExists(record: any) {
+      return this.tableRows.find(row => row.data.id === record.id) != undefined;
     }
 
     getValidations(index: number) {

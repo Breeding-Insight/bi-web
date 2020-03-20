@@ -278,8 +278,6 @@ export default class AdminProgramsTable extends Vue {
   saveProgram() {
 
     // TODO: api call
-    // some index management here for now just to allow the stub to work
-
 
     if (this.newProgram.name != undefined && this.newProgram.speciesId != undefined) {
       const newProgram: Program = new Program(this.uuidv4(), this.newProgram.name, this.newProgram.speciesId, '1');
