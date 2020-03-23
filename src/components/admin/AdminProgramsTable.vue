@@ -62,6 +62,7 @@
     <BaseTable
         v-bind:headers="programTableHeaders"
         v-bind:records.sync="programs"
+        v-bind:new-record.sync="currentNewProgram"
         v-bind:rowValidations="programValidations"
         v-bind:editable="true"
         v-on:submit="updateProgram($event)"
@@ -132,6 +133,7 @@ export default class AdminProgramsTable extends Vue {
   private newProgramActive: boolean = false;
   private deactivateWarningTitle: string = "Remove program from system?";
   private newProgram: Program = new Program();
+  private currentNewProgram: Program | undefined;
   private species: Array<Species> = [];
 
   private speciesMap: Map<string, Species> = new Map();
@@ -191,17 +193,16 @@ export default class AdminProgramsTable extends Vue {
 
       ProgramService.create(newProgram).then(() => {
         this.getPrograms();
+        this.currentNewProgram = newProgram;
         this.$emit('show-success-notification', 'Success! ' + this.newProgram.name + ' added.');
         this.newProgramActive = false;
+        this.newProgram = new Program();
       }).catch(() => {
         this.$emit('show-error-notification', 'Error while creating program, ' + this.newProgram.name);
       })
     } else {
       this.$emit('show-error-notification', 'Error while creating program, ' + this.newProgram.name);
     }
-
-    // Check all of our fields to see if they were required
-    this.newProgram = new Program();
 
   }
 

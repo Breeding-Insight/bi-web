@@ -68,6 +68,8 @@
     rowValidations!: Object;
     @Prop()
     editable!: boolean;
+    @Prop()
+    newRecord!: any;
 
     private tableRows: Array<TableRow<any>> = new Array<TableRow<any>>();
     private finishedInitialPopulate: boolean = false;
@@ -77,14 +79,14 @@
       const rowArray = new Array<TableRow<any>>();
       for (const record of this.records){
         const newTableRow = new TableRow<any>(this.editable, record);
-        //TODO: Make this so it checks if table has initially loaded yet
-        if (this.finishedInitialPopulate){
-          if (!this.rowExists(record)){
+
+        if (this.newRecord){
+          if (record.id === this.newRecord.id){
             newTableRow.toggleNew();
           }
         }
-
         rowArray.push(newTableRow);
+
       }
       this.tableRows = rowArray;
     }
