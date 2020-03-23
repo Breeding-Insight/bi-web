@@ -24,7 +24,7 @@
           v-on:remove="$emit('remove', row.data.id)"
         >
           <slot
-            v-bind:data="row.data"
+            v-bind="row.data"
             name="columns"
           />
         </BaseTableRow>
@@ -126,15 +126,13 @@
 
       this.$v.tableRows.$each[rowIndex].editData.$touch();
       if (this.$v.tableRows.$each[rowIndex].editData.$anyError){
-        //TODO: Send this to the front
-        //this.$emit('show-error-notification', 'Fix Invalid Fields');
+        this.$emit('show-error-notification', 'Fix Invalid Fields');
         return;
       }
       else {
         // Check all of our fields to see if they were required
         this.$v.tableRows.$each[rowIndex].editData.$reset();
         const editedRecord = this.tableRows[rowIndex].editData;
-        //this.resetAllRowStates();
         this.$emit('submit', editedRecord);
       }
     }

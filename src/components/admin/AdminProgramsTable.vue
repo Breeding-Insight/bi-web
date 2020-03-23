@@ -26,6 +26,7 @@
       v-bind:new-record.sync="newProgram"
       v-on:submit="saveProgram"
       v-on:cancel="cancelNewProgram"
+      v-on:show-error-notification="$emit('show-error-notification', $event)"
     >
       <template v-slot="validations">
         <div class="columns">
@@ -64,11 +65,12 @@
         v-bind:editable="true"
         v-on:submit="updateProgram($event)"
         v-on:remove="displayWarning($event)"
+        v-on:show-error-notification="$emit('show-error-notification', $event)"
     >
-      <template v-slot:columns="slotProps">
-        <TableRowColumn name="name">{{slotProps.data.name}}</TableRowColumn>
-        <TableRowColumn name="species">{{getSpeciesName(slotProps.data.speciesId)}}</TableRowColumn>
-        <TableRowColumn name="numUsers">{{slotProps.data.numUsers}}</TableRowColumn>
+      <template v-slot:columns="data">
+        <TableRowColumn name="name">{{data.name}}</TableRowColumn>
+        <TableRowColumn name="species">{{getSpeciesName(data.speciesId)}}</TableRowColumn>
+        <TableRowColumn name="numUsers">{{data.numUsers}}</TableRowColumn>
       </template>
       <template v-slot:edit="{editData, validation}">
         <div class="columns">

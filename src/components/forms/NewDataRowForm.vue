@@ -57,8 +57,7 @@
       this.$v.newRecord.$touch();
       if (this.$v.newRecord.$anyError){
 
-        //TODO: Shuffle this up to the top
-        //this.$emit('show-error-notification', 'Fix Invalid Fields');
+        this.$emit('show-error-notification', 'Fix Invalid Fields');
         return;
       } else {
 
