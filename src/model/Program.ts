@@ -1,3 +1,5 @@
+import {ProgramDAO} from "@/model/dao/ProgramDAO";
+
 export class Program {
   id?: string;
   name?: string;

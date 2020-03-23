@@ -99,33 +99,26 @@
 
 <script lang="ts">
 import {Component, Prop, Vue} from 'vue-property-decorator'
-import {PlusCircleIcon, CheckCircleIcon, XSquareIcon, ChevronRightIcon, ChevronDownIcon} from 'vue-feather-icons'
+import {PlusCircleIcon} from 'vue-feather-icons'
 import {validationMixin} from 'vuelidate'
-import {Validations} from 'vuelidate-property-decorators'
-import {required, email} from 'vuelidate/lib/validators'
+import {required} from 'vuelidate/lib/validators'
 
 import WarningModal from '@/components/modals/WarningModal.vue'
-import InputError from '@/components/forms/InputError.vue'
-import InputField from '@/components/forms/InputField.vue'
-import SelectField from '@/components/forms/SelectField.vue'
 import NewDataRowForm from '@/components/forms/NewDataRowForm.vue'
 import EditDataRowForm from '@/components/forms/EditDataRowForm.vue'
 import {Program} from '@/model/Program'
-import {TableRow} from '@/model/view_models/TableRow'
-import {User} from '@/model/User'
 import {Species} from '@/model/Species'
 import BaseTable from "@/components/tables/BaseTable.vue";
 import TableRowColumn from "@/components/tables/TableRowColumn.vue";
 import BasicInputField from "@/components/forms/BasicInputField.vue";
 import BasicSelectField from "@/components/forms/BasicSelectField.vue";
+import {ProgramService} from "@/model/service/ProgramService";
+import {SpeciesService} from "@/model/service/SpeciesService";
 
 @Component({
   mixins: [validationMixin],
   components: {
-    NewDataRowForm, EditDataRowForm,
-    InputError, InputField, SelectField,
-    WarningModal,
-    PlusCircleIcon, CheckCircleIcon, XSquareIcon, ChevronRightIcon, ChevronDownIcon,
+    NewDataRowForm, EditDataRowForm, WarningModal, PlusCircleIcon,
     BaseTable, TableRowColumn, BasicInputField, BasicSelectField
   }
 })
@@ -141,7 +134,7 @@ export default class AdminProgramsTable extends Vue {
 
   private speciesMap: Map<string, Species> = new Map();
 
-  private deleteIndex: number = -1;
+  private deleteProgram: Program | undefined;
 
   private programName: string = "Program Name";
 
@@ -156,41 +149,53 @@ export default class AdminProgramsTable extends Vue {
   }
 
    getPrograms() {
-    // TODO: api call
-    // stubbed for now
-    this.programs.push(new Program('1', 'Lance Grape Program', '1', '5', '1'));
-    this.programs.push(new Program('2', 'Phil Sweet Potato Program', '2', '2', '2'));
-    this.programs.push(new Program('3', 'Some Other Program', '3', '10', '3'));
+
+    ProgramService.getAll().then((programs) => {
+      this.programs.splice(0, this.programs.length, ...programs);
+    }).catch(() => {
+      this.$emit('show-error-notification', 'Unable to load programs from server');
+    });
+
   }
 
   getSpecies() {
-    // TODO: api call to get data
-    this.speciesMap.set('1', new Species('1', 'Grape'));
-    this.speciesMap.set('2', new Species('2', 'Sweet Potato'));
-    this.speciesMap.set('3', new Species('3', 'Blueberry'));
-    this.species = Array.from(this.speciesMap.values());
+
+    SpeciesService.getAll().then((species) => {
+      this.species.splice(0, this.species.length, ...species);
+      for (const individual of this.species){
+        this.speciesMap.set(individual.id, individual);
+      }
+    }).catch(() => {
+      this.$emit('show-error-notification', 'Unable to load programs from server');
+    })
+
   }
 
   updateProgram(updatedProgram: Program) {
-    // TODO: api call
 
-    //temporary until api call
-    const progIndex = this.programs.findIndex(program => program.id === updatedProgram.id);
-    Vue.set(this.programs, progIndex, updatedProgram);
+    ProgramService.update(updatedProgram).then(() => {
+      this.getPrograms();
+      this.$emit('show-success-notification', 'Success! ' + updatedProgram.name + ' updated.');
+    }).catch(() => {
+      this.$emit('show-error-notification', 'Error updating program');
+    });
 
-    this.$emit('show-success-notification', 'Success! ' + updatedProgram.name + ' updated.');
   }
 
   saveProgram() {
 
-    // TODO: api call
-
     if (this.newProgram.name != undefined && this.newProgram.speciesId != undefined) {
       const newProgram: Program = new Program(this.uuidv4(), this.newProgram.name, this.newProgram.speciesId, '1');
-      this.programs.push(newProgram);
 
-      this.$emit('show-success-notification', 'Success! ' + this.newProgram.name + ' added.');
-      this.newProgramActive = false;
+      ProgramService.create(newProgram).then(() => {
+        this.getPrograms();
+        this.$emit('show-success-notification', 'Success! ' + this.newProgram.name + ' added.');
+        this.newProgramActive = false;
+      }).catch(() => {
+        this.$emit('show-error-notification', 'Error while creating program, ' + this.newProgram.name);
+      })
+    } else {
+      this.$emit('show-error-notification', 'Error while creating program, ' + this.newProgram.name);
     }
 
     // Check all of our fields to see if they were required
@@ -212,11 +217,11 @@ export default class AdminProgramsTable extends Vue {
 
   displayWarning(programId: string) {
 
-    const deleteIndex = this.programs.findIndex(program => program.id === programId);
+    const deleteProgram: Program | undefined = this.programs.find(program => program.id === programId);
 
-    if (deleteIndex){
-      this.deleteIndex = deleteIndex;
-      this.deactivateWarningTitle = "Remove " + this.programs[deleteIndex].name + " from the system ?";
+    if (deleteProgram){
+      this.deleteProgram = deleteProgram;
+      this.deactivateWarningTitle = "Remove " + deleteProgram.name + " from the system ?";
       this.deactivateActive = true;
     } else {
       this.$log.error('Could not find object to delete')
@@ -226,8 +231,24 @@ export default class AdminProgramsTable extends Vue {
   modalDeleteHandler() {
     this.deactivateActive = false;
 
-    // TODO: api call
-    this.programs.splice(this.deleteIndex, 1);
+    if (this.deleteProgram){
+      if (this.deleteProgram.id) {
+        if (this.deleteProgram.name) {
+          const deleteId: string = this.deleteProgram.id;
+          const deleteName: string = this.deleteProgram.name;
+          ProgramService.archive(deleteId).then(() => {
+            this.getPrograms();
+            this.$emit('show-success-notification', `${deleteName} archived in system`);
+          }).catch(() => {
+            this.$emit('show-error-notification', `Unable to archive program, ${deleteName}.`);
+          })
+          return;
+        }
+      }
+    }
+
+    this.$emit('show-error-notification', `Unable to archive program`);
+
   }
 
   getSpeciesName(id: string): string {
