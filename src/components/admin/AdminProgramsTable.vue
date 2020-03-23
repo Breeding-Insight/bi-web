@@ -60,6 +60,7 @@
     </button>
 
     <BaseTable
+        v-bind:headers="programTableHeaders"
         v-bind:records.sync="programs"
         v-bind:rowValidations="programValidations"
         v-bind:editable="true"
@@ -125,6 +126,7 @@ import {SpeciesService} from "@/model/service/SpeciesService";
 export default class AdminProgramsTable extends Vue {
 
   private programs: Array<Program> = [];
+  programTableHeaders: string[] = ['Name', 'Species', '# Users'];
 
   private deactivateActive: boolean = false;
   private newProgramActive: boolean = false;

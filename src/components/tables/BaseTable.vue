@@ -2,17 +2,12 @@
   <table class="table is-striped is-narrow is-hoverable is-fullwidth">
     <thead>
       <tr>
-        <th>
-          Name
-        </th>
-        <th>
-          Species
-        </th>
-        <th>
-          # Users
-        </th>
-        <th></th>
-        <th></th>
+        <template v-for="(header, index) in headers">
+          <th v-bind:key="'header' + index">{{header}}</th>
+        </template>
+        <template v-if="editable">
+          <th></th>
+        </template>
       </tr>
     </thead>
     <tbody>
@@ -33,7 +28,7 @@
             v-bind:key="'edit' + index"
             v-bind:class="{'is-selected': (row.edit == true), 'is-new': (row.new == true)}"
           >
-            <td colspan="4">
+            <td v-bind:colspan="columnSpan">
               <EditDataRowForm
                 @submit="validateAndSubmit(index)"
                 @cancel="cancelEdit(row, index)"
@@ -58,7 +53,6 @@
   import {TableRow} from "@/model/view_models/TableRow"
   import EditDataRowForm from '@/components/forms/EditDataRowForm.vue'
   import {Validations} from "vuelidate-property-decorators";
-  import {Program} from "@/model/Program";
 
   @Component({
     components: { BaseTableRow, EditDataRowForm }
@@ -66,6 +60,8 @@
   export default class BaseTable extends Vue {
     //<slot name="table-row" v-bind:row-data="program"></slot>
     // Knows all of the data
+    @Prop()
+    headers!: string;
     @Prop()
     records!: Array<any>;
     @Prop()
@@ -112,6 +108,10 @@
 
     updated() {
       this.finishedInitialPopulate = true;
+    }
+
+    get columnSpan() {
+      return this.editable ? this.headers.length + 1 : this.headers.length;
     }
 
     rowExists(record: any) {
