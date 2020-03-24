@@ -1,50 +1,47 @@
 <template>
-  <div class="field" :class="{ 'field--error': fieldError }">
-    <label class="label">
-      {{fieldName}}
-    </label>
-    <div class="control is-expanded">
-      <div class="select is-fullwidth">
-        <select
-            v-on:input="$emit('input', $event.target.value)"
-        >
-          <option disabled v-bind:selected="displayDefault()" value="">Select a {{fieldName.toLowerCase()}}</option>
-          <option
-              v-for="option in options"
-              v-bind:key="option.id"
-              v-bind:selected="option.id == selectedId"
-              v-bind:value="option.id"
-          >
-            {{ option.name }}
-          </option>
-        </select>
-      </div>
-      <span
-          class="form-error has-text-danger"
-          :class="{ 'is-hidden': !fieldError }"
+  <BaseFieldWrapper
+      v-bind:validations="validations"
+      v-bind:field-help="fieldHelp"
+      v-bind:field-name="fieldName"
+  >
+    <div class="select is-fullwidth">
+      <select
+          v-on:input="$emit('input', $event.target.value)"
+          class="select is-fullwidth"
       >
-        {{fieldName}} is required
-      </span>
-      <p class="help">
-        <slot name="help"></slot>
-      </p>
+        <option disabled v-bind:selected="displayDefault()" value="">Select a {{fieldName.toLowerCase()}}</option>
+        <option
+            v-for="option in options"
+            v-bind:key="option.id"
+            v-bind:selected="option.id == selectedId"
+            v-bind:value="option.id"
+        >
+          {{ option.name }}
+        </option>
+      </select>
     </div>
-  </div>
+  </BaseFieldWrapper>
+
 </template>
 
 <script lang="ts">
   import { Component, Prop, PropSync, Vue } from 'vue-property-decorator';
-
-  @Component
+  import BaseFieldWrapper from "@/components/forms/BaseFieldWrapper.vue";
+  @Component({
+    components: {BaseFieldWrapper}
+  })
   export default class SelectField extends Vue {
     @Prop()
     selectedId!: string;
     @Prop()
     options!: any;
     @Prop()
-    fieldError!: boolean;
-    @Prop()
     fieldName!: string;
+    @Prop()
+    fieldHelp!: string;
+    @Prop()
+    validations!: any;
+
 
     displayDefault() {
       return this.selectedId === null || this.selectedId === undefined;

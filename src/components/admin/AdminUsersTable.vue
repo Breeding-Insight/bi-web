@@ -32,14 +32,14 @@
           <div class="column is-one-half">
             <BasicInputField
                 v-model="newUser.name"
-                v-bind:field-error="validations.name.$error"
+                v-bind:validations="validations.name"
                 v-bind:field-name="'Name'"
             />
           </div>
           <div class="column is-one-half">
             <BasicInputField
                 v-model="newUser.email"
-                v-bind:field-error="validations.email.$error"
+                v-bind:field-error="validations.email"
                 v-bind:field-name="'Email'"
             />
           </div>
@@ -75,7 +75,7 @@
           <div class="column is-one-half">
             <BasicInputField
                 v-model="editData.name"
-                v-bind:field-error="validation.editData.name.$error"
+                v-bind:validations="validation.editData.name"
                 v-bind:field-name="'Program Name'"
                 v-bind:field-help="'Name of program. All Unicode special characters accepted.'"
             />
@@ -83,7 +83,7 @@
           <div class="column is-one-half">
             <BasicInputField
                 v-model="editData.email"
-                v-bind:field-error="validation.editData.email.$error"
+                v-bind:validations="validation.editData.email"
                 v-bind:field-name="'Email'"
             />
           </div>

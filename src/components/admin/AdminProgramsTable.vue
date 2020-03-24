@@ -33,7 +33,7 @@
           <div class="column is-one-half">
             <BasicInputField
                 v-model="newProgram.name"
-                v-bind:field-error="validations.name.$error"
+                v-bind:validations="validations.name"
                 v-bind:field-name="'Program Name'"
                 v-bind:field-help="'Name of program. All Unicode special characters accepted.'"
             />
@@ -41,7 +41,7 @@
           <div class="column is-one-half">
             <BasicSelectField
                 v-model="newProgram.speciesId"
-                v-bind:field-error="validations.speciesId.$error"
+                v-bind:validations="validations.speciesId"
                 v-bind:options="species"
                 v-bind:field-name="'Species'"
             />
@@ -79,7 +79,7 @@
           <div class="column is-one-half">
             <BasicInputField
                 v-model="editData.name"
-                v-bind:field-error="validation.editData.name.$error"
+                v-bind:validations="validation.editData.name"
                 v-bind:field-name="'Program Name'"
                 v-bind:field-help="'Name of program. All Unicode special characters accepted.'"
             />
@@ -87,7 +87,7 @@
           <div class="column is-one-half">
             <BasicSelectField
                 v-model="editData.speciesId"
-                v-bind:field-error="validation.editData.speciesId.$error"
+                v-bind:validations="validation.editData.speciesId"
                 v-bind:options="species"
                 v-bind:selectedId="editData.speciesId"
                 v-bind:field-name="'Species'"
