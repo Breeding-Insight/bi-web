@@ -74,12 +74,12 @@
         <TableRowColumn name="species">{{getSpeciesName(data.speciesId)}}</TableRowColumn>
         <TableRowColumn name="numUsers">{{data.numUsers}}</TableRowColumn>
       </template>
-      <template v-slot:edit="{editData, validation}">
+      <template v-slot:edit="{editData, validations}">
         <div class="columns">
           <div class="column is-one-half">
             <BasicInputField
                 v-model="editData.name"
-                v-bind:validations="validation.editData.name"
+                v-bind:validations="validations.name"
                 v-bind:field-name="'Program Name'"
                 v-bind:field-help="'Name of program. All Unicode special characters accepted.'"
             />
@@ -87,7 +87,7 @@
           <div class="column is-one-half">
             <BasicSelectField
                 v-model="editData.speciesId"
-                v-bind:validations="validation.editData.speciesId"
+                v-bind:validations="validations.speciesId"
                 v-bind:options="species"
                 v-bind:selectedId="editData.speciesId"
                 v-bind:field-name="'Species'"

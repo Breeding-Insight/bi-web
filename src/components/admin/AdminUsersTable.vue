@@ -23,7 +23,7 @@
         v-if="newUserActive"
         v-bind:row-validations="userValidations"
         v-bind:new-record.sync="newUser"
-        v-on:submit="saveUser"
+        v-on:submit="addUser"
         v-on:cancel="cancelNewUser"
         v-on:show-error-notification="$emit('show-error-notification', $event)"
     >
@@ -39,7 +39,7 @@
           <div class="column is-one-half">
             <BasicInputField
                 v-model="newUser.email"
-                v-bind:field-error="validations.email"
+                v-bind:validations="validations.email"
                 v-bind:field-name="'Email'"
             />
           </div>
@@ -70,12 +70,12 @@
         <TableRowColumn name="name">{{data.name}}</TableRowColumn>
         <TableRowColumn name="species">{{data.email}}</TableRowColumn>
       </template>
-      <template v-slot:edit="{editData, validation}">
+      <template v-slot:edit="{editData, validations}">
         <div class="columns">
           <div class="column is-one-half">
             <BasicInputField
                 v-model="editData.name"
-                v-bind:validations="validation.editData.name"
+                v-bind:validations="validations.name"
                 v-bind:field-name="'Program Name'"
                 v-bind:field-help="'Name of program. All Unicode special characters accepted.'"
             />
@@ -83,7 +83,7 @@
           <div class="column is-one-half">
             <BasicInputField
                 v-model="editData.email"
-                v-bind:validations="validation.editData.email"
+                v-bind:validations="validations.email"
                 v-bind:field-name="'Email'"
             />
           </div>
@@ -119,9 +119,7 @@ import {UserService} from "@/model/service/UserService";
 
 @Component({
   components: {
-    SuccessNotification, EditIcon, DeleteIcon, InputField, InputError, NewDataRowForm,
-    CheckSquareIcon, XIcon, XSquareIcon, CheckCircleIcon, PlusCircleIcon, WarningModal,
-    BaseTable, TableRowColumn, BasicInputField
+    NewDataRowForm, PlusCircleIcon, WarningModal, BaseTable, TableRowColumn, BasicInputField
   }
 })
 export default class AdminUsersTable extends Vue {
@@ -131,7 +129,6 @@ export default class AdminUsersTable extends Vue {
   private newUser: User = new User();
   private currentNewUser: User = new User();
   private currentDeleteUser: User | undefined;
-  private newEmail: string= "";
 
   userValidations = {
     name: {required},
@@ -143,14 +140,6 @@ export default class AdminUsersTable extends Vue {
 
   mounted() {
     this.getUsers();
-  }
-
-  saveUser() {
-
-    this.addUser();
-    this.newUser = new User();
-    this.newUserActive = false;
-
   }
 
   cancelNewUser() {
@@ -174,12 +163,18 @@ export default class AdminUsersTable extends Vue {
 
     const user = this.users.find((user) => user.id === selectedId);
 
-    UserService.delete(user).then(() => {
-      this.getUsers();
-      this.$emit('show-success-notification', 'User successfully deleted');
-    }).catch((error: any) => {
-      this.$emit('show-error-notification', 'Unable to delete user');
-    });
+    if (user){
+
+      UserService.delete(user).then(() => {
+        this.getUsers();
+        this.$emit('show-success-notification', 'User successfully deleted');
+      }).catch((error: any) => {
+        this.$emit('show-error-notification', 'Unable to delete user');
+      });
+
+    } else {
+      this.$emit('show-error-notification', 'Unable to find user to delete');
+    }
 
   }
 
@@ -188,6 +183,8 @@ export default class AdminUsersTable extends Vue {
     UserService.create(this.newUser).then((user: User) => {
       this.currentNewUser = user;
       this.getUsers();
+      this.newUser = new User();
+      this.newUserActive = false;
       this.$emit('show-success-notification', 'User successfully created');
     }).catch((error) => {
 

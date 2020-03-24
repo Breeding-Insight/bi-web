@@ -81,7 +81,7 @@
         </div>
       </div>
     </NewDataRowForm>
-    <!--<table role="grid" aria-labelledby="programUserTableLabel" class="table is-striped is-narrow is-hoverable is-fullwidth">
+    <table role="grid" aria-labelledby="programUserTableLabel" class="table is-striped is-narrow is-hoverable is-fullwidth">
       <thead>
         <tr>
           <th>
@@ -135,10 +135,10 @@
               {{ user.data.role.name }}
           </td>
           <td class="has-text-right">
-            
+
             <a class="margin-right-2" v-on:click="user.toggleEdit()" v-if="!user.edit">Edit</a>
             <a class="" v-on:click="displayWarning(index)" v-if="!user.edit">Deactivate</a>
-            
+
             <button class="button is-pulled-right" title="Cancel Edit" v-on:click="user.cancelEdit()" v-if="user.edit">
               <span class="icon is-small is-light">
                 <XSquareIcon size="1.5x" aria-hidden="true"></XSquareIcon>
@@ -148,7 +148,7 @@
                 Cancel
               </span>
             </button>
-            
+
             <button class="button is-pulled-right is-primary"  title="Confirm Location" v-on:click="updateUser(index)" v-if="user.edit">
               <span class="icon is-small">
                 <CheckCircleIcon size="1.5x" aria-hidden="true"></CheckCircleIcon>
@@ -161,7 +161,7 @@
           </td>
       </tr>
       </tbody>
-    </table>-->
+    </table>
   </section>
 </template>
 

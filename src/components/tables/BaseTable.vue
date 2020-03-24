@@ -35,7 +35,7 @@
               >
                 <slot
                   v-bind:editData="row.editData"
-                  v-bind:validation="getValidations(index)"
+                  v-bind:validations="getValidations(index)"
                   name="edit" />
               </EditDataRowForm>
             </td>
@@ -72,7 +72,6 @@
     newRecord!: any;
 
     private tableRows: Array<TableRow<any>> = new Array<TableRow<any>>();
-    private finishedInitialPopulate: boolean = false;
 
     @Watch('records', {immediate: true, deep:true})
     updateTableRows() {
@@ -108,20 +107,12 @@
       return {}
     }
 
-    updated() {
-      this.finishedInitialPopulate = true;
-    }
-
     get columnSpan() {
       return this.editable ? this.headers.length + 1 : this.headers.length;
     }
 
-    rowExists(record: any) {
-      return this.tableRows.find(row => row.data.id === record.id) != undefined;
-    }
-
     getValidations(index: number) {
-      return this.$v.tableRows.$each[index];
+      return this.$v.tableRows.$each[index].editData;
     }
 
     validateAndSubmit(rowIndex: number) {
@@ -144,13 +135,6 @@
       record.revertChanges();
       // clear form
       this.$v.tableRows.$each[rowIndex].editData.$reset();
-    }
-
-    resetAllRowStates() {
-
-      for (const record of this.tableRows){
-        record.clearNewState();
-      }
     }
 
   }
