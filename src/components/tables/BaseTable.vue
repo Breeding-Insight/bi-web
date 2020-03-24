@@ -16,7 +16,7 @@
           v-bind:key="'row' + index"
           v-bind:row-data="row"
           v-on:edit="row.toggleEdit()"
-          v-on:remove="$emit('remove', row.data.id)"
+          v-on:remove="$emit('remove', row.data)"
         >
           <slot
             v-bind="row.data"

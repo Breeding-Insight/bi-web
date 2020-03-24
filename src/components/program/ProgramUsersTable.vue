@@ -81,7 +81,7 @@
         </div>
       </div>
     </NewDataRowForm>
-    <table role="grid" aria-labelledby="programUserTableLabel" class="table is-striped is-narrow is-hoverable is-fullwidth">
+    <!--<table role="grid" aria-labelledby="programUserTableLabel" class="table is-striped is-narrow is-hoverable is-fullwidth">
       <thead>
         <tr>
           <th>
@@ -118,7 +118,7 @@
               {{ user.data.email }}
           </td>
           <td v-if="user.edit">
-              <!--<input type="text" class="input" v-model="user.editData.roles" placeholder="Roles">-->
+              &lt;!&ndash;<input type="text" class="input" v-model="user.editData.roles" placeholder="Roles">&ndash;&gt;
               <div class="select is-fullwidth">
                 <select v-model="newUser.role">
                   <option disabled value="">Select a role</option>
@@ -161,7 +161,7 @@
           </td>
       </tr>
       </tbody>
-    </table>
+    </table>-->
   </section>
 </template>
 

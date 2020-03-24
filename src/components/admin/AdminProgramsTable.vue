@@ -133,7 +133,7 @@ export default class AdminProgramsTable extends Vue {
   private newProgramActive: boolean = false;
   private deactivateWarningTitle: string = "Remove program from system?";
   private newProgram: Program = new Program();
-  private currentNewProgram: Program | undefined;
+  private currentNewProgram: Program = new Program();
   private species: Array<Species> = [];
 
   private speciesMap: Map<string, Species> = new Map();
@@ -218,13 +218,11 @@ export default class AdminProgramsTable extends Vue {
     this.newProgramActive = false;
   }
 
-  displayWarning(programId: string) {
+  displayWarning(program: Program) {
 
-    const deleteProgram: Program | undefined = this.programs.find(program => program.id === programId);
-
-    if (deleteProgram){
-      this.deleteProgram = deleteProgram;
-      this.deactivateWarningTitle = "Remove " + deleteProgram.name + " from the system ?";
+    if (program){
+      this.deleteProgram = program;
+      this.deactivateWarningTitle = "Remove " + program.name + " from the system ?";
       this.deactivateActive = true;
     } else {
       this.$log.error('Could not find object to delete')
