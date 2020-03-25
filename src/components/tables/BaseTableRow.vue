@@ -28,11 +28,8 @@
 
     private showNewHighlight: boolean = true;
 
-    mounted() {
-      this.$emit('new');
-    }
-
     updated() {
+      // Once the table component is updated, remove the new highlighting for this row
       this.showNewHighlight = false;
     }
   }
