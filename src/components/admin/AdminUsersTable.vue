@@ -19,7 +19,7 @@
       </div>              
     </WarningModal>
 
-    <NewDataRowForm
+    <NewDataForm
         v-if="newUserActive"
         v-bind:row-validations="userValidations"
         v-bind:new-record.sync="newUser"
@@ -45,7 +45,7 @@
           </div>
         </div>
       </template>
-    </NewDataRowForm>
+    </NewDataForm>
 
     <button class="button is-primary has-text-weight-bold is-pulled-right" v-on:click="newUserActive = true" v-if="!newUserActive">
       <span class="icon is-small">
@@ -97,29 +97,21 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator'
-import * as api from '@/util/api'
-import { BiResponse } from '@/model/BiResponse'
-import SuccessNotification from '@/components/notifications/SuccessNotification.vue'
-import { TableRow } from '@/model/view_models/TableRow.ts'
-import NewDataRowForm from '@/components/forms/NewDataRowForm.vue'
 import { User } from '@/model/User.ts'
-import { EditIcon, DeleteIcon, CheckSquareIcon, XIcon, XSquareIcon, CheckCircleIcon, PlusCircleIcon } from 'vue-feather-icons'
+import { PlusCircleIcon } from 'vue-feather-icons'
 import WarningModal from '@/components/modals/WarningModal.vue'
 
-import {validationMixin} from 'vuelidate'
-import {Validations} from 'vuelidate-property-decorators'
 import {required, email} from 'vuelidate/lib/validators'
-import InputError from '@/components/forms/InputError.vue'
-import InputField from '@/components/forms/InputField.vue'
 import BaseTable from "@/components/tables/BaseTable.vue";
 import TableRowColumn from "@/components/tables/TableRowColumn.vue";
 import BasicInputField from "@/components/forms/BasicInputField.vue";
 import {UserService} from "@/model/service/UserService";
+import NewDataForm from "@/components/forms/NewDataForm.vue";
 
 
 @Component({
   components: {
-    NewDataRowForm, PlusCircleIcon, WarningModal, BaseTable, TableRowColumn, BasicInputField
+    NewDataForm, PlusCircleIcon, WarningModal, BaseTable, TableRowColumn, BasicInputField
   }
 })
 export default class AdminUsersTable extends Vue {

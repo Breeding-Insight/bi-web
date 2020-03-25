@@ -118,7 +118,6 @@
               {{ user.data.email }}
           </td>
           <td v-if="user.edit">
-              &lt;!&ndash;<input type="text" class="input" v-model="user.editData.roles" placeholder="Roles">&ndash;&gt;
               <div class="select is-fullwidth">
                 <select v-model="newUser.role">
                   <option disabled value="">Select a role</option>
@@ -178,7 +177,6 @@ import InputField from '@/components/forms/InputField.vue'
 import NewDataRowForm from '@/components/forms/NewDataRowForm.vue'
 import {ProgramUser} from '@/model/ProgramUser'
 import {TableRow} from '@/model/view_models/TableRow'
-import {User} from '@/model/User'
 import {Role} from '@/model/Role'
 
 @Component({

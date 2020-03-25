@@ -20,7 +20,7 @@
       </div>              
     </WarningModal>
 
-    <NewDataRowForm
+    <NewDataForm
       v-if="newProgramActive"
       v-bind:row-validations="programValidations"
       v-bind:new-record.sync="newProgram"
@@ -48,7 +48,7 @@
           </div>
         </div>
       </template>
-    </NewDataRowForm>
+    </NewDataForm>
 
     <button class="button is-primary has-text-weight-bold is-pulled-right" v-on:click="newProgramActive = true" v-if="!newProgramActive">
       <span class="icon is-small">
@@ -106,7 +106,6 @@ import {validationMixin} from 'vuelidate'
 import {required} from 'vuelidate/lib/validators'
 
 import WarningModal from '@/components/modals/WarningModal.vue'
-import NewDataRowForm from '@/components/forms/NewDataRowForm.vue'
 import EditDataRowForm from '@/components/forms/EditDataRowForm.vue'
 import {Program} from '@/model/Program'
 import {Species} from '@/model/Species'
@@ -116,11 +115,12 @@ import BasicInputField from "@/components/forms/BasicInputField.vue";
 import BasicSelectField from "@/components/forms/BasicSelectField.vue";
 import {ProgramService} from "@/model/service/ProgramService";
 import {SpeciesService} from "@/model/service/SpeciesService";
+import NewDataForm from "@/components/forms/NewDataForm.vue";
 
 @Component({
   mixins: [validationMixin],
   components: {
-    NewDataRowForm, EditDataRowForm, WarningModal, PlusCircleIcon,
+    NewDataForm, EditDataRowForm, WarningModal, PlusCircleIcon,
     BaseTable, TableRowColumn, BasicInputField, BasicSelectField
   }
 })
