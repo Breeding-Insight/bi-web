@@ -1,5 +1,5 @@
 <template>
-  <tr v-bind:class="{'is-new': (rowData.new == true && rowData.edit == false), 'is-selected': (rowData.edit == true)}" >
+  <tr v-bind:class="{'is-new': (rowData.new == true && rowData.edit == false && showNewHighlight), 'is-selected': (rowData.edit == true)}" >
     <slot></slot>
     <template v-if="rowData.editable">
       <td class="has-text-right">
@@ -26,8 +26,14 @@
     @Prop()
     rowData!: any;
 
+    private showNewHighlight: boolean = true;
+
     mounted() {
       this.$emit('new');
+    }
+
+    updated() {
+      this.showNewHighlight = false;
     }
   }
 </script>
