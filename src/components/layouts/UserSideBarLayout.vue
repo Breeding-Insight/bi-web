@@ -2,7 +2,7 @@
   <BaseSideBarLayout
     :title="'Program Name'" 
     :username="username"
-    v-on:logout="logout"
+    v-on:logout="$emit('logout')"
   >
   <template v-slot:menu>
     <ul class="menu-list">
@@ -13,17 +13,14 @@
       <li><a>Labels</a></li>
       <li><a>Reports</a></li>
       <li>
-        <a
-            v-bind:class="{ 'is-active': programManagementActive }"
-            @click="programManagementActive = !programManagementActive"
-        >
+        <router-link to="/program-management/locations" v-bind:class="{ 'is-active': programManagementActive }">
           Program Management
           <MoreVerticalIcon v-if="!programManagementActive" class="is-pulled-right"></MoreVerticalIcon>
           <MoreHorizontalIcon v-if="programManagementActive" class="is-pulled-right"></MoreHorizontalIcon>
-        </a>
+        </router-link>
         <ul v-show="programManagementActive">
-          <li><router-link to="/program-management">Locations</router-link></li>
-          <li><a>Users</a></li>
+          <li><router-link to="/program-management/locations">Locations</router-link></li>
+          <li><router-link to="/program-management/program-users">Users</router-link></li>
         </ul>
       </li>
     </ul>
@@ -36,7 +33,7 @@
 </template>
 
 <script lang="ts">
-  import {Component, Prop, Vue} from 'vue-property-decorator'
+  import {Component, Prop, Vue, Watch} from 'vue-property-decorator'
   import BaseSideBarLayout from '@/components/layouts/BaseSideBarLayout.vue';
   import { MoreVerticalIcon, MoreHorizontalIcon } from 'vue-feather-icons'
 
@@ -49,8 +46,16 @@
     @Prop()
     username!: string;
 
-    logout() {
-      this.$emit('logout');
+    mounted() {
+      this.setActiveLinkSubmenus();
+    }
+    updated() {
+      this.setActiveLinkSubmenus();
+    }
+
+    setActiveLinkSubmenus() {
+      var path: string = this.$route.path;
+      this.programManagementActive = path.startsWith('/program-management');
     }
   
   }

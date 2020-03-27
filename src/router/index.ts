@@ -10,6 +10,8 @@ import store from '@/store/index.ts';
 import { LOGIN, LOGOUT, REQUESTED_PATH, ERROR_STATE } from '@/store/mutation-types';
 import * as api from '@/util/api';
 import { BiResponse } from '@/breeding-insight/model/BiResponse';
+import ProgramLocationsManagement from "@/views/ProgramLocationsManagement.vue";
+import ProgramUserManagement from "@/views/ProgramUsersManagement.vue";
 
 Vue.use(VueRouter);
 
@@ -88,12 +90,33 @@ const routes = [
   },
   {
     path: '/program-management',
+    redirect: {name: 'program-locations'},
     name: 'program-management',
     meta: {
       title: 'Program Management',
       layout: layouts.userSideBar
     }, 
-    component: ProgramManagement
+    component: ProgramManagement,
+    children: [
+      {
+        path: 'locations',
+        name: 'program-locations',
+        meta: {
+          title: 'Program Location Management',
+          layout: layouts.userSideBar
+        },
+        component: ProgramLocationsManagement
+      },
+      {
+        path: 'program-users',
+        name: 'program-users',
+        meta: {
+          title: 'Program User Management',
+          layout: layouts.userSideBar
+        },
+        component: ProgramUserManagement
+      }
+    ]
   }
 ]
 

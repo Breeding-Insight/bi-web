@@ -6,22 +6,28 @@
     <p class="is-size-5 has-text-weight-bold">
       {{programName}}
     </p>
+
     <section>
-      <b-tabs type="is-boxed">
-        <b-tab-item label="Locations">
-          <ProgramLocationsTable v-on:show-success-notification="showSuccessNotification"
-                                 v-on:show-error-notification="showErrorNotification"
-          >
-          </ProgramLocationsTable>
-        </b-tab-item>
-        <b-tab-item label="Users">
-          <ProgramUsersTable v-on:show-success-notification="showSuccessNotification"
-                             v-on:show-error-notification="showErrorNotification"
-          >
-          </ProgramUsersTable>
-        </b-tab-item>
-      </b-tabs>
+      <nav class="tabs is-boxed">
+        <ul>
+          <router-link to="/program-management/locations" tag="li" active-class="is-active">
+            <a>Locations</a>
+          </router-link>
+          <router-link to="/program-management/program-users" tag="li" active-class="is-active">
+            <a>Users</a>
+          </router-link>
+        </ul>
+      </nav>
     </section>
+
+    <div class="tab-content">
+      <router-view
+        @show-success-notification="$emit('show-success-notification', $event)"
+        @show-info-notification="$emit('show-info-notification', $event)"
+        @show-error-notification="$emit('show-error-notification', $event)"
+      ></router-view>
+    </div>
+
   </div>
 </template>
 
@@ -39,20 +45,6 @@
 
     // get this when endpoint is implmented
     private programName: string = "Program Name";
-
-    mounted() {
-
-    }
-
-    showSuccessNotification(msg: string) {
-      console.log('showSuccess');
-      this.$emit('show-success-notification', msg);
-    }
-
-    showErrorNotification(msg: string) {
-      console.log('showError');
-      this.$emit('show-error-notification', msg);
-    }
 
   }
 </script>
