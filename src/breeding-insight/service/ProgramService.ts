@@ -28,7 +28,4 @@ export class ProgramService {
     return ProgramDAO.getAll();
   }
 
-  static getOne(id: string): Promise<Program> {
-    return ProgramDAO.getOne(id);
-  }
 }

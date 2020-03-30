@@ -63,8 +63,4 @@ export class ProgramDAO {
     });
   }
 
-  static getOne(id: string): Promise<Program> {
-    alert('get one program!');
-    return new Promise<Program>(() => {return new Program()});
-  }
 }

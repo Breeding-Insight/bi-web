@@ -7,7 +7,4 @@ export class SpeciesService{
     return SpeciesDAO.getAll();
   }
 
-  static getOne(id: string): Promise<Species> {
-    return SpeciesDAO.getOne(id);
-  }
 }
