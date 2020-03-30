@@ -1,4 +1,4 @@
-import {Species} from "@/model/Species";
+import {Species} from "@/breeding-insight/model/Species";
 
 export class SpeciesDAO {
 

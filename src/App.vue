@@ -79,7 +79,7 @@ import ErrorNotification from '@/components/notifications/ErrorNotification.vue'
 import SimpleLayout from '@/components/layouts/SimpleLayout.vue'
 import AdminSideBarLayout from './components/layouts/AdminSideBarLayout.vue'
 import UserSideBarLayout from './components/layouts/UserSideBarLayout.vue'
-import { User } from './model/User'
+import { User } from './breeding-insight/model/User'
 
 @Component({
   watch: {

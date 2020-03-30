@@ -175,9 +175,9 @@ import WarningModal from '@/components/modals/WarningModal.vue'
 import InputError from '@/components/forms/InputError.vue'
 import InputField from '@/components/forms/InputField.vue'
 import NewDataRowForm from '@/components/forms/NewDataRowForm.vue'
-import {ProgramUser} from '@/model/ProgramUser'
-import {TableRow} from '@/model/view_models/TableRow'
-import {Role} from '@/model/Role'
+import {ProgramUser} from '@/breeding-insight/model/ProgramUser'
+import {TableRow} from '@/breeding-insight/model/view_models/TableRow'
+import {Role} from '@/breeding-insight/model/Role'
 
 @Component({
   mixins: [validationMixin],

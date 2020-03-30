@@ -107,14 +107,14 @@ import {required} from 'vuelidate/lib/validators'
 
 import WarningModal from '@/components/modals/WarningModal.vue'
 import EditDataRowForm from '@/components/forms/EditDataRowForm.vue'
-import {Program} from '@/model/Program'
-import {Species} from '@/model/Species'
+import {Program} from '@/breeding-insight/model/Program'
+import {Species} from '@/breeding-insight/model/Species'
 import BaseTable from "@/components/tables/BaseTable.vue";
 import TableRowColumn from "@/components/tables/TableRowColumn.vue";
 import BasicInputField from "@/components/forms/BasicInputField.vue";
 import BasicSelectField from "@/components/forms/BasicSelectField.vue";
-import {ProgramService} from "@/model/service/ProgramService";
-import {SpeciesService} from "@/model/service/SpeciesService";
+import {ProgramService} from "@/breeding-insight/service/ProgramService";
+import {SpeciesService} from "@/breeding-insight/service/SpeciesService";
 import NewDataForm from "@/components/forms/NewDataForm.vue";
 
 @Component({

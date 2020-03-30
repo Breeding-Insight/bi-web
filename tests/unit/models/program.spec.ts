@@ -6,7 +6,10 @@ describe('Program service returns expected types.', () => {
 
   it('Returns single updated program for update', () => {});
 
-  it('Returns single updated program for update', () => {});
+  it('Returns single created program for create', () => {});
+
+  // getOne method not yet implemented
+  //it('Returns a single program for getOne', () => {});
 
 });
 

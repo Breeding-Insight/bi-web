@@ -1,7 +1,7 @@
-import {Program} from "@/model/Program";
-import {User} from "@/model/User";
+import {Program} from "@/breeding-insight/model/Program";
+import {User} from "@/breeding-insight/model/User";
 import * as api from "@/util/api";
-import {BiResponse} from "@/model/BiResponse";
+import {BiResponse} from "@/breeding-insight/model/BiResponse";
 import {Vue} from "vue-property-decorator";
 
 export class UserDAO {

@@ -1,4 +1,4 @@
-import {Program} from "@/model/Program";
+import {Program} from "@/breeding-insight/model/Program";
 
 export class ProgramDAO {
 

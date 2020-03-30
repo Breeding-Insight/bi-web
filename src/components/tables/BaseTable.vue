@@ -50,7 +50,7 @@
 
   import {Component, Prop, Vue, Watch} from 'vue-property-decorator'
   import BaseTableRow from "@/components/tables/BaseTableRow.vue"
-  import {TableRow} from "@/model/view_models/TableRow"
+  import {TableRow} from "@/breeding-insight/model/view_models/TableRow"
   import EditDataRowForm from '@/components/forms/EditDataRowForm.vue'
   import {Validations} from "vuelidate-property-decorators";
 

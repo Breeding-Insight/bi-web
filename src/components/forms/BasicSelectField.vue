@@ -30,7 +30,7 @@
   @Component({
     components: {BaseFieldWrapper}
   })
-  export default class SelectField extends Vue {
+  export default class BasicSelectField extends Vue {
     @Prop()
     selectedId!: string;
     @Prop()

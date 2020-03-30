@@ -4,8 +4,11 @@
     <template v-if="rowData.editable">
       <td class="has-text-right">
         <a v-on:click="$emit('edit')">Edit</a>
-        <span class="icon is-small margin-right-2 span-verticial-middle">
+        <span v-if="!rowData.edit" class="icon is-small margin-right-2 has-vertical-align-middle">
           <ChevronRightIcon size="1x" aria-hidden="true"></ChevronRightIcon>
+        </span>
+        <span v-if="rowData.edit" class="icon is-small margin-right-2 has-vertical-align-middle">
+          <ChevronDownIcon size="1x" aria-hidden="true"></ChevronDownIcon>
         </span>
         <a class="" v-on:click="$emit('remove')">Deactivate</a>
       </td>
@@ -15,10 +18,10 @@
 
 <script lang="ts">
   import {Component, Prop, Vue} from "vue-property-decorator";
-  import {ChevronRightIcon} from 'vue-feather-icons'
+  import {ChevronRightIcon, ChevronDownIcon} from 'vue-feather-icons'
 
   @Component({
-    components: { ChevronRightIcon }
+    components: { ChevronRightIcon, ChevronDownIcon }
   })
   export default class BaseTableRow extends Vue {
 

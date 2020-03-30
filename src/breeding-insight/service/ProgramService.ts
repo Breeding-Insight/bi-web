@@ -1,5 +1,5 @@
-import {ProgramDAO} from "@/model/dao/ProgramDAO";
-import {Program} from "@/model/Program";
+import {ProgramDAO} from "@/breeding-insight/dao/ProgramDAO";
+import {Program} from "@/breeding-insight/model/Program";
 
 export class ProgramService {
 

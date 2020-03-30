@@ -97,7 +97,7 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator'
-import { User } from '@/model/User.ts'
+import { User } from '@/breeding-insight/model/User'
 import { PlusCircleIcon } from 'vue-feather-icons'
 import WarningModal from '@/components/modals/WarningModal.vue'
 
@@ -105,7 +105,7 @@ import {required, email} from 'vuelidate/lib/validators'
 import BaseTable from "@/components/tables/BaseTable.vue";
 import TableRowColumn from "@/components/tables/TableRowColumn.vue";
 import BasicInputField from "@/components/forms/BasicInputField.vue";
-import {UserService} from "@/model/service/UserService";
+import {UserService} from "@/breeding-insight/service/UserService";
 import NewDataForm from "@/components/forms/NewDataForm.vue";
 
 

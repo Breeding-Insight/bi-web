@@ -1,5 +1,5 @@
-import {User} from "@/model/User";
-import {UserDAO} from "@/model/dao/UserDAO";
+import {User} from "@/breeding-insight/model/User";
+import {UserDAO} from "@/breeding-insight/dao/UserDAO";
 
 export class UserService {
 

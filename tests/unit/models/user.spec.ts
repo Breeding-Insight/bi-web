@@ -1,12 +1,15 @@
 describe('User service returns expected types.', () => {
 
-  it('Returns array of programs for getAll', () => {});
+  it('Returns array of user for getAll', () => {});
 
   it('Returns empty response for delete', () => {});
 
-  it('Returns single updated program for update', () => {});
+  it('Returns single updated user for update', () => {});
 
-  it('Returns single updated program for update', () => {});
+  it('Returns single created user for create', () => {});
+
+  // getOne method not yet implemented
+  //it('Returns a single user for getOne', () => {});
 
 });
 

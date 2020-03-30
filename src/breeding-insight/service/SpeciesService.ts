@@ -1,5 +1,5 @@
-import {SpeciesDAO} from "@/model/dao/SpeciesDAO";
-import {Species} from "@/model/Species";
+import {SpeciesDAO} from "@/breeding-insight/dao/SpeciesDAO";
+import {Species} from "@/breeding-insight/model/Species";
 
 export class SpeciesService{
 

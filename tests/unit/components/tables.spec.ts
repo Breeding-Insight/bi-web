@@ -2,7 +2,7 @@ describe('New table row hightlighting shows when new row is specified');
 
 describe('New table row highlighting disappears on next action', () => {
 
-  it('unhighlights on row detail form being show', () => {});
+  it('unhighlights on other row being updated', () => {});
 
   it('unhighlights on new row being added', () => {});
 
