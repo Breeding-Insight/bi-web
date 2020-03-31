@@ -25,12 +25,10 @@
 <script lang="ts">
   import {Component, Vue} from 'vue-property-decorator';
   import { CheckCircleIcon } from 'vue-feather-icons';
-
   @Component({
       components: {CheckCircleIcon}
     }
   )
-  export default class InputField extends Vue {
+  export default class NewDataRowForm extends Vue {
   }
-
 </script>

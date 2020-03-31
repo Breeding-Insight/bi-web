@@ -3,7 +3,7 @@
     <WarningModal
       v-bind:active="deactivateActive"
       v-bind:msg-title="deactivateWarningTitle"
-      v-on:cancel="modalCancelHandler()" 
+      v-on:cancel="deactivateActive = !deactivateActive"
     >
       <section>
         <p class="has-text-dark">
@@ -15,206 +15,136 @@
           <button v-on:click="modalDeleteHandler()" 
           class="button is-danger"><strong>Yes, remove</strong>
           </button>
-          <button v-on:click="modalCancelHandler()" class="button">Cancel</button>
+          <button v-on:click="deactivateActive = !deactivateActive" class="button">Cancel</button>
         </div>
       </div>              
     </WarningModal>
-    <NewDataRowForm
+
+    <NewDataForm
       v-if="newProgramActive"
-      @submit="saveProgram"
-      @cancel="cancelNewProgram"
+      v-bind:row-validations="programValidations"
+      v-bind:new-record.sync="newProgram"
+      v-on:submit="saveProgram"
+      v-on:cancel="cancelNewProgram"
+      v-on:show-error-notification="$emit('show-error-notification', $event)"
     >
-      <div class="columns">
-        <div class="column is-one-half">
-          <InputField
-            v-model="newProgram.name"
-            :field-error.sync="$v.newProgram.name.$error"
-            :field-type="'text'"
-            :placeholder="'Program Name'"
-          >
-            <template v-slot:label>Program Name</template>
-            <template v-slot:errors>
-              <InputError>Name is required</InputError>
-            </template>
-            <template v-slot:help>
-              Name of program. All Unicode special characters accepted.
-            </template>
-          </InputField>
+      <template v-slot="validations">
+        <div class="columns">
+          <div class="column is-one-half">
+            <BasicInputField
+                v-model="newProgram.name"
+                v-bind:validations="validations.name"
+                v-bind:field-name="'Program Name'"
+                v-bind:field-help="'Name of program. All Unicode special characters accepted.'"
+            />
+          </div>
+          <div class="column is-one-half">
+            <BasicSelectField
+                v-model="newProgram.speciesId"
+                v-bind:validations="validations.speciesId"
+                v-bind:options="species"
+                v-bind:field-name="'Species'"
+            />
+          </div>
         </div>
-        <div class="column is-one-half">
-          <SelectField
-            v-model="newProgram.speciesId"
-            :field-error.sync="$v.newProgram.speciesId.$error"
-            :options="species"
-            :placeholder="'Select a species'"
-          >
-            <template v-slot:label>Species</template>
-            <template v-slot:errors>
-              <InputError>Species is required</InputError>
-            </template>
-            <template v-slot:help>
-              Name of species.
-            </template>
-          </SelectField>
+      </template>
+    </NewDataForm>
+
+    <button class="button is-primary has-text-weight-bold is-pulled-right" v-on:click="newProgramActive = true" v-if="!newProgramActive">
+      <span class="icon is-small">
+        <PlusCircleIcon size="1.5x" aria-hidden="true"></PlusCircleIcon>
+      </span>
+      <span>
+        New Program
+      </span>
+    </button>
+
+    <BaseTable
+        v-bind:headers="programTableHeaders"
+        v-bind:records.sync="programs"
+        v-bind:new-record.sync="currentNewProgram"
+        v-bind:rowValidations="programValidations"
+        v-bind:editable="true"
+        v-on:submit="updateProgram($event)"
+        v-on:remove="displayWarning($event)"
+        v-on:show-error-notification="$emit('show-error-notification', $event)"
+    >
+      <template v-slot:columns="data">
+        <TableRowColumn name="name">{{data.name}}</TableRowColumn>
+        <TableRowColumn name="species">{{getSpeciesName(data.speciesId)}}</TableRowColumn>
+        <TableRowColumn name="numUsers">{{data.numUsers}}</TableRowColumn>
+      </template>
+      <template v-slot:edit="{editData, validations}">
+        <div class="columns">
+          <div class="column is-one-half">
+            <BasicInputField
+                v-model="editData.name"
+                v-bind:validations="validations.name"
+                v-bind:field-name="'Program Name'"
+                v-bind:field-help="'Name of program. All Unicode special characters accepted.'"
+            />
+          </div>
+          <div class="column is-one-half">
+            <BasicSelectField
+                v-model="editData.speciesId"
+                v-bind:validations="validations.speciesId"
+                v-bind:options="species"
+                v-bind:selectedId="editData.speciesId"
+                v-bind:field-name="'Species'"
+            />
+          </div>
         </div>
-      </div>
-    </NewDataRowForm>
-    <table role="grid" aria-labelledby="adminProgramTableLabel" class="table is-striped is-narrow is-hoverable is-fullwidth">
-      <thead>
-        <tr>
-          <th>
-            Name
-          </th>
-          <th>
-            Species</th>
-          <th>
-            # Users
-          </th>
-          <th>
-            <button class="button is-primary has-text-weight-bold is-pulled-right" v-on:click="createProgram()" v-if="!newProgramActive">
-              <span class="icon is-small">
-                <PlusCircleIcon size="1.5x" aria-hidden="true"></PlusCircleIcon>
-              </span>
-              <span>
-                New Program
-              </span>
-            </button>
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        <template v-for="(program, index) in programs">
-          <tr v-bind:key="program.data.id" 
-              v-bind:class="{'is-new': (program.new == true && program.edit == false), 'is-selected': (program.edit == true)}" 
-          >
-            <!-- always display table row data -->
-            <td>{{ program.data.name }}</td>
-            <td>{{ getSpeciesName(program.data.speciesId) }}</td>
-            <td>{{ program.data.numUsers }}</td>
-            <td class="has-text-right">
-              <a  v-on:click="program.toggleEdit()">Edit</a>
-              <template v-if="program.edit">
-                <span class="icon is-small margin-right-2 has-vertical-align-middle">
-                  <ChevronDownIcon size="1x" aria-hidden="true"></ChevronDownIcon>
-                </span>
-              </template>
-              <template v-else>
-                <span class="icon is-small margin-right-2 has-vertical-align-middle">
-                  <ChevronRightIcon size="1x" aria-hidden="true"></ChevronRightIcon>
-                </span>
-              </template>
-              <a class="" v-on:click="displayWarning(index)">Deactivate</a>
-            </td>
-          </tr>
-          <tr v-bind:key="'edit'+program.editData.id" v-if="program.edit"
-              v-bind:class="{'is-selected': (program.edit == true)}" 
-          >
-            <td colspan="4">
-              <EditDataRowForm
-                @submit="updateProgram(index)"
-                @cancel="cancelEdit(program, index)"
-              >
-                <div class="columns">
-                  <div class="column is-one-half">
-                    <InputField
-                      v-model="program.editData.name"
-                      :field-error.sync="$v.programs.$each[index].editData.name.$error"
-                      :field-type="'text'"
-                      :placeholder="'Program Name'"
-                    >
-                      <template v-slot:label>Program Name</template>
-                      <template v-slot:errors>
-                        <InputError>Name is required</InputError>
-                      </template>
-                      <template v-slot:help>
-                        Name of program. All Unicode special characters accepted.
-                      </template>
-                    </InputField>
-                  </div>
-                  <div class="column is-one-half">
-                    <SelectField
-                      v-model="program.editData.speciesId"
-                      :field-error.sync="$v.programs.$each[index].editData.speciesId.$error"
-                      :options="species"
-                      :placeholder="'Select a species'"
-                      :selectedId="program.editData.speciesId"
-                    >
-                      <template v-slot:label>Species</template>
-                      <template v-slot:errors>
-                        <InputError>Species is required</InputError>
-                      </template>
-                      <template v-slot:help>
-                        Name of species.
-                      </template>
-                    </SelectField>
-                  </div>
-                </div>
-              </EditDataRowForm>
-            </td>
-          </tr>
-        </template>
-      </tbody>
-    </table>
+      </template>
+    </BaseTable>
   </section>
 </template>
 
 <script lang="ts">
 import {Component, Prop, Vue} from 'vue-property-decorator'
-import {PlusCircleIcon, CheckCircleIcon, XSquareIcon, ChevronRightIcon, ChevronDownIcon} from 'vue-feather-icons'
+import {PlusCircleIcon} from 'vue-feather-icons'
 import {validationMixin} from 'vuelidate'
-import {Validations} from 'vuelidate-property-decorators'
-import {required, email} from 'vuelidate/lib/validators'
+import {required} from 'vuelidate/lib/validators'
 
 import WarningModal from '@/components/modals/WarningModal.vue'
-import InputError from '@/components/forms/InputError.vue'
-import InputField from '@/components/forms/InputField.vue'
-import SelectField from '@/components/forms/SelectField.vue'
-import NewDataRowForm from '@/components/forms/NewDataRowForm.vue'
 import EditDataRowForm from '@/components/forms/EditDataRowForm.vue'
-import {Program} from '@/model/Program'
-import {TableRow} from '@/model/view_models/TableRow'
-import {User} from '@/model/User'
-import {Species} from '@/model/Species'
+import {Program} from '@/breeding-insight/model/Program'
+import {Species} from '@/breeding-insight/model/Species'
+import BaseTable from "@/components/tables/BaseTable.vue";
+import TableRowColumn from "@/components/tables/TableRowColumn.vue";
+import BasicInputField from "@/components/forms/BasicInputField.vue";
+import BasicSelectField from "@/components/forms/BasicSelectField.vue";
+import {ProgramService} from "@/breeding-insight/service/ProgramService";
+import {SpeciesService} from "@/breeding-insight/service/SpeciesService";
+import NewDataForm from "@/components/forms/NewDataForm.vue";
 
 @Component({
   mixins: [validationMixin],
-  components: { NewDataRowForm, EditDataRowForm,
-                InputError, InputField, SelectField,
-                WarningModal, 
-                PlusCircleIcon, CheckCircleIcon, XSquareIcon, ChevronRightIcon, ChevronDownIcon
-              }
+  components: {
+    NewDataForm, EditDataRowForm, WarningModal, PlusCircleIcon,
+    BaseTable, TableRowColumn, BasicInputField, BasicSelectField
+  }
 })
 export default class AdminProgramsTable extends Vue {
 
-  private programs: Array<TableRow<Program>> = [];
+  private programs: Array<Program> = [];
+  programTableHeaders: string[] = ['Name', 'Species', '# Users'];
 
   private deactivateActive: boolean = false;
   private newProgramActive: boolean = false;
   private deactivateWarningTitle: string = "Remove program from system?";
   private newProgram: Program = new Program();
+  private currentNewProgram: Program = new Program();
   private species: Array<Species> = [];
 
   private speciesMap: Map<string, Species> = new Map();
 
-  private deleteIndex: number = -1;
-  private currentNewRow: TableRow<Program> | null = null;
+  private deleteProgram: Program | undefined;
 
   private programName: string = "Program Name";
 
-  @Validations()
-  validations = {
-    newProgram : {
-      name: {required},
-      speciesId: {required},
-    },
-    programs : {
-      $each: {
-        editData: {
-          name: {required},
-          speciesId: {required},
-        }
-      }
-    }
+  programValidations = {
+    name: {required},
+    speciesId: {required}
   }
 
   mounted() {
@@ -223,126 +153,104 @@ export default class AdminProgramsTable extends Vue {
   }
 
    getPrograms() {
-    // TODO: api call
-    // stubbed for now
-    this.programs.push(new TableRow(true, new Program('1', 'Lance Grape Program', '1', '5', '1')));
-    this.programs.push(new TableRow(true, new Program('2', 'Phil Sweet Potato Program', '2', '2', '2')));
-    this.programs.push(new TableRow(true, new Program('3', 'Some Other Program', '3', '10', '3')));
+
+    ProgramService.getAll().then((programs) => {
+      this.programs.splice(0, this.programs.length, ...programs);
+    }).catch(() => {
+      this.$emit('show-error-notification', 'Unable to load programs from server');
+    });
+
   }
 
   getSpecies() {
-    // TODO: api call to get data
-    this.speciesMap.set('1', new Species('1', 'Grape'));
-    this.speciesMap.set('2', new Species('2', 'Sweet Potato'));
-    this.speciesMap.set('3', new Species('3', 'Blueberry'));
-    this.species = Array.from(this.speciesMap.values());
+
+    SpeciesService.getAll().then((species) => {
+      this.species.splice(0, this.species.length, ...species);
+      for (const individual of this.species){
+        this.speciesMap.set(individual.id, individual);
+      }
+    }).catch(() => {
+      this.$emit('show-error-notification', 'Unable to load programs from server');
+    })
+
   }
 
-  createProgram() {
-    this.newProgramActive = true;
-  }
+  updateProgram(updatedProgram: Program) {
 
-  updateProgram(rowIndex: number) {
-    // TODO: api call
+    ProgramService.update(updatedProgram).then(() => {
+      this.getPrograms();
+      this.$emit('show-success-notification', 'Success! ' + updatedProgram.name + ' updated.');
+    }).catch(() => {
+      this.$emit('show-error-notification', 'Error updating program');
+    });
 
-    this.$v.programs.$each[rowIndex].editData.$touch();
-    if (this.$v.programs.$each[rowIndex].editData.$anyError){
-      this.$emit('show-error-notification', 'Fix Invalid Fields');
-      return;
-    }
-    else {
-      // Check all of our fields to see if they were required
-      // this.newProgram = new Program();
-      this.$v.programs.$each[rowIndex].editData.$reset();
-
-      const editRow: TableRow<Program> = this.programs[rowIndex];
-      editRow.confirmChanges();
-      editRow.toggleEdit();
-
-      console.log(editRow.data.speciesId);
-
-      this.clearNewRow();
-      this.$emit('show-success-notification', 'Success! ' + editRow.data.name + ' updated.');
-    }
   }
 
   saveProgram() {
-    this.$v.newProgram.$touch();
-    if (this.$v.newProgram.$anyError){
-      this.$emit('show-error-notification', 'Fix Invalid Fields');
-      return;
-    }
-    else {
-      // TODO: api call
-      // some index management here for now just to allow the stub to work
-      let id: Number = Number(1);
 
-      if (this.programs.length > 0) {
-        const editRow: TableRow<Program> = this.programs[this.programs.length-1];
-        const user: Program = editRow.editData;
-        id = Number(user.id)+1;
-      }
+    if (this.newProgram.name != undefined && this.newProgram.speciesId != undefined) {
+      const newProgram: Program = new Program(this.uuidv4(), this.newProgram.name, this.newProgram.speciesId, '1');
 
-      if (this.newProgram.name != undefined && this.newProgram.speciesId != undefined) {
-        const newProgram: Program = new Program(id.toString(), this.newProgram.name, this.newProgram.speciesId, '1');
-        const newRow: TableRow<Program> = new TableRow(true, newProgram);
-        newRow.toggleNew();
-        this.programs.push(newRow);
-
-        this.clearNewRow();
-        this.currentNewRow = newRow;
-
+      ProgramService.create(newProgram).then(() => {
+        this.getPrograms();
+        this.currentNewProgram = newProgram;
         this.$emit('show-success-notification', 'Success! ' + this.newProgram.name + ' added.');
         this.newProgramActive = false;
-      }
-
-      // Check all of our fields to see if they were required
-      this.newProgram = new Program();
-      this.$v.newProgram.$reset();
-
+        this.newProgram = new Program();
+      }).catch(() => {
+        this.$emit('show-error-notification', 'Error while creating program, ' + this.newProgram.name);
+      })
+    } else {
+      this.$emit('show-error-notification', 'Error while creating program, ' + this.newProgram.name);
     }
+
+  }
+
+  uuidv4() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+      var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+      return v.toString(16);
+    });
   }
 
   cancelNewProgram() {
     this.newProgram = new Program();
-    this.$v.newProgram.$reset();
     this.newProgramActive = false;
   }
 
-  displayWarning(rowIndex: number) {
-    const editRow: TableRow<Program> = this.programs[rowIndex];
-    const program: Program = editRow.editData;
-    this.deleteIndex = rowIndex;
-    this.deactivateWarningTitle = "Remove " + program.name + " from the system ?";
-    this.deactivateActive = true;
+  displayWarning(program: Program) {
+
+    if (program){
+      this.deleteProgram = program;
+      this.deactivateWarningTitle = "Remove " + program.name + " from the system ?";
+      this.deactivateActive = true;
+    } else {
+      this.$log.error('Could not find object to delete')
+    }
   }
 
   modalDeleteHandler() {
     this.deactivateActive = false;
 
-    // TODO: api call
-    this.clearNewRow();
-    this.programs.splice(this.deleteIndex, 1);
-  }
-
-  modalCancelHandler() {
-    this.deactivateActive = false;
-  }
-
-  clearNewRow() {
-    if (this.currentNewRow != null) {
-      this.currentNewRow.toggleNew();
-      this.currentNewRow = null;
+    if (this.deleteProgram){
+      if (this.deleteProgram.id) {
+        if (this.deleteProgram.name) {
+          const deleteId: string = this.deleteProgram.id;
+          const deleteName: string = this.deleteProgram.name;
+          ProgramService.archive(deleteId).then(() => {
+            this.getPrograms();
+            this.$emit('show-success-notification', `${deleteName} archived in system`);
+          }).catch(() => {
+            this.$emit('show-error-notification', `Unable to archive program, ${deleteName}.`);
+          })
+          return;
+        }
+      }
     }
-  }
 
-  cancelEdit(program: TableRow<Program>, rowIndex: number) {
-    program.toggleEdit();
-    program.revertChanges();
-    // clear form
-    this.$v.programs.$each[rowIndex].editData.$reset();
-  }
+    this.$emit('show-error-notification', `Unable to archive program`);
 
+  }
 
   getSpeciesName(id: string): string {
     return this.speciesMap.get(id)!.name;

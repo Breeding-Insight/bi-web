@@ -45,4 +45,8 @@ export class TableRow<T extends Object> {
     this.toggleEdit();
     this.revertChanges();
   }
+
+  clearNewState() {
+    this.new = false;
+  }
 }

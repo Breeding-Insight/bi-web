@@ -147,8 +147,8 @@
 <script lang="ts">
 import {Component, Prop, Vue} from 'vue-property-decorator'
 import WarningModal from '@/components/modals/WarningModal.vue'
-import {Location} from '@/model/Location'
-import {TableRow} from '@/model/view_models/TableRow'
+import {Location} from '@/breeding-insight/model/Location'
+import {TableRow} from '@/breeding-insight/model/view_models/TableRow'
 import {PlusCircleIcon, CheckCircleIcon, XSquareIcon} from 'vue-feather-icons'
 import {validationMixin} from 'vuelidate';
 import InputError from '@/components/forms/InputError.vue'
@@ -156,7 +156,7 @@ import InputField from '@/components/forms/InputField.vue'
 import NewDataRowForm from '@/components/forms/NewDataRowForm.vue'
 import {Validations} from 'vuelidate-property-decorators'
 import {required} from 'vuelidate/lib/validators'
-import {ProgramLocation} from '@/model/ProgramLocation'
+import {ProgramLocation} from '@/breeding-insight/model/ProgramLocation'
 
 @Component({
   mixins: [validationMixin],

@@ -1,4 +1,4 @@
-import {Role} from '@/model/Role'
+import {Role} from '@/breeding-insight/model/Role'
 
 export class ProgramUser {
   id?: string;

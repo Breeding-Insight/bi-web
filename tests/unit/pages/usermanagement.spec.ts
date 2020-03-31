@@ -3,8 +3,8 @@ import UserManagement from '@/views/UserManagement.vue'
 import VueRouter from 'vue-router'
 import Vuex from 'vuex'
 import localVue from '../index'
-import { User } from '@/model/User'
-import { TableRow } from '@/model/view_models/TableRow'
+import { User } from '@/breeding-insight/model/User'
+import { TableRow } from '@/breeding-insight/model/view_models/TableRow'
 
 describe('UserManagement.vue', () => {
 

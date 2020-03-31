@@ -1,3 +1,5 @@
+import {ProgramDAO} from "@/breeding-insight/dao/ProgramDAO";
+
 export class Program {
   id?: string;
   name?: string;

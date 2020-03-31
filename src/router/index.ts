@@ -9,7 +9,7 @@ import AdminUserManagement from '@/views/AdminUserManagement.vue'
 import store from '@/store/index.ts';
 import { LOGIN, LOGOUT, REQUESTED_PATH, ERROR_STATE } from '@/store/mutation-types';
 import * as api from '@/util/api';
-import { BiResponse } from '@/model/BiResponse';
+import { BiResponse } from '@/breeding-insight/model/BiResponse';
 
 Vue.use(VueRouter);
 
