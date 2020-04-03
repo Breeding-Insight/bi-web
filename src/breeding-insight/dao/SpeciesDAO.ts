@@ -1,24 +1,22 @@
 import {Species} from "@/breeding-insight/model/Species";
+import { BiResponse } from '../model/BiResponse';
+import * as api from "@/util/api";
 
 export class SpeciesDAO {
 
-  static getAll(): Promise<Species[]> {
+  static getAll(): Promise<BiResponse> {
 
-    return new Promise<Species[]>((resolve, reject) => {
+    return new Promise<BiResponse>(((resolve, reject) => {
 
-      // Get programs
-      const programs: Species[] = [
-        new Species('1', 'Grape'),
-        new Species('2', 'Sweet Potato'),
-        new Species('3', 'Blueberry')
-      ];
+      api.call({ url: `${process.env.VUE_APP_BI_API_V1_PATH}/species`, method: 'get' })
+        .then((response: any) => {
+          const biResponse = new BiResponse(response.data);
+          resolve(biResponse);
+        }).catch((error) => {
+          reject(error);
+        })
 
-      resolve(programs);
-
-      if (programs.length < 0){
-        reject();
-      }
-    });
+    }))
   }
 
 }
