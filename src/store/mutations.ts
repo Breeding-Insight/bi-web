@@ -1,6 +1,6 @@
 import { MutationTree } from 'vuex';
-import { User, RootState } from '@/store/types';
-import { ERROR_STATE, LOGIN, LOGOUT, REQUESTED_PATH } from '@/store/mutation-types';
+import { User, Program, RootState } from '@/store/types';
+import { ERROR_STATE, LOGIN, LOGOUT, REQUESTED_PATH, SET_ACTIVE_PROGRAM } from '@/store/mutation-types';
 
 export const mutations: MutationTree<RootState> = {
   [LOGIN] (state, user: User) {
@@ -23,5 +23,8 @@ export const mutations: MutationTree<RootState> = {
   },
   [REQUESTED_PATH] (state, payload: any) {
     state.requestedPath = payload.path;
+  },
+  [SET_ACTIVE_PROGRAM] (state, program: Program) {
+    state.program = program;
   }
 };

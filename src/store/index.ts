@@ -15,7 +15,8 @@ const store: StoreOptions<RootState> = {
     loginServerError: false,
     loggedIn: false,
     requestedPath: undefined,
-    user: undefined
+    user: undefined,
+    program: undefined
   },
   mutations,
   actions
