@@ -152,26 +152,34 @@ export default class AdminProgramsTable extends Vue {
     this.getSpecies();
   }
 
-   getPrograms() {
+  destroyed() {
+    this.dataLoaded = false;
+  }
 
-    ProgramService.getAll().then((programs) => {
-      this.programs.splice(0, this.programs.length, ...programs);
-    }).catch(() => {
-      this.$emit('show-error-notification', 'Unable to load programs from server');
+  getPrograms() {
+
+    ProgramService.getAll().then((programs: Program[]) => {
+      this.programs = programs;
+    }).catch((error) => {
+      // Display error that users cannot be loaded
+      this.$emit('show-error-notification', 'Error while trying to load programs');
+      throw error;
     });
 
   }
 
   getSpecies() {
 
-    SpeciesService.getAll().then((species) => {
-      this.species.splice(0, this.species.length, ...species);
+    SpeciesService.getAll().then((species: Species[]) => {
+      this.species = species;
       for (const individual of this.species){
         this.speciesMap.set(individual.id, individual);
       }
-    }).catch(() => {
-      this.$emit('show-error-notification', 'Unable to load programs from server');
-    })
+    }).catch((error) => {
+      // Display error that users cannot be loaded
+      this.$emit('show-error-notification', 'Error while trying to load species');
+      throw error;
+    });
 
   }
 
@@ -189,7 +197,7 @@ export default class AdminProgramsTable extends Vue {
   saveProgram() {
 
     if (this.newProgram.name != undefined && this.newProgram.speciesId != undefined) {
-      const newProgram: Program = new Program(this.uuidv4(), this.newProgram.name, this.newProgram.speciesId, '1');
+      const newProgram: Program = new Program(undefined, this.newProgram.name, this.newProgram.speciesId, '1');
 
       ProgramService.create(newProgram).then(() => {
         this.getPrograms();
@@ -204,13 +212,6 @@ export default class AdminProgramsTable extends Vue {
       this.$emit('show-error-notification', 'Error while creating program, ' + this.newProgram.name);
     }
 
-  }
-
-  uuidv4() {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-      var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
-      return v.toString(16);
-    });
   }
 
   cancelNewProgram() {
@@ -253,6 +254,9 @@ export default class AdminProgramsTable extends Vue {
   }
 
   getSpeciesName(id: string): string {
+    console.log(id);
+    console.log(this.speciesMap);
+    
     return this.speciesMap.get(id)!.name;
   }
 

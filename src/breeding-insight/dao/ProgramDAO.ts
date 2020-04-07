@@ -1,66 +1,58 @@
 import {Program} from "@/breeding-insight/model/Program";
+import { BiResponse } from '../model/BiResponse';
+import * as api from "@/util/api";
 
 export class ProgramDAO {
 
-  static programs: Program[] = [
-    new Program('1', 'Lance Grape Program', '1', '5'),
-    new Program('2', 'Phil Sweet Potato Program', '2', '2'),
-    new Program('3', 'Some Other Program', '3', '10')
-  ];
+  static create(program: Program): Promise<BiResponse> {
 
-  static create(program: Program): Promise<Program> {
+    return new Promise<BiResponse>((resolve, reject) => {
 
-    return new Promise<Program>((resolve, reject) => {
+      // Construct request body
+      const body = {'name': program.name, 'species': { 'id': program.speciesId } };
 
-      if (program === undefined){
-        reject();
-      } else {
-        this.programs.push(program);
-        resolve(program);
-      }
-    });
-  }
-
-  static update(id: string, program: Program): Promise<Program> {
-
-
-    return new Promise<Program>((resolve, reject) => {
-      const recordIndex: number = this.programs.findIndex(program => program.id === id);
-
-      if (recordIndex === undefined){
-        reject();
-      } else {
-        this.programs[recordIndex] = program;
-        resolve(program);
-      }
+      // Make api request
+      api.call({ url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs`, method: 'post', data: body})
+        .then((response: any) => {
+          const biResponse = new BiResponse(response.data);
+          resolve(biResponse);
+        }).catch((error) => {reject(error)});
 
     });
   }
 
-  static archive(id: string): Promise<Program> {
+  static update(id: string, program: Program): Promise<BiResponse> {
 
-    return new Promise<Program>((resolve, reject) => {
-      if (id === undefined){
-        reject();
-      } else {
-        const deleteIndex: number = this.programs.findIndex(program => program.id === id);
-        const deletedProgram: Program = this.programs[deleteIndex];
-        this.programs.splice(deleteIndex, 1);
-        resolve(deletedProgram);
-      }
+    return new Promise<BiResponse>((resolve, reject) => {
+
+      const body = {'name': program.name, 'species': { 'id': program.speciesId } };
+
+      api.call({ url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${id}`, method: 'put', data: body})
+        .then((response: any) => {
+          const biResponse = new BiResponse(response.data);
+          resolve(biResponse);
+        }).catch((error) => reject(error));
+
     });
   }
 
-  static getAll(): Promise<Program[]> {
+  static archive(id: string): Promise<any> {
+    return api.call({ url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/archive/${id}`, method: 'delete'});
+  }
 
-    return new Promise<Program[]>((resolve, reject) => {
+  static getAll(): Promise<BiResponse> {
 
-      resolve(this.programs);
+    return new Promise<BiResponse>(((resolve, reject) => {
 
-      if (this.programs.length < 0){
-        reject();
-      }
-    });
+      api.call({ url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs`, method: 'get' })
+        .then((response: any) => {
+          const biResponse = new BiResponse(response.data);
+          resolve(biResponse);
+        }).catch((error) => {
+          reject(error);
+        })
+
+    }))
   }
 
 }
