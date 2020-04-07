@@ -152,10 +152,6 @@ export default class AdminProgramsTable extends Vue {
     this.getSpecies();
   }
 
-  destroyed() {
-    this.dataLoaded = false;
-  }
-
   getPrograms() {
 
     ProgramService.getAll().then((programs: Program[]) => {
