@@ -7,7 +7,7 @@
     <div class="columns">
       <div class="column is-2">
         <div class="buttons">
-          <button v-on:click="$router.push('/admin')" class="button is-primary is-light is-fullwidth is-outlined">System Administration</button>
+          <router-link to="/admin" tag="button" class="button is-primary is-light is-fullwidth is-outlined">System Administration</router-link>
           <template v-if="programs.length > 0">
             <button v-for="program in programs" :key="program.id" 
               v-on:click="selectProgram(program)" 
