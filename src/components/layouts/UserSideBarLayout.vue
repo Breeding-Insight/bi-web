@@ -1,6 +1,6 @@
 <template>
   <BaseSideBarLayout
-    :title="'Program Name'" 
+    :title="title" 
     :username="username"
     v-on:logout="$emit('logout')"
   >
@@ -40,7 +40,7 @@
   @Component( {
     components: {BaseSideBarLayout, MoreVerticalIcon, MoreHorizontalIcon}
   })
-  export default class AdminSideBarLayout extends Vue {
+  export default class UserSideBarLayout extends Vue {
     programManagementActive: boolean =  true;
 
     @Prop()
@@ -51,6 +51,10 @@
     }
     updated() {
       this.setActiveLinkSubmenus();
+    }
+
+    get title(): string {
+      return this.$store.state.program ? this.$store.state.program.name : 'Program Name';
     }
 
     setActiveLinkSubmenus() {
