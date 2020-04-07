@@ -5,7 +5,7 @@
       <td class="has-text-right">
         <a
           v-on:click="$emit('edit')"
-          v-on:keyup.enter="$emit('edit')"
+          v-on:keypress.enter.space="$emit('edit')"
           tabindex="0"
         >
           Edit
@@ -18,7 +18,7 @@
         </span>
         <a
           v-on:click="$emit('remove')"
-          v-on:keyup.enter="$emit('remove')"
+          v-on:keypress.enter.space="$emit('remove')"
           tabindex="0"
         >
           Deactivate
