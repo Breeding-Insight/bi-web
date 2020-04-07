@@ -1,7 +1,7 @@
 <template>
   <BaseSideBarLayout
-    :title="title" 
-    :username="username"
+    v-bind:title="title" 
+    v-bind:username="username"
     v-on:logout="$emit('logout')"
   >
   <template v-slot:menu>
