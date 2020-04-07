@@ -192,21 +192,15 @@ export default class AdminProgramsTable extends Vue {
 
   saveProgram() {
 
-    if (this.newProgram.name != undefined && this.newProgram.speciesId != undefined) {
-      const newProgram: Program = new Program(undefined, this.newProgram.name, this.newProgram.speciesId, '1');
-
-      ProgramService.create(newProgram).then(() => {
-        this.getPrograms();
-        this.currentNewProgram = newProgram;
-        this.$emit('show-success-notification', 'Success! ' + this.newProgram.name + ' added.');
-        this.newProgramActive = false;
-        this.newProgram = new Program();
-      }).catch(() => {
-        this.$emit('show-error-notification', 'Error while creating program, ' + this.newProgram.name);
-      })
-    } else {
+    ProgramService.create(this.newProgram).then(() => {
+      this.getPrograms();
+      this.currentNewProgram = this.newProgram;
+      this.$emit('show-success-notification', 'Success! ' + this.newProgram.name + ' added.');
+      this.newProgramActive = false;
+      this.newProgram = new Program();
+    }).catch(() => {
       this.$emit('show-error-notification', 'Error while creating program, ' + this.newProgram.name);
-    }
+    })
 
   }
 
