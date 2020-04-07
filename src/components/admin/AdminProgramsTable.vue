@@ -1,9 +1,9 @@
 <template>
   <section id="adminProgramTableLabel">
     <WarningModal
-      v-bind:active="deactivateActive"
+      v-bind:active.sync="deactivateActive"
       v-bind:msg-title="deactivateWarningTitle"
-      v-on:cancel="deactivateActive = !deactivateActive"
+      v-on:deactivate="deactivateActive = false"
     >
       <section>
         <p class="has-text-dark">
@@ -15,18 +15,27 @@
           <button v-on:click="modalDeleteHandler()" 
           class="button is-danger"><strong>Yes, remove</strong>
           </button>
-          <button v-on:click="deactivateActive = !deactivateActive" class="button">Cancel</button>
+          <button v-on:click="deactivateActive = false" class="button">Cancel</button>
         </div>
       </div>              
     </WarningModal>
 
+    <button class="button is-primary has-text-weight-bold is-pulled-right" v-on:click="newProgramActive = true" v-show="!newProgramActive">
+      <span class="icon is-small">
+        <PlusCircleIcon size="1.5x" aria-hidden="true"></PlusCircleIcon>
+      </span>
+      <span>
+        New Program
+      </span>
+    </button>
+
     <NewDataForm
-      v-if="newProgramActive"
-      v-bind:row-validations="programValidations"
-      v-bind:new-record.sync="newProgram"
-      v-on:submit="saveProgram"
-      v-on:cancel="cancelNewProgram"
-      v-on:show-error-notification="$emit('show-error-notification', $event)"
+        v-if="newProgramActive"
+        v-bind:row-validations="programValidations"
+        v-bind:new-record.sync="newProgram"
+        v-on:submit="saveProgram"
+        v-on:cancel="cancelNewProgram"
+        v-on:show-error-notification="$emit('show-error-notification', $event)"
     >
       <template v-slot="validations">
         <div class="columns">
@@ -49,15 +58,6 @@
         </div>
       </template>
     </NewDataForm>
-
-    <button class="button is-primary has-text-weight-bold is-pulled-right" v-on:click="newProgramActive = true" v-if="!newProgramActive">
-      <span class="icon is-small">
-        <PlusCircleIcon size="1.5x" aria-hidden="true"></PlusCircleIcon>
-      </span>
-      <span>
-        New Program
-      </span>
-    </button>
 
     <BaseTable
         v-bind:headers="programTableHeaders"

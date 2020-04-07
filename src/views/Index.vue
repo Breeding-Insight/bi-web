@@ -157,10 +157,10 @@
       <p>
         To access to your breeding program, please log in.
       </p>
-      <b-button
-          id="connect-orcid-button"
-          class="orcidBtn"
-          @click="orcidLogin"
+      <button
+        id="connect-orcid-button"
+        class="orcidBtn"
+        v-on:click="orcidLogin"
       >
         SIGN IN with ORCID
         <img
@@ -171,7 +171,7 @@
             class="is-pulled-right"
             alt="ORCID iD icon"
         >
-      </b-button>
+      </button>
       <p class="is-size-7 has-text-left">
         To acknowledge that you have used your iD and that it has been authenticated, we display
         the ORCID iD icon
@@ -189,9 +189,9 @@
 
     <!-- Login Failed Modal -->
     <InfoModal
-        :active="isFailedLoginModalActive"
-        @cancel="isFailedLoginModalActive = !isFailedLoginModalActive"
-        :msg-title="'Login Failed'"
+        v-bind:active.sync="isFailedLoginModalActive"
+        v-on:deactivate="isFailedLoginModalActive = false"
+        v-bind:msg-title="'Login Failed'"
     >
       <p class="has-text-dark">
         Verify your login credentials, and if the issue persists
@@ -201,9 +201,9 @@
     </InfoModal>
 
     <WarningModal
-        :active.sync="isLoginServerErrorModalActive"
-        :msg-title="'Server Error: Login Failed'"
-        @cancel="isLoginServerErrorModalActive = !isLoginServerErrorModalActive"
+        v-bind:active.sync="isLoginServerErrorModalActive"
+        v-bind:msg-title="'Server Error: Login Failed'"
+        v-on:deactivate="isLoginServerErrorModalActive = false"
     >
       <section>
         <p class="has-text-dark">

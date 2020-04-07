@@ -1,10 +1,9 @@
 <template>
-  <section id="adminUserTableLabel">
+  <div>
     <WarningModal
-      v-on:submit="modalDeleteHandler()" 
-      v-on:cancel="modalCancelHandler()" 
-      v-bind:active="deactivateActive"
+      v-bind:active.sync="deactivateActive"
       v-bind:msg-title="deactivateWarningTitle"
+      v-on:deactivate="deactivateActive = false"
     >
       <section>
         <p class="has-text-dark">
@@ -14,10 +13,23 @@
       <div class="columns">
         <div class="column is-whole has-text-centered buttons">
           <button v-on:click="modalDeleteHandler()" class="button is-danger"><strong>Yes, remove</strong></button>
-          <button v-on:click="modalCancelHandler()" class="button">Cancel</button>
+          <button v-on:click="deactivateActive = false" class="button">Cancel</button>
         </div>
       </div>              
     </WarningModal>
+
+    <button
+      class="button is-primary has-text-weight-bold is-pulled-right"
+      v-on:click="newUserActive = true"
+      v-show="!newUserActive"
+    >
+      <span class="icon is-small">
+        <PlusCircleIcon size="1.5x" aria-hidden="true"></PlusCircleIcon>
+      </span>
+      <span>
+        New User
+      </span>
+    </button>
 
     <NewDataForm
         v-if="newUserActive"
@@ -46,15 +58,6 @@
         </div>
       </template>
     </NewDataForm>
-
-    <button class="button is-primary has-text-weight-bold is-pulled-right" v-on:click="newUserActive = true" v-if="!newUserActive">
-      <span class="icon is-small">
-        <PlusCircleIcon size="1.5x" aria-hidden="true"></PlusCircleIcon>
-      </span>
-      <span>
-        New User
-      </span>
-    </button>
 
     <BaseTable
         v-bind:headers="userTableHeaders"
@@ -90,9 +93,7 @@
         </div>
       </template>
     </BaseTable>
-
-  </section>
-
+  </div>
 </template>
 
 <script lang="ts">
@@ -221,10 +222,6 @@ export default class AdminUsersTable extends Vue {
       }
     }
 
-  }
-
-  modalCancelHandler() {
-    this.deactivateActive = false;
   }
 
 }
