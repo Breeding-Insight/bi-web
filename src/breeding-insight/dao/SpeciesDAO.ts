@@ -1,5 +1,5 @@
 import {Species} from "@/breeding-insight/model/Species";
-import { BiResponse } from '../model/BiResponse';
+import {BiResponse} from "@/breeding-insight/model/BiResponse";
 import * as api from "@/util/api";
 
 export class SpeciesDAO {

@@ -1,5 +1,5 @@
 import {Program} from "@/breeding-insight/model/Program";
-import { BiResponse } from '../model/BiResponse';
+import {BiResponse} from "@/breeding-insight/model/BiResponse";
 import * as api from "@/util/api";
 
 export class ProgramDAO {
