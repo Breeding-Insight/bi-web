@@ -12,13 +12,15 @@ import * as api from '@/util/api';
 import { BiResponse } from '@/breeding-insight/model/BiResponse';
 import ProgramLocationsManagement from "@/views/ProgramLocationsManagement.vue";
 import ProgramUserManagement from "@/views/ProgramUsersManagement.vue";
+import ProgramSelection from "@/views/ProgramSelection.vue";
 
 Vue.use(VueRouter);
 
 const layouts = {
   adminSideBar: 'adminSideBar',
   userSideBar: 'userSideBar',
-  simple: 'simple'
+  simple: 'simple',
+  noSideBar: 'noSideBar'
 }
 
 const routes = [
@@ -117,6 +119,15 @@ const routes = [
         component: ProgramUserManagement
       }
     ]
+  },
+  {
+    path: '/program-selection',
+    name: 'program-selection',
+    meta: {
+      title: 'Select A Program',
+      layout: layouts.noSideBar
+    },
+    component: ProgramSelection
   }
 ]
 
@@ -140,9 +151,8 @@ router.beforeEach((to, from, next) => {
       let biResponse = new BiResponse(response.data);
       store.commit(LOGIN, {'id': biResponse.result.orcid, 'name': biResponse.result.name, 'roles':[] });
 
-      // If they are logged in and trying to go home, send them to user home
-      if (to.path == '/') next('/home')
-      else next();
+      // send them to program-selection regardless of requested url
+      next('/program-selection');
     })
     .catch((error) => {
 
@@ -161,8 +171,8 @@ router.beforeEach((to, from, next) => {
     });
 
   } else {
-    // If the user is trying to go home and they are logged in, send them to user home. 
-    if (to.path == '/' && store.state.loggedIn) next('/home')
+    // If the user is trying to go home and they are logged in, send them to program selection
+    if (to.path == '/' && store.state.loggedIn) next('/program-selection') 
     else next();
   }
 

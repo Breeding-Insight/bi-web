@@ -6,7 +6,7 @@
       <InfoNotification ref="infoNotification" class="is-marginless"></InfoNotification>
     </div>
     
-    <component v-bind:is="layout" v-bind:username="username" @logout="logOut">
+    <component v-bind:is="layout" v-bind:username="username" v-bind:title="layoutTitle" @logout="logOut">
         <router-view
             @show-success-notification="showSuccessNotification"
             @show-info-notification="showInfoNotification"
@@ -79,6 +79,7 @@ import ErrorNotification from '@/components/notifications/ErrorNotification.vue'
 import SimpleLayout from '@/components/layouts/SimpleLayout.vue'
 import AdminSideBarLayout from './components/layouts/AdminSideBarLayout.vue'
 import UserSideBarLayout from './components/layouts/UserSideBarLayout.vue'
+import NoSideBarLayout from './components/layouts/NoSideBarLayout.vue'
 import { User } from './breeding-insight/model/User'
 
 @Component({
@@ -95,6 +96,9 @@ import { User } from './breeding-insight/model/User'
   computed: {
     layout() {
       return this.$route.meta.layout ? `${this.$route.meta.layout}Layout` : 'simpleLayout';
+    },
+    layoutTitle() {
+      return this.$route.meta.title;
     }
   },
   components: {
@@ -103,11 +107,13 @@ import { User } from './breeding-insight/model/User'
     ErrorNotification,
     simpleLayout: SimpleLayout,
     adminSideBarLayout: AdminSideBarLayout,
-    userSideBarLayout: UserSideBarLayout
+    userSideBarLayout: UserSideBarLayout,
+    noSideBarLayout: NoSideBarLayout
   },
 })
 export default class App extends Vue {
   public loading: boolean = false;
+  public t: string = "Title";
 
   public $refs!: {
     successNotification: SuccessNotification,
