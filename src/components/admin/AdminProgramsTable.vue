@@ -71,7 +71,11 @@
     >
       <template v-slot:columns="data">
         <TableRowColumn name="name">{{data.name}}</TableRowColumn>
-        <TableRowColumn name="species">{{getSpeciesName(data.speciesId)}}</TableRowColumn>
+        <TableRowColumn name="species">
+          <template v-if="speciesMap.size > 0">
+            {{getSpeciesName(data.speciesId)}}
+          </template>
+        </TableRowColumn>
         <TableRowColumn name="numUsers">{{data.numUsers}}</TableRowColumn>
       </template>
       <template v-slot:edit="{editData, validations}">
@@ -137,7 +141,6 @@ export default class AdminProgramsTable extends Vue {
   private species: Array<Species> = [];
 
   private speciesMap: Map<string, Species> = new Map();
-
   private deleteProgram: Program | undefined;
 
   private programName: string = "Program Name";
@@ -169,7 +172,8 @@ export default class AdminProgramsTable extends Vue {
     SpeciesService.getAll().then((species: Species[]) => {
       this.species = species;
       for (const individual of this.species){
-        this.speciesMap.set(individual.id, individual);
+        // reassign so vue picks up changes
+        this.speciesMap = new Map(this.speciesMap.set(individual.id, individual));
       }
     }).catch((error) => {
       // Display error that users cannot be loaded
@@ -244,9 +248,6 @@ export default class AdminProgramsTable extends Vue {
   }
 
   getSpeciesName(id: string): string {
-    console.log(id);
-    console.log(this.speciesMap);
-    
     return this.speciesMap.get(id)!.name;
   }
 
