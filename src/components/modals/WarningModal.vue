@@ -1,7 +1,7 @@
 <template>
   <BaseModal
-      v-bind:active="active"
-      v-on:close-modal="$emit('cancel')"
+      v-bind:active.sync="active"
+      v-on:deactivate="$emit('deactivate')"
     >
       <div class="message is-danger">
         <div class="message-body">

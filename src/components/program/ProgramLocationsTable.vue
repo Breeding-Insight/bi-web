@@ -1,10 +1,9 @@
 <template>
   <section id="locationTableLabel">
     <WarningModal
-      v-on:submit="modalDeleteHandler()" 
-      v-on:cancel="modalCancelHandler()" 
-      v-bind:active="deactivateActive"
+      v-bind:active.sync="deactivateActive"
       v-bind:msg-title="deactivateWarningTitle"
+      v-on:deactivate="deactivateActive = false"
     >
       <section>
         <p class="has-text-dark">
@@ -14,7 +13,7 @@
       <div class="columns">
         <div class="column is-whole has-text-centered buttons">
           <button v-on:click="modalDeleteHandler()" class="button is-danger"><strong>Yes, remove</strong></button>
-          <button v-on:click="modalCancelHandler()" class="button">Cancel</button>
+          <button v-on:click="deactivateActive = false" class="button">Cancel</button>
         </div>
       </div>              
     </WarningModal>
@@ -267,10 +266,6 @@ export default class ProgramLocationsTable extends Vue {
     // TODO: api call
     this.clearNewRow();
     this.locations.splice(this.deleteIndex, 1);
-  }
-
-  modalCancelHandler() {
-    this.deactivateActive = false;
   }
 
   clearNewRow() {

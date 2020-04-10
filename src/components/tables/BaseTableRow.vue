@@ -3,14 +3,26 @@
     <slot></slot>
     <template v-if="rowData.editable">
       <td class="has-text-right">
-        <a v-on:click="$emit('edit')">Edit</a>
+        <a
+          v-on:click="$emit('edit')"
+          v-on:keypress.enter.space="$emit('edit')"
+          tabindex="0"
+        >
+          Edit
+        </a>
         <span v-if="!rowData.edit" class="icon is-small margin-right-2 has-vertical-align-middle">
           <ChevronRightIcon size="1x" aria-hidden="true"></ChevronRightIcon>
         </span>
         <span v-if="rowData.edit" class="icon is-small margin-right-2 has-vertical-align-middle">
           <ChevronDownIcon size="1x" aria-hidden="true"></ChevronDownIcon>
         </span>
-        <a class="" v-on:click="$emit('remove')">Deactivate</a>
+        <a
+          v-on:click="$emit('remove')"
+          v-on:keypress.enter.space="$emit('remove')"
+          tabindex="0"
+        >
+          Deactivate
+        </a>
       </td>
     </template>
   </tr>

@@ -37,6 +37,8 @@
     "bulma": "^0.8.0",
     "bulma-divider": "^0.2.0",
     "core-js": "^3.4.3",
+    "focus-trap": "^5.1.0",
+    "focus-trap-vue": "0.0.6",
     "vue": "^2.6.10",
     "vue-class-component": "^7.0.2",
     "vue-feather-icons": "^5.0.0",
