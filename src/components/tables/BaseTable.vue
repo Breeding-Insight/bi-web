@@ -80,7 +80,7 @@
         const newTableRow = new TableRow<any>(this.editable, record);
 
         if (this.newRecord){
-          if (record.id === this.newRecord.id){
+          if (record.id !== undefined && this.newRecord.id !== undefined && record.id === this.newRecord.id){
             newTableRow.toggleNew();
           }
         }
