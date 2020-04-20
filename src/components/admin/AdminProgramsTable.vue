@@ -185,7 +185,7 @@ export default class AdminProgramsTable extends Vue {
 
   updateProgram(updatedProgram: Program) {
 
-    ProgramService.update(updatedProgram).then(() => {
+    ProgramService.update(updatedProgram).then((program: Program) => {
       this.getPrograms();
       this.$emit('show-success-notification', 'Success! ' + updatedProgram.name + ' updated.');
     }).catch(() => {
@@ -196,9 +196,9 @@ export default class AdminProgramsTable extends Vue {
 
   saveProgram() {
 
-    ProgramService.create(this.newProgram).then(() => {
+    ProgramService.create(this.newProgram).then((program: Program) => {
+      this.currentNewProgram = program;
       this.getPrograms();
-      this.currentNewProgram = this.newProgram;
       this.$emit('show-success-notification', 'Success! ' + this.newProgram.name + ' added.');
       this.newProgramActive = false;
       this.newProgram = new Program();
