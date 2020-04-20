@@ -46,6 +46,7 @@
                 v-model="newUser.name"
                 v-bind:validations="validations.name"
                 v-bind:field-name="'Name'"
+                v-bind:field-help="'Name of user. All Unicode special characters accepted.'"
             />
           </div>
           <div class="column is-one-half">
@@ -79,8 +80,8 @@
             <BasicInputField
                 v-model="editData.name"
                 v-bind:validations="validations.name"
-                v-bind:field-name="'Program Name'"
-                v-bind:field-help="'Name of program. All Unicode special characters accepted.'"
+                v-bind:field-name="'Name'"
+                v-bind:field-help="'Name of user. All Unicode special characters accepted.'"
             />
           </div>
           <div class="column is-one-half">
