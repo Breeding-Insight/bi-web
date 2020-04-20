@@ -17,289 +17,242 @@
         </div>
       </div>              
     </WarningModal>
-    <NewDataRowForm
-      v-if="newUserActive"
-      @submit="saveUser"
-      @cancel="cancelNewUser"
+
+    <button class="button is-primary has-text-weight-bold is-pulled-right" v-on:click="newUserActive = true" v-show="!newUserActive">
+      <span class="icon is-small">
+        <PlusCircleIcon size="1.5x" aria-hidden="true"></PlusCircleIcon>
+      </span>
+      <span>
+        New User
+      </span>
+    </button>
+
+    <NewDataForm
+        v-if="newUserActive"
+        v-bind:row-validations="userValidations"
+        v-bind:new-record.sync="newUser"
+        v-on:submit="saveUser"
+        v-on:cancel="cancelNewUser"
+        v-on:show-error-notification="$emit('show-error-notification', $event)"
     >
-      <div class="columns">
-        <div class="column is-two-fifths">
-          <InputField
-            v-model="newUser.name"
-            :field-error.sync="$v.newUser.name.$error"
-            :field-type="'text'"
-            :placeholder="'New User Name'"
-          >
-            <template v-slot:label>Name</template>
-            <template v-slot:errors>
-              <InputError>Name is required</InputError>
-            </template>
-            <template v-slot:help>
-              Full name as preferred. All Unicode special characters accepted.
-            </template>
-          </InputField>
-        </div>
-        <div class="column is-two-fifths">
-          <InputField
-            v-model="newUser.email"
-            :field-error.sync="$v.newUser.email.$error"
-            :field-type="'email'"
-            :placeholder="'New User Email'"
-          >
-            <template v-slot:label>Email</template>
-            <template v-slot:errors>
-              <InputError v-bind:hidden-indication.sync="$v.newUser.email.required">
-                Email is required
-              </InputError>
-              <InputError v-bind:hidden-indication.sync="$v.newUser.email.email">
-                Must be in email format
-              </InputError>
-            </template>
-            <template v-slot:help>
-              New users will receive an email at this address to activate their account.
-            </template>
-          </InputField>
-        </div>
-        <div class="column is-one-fifth">
-          <div class="field">
-            <label class="label">Role</label>
-            <div class="control is-expanded">
-              <div class="select is-fullwidth">
-                <select v-model="newUser.role">
-                  <option disabled value="">Select a role</option>
-                  <option
-                      v-for="role in roles"
-                      v-bind:key="role.id"
-                  >
-                    {{ role.name }}
-                  </option>
-                </select>
-              </div>
-            </div>
+      <template v-slot="validations">
+        <div class="columns">
+          <div class="column is-two-fifths">
+            <BasicInputField
+                v-model="newUser.name"
+                v-bind:validations="validations.name"
+                v-bind:field-name="'Name'"
+                v-bind:field-help="'Full name as preferred. All Unicode special characters accepted.'"
+            />
+          </div>
+          <div class="column is-two-fifths">
+            <BasicInputField
+                v-model="newUser.email"
+                v-bind:validations="validations.email"
+                v-bind:field-name="'Email'"
+                v-bind:field-help="'New users will receive an email at this address to activate their account.'"
+            />
+          </div>
+          <div class="column is-one-fifth">
+            <BasicSelectField
+                v-model="newUser.roleId"
+                v-bind:validations="validations.roleId"
+                v-bind:options="roles"
+                v-bind:field-name="'Role'"
+            />
           </div>
         </div>
-      </div>
-    </NewDataRowForm>
-    <table role="grid" aria-labelledby="programUserTableLabel" class="table is-striped is-narrow is-hoverable is-fullwidth">
-      <thead>
-        <tr>
-          <th>
-            Name
-          </th>
-          <th>Email</th>
-          <th>
-            Role
-          </th>
-          <th>
-            <button class="button is-primary has-text-weight-bold is-pulled-right" v-on:click="createUser()" v-if="!newUserActive">
-              <span class="icon is-small">
-                <PlusCircleIcon size="1.5x" aria-hidden="true"></PlusCircleIcon>
-              </span>
-              <span>
-                New User
-              </span>
-            </button>
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-bind:key="user.data.id" v-for="(user, index) in users"
-            v-bind:class="{'is-selected': (user.edit == true), 'is-new': (user.new == true)}"
-        >
-          <td v-if="user.edit">
-            <input type="text" class="input" v-model="user.editData.name" placeholder="User Name">
-          </td>
-          <td v-else>{{ user.data.name }}</td>
-          <td v-if="user.edit">
-              <input type="text" class="input" v-model="user.editData.email" placeholder="User Email">
-          </td>
-          <td v-else>
-              {{ user.data.email }}
-          </td>
-          <td v-if="user.edit">
-              <div class="select is-fullwidth">
-                <select v-model="newUser.role">
-                  <option disabled value="">Select a role</option>
-                  <option
-                      v-for="role in roles"
-                      v-bind:key="role.id"
-                  >
-                    {{ role.name }}
-                  </option>
-                </select>
-              </div>
-          </td>
-          <td v-else>
-              {{ user.data.role.name }}
-          </td>
-          <td class="has-text-right">
+      </template>
+    </NewDataForm>
 
-            <a class="margin-right-2" v-on:click="user.toggleEdit()" v-if="!user.edit">Edit</a>
-            <a class="" v-on:click="displayWarning(index)" v-if="!user.edit">Deactivate</a>
-
-            <button class="button is-pulled-right" title="Cancel Edit" v-on:click="user.cancelEdit()" v-if="user.edit">
-              <span class="icon is-small is-light">
-                <XSquareIcon size="1.5x" aria-hidden="true"></XSquareIcon>
-                <span class="is-sr-only">Cancel Edit</span>
-              </span>
-              <span>
-                Cancel
-              </span>
-            </button>
-
-            <button class="button is-pulled-right is-primary"  title="Confirm Location" v-on:click="updateUser(index)" v-if="user.edit">
-              <span class="icon is-small">
-                <CheckCircleIcon size="1.5x" aria-hidden="true"></CheckCircleIcon>
-                <span class="is-sr-only">Confirm Edits</span>
-              </span>
-              <span>
-                Save
-              </span>
-            </button>
-          </td>
-      </tr>
-      </tbody>
-    </table>
+    <BaseTable
+        v-bind:headers="userTableHeaders"
+        v-bind:records.sync="users"
+        v-bind:new-record.sync="currentNewUser"
+        v-bind:rowValidations="userValidations"
+        v-bind:editable="true"
+        v-on:submit="updateUser($event)"
+        v-on:remove="displayWarning($event)"
+        v-on:show-error-notification="$emit('show-error-notification', $event)"
+    >
+      <template v-slot:columns="data">
+        <TableRowColumn name="name">{{data.name}}</TableRowColumn>
+        <TableRowColumn name="email">{{data.email}}</TableRowColumn>
+        <TableRowColumn name="roles">
+          <template v-if="rolesMap.size > 0">
+            {{getRoleName(data.roleId)}}
+          </template>
+        </TableRowColumn>
+        
+      </template>
+      <template v-slot:edit="{editData, validations}">
+        <div class="columns">
+          <div class="column is-two-fifths">
+            <BasicSelectField
+                v-model="editData.roleId"
+                v-bind:validations="validations.roleId"
+                v-bind:options="roles"
+                v-bind:selectedId="editData.roleId"
+                v-bind:field-name="'Role'"
+            />
+          </div>
+        </div>
+      </template>
+    </BaseTable>
   </section>
 </template>
 
 <script lang="ts">
 import {Component, Prop, Vue} from 'vue-property-decorator'
-import {PlusCircleIcon, CheckCircleIcon, XSquareIcon} from 'vue-feather-icons'
+import {PlusCircleIcon} from 'vue-feather-icons'
 import {validationMixin} from 'vuelidate'
 import {Validations} from 'vuelidate-property-decorators'
 import {required, email} from 'vuelidate/lib/validators'
 
 import WarningModal from '@/components/modals/WarningModal.vue'
-import InputError from '@/components/forms/InputError.vue'
-import InputField from '@/components/forms/InputField.vue'
-import NewDataRowForm from '@/components/forms/NewDataRowForm.vue'
+import NewDataForm from '@/components/forms/NewDataForm.vue'
+import BasicInputField from "@/components/forms/BasicInputField.vue";
+import BasicSelectField from "@/components/forms/BasicSelectField.vue";
+import BaseTable from "@/components/tables/BaseTable.vue";
 import {ProgramUser} from '@/breeding-insight/model/ProgramUser'
-import {TableRow} from '@/breeding-insight/model/view_models/TableRow'
+import TableRowColumn from "@/components/tables/TableRowColumn.vue";
 import {Role} from '@/breeding-insight/model/Role'
+import {ProgramUserService} from "@/breeding-insight/service/ProgramUserService";
+import {RoleService} from "@/breeding-insight/service/RoleService";
 
 @Component({
   mixins: [validationMixin],
-  components: { NewDataRowForm,
-                InputError, InputField,
+  components: { NewDataForm, BasicInputField, BasicSelectField, BaseTable, TableRowColumn,
                 WarningModal, 
-                PlusCircleIcon, CheckCircleIcon, XSquareIcon,
-                 }
+                PlusCircleIcon
+              }
 })
 export default class ProgramUsersTable extends Vue {
 
-  private users: Array<TableRow<ProgramUser>> = [];
+  public users: ProgramUser[] = [];
+  userTableHeaders: string[] = ['Name', 'Email', 'Role'];
 
   private deactivateActive: boolean = false;
   private newUserActive: boolean = false;
   private deactivateWarningTitle: string = "Remove user's access to Program name?";
   private newUser: ProgramUser = new ProgramUser();
-  private roles: Array<Role> = [new Role('1', 'Breeder'), new Role('2', 'Field Manager')];
-  private deleteIndex: number = -1;
-  private currentNewRow: TableRow<ProgramUser> | null = null;
+  private roles: Array<Role> = [];
 
+  private deleteUser: ProgramUser | undefined;
+  private currentNewUser: ProgramUser = new ProgramUser();
+  private rolesMap: Map<string, Role> = new Map();
   private programName: string = "Program Name";
 
-  @Validations()
-  validations = {
-    newUser : {
-      name: {required},
-      email: {required, email},
-      role: {required}
-    }
+  userValidations = {
+    name: {required},
+    email: {required, email},
+    roleId: {required}
   }
 
    mounted() {
+    this.getRoles();
     this.getUsers();
   }
 
-   getUsers() {
-    // TODO: api call
-    // stubbed for now
-    this.users.push(new TableRow(true, new ProgramUser('1', 'Ann Other Budy', 'Ann.otherbudy@usda.gov', this.roles[0])));
-    this.users.push(new TableRow(true, new ProgramUser('2', 'Ima Fyne Breeder', 'ima.breeder@usda.gov', this.roles[0])));
-    this.users.push(new TableRow(true, new ProgramUser('3', 'Somme Bodie', 'somme.bodie@usda.gov', this.roles[1])));
+  get activeProgramId(): string {
+    return this.$store.state.program.id;
   }
 
-  createUser() {
-    this.newUserActive = true;
+  getUsers() {
+
+    ProgramUserService.getAll(this.activeProgramId).then((programUsers: ProgramUser[]) => {
+      this.users = programUsers;
+    }).catch((error) => {
+      // Display error that users cannot be loaded
+      this.$emit('show-error-notification', 'Error while trying to load program users');
+      throw error;
+    });
   }
 
-  updateUser(rowIndex: number) {
-    // TODO: api call
-    const editRow: TableRow<ProgramUser> = this.users[rowIndex];
-    editRow.confirmChanges();
-    editRow.toggleEdit();
+  getRoles() {
 
-    this.clearNewRow();
-    this.$emit('show-success-notification', 'User successfully updated');
+    RoleService.getAll().then((roles: Role[]) => {
+      this.roles = roles;
+      for (const role of this.roles){
+        // reassign so vue picks up changes
+        this.rolesMap = new Map(this.rolesMap.set(role.id!, role));
+      }
+    }).catch((error) => {
+      // Display error that users cannot be loaded
+      this.$emit('show-error-notification', 'Error while trying to load roles');
+      throw error;
+    });
+
+  }
+
+  updateUser(updatedUser: ProgramUser) {
+
+    ProgramUserService.update(updatedUser).then(() => {
+      this.getUsers();
+      this.$emit('show-success-notification', 'Success! ' + updatedUser.name + ' updated.');
+    }).catch(() => {
+      this.$emit('show-error-notification', 'Error updating program');
+    });
+
   }
 
   saveUser() {
-    this.$v.$touch();
-    if (this.$v.$anyError){
-      this.$emit('show-error-notification', 'Fix Invalid Fields');
-      return;
-    }
-    else {
-      // TODO: api call
-      // some index management here for now just to allow the stub to work
-      let id: Number = Number(1);
 
-      if (this.users.length > 0) {
-        const editRow: TableRow<ProgramUser> = this.users[this.users.length-1];
-        const user: ProgramUser = editRow.editData;
-        id = Number(user.id)+1;
-      }
+    this.newUser.programId = this.activeProgramId;
 
-      if (this.newUser.name != undefined && this.newUser.email != undefined && this.newUser.role != undefined) {
-        const newUser: ProgramUser = new ProgramUser(id.toString(), this.newUser.name, this.newUser.email, this.newUser.role);
-        const newRow: TableRow<ProgramUser> = new TableRow(true, newUser);
-        newRow.toggleNew();
-        this.users.push(newRow);
-
-        this.clearNewRow();
-        this.currentNewRow = newRow;
-
-        this.$emit('show-success-notification', 'Success! ' + this.newUser.name + ' added.');
-        this.newUserActive = false;
-      }
-
-      // Check all of our fields to see if they were required
+    ProgramUserService.create(this.newUser).then((user: ProgramUser) => {
+      this.currentNewUser = user;
+      this.getUsers();
+      this.$emit('show-success-notification', 'Success! ' + this.newUser.name + ' added.');
       this.newUser = new ProgramUser();
-      this.$v.$reset();
+      this.newUserActive = false;
+    }).catch(() => {
+      this.$emit('show-error-notification', 'Error while creating user, ' + this.newUser.name);
+    })
 
-    }
   }
 
   cancelNewUser() {
     this.newUser = new ProgramUser();
-    this.$v.$reset();
     this.newUserActive = false;
   }
 
-  displayWarning(rowIndex: number) {
-    // Get the username
-    const editRow: TableRow<ProgramUser> = this.users[rowIndex];
-    const user: ProgramUser = editRow.editData;
-    this.deleteIndex = rowIndex;
-    this.deactivateWarningTitle = "Remove " + user.name + "'s access to " + this.programName + "?";
-    this.deactivateActive = true;
+  displayWarning(user: ProgramUser) {
+
+    if (user){
+      this.deleteUser = user;
+      this.deactivateWarningTitle = "Remove " + user.name + "'s access to " + this.programName + "?";
+      this.deactivateActive = true;
+    } else {
+      this.$log.error('Could not find object to delete')
+    }
   }
 
   modalDeleteHandler() {
     this.deactivateActive = false;
 
-   // TODO: api call
-    this.clearNewRow();
-    this.users.splice(this.deleteIndex, 1);
+    if (this.deleteUser) {
+      if (this.deleteUser.id) {
+        if (this.deleteUser.name) {
+          const deleteId: string = this.deleteUser.id;
+          const deleteName: string = this.deleteUser.name;
+          ProgramUserService.delete(this.activeProgramId, deleteId).then(() => {
+            this.getUsers();
+            this.$emit('show-success-notification', `${deleteName} removed from program`);
+          }).catch(() => {
+            this.$emit('show-error-notification', `Unable to remove user, ${deleteName}.`);
+          })
+          return;
+        }
+      }
+    }
+
+    this.$emit('show-error-notification', `Unable to remove user`);
+
   }
 
-  clearNewRow() {
-    if (this.currentNewRow != null) {
-      this.currentNewRow.toggleNew();
-      this.currentNewRow = null;
-    }
+  getRoleName(id: string): string {
+    return this.rolesMap.get(id)!.name;
   }
 
 }
