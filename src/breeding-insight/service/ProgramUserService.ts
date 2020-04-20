@@ -5,13 +5,13 @@ import { Role } from "@/breeding-insight/model/Role";
 export class ProgramUserService {
 
   static create(programUser: ProgramUser): Promise<ProgramUser> {
-    //TODO: Check everything is good
+
     return new Promise<ProgramUser>((resolve, reject) => {
 
       if (programUser.id === undefined) {
         ProgramUserDAO.create(programUser).then((biResponse) => {
           const result: any = biResponse.result;
-          const newProgram: ProgramUser = new ProgramUser(result.id, result.name);
+          const newProgram: ProgramUser = new ProgramUser(result.user.id, result.user.name, result.user.email, programUser.programId, result.roles[0].id);
           resolve(newProgram);
 
         }).catch((error) => reject(error));
@@ -24,13 +24,13 @@ export class ProgramUserService {
   }
 
   static update(programUser: ProgramUser): Promise<ProgramUser> {
-    //TODO: Check everything is good
+
     return new Promise<ProgramUser>((resolve, reject) => {
 
       if (programUser.id && programUser.programId) {
         ProgramUserDAO.update(programUser).then((biResponse) => {
           const result: any = biResponse.result;
-          const newProgram: ProgramUser = new ProgramUser(result.id, result.name, result.species.id);
+          const newProgram: ProgramUser = new ProgramUser(result.user.id, result.user.name, result.user.email, programUser.programId, result.roles[0].id);
           resolve(newProgram);
 
         }).catch((error) => reject(error));
@@ -43,7 +43,7 @@ export class ProgramUserService {
   }
 
   static delete(programId: string, userId: string): Promise<ProgramUser> {
-    //TODO: Check everything is good
+
     return new Promise<any>(((resolve, reject) => {
 
       if (programId && userId){
@@ -64,11 +64,10 @@ export class ProgramUserService {
 
         let programUsers: ProgramUser[] = [];
     
-        // TODO: workaround for no programs for now
+        // TODO: workaround for no program users for now
         if (biResponse.result.data) {
           programUsers = biResponse.result.data.map((programUser: any) => {
-            const role: Role = new Role(programUser.roles[0].id, programUser.roles[0].domain);
-            return new ProgramUser(programUser.user.id, programUser.user.name, programUser.user.email, role, programId);
+            return new ProgramUser(programUser.user.id, programUser.user.name, programUser.user.email, programId, programUser.roles[0].id);
           });
         }
     
