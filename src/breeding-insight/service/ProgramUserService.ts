@@ -1,6 +1,5 @@
 import {ProgramUserDAO} from "@/breeding-insight/dao/ProgramUserDAO";
 import {ProgramUser} from "@/breeding-insight/model/ProgramUser";
-import { Role } from "@/breeding-insight/model/Role";
 
 export class ProgramUserService {
 
