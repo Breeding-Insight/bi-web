@@ -1,5 +1,5 @@
 <template>
-  <tr v-bind:class="{'is-new': (rowData.new == true && rowData.edit == false && showNewHighlight), 'is-selected': (rowData.edit == true)}" >
+  <tr v-bind:class="{'is-new': (rowData.new == true && rowData.edit == false), 'is-selected': (rowData.edit == true)}" >
     <slot></slot>
     <template v-if="rowData.editable">
       <td class="has-text-right">
@@ -40,12 +40,5 @@
     // Knows its row values and its column objects
     @Prop()
     rowData!: any;
-
-    private showNewHighlight: boolean = true;
-
-    updated() {
-      // Once the table component is updated, remove the new highlighting for this row
-      this.showNewHighlight = false;
-    }
   }
 </script>

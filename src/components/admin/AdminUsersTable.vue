@@ -63,7 +63,6 @@
     <BaseTable
         v-bind:headers="userTableHeaders"
         v-bind:records.sync="users"
-        v-bind:new-record.sync="currentNewUser"
         v-bind:rowValidations="userValidations"
         v-bind:editable="true"
         v-on:submit="updateUser($event)"
@@ -121,7 +120,6 @@ export default class AdminUsersTable extends Vue {
   private newUserActive: boolean = false;
   private deactivateWarningTitle: string = "Remove user's access to Program name?";
   private newUser: User = new User();
-  private currentNewUser: User = new User();
   private currentDeleteUser: User | undefined;
 
   userValidations = {
@@ -175,7 +173,6 @@ export default class AdminUsersTable extends Vue {
   addUser() {
 
     UserService.create(this.newUser).then((user: User) => {
-      this.currentNewUser = user;
       this.getUsers();
       this.newUser = new User();
       this.newUserActive = false;

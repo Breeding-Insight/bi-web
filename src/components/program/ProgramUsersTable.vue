@@ -68,7 +68,6 @@
     <BaseTable
         v-bind:headers="userTableHeaders"
         v-bind:records.sync="users"
-        v-bind:new-record.sync="currentNewUser"
         v-bind:rowValidations="userValidations"
         v-bind:editable="true"
         v-on:submit="updateUser($event)"
@@ -139,7 +138,6 @@ export default class ProgramUsersTable extends Vue {
   private roles: Array<Role> = [];
 
   private deleteUser: ProgramUser | undefined;
-  private currentNewUser: ProgramUser = new ProgramUser();
   private rolesMap: Map<string, Role> = new Map();
   private programName: string = "Program Name";
 
@@ -201,7 +199,6 @@ export default class ProgramUsersTable extends Vue {
     this.newUser.programId = this.activeProgramId;
 
     ProgramUserService.create(this.newUser).then((user: ProgramUser) => {
-      this.currentNewUser = user;
       this.getUsers();
       this.$emit('show-success-notification', 'Success! ' + this.newUser.name + ' added.');
       this.newUser = new ProgramUser();
