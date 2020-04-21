@@ -68,24 +68,42 @@
     rowValidations!: Object;
     @Prop()
     editable!: boolean;
-    @Prop()
-    newRecord!: any;
+
+    initialUpdate: boolean = false;
 
     private tableRows: Array<TableRow<any>> = new Array<TableRow<any>>();
 
+    updated() {
+      this.initialUpdate = true;
+    }
+
     @Watch('records', {immediate: true, deep:true})
-    updateTableRows() {
+    updateTableRows(newRecords: any, oldRecords: any) {
+
+      let difference: Array<string> = [];
+      if (oldRecords != null && this.initialUpdate) {
+        const newSet: Set<string> = new Set(newRecords
+          .filter( (record: any) => record.id !== undefined)
+          .map( (filteredRecord: any) => filteredRecord.id)
+        );
+        const oldSet: Set<string> = new Set(oldRecords
+          .filter( (record: any) => record.id !== undefined)
+          .map( (filteredRecord: any) => filteredRecord.id)
+        );
+        difference = [...newSet].filter( (record: any) => !oldSet.has(record));
+      }
+
       const rowArray = new Array<TableRow<any>>();
       for (const record of this.records){
         const newTableRow = new TableRow<any>(this.editable, record);
 
-        if (this.newRecord){
-          if (record.id !== undefined && this.newRecord.id !== undefined && record.id === this.newRecord.id){
+        // See if it is our new row
+        if (difference.length === 1) {
+          if (record.id === difference[0]) {
             newTableRow.toggleNew();
           }
         }
         rowArray.push(newTableRow);
-
       }
       this.tableRows = rowArray;
     }
