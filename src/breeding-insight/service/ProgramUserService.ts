@@ -59,23 +59,25 @@ export class ProgramUserService {
   static getAll(programId: string): Promise<ProgramUser[]> {
     return new Promise<ProgramUser[]>(((resolve, reject) => {
 
-      ProgramUserDAO.getAll(programId).then((biResponse) => {
+      if (programId) {
+        ProgramUserDAO.getAll(programId).then((biResponse) => {
 
-        let programUsers: ProgramUser[] = [];
-    
-        // TODO: workaround for no program users for now
-        if (biResponse.result.data) {
-          programUsers = biResponse.result.data.map((programUser: any) => {
-            return new ProgramUser(programUser.user.id, programUser.user.name, programUser.user.email, programId, programUser.roles[0].id);
-          });
-        }
-    
-        resolve(programUsers);
-    
-      }).catch((error) => reject(error));
-    
+          let programUsers: ProgramUser[] = [];
+      
+          // TODO: workaround for no program users for now
+          if (biResponse.result.data) {
+            programUsers = biResponse.result.data.map((programUser: any) => {
+              return new ProgramUser(programUser.user.id, programUser.user.name, programUser.user.email, programId, programUser.roles[0].id);
+            });
+          }
+      
+          resolve(programUsers);
+      
+        }).catch((error) => reject(error));
+      
+      } else {
+        reject();
+      }
     }));
   }
-
 }
-

@@ -19,7 +19,12 @@ const store: StoreOptions<RootState> = {
     program: undefined
   },
   mutations,
-  actions
+  actions,
+  getters: {
+    activeProgramId: state => {
+      return state.program ? state.program.id : undefined;
+    }
+  }
 };
 
 export default new Vuex.Store(store);

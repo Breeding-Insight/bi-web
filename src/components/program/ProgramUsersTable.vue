@@ -118,16 +118,23 @@ import TableRowColumn from "@/components/tables/TableRowColumn.vue";
 import {Role} from '@/breeding-insight/model/Role'
 import {ProgramUserService} from "@/breeding-insight/service/ProgramUserService";
 import {RoleService} from "@/breeding-insight/service/RoleService";
+import { mapGetters } from 'vuex'
 
 @Component({
   mixins: [validationMixin],
   components: { NewDataForm, BasicInputField, BasicSelectField, BaseTable, TableRowColumn,
                 WarningModal, 
                 PlusCircleIcon
-              }
+              },
+  computed: {
+    ...mapGetters([
+      'activeProgramId'
+    ])
+  }
 })
 export default class ProgramUsersTable extends Vue {
 
+  private activeProgramId: string | undefined;
   public users: ProgramUser[] = [];
   userTableHeaders: string[] = ['Name', 'Email', 'Role'];
 
@@ -147,18 +154,14 @@ export default class ProgramUsersTable extends Vue {
     roleId: {required}
   }
 
-   mounted() {
+  mounted() {
     this.getRoles();
     this.getUsers();
   }
 
-  get activeProgramId(): string {
-    return this.$store.state.program.id;
-  }
-
   getUsers() {
 
-    ProgramUserService.getAll(this.activeProgramId).then((programUsers: ProgramUser[]) => {
+    ProgramUserService.getAll(this.activeProgramId!).then((programUsers: ProgramUser[]) => {
       this.users = programUsers;
     }).catch((error) => {
       // Display error that users cannot be loaded
@@ -233,7 +236,7 @@ export default class ProgramUsersTable extends Vue {
         if (this.deleteUser.name) {
           const deleteId: string = this.deleteUser.id;
           const deleteName: string = this.deleteUser.name;
-          ProgramUserService.delete(this.activeProgramId, deleteId).then(() => {
+          ProgramUserService.delete(this.activeProgramId!, deleteId).then(() => {
             this.getUsers();
             this.$emit('show-success-notification', `${deleteName} removed from program`);
           }).catch(() => {
