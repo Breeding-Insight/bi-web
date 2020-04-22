@@ -26,8 +26,7 @@ export class ProgramUserDAO {
 
     return new Promise<BiResponse>((resolve, reject) => {
 
-      const body = {'user': {'id': programUser.id, 'name': programUser.name, 'email': programUser.email}, 
-                    'roles': [{'id': programUser.roleId}] };
+      const body = {'user': {'id': programUser.id}, 'roles': [{'id': programUser.roleId}] };
 
       api.call({ url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programUser.programId}/users/${programUser.id}`, method: 'put', data: body})
         .then((response: any) => {
