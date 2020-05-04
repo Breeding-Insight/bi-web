@@ -10,6 +10,11 @@
           class="select is-fullwidth"
       >
         <option disabled v-bind:selected="displayDefault()" value="">Select a {{fieldName.toLowerCase()}}</option>
+        <template v-if="emptyValueName != undefined">
+          <option v-bind:value="undefined" v-bind:selected="selectedId == undefined">
+            {{emptyValueName}}
+          </option>
+        </template>
         <option
             v-for="option in options"
             v-bind:key="option.id"
@@ -41,6 +46,8 @@
     fieldHelp!: string;
     @Prop()
     validations!: any;
+    @Prop()
+    emptyValueName!: string;
 
 
     displayDefault() {
