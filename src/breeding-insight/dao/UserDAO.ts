@@ -4,8 +4,22 @@ import * as api from "@/util/api";
 import {BiResponse} from "@/breeding-insight/model/BiResponse";
 import {Vue} from "vue-property-decorator";
 import {Role} from "@/breeding-insight/model/Role";
+import store from "@/store";
+import {ERROR_STATE, LOGIN} from "@/store/mutation-types";
 
 export class UserDAO {
+
+  static getUserInfo(): Promise<BiResponse> {
+
+    return new Promise<BiResponse>((resolve, reject) => {
+
+      api.call({url: `${process.env.VUE_APP_BI_API_V1_PATH}/userinfo`})
+        .then((response: any) => {
+          const biResponse = new BiResponse(response.data);
+          resolve(biResponse);
+        }).catch((error) => {reject(error)});
+    });
+  }
 
   static create(user: User, systemRoles: Role[]): Promise<BiResponse> {
 

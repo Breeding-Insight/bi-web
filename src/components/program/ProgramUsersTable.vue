@@ -119,6 +119,7 @@ import {Role} from '@/breeding-insight/model/Role'
 import {ProgramUserService} from "@/breeding-insight/service/ProgramUserService";
 import {RoleService} from "@/breeding-insight/service/RoleService";
 import { mapGetters } from 'vuex'
+import {Program} from "@/breeding-insight/model/Program";
 
 @Component({
   mixins: [validationMixin],
@@ -128,13 +129,13 @@ import { mapGetters } from 'vuex'
               },
   computed: {
     ...mapGetters([
-      'activeProgramId'
+      'activeProgram'
     ])
   }
 })
 export default class ProgramUsersTable extends Vue {
 
-  private activeProgramId: string | undefined;
+  private activeProgram: Program | undefined;
   public users: ProgramUser[] = [];
   userTableHeaders: string[] = ['Name', 'Email', 'Role'];
 
@@ -161,7 +162,7 @@ export default class ProgramUsersTable extends Vue {
 
   getUsers() {
 
-    ProgramUserService.getAll(this.activeProgramId!).then((programUsers: ProgramUser[]) => {
+    ProgramUserService.getAll(this.activeProgram!.id!).then((programUsers: ProgramUser[]) => {
       this.users = programUsers;
     }).catch((error) => {
       // Display error that users cannot be loaded
@@ -251,7 +252,7 @@ export default class ProgramUsersTable extends Vue {
 
   }
 
-  getRoleName(id: string): string {
+  getRoleName(id: string): string | undefined {
     return this.rolesMap.get(id)!.name;
   }
 

@@ -7,14 +7,15 @@
     <div class="columns">
       <div class="column is-2">
         <div class="buttons">
-          <router-link to="/admin" tag="button" class="button is-primary is-light is-fullwidth is-outlined">System Administration</router-link>
           <template v-if="programs.length > 0">
-            <button v-for="program in programs" :key="program.id" 
-              v-on:click="selectProgram(program)" 
-              class="button is-primary is-light is-fullwidth is-outlined"
+            <router-link
+                v-for="program in programs"
+                v-bind:key="program.id"
+                v-bind:to="{name: 'program-home', params: {programId: program.id}}"
+                class="button is-primary is-light is-fullwidth is-outlined"
             >
-              {{ program.name }}
-            </button>
+              {{program.name}}
+            </router-link>
           </template>
           <template v-else>
             <p>No programs found in system</p>
@@ -54,11 +55,6 @@
         this.$emit('show-error-notification', 'Error while trying to load programs');
         throw error;
       });
-    }
-
-    selectProgram(program: Program) {
-      store.commit(SET_ACTIVE_PROGRAM, {'id': program.id, 'name': program.name });
-      this.$router.push('/home')
     }
 
   }

@@ -78,5 +78,21 @@ export class ProgramService {
     }));
   }
 
+  static getOne(programId: string): Promise<Program> {
+    return new Promise<Program>(((resolve, reject) => {
+
+      if (programId == null) {
+        reject();
+      }
+
+      ProgramDAO.getOne(programId).then((biResponse) => {
+        const result = biResponse.result;
+        const program = new Program(result.id, result.name, result.species.id);
+        resolve(program);
+      }).catch((error) => reject(error));
+
+    }));
+  }
+
 }
 

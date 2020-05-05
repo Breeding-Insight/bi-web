@@ -1,13 +1,5 @@
-export interface User {
-  id: string;
-  name: string;
-  roles: string[];
-}
-
-export interface Program {
-  id: string;
-  name: string;
-}
+import {User} from "@/breeding-insight/model/User";
+import {Program} from "@/breeding-insight/model/Program";
 
 export interface RootState {
   loggedIn: boolean;

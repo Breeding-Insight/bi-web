@@ -21,8 +21,11 @@ const store: StoreOptions<RootState> = {
   mutations,
   actions,
   getters: {
-    activeProgramId: state => {
-      return state.program ? state.program.id : undefined;
+    activeProgram: state => {
+      return state.program;
+    },
+    activeUser: state => {
+      return state.user;
     }
   }
 };
