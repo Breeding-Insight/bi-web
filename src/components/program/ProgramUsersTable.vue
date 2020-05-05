@@ -200,7 +200,7 @@ export default class ProgramUsersTable extends Vue {
 
   saveUser() {
 
-    this.newUser.programId = this.activeProgramId;
+    this.newUser.programId = this.activeProgram!.id;
 
     ProgramUserService.create(this.newUser).then((user: ProgramUser) => {
       this.getUsers();
@@ -222,7 +222,7 @@ export default class ProgramUsersTable extends Vue {
 
     if (user){
       this.deleteUser = user;
-      this.deactivateWarningTitle = "Remove " + user.name + "'s access to " + this.programName + "?";
+      this.deactivateWarningTitle = "Remove " + user.name + "'s access to " + this.activeProgram!.name + "?";
       this.deactivateActive = true;
     } else {
       this.$log.error('Could not find object to delete')
@@ -237,7 +237,7 @@ export default class ProgramUsersTable extends Vue {
         if (this.deleteUser.name) {
           const deleteId: string = this.deleteUser.id;
           const deleteName: string = this.deleteUser.name;
-          ProgramUserService.delete(this.activeProgramId!, deleteId).then(() => {
+          ProgramUserService.delete(this.activeProgram!.id!, deleteId).then(() => {
             this.getUsers();
             this.$emit('show-success-notification', `${deleteName} removed from program`);
           }).catch(() => {
