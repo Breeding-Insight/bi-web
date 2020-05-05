@@ -10,10 +10,14 @@
     <section>
       <nav class="tabs is-boxed">
         <ul>
-          <router-link to="/program-management/locations" tag="li" active-class="is-active">
+          <router-link
+              v-bind:to="{name: 'program-locations', params: {programId: activeProgram.id}}"
+              tag="li" active-class="is-active">
             <a>Locations</a>
           </router-link>
-          <router-link to="/program-management/program-users" tag="li" active-class="is-active">
+          <router-link
+              v-bind:to="{name: 'program-users', params: {programId: activeProgram.id}}"
+              tag="li" active-class="is-active">
             <a>Users</a>
           </router-link>
         </ul>
@@ -35,14 +39,22 @@
   import { Component, Prop, Vue } from 'vue-property-decorator'
   import ProgramUsersTable from '@/components/program/ProgramUsersTable.vue';
   import ProgramLocationsTable from '@/components/program/ProgramLocationsTable.vue';
+  import {mapGetters} from "vuex";
+  import {Program} from "@/breeding-insight/model/Program";
 
   @Component({
     components: {
       ProgramUsersTable, ProgramLocationsTable
-      }
+    },
+    computed: {
+      ...mapGetters([
+        'activeProgram'
+      ])
+    }
   })
   export default class ProgramManagement extends Vue {
 
+    private activeProgram: Program | undefined;
     // get this when endpoint is implmented
     private programName: string = "Program Name";
 

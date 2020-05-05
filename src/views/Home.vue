@@ -3,7 +3,7 @@
     <div class="is-divider"></div>
     <div class="columns">
       <div class="column is-three-fifths">
-        <p class="title">Welcome, {{ username }}!</p>
+        <p class="title">Welcome, {{ activeUser.name }}!</p>
         <div class="columns is-mobile">
           <div class="column">
             <p class="title is-6">Last activity:</p>
@@ -46,8 +46,8 @@
                 </figure>
               </div>
               <div class="media-content">
-                <p class="title is-4">{{ username }}</p>
-                <p class="subtitle is-6">{{ orcid }}</p>
+                <p class="title is-4">{{ activeUser.name }}</p>
+                <p class="subtitle is-6">{{ activeUser.orcid }}</p>
               </div>
             </div>
           </div>
@@ -63,22 +63,20 @@
 
 <script lang="ts">
   import { Component, Vue } from 'vue-property-decorator'
+  import {mapGetters} from "vuex";
+  import {User} from "@/breeding-insight/model/User";
+  import {processProgramNavigation} from "@/router/guards";
 
-  @Component
+  @Component({
+    computed: {
+      ...mapGetters([
+        'activeUser'
+      ])
+    },
+    beforeRouteUpdate: processProgramNavigation
+  })
   export default class Home extends Vue {
 
-    // Computed properties
-    get username(): string {
-      return this.$store.state.user ? this.$store.state.user.name : '';
-    }
-
-    get orcid(): boolean {
-      return this.$store.state.user ? this.$store.state.user.id : '';
-    }
-
-    // Methods
-    logout(): void {
-      window.location.href = process.env.VUE_APP_BI_API_ROOT+'/logout'
-    }
+    private activeUser: User | undefined;
   }
 </script>

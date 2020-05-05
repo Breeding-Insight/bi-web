@@ -69,7 +69,13 @@
         v-on:show-error-notification="$emit('show-error-notification', $event)"
     >
       <template v-slot:columns="data">
-        <TableRowColumn name="name">{{data.name}}</TableRowColumn>
+        <TableRowColumn name="name">
+          <router-link
+            v-bind:to="{name: 'program-home', params: {programId: data.id}}"
+          >
+            {{data.name}}
+          </router-link>
+        </TableRowColumn>
         <TableRowColumn name="species">
           <template v-if="speciesMap.size > 0">
             {{getSpeciesName(data.speciesId)}}
