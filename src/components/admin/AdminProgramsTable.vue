@@ -223,7 +223,7 @@ export default class AdminProgramsTable extends Vue {
       this.deactivateWarningTitle = "Remove " + program.name + " from the system ?";
       this.deactivateActive = true;
     } else {
-      this.$log.error('Could not find object to delete')
+      Vue.$log.error('Could not find object to delete')
     }
   }
 

@@ -3,6 +3,8 @@ import {SystemRoleDao} from "@/breeding-insight/dao/SystemRoleDao";
 
 export class SystemRoleService {
 
+  static errorGetRoles = "Unable to load system roles";
+
   static getAll(): Promise<Role[]> {
     return new Promise<Role[]>(((resolve, reject) => {
 
@@ -14,7 +16,10 @@ export class SystemRoleService {
 
         resolve(roles);
 
-      }).catch((error) => reject(error));
+      }).catch((error) => {
+        error['errorMessage'] = this.errorGetRoles;
+        reject(error);
+      });
 
     }));
   }

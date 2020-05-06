@@ -1,11 +1,7 @@
-import {Program} from "@/breeding-insight/model/Program";
 import {User} from "@/breeding-insight/model/User";
 import * as api from "@/util/api";
 import {BiResponse} from "@/breeding-insight/model/BiResponse";
-import {Vue} from "vue-property-decorator";
 import {Role} from "@/breeding-insight/model/Role";
-import store from "@/store";
-import {ERROR_STATE, LOGIN} from "@/store/mutation-types";
 
 export class UserDAO {
 
@@ -78,7 +74,6 @@ export class UserDAO {
   static updateSystemRoles(id: string, systemRoles: Array<Role>) {
 
     return new Promise<BiResponse>((resolve, reject) => {
-
       const body = {'systemRoles': systemRoles.map((role: Role) => {
         return {'id': role.id, 'domain': role.name}
       })};
