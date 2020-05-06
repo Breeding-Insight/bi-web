@@ -1,4 +1,5 @@
-import {PromiseResult} from "promise.allsettled";
+import {PromiseRejection, PromiseResolution, PromiseResult} from "promise.allsettled";
+import {PromiseResultTuple} from "promise.allsettled/types";
 
 export class PromiseHandler {
   promises: Promise<any>[] = [];
@@ -14,12 +15,14 @@ export class PromiseHandler {
   resolvePromises(): Promise<any> {
     //TODO: Need to get these function shimmed out in typescript.
     return new Promise<any>((resolve, reject) => {
-      Promise.allSettled(this.promises).then( (results: PromiseResult<any>[]) => {
-        if (results.every((result: PromiseResult<any>) => result.status == 'fulfilled')) {
-          resolve(results.map((result: PromiseResult<any>) => result.value));
+      Promise.allSettled(this.promises).then( (results: PromiseResult<any, any>[]) => {
+        const successResults: PromiseResolution<any>[] = results as PromiseResolution<any>[];
+        if (successResults.every((result: PromiseResolution<any>) => result.status == 'fulfilled')) {
+          resolve(successResults.map((result: PromiseResolution<any>) => result.value));
         } else {
-          const failedResults = results.filter((result: PromiseResult<any>) => result.reason !== undefined)
-            .map((failedResult: PromiseResult<any>) => failedResult.reason);
+          const rejectionResults: PromiseRejection<any>[] = results as PromiseRejection<any>[];
+          const failedResults = rejectionResults.filter((result: PromiseRejection<any>) => result.reason !== undefined)
+            .map((failedResult: PromiseRejection<any>) => failedResult.reason);
           reject(failedResults);
         }
       })

@@ -105,7 +105,6 @@
 import {Component, Prop, Vue} from 'vue-property-decorator'
 import {PlusCircleIcon} from 'vue-feather-icons'
 import {validationMixin} from 'vuelidate'
-import {Validations} from 'vuelidate-property-decorators'
 import {required, email} from 'vuelidate/lib/validators'
 
 import WarningModal from '@/components/modals/WarningModal.vue'
@@ -225,7 +224,7 @@ export default class ProgramUsersTable extends Vue {
       this.deactivateWarningTitle = "Remove " + user.name + "'s access to " + this.activeProgram!.name + "?";
       this.deactivateActive = true;
     } else {
-      this.$log.error('Could not find object to delete')
+      Vue.$log.error('Could not find object to delete')
     }
   }
 

@@ -79,8 +79,6 @@ import ErrorNotification from '@/components/notifications/ErrorNotification.vue'
 import SimpleLayout from '@/components/layouts/SimpleLayout.vue'
 import UserSideBarLayout from './components/layouts/UserSideBarLayout.vue'
 import NoSideBarLayout from './components/layouts/NoSideBarLayout.vue'
-import { User } from './breeding-insight/model/User'
-import {processProgramNavigation} from "@/router/guards";
 
 @Component({
   watch: {

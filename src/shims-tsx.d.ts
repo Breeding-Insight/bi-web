@@ -1,6 +1,7 @@
 import Vue, { VNode } from 'vue'
 
 declare global {
+
   namespace JSX {
     // tslint:disable no-empty-interface
     interface Element extends VNode {}
@@ -10,4 +11,10 @@ declare global {
       [elem: string]: any
     }
   }
+
+  interface PromiseConstructor {
+    allSettled(arg0: Promise<any>[]): Promise<[]>;
+  }
+
 }
+

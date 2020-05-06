@@ -131,7 +131,6 @@
     username!: string;
 
     mounted() {
-      console.log(this.activeProgram);
       this.setActiveLinkSubmenus();
       this.getPrograms();
     }
