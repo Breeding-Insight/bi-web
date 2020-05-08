@@ -146,7 +146,7 @@ export default class AdminUsersTable extends Vue {
   private deactivateActive: boolean = false;
   private newUserActive: boolean = false;
   private deactivateWarningTitle: string = "Remove user's access to Program name?";
-  private newUser: User = new User();
+  private newUser = new User();
   private currentDeleteUser: User | undefined;
   private roles: Role[] = [];
   private rolesMap: Map<string, Role> = new Map();

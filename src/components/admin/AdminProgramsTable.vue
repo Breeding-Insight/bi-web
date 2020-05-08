@@ -173,7 +173,7 @@ export default class AdminProgramsTable extends Vue {
   private deactivateActive: boolean = false;
   private newProgramActive: boolean = false;
   private deactivateWarningTitle: string = "Remove program from system?";
-  private newProgram: Program = new Program();
+  private newProgram = new Program();
   private species: Array<Species> = [];
 
   private speciesMap: Map<string, Species> = new Map();

@@ -15,7 +15,7 @@
         </span>
       </template>
       <p
-          v-if="fieldHelp != null"
+          v-if="fieldHelp !== null"
           class="help"
       >
         {{ fieldHelp }}

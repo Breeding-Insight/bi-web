@@ -19,7 +19,7 @@ export class UserService {
       UserDAO.getUserInfo().then((biResponse: BiResponse) => {
         const result: any = biResponse.result;
         const role: Role | undefined = this.parseSystemRoles(result.systemRoles);
-        const user: User = new User(result.id, result.name, result.orcid, result.email, role);
+        const user = new User(result.id, result.name, result.orcid, result.email, role);
         resolve(user);
       }).catch((error: any) => reject(error));
     });
@@ -36,7 +36,7 @@ export class UserService {
         UserDAO.create(user, systemRoles).then((biResponse) => {
           const result: any = biResponse.result;
           const role: Role | undefined = this.parseSystemRoles(result.systemRoles);
-          const newUser: User = new User(result.id, result.name, result.orcid, result.email, role);
+          const newUser = new User(result.id, result.name, result.orcid, result.email, role);
           resolve(newUser);
 
         }).catch((error) => {
@@ -65,7 +65,7 @@ export class UserService {
         UserDAO.update(user.id, user).then((biResponse) => {
           const result: any = biResponse.result;
           const role: Role | undefined = this.parseSystemRoles(result.systemRoles);
-          const newUser: User = new User(result.id, result.name, result.orcid, result.email, role);
+          const newUser = new User(result.id, result.name, result.orcid, result.email, role);
           resolve(newUser);
 
         }).catch((error) => {
@@ -139,7 +139,7 @@ export class UserService {
         UserDAO.updateSystemRoles(user.id, systemRoles).then((biResponse) => {
           const result: any = biResponse.result;
           const role: Role | undefined = this.parseSystemRoles(result.systemRoles);
-          const newUser: User = new User(result.id, result.name, result.orcid, result.email, role);
+          const newUser = new User(result.id, result.name, result.orcid, result.email, role);
           resolve(newUser);
 
         }).catch((error) => {
@@ -160,10 +160,8 @@ export class UserService {
   }
 
   private static parseSystemRoles(systemRoles: any[]): Role | undefined {
-    if (systemRoles){
-      if (systemRoles.length > 0) {
-        return new Role(systemRoles[0].id, systemRoles[0].domain);
-      }
+    if (systemRoles && systemRoles.length > 0){
+      return new Role(systemRoles[0].id, systemRoles[0].domain);
     }
     return undefined;
   }
