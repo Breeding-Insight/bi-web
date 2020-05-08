@@ -3,8 +3,9 @@
     <h1 class="title">
       Programs
     </h1>
-    <AdminProgramsTable v-on:show-success-notification="showSuccessNotification"
-                        v-on:show-error-notification="showErrorNotification"
+    <AdminProgramsTable
+        v-on:show-success-notification="showSuccessNotification"
+        v-on:show-error-notification="showErrorNotification"
     >
     </AdminProgramsTable>
   </div>
@@ -27,12 +28,10 @@
     }
 
     showSuccessNotification(msg: string) {
-      console.log('showSuccess');
       this.$emit('show-success-notification', msg);
     }
 
     showErrorNotification(msg: string) {
-      console.log('showError');
       this.$emit('show-error-notification', msg);
     }
 

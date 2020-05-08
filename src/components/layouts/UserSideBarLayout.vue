@@ -111,6 +111,7 @@
   import {mapGetters} from "vuex";
   import {User} from "@/breeding-insight/model/User";
   import {ProgramService} from "@/breeding-insight/service/ProgramService";
+  import {EventBus} from "@/util/event-bus";
 
   @Component( {
     components: {BaseSideBarLayout, MoreVerticalIcon, MoreHorizontalIcon},
@@ -129,6 +130,10 @@
 
     @Prop()
     username!: string;
+
+    created() {
+      EventBus.bus.$on(EventBus.programChange, this.getPrograms);
+    }
 
     mounted() {
       this.setActiveLinkSubmenus();
@@ -158,6 +163,13 @@
     getPrograms() {
       ProgramService.getAll().then((programs: Program[]) => {
         this.programs = programs;
+        // Clear the active program if its not in the list of programs anymore
+        if (this.activeProgram){
+          const foundActiveProgram: Program[] = programs.filter((program) => program.id === this.activeProgram!.id);
+          if (foundActiveProgram.length === 0){
+            this.$store.dispatch('clearActiveProgram');
+          }
+        }
       }).catch((error) => {
         throw error;
       });
