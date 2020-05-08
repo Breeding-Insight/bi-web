@@ -177,7 +177,7 @@ export default class ProgramUsersTable extends Vue {
   private deactivateActive: boolean = false;
   private newUserActive: boolean = false;
   private deactivateWarningTitle: string = "Remove user's access to Program name?";
-  private newUser: ProgramUser = new ProgramUser();
+  private newUser = new ProgramUser();
   private roles: Array<Role> = [];
 
   private deleteUser: ProgramUser | undefined;

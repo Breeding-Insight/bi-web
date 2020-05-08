@@ -173,7 +173,7 @@ export default class ProgramLocationsTable extends Vue {
   private deleteIndex = -1;
   private currentNewRow: TableRow<Location> | null = null;
 
-  private newLocation: ProgramLocation = new ProgramLocation();
+  private newLocation = new ProgramLocation();
   private programName: string = "Program Name";
 
   @Validations()
@@ -269,7 +269,7 @@ export default class ProgramLocationsTable extends Vue {
   }
 
   clearNewRow() {
-     if (this.currentNewRow != null) {
+     if (this.currentNewRow !== null) {
       this.currentNewRow.toggleNew();
       this.currentNewRow = null;
     }

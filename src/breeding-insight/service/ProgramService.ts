@@ -10,7 +10,7 @@ export class ProgramService {
       if (program.id === undefined) {
         ProgramDAO.create(program).then((biResponse) => {
           const result: any = biResponse.result;
-          const newProgram: Program = new Program(result.id, result.name);
+          const newProgram = new Program(result.id, result.name);
           resolve(newProgram);
 
         }).catch((error) => reject(error));
@@ -29,7 +29,7 @@ export class ProgramService {
       if (program.id) {
         ProgramDAO.update(program.id, program).then((biResponse) => {
           const result: any = biResponse.result;
-          const newProgram: Program = new Program(result.id, result.name, result.species.id);
+          const newProgram = new Program(result.id, result.name, result.species.id);
           resolve(newProgram);
 
         }).catch((error) => reject(error));

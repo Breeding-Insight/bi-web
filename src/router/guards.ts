@@ -8,7 +8,7 @@ export function processProgramNavigation(to: Route, from: Route, next: Function)
 
   // Navigating to programs path
   if (to.path.startsWith('/programs/')) {
-    if (store.state.program == undefined || store.state.program.id != to.params.programId) {
+    if (store.state.program === undefined || store.state.program.id !== to.params.programId) {
       ProgramService.getOne(to.params['programId'])
         .then((program: Program) => {
           store.commit(SET_ACTIVE_PROGRAM, program);

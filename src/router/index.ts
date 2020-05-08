@@ -145,7 +145,7 @@ router.beforeEach((to: Route, from: Route, next: Function) => {
     UserService.getUserInfo()
     .then((user: User) => {
       store.commit(LOGIN, user);
-      if (to.name != 'home') { next(); }
+      if (to.name !== 'home') { next(); }
       else { next({name: 'program-selection'})}
     })
     .catch((error) => {
@@ -157,7 +157,7 @@ router.beforeEach((to: Route, from: Route, next: Function) => {
         store.commit(ERROR_STATE, {'loginFailed': false, 'loginServerError':true});
       }
       // If logged in fail, send them to the home page
-      if (to.name != 'home') {
+      if (to.name !== 'home') {
         //TODO: Show error to login again.
         next({name: 'home'});
       } else next();

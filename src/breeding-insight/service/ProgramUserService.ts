@@ -10,7 +10,7 @@ export class ProgramUserService {
       if (programUser.id === undefined) {
         ProgramUserDAO.create(programUser).then((biResponse) => {
           const result: any = biResponse.result;
-          const newProgram: ProgramUser = new ProgramUser(result.user.id, result.user.name, result.user.email, programUser.programId, result.roles[0].id);
+          const newProgram  = new ProgramUser(result.user.id, result.user.name, result.user.email, programUser.programId, result.roles[0].id);
           resolve(newProgram);
 
         }).catch((error) => reject(error));
@@ -29,7 +29,7 @@ export class ProgramUserService {
       if (programUser.id && programUser.programId) {
         ProgramUserDAO.update(programUser).then((biResponse) => {
           const result: any = biResponse.result;
-          const newProgram: ProgramUser = new ProgramUser(result.user.id, result.user.name, result.user.email, programUser.programId, result.roles[0].id);
+          const newProgram = new ProgramUser(result.user.id, result.user.name, result.user.email, programUser.programId, result.roles[0].id);
           resolve(newProgram);
 
         }).catch((error) => reject(error));

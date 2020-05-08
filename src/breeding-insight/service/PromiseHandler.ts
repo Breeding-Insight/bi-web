@@ -13,7 +13,7 @@ export class PromiseHandler {
   }
 
   resolvePromises(): Promise<any> {
-    
+
     return new Promise<any>((resolve, reject) => {
       Promise.allSettled(this.promises).then( (results: PromiseResult<any, any>[]) => {
         const successResults: PromiseResolution<any>[] = results as PromiseResolution<any>[];

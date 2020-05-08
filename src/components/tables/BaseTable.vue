@@ -88,7 +88,7 @@
     updateTableRows(newRecords: any, oldRecords: any) {
 
       let difference: Array<string> = [];
-      if (oldRecords != null && this.initialUpdate) {
+      if (oldRecords !== null && this.initialUpdate) {
         const newSet: Set<string> = new Set(newRecords
           .filter( (record: any) => record.id !== undefined)
           .map( (filteredRecord: any) => filteredRecord.id)
