@@ -1,7 +1,7 @@
 <template>
   <div class="program-selection">
     <h1 class="title">
-      Welcome, {{ username }}!
+      Welcome, {{ activeUser.name }}!
     </h1>
     <p>Which program are you working with today?</p>
     <div class="columns">
@@ -27,22 +27,24 @@
 </template>
 
 <script lang="ts">
-  import { Component, Prop, Vue } from 'vue-property-decorator'
+  import { Component, Vue } from 'vue-property-decorator'
   import {Program} from "@/breeding-insight/model/Program";
-  import store from '@/store/index.ts';
-  import { SET_ACTIVE_PROGRAM } from '@/store/mutation-types';
   import { ProgramService } from '../breeding-insight/service/ProgramService';
+  import {mapGetters} from "vuex";
+  import {User} from "@/breeding-insight/model/User";
 
   @Component({
-    components: {}
+    components: {},
+    computed: {
+      ...mapGetters([
+        'activeUser'
+      ])
+    }
   })
   export default class ProgramSelection extends Vue {
 
     private programs: Program[] = [];
-
-    get username(): string {
-      return this.$store.state.user ? this.$store.state.user.name : '';
-    }
+    private activeUser?: User;
 
     mounted() {
       this.getPrograms();

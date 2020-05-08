@@ -77,6 +77,6 @@
   })
   export default class Home extends Vue {
 
-    private activeUser: User | undefined;
+    private activeUser?: User;
   }
 </script>

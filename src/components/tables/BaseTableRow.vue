@@ -1,5 +1,5 @@
 <template>
-  <tr v-bind:class="{'is-new': (rowData.new == true && rowData.edit == false), 'is-selected': (rowData.edit == true)}" >
+  <tr v-bind:class="{'is-new': (rowData.new && !rowData.edit), 'is-selected': rowData.edit}" >
     <slot></slot>
     <template v-if="rowData.editable">
       <td class="has-text-right">

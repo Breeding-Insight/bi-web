@@ -40,7 +40,7 @@ export class UserService {
           resolve(newUser);
 
         }).catch((error) => {
-          if (error.response && error.response.status == 409) {
+          if (error.response && error.response.status === 409) {
             Vue.$log.info('Email already exists');
             error['errorMessage'] = this.duplicateEmailMessage;
           } else {
@@ -69,7 +69,7 @@ export class UserService {
           resolve(newUser);
 
         }).catch((error) => {
-          if (error.response && error.response.status == 409) {
+          if (error.response && error.response.status === 409) {
             Vue.$log.info('Email already exists');
             error['errorMessage'] = this.duplicateEmailMessage;
           } else {
@@ -93,7 +93,7 @@ export class UserService {
         return UserDAO.delete(user.id)
           .then(() => resolve())
           .catch((error) => {
-            if (error.response && error.response.status == 401) {
+            if (error.response && error.response.status === 404) {
               error['errorMessage'] = this.errorDeleteUserNotFound;
             } else {
               error['errorMessage'] = this.errorDeleteUser;
@@ -143,7 +143,7 @@ export class UserService {
           resolve(newUser);
 
         }).catch((error) => {
-          if (error.response && error.response.status == 403) {
+          if (error.response && error.response.status === 403) {
             Vue.$log.info('Unable to edit own roles');
             error['errorMessage'] = this.errorPermissionsEditUser;
           } else {

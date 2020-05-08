@@ -81,7 +81,7 @@ export class ProgramService {
   static getOne(programId: string): Promise<Program> {
     return new Promise<Program>(((resolve, reject) => {
 
-      if (programId == null) {
+      if (programId === null) {
         reject();
       }
 
