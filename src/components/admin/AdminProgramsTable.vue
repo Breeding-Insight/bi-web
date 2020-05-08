@@ -155,6 +155,7 @@ import {ProgramService} from "@/breeding-insight/service/ProgramService";
 import {SpeciesService} from "@/breeding-insight/service/SpeciesService";
 import NewDataForm from "@/components/forms/NewDataForm.vue";
 import EmtpyTableMessage from "@/components/tables/EmtpyTableMessage.vue";
+import {EventBus} from "@/util/event-bus";
 
 @Component({
   mixins: [validationMixin],
@@ -225,6 +226,8 @@ export default class AdminProgramsTable extends Vue {
       this.$emit('show-success-notification', 'Success! ' + updatedProgram.name + ' updated.');
     }).catch(() => {
       this.$emit('show-error-notification', 'Error updating program');
+    }).finally(() => {
+      this.emitProgramChange();
     });
 
   }
@@ -238,7 +241,9 @@ export default class AdminProgramsTable extends Vue {
       this.newProgram = new Program();
     }).catch(() => {
       this.$emit('show-error-notification', 'Error while creating program, ' + this.newProgram.name);
-    })
+    }).finally(() => {
+      this.emitProgramChange();
+    });
 
   }
 
@@ -271,7 +276,10 @@ export default class AdminProgramsTable extends Vue {
             this.$emit('show-success-notification', `${deleteName} archived in system`);
           }).catch(() => {
             this.$emit('show-error-notification', `Unable to archive program, ${deleteName}.`);
-          })
+          }).finally(() => {
+              this.emitProgramChange();
+          });
+
           return;
         }
       }
@@ -283,6 +291,10 @@ export default class AdminProgramsTable extends Vue {
 
   getSpeciesName(id: string): string {
     return this.speciesMap.get(id)!.name;
+  }
+
+  emitProgramChange() {
+    EventBus.bus.$emit(EventBus.programChange);
   }
 
 }
