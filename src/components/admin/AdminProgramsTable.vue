@@ -12,17 +12,32 @@
       </section>
       <div class="columns">
         <div class="column is-whole has-text-centered buttons">
-          <button v-on:click="modalDeleteHandler()" 
-          class="button is-danger"><strong>Yes, remove</strong>
+          <button
+            class="button is-danger"
+            v-on:click="modalDeleteHandler()"
+          >
+            <strong>Yes, remove</strong>
           </button>
-          <button v-on:click="deactivateActive = false" class="button">Cancel</button>
+          <button
+            class="button"
+            v-on:click="deactivateActive = false"
+          >
+            Cancel
+          </button>
         </div>
-      </div>              
+      </div>
     </WarningModal>
 
-    <button class="button is-primary has-text-weight-bold is-pulled-right" v-on:click="newProgramActive = true" v-show="!newProgramActive">
+    <button
+      v-show="!newProgramActive & programs.length > 0"
+      class="button is-primary has-text-weight-bold is-pulled-right"
+      v-on:click="newProgramActive = true"
+    >
       <span class="icon is-small">
-        <PlusCircleIcon size="1.5x" aria-hidden="true"></PlusCircleIcon>
+        <PlusCircleIcon
+          size="1.5x"
+          aria-hidden="true"
+        />
       </span>
       <span>
         New Program
@@ -30,29 +45,29 @@
     </button>
 
     <NewDataForm
-        v-if="newProgramActive"
-        v-bind:row-validations="programValidations"
-        v-bind:new-record.sync="newProgram"
-        v-on:submit="saveProgram"
-        v-on:cancel="cancelNewProgram"
-        v-on:show-error-notification="$emit('show-error-notification', $event)"
+      v-if="newProgramActive"
+      v-bind:row-validations="programValidations"
+      v-bind:new-record.sync="newProgram"
+      v-on:submit="saveProgram"
+      v-on:cancel="cancelNewProgram"
+      v-on:show-error-notification="$emit('show-error-notification', $event)"
     >
       <template v-slot="validations">
         <div class="columns">
           <div class="column is-one-half">
             <BasicInputField
-                v-model="newProgram.name"
-                v-bind:validations="validations.name"
-                v-bind:field-name="'Program Name'"
-                v-bind:field-help="'Name of program. All Unicode special characters accepted.'"
+              v-model="newProgram.name"
+              v-bind:validations="validations.name"
+              v-bind:field-name="'Program Name'"
+              v-bind:field-help="'Name of program. All Unicode special characters accepted.'"
             />
           </div>
           <div class="column is-one-half">
             <BasicSelectField
-                v-model="newProgram.speciesId"
-                v-bind:validations="validations.speciesId"
-                v-bind:options="species"
-                v-bind:field-name="'Species'"
+              v-model="newProgram.speciesId"
+              v-bind:validations="validations.speciesId"
+              v-bind:options="species"
+              v-bind:field-name="'Species'"
             />
           </div>
         </div>
@@ -60,49 +75,63 @@
     </NewDataForm>
 
     <BaseTable
-        v-bind:headers="programTableHeaders"
-        v-bind:records.sync="programs"
-        v-bind:rowValidations="programValidations"
-        v-bind:editable="true"
-        v-on:submit="updateProgram($event)"
-        v-on:remove="displayWarning($event)"
-        v-on:show-error-notification="$emit('show-error-notification', $event)"
+      v-bind:headers="programTableHeaders"
+      v-bind:records.sync="programs"
+      v-bind:row-validations="programValidations"
+      v-bind:editable="true"
+      v-on:submit="updateProgram($event)"
+      v-on:remove="displayWarning($event)"
+      v-on:show-error-notification="$emit('show-error-notification', $event)"
     >
       <template v-slot:columns="data">
         <TableRowColumn name="name">
           <router-link
             v-bind:to="{name: 'program-home', params: {programId: data.id}}"
           >
-            {{data.name}}
+            {{ data.name }}
           </router-link>
         </TableRowColumn>
         <TableRowColumn name="species">
           <template v-if="speciesMap.size > 0">
-            {{getSpeciesName(data.speciesId)}}
+            {{ getSpeciesName(data.speciesId) }}
           </template>
         </TableRowColumn>
-        <TableRowColumn name="numUsers">{{data.numUsers}}</TableRowColumn>
+        <TableRowColumn name="numUsers">
+          {{ data.numUsers }}
+        </TableRowColumn>
       </template>
       <template v-slot:edit="{editData, validations}">
         <div class="columns">
           <div class="column is-one-half">
             <BasicInputField
-                v-model="editData.name"
-                v-bind:validations="validations.name"
-                v-bind:field-name="'Program Name'"
-                v-bind:field-help="'Name of program. All Unicode special characters accepted.'"
+              v-model="editData.name"
+              v-bind:validations="validations.name"
+              v-bind:field-name="'Program Name'"
+              v-bind:field-help="'Name of program. All Unicode special characters accepted.'"
             />
           </div>
           <div class="column is-one-half">
             <BasicSelectField
-                v-model="editData.speciesId"
-                v-bind:validations="validations.speciesId"
-                v-bind:options="species"
-                v-bind:selectedId="editData.speciesId"
-                v-bind:field-name="'Species'"
+              v-model="editData.speciesId"
+              v-bind:validations="validations.speciesId"
+              v-bind:options="species"
+              v-bind:selected-id="editData.speciesId"
+              v-bind:field-name="'Species'"
             />
           </div>
         </div>
+      </template>
+      <template v-slot:emptyMessage>
+        <EmtpyTableMessage
+          v-bind:button-view-toggle="!newProgramActive"
+          v-bind:button-text="'New Program'"
+          v-on:newClick="newProgramActive = true"
+        >
+          <p class="has-text-weight-bold">
+            No programs are currently defined.
+          </p>
+          You can add, edit, and delete programs from this panel.
+        </EmtpyTableMessage>
       </template>
     </BaseTable>
   </section>
@@ -125,10 +154,12 @@ import BasicSelectField from "@/components/forms/BasicSelectField.vue";
 import {ProgramService} from "@/breeding-insight/service/ProgramService";
 import {SpeciesService} from "@/breeding-insight/service/SpeciesService";
 import NewDataForm from "@/components/forms/NewDataForm.vue";
+import EmtpyTableMessage from "@/components/tables/EmtpyTableMessage.vue";
 
 @Component({
   mixins: [validationMixin],
   components: {
+    EmtpyTableMessage,
     NewDataForm, EditDataRowForm, WarningModal, PlusCircleIcon,
     BaseTable, TableRowColumn, BasicInputField, BasicSelectField
   }
