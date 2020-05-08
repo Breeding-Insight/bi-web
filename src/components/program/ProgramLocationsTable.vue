@@ -226,7 +226,7 @@ export default class ProgramLocationsTable extends Vue {
         id = Number(location.id)+1;
       }
 
-      if (this.newLocation.name != undefined) {
+      if (this.newLocation.name) {
         const newLocation: Location = new Location(id.toString(), this.newLocation.name, '');
         const newRow: TableRow<Location> = new TableRow(true, newLocation);
         newRow.toggleNew();

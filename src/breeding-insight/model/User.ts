@@ -21,6 +21,6 @@ export class User {
   }
 
   hasRole(roleName: string){
-    return this.roleName == roleName;
+    return this.roleName === roleName;
   }
 }

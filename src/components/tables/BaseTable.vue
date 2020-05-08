@@ -29,7 +29,7 @@
           <template v-if="row.edit">
             <tr
                 v-bind:key="'edit' + index"
-                v-bind:class="{'is-selected': (row.edit == true), 'is-new': (row.new == true)}"
+                v-bind:class="{'is-selected': row.edit, 'is-new': row.new}"
             >
               <td v-bind:colspan="columnSpan">
                 <EditDataRowForm

@@ -170,7 +170,7 @@ import EmptyTableMessage from "@/components/tables/EmtpyTableMessage.vue";
 })
 export default class ProgramUsersTable extends Vue {
 
-  private activeProgram: Program | undefined;
+  private activeProgram?: Program;
   public users: ProgramUser[] = [];
   userTableHeaders: string[] = ['Name', 'Email', 'Role'];
 

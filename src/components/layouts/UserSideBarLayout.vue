@@ -123,8 +123,8 @@
     }
   })
   export default class UserSideBarLayout extends Vue {
-    private activeProgram: Program | undefined;
-    private activeUser: User | undefined;
+    private activeProgram?: Program;
+    private activeUser?: User;
     programManagementActive: boolean =  true;
     private programs: Program[] = [];
 

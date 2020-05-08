@@ -78,7 +78,7 @@
     validateTypeError(type: string) {
 
       if (this.validations) {
-        if (this.validations[type] != undefined) {
+        if (this.validations[type]) {
           return this.validations[type];
         }
       }

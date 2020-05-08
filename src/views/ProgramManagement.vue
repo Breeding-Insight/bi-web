@@ -54,7 +54,7 @@
   })
   export default class ProgramManagement extends Vue {
 
-    private activeProgram: Program | undefined;
+    private activeProgram?: Program;
     // get this when endpoint is implmented
     private programName: string = "Program Name";
 
