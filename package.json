@@ -42,6 +42,7 @@
     "focus-trap-vue": "0.0.6",
     "vue": "^2.6.10",
     "vue-class-component": "^7.0.2",
+    "vue-click-outside": "^1.1.0",
     "vue-feather-icons": "^5.0.0",
     "vue-property-decorator": "^8.3.0",
     "vue-router": "^3.1.3",
