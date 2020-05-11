@@ -3,9 +3,6 @@
     <h1 class="title">
       Program Management
     </h1>
-    <p class="is-size-5 has-text-weight-bold">
-      {{programName}}
-    </p>
 
     <section>
       <nav class="tabs is-boxed">
@@ -56,8 +53,6 @@
   export default class ProgramManagement extends ProgramsBase {
 
     private activeProgram?: Program;
-    // get this when endpoint is implmented
-    private programName: string = "Program Name";
 
   }
 </script>
