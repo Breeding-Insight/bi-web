@@ -11,13 +11,14 @@
 <script lang="ts">
   import { Component, Prop, Vue } from 'vue-property-decorator'
   import ProgramLocationsTable from "@/components/program/ProgramLocationsTable.vue"
+  import ProgramsBase from "@/components/program/ProgramsBase.vue";
 
   @Component({
     components: {
       ProgramLocationsTable
     }
   })
-  export default class ProgramLocationManagement extends Vue {
+  export default class ProgramLocationManagement extends ProgramsBase {
 
   }
 </script>

@@ -180,7 +180,7 @@ export default class ProgramUsersTable extends Vue {
   private newUser = new ProgramUser();
   private roles: Array<Role> = [];
 
-  private deleteUser: ProgramUser | undefined;
+  private deleteUser?: ProgramUser;
   private rolesMap: Map<string, Role> = new Map();
   private programName: string = "Program Name";
 

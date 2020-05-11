@@ -5,8 +5,16 @@
     </h1>
     <p>Which program are you working with today?</p>
     <div class="columns">
-      <div class="column is-2">
+      <div class="column is-narrow">
         <div class="buttons">
+          <template v-if="activeUser && activeUser.hasRole('admin')">
+            <router-link
+              v-bind:to="{name: 'admin'}"
+              class="button is-primary is-light is-fullwidth is-outlined"
+            >
+              System Administration
+            </router-link>
+          </template>
           <template v-if="programs.length > 0">
             <router-link
                 v-for="program in programs"
@@ -53,6 +61,10 @@
     getPrograms() {
       ProgramService.getAll().then((programs: Program[]) => {
         this.programs = programs;
+        if (programs.length == 1){
+          const program: Program = programs[0];
+          this.$router.replace({name: 'program-home', params: {programId: program.id!}});
+        }
       }).catch((error) => {
         this.$emit('show-error-notification', 'Error while trying to load programs');
         throw error;

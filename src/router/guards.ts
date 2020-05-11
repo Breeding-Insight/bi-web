@@ -6,8 +6,9 @@ import {SET_ACTIVE_PROGRAM} from "@/store/mutation-types";
 
 export function processProgramNavigation(to: Route, from: Route, next: Function) {
 
+  console.log('i was called');
   // Navigating to programs path
-  if (to.path.startsWith('/programs/')) {
+  if (isProgramsPath(to)) {
     if (store.state.program === undefined || store.state.program.id !== to.params.programId) {
       ProgramService.getOne(to.params['programId'])
         .then((program: Program) => {
@@ -20,4 +21,11 @@ export function processProgramNavigation(to: Route, from: Route, next: Function)
         });
     } else { next(); }
   } else { next(); }
+}
+
+export function isProgramsPath(to: Route): boolean {
+  if (to.path.startsWith('/programs/')) {
+    return true;
+  }
+  return false;
 }

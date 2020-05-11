@@ -41,6 +41,7 @@
   import ProgramLocationsTable from '@/components/program/ProgramLocationsTable.vue';
   import {mapGetters} from "vuex";
   import {Program} from "@/breeding-insight/model/Program";
+  import ProgramsBase from "@/components/program/ProgramsBase.vue";
 
   @Component({
     components: {
@@ -52,7 +53,7 @@
       ])
     }
   })
-  export default class ProgramManagement extends Vue {
+  export default class ProgramManagement extends ProgramsBase {
 
     private activeProgram?: Program;
     // get this when endpoint is implmented
