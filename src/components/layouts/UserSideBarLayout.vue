@@ -1,9 +1,51 @@
 <template>
   <BaseSideBarLayout
-    v-bind:title="title" 
     v-bind:username="username"
     v-on:logout="$emit('logout')"
   >
+    <template v-slot:title class="level">
+      <h1 class="title has-text-primary level-item">{{title}}</h1>
+      <div
+        class="dropdown is-right level-item"
+        v-bind:class="{'is-active': programSelectActive}"
+      >
+        <div class="dropdown-trigger">
+          <button
+            v-on:click.stop="programSelectActive = !programSelectActive"
+            class="button is-small"
+            aria-haspopup="true"
+            aria-controls="program-menu"
+          >
+            <span class="icon is-small">
+              <ChevronDownIcon></ChevronDownIcon>
+            </span>
+          </button>
+        </div>
+        <div
+          class="dropdown-menu"
+          id="program-menu"
+          role="menu"
+          v-click-outside="hideProgramSelect"
+        >
+          <div
+            class="dropdown-content"
+          >
+            <template v-for="program of programs">
+              <router-link
+                v-if="activeProgram === undefined || program.id !== activeProgram.id"
+                v-bind:key="`programNav${program.id}`"
+                v-bind:to="{name: 'program', params: {programId: program.id}}"
+                v-on:click.native="programSelectActive = false"
+                class="dropdown-item"
+                active-class="is-active"
+              >
+                {{program.name}}
+              </router-link>
+            </template>
+          </div>
+        </div>
+      </div>
+    </template>
     <template v-slot:menu>
       <template v-if="activeUser && activeUser.hasRole('admin')">
         <p class="menu-label">
@@ -11,35 +53,26 @@
         </p>
         <ul class="menu-list">
           <li>
+            <router-link to="/admin/user-management">
+              Users
+            </router-link>
+          </li>
+          <li>
             <router-link to="/admin/program-management">
               Programs
             </router-link>
             <ul class="menu-list">
               <template v-for="program of programs">
-                <router-link v-bind:key="program.id" v-bind:to="{name: 'program-home', params: {programId: program.id}}">
-                  {{program.name}}
-                </router-link>
+                <li v-bind:key="program.id">
+                  <router-link v-bind:to="{name: 'program', params: {programId: program.id}}">
+                    {{program.name}}
+                  </router-link>
+                </li>
               </template>
             </ul>
           </li>
-          <li>
-            <router-link to="/admin/user-management">
-              Users
-            </router-link>
-          </li>
         </ul>
       </template>
-      <hr style="margin:5px;">
-      <p class="menu-label">
-        My Breeding Insight
-      </p>
-      <ul class="menu-list">
-        <li>
-          <router-link to="/account/program-selection">
-            My Programs
-          </router-link>
-        </li>
-      </ul>
       <template v-if="activeProgram">
         <hr style="margin:5px;">
         <p class="menu-label">
@@ -106,20 +139,24 @@
 <script lang="ts">
   import {Component, Prop, Vue} from 'vue-property-decorator'
   import BaseSideBarLayout from '@/components/layouts/BaseSideBarLayout.vue';
-  import { MoreVerticalIcon, MoreHorizontalIcon } from 'vue-feather-icons'
+  import { MoreVerticalIcon, MoreHorizontalIcon, ChevronDownIcon } from 'vue-feather-icons'
   import {Program} from "@/breeding-insight/model/Program";
   import {mapGetters} from "vuex";
   import {User} from "@/breeding-insight/model/User";
   import {ProgramService} from "@/breeding-insight/service/ProgramService";
   import {EventBus} from "@/util/event-bus";
+  import ClickOutside from 'vue-click-outside';
 
   @Component( {
-    components: {BaseSideBarLayout, MoreVerticalIcon, MoreHorizontalIcon},
+    components: {BaseSideBarLayout, MoreVerticalIcon, MoreHorizontalIcon, ChevronDownIcon},
     computed: {
       ...mapGetters([
         'activeProgram',
         'activeUser'
       ])
+    },
+    directives: {
+      ClickOutside
     }
   })
   export default class UserSideBarLayout extends Vue {
@@ -127,6 +164,7 @@
     private activeUser?: User;
     programManagementActive: boolean =  true;
     private programs: Program[] = [];
+    private programSelectActive: boolean = false;
 
     @Prop()
     username!: string;
@@ -148,8 +186,6 @@
       var path: string = this.$route.path;
       if (path.startsWith("/admin")){
         return "System Administration";
-      } else if (path.startsWith("/account")){
-        return "Account";
       }
       else {
         if (this.activeProgram){
@@ -178,6 +214,10 @@
     setActiveLinkSubmenus() {
       var path: string = this.$route.path;
       this.programManagementActive = path.includes('/program-management/');
+    }
+
+    hideProgramSelect() {
+      this.programSelectActive = false;
     }
 
   }

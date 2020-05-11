@@ -65,7 +65,7 @@
   import { Component, Vue } from 'vue-property-decorator'
   import {mapGetters} from "vuex";
   import {User} from "@/breeding-insight/model/User";
-  import {processProgramNavigation} from "@/router/guards";
+  import ProgramsBase from "@/components/program/ProgramsBase.vue";
 
   @Component({
     computed: {
@@ -73,10 +73,8 @@
         'activeUser'
       ])
     },
-    beforeRouteUpdate: processProgramNavigation
   })
-  export default class Home extends Vue {
-
+  export default class Home extends ProgramsBase {
     private activeUser?: User;
   }
 </script>

@@ -13,7 +13,7 @@ import ProgramUserManagement from "@/views/ProgramUsersManagement.vue";
 import ProgramSelection from "@/views/ProgramSelection.vue";
 import {UserService} from "@/breeding-insight/service/UserService";
 import {User} from "@/breeding-insight/model/User";
-import {processProgramNavigation} from "@/router/guards";
+import {isProgramsPath, processProgramNavigation} from "@/router/guards";
 import {ProgramService} from "@/breeding-insight/service/ProgramService";
 import {Program} from "@/breeding-insight/model/Program";
 
@@ -57,7 +57,9 @@ const routes = [
     // which is lazy-loaded when the route is visited.
     component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
   },
-  { path: '/admin', redirect: '/admin/program-management' },
+  { path: '/admin',
+    name: 'admin',
+    redirect: '/admin/program-management' },
   {
     path: '/admin/program-management',
     name: 'admin-program-management',
@@ -75,6 +77,11 @@ const routes = [
       layout: layouts.userSideBar
     }, 
     component: AdminUserManagement
+  },
+  {
+    path: '/programs/:programId',
+    name: 'program',
+    redirect: (to: Route) => ({name: 'program-home', params: {programId: to.params.programId}}),
   },
   {
     path: '/programs/:programId/home',
@@ -118,11 +125,11 @@ const routes = [
     ]
   },
   {
-    path: '/account/program-selection',
+    path: '/program-selection',
     name: 'program-selection',
     meta: {
       title: 'Select A Program',
-      layout: layouts.userSideBar
+      layout: layouts.noSideBar
     },
     component: ProgramSelection
   }
@@ -139,6 +146,12 @@ router.beforeEach((to: Route, from: Route, next: Function) => {
   // TODO: Check if the page is a protected resource, if not, let them through
   // If page is protected, check if they are logged in. 
   // TODO: Check if their token has expired.
+
+  // Clear path dependent store data for easier state management
+  if (!isProgramsPath(to)){
+    store.commit(SET_ACTIVE_PROGRAM, undefined);
+  }
+
   if (!store.state.loggedIn) {
 
     //Get the user info

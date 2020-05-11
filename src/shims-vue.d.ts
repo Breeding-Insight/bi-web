@@ -44,3 +44,4 @@ declare module 'vuejs-logger' {
 }
 
 declare module 'vue-feather-icons';
+declare module 'vue-click-outside';
