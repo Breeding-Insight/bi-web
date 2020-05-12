@@ -8,6 +8,7 @@
       <div
         class="dropdown is-right level-item"
         v-bind:class="{'is-active': programSelectActive}"
+        v-if="programs.length > 1"
       >
         <div class="dropdown-trigger">
           <button
@@ -72,12 +73,15 @@
             </ul>
           </li>
         </ul>
+        <template v-if="activeProgram">
+          <hr style="margin:5px;">
+          <p class="menu-label">
+            {{activeProgram.name}}
+          </p>
+        </template>
       </template>
       <template v-if="activeProgram">
-        <hr style="margin:5px;">
-        <p class="menu-label">
-          {{activeProgram.name}}
-        </p>
+
         <ul class="menu-list">
           <li>
             <router-link v-bind:to="{name: 'program-home', params: {programId: activeProgram.id}}">
