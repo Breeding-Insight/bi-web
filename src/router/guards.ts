@@ -6,7 +6,6 @@ import {SET_ACTIVE_PROGRAM} from "@/store/mutation-types";
 
 export function processProgramNavigation(to: Route, from: Route, next: Function) {
 
-  console.log('i was called');
   // Navigating to programs path
   if (isProgramsPath(to)) {
     if (store.state.program === undefined || store.state.program.id !== to.params.programId) {
