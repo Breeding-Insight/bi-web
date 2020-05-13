@@ -23,8 +23,8 @@
             </a>
           </div>
         </div>
-        <div class="level-right">
-          <h1 class="title has-text-primary">{{title}}</h1>
+        <div class="level-right program-selection-level">
+          <slot name="title"></slot>
         </div>
       </div>
     </header>
@@ -78,9 +78,6 @@
 
     @Prop()
     username!: string;
-
-    @Prop()
-    title!: string;
 
     @Watch('$route')
     onUrlChange(){

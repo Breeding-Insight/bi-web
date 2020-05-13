@@ -3,6 +3,29 @@ declare module '*.vue' {
   export default Vue
 }
 
+declare module 'validations' {
+  import {Validation} from 'vuelidate';
+
+  type TableValidation = {
+    tableRows: {
+      $each: [{
+        editData: Validation
+      }]
+    }
+  }
+
+  type NewRecord = {
+    newRecord: Validation;
+  }
+
+  module 'vue/types/vue' {
+    interface Vue {
+      $v: TableValidation & NewRecord;
+    }
+  }
+
+}
+
 declare module 'vuejs-logger' {
   import {PluginFunction} from "vue";
   export const install: PluginFunction<{}>
@@ -21,3 +44,4 @@ declare module 'vuejs-logger' {
 }
 
 declare module 'vue-feather-icons';
+declare module 'vue-click-outside';

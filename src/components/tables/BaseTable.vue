@@ -1,5 +1,8 @@
 <template>
-  <table class="table is-striped is-narrow is-hoverable is-fullwidth">
+  <table
+    class="table is-striped is-narrow is-hoverable is-fullwidth"
+    v-if="tableRows.length > 0"
+  >
     <thead>
       <tr>
         <template v-for="(header, index) in headers">
@@ -11,40 +14,44 @@
       </tr>
     </thead>
     <tbody>
-      <template v-for="(row, index) in tableRows">
-        <BaseTableRow
-          v-bind:key="'row' + index"
-          v-bind:row-data="row"
-          v-on:edit="row.toggleEdit()"
-          v-on:remove="$emit('remove', row.data)"
-        >
-          <slot
-            v-bind="row.data"
-            name="columns"
-          />
-        </BaseTableRow>
-        <template v-if="row.edit">
-          <tr
-            v-bind:key="'edit' + index"
-            v-bind:class="{'is-selected': (row.edit == true), 'is-new': (row.new == true)}"
+        <template v-for="(row, index) in tableRows">
+          <BaseTableRow
+              v-bind:key="'row' + index"
+              v-bind:row-data="row"
+              v-on:edit="row.toggleEdit()"
+              v-on:remove="$emit('remove', row.data)"
           >
-            <td v-bind:colspan="columnSpan">
-              <EditDataRowForm
-                @submit="validateAndSubmit(index)"
-                @cancel="cancelEdit(row, index)"
-              >
-                <slot
-                  v-bind:editData="row.editData"
-                  v-bind:validations="getValidations(index)"
-                  name="edit" />
-              </EditDataRowForm>
-            </td>
-          </tr>
+            <slot
+                v-bind="row.data"
+                name="columns"
+            />
+          </BaseTableRow>
+          <template v-if="row.edit">
+            <tr
+                v-bind:key="'edit' + index"
+                v-bind:class="{'is-selected': row.edit, 'is-new': row.new}"
+            >
+              <td v-bind:colspan="columnSpan">
+                <EditDataRowForm
+                    @submit="validateAndSubmit(index)"
+                    @cancel="cancelEdit(row, index)"
+                >
+                  <slot
+                      v-bind:editData="row.editData"
+                      v-bind:validations="getValidations(index)"
+                      name="edit" />
+                </EditDataRowForm>
+              </td>
+            </tr>
+          </template>
         </template>
-      </template>
     </tbody>
   </table>
+  <div v-else>
+    <slot name="emptyMessage" />
+  </div>
 </template>
+
 
 <script lang="ts">
 
@@ -81,7 +88,7 @@
     updateTableRows(newRecords: any, oldRecords: any) {
 
       let difference: Array<string> = [];
-      if (oldRecords != null && this.initialUpdate) {
+      if (oldRecords !== null && this.initialUpdate) {
         const newSet: Set<string> = new Set(newRecords
           .filter( (record: any) => record.id !== undefined)
           .map( (filteredRecord: any) => filteredRecord.id)

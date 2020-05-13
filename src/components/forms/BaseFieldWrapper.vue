@@ -15,7 +15,7 @@
         </span>
       </template>
       <p
-          v-if="fieldHelp != null"
+          v-if="fieldHelp !== null"
           class="help"
       >
         {{ fieldHelp }}
@@ -78,7 +78,7 @@
     validateTypeError(type: string) {
 
       if (this.validations) {
-        if (this.validations[type] != undefined) {
+        if (this.validations[type]) {
           return this.validations[type];
         }
       }

@@ -77,10 +77,8 @@ import SuccessNotification from '@/components/notifications/SuccessNotification.
 import InfoNotification from '@/components/notifications/InfoNotification.vue'
 import ErrorNotification from '@/components/notifications/ErrorNotification.vue'
 import SimpleLayout from '@/components/layouts/SimpleLayout.vue'
-import AdminSideBarLayout from './components/layouts/AdminSideBarLayout.vue'
 import UserSideBarLayout from './components/layouts/UserSideBarLayout.vue'
 import NoSideBarLayout from './components/layouts/NoSideBarLayout.vue'
-import { User } from './breeding-insight/model/User'
 
 @Component({
   watch: {
@@ -91,7 +89,7 @@ import { User } from './breeding-insight/model/User'
           if(!isLoggedIn) {
               this.$router.push('/');
           }             
-      }
+      },
   },
   computed: {
     layout() {
@@ -106,10 +104,9 @@ import { User } from './breeding-insight/model/User'
     InfoNotification,
     ErrorNotification,
     simpleLayout: SimpleLayout,
-    adminSideBarLayout: AdminSideBarLayout,
     userSideBarLayout: UserSideBarLayout,
     noSideBarLayout: NoSideBarLayout
-  },
+  }
 })
 export default class App extends Vue {
   public loading: boolean = false;

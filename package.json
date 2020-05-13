@@ -32,6 +32,7 @@
   },
   "dependencies": {
     "@types/jest": "^24.9.0",
+    "@types/promise.allsettled": "^1.0.3",
     "@types/vuelidate": "^0.7.10",
     "buefy": "^0.8.8",
     "bulma": "^0.8.0",
@@ -41,6 +42,7 @@
     "focus-trap-vue": "0.0.6",
     "vue": "^2.6.10",
     "vue-class-component": "^7.0.2",
+    "vue-click-outside": "^1.1.0",
     "vue-feather-icons": "^5.0.0",
     "vue-property-decorator": "^8.3.0",
     "vue-router": "^3.1.3",

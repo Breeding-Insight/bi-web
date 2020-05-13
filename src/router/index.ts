@@ -1,5 +1,5 @@
 import Vue from 'vue'
-import VueRouter from 'vue-router'
+import VueRouter, {Route} from 'vue-router'
 import Index from '@/views/Index.vue'
 import Home from '@/views/Home.vue'
 import StyleGuide from '@/views/StyleGuide.vue'
@@ -7,12 +7,15 @@ import ProgramManagement from '@/views/ProgramManagement.vue'
 import AdminProgramManagement from '@/views/AdminProgramManagement.vue'
 import AdminUserManagement from '@/views/AdminUserManagement.vue'
 import store from '@/store/index.ts';
-import { LOGIN, LOGOUT, REQUESTED_PATH, ERROR_STATE } from '@/store/mutation-types';
-import * as api from '@/util/api';
-import { BiResponse } from '@/breeding-insight/model/BiResponse';
+import {LOGIN, LOGOUT, REQUESTED_PATH, ERROR_STATE, SET_ACTIVE_PROGRAM} from '@/store/mutation-types';
 import ProgramLocationsManagement from "@/views/ProgramLocationsManagement.vue";
 import ProgramUserManagement from "@/views/ProgramUsersManagement.vue";
 import ProgramSelection from "@/views/ProgramSelection.vue";
+import {UserService} from "@/breeding-insight/service/UserService";
+import {User} from "@/breeding-insight/model/User";
+import {isProgramsPath, processProgramNavigation} from "@/router/guards";
+import {ProgramService} from "@/breeding-insight/service/ProgramService";
+import {Program} from "@/breeding-insight/model/Program";
 
 Vue.use(VueRouter);
 
@@ -32,15 +35,6 @@ const routes = [
       layout: layouts.simple
     },
     component: Index
-  },
-  {
-    path: '/home',
-    name: 'home',
-    meta: {
-      title: 'Welcome',
-      layout: layouts.userSideBar
-    },
-    component: Home
   },
   {
     path: '/style-guide',
@@ -63,42 +57,52 @@ const routes = [
     // which is lazy-loaded when the route is visited.
     component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
   },
+  { path: '/admin',
+    name: 'admin',
+    redirect: '/admin/program-management' },
   {
-    path: '/admin', 
-    name: 'admin', 
+    path: '/admin/program-management',
+    name: 'admin-program-management',
     meta: {
-      title: 'System Administration',
-      layout: layouts.adminSideBar
-    }, 
+      title: 'Admin Program Management',
+      layout: layouts.userSideBar
+    },
     component: AdminProgramManagement
   },
   {
-    path: '/admin-user-management',
+    path: '/admin/user-management',
     name: 'admin-user-management',
     meta: {
       title: 'Admin User Management',
-      layout: layouts.adminSideBar
+      layout: layouts.userSideBar
     }, 
     component: AdminUserManagement
   },
   {
-    path: '/admin-program-management',
-    name: 'admin-program-management',
-    meta: {
-      title: 'Admin Program Management',
-      layout: layouts.adminSideBar
-    }, 
-    component: AdminProgramManagement
+    path: '/programs/:programId',
+    name: 'program',
+    redirect: (to: Route) => ({name: 'program-home', params: {programId: to.params.programId}}),
   },
   {
-    path: '/program-management',
-    redirect: {name: 'program-locations'},
+    path: '/programs/:programId/home',
+    name: 'program-home',
+    meta: {
+      title: 'Welcome',
+      layout: layouts.userSideBar
+    },
+    component: Home,
+    beforeEnter: processProgramNavigation,
+  },
+  {
+    path: '/programs/:programId/program-management',
     name: 'program-management',
     meta: {
       title: 'Program Management',
       layout: layouts.userSideBar
-    }, 
+    },
     component: ProgramManagement,
+    redirect: {name: 'program-locations'},
+    beforeEnter: processProgramNavigation,
     children: [
       {
         path: 'locations',
@@ -110,7 +114,7 @@ const routes = [
         component: ProgramLocationsManagement
       },
       {
-        path: 'program-users',
+        path: 'users',
         name: 'program-users',
         meta: {
           title: 'Program User Management',
@@ -137,25 +141,27 @@ const router = new VueRouter({
   routes
 })
 
-router.beforeEach((to, from, next) => {
+router.beforeEach((to: Route, from: Route, next: Function) => {
 
   // TODO: Check if the page is a protected resource, if not, let them through
   // If page is protected, check if they are logged in. 
-  // TODO: Check if their token has expired. 
+  // TODO: Check if their token has expired.
+
+  // Clear path dependent store data for easier state management
+  if (!isProgramsPath(to)){
+    store.commit(SET_ACTIVE_PROGRAM, undefined);
+  }
+
   if (!store.state.loggedIn) {
 
     //Get the user info
-    api.call({url: `${process.env.VUE_APP_BI_API_V1_PATH}/userinfo`})
-    .then((response: any) => {
-      
-      let biResponse = new BiResponse(response.data);
-      store.commit(LOGIN, {'id': biResponse.result.orcid, 'name': biResponse.result.name, 'roles':[] });
-
-      // send them to program-selection regardless of requested url
-      next('/program-selection');
+    UserService.getUserInfo()
+    .then((user: User) => {
+      store.commit(LOGIN, user);
+      if (to.name !== 'home') { next(); }
+      else { next({name: 'program-selection'})}
     })
     .catch((error) => {
-
       // Check if it is a 401
       if (error.response && error.response.status === 401) {
           Vue.$log.info(`Unauthorized login, ${error.response}`);
@@ -163,23 +169,20 @@ router.beforeEach((to, from, next) => {
       } else {
         store.commit(ERROR_STATE, {'loginFailed': false, 'loginServerError':true});
       }
-
       // If logged in fail, send them to the home page
-      if (to.path != '/') next('/')
-      else next();
-        
+      if (to.name !== 'home') {
+        //TODO: Show error to login again.
+        next({name: 'home'});
+      } else next();
     });
-
   } else {
-    // If the user is trying to go home and they are logged in, send them to program selection
-    if (to.path == '/' && store.state.loggedIn) next('/program-selection') 
-    else next();
+    next();
   }
-
   // Set page title
   document.title = to.meta.title + ' | Breeding Insight Platform' || 'Breeding Insight Platform'
-
 });
+
+
 
 
 export default router

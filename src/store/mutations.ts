@@ -1,6 +1,8 @@
 import { MutationTree } from 'vuex';
-import { User, Program, RootState } from '@/store/types';
+import { RootState } from '@/store/types';
 import { ERROR_STATE, LOGIN, LOGOUT, REQUESTED_PATH, SET_ACTIVE_PROGRAM } from '@/store/mutation-types';
+import {User} from "@/breeding-insight/model/User";
+import {Program} from "@/breeding-insight/model/Program";
 
 export const mutations: MutationTree<RootState> = {
   [LOGIN] (state, user: User) {

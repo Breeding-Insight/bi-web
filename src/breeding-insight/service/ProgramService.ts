@@ -10,7 +10,7 @@ export class ProgramService {
       if (program.id === undefined) {
         ProgramDAO.create(program).then((biResponse) => {
           const result: any = biResponse.result;
-          const newProgram: Program = new Program(result.id, result.name);
+          const newProgram = new Program(result.id, result.name);
           resolve(newProgram);
 
         }).catch((error) => reject(error));
@@ -29,7 +29,7 @@ export class ProgramService {
       if (program.id) {
         ProgramDAO.update(program.id, program).then((biResponse) => {
           const result: any = biResponse.result;
-          const newProgram: Program = new Program(result.id, result.name, result.species.id);
+          const newProgram = new Program(result.id, result.name, result.species.id);
           resolve(newProgram);
 
         }).catch((error) => reject(error));
@@ -75,6 +75,22 @@ export class ProgramService {
     
       }).catch((error) => reject(error));
     
+    }));
+  }
+
+  static getOne(programId: string): Promise<Program> {
+    return new Promise<Program>(((resolve, reject) => {
+
+      if (programId === null) {
+        reject();
+      }
+
+      ProgramDAO.getOne(programId).then((biResponse) => {
+        const result = biResponse.result;
+        const program = new Program(result.id, result.name, result.species.id);
+        resolve(program);
+      }).catch((error) => reject(error));
+
     }));
   }
 

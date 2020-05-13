@@ -9,13 +9,14 @@
 <script lang="ts">
   import { Component, Prop, Vue } from 'vue-property-decorator'
   import ProgramUsersTable from "../components/program/ProgramUsersTable.vue";
+  import ProgramsBase from "@/components/program/ProgramsBase.vue";
 
   @Component({
     components: {
       ProgramUsersTable
     }
   })
-  export default class ProgramUserManagement extends Vue {
+  export default class ProgramUserManagement extends ProgramsBase {
 
   }
 </script>

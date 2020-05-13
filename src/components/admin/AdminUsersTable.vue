@@ -41,7 +41,7 @@
     >
       <template v-slot="validations">
         <div class="columns">
-          <div class="column is-one-half">
+          <div class="column is-one-third">
             <BasicInputField
                 v-model="newUser.name"
                 v-bind:validations="validations.name"
@@ -49,11 +49,18 @@
                 v-bind:field-help="'Name of user. All Unicode special characters accepted.'"
             />
           </div>
-          <div class="column is-one-half">
+          <div class="column is-one-third">
             <BasicInputField
                 v-model="newUser.email"
                 v-bind:validations="validations.email"
                 v-bind:field-name="'Email'"
+            />
+          </div>
+          <div class="column is-one-third">
+            <BasicSelectField
+                v-model="newUser.roleId"
+                v-bind:options="roles"
+                v-bind:field-name="'Role'"
             />
           </div>
         </div>
@@ -72,6 +79,11 @@
       <template v-slot:columns="data">
         <TableRowColumn name="name">{{data.name}}</TableRowColumn>
         <TableRowColumn name="species">{{data.email}}</TableRowColumn>
+        <TableRowColumn name="roles">
+          <template v-if="rolesMap.size > 0">
+            {{getRoleName(data.roleId)}}
+          </template>
+        </TableRowColumn>
       </template>
       <template v-slot:edit="{editData, validations}">
         <div class="columns">
@@ -88,6 +100,15 @@
                 v-model="editData.email"
                 v-bind:validations="validations.email"
                 v-bind:field-name="'Email'"
+            />
+          </div>
+          <div class="column is-one-third">
+            <BasicSelectField
+                v-model="editData.roleId"
+                v-bind:options="roles"
+                v-bind:selectedId="editData.roleId"
+                v-bind:field-name="'Role'"
+                v-bind:empty-value-name="'No Role'"
             />
           </div>
         </div>
@@ -108,19 +129,27 @@ import TableRowColumn from "@/components/tables/TableRowColumn.vue";
 import BasicInputField from "@/components/forms/BasicInputField.vue";
 import {UserService} from "@/breeding-insight/service/UserService";
 import NewDataForm from "@/components/forms/NewDataForm.vue";
+import {RoleService} from "@/breeding-insight/service/RoleService";
+import {Role} from "@/breeding-insight/model/Role";
+import {SystemRoleService} from "@/breeding-insight/service/SystemRoleService";
+import BasicSelectField from "@/components/forms/BasicSelectField.vue";
+import {PromiseHandler} from "@/breeding-insight/service/PromiseHandler";
+import {PromiseResult} from "promise.allsettled/types";
 
 
 @Component({
   components: {
-    NewDataForm, PlusCircleIcon, WarningModal, BaseTable, TableRowColumn, BasicInputField
+    NewDataForm, PlusCircleIcon, WarningModal, BaseTable, TableRowColumn, BasicInputField, BasicSelectField
   }
 })
 export default class AdminUsersTable extends Vue {
   private deactivateActive: boolean = false;
   private newUserActive: boolean = false;
   private deactivateWarningTitle: string = "Remove user's access to Program name?";
-  private newUser: User = new User();
+  private newUser = new User();
   private currentDeleteUser: User | undefined;
+  private roles: Role[] = [];
+  private rolesMap: Map<string, Role> = new Map();
 
   userValidations = {
     name: {required},
@@ -128,9 +157,10 @@ export default class AdminUsersTable extends Vue {
   }
 
   public users: User[] = [];
-  private userTableHeaders = ['Name', 'Email'];
+  private userTableHeaders = ['Name', 'Email', 'Role'];
 
   mounted() {
+    this.getRoles();
     this.getUsers();
   }
 
@@ -145,7 +175,23 @@ export default class AdminUsersTable extends Vue {
       this.users = users;
     }).catch((error) => {
       // Display error that users cannot be loaded
-      this.$emit('show-error-notification', 'Error while trying to load users');
+      this.$emit('show-error-notification', error.errorMessage);
+      throw error;
+    });
+
+  }
+
+  getRoles() {
+
+    SystemRoleService.getAll().then((roles: Role[]) => {
+      this.roles = roles;
+      for (const role of this.roles){
+        // reassign so vue picks up changes
+        this.rolesMap = new Map(this.rolesMap.set(role.id!, role));
+      }
+    }).catch((error) => {
+      // Display error that users cannot be loaded
+      this.$emit('show-error-notification', error.errorMessage);
       throw error;
     });
 
@@ -161,7 +207,7 @@ export default class AdminUsersTable extends Vue {
         this.getUsers();
         this.$emit('show-success-notification', 'User successfully deleted');
       }).catch((error: any) => {
-        this.$emit('show-error-notification', 'Unable to delete user');
+        this.$emit('show-error-notification', error.errorMessage);
       });
 
     } else {
@@ -178,30 +224,28 @@ export default class AdminUsersTable extends Vue {
       this.newUserActive = false;
       this.$emit('show-success-notification', 'User successfully created');
     }).catch((error) => {
-
-      // Look for email conflict and display error
-      if (error.response && error.response.status == 409) {
-        Vue.$log.info('Email already exists');
-        this.$emit('show-error-notification', 'A user with that email already exists');
-      }
-      else {
-        // Something else went wrong
-        Vue.$log.fatal(error);
-        this.$emit('show-error-notification', 'Unable to create user');
-      }
+      this.$emit('show-error-notification', error.errorMessage);
     });
 
   }
 
   updateUser(user: User) {
 
-    UserService.update(user).then((user: User) => {
-      this.getUsers();
-      this.$emit('show-success-notification', 'User successfully updated');
-    }).catch((error) => {
-      this.$emit('show-error-notification', 'Unable to update user');
-    });
+    const updateUserPromise = UserService.update(user);
+    const updateRolesPromise = UserService.updateSystemRoles(user);
 
+    const promiseHandler = new PromiseHandler([updateUserPromise, updateRolesPromise]);
+    promiseHandler.resolvePromises()
+      .then((result:User[]) => {
+        this.$emit('show-success-notification', 'User successfully updated');
+      }).catch((errors: any[]) => {
+        for (const error of errors) {
+          //TODO: This is where multiple error messages could be handy
+          this.$emit('show-error-notification', error.errorMessage);
+        }
+      }).finally(() => {
+        this.getUsers();
+      });
   }
 
   displayWarning(user: User) {
@@ -220,6 +264,12 @@ export default class AdminUsersTable extends Vue {
       }
     }
 
+  }
+
+  getRoleName(id: string): string | undefined {
+    if (this.rolesMap.get(id)){
+      return this.rolesMap.get(id)!.name;
+    }
   }
 
 }
