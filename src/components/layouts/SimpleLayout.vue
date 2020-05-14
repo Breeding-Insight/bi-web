@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="is-full-length">
     <header class="container">
       <div>
         <nav
@@ -34,7 +34,7 @@
                   Program Management
                 </router-link>
               </li>
-              <li class="navbar-item">
+              <li v-if="activeUser" class="navbar-item">
                 <a @click="$emit('logout')">
                   Logout
                 </a>
@@ -56,10 +56,18 @@
 
 <script lang="ts">
   import { Component, Vue } from 'vue-property-decorator'
+  import {mapGetters} from "vuex";
+  import {User} from "@/breeding-insight/model/User";
 
-  @Component
+  @Component({
+    computed: {
+      ...mapGetters([
+        'activeUser'
+      ])
+    },
+  })
   export default class SimpleLayout extends Vue {
-
+    private activeUser?: User;
   }
 
 </script>

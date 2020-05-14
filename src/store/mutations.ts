@@ -20,7 +20,6 @@ export const mutations: MutationTree<RootState> = {
   [ERROR_STATE] (state, payload: any) {
     state.apiError = payload.apiError;
     state.apiUnavailable = payload.apiUnavailable;
-    state.loginFailed = payload.loginFailed;
     state.loginServerError = payload.loginServerError;
   },
   [REQUESTED_PATH] (state, payload: any) {
