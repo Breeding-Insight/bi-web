@@ -29,8 +29,8 @@ export class ProgramLocationService {
       if (programLocation.id && programLocation.programId) {
         ProgramLocationDAO.update(programLocation).then((biResponse) => {
           const result: any = biResponse.result;
-          const newProgramLocation = new ProgramLocation(result.id, result.programId, result.name);
-          resolve(newProgramLocation);
+          const updatedProgramLocation = new ProgramLocation(result.id, result.programId, result.name);
+          resolve(updatedProgramLocation);
 
         }).catch((error) => reject(error));
       }
