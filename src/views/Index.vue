@@ -194,7 +194,7 @@
     >
       <section>
         <p class="has-text-dark">
-          This applications was unable to establish a connection with ORCID. Please try again.
+          This application was unable to establish a connection with our servers. Please try again.
         </p>
         <p class="has-text-dark">
           If you continue to experience problems, try
@@ -208,11 +208,11 @@
 </template>
 
 <script lang="ts">
-  import { Component, Prop, Vue } from 'vue-property-decorator'
+  import { Component, Vue } from 'vue-property-decorator'
   import BaseModal from '@/components/modals/BaseModal.vue'
   import InfoModal from '@/components/modals/InfoModal.vue'
   import WarningModal from '@/components/modals/WarningModal.vue'
-  import {ServerManagementDAO} from "@/breeding-insight/dao/ServerManagementDAO";
+  import {ServerManagementService} from "@/breeding-insight/service/ServerManagementService";
 
   @Component({
     components: {InfoModal, BaseModal, WarningModal}
@@ -226,7 +226,7 @@
     orcidLogin() {
       // Check the server can be contacted
       this.isLoginModalActive = false;
-      ServerManagementDAO.checkHealth().then((response) => {
+      ServerManagementService.checkHealth().then((response) => {
         window.location.href = process.env.VUE_APP_BI_API_ROOT+'/sso/start';
       }).catch((error) => {
         this.isLoginServerErrorModalActive = true;
