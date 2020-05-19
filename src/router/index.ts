@@ -134,7 +134,7 @@ const routes = [
     component: ProgramSelection
   },
   {
-    path: '/401',
+    path: '/login-failed',
     name: 'login-failed',
     meta: {
       title: 'Login Failed',
