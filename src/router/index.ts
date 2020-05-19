@@ -3,7 +3,7 @@ import VueRouter, {Route} from 'vue-router'
 import Index from '@/views/Index.vue'
 import Home from '@/views/Home.vue'
 import StyleGuide from '@/views/StyleGuide.vue'
-import LoginFailed from '@/views/LoginFailed.vue'
+import NotAuthorized from '@/views/NotAuthorized.vue'
 import ProgramManagement from '@/views/ProgramManagement.vue'
 import AdminProgramManagement from '@/views/AdminProgramManagement.vue'
 import AdminUserManagement from '@/views/AdminUserManagement.vue'
@@ -134,13 +134,13 @@ const routes = [
     component: ProgramSelection
   },
   {
-    path: '/login-failed',
-    name: 'login-failed',
+    path: '/401',
+    name: 'not-authorized',
     meta: {
       title: 'Login Failed',
       layout: layouts.simple
     },
-    component: LoginFailed
+    component: NotAuthorized
   }
 ]
 
@@ -179,7 +179,7 @@ router.beforeEach((to: Route, from: Route, next: Function) => {
       }
       // If logged in fail, send them to the home page
       //TODO: This can go away once route protection by roles is added
-      if (to.name !== 'home' && to.name !== 'login-failed') {
+      if (to.name !== 'home' && to.name !== 'not-authorized') {
         //TODO: Show error to login again.
         next({name: 'home'});
       } else next();
