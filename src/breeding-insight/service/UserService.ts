@@ -12,6 +12,7 @@ export class UserService {
   static errorGetUsers: string = 'Error while trying to load roles';
   static errorDeleteUserNotFound: string = 'Unable to find user to delete';
   static errorPermissionsEditUser: string = "You don't have permissions to edit this user.";
+  static errorDeleteUserActiveInPrograms: String = 'Unable to archive user, user still active in programs.';
 
   static getUserInfo(): Promise<User> {
 
@@ -85,16 +86,19 @@ export class UserService {
     });
   }
 
-  static delete(user: User): Promise<any> {
+  static archive(user: User): Promise<any> {
 
     return new Promise<any>(((resolve, reject) => {
 
       if (user.id){
-        return UserDAO.delete(user.id)
+        return UserDAO.archive(user.id)
           .then(() => resolve())
           .catch((error) => {
             if (error.response && error.response.status === 404) {
               error['errorMessage'] = this.errorDeleteUserNotFound;
+            } if (error.response && error.response.status === 422) {
+              Vue.$log.info('User still active in programs.');
+              error['errorMessage'] = this.errorDeleteUserActiveInPrograms;
             } else {
               error['errorMessage'] = this.errorDeleteUser;
             }
