@@ -3,6 +3,7 @@ import VueRouter, {Route} from 'vue-router'
 import Index from '@/views/Index.vue'
 import Home from '@/views/Home.vue'
 import StyleGuide from '@/views/StyleGuide.vue'
+import NotAuthorized from '@/views/NotAuthorized.vue'
 import ProgramManagement from '@/views/ProgramManagement.vue'
 import AdminProgramManagement from '@/views/AdminProgramManagement.vue'
 import AdminUserManagement from '@/views/AdminUserManagement.vue'
@@ -13,9 +14,8 @@ import ProgramUserManagement from "@/views/ProgramUsersManagement.vue";
 import ProgramSelection from "@/views/ProgramSelection.vue";
 import {UserService} from "@/breeding-insight/service/UserService";
 import {User} from "@/breeding-insight/model/User";
-import {isProgramsPath, processProgramNavigation} from "@/router/guards";
-import {ProgramService} from "@/breeding-insight/service/ProgramService";
-import {Program} from "@/breeding-insight/model/Program";
+import {isProgramsPath, processProgramNavigation} from "@/router/guards.ts";
+
 
 Vue.use(VueRouter);
 
@@ -132,6 +132,15 @@ const routes = [
       layout: layouts.noSideBar
     },
     component: ProgramSelection
+  },
+  {
+    path: '/401',
+    name: 'not-authorized',
+    meta: {
+      title: 'Login Failed',
+      layout: layouts.simple
+    },
+    component: NotAuthorized
   }
 ]
 
@@ -165,12 +174,12 @@ router.beforeEach((to: Route, from: Route, next: Function) => {
       // Check if it is a 401
       if (error.response && error.response.status === 401) {
           Vue.$log.info(`Unauthorized login, ${error.response}`);
-          store.commit(ERROR_STATE, {'loginFailed': true});
       } else {
-        store.commit(ERROR_STATE, {'loginFailed': false, 'loginServerError':true});
+        store.commit(ERROR_STATE, {'loginServerError':true});
       }
       // If logged in fail, send them to the home page
-      if (to.name !== 'home') {
+      //TODO: This can go away once route protection by roles is added
+      if (to.name !== 'home' && to.name !== 'not-authorized') {
         //TODO: Show error to login again.
         next({name: 'home'});
       } else next();

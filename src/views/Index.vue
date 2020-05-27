@@ -187,19 +187,6 @@
       </p>
     </BaseModal>
 
-    <!-- Login Failed Modal -->
-    <InfoModal
-        v-bind:active.sync="isFailedLoginModalActive"
-        v-on:deactivate="isFailedLoginModalActive = false"
-        v-bind:msg-title="'Login Failed'"
-    >
-      <p class="has-text-dark">
-        Verify your login credentials, and if the issue persists
-        <a href="#!">contact your breeding program leader</a> or
-        <a href="#!">Breeding Insight support</a>.
-      </p>
-    </InfoModal>
-
     <WarningModal
         v-bind:active.sync="isLoginServerErrorModalActive"
         v-bind:msg-title="'Server Error: Login Failed'"
@@ -207,7 +194,7 @@
     >
       <section>
         <p class="has-text-dark">
-          This applications was unable to establish a connection with ORCID. Please try again.
+          This application was unable to establish a connection with our servers. Please try again.
         </p>
         <p class="has-text-dark">
           If you continue to experience problems, try
@@ -221,10 +208,11 @@
 </template>
 
 <script lang="ts">
-  import { Component, Prop, Vue } from 'vue-property-decorator'
+  import { Component, Vue } from 'vue-property-decorator'
   import BaseModal from '@/components/modals/BaseModal.vue'
   import InfoModal from '@/components/modals/InfoModal.vue'
   import WarningModal from '@/components/modals/WarningModal.vue'
+  import {ServerManagementService} from "@/breeding-insight/service/ServerManagementService";
 
   @Component({
     components: {InfoModal, BaseModal, WarningModal}
@@ -232,31 +220,17 @@
   export default class Index extends Vue {
 
     public isLoginModalActive: boolean = false;
-
-    // Computed properties
-    get isFailedLoginModalActive(): boolean {
-      // If the user just attempted login, and they are unauthorized for userinfo, warn them
-      const newLogin = this.$route.query['new-login'] === 'true';
-      return (this.$store.state.loginFailed && newLogin && !this.$store.state.loginServerError);
-    }
-
-    get isLoginServerErrorModalActive(): boolean {
-      // If the user just tried to log in, and there was an error with the endpoint, warn them. 
-      const newLogin = this.$route.query['new-login'] === 'true';
-      return (!this.$store.state.loginFailed && newLogin && this.$store.state.loginServerError);
-    }
-
-    set isFailedLoginModalActive(disable: boolean) {
-      this.$store.dispatch('clearLoginFailed');
-    }
-
-    set isLoginServerErrorModalActive(disable: boolean) {
-      this.$store.dispatch('clearLoginFailed');
-    }
+    public isLoginServerErrorModalActive: boolean = false;
 
     // Methods
     orcidLogin() {
-      window.location.href = process.env.VUE_APP_BI_API_ROOT+'/sso/start';
+      // Check the server can be contacted
+      this.isLoginModalActive = false;
+      ServerManagementService.checkHealth().then((response) => {
+        window.location.href = process.env.VUE_APP_BI_API_ROOT+'/sso/start';
+      }).catch((error) => {
+        this.isLoginServerErrorModalActive = true;
+      })
     }
 
   }

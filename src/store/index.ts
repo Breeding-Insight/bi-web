@@ -11,7 +11,6 @@ const store: StoreOptions<RootState> = {
   state: {
     apiError: false,
     apiUnavailable: false,
-    loginFailed: false,
     loginServerError: false,
     loggedIn: false,
     requestedPath: undefined,

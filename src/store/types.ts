@@ -7,7 +7,6 @@ export interface RootState {
   program?: Program;
   apiError: boolean;
   apiUnavailable: boolean;
-  loginFailed: boolean;
   loginServerError: boolean;
   requestedPath?: string;
 }
