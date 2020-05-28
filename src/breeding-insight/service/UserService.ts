@@ -96,9 +96,6 @@ export class UserService {
           .catch((error) => {
             if (error.response && error.response.status === 404) {
               error['errorMessage'] = this.errorDeleteUserNotFound;
-            } if (error.response && error.response.status === 422) {
-              Vue.$log.info('User still active in programs.');
-              error['errorMessage'] = this.errorDeleteUserActiveInPrograms;
             } else {
               error['errorMessage'] = this.errorDeleteUser;
             }

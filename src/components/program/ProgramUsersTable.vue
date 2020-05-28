@@ -245,8 +245,8 @@ export default class ProgramUsersTable extends Vue {
       this.$emit('show-success-notification', 'Success! ' + this.newUser.name + ' added.');
       this.newUser = new ProgramUser();
       this.newUserActive = false;
-    }).catch(() => {
-      this.$emit('show-error-notification', 'Error while creating user, ' + this.newUser.name);
+    }).catch((error) => {
+      this.$emit('show-error-notification', error.errorMessage);
     })
 
   }

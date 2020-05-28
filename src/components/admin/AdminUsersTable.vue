@@ -7,7 +7,7 @@
     >
       <section>
         <p class="has-text-dark">
-          You will not be able to deactivate this user if they are active in any programs.
+          Deactivation will also deactivate the user from all programs.
         </p>
         <p class="has-text-dark">
           Program-related data collected by this user will not be affected by this change.
@@ -15,7 +15,7 @@
       </section>
       <div class="columns">
         <div class="column is-whole has-text-centered buttons">
-          <button v-on:click="modalDeleteHandler()" class="button is-danger"><strong>Yes, archive</strong></button>
+          <button v-on:click="modalDeleteHandler()" class="button is-danger"><strong>Yes, deactivate</strong></button>
           <button v-on:click="deactivateActive = false" class="button">Cancel</button>
         </div>
       </div>              
