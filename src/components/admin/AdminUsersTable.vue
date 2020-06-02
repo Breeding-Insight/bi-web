@@ -7,12 +7,15 @@
     >
       <section>
         <p class="has-text-dark">
+          Deactivation will also deactivate the user from all programs.
+        </p>
+        <p class="has-text-dark">
           Program-related data collected by this user will not be affected by this change.
         </p>
       </section>
       <div class="columns">
         <div class="column is-whole has-text-centered buttons">
-          <button v-on:click="modalDeleteHandler()" class="button is-danger"><strong>Yes, remove</strong></button>
+          <button v-on:click="modalDeleteHandler()" class="button is-danger"><strong>Yes, deactivate</strong></button>
           <button v-on:click="deactivateActive = false" class="button">Cancel</button>
         </div>
       </div>              
@@ -197,21 +200,21 @@ export default class AdminUsersTable extends Vue {
 
   }
 
-  deleteUser(selectedId: string) {
+  archiveUser(selectedId: string) {
 
     const user = this.users.find((user) => user.id === selectedId);
 
     if (user){
 
-      UserService.delete(user).then(() => {
+      UserService.archive(user).then(() => {
         this.getUsers();
-        this.$emit('show-success-notification', 'User successfully deleted');
+        this.$emit('show-success-notification', 'User successfully archived');
       }).catch((error: any) => {
         this.$emit('show-error-notification', error.errorMessage);
       });
 
     } else {
-      this.$emit('show-error-notification', 'Unable to find user to delete');
+      this.$emit('show-error-notification', 'Unable to find user to archive');
     }
 
   }
@@ -251,7 +254,7 @@ export default class AdminUsersTable extends Vue {
   displayWarning(user: User) {
     // Get the username
     this.currentDeleteUser = user;
-    this.deactivateWarningTitle = "Remove " + user.name + " from system?";
+    this.deactivateWarningTitle = "Deactivate " + user.name + " from the system?";
     this.deactivateActive = true;
   }
 
@@ -260,7 +263,7 @@ export default class AdminUsersTable extends Vue {
 
     if (this.currentDeleteUser){
       if (this.currentDeleteUser.id){
-        this.deleteUser(this.currentDeleteUser.id);
+        this.archiveUser(this.currentDeleteUser.id);
       }
     }
 

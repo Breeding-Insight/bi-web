@@ -7,6 +7,9 @@
     >
       <section>
         <p class="has-text-dark">
+          This will only remove the user's access to your program and will not affect their account.
+        </p>
+        <p class="has-text-dark">
           Program-related data collected by this user will not be affected by this change.
         </p>
       </section>
@@ -16,7 +19,7 @@
             class="button is-danger"
             v-on:click="modalDeleteHandler()"
           >
-            <strong>Yes, remove</strong>
+            <strong>Yes, archive</strong>
           </button>
           <button
             class="button"
@@ -242,8 +245,8 @@ export default class ProgramUsersTable extends Vue {
       this.$emit('show-success-notification', 'Success! ' + this.newUser.name + ' added.');
       this.newUser = new ProgramUser();
       this.newUserActive = false;
-    }).catch(() => {
-      this.$emit('show-error-notification', 'Error while creating user, ' + this.newUser.name);
+    }).catch((error) => {
+      this.$emit('show-error-notification', error.errorMessage);
     })
 
   }
@@ -257,7 +260,7 @@ export default class ProgramUsersTable extends Vue {
 
     if (user){
       this.deleteUser = user;
-      this.deactivateWarningTitle = "Remove " + user.name + "'s access to " + this.activeProgram!.name + "?";
+      this.deactivateWarningTitle = "Deactivate " + user.name + " from program " + this.activeProgram!.name + "?";
       this.deactivateActive = true;
     } else {
       Vue.$log.error('Could not find object to delete')

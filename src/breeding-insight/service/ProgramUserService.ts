@@ -3,6 +3,9 @@ import {ProgramUser} from "@/breeding-insight/model/ProgramUser";
 
 export class ProgramUserService {
 
+  static errorEmailInUse: String = "Error creating user, a user with this email already exists";
+  static errorCreatingUser: String = "Error while creating user";
+
   static create(programUser: ProgramUser): Promise<ProgramUser> {
 
     return new Promise<ProgramUser>((resolve, reject) => {
@@ -13,7 +16,14 @@ export class ProgramUserService {
           const newProgram  = new ProgramUser(result.user.id, result.user.name, result.user.email, programUser.programId, result.roles[0].id);
           resolve(newProgram);
 
-        }).catch((error) => reject(error));
+        }).catch((error) => {
+          if (error.response && error.response.status === 409) {
+            error['errorMessage'] = this.errorEmailInUse;
+          } else {
+            error['errorMessage'] = this.errorCreatingUser;
+          }
+          reject(error)
+        });
       }
       else {
         reject();

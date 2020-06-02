@@ -51,7 +51,7 @@ export class UserDAO {
     });
   }
 
-  static delete(id: string): Promise<any> {
+  static archive(id: string): Promise<any> {
     return api.call({ url: `${process.env.VUE_APP_BI_API_V1_PATH}/users/${id}`, method: 'delete'});
   }
 
