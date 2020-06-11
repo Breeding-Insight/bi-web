@@ -166,7 +166,7 @@
     <BaseModal
       v-bind:active="isLoginModalActive"
       v-bind:body-class="'has-text-centered'"
-      v-on:close-modal="isLoginModalActive = !isLoginModalActive"
+      v-on:deactivate="isLoginModalActive = false"
     >
       <h1
         v-if="loginRedirect"

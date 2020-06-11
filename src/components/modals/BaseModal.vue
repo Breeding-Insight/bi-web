@@ -18,23 +18,25 @@
 <template>
 
   <focus-trap
-      v-bind:active.sync="active"
-      v-bind:returnFocusOnDeactivate="false"
+      v-bind:active="active"
+      v-bind:returnFocusOnDeactivate="true"
+      v-bind:escapeDeactivates="true"
       v-on:deactivate="$emit('deactivate')"
+      ref="focusTrap"
   >
     <div
         class="modal"
         v-bind:class="{ 'is-active': active }"
         tabindex="-1"
     >
-        <div class="modal-background" v-on:click="$emit('deactivate')"/>
+        <div class="modal-background" v-on:click="() => $refs.focusTrap.deactivate()"/>
         <div class="modal-card">
           <header class="modal-card-head">
             <div class="modal-card-title" />
             <button
                 class="delete"
                 aria-label="close"
-                @click="$emit('deactivate')"
+                @click="() => $refs.focusTrap.deactivate()"
             />
           </header>
           <section
