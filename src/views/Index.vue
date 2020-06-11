@@ -168,7 +168,10 @@
       v-bind:body-class="'has-text-centered'"
       v-on:close-modal="isLoginModalActive = !isLoginModalActive"
     >
-      <h1 class="is-size-5 has-text-primary">
+      <h1 class="is-size-5 has-text-primary" v-if="isLoginRedirect">
+        You must be logged in to view the resource you have requested.
+      </h1>
+      <h1 class="is-size-5 has-text-primary" v-else>
         Welcome back to Breeding Insight!
       </h1>
       <p>
@@ -230,6 +233,8 @@
   import InfoModal from '@/components/modals/InfoModal.vue'
   import WarningModal from '@/components/modals/WarningModal.vue'
   import {ServerManagementService} from "@/breeding-insight/service/ServerManagementService";
+  import {mapGetters} from "vuex";
+  import {User} from "@/breeding-insight/model/User";
 
   @Component({
     components: {InfoModal, BaseModal, WarningModal}
@@ -238,6 +243,14 @@
 
     public isLoginModalActive: boolean = false;
     public isLoginServerErrorModalActive: boolean = false;
+    public isLoginRedirect: boolean = false;
+
+    mounted() {
+      if (this.$cookieNames.loginRedirectUrl in this.$route.params){
+        this.isLoginRedirect = true;
+        this.isLoginModalActive = true;
+      }
+    }
 
     // Methods
     orcidLogin() {

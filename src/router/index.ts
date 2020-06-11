@@ -172,6 +172,15 @@ router.beforeEach((to: Route, from: Route, next: Function) => {
   // TODO: Check if the page is a protected resource, if not, let them through
   // If page is protected, check if they are logged in. 
   // TODO: Check if their token has expired.
+  const loginRedirectUrlCookieName = Vue.prototype.$cookieNames.loginRedirectUrl;
+
+  // Remove the redirect url from the cookie
+  Vue.$cookies.remove(loginRedirectUrlCookieName);
+  // Check the url for a redirect-login url
+  if (to.params[loginRedirectUrlCookieName]){
+    // Expires in 1 hr
+    Vue.$cookies.set(loginRedirectUrlCookieName, to.params[loginRedirectUrlCookieName], 60*60);
+  }
 
   // Clear path dependent store data for easier state management
   if (!isProgramsPath(to)){
@@ -198,7 +207,8 @@ router.beforeEach((to: Route, from: Route, next: Function) => {
       //TODO: This can go away once route protection by roles is added
       if (to.name !== 'home' && to.name !== 'not-authorized') {
         //TODO: Show error to login again.
-        next({name: 'home'});
+        const targetUrl = `http://${window.location.host}${to.fullPath}`;
+        next({name: 'home', replace: true, params: {[loginRedirectUrlCookieName]: targetUrl}});
       } else next();
     });
   } else {

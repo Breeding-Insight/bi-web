@@ -60,5 +60,15 @@ declare module 'vuejs-logger' {
   }
 }
 
+// Shim out our global variables
+declare module 'constants' {
+  module 'vue/types/vue' {
+    interface Vue {
+      $cookieNames: {
+        loginRedirectUrl: string
+      }
+    }
+}
+
 declare module 'vue-feather-icons';
 declare module 'vue-click-outside';
