@@ -104,8 +104,12 @@ import NoSideBarLayout from './components/layouts/NoSideBarLayout.vue'
       },
       loggedIn(isLoggedIn) {
           if(!isLoggedIn) {
-              this.$router.push('/');
-          }             
+            this.$router.push({name: 'home',
+              params: {
+                sessionExpired: 'true'
+              }
+            });
+          }
       },
   },
   computed: {
