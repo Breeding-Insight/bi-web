@@ -245,8 +245,6 @@
   import InfoModal from '@/components/modals/InfoModal.vue'
   import WarningModal from '@/components/modals/WarningModal.vue'
   import {ServerManagementService} from "@/breeding-insight/service/ServerManagementService";
-  import {mapGetters} from "vuex";
-  import {User} from "@/breeding-insight/model/User";
 
   @Component({
     components: {InfoModal, BaseModal, WarningModal}
