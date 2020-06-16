@@ -17,7 +17,7 @@
 
 import store from './../store';
 import axios from 'axios';
-import { ERROR_STATE, LOGOUT } from './../store/mutation-types';
+import {ERROR_STATE, LOGOUT, REQUESTED_PATH} from './../store/mutation-types';
 
 export function call (config: any) {
     config.xsrfCookieName = 'phylo-token';
@@ -30,6 +30,7 @@ export function call (config: any) {
             resolve(response);
         }).catch((error) => {
             if (error.response && error.response.status === 401) {
+                store.commit(REQUESTED_PATH, {path: window.location.href});
                 store.commit(LOGOUT);
             } else {
                 store.commit(ERROR_STATE, {

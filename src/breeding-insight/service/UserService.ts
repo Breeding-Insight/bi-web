@@ -25,11 +25,10 @@ export class UserService {
 
   static duplicateEmailMessage : string = 'Email is already in use.';
   static errorCreateUser: string = 'Unable to create user';
-  static errorDeleteUser: string = 'Unable to delete user';
+  static errorDeleteUser: string = 'Unable to archive user';
   static errorGetUsers: string = 'Error while trying to load roles';
-  static errorDeleteUserNotFound: string = 'Unable to find user to delete';
+  static errorDeleteUserNotFound: string = 'Unable to find user to deactivate';
   static errorPermissionsEditUser: string = "You don't have permissions to edit this user.";
-  static errorDeleteUserActiveInPrograms: String = 'Unable to archive user, user still active in programs.';
 
   static getUserInfo(): Promise<User> {
 

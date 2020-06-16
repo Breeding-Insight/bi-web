@@ -51,7 +51,11 @@ const routes = [
       title: 'Welcome',
       layout: layouts.simple
     },
-    component: Index
+    component: Index,
+    props: (route: Route) => ({
+      loginRedirect: route.params.loginRedirect || false,
+      sessionExpired: route.params.sessionExpired || false
+    })
   },
   {
     path: '/style-guide',
@@ -170,8 +174,19 @@ const router = new VueRouter({
 router.beforeEach((to: Route, from: Route, next: Function) => {
 
   // TODO: Check if the page is a protected resource, if not, let them through
-  // If page is protected, check if they are logged in. 
-  // TODO: Check if their token has expired.
+  // If page is protected, check if they are logged in.
+  const loginRedirectUrlCookieName = Vue.prototype.$cookieNames.loginRedirectUrl;
+
+  // Remove the redirect url from the cookie
+  Vue.$cookies.remove(loginRedirectUrlCookieName);
+
+  // Check the url for a redirect-login url. Also check if they were redirected because of expired session
+  if (store.state.requestedPath){
+    // Expires in 1 hr
+    Vue.$cookies.set(loginRedirectUrlCookieName, store.state.requestedPath, 60*60);
+    // reset our state
+    store.commit(REQUESTED_PATH, {path: undefined});
+  }
 
   // Clear path dependent store data for easier state management
   if (!isProgramsPath(to)){
@@ -195,10 +210,12 @@ router.beforeEach((to: Route, from: Route, next: Function) => {
         store.commit(ERROR_STATE, {'loginServerError':true});
       }
       // If logged in fail, send them to the home page
-      //TODO: This can go away once route protection by roles is added
+      //TODO: Change this to a route guard if we make our page protections more advanced.
       if (to.name !== 'home' && to.name !== 'not-authorized') {
         //TODO: Show error to login again.
-        next({name: 'home'});
+        const targetUrl = `http://${window.location.host}${to.fullPath}`;
+        store.commit(REQUESTED_PATH, {path: targetUrl});
+        next({name: 'home', replace: true, params: {loginRedirect: true, sessionExpired: false}});
       } else next();
     });
   } else {

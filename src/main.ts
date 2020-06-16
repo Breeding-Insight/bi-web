@@ -24,10 +24,12 @@ import './assets/scss/main.scss';
 import Buefy from 'buefy';
 import VueLogger from 'vuejs-logger';
 import Vuelidate from 'vuelidate';
+import VueCookies from 'vue-cookies';
 
 Vue.config.productionTip = false;
 Vue.use(Buefy);
 Vue.use(Vuelidate);
+Vue.use(VueCookies);
 
 // Global components example
 //import LoginFailedDialog from './components/LoginFailedDialog.vue';
@@ -44,6 +46,12 @@ const options = {
 };
 
 Vue.use(VueLogger, options);
+
+// Vue constants
+const cookieNames = {
+  loginRedirectUrl: 'redirect-login'
+}
+Vue.prototype.$cookieNames = cookieNames;
 
 new Vue({
   router,

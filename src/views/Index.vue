@@ -166,9 +166,24 @@
     <BaseModal
       v-bind:active="isLoginModalActive"
       v-bind:body-class="'has-text-centered'"
-      v-on:close-modal="isLoginModalActive = !isLoginModalActive"
+      v-on:deactivate="isLoginModalActive = false"
     >
-      <h1 class="is-size-5 has-text-primary">
+      <h1
+        v-if="loginRedirect"
+        class="is-size-5 has-text-primary"
+      >
+        You must be logged in to view the resource you have requested.
+      </h1>
+      <h1
+        v-else-if="sessionExpired"
+        class="is-size-5 has-text-primary"
+      >
+        Your session has expired. Please login again to continue.
+      </h1>
+      <h1
+        v-else
+        class="is-size-5 has-text-primary"
+      >
         Welcome back to Breeding Insight!
       </h1>
       <p>
@@ -181,23 +196,23 @@
       >
         SIGN IN with ORCID
         <img
-            id="orcid-id-icon"
-            src="https://orcid.org/sites/default/files/images/orcid_24x24.png"
-            width="24"
-            height="24"
-            class="is-pulled-right"
-            alt="ORCID iD icon"
+          id="orcid-id-icon"
+          src="https://orcid.org/sites/default/files/images/orcid_24x24.png"
+          width="24"
+          height="24"
+          class="is-pulled-right"
+          alt="ORCID iD icon"
         >
       </button>
       <p class="is-size-7 has-text-left">
         To acknowledge that you have used your iD and that it has been authenticated, we display
         the ORCID iD icon
         <img
-            id="orcid-id-icon2"
-            src="https://orcid.org/sites/default/files/images/orcid_24x24.png"
-            width="16"
-            height="16"
-            alt="ORCID iD icon"
+          id="orcid-id-icon2"
+          src="https://orcid.org/sites/default/files/images/orcid_24x24.png"
+          width="16"
+          height="16"
+          alt="ORCID iD icon"
         >
         alongside your name in our application. Learn more in
         <a href="">How should an ORCID iD be displayed</a>.
@@ -205,9 +220,9 @@
     </BaseModal>
 
     <WarningModal
-        v-bind:active.sync="isLoginServerErrorModalActive"
-        v-bind:msg-title="'Server Error: Login Failed'"
-        v-on:deactivate="isLoginServerErrorModalActive = false"
+      v-bind:active.sync="isLoginServerErrorModalActive"
+      v-bind:msg-title="'Server Error: Login Failed'"
+      v-on:deactivate="isLoginServerErrorModalActive = false"
     >
       <section>
         <p class="has-text-dark">
@@ -225,7 +240,7 @@
 </template>
 
 <script lang="ts">
-  import { Component, Vue } from 'vue-property-decorator'
+  import {Component, Prop, Vue} from 'vue-property-decorator'
   import BaseModal from '@/components/modals/BaseModal.vue'
   import InfoModal from '@/components/modals/InfoModal.vue'
   import WarningModal from '@/components/modals/WarningModal.vue'
@@ -238,6 +253,16 @@
 
     public isLoginModalActive: boolean = false;
     public isLoginServerErrorModalActive: boolean = false;
+    @Prop()
+    public loginRedirect!: boolean;
+    @Prop()
+    public sessionExpired!: boolean;
+
+    mounted() {
+      if (this.loginRedirect || this.sessionExpired){
+        this.isLoginModalActive = true;
+      }
+    }
 
     // Methods
     orcidLogin() {
