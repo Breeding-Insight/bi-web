@@ -23,28 +23,63 @@
       v-on:deactivate="deactivateActive = false"
     >
       <section>
-        <p class="has-text-dark">
-          Deactivation will also deactivate the user from all programs.
-        </p>
+        <template v-if="deactivateActive">
+          <template v-if="currentDeleteUser && currentDeleteUser.programRoles && currentDeleteUser.programRoles.length > 0">
+            <p class="has-text-dark">
+              Access for this user will be removed system wide, including:
+            </p>
+            <ul>
+              <template
+                  v-for="(programRole, index) of currentDeleteUser.programRoles"
+              >
+                <li
+                    v-if="programRole.program"
+                    v-bind:key="index"
+                    class="has-text-black"
+                >
+                  {{ programRole.program.name }}
+                </li>
+              </template>
+            </ul>
+          </template>
+          <template v-else>
+            <p class="has-text-dark">
+              Access for this user will be removed system wide.
+            </p>
+          </template>
+        </template>
         <p class="has-text-dark">
           Program-related data collected by this user will not be affected by this change.
         </p>
       </section>
       <div class="columns">
         <div class="column is-whole has-text-centered buttons">
-          <button v-on:click="modalDeleteHandler()" class="button is-danger"><strong>Yes, deactivate</strong></button>
-          <button v-on:click="deactivateActive = false" class="button">Cancel</button>
+          <button
+            class="button is-danger"
+            v-on:click="modalDeleteHandler()"
+          >
+            <strong>Yes, deactivate</strong>
+          </button>
+          <button
+            class="button"
+            v-on:click="deactivateActive = false"
+          >
+            Cancel
+          </button>
         </div>
       </div>              
     </WarningModal>
 
     <button
+      v-show="!newUserActive"
       class="button is-primary has-text-weight-bold is-pulled-right"
       v-on:click="newUserActive = true"
-      v-show="!newUserActive"
     >
       <span class="icon is-small">
-        <PlusCircleIcon size="1.5x" aria-hidden="true"></PlusCircleIcon>
+        <PlusCircleIcon
+          size="1.5x"
+          aria-hidden="true"
+        />
       </span>
       <span>
         New User
@@ -52,35 +87,35 @@
     </button>
 
     <NewDataForm
-        v-if="newUserActive"
-        v-bind:row-validations="userValidations"
-        v-bind:new-record.sync="newUser"
-        v-on:submit="addUser"
-        v-on:cancel="cancelNewUser"
-        v-on:show-error-notification="$emit('show-error-notification', $event)"
+      v-if="newUserActive"
+      v-bind:row-validations="userValidations"
+      v-bind:new-record.sync="newUser"
+      v-on:submit="addUser"
+      v-on:cancel="cancelNewUser"
+      v-on:show-error-notification="$emit('show-error-notification', $event)"
     >
       <template v-slot="validations">
         <div class="columns">
           <div class="column is-one-third">
             <BasicInputField
-                v-model="newUser.name"
-                v-bind:validations="validations.name"
-                v-bind:field-name="'Name'"
-                v-bind:field-help="'Name of user. All Unicode special characters accepted.'"
+              v-model="newUser.name"
+              v-bind:validations="validations.name"
+              v-bind:field-name="'Name'"
+              v-bind:field-help="'Name of user. All Unicode special characters accepted.'"
             />
           </div>
           <div class="column is-one-third">
             <BasicInputField
-                v-model="newUser.email"
-                v-bind:validations="validations.email"
-                v-bind:field-name="'Email'"
+              v-model="newUser.email"
+              v-bind:validations="validations.email"
+              v-bind:field-name="'Email'"
             />
           </div>
           <div class="column is-one-third">
             <BasicSelectField
-                v-model="newUser.roleId"
-                v-bind:options="roles"
-                v-bind:field-name="'Role'"
+              v-model="newUser.roleId"
+              v-bind:options="roles"
+              v-bind:field-name="'Role'"
             />
           </div>
         </div>
@@ -88,20 +123,52 @@
     </NewDataForm>
 
     <BaseTable
-        v-bind:headers="userTableHeaders"
-        v-bind:records.sync="users"
-        v-bind:rowValidations="userValidations"
-        v-bind:editable="true"
-        v-on:submit="updateUser($event)"
-        v-on:remove="displayWarning($event)"
-        v-on:show-error-notification="$emit('show-error-notification', $event)"
+      v-bind:headers="userTableHeaders"
+      v-bind:hide-mobile-headers="hideMobileHeaders"
+      v-bind:records.sync="users"
+      v-bind:row-validations="userValidations"
+      v-bind:editable="true"
+      v-on:submit="updateUser($event)"
+      v-on:remove="displayWarning($event)"
+      v-on:show-error-notification="$emit('show-error-notification', $event)"
     >
       <template v-slot:columns="data">
-        <TableRowColumn name="name">{{data.name}}</TableRowColumn>
-        <TableRowColumn name="species">{{data.email}}</TableRowColumn>
+        <TableRowColumn name="name">
+          {{ data.name }}
+        </TableRowColumn>
+        <TableRowColumn name="species" class="is-hidden-mobile">
+          {{ data.email }}
+        </TableRowColumn>
         <TableRowColumn name="roles">
           <template v-if="rolesMap.size > 0">
-            {{getRoleName(data.roleId)}}
+            {{ getRoleName(data.roleId) }}
+          </template>
+        </TableRowColumn>
+        <TableRowColumn>
+          <template
+            v-if="getRoleName(data.roleId) === 'admin'"
+          >
+            <span
+              class="is-text has-text-weight-bold"
+            >
+              Admin (all programs)
+            </span>
+          </template>
+          <template
+            v-for="(programRole, index) of data.programRoles"
+            v-else
+          >
+            <span v-bind:key="'program' + index">
+              <!-- One line span needed to remove after space. Don't change. -->
+              <!-- eslint-disable-next-line -->
+              <span v-if="programRole.active" class="is-text">{{ programRole.program.name }}</span>
+              <!-- One line span needed to remove after space. Don't change. -->
+              <!-- eslint-disable-next-line -->
+              <span v-else class="has-background-grey-lighter">[ {{ programRole.program.name }} ]</span>
+              <!-- One line span needed to remove after space. Don't change. -->
+              <!-- eslint-disable-next-line -->
+              <span v-if="index !== data.programRoles.length - 1">, </span>
+            </span>
           </template>
         </TableRowColumn>
       </template>
@@ -109,26 +176,26 @@
         <div class="columns">
           <div class="column is-one-half">
             <BasicInputField
-                v-model="editData.name"
-                v-bind:validations="validations.name"
-                v-bind:field-name="'Name'"
-                v-bind:field-help="'Name of user. All Unicode special characters accepted.'"
+              v-model="editData.name"
+              v-bind:validations="validations.name"
+              v-bind:field-name="'Name'"
+              v-bind:field-help="'Name of user. All Unicode special characters accepted.'"
             />
           </div>
           <div class="column is-one-half">
             <BasicInputField
-                v-model="editData.email"
-                v-bind:validations="validations.email"
-                v-bind:field-name="'Email'"
+              v-model="editData.email"
+              v-bind:validations="validations.email"
+              v-bind:field-name="'Email'"
             />
           </div>
           <div class="column is-one-third">
             <BasicSelectField
-                v-model="editData.roleId"
-                v-bind:options="roles"
-                v-bind:selectedId="editData.roleId"
-                v-bind:field-name="'Role'"
-                v-bind:empty-value-name="'No Role'"
+              v-model="editData.roleId"
+              v-bind:options="roles"
+              v-bind:selected-id="editData.roleId"
+              v-bind:field-name="'Role'"
+              v-bind:empty-value-name="'No Role'"
             />
           </div>
         </div>
@@ -177,7 +244,8 @@ export default class AdminUsersTable extends Vue {
   }
 
   public users: User[] = [];
-  private userTableHeaders = ['Name', 'Email', 'Role'];
+  private userTableHeaders = ['Name', 'Email', 'Role', 'Programs'];
+  private hideMobileHeaders = ['Email'];
 
   mounted() {
     this.getRoles();

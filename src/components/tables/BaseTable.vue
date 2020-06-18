@@ -23,7 +23,12 @@
     <thead>
       <tr>
         <template v-for="(header, index) in headers">
-          <th v-bind:key="'header' + index">{{header}}</th>
+          <th
+            v-bind:key="'header' + index"
+            v-bind:class="{'is-hidden-mobile': hideMobileHeaders !== undefined && hideMobileHeaders.indexOf(header) !== -1 }"
+          >
+            {{header}}
+          </th>
         </template>
         <template v-if="editable">
           <th></th>
@@ -67,6 +72,7 @@
   <div v-else>
     <slot name="emptyMessage" />
   </div>
+
 </template>
 
 
@@ -85,7 +91,9 @@
     //<slot name="table-row" v-bind:row-data="program"></slot>
     // Knows all of the data
     @Prop()
-    headers!: string;
+    headers!: string[];
+    @Prop()
+    hideMobileHeaders!: string[];
     @Prop()
     records!: Array<any>;
     @Prop()

@@ -16,6 +16,8 @@
  */
 
 import {Role} from "@/breeding-insight/model/Role";
+import {Program} from "@/breeding-insight/model/Program";
+import {ProgramUser} from "@/breeding-insight/model/ProgramUser";
 
 export class User {
   id?: string;
@@ -24,8 +26,9 @@ export class User {
   email?: string;
   roleId?: string;
   roleName?: string;
+  programRoles?: ProgramUser[];
 
-  constructor(id?:string, name?: string, orcid?: string, email?: string, role?: Role) {
+  constructor(id?:string, name?: string, orcid?: string, email?: string, role?: Role, programRoles?: ProgramUser[]) {
     this.id = id;
     this.name = name;
     this.orcid = orcid;
@@ -34,7 +37,7 @@ export class User {
       this.roleId = role.id;
       this.roleName = role.name;
     }
-
+    this.programRoles = programRoles;
   }
 
   hasRole(roleName: string){
