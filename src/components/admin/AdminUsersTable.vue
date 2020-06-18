@@ -70,6 +70,10 @@
       </div>              
     </WarningModal>
 
+    <div class="level">
+      <p class="level-item level-right is-text">Inactive programs are  <span class="has-background-grey-light">[ highlighted ]</span></p>
+    </div>
+
     <button
       v-show="!newUserActive"
       class="button is-primary has-text-weight-bold is-pulled-right"
