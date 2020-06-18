@@ -135,7 +135,6 @@ export class UserService {
         const users = biResponse.result.data.map((user: any) => {
           const role: Role | undefined = this.parseSystemRoles(user.systemRoles);
           const programRoles: ProgramUser[] | undefined = this.parseProgramRoles(user.programRoles);
-          console.log(programRoles);
           return new User(user.id, user.name, user.orcid, user.email, role, programRoles);
         });
 
