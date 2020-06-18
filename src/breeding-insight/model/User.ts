@@ -16,7 +16,6 @@
  */
 
 import {Role} from "@/breeding-insight/model/Role";
-import {Program} from "@/breeding-insight/model/Program";
 import {ProgramUser} from "@/breeding-insight/model/ProgramUser";
 
 export class User {
