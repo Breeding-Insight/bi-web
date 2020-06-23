@@ -18,8 +18,19 @@
 import {Program} from "@/breeding-insight/model/Program";
 import {BiResponse} from "@/breeding-insight/model/BiResponse";
 import * as api from "@/util/api";
+import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
 
 export class ProgramDAO {
+
+  static mockMetadata: any = {
+    pagination: {
+      totalCount: 1000,
+      pageSize: 50,
+      totalPages: 20,
+      currentPage: 1
+    },
+    status: []
+  }
 
   static create(program: Program): Promise<BiResponse> {
 
@@ -57,12 +68,28 @@ export class ProgramDAO {
     return api.call({ url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/archive/${id}`, method: 'delete'});
   }
 
-  static getAll(): Promise<BiResponse> {
+  static getAll(paginationQuery: PaginationQuery): Promise<BiResponse> {
 
     return new Promise<BiResponse>(((resolve, reject) => {
 
-      api.call({ url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs`, method: 'get' })
+      let params: any = {};
+      if (paginationQuery.pageSize){
+        params.pageSize = paginationQuery.pageSize;
+        //TODO: Remove when backend has pagination
+        if (params.pageSize != 0) this.mockMetadata.pagination.pageSize = paginationQuery.pageSize;
+      }
+      if (paginationQuery.page) {
+        params.page = paginationQuery.page;
+        //TODO: Remove when backend has pagination
+        if (params.page != 0) this.mockMetadata.pagination.currentPage = paginationQuery.page;
+      }
+      if (paginationQuery.showAll) {
+        params.showAll = paginationQuery.showAll;
+      }
+
+      api.call({ url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs`, method: 'get', params})
         .then((response: any) => {
+          response.data.metadata = this.mockMetadata;
           const biResponse = new BiResponse(response.data);
           resolve(biResponse);
         }).catch((error) => {

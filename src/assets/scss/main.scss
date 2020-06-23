@@ -101,7 +101,7 @@ main {
   pre,
   table {
     &:not(last-child) {
-    margin-bottom: 1em;
+      margin-bottom: 1em;
     }
   }
 }
@@ -110,9 +110,44 @@ main ul {
   list-style: disc outside;
   margin-left: 2em;
   ul {
-      list-style-type: circle;
-      margin-top: .5em;
+    list-style-type: circle;
+    margin-top: .5em;
+  }
+}
+
+
+
+nav.pagination {
+  align-items: normal;
+  justify-content: flex-start;
+  & ul.pagination-list {
+    list-style-type: none;
+    margin-left: 0;
+    flex-grow: 0;
+    flex-shrink: 0;
+    & li a.is-current {
+      background-color: $info;
+      border: none;
+    }
+  }
+  & div.pagination-extras {
+    order: 4;
+    display: flex;
+    flex-grow: 1;
+    flex-shrink: 0;
+    justify-content: space-evenly;
+
+    & div.page-size-select {
+      order: 1;
+      border: none;
+      & span {
+        margin-left: 4px;
       }
+    }
+    & a.show-all-button {
+      order: 2;
+    }
+  }
 }
 
 main ol {

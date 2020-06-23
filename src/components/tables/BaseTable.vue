@@ -16,63 +16,235 @@
   -->
 
 <template>
-  <table
-    class="table is-striped is-narrow is-hoverable is-fullwidth"
-    v-if="tableRows.length > 0"
-  >
-    <thead>
-      <tr>
-        <template v-for="(header, index) in headers">
-          <th
-            v-bind:key="'header' + index"
-            v-bind:class="{'is-hidden-mobile': hideMobileHeaders !== undefined && hideMobileHeaders.indexOf(header) !== -1 }"
-          >
-            {{header}}
-          </th>
-        </template>
-        <template v-if="editable">
-          <th></th>
-        </template>
-      </tr>
-    </thead>
-    <tbody>
+  <div>
+    <table
+      v-if="tableRows.length > 0"
+      class="table is-striped is-narrow is-hoverable is-fullwidth"
+    >
+      <thead>
+        <tr>
+          <template v-for="(header, index) in headers">
+            <th
+              v-bind:key="'header' + index"
+              v-bind:class="{'is-hidden-mobile': hideMobileHeaders !== undefined && hideMobileHeaders.indexOf(header) !== -1 }"
+            >
+              {{ header }}
+            </th>
+          </template>
+          <template v-if="editable">
+            <th />
+          </template>
+        </tr>
+      </thead>
+      <tbody>
         <template v-for="(row, index) in tableRows">
           <BaseTableRow
-              v-bind:key="'row' + index"
-              v-bind:row-data="row"
-              v-on:edit="row.toggleEdit()"
-              v-on:remove="$emit('remove', row.data)"
+            v-bind:key="'row' + index"
+            v-bind:row-data="row"
+            v-on:edit="row.toggleEdit()"
+            v-on:remove="$emit('remove', row.data)"
           >
             <slot
-                v-bind="row.data"
-                name="columns"
+              v-bind="row.data"
+              name="columns"
             />
           </BaseTableRow>
           <template v-if="row.edit">
             <tr
-                v-bind:key="'edit' + index"
-                v-bind:class="{'is-selected': row.edit, 'is-new': row.new}"
+              v-bind:key="'edit' + index"
+              v-bind:class="{'is-selected': row.edit, 'is-new': row.new}"
             >
               <td v-bind:colspan="columnSpan">
                 <EditDataRowForm
-                    @submit="validateAndSubmit(index)"
-                    @cancel="cancelEdit(row, index)"
+                  @submit="validateAndSubmit(index)"
+                  @cancel="cancelEdit(row, index)"
                 >
                   <slot
-                      v-bind:editData="row.editData"
-                      v-bind:validations="getValidations(index)"
-                      name="edit" />
+                    v-bind:editData="row.editData"
+                    v-bind:validations="getValidations(index)"
+                    name="edit"
+                  />
                 </EditDataRowForm>
               </td>
             </tr>
           </template>
         </template>
-    </tbody>
-  </table>
-  <div v-else>
-    <slot name="emptyMessage" />
-  </div>
+      </tbody>
+    </table>
+    <div v-else>
+      <slot name="emptyMessage" />
+    </div>
 
+    <!--<nav class="pagination" v-if="pagination">
+      <ul class="pagination-list">
+        <li>
+          <a
+              class="pagination-link"
+              v-bind:disabled="pagination.totalPages <= 1"
+              v-on:click="$emit('paginate', pagination.currentPage - 1)"
+              v-bind:aria-label="'Page ' + pagination.currentPage - 1"
+          >
+            Previous
+          </a>
+        </li>
+        <template v-if="pagination.totalPages > 5">
+          <li v-if="pagination.currentPage > 2" class="pagination-link">
+            <a
+              role="button"
+              aria-label="Page 1"
+              class="pagination-link"
+              v-on:click="$emit('paginate', 1)"
+            >
+              1
+            </a>
+          </li>
+          <li v-if="pagination.currentPage > 2 && pagination.currentPage != 3">
+            <span></span>
+          </li>
+
+          <li v-if="pagination.currentPage != 1">
+            <a
+              role="button"
+              v-bind:aria-label="`Page ${pagination.currentPage - 1}`"
+              class="pagination-link"
+              v-on:click="$emit('paginate', pagination.currentPage - 1)"
+            >
+              {{ pagination.currentPage - 1 }}
+            </a>
+          </li>
+          <li>
+            <a
+              role="button"
+              class="has-background-info pagination-link"
+            >
+              {{ pagination.currentPage }}
+            </a>
+          </li>
+          <li v-if="pagination.currentPage != pagination.totalPages">
+            <a
+                class="pagination-link"
+                v-bind:aria-label="`Page ${pagination.currentPage + 1}`"
+                v-on:click="$emit('paginate', pagination.currentPage + 1)"
+            >
+              {{ pagination.currentPage + 1 }}
+            </a>
+          </li>
+
+          <li v-if="pagination.currentPage < pagination.totalPages - 1 && pagination.currentPage != pagination.totalPages - 2">
+            <span></span>
+          </li>
+
+          <li v-if="pagination.currentPage < pagination.totalPages - 1">
+            <a
+              role="button"
+              v-bind:aria-label="`Page ${pagination.totalPages}`"
+              class="pagination-link"
+              v-on:click="$emit('paginate', pagination.totalPages)"
+            >
+              {{ pagination.totalPages }}
+            </a>
+          </li>
+
+        </template>
+        <template
+          v-for="pageNumber in pagination.totalPages"
+          v-else
+        >
+          <li v-bind:key="pageNumber">
+            <a
+              role="button"
+              v-bind:aria-label="`Page ${pageNumber}`"
+              class="pagination-link"
+              v-on:click="$emit('paginate', pageNumber)"
+            >
+              {{ pageNumber }}
+            </a>
+          </li>
+
+        </template>
+        <li>
+          <a
+              class="pagination-link"
+              v-bind:disabled="pagination.totalPages <= 1"
+              v-on:click="$emit('paginate', pagination.currentPage + 1)"
+              v-bind:aria-label="'Page ' + pagination.currentPage + 1"
+          >
+            Next
+          </a>
+        </li>
+      </ul>
+    </nav>-->
+
+    <b-pagination
+      v-if="pagination"
+      :total="pagination.totalCount"
+      :current="pagination.currentPage"
+      range-before="1"
+      range-after="1"
+      order="is-centered"
+      size="is-small"
+      :simple="false"
+      :rounded="false"
+      :per-page="pagination.pageSize"
+      aria-next-label="Next page"
+      aria-previous-label="Previous page"
+      aria-page-label="Page"
+      aria-current-label="Current page"
+      v-on:change="$emit('paginate', $event)"
+    >
+      <b-pagination-button
+        slot="previous"
+        slot-scope="props"
+        :page="props.page"
+        tag="a"
+      >
+        Previous
+      </b-pagination-button>
+
+      <template
+        slot="next"
+        slot-scope="props"
+      >
+        <b-pagination-button
+          :page="props.page"
+          tag="a"
+        >
+          Next
+        </b-pagination-button>
+
+        <div class="pagination-extras">
+          <div class="page-size-select pagination-link">
+            <div class="select is-small">
+              <select
+                v-model="pagination.pageSize"
+                v-on:change="$emit('paginate-page-size', $event.target.value)"
+              >
+                <option value="50">
+                  50
+                </option>
+                <option value="100">
+                  100
+                </option>
+                <option value="200">
+                  200
+                </option>
+              </select>
+            </div>
+            <span>per page</span>
+          </div>
+
+          <a
+            role="button"
+            class="pagination-link show-all-button"
+            v-bind:class="{ 'has-background-info': pagination.totalPages === 1}"
+            v-on:click="$emit('paginate-toggle-all')"
+          >
+            Show All
+          </a>
+        </div>
+      </template>
+    </b-pagination>
+  </div>
 </template>
 
 
@@ -83,6 +255,7 @@
   import {TableRow} from "@/breeding-insight/model/view_models/TableRow"
   import EditDataRowForm from '@/components/forms/EditDataRowForm.vue'
   import {Validations} from "vuelidate-property-decorators";
+  import {Pagination} from "@/breeding-insight/model/BiResponse";
 
   @Component({
     components: { BaseTableRow, EditDataRowForm }
@@ -100,11 +273,16 @@
     rowValidations!: Object;
     @Prop()
     editable!: boolean;
+    @Prop()
+    pagination!: Pagination;
 
     initialUpdate: boolean = false;
 
     private tableRows: Array<TableRow<any>> = new Array<TableRow<any>>();
 
+    mounted() {
+      console.log(this.pagination);
+    }
     updated() {
       this.initialUpdate = true;
     }

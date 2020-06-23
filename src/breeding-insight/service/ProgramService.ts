@@ -17,6 +17,8 @@
 
 import {ProgramDAO} from "@/breeding-insight/dao/ProgramDAO";
 import {Program} from "@/breeding-insight/model/Program";
+import {Metadata, Pagination} from "@/breeding-insight/model/BiResponse";
+import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
 
 export class ProgramService {
 
@@ -73,10 +75,13 @@ export class ProgramService {
     }));
   }
 
-  static getAll(): Promise<Program[]> {
-    return new Promise<Program[]>(((resolve, reject) => {
+  static getAll(paginationQuery?: PaginationQuery): Promise<[Program[], Metadata]> {
+    return new Promise<[Program[], Metadata]>(((resolve, reject) => {
 
-      ProgramDAO.getAll().then((biResponse) => {
+      if (paginationQuery === undefined){
+        paginationQuery = new PaginationQuery(0, 0, true);
+      }
+      ProgramDAO.getAll(paginationQuery).then((biResponse) => {
 
         let programs: Program[] = [];
     
@@ -87,8 +92,8 @@ export class ProgramService {
             return new Program(program.id, program.name, program.species.id);
           });
         }
-    
-        resolve(programs);
+
+        resolve([programs, biResponse.metadata]);
     
       }).catch((error) => reject(error));
     

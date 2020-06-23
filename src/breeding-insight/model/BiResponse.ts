@@ -25,7 +25,7 @@ export class BiResponse {
   }
 }
 
-class Metadata {
+export class Metadata {
   pagination: Pagination;
   statusArray: Array<Status>;
 
@@ -35,17 +35,25 @@ class Metadata {
   }
 }
 
-class Pagination {
+export class Pagination {
   totalPages: Number;
   currentPage: Number;
   totalCount: Number;
   pageSize: Number;
 
-  constructor(paginationResult: any) {
-    this.totalPages = paginationResult.totalPages;
-    this.currentPage = paginationResult.currentPage;
-    this.totalCount = paginationResult.totalCount;
-    this.pageSize = paginationResult.pageSize;
+  constructor(paginationResult?: any) {
+    if (paginationResult){
+      this.totalPages = paginationResult.totalPages;
+      this.currentPage = paginationResult.currentPage;
+      this.totalCount = paginationResult.totalCount;
+      this.pageSize = paginationResult.pageSize;
+    } else {
+      this.totalPages = 1;
+      this.currentPage = 1;
+      this.totalCount = 0;
+      this.pageSize = 0;
+    }
+
   }
 }
 
