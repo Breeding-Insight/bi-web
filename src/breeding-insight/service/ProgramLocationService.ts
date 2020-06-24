@@ -17,6 +17,8 @@
 
 import {ProgramLocationDAO} from "@/breeding-insight/dao/ProgramLocationDAO";
 import {ProgramLocation} from "@/breeding-insight/model/ProgramLocation";
+import {Metadata} from "@/breeding-insight/model/BiResponse";
+import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
 
 export class ProgramLocationService {
 
@@ -73,11 +75,15 @@ export class ProgramLocationService {
     }));
   }
 
-  static getAll(programId: string): Promise<ProgramLocation[]> {
-    return new Promise<ProgramLocation[]>(((resolve, reject) => {
+  static getAll(programId: string, paginationQuery?: PaginationQuery): Promise<[ProgramLocation[], Metadata]> {
+    return new Promise<[ProgramLocation[], Metadata]>(((resolve, reject) => {
+
+      if (paginationQuery === undefined){
+        paginationQuery = new PaginationQuery(0, 0, true);
+      }
 
       if (programId) {
-        ProgramLocationDAO.getAll(programId).then((biResponse) => {
+        ProgramLocationDAO.getAll(programId, paginationQuery).then((biResponse) => {
 
           let programLocations: ProgramLocation[] = [];
       
@@ -88,7 +94,7 @@ export class ProgramLocationService {
             });
           }
       
-          resolve(programLocations);
+          resolve([programLocations, biResponse.metadata]);
       
         }).catch((error) => reject(error));
       

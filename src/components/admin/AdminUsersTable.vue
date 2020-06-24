@@ -139,9 +139,13 @@
       v-bind:records.sync="users"
       v-bind:row-validations="userValidations"
       v-bind:editable="true"
+      v-bind:pagination="usersPagination"
       v-on:submit="updateUser($event)"
       v-on:remove="displayWarning($event)"
       v-on:show-error-notification="$emit('show-error-notification', $event)"
+      v-on:paginate="paginationController.updatePage($event)"
+      v-on:paginate-toggle-all="paginationController.toggleShowAll()"
+      v-on:paginate-page-size="paginationController.updatePageSize($event)"
     >
       <template v-slot:columns="data">
         <TableRowColumn name="name">
@@ -216,7 +220,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator'
+  import {Component, Prop, Vue, Watch} from 'vue-property-decorator'
 import { User } from '@/breeding-insight/model/User'
 import { PlusCircleIcon } from 'vue-feather-icons'
 import WarningModal from '@/components/modals/WarningModal.vue'
@@ -233,6 +237,9 @@ import {SystemRoleService} from "@/breeding-insight/service/SystemRoleService";
 import BasicSelectField from "@/components/forms/BasicSelectField.vue";
 import {PromiseHandler} from "@/breeding-insight/service/PromiseHandler";
 import {PromiseResult} from "promise.allsettled/types";
+import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
+  import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
+  import {Pagination} from "@/breeding-insight/model/BiResponse";
 
 
 @Component({
@@ -254,7 +261,10 @@ export default class AdminUsersTable extends Vue {
     email: {required, email},
   }
 
+  private paginationController: PaginationController = new PaginationController();
+
   public users: User[] = [];
+  private usersPagination?: Pagination = new Pagination();
   private userTableHeaders = ['Name', 'Email', 'Role', 'Programs'];
   private hideMobileHeaders = ['Email'];
 
@@ -277,10 +287,19 @@ export default class AdminUsersTable extends Vue {
     this.newUserActive = false;
   }
 
+  @Watch('paginationController', { deep: true})
   getUsers() {
 
-    UserService.getAll().then((users: User[]) => {
-      this.users = users;
+    let paginationQuery: PaginationQuery = PaginationController.getPaginationSelections(
+      this.paginationController.currentPage, this.paginationController.pageSize, this.paginationController.showAll);
+    this.paginationController.setCurrentCall(paginationQuery);
+
+
+    UserService.getAll(paginationQuery).then(([users, metadata]) => {
+      if (this.paginationController.matchesCurrentRequest(metadata.pagination)){
+        this.users = users;
+        this.usersPagination = metadata.pagination;
+      }
     }).catch((error) => {
       // Display error that users cannot be loaded
       this.$emit('show-error-notification', error.errorMessage);
@@ -291,7 +310,7 @@ export default class AdminUsersTable extends Vue {
 
   getRoles() {
 
-    SystemRoleService.getAll().then((roles: Role[]) => {
+    SystemRoleService.getAll().then(([roles, metadata]) => {
       this.roles = roles;
       for (const role of this.roles){
         // reassign so vue picks up changes

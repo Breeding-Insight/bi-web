@@ -1,4 +1,5 @@
 import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
+import {Pagination} from "@/breeding-insight/model/BiResponse";
 
 export class PaginationController {
   public currentPage: Number = 1;
@@ -28,6 +29,24 @@ export class PaginationController {
 
   setCurrentCall(paginationQuery: PaginationQuery){
     this.currentCall = paginationQuery;
+  }
+
+  matchesCurrentRequest(pagination: Pagination): boolean {
+
+    if (this.currentCall) {
+      return this.currentCall.page === pagination.currentPage &&
+        this.currentCall.pageSize === pagination.pageSize;
+    }
+    return false;
+  }
+
+  static getPaginationSelections(currentPage: Number, pageSize: Number, showAll: boolean): PaginationQuery {
+    if (showAll) {
+      return new PaginationQuery(0, 0, true);
+    } else {
+      return new PaginationQuery(
+        currentPage, pageSize, false);
+    }
   }
 
 }

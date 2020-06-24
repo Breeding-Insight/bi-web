@@ -18,6 +18,8 @@
 import {ProgramUserDAO} from "@/breeding-insight/dao/ProgramUserDAO";
 import {ProgramUser} from "@/breeding-insight/model/ProgramUser";
 import {Program} from "@/breeding-insight/model/Program";
+import {Metadata} from "@/breeding-insight/model/BiResponse";
+import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
 
 export class ProgramUserService {
 
@@ -88,11 +90,15 @@ export class ProgramUserService {
     }));
   }
 
-  static getAll(programId: string): Promise<ProgramUser[]> {
-    return new Promise<ProgramUser[]>(((resolve, reject) => {
+  static getAll(programId: string, paginationQuery?: PaginationQuery): Promise<[ProgramUser[], Metadata]> {
+    return new Promise<[ProgramUser[], Metadata]>(((resolve, reject) => {
+
+      if (paginationQuery === undefined){
+        paginationQuery = new PaginationQuery(0, 0, true);
+      }
 
       if (programId) {
-        ProgramUserDAO.getAll(programId).then((biResponse) => {
+        ProgramUserDAO.getAll(programId, paginationQuery).then((biResponse) => {
 
           let programUsers: ProgramUser[] = [];
       
@@ -104,7 +110,7 @@ export class ProgramUserService {
             });
           }
       
-          resolve(programUsers);
+          resolve([programUsers, biResponse.metadata]);
       
         }).catch((error) => reject(error));
       

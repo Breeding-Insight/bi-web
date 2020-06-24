@@ -17,13 +17,14 @@
 
 import {Role} from "@/breeding-insight/model/Role";
 import {SystemRoleDao} from "@/breeding-insight/dao/SystemRoleDao";
+import {Metadata} from "@/breeding-insight/model/BiResponse";
 
 export class SystemRoleService {
 
   static errorGetRoles = "Unable to load system roles";
 
-  static getAll(): Promise<Role[]> {
-    return new Promise<Role[]>(((resolve, reject) => {
+  static getAll(): Promise<[Role[], Metadata]> {
+    return new Promise<[Role[], Metadata]>(((resolve, reject) => {
 
       SystemRoleDao.getAll().then((biResponse) => {
 
@@ -31,7 +32,7 @@ export class SystemRoleService {
           return new Role(roles.id, roles.domain);
         });
 
-        resolve(roles);
+        resolve([roles, biResponse.metadata]);
 
       }).catch((error) => {
         error['errorMessage'] = this.errorGetRoles;

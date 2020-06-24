@@ -19,8 +19,19 @@ import {User} from "@/breeding-insight/model/User";
 import * as api from "@/util/api";
 import {BiResponse} from "@/breeding-insight/model/BiResponse";
 import {Role} from "@/breeding-insight/model/Role";
+import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
 
 export class UserDAO {
+
+  static mockMetadata: any = {
+    pagination: {
+      totalCount: 1000,
+      pageSize: 50,
+      totalPages: 20,
+      currentPage: 1
+    },
+    status: []
+  }
 
   static getUserInfo(): Promise<BiResponse> {
 
@@ -72,12 +83,25 @@ export class UserDAO {
     return api.call({ url: `${process.env.VUE_APP_BI_API_V1_PATH}/users/${id}`, method: 'delete'});
   }
 
-  static getAll(): Promise<BiResponse> {
+  static getAll(paginationQuery: PaginationQuery): Promise<BiResponse> {
+
+    //TODO: Remove when backend has pagination
+    if (paginationQuery.pageSize){
+      if (paginationQuery.pageSize != 0) this.mockMetadata.pagination.pageSize = paginationQuery.pageSize;
+    }
+    if (paginationQuery.page) {
+      if (paginationQuery.page != 0) this.mockMetadata.pagination.currentPage = paginationQuery.page;
+    }
+    if (paginationQuery.showAll) {
+      console.log('showing all');
+    }
 
     return new Promise<BiResponse>(((resolve, reject) => {
 
-      api.call({ url: `${process.env.VUE_APP_BI_API_V1_PATH}/users`, method: 'get' })
+      api.call({ url: `${process.env.VUE_APP_BI_API_V1_PATH}/users`, method: 'get', params: paginationQuery })
         .then((response: any) => {
+          //TODO: Change back when no longer mocked
+          response.data.metadata = this.mockMetadata;
           const biResponse = new BiResponse(response.data);
           resolve(biResponse);
         }).catch((error) => {

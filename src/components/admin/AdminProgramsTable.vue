@@ -221,17 +221,14 @@ export default class AdminProgramsTable extends Vue {
   @Watch('paginationController', { deep: true})
   getPrograms() {
 
-    let paginationQuery: PaginationQuery = this.getPaginationSelections();
+    let paginationQuery: PaginationQuery = PaginationController.getPaginationSelections(
+        this.paginationController.currentPage, this.paginationController.pageSize, this.paginationController.showAll);
     this.paginationController.setCurrentCall(paginationQuery);
 
     ProgramService.getAll(paginationQuery).then(([programs, metadata]) => {
 
       // Check that our most recent query is this one
-      const currentPaginationQuery = this.paginationController.currentCall;
-      if (currentPaginationQuery &&
-          currentPaginationQuery.page === metadata.pagination.currentPage &&
-          currentPaginationQuery.pageSize === metadata.pagination.pageSize)
-      {
+      if (this.paginationController.matchesCurrentRequest(metadata.pagination)) {
         this.programs = programs;
         this.programsPagination = metadata.pagination;
       }
@@ -245,7 +242,7 @@ export default class AdminProgramsTable extends Vue {
 
   getSpecies() {
 
-    SpeciesService.getAll().then((species: Species[]) => {
+    SpeciesService.getAll().then(([species, metadata]) => {
       this.species = species;
       for (const individual of this.species){
         // reassign so vue picks up changes
@@ -337,17 +334,7 @@ export default class AdminProgramsTable extends Vue {
     EventBus.bus.$emit(EventBus.programChange);
   }
 
-  getPaginationSelections(): PaginationQuery {
-    let paginationQuery: PaginationQuery;
-    if (this.paginationController.showAll) {
-      paginationQuery = new PaginationQuery(0, 0, true);
-    } else {
-      paginationQuery = new PaginationQuery(
-        this.paginationController.currentPage, this.paginationController.pageSize, false);
-    }
 
-    return paginationQuery;
-  }
 
 }
 

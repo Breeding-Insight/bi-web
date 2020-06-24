@@ -72,23 +72,20 @@ export class ProgramDAO {
 
     return new Promise<BiResponse>(((resolve, reject) => {
 
-      let params: any = {};
+      //TODO: Remove when backend has pagination
       if (paginationQuery.pageSize){
-        params.pageSize = paginationQuery.pageSize;
-        //TODO: Remove when backend has pagination
-        if (params.pageSize != 0) this.mockMetadata.pagination.pageSize = paginationQuery.pageSize;
+        if (paginationQuery.pageSize != 0) this.mockMetadata.pagination.pageSize = paginationQuery.pageSize;
       }
       if (paginationQuery.page) {
-        params.page = paginationQuery.page;
-        //TODO: Remove when backend has pagination
-        if (params.page != 0) this.mockMetadata.pagination.currentPage = paginationQuery.page;
+        if (paginationQuery.page != 0) this.mockMetadata.pagination.currentPage = paginationQuery.page;
       }
       if (paginationQuery.showAll) {
-        params.showAll = paginationQuery.showAll;
+        console.log('showing all');
       }
 
-      api.call({ url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs`, method: 'get', params})
+      api.call({ url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs`, method: 'get', paginationQuery})
         .then((response: any) => {
+          //TODO: Change back when no longer mocked
           response.data.metadata = this.mockMetadata;
           const biResponse = new BiResponse(response.data);
           resolve(biResponse);

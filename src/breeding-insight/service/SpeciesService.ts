@@ -17,11 +17,12 @@
 
 import {SpeciesDAO} from "@/breeding-insight/dao/SpeciesDAO";
 import {Species} from "@/breeding-insight/model/Species";
+import {Metadata} from "@/breeding-insight/model/BiResponse";
 
 export class SpeciesService{
 
-  static getAll(): Promise<Species[]> {
-    return new Promise<Species[]>(((resolve, reject) => {
+  static getAll(): Promise<[Species[], Metadata]> {
+    return new Promise<[Species[], Metadata]>(((resolve, reject) => {
 
       SpeciesDAO.getAll().then((biResponse) => {
 
@@ -30,7 +31,7 @@ export class SpeciesService{
           return new Species(species.id, species.commonName);
         });
 
-        resolve(species);
+        resolve([species, biResponse.metadata]);
 
       }).catch((error) => reject(error));
 

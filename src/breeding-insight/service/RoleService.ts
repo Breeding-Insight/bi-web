@@ -17,12 +17,13 @@
 
 import {RoleDAO} from "@/breeding-insight/dao/RoleDAO";
 import {Role} from "@/breeding-insight/model/Role";
+import {Metadata} from "@/breeding-insight/model/BiResponse";
 
 export class RoleService {
 
   static errorGetRoles: string = 'Error while loading roles.'
-  static getAll(): Promise<Role[]> {
-    return new Promise<Role[]>(((resolve, reject) => {
+  static getAll(): Promise<[Role[], Metadata]> {
+    return new Promise<[Role[], Metadata]>(((resolve, reject) => {
 
       RoleDAO.getAll().then((biResponse) => {
 
@@ -30,7 +31,7 @@ export class RoleService {
           return new Role(roles.id, roles.domain);
         });
 
-        resolve(roles);
+        resolve([roles, biResponse.metadata]);
 
       }).catch((error) => {
         error['errorMessage'] = this.errorGetRoles;

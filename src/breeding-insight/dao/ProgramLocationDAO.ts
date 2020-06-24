@@ -18,8 +18,19 @@
 import {ProgramLocation} from "@/breeding-insight/model/ProgramLocation";
 import {BiResponse} from "@/breeding-insight/model/BiResponse";
 import * as api from "@/util/api";
+import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
 
 export class ProgramLocationDAO {
+
+  static mockMetadata: any = {
+    pagination: {
+      totalCount: 1000,
+      pageSize: 50,
+      totalPages: 20,
+      currentPage: 1
+    },
+    status: []
+  }
 
   static create(programLocation: ProgramLocation): Promise<BiResponse> {
 
@@ -57,12 +68,25 @@ export class ProgramLocationDAO {
     return api.call({ url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/locations/${locationId}`, method: 'delete'});
   }
 
-  static getAll(programId: string): Promise<BiResponse> {
+  static getAll(programId: string, paginationQuery: PaginationQuery): Promise<BiResponse> {
+
+    //TODO: Remove when backend has pagination
+    if (paginationQuery.pageSize){
+      if (paginationQuery.pageSize != 0) this.mockMetadata.pagination.pageSize = paginationQuery.pageSize;
+    }
+    if (paginationQuery.page) {
+      if (paginationQuery.page != 0) this.mockMetadata.pagination.currentPage = paginationQuery.page;
+    }
+    if (paginationQuery.showAll) {
+      console.log('showing all');
+    }
 
     return new Promise<BiResponse>(((resolve, reject) => {
 
-      api.call({ url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/locations`, method: 'get' })
+      api.call({ url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/locations`, method: 'get', params: paginationQuery })
         .then((response: any) => {
+          //TODO: Change back when no longer mocked
+          response.data.metadata = this.mockMetadata;
           const biResponse = new BiResponse(response.data);
           resolve(biResponse);
         }).catch((error) => {

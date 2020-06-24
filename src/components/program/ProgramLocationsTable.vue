@@ -79,9 +79,13 @@
       v-bind:records.sync="locations"
       v-bind:row-validations="locationValidations"
       v-bind:editable="true"
+      v-bind:pagination="locationsPagination"
       v-on:submit="updateLocation($event)"
       v-on:remove="displayWarning($event)"
       v-on:show-error-notification="$emit('show-error-notification', $event)"
+      v-on:paginate="paginationController.updatePage($event)"
+      v-on:paginate-toggle-all="paginationController.toggleShowAll()"
+      v-on:paginate-page-size="paginationController.updatePageSize($event)"
     >
       <template v-slot:columns="data">
         <TableRowColumn name="name">
@@ -122,7 +126,7 @@
 </template>
 
 <script lang="ts">
-import {Component, Prop, Vue} from 'vue-property-decorator'
+  import {Component, Prop, Vue, Watch} from 'vue-property-decorator'
 import WarningModal from '@/components/modals/WarningModal.vue'
 import {PlusCircleIcon} from 'vue-feather-icons'
 import {validationMixin} from 'vuelidate';
@@ -137,6 +141,9 @@ import BaseTable from "@/components/tables/BaseTable.vue";
 import {ProgramLocationService} from "@/breeding-insight/service/ProgramLocationService";
 import EmptyTableMessage from "@/components/tables/EmtpyTableMessage.vue";
 import TableRowColumn from "@/components/tables/TableRowColumn.vue";
+  import {Metadata, Pagination} from "@/breeding-insight/model/BiResponse";
+  import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
+  import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
 
 @Component({
   mixins: [validationMixin],
@@ -154,12 +161,15 @@ export default class ProgramLocationsTable extends Vue {
   private locationTableHeaders: string[] = ['Name', '# Experiments'];
   private activeProgram?: Program;
   private locations: ProgramLocation[] = [];
+  private locationsPagination?: Pagination = new Pagination();
   private deactivateActive: boolean = false;
   private newLocationActive: boolean = false;
   private deactivateWarningTitle: string = "Remove location from Program name?";
   private newLocation = new ProgramLocation();
   private programName: string = "Program Name";
   private deleteLocation?: ProgramLocation;
+
+  private paginationController: PaginationController = new PaginationController();
 
   locationValidations = {
     name: {required}
@@ -169,9 +179,18 @@ export default class ProgramLocationsTable extends Vue {
     this.getLocations();
   }
 
+  @Watch('paginationController', { deep: true})
   getLocations() {
-    ProgramLocationService.getAll(this.activeProgram!.id!).then((programLocations: ProgramLocation[]) => {
-      this.locations = programLocations;
+    let paginationQuery: PaginationQuery = PaginationController.getPaginationSelections(
+      this.paginationController.currentPage, this.paginationController.pageSize, this.paginationController.showAll);
+    this.paginationController.setCurrentCall(paginationQuery);
+
+    ProgramLocationService.getAll(this.activeProgram!.id!, paginationQuery).then(([programLocations, metadata]) => {
+      if (this.paginationController.matchesCurrentRequest(metadata.pagination)){
+        this.locations = programLocations;
+        this.locationsPagination = metadata.pagination;
+      }
+
     }).catch((error) => {
       // Display error that locations cannot be loaded
       this.$emit('show-error-notification', 'Error while trying to load locations');
