@@ -220,7 +220,7 @@ export class UserService {
         // Both need to exist for us to assign the data to the user
         if (role && program){
           const newProgramUser: ProgramUser = new ProgramUser(programRole.id, undefined, undefined,
-            program.id, role.id, program, programRole.active);
+            role.id, program, programRole.active);
           programRoles.push(newProgramUser);
         }
       }

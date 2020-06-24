@@ -20,18 +20,16 @@ import {Program} from "@/breeding-insight/model/Program";
 
 export class ProgramUser {
   id?: string;
-  programId?: string;
   name?: string;
   email?: string;
   roleId?: string;
   program?: Program;
   active?: boolean;
 
-  constructor(id?: string, name?:string, email?: string, programId?: string, roleId?: string, program?: Program, active?: boolean) {
+  constructor(id?: string, name?:string, email?: string, roleId?: string, program?: Program, active?: boolean) {
     this.id = id;
     this.name = name;
     this.email = email;
-    this.programId = programId;
     this.roleId = roleId;
     this.program = program;
     this.active = active;

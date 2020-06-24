@@ -28,13 +28,19 @@ export class ProgramUserDAO {
       // Construct request body
       const body = {'user': {'id': programUser.id, 'name': programUser.name, 'email': programUser.email}, 
                     'roles': [{'id': programUser.roleId}] };
-  
-      // Make api request
-      api.call({ url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programUser.programId}/users`, method: 'post', data: body})
-        .then((response: any) => {
-          const biResponse = new BiResponse(response.data);
-          resolve(biResponse);
-        }).catch((error) => {reject(error)});
+
+      if (programUser.program){
+
+        // Make api request
+        api.call({ url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programUser.program.id}/users`, method: 'post', data: body})
+          .then((response: any) => {
+            const biResponse = new BiResponse(response.data);
+            resolve(biResponse);
+          }).catch((error) => {reject(error)});
+
+      } else {
+        reject();
+      }
 
     });
   }
@@ -45,11 +51,16 @@ export class ProgramUserDAO {
 
       const body = {'user': {'id': programUser.id}, 'roles': [{'id': programUser.roleId}] };
 
-      api.call({ url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programUser.programId}/users/${programUser.id}`, method: 'put', data: body})
-        .then((response: any) => {
-          const biResponse = new BiResponse(response.data);
-          resolve(biResponse);
-        }).catch((error) => reject(error));
+      if (programUser.program){
+        api.call({ url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programUser.program.id}/users/${programUser.id}`, method: 'put', data: body})
+          .then((response: any) => {
+            const biResponse = new BiResponse(response.data);
+            resolve(biResponse);
+          }).catch((error) => reject(error));
+      } else {
+        reject();
+      }
+
 
     });
   }

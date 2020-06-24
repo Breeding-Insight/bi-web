@@ -24,13 +24,13 @@
     >
       <section>
         <template v-if="deactivateActive">
-          <template v-if="currentDeleteUser && currentDeleteUser.programRoles && currentDeleteUser.programRoles.length > 0">
+          <template v-if="getActiveProgramRoles().length > 0">
             <p class="has-text-dark">
               Access for this user will be removed system wide, including:
             </p>
             <ul>
               <template
-                  v-for="(programRole, index) of currentDeleteUser.programRoles"
+                  v-for="(programRole, index) of getActiveProgramRoles()"
               >
                 <li
                     v-if="programRole.program"
@@ -70,9 +70,16 @@
       </div>              
     </WarningModal>
 
-    <div class="level">
-      <p class="level-item level-right is-text">Inactive programs are  <span class="has-background-grey-light">[ highlighted ]</span></p>
+    <div class="level is-marginless">
+      <div class="level-left"></div>
+      <div class="level-right">
+        <div class="level-item">
+          <p>Inactive programs are  <span class="has-background-grey-light">[ highlighted ]</span></p>
+        </div>
+      </div>
     </div>
+
+
 
     <button
       v-show="!newUserActive"
@@ -254,6 +261,15 @@ export default class AdminUsersTable extends Vue {
   mounted() {
     this.getRoles();
     this.getUsers();
+  }
+
+  getActiveProgramRoles() {
+    if (this.currentDeleteUser) {
+      if (this.currentDeleteUser.id && this.currentDeleteUser.programRoles) {
+        return this.currentDeleteUser.programRoles.filter(programRole => programRole.active);
+      }
+    }
+    return [];
   }
 
   cancelNewUser() {
