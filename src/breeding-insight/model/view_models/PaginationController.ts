@@ -2,12 +2,12 @@ import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
 import {Pagination} from "@/breeding-insight/model/BiResponse";
 
 export class PaginationController {
-  public currentPage: Number = 1;
-  public pageSize: Number = 50;
+  public currentPage: number = 1;
+  public pageSize: number = 50;
   public showAll: boolean = false;
   public currentCall?: PaginationQuery;
 
-  constructor(currentPage?: Number, pageSize?: Number, currentCall?: PaginationQuery) {
+  constructor(currentPage?: number, pageSize?: number, currentCall?: PaginationQuery) {
     if (currentPage) this.currentPage = currentPage;
     if (pageSize) this.pageSize = pageSize;
     if (currentCall) this.currentCall = currentCall;
@@ -17,12 +17,12 @@ export class PaginationController {
     this.showAll = !this.showAll;
   }
 
-  updatePageSize(pageSize: Number) {
+  updatePageSize(pageSize: number) {
     this.pageSize = pageSize;
     this.showAll = false;
   }
 
-  updatePage(page: Number) {
+  updatePage(page: number) {
     this.currentPage = page;
     this.showAll = false;
   }
@@ -53,7 +53,9 @@ export class PaginationController {
     }
   }
 
+  //TODO: Remove when backend pagination is implemented
   static mockPagination(records: any[], page: number, pageSize: number, showAll: boolean): [any[], Pagination] {
+
     if (showAll){
       const newPagination: Pagination = new Pagination({
         totalCount: records.length,
@@ -62,6 +64,14 @@ export class PaginationController {
         currentPage: 1
       });
       return [records, newPagination];
+    } else if (records.length === 0){
+      const newPagination: Pagination = new Pagination({
+        totalCount: 0,
+        pageSize: pageSize,
+        totalPages: 1,
+        currentPage: page
+      });
+      return [[], newPagination];
     } else {
       const newPagination: Pagination = new Pagination({
         totalCount: records.length,

@@ -109,12 +109,12 @@ export class ProgramUserService {
               const newProgram = new Program(programUser.program.id, programUser.program.name);
               return new ProgramUser(programUser.user.id, programUser.user.name, programUser.user.email, programUser.roles[0].id, newProgram, programUser.active);
             });
-            //TODO: Remove when backend pagination is implemented
-            let newPagination;
-            [programUsers, newPagination] = PaginationController.mockPagination(programUsers, paginationQuery!.page, paginationQuery!.pageSize, paginationQuery!.showAll);
-            biResponse.metadata.pagination = newPagination;
           }
-      
+          //TODO: Remove when backend pagination is implemented
+          let newPagination;
+          [programUsers, newPagination] = PaginationController.mockPagination(programUsers, paginationQuery!.page, paginationQuery!.pageSize, paginationQuery!.showAll);
+          biResponse.metadata.pagination = newPagination;
+
           resolve([programUsers, biResponse.metadata]);
       
         }).catch((error) => reject(error));

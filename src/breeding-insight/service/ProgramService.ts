@@ -92,11 +92,11 @@ export class ProgramService {
           programs = biResponse.result.data.map((program: any) => {
             return new Program(program.id, program.name, program.species.id);
           });
-          //TODO: Remove when backend pagination is implemented
-          let newPagination;
-          [programs, newPagination] = PaginationController.mockPagination(programs, paginationQuery!.page, paginationQuery!.pageSize, paginationQuery!.showAll);
-          biResponse.metadata.pagination = newPagination;
         }
+        //TODO: Remove when backend pagination is implemented
+        let newPagination;
+        [programs, newPagination] = PaginationController.mockPagination(programs, paginationQuery!.page, paginationQuery!.pageSize, paginationQuery!.showAll);
+        biResponse.metadata.pagination = newPagination;
 
         resolve([programs, biResponse.metadata]);
     
