@@ -18,14 +18,19 @@
 import {RoleDAO} from "@/breeding-insight/dao/RoleDAO";
 import {Role} from "@/breeding-insight/model/Role";
 import {Metadata} from "@/breeding-insight/model/BiResponse";
+import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
 
 export class RoleService {
 
   static errorGetRoles: string = 'Error while loading roles.'
-  static getAll(): Promise<[Role[], Metadata]> {
+  static getAll(paginationQuery?: PaginationQuery): Promise<[Role[], Metadata]> {
     return new Promise<[Role[], Metadata]>(((resolve, reject) => {
 
-      RoleDAO.getAll().then((biResponse) => {
+      if (paginationQuery === undefined){
+        paginationQuery = new PaginationQuery(0, 0, true);
+      }
+
+      RoleDAO.getAll(paginationQuery).then((biResponse) => {
 
         const roles = biResponse.result.data.map((roles: any) => {
           return new Role(roles.id, roles.domain);

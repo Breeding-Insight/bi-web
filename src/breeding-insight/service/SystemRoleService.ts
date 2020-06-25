@@ -18,15 +18,20 @@
 import {Role} from "@/breeding-insight/model/Role";
 import {SystemRoleDao} from "@/breeding-insight/dao/SystemRoleDao";
 import {Metadata} from "@/breeding-insight/model/BiResponse";
+import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
 
 export class SystemRoleService {
 
   static errorGetRoles = "Unable to load system roles";
 
-  static getAll(): Promise<[Role[], Metadata]> {
+  static getAll(paginationQuery?: PaginationQuery): Promise<[Role[], Metadata]> {
     return new Promise<[Role[], Metadata]>(((resolve, reject) => {
 
-      SystemRoleDao.getAll().then((biResponse) => {
+      if (paginationQuery === undefined){
+        paginationQuery = new PaginationQuery(0, 0, true);
+      }
+
+      SystemRoleDao.getAll(paginationQuery).then((biResponse) => {
 
         const roles = biResponse.result.data.map((roles: any) => {
           return new Role(roles.id, roles.domain);
