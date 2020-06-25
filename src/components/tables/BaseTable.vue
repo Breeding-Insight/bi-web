@@ -186,10 +186,7 @@
     initialUpdate: boolean = false;
 
     private tableRows: Array<TableRow<any>> = new Array<TableRow<any>>();
-
-    mounted() {
-      console.log(this.pagination);
-    }
+    
     updated() {
       this.initialUpdate = true;
     }

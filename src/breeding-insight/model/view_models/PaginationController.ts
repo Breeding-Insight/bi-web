@@ -7,7 +7,7 @@ export class PaginationController {
   public showAll: boolean = false;
   public currentCall?: PaginationQuery;
 
-  constructor(currentPage?: Number, pageSize?: Number, lockPaginate?: boolean, currentCall?: PaginationQuery) {
+  constructor(currentPage?: Number, pageSize?: Number, currentCall?: PaginationQuery) {
     if (currentPage) this.currentPage = currentPage;
     if (pageSize) this.pageSize = pageSize;
     if (currentCall) this.currentCall = currentCall;
