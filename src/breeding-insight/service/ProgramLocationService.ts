@@ -19,6 +19,7 @@ import {ProgramLocationDAO} from "@/breeding-insight/dao/ProgramLocationDAO";
 import {ProgramLocation} from "@/breeding-insight/model/ProgramLocation";
 import {Metadata} from "@/breeding-insight/model/BiResponse";
 import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
+import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
 
 export class ProgramLocationService {
 
@@ -92,6 +93,10 @@ export class ProgramLocationService {
             programLocations = biResponse.result.data.map((programLocation: any) => {
               return new ProgramLocation(programLocation.id, programLocation.programId, programLocation.name);
             });
+            //TODO: Remove when backend pagination is implemented
+            let newPagination;
+            [programLocations, newPagination] = PaginationController.mockPagination(programLocations, paginationQuery!.page, paginationQuery!.pageSize, paginationQuery!.showAll);
+            biResponse.metadata.pagination = newPagination;
           }
       
           resolve([programLocations, biResponse.metadata]);

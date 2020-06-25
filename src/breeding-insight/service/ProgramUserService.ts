@@ -20,6 +20,7 @@ import {ProgramUser} from "@/breeding-insight/model/ProgramUser";
 import {Program} from "@/breeding-insight/model/Program";
 import {Metadata} from "@/breeding-insight/model/BiResponse";
 import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
+import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
 
 export class ProgramUserService {
 
@@ -108,6 +109,10 @@ export class ProgramUserService {
               const newProgram = new Program(programUser.program.id, programUser.program.name);
               return new ProgramUser(programUser.user.id, programUser.user.name, programUser.user.email, programUser.roles[0].id, newProgram, programUser.active);
             });
+            //TODO: Remove when backend pagination is implemented
+            let newPagination;
+            [programUsers, newPagination] = PaginationController.mockPagination(programUsers, paginationQuery!.page, paginationQuery!.pageSize, paginationQuery!.showAll);
+            biResponse.metadata.pagination = newPagination;
           }
       
           resolve([programUsers, biResponse.metadata]);

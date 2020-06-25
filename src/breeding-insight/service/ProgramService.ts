@@ -19,6 +19,7 @@ import {ProgramDAO} from "@/breeding-insight/dao/ProgramDAO";
 import {Program} from "@/breeding-insight/model/Program";
 import {Metadata, Pagination} from "@/breeding-insight/model/BiResponse";
 import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
+import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
 
 export class ProgramService {
 
@@ -91,6 +92,10 @@ export class ProgramService {
           programs = biResponse.result.data.map((program: any) => {
             return new Program(program.id, program.name, program.species.id);
           });
+          //TODO: Remove when backend pagination is implemented
+          let newPagination;
+          [programs, newPagination] = PaginationController.mockPagination(programs, paginationQuery!.page, paginationQuery!.pageSize, paginationQuery!.showAll);
+          biResponse.metadata.pagination = newPagination;
         }
 
         resolve([programs, biResponse.metadata]);

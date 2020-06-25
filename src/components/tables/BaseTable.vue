@@ -119,6 +119,12 @@
                     v-model="pagination.pageSize"
                     v-on:change="$emit('paginate-page-size', $event.target.value)"
                 >
+                  <option value="10">
+                    10
+                  </option>
+                  <option value="20">
+                    20
+                  </option>
                   <option value="50">
                     50
                   </option>
@@ -186,7 +192,7 @@
     initialUpdate: boolean = false;
 
     private tableRows: Array<TableRow<any>> = new Array<TableRow<any>>();
-    
+
     updated() {
       this.initialUpdate = true;
     }

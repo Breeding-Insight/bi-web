@@ -1,9 +1,9 @@
 export class PaginationQuery {
-  page: Number;
-  pageSize: Number;
+  page: number;
+  pageSize: number;
   showAll: boolean;
 
-  constructor(page: Number, pageSize: Number, showAll: boolean) {
+  constructor(page: number, pageSize: number, showAll: boolean) {
     this.page = page;
     this.pageSize = pageSize;
     this.showAll = showAll;
