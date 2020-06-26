@@ -277,6 +277,7 @@ export default class ProgramUsersTable extends Vue {
     this.newUser.program = this.activeProgram;
 
     ProgramUserService.create(this.newUser).then((user: ProgramUser) => {
+      this.paginationController.updatePage(1);
       this.getUsers();
       this.$emit('show-success-notification', 'Success! ' + this.newUser.name + ' added.');
       this.newUser = new ProgramUser();

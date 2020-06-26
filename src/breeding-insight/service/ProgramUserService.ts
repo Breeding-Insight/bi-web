@@ -101,6 +101,8 @@ export class ProgramUserService {
       if (programId) {
         ProgramUserDAO.getAll(programId, paginationQuery).then((biResponse) => {
 
+          //TODO: Remove when backend sorts the data by default
+          biResponse.result.data = PaginationController.mockSortRecords(biResponse.result.data);
           let programUsers: ProgramUser[] = [];
       
           // TODO: workaround for no program users for now

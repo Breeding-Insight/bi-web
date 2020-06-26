@@ -86,6 +86,9 @@ export class ProgramLocationService {
       if (programId) {
         ProgramLocationDAO.getAll(programId, paginationQuery).then((biResponse) => {
 
+          //TODO: Remove when backend sorts the data by default
+          biResponse.result.data = PaginationController.mockSortRecords(biResponse.result.data);
+
           let programLocations: ProgramLocation[] = [];
       
           // TODO: workaround for no program locations for now

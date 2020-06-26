@@ -218,6 +218,7 @@ export default class ProgramLocationsTable extends Vue {
     this.newLocation.programId = this.activeProgram!.id;
 
     ProgramLocationService.create(this.newLocation).then((location: ProgramLocation) => {
+      this.paginationController.updatePage(1);
       this.getLocations();
       this.$emit('show-success-notification', 'Success! ' + this.newLocation.name + ' added.');
       this.newLocation = new ProgramLocation();

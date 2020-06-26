@@ -84,6 +84,9 @@ export class ProgramService {
       }
       ProgramDAO.getAll(paginationQuery).then((biResponse) => {
 
+        //TODO: Remove when backend sorts the data by default
+        biResponse.result.data = PaginationController.mockSortRecords(biResponse.result.data);
+
         let programs: Program[] = [];
     
         // TODO: workaround for no programs for now

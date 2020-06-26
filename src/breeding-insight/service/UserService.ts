@@ -137,6 +137,7 @@ export class UserService {
 
       UserDAO.getAll(paginationQuery).then((biResponse) => {
 
+        biResponse.result.data = PaginationController.mockSortRecords(biResponse.result.data);
         // Parse our users into the vue users param
         let users = biResponse.result.data.map((user: any) => {
           const role: Role | undefined = this.parseSystemRoles(user.systemRoles);

@@ -272,6 +272,7 @@ export default class AdminProgramsTable extends Vue {
   saveProgram() {
 
     ProgramService.create(this.newProgram).then((program: Program) => {
+      this.paginationController.updatePage(1);
       this.getPrograms();
       this.$emit('show-success-notification', 'Success! ' + this.newProgram.name + ' added.');
       this.newProgramActive = false;

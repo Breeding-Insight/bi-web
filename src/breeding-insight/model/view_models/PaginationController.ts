@@ -83,4 +83,15 @@ export class PaginationController {
     }
   }
 
+  //TODO: Remove when backend pagination is implemented
+  static mockSortRecords(records: any[]){
+    // Imitates sql sorting by created date
+    if (records && records.length > 0){
+      if (records[0].createdAt){
+        records = records.sort((record1, record2) => record1.createdAt > record2.createdAt ? -1: 1);
+      }
+    }
+    return records;
+  }
+
 }

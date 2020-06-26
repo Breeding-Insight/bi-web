@@ -346,6 +346,7 @@ export default class AdminUsersTable extends Vue {
   addUser() {
 
     UserService.create(this.newUser).then((user: User) => {
+      this.paginationController.updatePage(1);
       this.getUsers();
       this.newUser = new User();
       this.newUserActive = false;
