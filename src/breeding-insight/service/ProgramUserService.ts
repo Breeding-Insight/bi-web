@@ -17,6 +17,7 @@
 
 import {ProgramUserDAO} from "@/breeding-insight/dao/ProgramUserDAO";
 import {ProgramUser} from "@/breeding-insight/model/ProgramUser";
+import {Program} from "@/breeding-insight/model/Program";
 
 export class ProgramUserService {
 
@@ -27,20 +28,22 @@ export class ProgramUserService {
 
     return new Promise<ProgramUser>((resolve, reject) => {
 
-      if (programUser.id === undefined) {
-        ProgramUserDAO.create(programUser).then((biResponse) => {
-          const result: any = biResponse.result;
-          const newProgram  = new ProgramUser(result.user.id, result.user.name, result.user.email, programUser.programId, result.roles[0].id);
-          resolve(newProgram);
+      if (programUser.id === undefined && programUser.program) {
 
-        }).catch((error) => {
-          if (error.response && error.response.status === 409) {
-            error['errorMessage'] = this.errorEmailInUse;
-          } else {
-            error['errorMessage'] = this.errorCreatingUser;
-          }
-          reject(error)
-        });
+          ProgramUserDAO.create(programUser).then((biResponse) => {
+            const result: any = biResponse.result;
+            const newProgram = new Program(result.program.id, result.program.name);
+            const newProgramUser  = new ProgramUser(result.user.id, result.user.name, result.user.email, result.roles[0].id, newProgram, result.active);
+            resolve(newProgramUser);
+
+          }).catch((error) => {
+            if (error.response && error.response.status === 409) {
+              error['errorMessage'] = this.errorEmailInUse;
+            } else {
+              error['errorMessage'] = this.errorCreatingUser;
+            }
+            reject(error)
+          });
       }
       else {
         reject();
@@ -53,11 +56,13 @@ export class ProgramUserService {
 
     return new Promise<ProgramUser>((resolve, reject) => {
 
-      if (programUser.id && programUser.programId) {
+      if (programUser.program && programUser.id) {
+
         ProgramUserDAO.update(programUser).then((biResponse) => {
           const result: any = biResponse.result;
-          const newProgram = new ProgramUser(result.user.id, result.user.name, result.user.email, programUser.programId, result.roles[0].id);
-          resolve(newProgram);
+          const newProgram = new Program(result.program.id, result.program.name);
+          const newProgramUser = new ProgramUser(result.user.id, result.user.name, result.user.email, result.roles[0].id, newProgram, result.active);
+          resolve(newProgramUser);
 
         }).catch((error) => reject(error));
       }
@@ -94,7 +99,8 @@ export class ProgramUserService {
           // TODO: workaround for no program users for now
           if (biResponse.result.data) {
             programUsers = biResponse.result.data.map((programUser: any) => {
-              return new ProgramUser(programUser.user.id, programUser.user.name, programUser.user.email, programId, programUser.roles[0].id);
+              const newProgram = new Program(programUser.program.id, programUser.program.name);
+              return new ProgramUser(programUser.user.id, programUser.user.name, programUser.user.email, programUser.roles[0].id, newProgram, programUser.active);
             });
           }
       

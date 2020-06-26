@@ -255,7 +255,7 @@ export default class ProgramUsersTable extends Vue {
 
   saveUser() {
 
-    this.newUser.programId = this.activeProgram!.id;
+    this.newUser.program = this.activeProgram;
 
     ProgramUserService.create(this.newUser).then((user: ProgramUser) => {
       this.getUsers();

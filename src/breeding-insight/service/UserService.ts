@@ -20,6 +20,8 @@ import {UserDAO} from "@/breeding-insight/dao/UserDAO";
 import {Role} from "@/breeding-insight/model/Role";
 import {Vue} from "vue-property-decorator";
 import {BiResponse} from "@/breeding-insight/model/BiResponse";
+import {Program} from "@/breeding-insight/model/Program";
+import {ProgramUser} from "@/breeding-insight/model/ProgramUser";
 
 export class UserService {
 
@@ -132,7 +134,8 @@ export class UserService {
         // Parse our users into the vue users param
         const users = biResponse.result.data.map((user: any) => {
           const role: Role | undefined = this.parseSystemRoles(user.systemRoles);
-          return new User(user.id, user.name, user.orcid, user.email, role);
+          const programRoles: ProgramUser[] | undefined = this.parseProgramRoles(user.programRoles);
+          return new User(user.id, user.name, user.orcid, user.email, role, programRoles);
         });
 
         resolve(users);
@@ -181,6 +184,48 @@ export class UserService {
       return new Role(systemRoles[0].id, systemRoles[0].domain);
     }
     return undefined;
+  }
+
+  private static parseProgramRoles(programRoleResponse: any[]): ProgramUser[] | undefined {
+
+    if (programRoleResponse && programRoleResponse.length > 0) {
+
+      let programRoles: ProgramUser[] = [];
+      for (const programRole of programRoleResponse){
+
+        // Get the program
+        const programResponse: any = programRole.program;
+        let program: Program | undefined;
+        if (programResponse){
+          if (programResponse.id && programResponse.name){
+            program = new Program(programResponse.id, programResponse.name);
+          }
+        }
+
+        // Get the roles for that program
+        const roleArrayResponse: any[] = programRole.roles;
+        let role: Role | undefined;
+        if (roleArrayResponse) {
+          // We only have one role per program user right now
+          if (roleArrayResponse.length > 0){
+            const roleResponse: any = roleArrayResponse[0];
+            if (roleResponse){
+              if (roleResponse.id && roleResponse.domain){
+                role = new Role(roleResponse.id, roleResponse.domain);
+              }
+            }
+          }
+        }
+
+        // Both need to exist for us to assign the data to the user
+        if (role && program){
+          const newProgramUser: ProgramUser = new ProgramUser(programRole.id, undefined, undefined,
+            role.id, program, programRole.active);
+          programRoles.push(newProgramUser);
+        }
+      }
+      return programRoles;
+    }
   }
 
 }
