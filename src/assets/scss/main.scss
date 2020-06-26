@@ -135,7 +135,8 @@ nav.pagination {
     display: flex;
     flex-grow: 1;
     flex-shrink: 0;
-    justify-content: space-evenly;
+    justify-content: flex-start;
+    margin-left: 2em;
 
     & div.page-size-select {
       order: 1;
