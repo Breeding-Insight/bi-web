@@ -17,6 +17,9 @@
 
 import {ProgramDAO} from "@/breeding-insight/dao/ProgramDAO";
 import {Program} from "@/breeding-insight/model/Program";
+import {Metadata, Pagination} from "@/breeding-insight/model/BiResponse";
+import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
+import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
 
 export class ProgramService {
 
@@ -73,10 +76,16 @@ export class ProgramService {
     }));
   }
 
-  static getAll(): Promise<Program[]> {
-    return new Promise<Program[]>(((resolve, reject) => {
+  static getAll(paginationQuery?: PaginationQuery): Promise<[Program[], Metadata]> {
+    return new Promise<[Program[], Metadata]>(((resolve, reject) => {
 
-      ProgramDAO.getAll().then((biResponse) => {
+      if (paginationQuery === undefined){
+        paginationQuery = new PaginationQuery(0, 0, true);
+      }
+      ProgramDAO.getAll(paginationQuery).then((biResponse) => {
+
+        //TODO: Remove when backend sorts the data by default
+        biResponse.result.data = PaginationController.mockSortRecords(biResponse.result.data);
 
         let programs: Program[] = [];
     
@@ -87,8 +96,12 @@ export class ProgramService {
             return new Program(program.id, program.name, program.species.id);
           });
         }
-    
-        resolve(programs);
+        //TODO: Remove when backend pagination is implemented
+        let newPagination;
+        [programs, newPagination] = PaginationController.mockPagination(programs, paginationQuery!.page, paginationQuery!.pageSize, paginationQuery!.showAll);
+        biResponse.metadata.pagination = newPagination;
+
+        resolve([programs, biResponse.metadata]);
     
       }).catch((error) => reject(error));
     

@@ -18,6 +18,9 @@
 import {ProgramUserDAO} from "@/breeding-insight/dao/ProgramUserDAO";
 import {ProgramUser} from "@/breeding-insight/model/ProgramUser";
 import {Program} from "@/breeding-insight/model/Program";
+import {Metadata} from "@/breeding-insight/model/BiResponse";
+import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
+import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
 
 export class ProgramUserService {
 
@@ -88,12 +91,18 @@ export class ProgramUserService {
     }));
   }
 
-  static getAll(programId: string): Promise<ProgramUser[]> {
-    return new Promise<ProgramUser[]>(((resolve, reject) => {
+  static getAll(programId: string, paginationQuery?: PaginationQuery): Promise<[ProgramUser[], Metadata]> {
+    return new Promise<[ProgramUser[], Metadata]>(((resolve, reject) => {
+
+      if (paginationQuery === undefined){
+        paginationQuery = new PaginationQuery(0, 0, true);
+      }
 
       if (programId) {
-        ProgramUserDAO.getAll(programId).then((biResponse) => {
+        ProgramUserDAO.getAll(programId, paginationQuery).then((biResponse) => {
 
+          //TODO: Remove when backend sorts the data by default
+          biResponse.result.data = PaginationController.mockSortRecords(biResponse.result.data);
           let programUsers: ProgramUser[] = [];
       
           // TODO: workaround for no program users for now
@@ -103,8 +112,12 @@ export class ProgramUserService {
               return new ProgramUser(programUser.user.id, programUser.user.name, programUser.user.email, programUser.roles[0].id, newProgram, programUser.active);
             });
           }
-      
-          resolve(programUsers);
+          //TODO: Remove when backend pagination is implemented
+          let newPagination;
+          [programUsers, newPagination] = PaginationController.mockPagination(programUsers, paginationQuery!.page, paginationQuery!.pageSize, paginationQuery!.showAll);
+          biResponse.metadata.pagination = newPagination;
+
+          resolve([programUsers, biResponse.metadata]);
       
         }).catch((error) => reject(error));
       

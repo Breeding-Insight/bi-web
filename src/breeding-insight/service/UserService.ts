@@ -19,9 +19,11 @@ import {User} from "@/breeding-insight/model/User";
 import {UserDAO} from "@/breeding-insight/dao/UserDAO";
 import {Role} from "@/breeding-insight/model/Role";
 import {Vue} from "vue-property-decorator";
-import {BiResponse} from "@/breeding-insight/model/BiResponse";
+import {BiResponse, Metadata} from "@/breeding-insight/model/BiResponse";
 import {Program} from "@/breeding-insight/model/Program";
 import {ProgramUser} from "@/breeding-insight/model/ProgramUser";
+import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
+import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
 
 export class UserService {
 
@@ -126,19 +128,28 @@ export class UserService {
     }))
   }
 
-  static getAll(): Promise<User[]> {
-    return new Promise<User[]>(((resolve, reject) => {
+  static getAll(paginationQuery?: PaginationQuery): Promise<[User[], Metadata]> {
+    return new Promise<[User[], Metadata]>(((resolve, reject) => {
 
-      UserDAO.getAll().then((biResponse) => {
+      if (paginationQuery === undefined){
+        paginationQuery = new PaginationQuery(0, 0, true);
+      }
 
+      UserDAO.getAll(paginationQuery).then((biResponse) => {
+
+        biResponse.result.data = PaginationController.mockSortRecords(biResponse.result.data);
         // Parse our users into the vue users param
-        const users = biResponse.result.data.map((user: any) => {
+        let users = biResponse.result.data.map((user: any) => {
           const role: Role | undefined = this.parseSystemRoles(user.systemRoles);
           const programRoles: ProgramUser[] | undefined = this.parseProgramRoles(user.programRoles);
           return new User(user.id, user.name, user.orcid, user.email, role, programRoles);
         });
+        //TODO: Remove when backend pagination is implemented
+        let newPagination;
+        [users, newPagination] = PaginationController.mockPagination(users, paginationQuery!.page, paginationQuery!.pageSize, paginationQuery!.showAll);
+        biResponse.metadata.pagination = newPagination;
 
-        resolve(users);
+        resolve([users, biResponse.metadata]);
 
       }).catch((error) => {
         error['errorMessage'] = this.errorGetUsers;

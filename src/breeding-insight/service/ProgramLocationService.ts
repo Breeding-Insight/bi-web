@@ -17,6 +17,9 @@
 
 import {ProgramLocationDAO} from "@/breeding-insight/dao/ProgramLocationDAO";
 import {ProgramLocation} from "@/breeding-insight/model/ProgramLocation";
+import {Metadata} from "@/breeding-insight/model/BiResponse";
+import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
+import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
 
 export class ProgramLocationService {
 
@@ -73,11 +76,18 @@ export class ProgramLocationService {
     }));
   }
 
-  static getAll(programId: string): Promise<ProgramLocation[]> {
-    return new Promise<ProgramLocation[]>(((resolve, reject) => {
+  static getAll(programId: string, paginationQuery?: PaginationQuery): Promise<[ProgramLocation[], Metadata]> {
+    return new Promise<[ProgramLocation[], Metadata]>(((resolve, reject) => {
+
+      if (paginationQuery === undefined){
+        paginationQuery = new PaginationQuery(0, 0, true);
+      }
 
       if (programId) {
-        ProgramLocationDAO.getAll(programId).then((biResponse) => {
+        ProgramLocationDAO.getAll(programId, paginationQuery).then((biResponse) => {
+
+          //TODO: Remove when backend sorts the data by default
+          biResponse.result.data = PaginationController.mockSortRecords(biResponse.result.data);
 
           let programLocations: ProgramLocation[] = [];
       
@@ -87,8 +97,12 @@ export class ProgramLocationService {
               return new ProgramLocation(programLocation.id, programLocation.programId, programLocation.name);
             });
           }
+          //TODO: Remove when backend pagination is implemented
+          let newPagination;
+          [programLocations, newPagination] = PaginationController.mockPagination(programLocations, paginationQuery!.page, paginationQuery!.pageSize, paginationQuery!.showAll);
+          biResponse.metadata.pagination = newPagination;
       
-          resolve(programLocations);
+          resolve([programLocations, biResponse.metadata]);
       
         }).catch((error) => reject(error));
       

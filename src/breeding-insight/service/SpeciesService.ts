@@ -17,20 +17,26 @@
 
 import {SpeciesDAO} from "@/breeding-insight/dao/SpeciesDAO";
 import {Species} from "@/breeding-insight/model/Species";
+import {Metadata} from "@/breeding-insight/model/BiResponse";
+import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
 
 export class SpeciesService{
 
-  static getAll(): Promise<Species[]> {
-    return new Promise<Species[]>(((resolve, reject) => {
+  static getAll(paginationQuery?: PaginationQuery): Promise<[Species[], Metadata]> {
+    return new Promise<[Species[], Metadata]>(((resolve, reject) => {
 
-      SpeciesDAO.getAll().then((biResponse) => {
+      if (paginationQuery === undefined){
+        paginationQuery = new PaginationQuery(0, 0, true);
+      }
+
+      SpeciesDAO.getAll(paginationQuery).then((biResponse) => {
 
         // Parse our users into the vue users param
         const species = biResponse.result.data.map((species: any) => {
           return new Species(species.id, species.commonName);
         });
 
-        resolve(species);
+        resolve([species, biResponse.metadata]);
 
       }).catch((error) => reject(error));
 

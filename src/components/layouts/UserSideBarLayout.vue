@@ -218,7 +218,7 @@
     }
 
     getPrograms() {
-      ProgramService.getAll().then((programs: Program[]) => {
+      ProgramService.getAll().then(([programs, metadata]) => {
         this.programs = programs;
         // Clear the active program if its not in the list of programs anymore
         if (this.activeProgram){

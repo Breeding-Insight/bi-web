@@ -18,6 +18,7 @@
 import {ProgramLocation} from "@/breeding-insight/model/ProgramLocation";
 import {BiResponse} from "@/breeding-insight/model/BiResponse";
 import * as api from "@/util/api";
+import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
 
 export class ProgramLocationDAO {
 
@@ -57,11 +58,11 @@ export class ProgramLocationDAO {
     return api.call({ url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/locations/${locationId}`, method: 'delete'});
   }
 
-  static getAll(programId: string): Promise<BiResponse> {
+  static getAll(programId: string, paginationQuery: PaginationQuery): Promise<BiResponse> {
 
     return new Promise<BiResponse>(((resolve, reject) => {
 
-      api.call({ url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/locations`, method: 'get' })
+      api.call({ url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/locations`, method: 'get', params: paginationQuery })
         .then((response: any) => {
           const biResponse = new BiResponse(response.data);
           resolve(biResponse);

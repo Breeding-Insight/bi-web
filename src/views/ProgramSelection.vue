@@ -57,6 +57,7 @@
   import { ProgramService } from '../breeding-insight/service/ProgramService';
   import {mapGetters} from "vuex";
   import {User} from "@/breeding-insight/model/User";
+  import {BiResponse} from "@/breeding-insight/model/BiResponse";
 
   @Component({
     components: {},
@@ -76,7 +77,7 @@
     }
 
     getPrograms() {
-      ProgramService.getAll().then((programs: Program[]) => {
+      ProgramService.getAll().then(([programs, metadata]) => {
         this.programs = programs;
         if (programs.length == 1){
           const program: Program = programs[0];

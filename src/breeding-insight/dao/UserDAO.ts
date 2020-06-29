@@ -19,6 +19,7 @@ import {User} from "@/breeding-insight/model/User";
 import * as api from "@/util/api";
 import {BiResponse} from "@/breeding-insight/model/BiResponse";
 import {Role} from "@/breeding-insight/model/Role";
+import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
 
 export class UserDAO {
 
@@ -72,11 +73,11 @@ export class UserDAO {
     return api.call({ url: `${process.env.VUE_APP_BI_API_V1_PATH}/users/${id}`, method: 'delete'});
   }
 
-  static getAll(): Promise<BiResponse> {
+  static getAll(paginationQuery: PaginationQuery): Promise<BiResponse> {
 
     return new Promise<BiResponse>(((resolve, reject) => {
 
-      api.call({ url: `${process.env.VUE_APP_BI_API_V1_PATH}/users`, method: 'get' })
+      api.call({ url: `${process.env.VUE_APP_BI_API_V1_PATH}/users`, method: 'get', params: paginationQuery })
         .then((response: any) => {
           const biResponse = new BiResponse(response.data);
           resolve(biResponse);

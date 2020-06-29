@@ -96,9 +96,13 @@
       v-bind:records.sync="programs"
       v-bind:row-validations="programValidations"
       v-bind:editable="true"
+      v-bind:pagination="programsPagination"
       v-on:submit="updateProgram($event)"
       v-on:remove="displayWarning($event)"
       v-on:show-error-notification="$emit('show-error-notification', $event)"
+      v-on:paginate="paginationController.updatePage($event)"
+      v-on:paginate-toggle-all="paginationController.toggleShowAll()"
+      v-on:paginate-page-size="paginationController.updatePageSize($event)"
     >
       <template v-slot:columns="data">
         <TableRowColumn name="name">
@@ -155,7 +159,7 @@
 </template>
 
 <script lang="ts">
-import {Component, Prop, Vue} from 'vue-property-decorator'
+  import {Component, Prop, Vue, Watch} from 'vue-property-decorator'
 import {PlusCircleIcon} from 'vue-feather-icons'
 import {validationMixin} from 'vuelidate'
 import {required} from 'vuelidate/lib/validators'
@@ -173,6 +177,9 @@ import {SpeciesService} from "@/breeding-insight/service/SpeciesService";
 import NewDataForm from "@/components/forms/NewDataForm.vue";
 import EmtpyTableMessage from "@/components/tables/EmtpyTableMessage.vue";
 import {EventBus} from "@/util/event-bus";
+import {Metadata, Pagination} from "@/breeding-insight/model/BiResponse";
+import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
+  import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
 
 @Component({
   mixins: [validationMixin],
@@ -185,6 +192,7 @@ import {EventBus} from "@/util/event-bus";
 export default class AdminProgramsTable extends Vue {
 
   private programs: Array<Program> = [];
+  private programsPagination?: Pagination = new Pagination();
   programTableHeaders: string[] = ['Name', 'Species', '# Users'];
 
   private deactivateActive: boolean = false;
@@ -195,6 +203,8 @@ export default class AdminProgramsTable extends Vue {
 
   private speciesMap: Map<string, Species> = new Map();
   private deleteProgram: Program | undefined;
+
+  private paginationController: PaginationController = new PaginationController();
 
   private programName: string = "Program Name";
 
@@ -208,10 +218,20 @@ export default class AdminProgramsTable extends Vue {
     this.getSpecies();
   }
 
+  @Watch('paginationController', { deep: true})
   getPrograms() {
 
-    ProgramService.getAll().then((programs: Program[]) => {
-      this.programs = programs;
+    let paginationQuery: PaginationQuery = PaginationController.getPaginationSelections(
+        this.paginationController.currentPage, this.paginationController.pageSize, this.paginationController.showAll);
+    this.paginationController.setCurrentCall(paginationQuery);
+
+    ProgramService.getAll(paginationQuery).then(([programs, metadata]) => {
+
+      // Check that our most recent query is this one
+      if (this.paginationController.matchesCurrentRequest(metadata.pagination)) {
+        this.programs = programs;
+        this.programsPagination = metadata.pagination;
+      }
     }).catch((error) => {
       // Display error that users cannot be loaded
       this.$emit('show-error-notification', 'Error while trying to load programs');
@@ -222,7 +242,7 @@ export default class AdminProgramsTable extends Vue {
 
   getSpecies() {
 
-    SpeciesService.getAll().then((species: Species[]) => {
+    SpeciesService.getAll().then(([species, metadata]) => {
       this.species = species;
       for (const individual of this.species){
         // reassign so vue picks up changes
@@ -252,6 +272,7 @@ export default class AdminProgramsTable extends Vue {
   saveProgram() {
 
     ProgramService.create(this.newProgram).then((program: Program) => {
+      this.paginationController.updatePage(1);
       this.getPrograms();
       this.$emit('show-success-notification', 'Success! ' + this.newProgram.name + ' added.');
       this.newProgramActive = false;
@@ -313,6 +334,8 @@ export default class AdminProgramsTable extends Vue {
   emitProgramChange() {
     EventBus.bus.$emit(EventBus.programChange);
   }
+
+
 
 }
 

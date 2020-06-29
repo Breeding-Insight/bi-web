@@ -107,9 +107,13 @@
       v-bind:records.sync="users"
       v-bind:row-validations="userValidations"
       v-bind:editable="true"
+      v-bind:pagination="usersPagination"
       v-on:submit="updateUser($event)"
       v-on:remove="displayWarning($event)"
       v-on:show-error-notification="$emit('show-error-notification', $event)"
+      v-on:paginate="paginationController.updatePage($event)"
+      v-on:paginate-toggle-all="paginationController.toggleShowAll()"
+      v-on:paginate-page-size="paginationController.updatePageSize($event)"
     >
       <template v-slot:columns="data">
         <TableRowColumn name="name">
@@ -158,7 +162,7 @@
 </template>
 
 <script lang="ts">
-import {Component, Prop, Vue} from 'vue-property-decorator'
+  import {Component, Prop, Vue, Watch} from 'vue-property-decorator'
 import {PlusCircleIcon} from 'vue-feather-icons'
 import {validationMixin} from 'vuelidate'
 import {required, email} from 'vuelidate/lib/validators'
@@ -176,6 +180,9 @@ import {RoleService} from "@/breeding-insight/service/RoleService";
 import { mapGetters } from 'vuex'
 import {Program} from "@/breeding-insight/model/Program";
 import EmptyTableMessage from "@/components/tables/EmtpyTableMessage.vue";
+  import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
+  import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
+  import {Pagination} from "@/breeding-insight/model/BiResponse";
 
 @Component({
   mixins: [validationMixin],
@@ -192,6 +199,7 @@ export default class ProgramUsersTable extends Vue {
 
   private activeProgram?: Program;
   public users: ProgramUser[] = [];
+  private usersPagination?: Pagination = new Pagination();
   userTableHeaders: string[] = ['Name', 'Email', 'Role'];
 
   private deactivateActive: boolean = false;
@@ -204,6 +212,8 @@ export default class ProgramUsersTable extends Vue {
   private rolesMap: Map<string, Role> = new Map();
   private programName: string = "Program Name";
 
+  private paginationController: PaginationController = new PaginationController();
+
   userValidations = {
     name: {required},
     email: {required, email},
@@ -215,10 +225,19 @@ export default class ProgramUsersTable extends Vue {
     this.getUsers();
   }
 
+  @Watch('paginationController', { deep: true})
   getUsers() {
 
-    ProgramUserService.getAll(this.activeProgram!.id!).then((programUsers: ProgramUser[]) => {
-      this.users = programUsers;
+    let paginationQuery: PaginationQuery = PaginationController.getPaginationSelections(
+      this.paginationController.currentPage, this.paginationController.pageSize, this.paginationController.showAll);
+    this.paginationController.setCurrentCall(paginationQuery);
+
+    ProgramUserService.getAll(this.activeProgram!.id!, paginationQuery).then(([programUsers, metadata]) => {
+      if (this.paginationController.matchesCurrentRequest(metadata.pagination)){
+        this.users = programUsers;
+        this.usersPagination = metadata.pagination;
+      }
+
     }).catch((error) => {
       // Display error that users cannot be loaded
       this.$emit('show-error-notification', 'Error while trying to load program users');
@@ -228,7 +247,7 @@ export default class ProgramUsersTable extends Vue {
 
   getRoles() {
 
-    RoleService.getAll().then((roles: Role[]) => {
+    RoleService.getAll().then(([roles, metadata]) => {
       this.roles = roles;
       for (const role of this.roles){
         // reassign so vue picks up changes
@@ -258,6 +277,7 @@ export default class ProgramUsersTable extends Vue {
     this.newUser.program = this.activeProgram;
 
     ProgramUserService.create(this.newUser).then((user: ProgramUser) => {
+      this.paginationController.updatePage(1);
       this.getUsers();
       this.$emit('show-success-notification', 'Success! ' + this.newUser.name + ' added.');
       this.newUser = new ProgramUser();
