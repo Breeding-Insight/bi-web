@@ -1,4 +1,6 @@
 # bi-web
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FBreeding-Insight%2Fbi-web.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2FBreeding-Insight%2Fbi-web?ref=badge_shield)
+
 
 ## Project setup
 Install all dependencies.
@@ -96,3 +98,7 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
 ## Style and layout
 A guide to visual design conventions and writing style can be found at `/styleguide` after authentication. 
 For example, if you are running the app locally on port 8080, the style guide URL would be [http://localhost:8080/styleguide].
+
+
+## License
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FBreeding-Insight%2Fbi-web.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2FBreeding-Insight%2Fbi-web?ref=badge_large)
