@@ -90,13 +90,11 @@ export class ProgramLocationService {
           biResponse.result.data = PaginationController.mockSortRecords(biResponse.result.data);
 
           let programLocations: ProgramLocation[] = [];
-      
-          // TODO: workaround for no program locations for now
-          if (biResponse.result.data) {
-            programLocations = biResponse.result.data.map((programLocation: any) => {
-              return new ProgramLocation(programLocation.id, programLocation.programId, programLocation.name);
-            });
-          }
+
+          programLocations = biResponse.result.data.map((programLocation: any) => {
+            return new ProgramLocation(programLocation.id, programLocation.programId, programLocation.name);
+          });
+
           //TODO: Remove when backend pagination is implemented
           let newPagination;
           [programLocations, newPagination] = PaginationController.mockPagination(programLocations, paginationQuery!.page, paginationQuery!.pageSize, paginationQuery!.showAll);
