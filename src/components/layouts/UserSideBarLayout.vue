@@ -112,7 +112,42 @@
             <a>Germplasm Inventory</a>
           </li>
           <li>
-            <a>Ontology Management</a>
+            <router-link
+              v-bind:to="{name: 'traits', params: {programId: activeProgram.id}}"
+              v-bind:class="{ 'is-active': traitsActive }"
+            >
+              Traits
+              <MoreVerticalIcon
+                v-if="!traitsActive"
+                class="is-pulled-right"
+              />
+              <MoreHorizontalIcon
+                v-if="traitsActive"
+                class="is-pulled-right"
+              />
+            </router-link>
+            <ul v-show="traitsActive">
+              <li>
+                <router-link v-bind:to="{name: 'traits-list', params: {programId: activeProgram.id}}">
+                  Trait List
+                </router-link>
+              </li>
+              <li>
+                <router-link v-bind:to="{name: 'traits-favorites', params: {programId: activeProgram.id}}">
+                  Favorites
+                </router-link>
+              </li>
+              <li>
+                <router-link v-bind:to="{name: 'traits-import', params: {programId: activeProgram.id}}">
+                  Import Traits
+                </router-link>
+              </li>
+              <li>
+                <router-link v-bind:to="{name: 'traits-archived', params: {programId: activeProgram.id}}">
+                  Archived Traits
+                </router-link>
+              </li>
+            </ul>
           </li>
           <li>
             <a>Labels</a>
@@ -184,6 +219,7 @@
     private activeProgram?: Program;
     private activeUser?: User;
     programManagementActive: boolean =  true;
+    traitsActive: boolean = false;
     private programs: Program[] = [];
     private programSelectActive: boolean = false;
 
@@ -235,6 +271,7 @@
     setActiveLinkSubmenus() {
       var path: string = this.$route.path;
       this.programManagementActive = path.includes('/program-management/');
+      this.traitsActive = path.includes('/traits/');
     }
 
     hideProgramSelect() {
