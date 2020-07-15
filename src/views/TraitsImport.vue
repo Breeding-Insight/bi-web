@@ -18,18 +18,91 @@
 <template>
   <div class="traits-import">
     <h1 class="title">Import Traits</h1>
+
+    <template v-if="state == State.CHOOSE_FILE || state == State.FILE_CHOSEN">
+      <article class="message is-info">
+        <div class="message-body">
+          <nav class="level">
+            <div class="level-left">
+              <div class="level-item">
+                <div class="has-text-dark">
+                  <strong>Before You Import...</strong>
+                  <br/>Prepare trait information for import using the provided template.
+                </div>
+              </div>
+            </div>
+            <div class="level-right">
+              <div class="level-item">
+                <div class="has-text-dark has-text-centered is-size-7">
+                  <!-- temporary link until the backend card is done, need github access to our private repo -->
+                  <a href="https://github.com/Breeding-Insight/requirements/raw/master/file-formats/bi_traits_import_template_v01.xls" 
+                    class="button is-outlined is-primary">Download the Trait Import Template</a>
+                  <br/>Template version placeholder
+                </div>
+              </div>
+            </div>
+          </nav>
+        </div>
+      </article>
+
+      <article class="message is-light">
+        <div class="message-body">
+          <nav class="level">
+            <div class="level-left">
+              <div v-if="file" class="level-item">
+                <div class="has-text-dark">
+                  {{file.name}}                  
+                </div>
+              </div>
+              <div class="level-item">
+                <div class="has-text-dark">
+                  <file-selector v-model="file"
+                                 v-bind:fileTypes="'.csv, .xls, .xlsx'">
+                  </file-selector>
+                </div>
+              </div>
+            </div>
+            <div class="level-right">
+              <div class="level-item">
+                <div>
+                  <a v-if="state == State.FILE_CHOSEN" class="button is-primary">Import</a>
+                </div>
+              </div>
+            </div>
+          </nav>
+        </div>
+      </article>
+    </template>
+
   </div>
 </template>
 
 <script lang="ts">
-  import { Component, Prop, Vue } from 'vue-property-decorator'
-  import ProgramsBase from "@/components/program/ProgramsBase.vue";
+  import { Component, Prop, Watch, Vue } from 'vue-property-decorator'
+  import ProgramsBase from "@/components/program/ProgramsBase.vue"
+  import FileSelector from '@/components/forms/FileSelector.vue'
+
+  enum State {
+    CHOOSE_FILE,
+    FILE_CHOSEN,
+    IMPORTING
+  }
 
   @Component({
     components: {
+      FileSelector
     }
   })
   export default class TraitsImport extends ProgramsBase {
+
+    private State = State;
+    private state: State = State.CHOOSE_FILE;
+    private file : File | null = null;
+
+    @Watch('file')
+    onFileChanged(value: string, oldValue: string) {
+      this.state = State.FILE_CHOSEN;
+    }
 
   }
 </script>
