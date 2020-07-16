@@ -17,9 +17,9 @@
 
 <template>
   <div class="traits-import">
-    <h1 class="title">Import Traits</h1>
 
     <template v-if="state == State.CHOOSE_FILE || state == State.FILE_CHOSEN">
+      <h1 class="title">Import Traits</h1>
       <article class="message is-info">
         <div class="message-body">
           <nav class="level">
@@ -44,7 +44,6 @@
           </nav>
         </div>
       </article>
-
       <article class="message is-light">
         <div class="message-body">
           <nav class="level">
@@ -65,13 +64,35 @@
             <div class="level-right">
               <div class="level-item">
                 <div>
-                  <a v-if="state == State.FILE_CHOSEN" class="button is-primary" v-on:click="upload">Import</a>
+                  <a v-if="state == State.FILE_CHOSEN" class="button is-primary has-text-weight-bold" v-on:click="upload">Import</a>
                 </div>
               </div>
             </div>
           </nav>
         </div>
       </article>
+    </template>
+
+    <template v-else-if="state == State.IMPORTING">
+      <h1 class="title">Importing...</h1>
+      <article class="message is-light">
+        <div class="message-body">
+          <div class="columns">
+            <div class="column">
+              <progress-bar v-bind:label="'Importing File ' + this.file.name"
+                            v-bind:estimated-time-text="'May take up to a minute'"
+              />
+            </div>
+            <div class="column">
+              <button class="button is-outlined" v-on:click="abort">Abort</button>
+            </div>
+          </div>
+        </div>
+      </article>
+    </template>
+
+    <template v-else-if="state == State.CURATE">
+       <h1 class="title">Curate and Confirm New Traits</h1>
     </template>
 
   </div>
@@ -83,6 +104,7 @@
 
   import ProgramsBase from "@/components/program/ProgramsBase.vue"
   import FileSelector from '@/components/forms/FileSelector.vue'
+  import ProgressBar from '@/components/forms/ProgressBar.vue'
 
   import {ProgramUpload} from '@/breeding-insight/model/ProgramUpload'
   import {Program} from '@/breeding-insight/model/Program'
@@ -91,40 +113,83 @@
   enum State {
     CHOOSE_FILE,
     FILE_CHOSEN,
-    IMPORTING
+    IMPORTING,
+    CURATE
+  }
+
+  enum Event {
+    FILE_SELECTED,
+    IMPORT_STARTED,
+    ABORT_IMPORT,
+    IMPORT_SUCCESS
   }
 
   @Component({
     components: {
-      FileSelector
+      FileSelector,
+      ProgressBar
     },
     computed: {
     ...mapGetters([
       'activeProgram'
     ])
-  }
+    }
   })
   export default class TraitsImport extends ProgramsBase {
 
     private State = State;
+    private Event = Event;
     private state: State = State.CHOOSE_FILE;
     private file : File | null = null;
     private activeProgram?: Program;
 
     @Watch('file')
-    onFileChanged(value: string, oldValue: string) {
-      this.state = State.FILE_CHOSEN;
+    onFileChanged() {
+      this.updateState(Event.FILE_SELECTED);
     }
 
     upload() {
+      this.updateState(Event.IMPORT_STARTED);
       TraitUploadService.uploadFile(this.activeProgram!.id!, this.file!).then((response) => {
         this.$emit('show-success-notification', 'Success! '+ this.file!.name + ' imported.');
+        this.updateState(Event.IMPORT_SUCCESS);
       }).catch((error) => {
         // proper error handling is not part of ONT-21
         this.$emit('show-error-notification', error.response.statusText);
       });
-
     }
+
+    abort() {
+      // TODO: actually cancel request
+      this.file = null;
+      this.updateState(Event.ABORT_IMPORT);
+    }
+
+    updateState(event: Event) {
+      switch(this.state) {
+        case State.CHOOSE_FILE:
+          if (event == Event.FILE_SELECTED) {
+            this.state = State.FILE_CHOSEN;
+          }
+          break;
+        case State.FILE_CHOSEN:
+          if (event == Event.IMPORT_STARTED) {
+            this.state = State.IMPORTING;
+          }
+          break;
+        case State.IMPORTING:
+          if (event == Event.ABORT_IMPORT) {
+            this.state = State.CHOOSE_FILE;
+          }
+          else if (event == Event.IMPORT_SUCCESS) {
+            this.state = State.CURATE;
+          }
+          break;
+        case State.CURATE:
+          break;
+      }
+    }
+
 
   }
 </script>
