@@ -71,6 +71,7 @@
   }
 </script>
 
+<!-- keeping this scoped since it's only used here -->
 <style scoped>
 .file-select > input[type="file"] {
   display: none;
