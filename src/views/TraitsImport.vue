@@ -65,7 +65,7 @@
             <div class="level-right">
               <div class="level-item">
                 <div>
-                  <a v-if="state == State.FILE_CHOSEN" class="button is-primary">Import</a>
+                  <a v-if="state == State.FILE_CHOSEN" class="button is-primary" v-on:click="upload">Import</a>
                 </div>
               </div>
             </div>
@@ -79,8 +79,14 @@
 
 <script lang="ts">
   import { Component, Prop, Watch, Vue } from 'vue-property-decorator'
+  import { mapGetters } from 'vuex'
+
   import ProgramsBase from "@/components/program/ProgramsBase.vue"
   import FileSelector from '@/components/forms/FileSelector.vue'
+
+  import {ProgramUpload} from '@/breeding-insight/model/ProgramUpload'
+  import {Program} from '@/breeding-insight/model/Program'
+  import {TraitUploadService} from "@/breeding-insight/service/TraitUploadService";
 
   enum State {
     CHOOSE_FILE,
@@ -91,17 +97,33 @@
   @Component({
     components: {
       FileSelector
-    }
+    },
+    computed: {
+    ...mapGetters([
+      'activeProgram'
+    ])
+  }
   })
   export default class TraitsImport extends ProgramsBase {
 
     private State = State;
     private state: State = State.CHOOSE_FILE;
     private file : File | null = null;
+    private activeProgram?: Program;
 
     @Watch('file')
     onFileChanged(value: string, oldValue: string) {
       this.state = State.FILE_CHOSEN;
+    }
+
+    upload() {
+      TraitUploadService.uploadFile(this.activeProgram!.id!, this.file!).then((response) => {
+        this.$emit('show-success-notification', 'Success! '+ this.file!.name + ' imported.');
+      }).catch((error) => {
+        // proper error handling is not part of ONT-21
+        this.$emit('show-error-notification', error.response.statusText);
+      });
+
     }
 
   }
