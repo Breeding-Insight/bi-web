@@ -17,6 +17,10 @@
 
 import {ProgramUpload} from "@/breeding-insight/model/ProgramUpload";
 import { TraitUploadDAO } from '@/breeding-insight/dao/TraitUploadDAO';
+import {Metadata} from "@/breeding-insight/model/BiResponse";
+import {Trait} from "@/breeding-insight/model/Trait";
+import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
+import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
 
 export class TraitUploadService {
 
@@ -27,7 +31,16 @@ export class TraitUploadService {
       if (file !== null) {
         TraitUploadDAO.update(programId, file).then((biResponse) => {
           const result: any = biResponse.result;
-          const upload = new ProgramUpload(result.id);
+
+          let traits: Trait[] = [];
+
+          if (result.data) {
+            traits = biResponse.result.data.map((trait: any) => {
+              return trait as Trait;
+            });
+          }
+
+          const upload = new ProgramUpload(result.id, traits);
           resolve(upload);
 
         }).catch((error) => reject(error));
@@ -38,4 +51,40 @@ export class TraitUploadService {
 
     });
   }
+
+  static getTraits(programId: string, paginationQuery?: PaginationQuery): Promise<[Trait[], Metadata]> {
+    return new Promise<[Trait[], Metadata]>(((resolve, reject) => {
+
+      if (paginationQuery === undefined){
+        paginationQuery = new PaginationQuery(0, 0, true);
+      }
+
+      if (programId) {
+        TraitUploadDAO.getTraitUpload(programId, paginationQuery).then((biResponse) => {
+
+          //TODO: Remove when backend sorts the data by default
+          biResponse.result.data = PaginationController.mockSortRecords(biResponse.result.data);
+          let traits: Trait[] = [];
+      
+          // TODO: workaround for no program users for now
+          if (biResponse.result.data) {
+            traits = biResponse.result.data.map((trait: any) => {
+              return trait as Trait;
+            });
+          }
+          //TODO: Remove when backend pagination is implemented
+          let newPagination;
+          [traits, newPagination] = PaginationController.mockPagination(traits, paginationQuery!.page, paginationQuery!.pageSize, paginationQuery!.showAll);
+          biResponse.metadata.pagination = newPagination;
+
+          resolve([traits, biResponse.metadata]);
+      
+        }).catch((error) => reject(error));
+      
+      } else {
+        reject();
+      }
+    }));
+  }
+
 }

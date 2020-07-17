@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-import {Program} from "@/breeding-insight/model/Program";
 import {BiResponse} from "@/breeding-insight/model/BiResponse";
 import * as api from "@/util/api";
+import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
 
 export class TraitUploadDAO {
 
@@ -35,6 +35,21 @@ export class TraitUploadDAO {
         }).catch((error) => reject(error));
 
     });
+  }
+
+  static getTraitUpload(programId: string, paginationQuery: PaginationQuery): Promise<BiResponse> {
+
+    return new Promise<BiResponse>(((resolve, reject) => {
+
+      api.call({ url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/trait-upload`, method: 'get', params: paginationQuery })
+        .then((response: any) => {
+          const biResponse = new BiResponse(response.data);
+          resolve(biResponse);
+        }).catch((error) => {
+          reject(error);
+        })
+
+    }))
   }
 
 
