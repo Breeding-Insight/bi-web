@@ -17,7 +17,33 @@
 
 <template>
   <div class="traits-import">
-
+    <WarningModal
+      v-bind:active.sync="showAbortModal"
+      v-bind:msg-title="'Abort This Import'"
+      v-on:deactivate="showAbortModal = false"
+    >
+      <section>
+        <p class="has-text-dark">
+          No traits will be added, and the import in progress will be completely removed.
+        </p>
+      </section>
+      <div class="columns">
+        <div class="column is-whole has-text-centered buttons">
+          <button
+            class="button is-danger"
+            v-on:click="handleAbortModal()"
+          >
+            <strong>Yes, abort</strong>
+          </button>
+          <button
+            class="button"
+            v-on:click="showAbortModal = false"
+          >
+            Cancel
+          </button>
+        </div>
+      </div>              
+    </WarningModal>
     <template v-if="state === State.CHOOSE_FILE || state === State.FILE_CHOSEN">
       <h1 class="title">Import Traits</h1>
       <article class="message is-info">
@@ -73,14 +99,42 @@
       </div>
     </template>
 
-    <template v-else-if="state === State.IMPORTING">
+    <template v-if="state === State.IMPORTING || state === State.LOADING">
       <importing-message-box v-bind:file="file" v-on:abort="abort"/>
     </template>
 
-    <template v-else-if="state === State.CURATE">
-      <importing-message-box v-if="!tableLoaded" v-bind:file="file" v-on:abort="abort"/>
-      <h1 v-if="tableLoaded" class="title">Curate and Confirm New Traits</h1>
-      <traits-import-table v-on:loaded="tableLoaded = true"/>  
+    <template v-if="state === State.LOADING || state === State.CURATE">
+      <template v-if="tableLoaded">
+        <h1 class="title">Curate and Confirm New Traits</h1>
+        <article class="message is-success">
+          <div class="message-body">
+            <nav class="level">
+              <div class="level-left">
+                <div class="level-item">
+                  <div class="has-text-dark">
+                    <strong>{{numTraits}} new traits and duplicates not checked yet</strong>
+                    <br/>Duplicate traits, highlighted in yellow and a X icon, will not be imported.
+                    <br/>Traits in this list can be directly edited using the "Show details" link.
+                  </div>
+                </div>
+              </div>
+              <div class="level-right">
+                <div class="level-item">
+                  <div>
+                    <button class="button is-success has-text-weight-bold" v-on:click="confirm">Confirm</button>
+                  </div>
+                </div>
+                <div class="level-item">
+                  <div>
+                    <button class="button is-outlined" v-on:click="showAbortModal = true">Abort</button>
+                  </div>
+                </div>
+              </div>
+            </nav>
+          </div>
+        </article>
+      </template>
+      <traits-import-table v-on:loaded="tableLoadedComplete"/>
     </template>
 
   </div>
@@ -94,6 +148,7 @@
   import FileSelector from '@/components/forms/FileSelector.vue'
   import TraitsImportTable from "@/components/trait/TraitsImportTable.vue";
   import ImportingMessageBox from "@/components/trait/ImportingMessageBox.vue";
+  import WarningModal from '@/components/modals/WarningModal.vue'
 
   import {ProgramUpload} from '@/breeding-insight/model/ProgramUpload'
   import {Program} from '@/breeding-insight/model/Program'
@@ -103,6 +158,7 @@
     CHOOSE_FILE,
     FILE_CHOSEN,
     IMPORTING,
+    LOADING,
     CURATE
   }
 
@@ -110,14 +166,17 @@
     FILE_SELECTED,
     IMPORT_STARTED,
     ABORT_IMPORT,
-    IMPORT_SUCCESS
+    IMPORT_SUCCESS,
+    IMPORT_ERROR,
+    TABLE_LOADED
   }
 
   @Component({
     components: {
       FileSelector,
       TraitsImportTable,
-      ImportingMessageBox
+      ImportingMessageBox,
+      WarningModal
     },
     computed: {
     ...mapGetters([
@@ -133,30 +192,51 @@
     private file : File | null = null;
     private activeProgram?: Program;
     private tableLoaded = false;
+    private numTraits = 0;
+    private showAbortModal = false;
 
     @Watch('file')
-    onFileChanged() {
-      this.updateState(Event.FILE_SELECTED);
+    onFileChanged(value: string, oldValue: string) {
+      if (oldValue === null && value !== null) {
+        this.updateState(Event.FILE_SELECTED);
+      }
     }
 
     upload() {
       this.updateState(Event.IMPORT_STARTED);
       TraitUploadService.uploadFile(this.activeProgram!.id!, this.file!).then((response) => {
-        //this.$emit('show-success-notification', 'Success! '+ this.file!.name + ' imported.');
+        this.numTraits = response.data!.length;
         this.updateState(Event.IMPORT_SUCCESS);
       }).catch((error) => {
         // proper error handling is not part of ONT-21
         this.$emit('show-error-notification', error.response.statusText);
+        this.updateState(Event.IMPORT_ERROR);
       });
     }
 
     abort() {
       // TODO: actually cancel request
-      this.file = null;
+      this.$emit('show-info-notification', 'Import cancelled');
       this.updateState(Event.ABORT_IMPORT);
     }
 
+    handleAbortModal() {
+      this.showAbortModal = false;
+      // TODO: call DELETE /trait-upload
+      this.abort();
+    }
+
+    tableLoadedComplete() {
+      this.tableLoaded = true;
+      this.updateState(Event.TABLE_LOADED);
+    }
+
+    confirm() {
+      //TODO POST /traits
+    }
+
     updateState(event: Event) {
+      console.log(event);
       switch(this.state) {
         case State.CHOOSE_FILE:
           if (event === Event.FILE_SELECTED) {
@@ -173,12 +253,42 @@
             this.state = State.CHOOSE_FILE;
           }
           else if (event === Event.IMPORT_SUCCESS) {
+            this.state = State.LOADING;
+          }
+          else if (event === Event.IMPORT_ERROR) {
+            // TODO: transition to error page view
+            this.state = State.CHOOSE_FILE;
+          }
+          break;
+        case State.LOADING:
+          if (event === Event.ABORT_IMPORT) {
+            this.state = State.CHOOSE_FILE;
+          }
+          if (event === Event.TABLE_LOADED) {
             this.state = State.CURATE;
           }
           break;
         case State.CURATE:
+          if (event === Event.ABORT_IMPORT) {
+            this.state = State.CHOOSE_FILE;
+          }
           break;
       }
+      this.onEnterActions();
+    }
+
+    onEnterActions() {
+      switch(this.state) {
+        case State.CHOOSE_FILE:
+          this.onEnterChooseFile();
+          break;
+      } 
+    }
+
+    onEnterChooseFile() {
+      console.log('onEnterChooseFile');
+      this.file = null;
+      this.tableLoaded = false;
     }
 
 
