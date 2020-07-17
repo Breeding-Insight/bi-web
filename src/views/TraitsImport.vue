@@ -18,7 +18,7 @@
 <template>
   <div class="traits-import">
 
-    <template v-if="state == State.CHOOSE_FILE || state == State.FILE_CHOSEN">
+    <template v-if="state === State.CHOOSE_FILE || state === State.FILE_CHOSEN">
       <h1 class="title">Import Traits</h1>
       <article class="message is-info">
         <div class="message-body">
@@ -44,8 +44,8 @@
           </nav>
         </div>
       </article>
-      <article class="message is-light">
-        <div class="message-body">
+      <div class="box">
+        <article>
           <nav class="level">
             <div class="level-left">
               <div v-if="file" class="level-item">
@@ -56,7 +56,7 @@
               <div class="level-item">
                 <div class="has-text-dark">
                   <file-selector v-model="file"
-                                 v-bind:fileTypes="'.csv, .xls, .xlsx'">
+                                  v-bind:fileTypes="'.csv, .xls, .xlsx'">
                   </file-selector>
                 </div>
               </div>
@@ -64,35 +64,23 @@
             <div class="level-right">
               <div class="level-item">
                 <div>
-                  <a v-if="state == State.FILE_CHOSEN" class="button is-primary has-text-weight-bold" v-on:click="upload">Import</a>
+                  <a v-if="state === State.FILE_CHOSEN" class="button is-primary has-text-weight-bold" v-on:click="upload">Import</a>
                 </div>
               </div>
             </div>
           </nav>
-        </div>
-      </article>
+        </article>
+      </div>
     </template>
 
-    <template v-else-if="state == State.IMPORTING">
-      <h1 class="title">Importing...</h1>
-      <article class="message is-light">
-        <div class="message-body">
-          <div class="columns">
-            <div class="column">
-              <progress-bar v-bind:label="'Importing File ' + this.file.name"
-                            v-bind:estimated-time-text="'May take up to a minute'"
-              />
-            </div>
-            <div class="column">
-              <button class="button is-outlined" v-on:click="abort">Abort</button>
-            </div>
-          </div>
-        </div>
-      </article>
+    <template v-else-if="state === State.IMPORTING">
+      <importing-message-box v-bind:file="file" v-on:abort="abort"/>
     </template>
 
-    <template v-else-if="state == State.CURATE">
-       <h1 class="title">Curate and Confirm New Traits</h1>
+    <template v-else-if="state === State.CURATE">
+      <importing-message-box v-if="!tableLoaded" v-bind:file="file" v-on:abort="abort"/>
+      <h1 v-if="tableLoaded" class="title">Curate and Confirm New Traits</h1>
+      <traits-import-table v-on:loaded="tableLoaded = true"/>  
     </template>
 
   </div>
@@ -104,12 +92,13 @@
 
   import ProgramsBase from "@/components/program/ProgramsBase.vue"
   import FileSelector from '@/components/forms/FileSelector.vue'
-  import ProgressBar from '@/components/forms/ProgressBar.vue'
+  import TraitsImportTable from "@/components/trait/TraitsImportTable.vue";
+  import ImportingMessageBox from "@/components/trait/ImportingMessageBox.vue";
 
   import {ProgramUpload} from '@/breeding-insight/model/ProgramUpload'
   import {Program} from '@/breeding-insight/model/Program'
   import {TraitUploadService} from "@/breeding-insight/service/TraitUploadService";
-
+  
   enum State {
     CHOOSE_FILE,
     FILE_CHOSEN,
@@ -127,7 +116,8 @@
   @Component({
     components: {
       FileSelector,
-      ProgressBar
+      TraitsImportTable,
+      ImportingMessageBox
     },
     computed: {
     ...mapGetters([
@@ -142,6 +132,7 @@
     private state: State = State.CHOOSE_FILE;
     private file : File | null = null;
     private activeProgram?: Program;
+    private tableLoaded = false;
 
     @Watch('file')
     onFileChanged() {
@@ -151,7 +142,7 @@
     upload() {
       this.updateState(Event.IMPORT_STARTED);
       TraitUploadService.uploadFile(this.activeProgram!.id!, this.file!).then((response) => {
-        this.$emit('show-success-notification', 'Success! '+ this.file!.name + ' imported.');
+        //this.$emit('show-success-notification', 'Success! '+ this.file!.name + ' imported.');
         this.updateState(Event.IMPORT_SUCCESS);
       }).catch((error) => {
         // proper error handling is not part of ONT-21
@@ -168,20 +159,20 @@
     updateState(event: Event) {
       switch(this.state) {
         case State.CHOOSE_FILE:
-          if (event == Event.FILE_SELECTED) {
+          if (event === Event.FILE_SELECTED) {
             this.state = State.FILE_CHOSEN;
           }
           break;
         case State.FILE_CHOSEN:
-          if (event == Event.IMPORT_STARTED) {
+          if (event === Event.IMPORT_STARTED) {
             this.state = State.IMPORTING;
           }
           break;
         case State.IMPORTING:
-          if (event == Event.ABORT_IMPORT) {
+          if (event === Event.ABORT_IMPORT) {
             this.state = State.CHOOSE_FILE;
           }
-          else if (event == Event.IMPORT_SUCCESS) {
+          else if (event === Event.IMPORT_SUCCESS) {
             this.state = State.CURATE;
           }
           break;
