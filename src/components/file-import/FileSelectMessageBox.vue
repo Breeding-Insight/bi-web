@@ -37,7 +37,7 @@
           <div class="level-right">
             <div class="level-item">
               <div>
-                <a v-if="fileChosen" class="button is-primary has-text-weight-bold" v-on:click="$emit('import')">Import</a>
+                <a v-if="file" class="button is-primary has-text-weight-bold" v-on:click="$emit('import')">Import</a>
               </div>
             </div>
           </div>
@@ -68,11 +68,8 @@
     private fileTypes!: string[];
 
     @Watch('file')
-    onFileChanged(value: string, oldValue: string) {
-      if (oldValue === null && value !== null) {
-        this.fileChosen = true;
-        this.$emit('input', value);
-      }
+    onFileChanged() {
+      this.$emit('input', this.file);
     }
 
   }
