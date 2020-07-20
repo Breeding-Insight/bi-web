@@ -45,14 +45,13 @@
       </div>              
     </warning-modal>
 
-    <section v-if="state === ImportState.CHOOSE_FILE || state === ImportState.FILE_CHOSEN">
+    <template v-if="state === ImportState.CHOOSE_FILE || state === ImportState.FILE_CHOSEN">
       <h1 class="title">Import Traits</h1>
-      <trait-import-template-message-box/>
-      
+      <trait-import-template-message-box class="mb-5"/>
       <file-select-message-box v-model="file" 
                                v-bind:fileTypes="'.csv, .xls, .xlsx'"
-                               v-on:import="importService.send(ImportEvent.IMPORT_STARTED)"/>
-    </section>
+                               v-on:import="importService.send(ImportEvent.IMPORT_STARTED)"/>        
+    </template>
     
     <template v-if="state === ImportState.IMPORTING || state === ImportState.LOADING">
       <h1 class="title">Importing...</h1>
@@ -64,7 +63,8 @@
         <h1 class="title">Curate and Confirm New Traits</h1>
         <confirm-import-message-box v-bind:num-traits="numTraits" 
                                     v-on:abort="showAbortModal = true" 
-                                    v-on:confirm="importService.send(ImportEvent.CONFIRMED)"/>
+                                    v-on:confirm="importService.send(ImportEvent.CONFIRMED)"
+                                    class="mb-4"/>
       </template>
       <traits-import-table v-on:loaded="importService.send(ImportEvent.TABLE_LOADED)"/>
     </template>

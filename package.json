@@ -36,7 +36,7 @@
     "@types/vuelidate": "^0.7.10",
     "@xstate/fsm": "^1.4.0",
     "buefy": "^0.8.8",
-    "bulma": "^0.8.0",
+    "bulma": "^0.9.0",
     "bulma-divider": "^0.2.0",
     "core-js": "^3.4.3",
     "focus-trap": "^5.1.0",
