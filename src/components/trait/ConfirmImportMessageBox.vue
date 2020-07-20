@@ -24,7 +24,7 @@
             <div class="level-item">
               <div class="has-text-dark">
                 <strong>{{numTraits}} new traits and duplicates not checked yet</strong>
-                <br/>Duplicate traits, highlighted in yellow and a X icon, will not be imported.
+                <br/>Duplicate traits, highlighted in yellow and a <alert-triangle-icon size="1.2x" class="icon-align"/> icon, will not be imported.
                 <br/>Traits in this list can be directly edited using the "Show details" link.
               </div>
             </div>
@@ -49,9 +49,11 @@
 
 <script lang="ts">
   import { Component, Prop, Vue } from 'vue-property-decorator'
+  import {AlertTriangleIcon} from 'vue-feather-icons'
 
   @Component({
     components: {
+      AlertTriangleIcon
     }
   })
   export default class ConfirmImportMessageBox extends Vue {
@@ -70,4 +72,9 @@
   }
 </script>
 
-
+<!-- keeping this scoped since it's only used here as a one-off -->
+<style scoped>
+.icon-align {
+  margin-bottom: -0.25em;
+}
+</style>
