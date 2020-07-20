@@ -223,7 +223,6 @@
 
     created() {
       this.importService.subscribe(state => {
-        console.log("new state: " + state.value);
         this.state = ImportState[state.value as keyof typeof ImportState];
       });
       this.importService.start();
