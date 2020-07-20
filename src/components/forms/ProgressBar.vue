@@ -18,8 +18,7 @@
 <template>
   <div class="progress-bar">
     <label for="progress" class="has-text-weight-bold">{{label}}</label>
-    <p/> <!-- not the greatest, let me know any css recommendations -->
-    <progress class="progress is-primary" id="progress" :value=value :max=max>{{valuePercent}}</progress>
+    <progress class="mt-4 progress is-primary" id="progress" :value=value :max=max>{{valuePercent}}</progress>
     {{estimatedTimeText}}
   </div>
 </template>
