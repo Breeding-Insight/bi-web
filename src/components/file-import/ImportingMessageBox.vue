@@ -18,7 +18,7 @@
 <template>
   <div class="importing">
     <div class="box">
-      <article class="message is-light">
+      <article>
         <div class="columns">
           <div class="column">
             <progress-bar v-bind:label="'Importing File ' + this.file.name"
