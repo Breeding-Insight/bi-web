@@ -1,0 +1,257 @@
+<!--
+  - See the NOTICE file distributed with this work for additional information
+  - regarding copyright ownership.
+  -
+  - Licensed under the Apache License, Version 2.0 (the "License");
+  - you may not use this file except in compliance with the License.
+  - You may obtain a copy of the License at
+  -
+  -     http://www.apache.org/licenses/LICENSE-2.0
+  -
+  - Unless required by applicable law or agreed to in writing, software
+  - distributed under the License is distributed on an "AS IS" BASIS,
+  - WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  - See the License for the specific language governing permissions and
+  - limitations under the License.
+  -->
+
+<template>
+  <section id="traitTableLabel">
+    <WarningModal
+      v-bind:active.sync="deactivateActive"
+      v-bind:msg-title="deactivateWarningTitle"
+      v-on:deactivate="deactivateActive = false"
+    >
+      <section>
+        <p class="has-text-dark">
+          Program-related data referencing this trait will not be affected by this change.
+        </p>
+      </section>
+      <div class="columns">
+        <div class="column is-whole has-text-centered buttons">
+          <button v-on:click="modalDeleteHandler()" class="button is-danger"><strong>Yes, remove</strong></button>
+          <button v-on:click="deactivateActive = false" class="button">Cancel</button>
+        </div>
+      </div>              
+    </WarningModal>
+
+    <button
+      v-show="!newTraitActive & traits.length > 0"
+      class="button is-primary has-text-weight-bold is-pulled-right"
+      v-on:click="newTraitActive = true"
+    >
+      <span class="icon is-small">
+        <PlusCircleIcon
+          size="1.5x"
+          aria-hidden="true"
+        />
+      </span>
+      <span>
+        New Trait
+      </span>
+    </button>
+
+    <NewDataForm
+      v-if="newTraitActive"
+      v-bind:row-validations="traitValidations"
+      v-bind:new-record.sync="newTrait"
+      v-on:submit="saveTrait"
+      v-on:cancel="cancelNewTrait"
+      v-on:show-error-notification="$emit('show-error-notification', $event)"
+    >
+      <template v-slot="validations">
+        <div class="columns">
+          <div class="column is-two-fifths">
+            <BasicInputField
+              v-model="newTrait.name"
+              v-bind:validations="validations.name"
+              v-bind:field-name="'Name'"
+              v-bind:field-help="'Trait name as preferred. All Unicode special characters accepted.'"
+              :placeholder="'New Trait Name'"
+            />
+          </div>
+        </div>
+      </template>
+    </NewDataForm>
+
+    <BaseTable
+      v-bind:headers="traitTableHeaders"
+      v-bind:records.sync="traits"
+      v-bind:row-validations="traitValidations"
+      v-bind:editable="true"
+      v-on:submit="updateTrait($event)"
+      v-on:remove="displayWarning($event)"
+      v-on:show-error-notification="$emit('show-error-notification', $event)"
+    >
+      <template v-slot:columns="data">
+        <TableRowColumn name="name">
+          {{ data.name }}
+        </TableRowColumn>
+        <TableRowColumn name="level">
+          {{ data.level }}
+        </TableRowColumn>
+        <TableRowColumn name="method">
+          {{ data.method }}
+        </TableRowColumn>
+        <TableRowColumn name="scale">
+          {{ data.scale }}
+        </TableRowColumn>        
+      </template>
+      <template v-slot:edit="{editData, validations}">
+        <div class="columns">
+          <div class="column is-two-fifths">
+            <BasicInputField
+              v-model="editData.name"
+              v-bind:validations="validations.name"
+              v-bind:field-name="'Name'"
+              v-bind:field-help="'Trait name as preferred. All Unicode special characters accepted.'"
+            />
+          </div>
+        </div>
+      </template>
+      <template v-slot:emptyMessage>
+        <EmptyTableMessage
+          v-bind:button-view-toggle="!newTraitActive"
+          v-bind:button-text="'New Trait'"
+          v-on:newClick="newTraitActive = true"
+        >
+          <p class="has-text-weight-bold">
+            No traits are currently defined for this program.
+          </p>
+          Traits are used in trials and experiments.<br>
+          Any traits created when setting up trials and experiments will appear in this list automatically.<br>
+          You can also add, edit, and delete traits from this panel.  
+        </EmptyTableMessage>
+      </template>
+    </BaseTable>
+  </section>
+</template>
+
+<script lang="ts">
+import {Component, Prop, Vue} from 'vue-property-decorator'
+import WarningModal from '@/components/modals/WarningModal.vue'
+import {PlusCircleIcon} from 'vue-feather-icons'
+import {validationMixin} from 'vuelidate';
+import {Validations} from 'vuelidate-property-decorators'
+import {required} from 'vuelidate/lib/validators'
+import {Trait} from '@/breeding-insight/model/Trait'
+import { mapGetters } from 'vuex'
+import {Program} from "@/breeding-insight/model/Program";
+import NewDataForm from '@/components/forms/NewDataForm.vue'
+import BasicInputField from "@/components/forms/BasicInputField.vue";
+import BaseTable from "@/components/tables/BaseTable.vue";
+import {TraitService} from "@/breeding-insight/service/TraitService";
+import EmptyTableMessage from "@/components/tables/EmtpyTableMessage.vue";
+import TableRowColumn from "@/components/tables/TableRowColumn.vue";
+
+@Component({
+  mixins: [validationMixin],
+  components: { NewDataForm, BasicInputField, BaseTable, EmptyTableMessage, TableRowColumn,
+                WarningModal, 
+                PlusCircleIcon },
+  computed: {
+    ...mapGetters([
+      'activeProgram'
+    ])
+  }
+})
+export default class TraitTable extends Vue {
+
+  private traitTableHeaders: string[] = ['Name', '# Experiments'];
+  private activeProgram?: Program;
+  private traits: Trait[] = [];
+  private deactivateActive: boolean = false;
+  private newTraitActive: boolean = false;
+  private deactivateWarningTitle: string = "Remove trait from Program name?";
+  private newTrait = new Trait();
+  private traitName: string = "Program Trait";
+  private deleteTrait?: Trait;
+
+  traitValidations = {
+    name: {required}
+  }
+
+  mounted() {
+    this.getTraits();
+  }
+
+  getTraits() {
+    TraitService.getAll(this.activeProgram!.id!).then((traits: Trait[]) => {
+      this.traits = traitss;
+    }).catch((error) => {
+      // Display error that traits cannot be loaded
+      this.$emit('show-error-notification', 'Error while trying to load traits');
+      throw error;
+    });
+  }
+
+  createTrait() {
+    this.newTraitActive = true;
+  }
+
+  updateTrait(updatedTrait: Trait) {
+
+    TraitService.update(updatedTrait).then(() => {
+      this.getTraits();
+      this.$emit('show-success-notification', 'Success! ' + updatedTrait.name + ' updated.');
+    }).catch(() => {
+      this.$emit('show-error-notification', 'Error updating trait');
+    });
+
+  }
+
+  saveTrait() {
+
+    this.newTrait.programId = this.activeProgram!.id;
+
+    TraitService.create(this.newTrait).then((trait: Trait) => {
+      this.getTraitss();
+      this.$emit('show-success-notification', 'Success! ' + this.Trait.name + ' added.');
+      this.newTrait = new Trait();
+      this.newTraitActive = false;
+    }).catch(() => {
+      this.$emit('show-error-notification', 'Error while creating trait, ' + this.newTrait.name);
+    })
+
+  }
+
+  cancelNewTrait() {
+    this.newTrait = new ProgramTrait();
+    this.newTraitActive = false;
+  }
+
+  displayWarning(trait: Trait) {
+
+    if (trait){
+      this.deleteTrait = trait;
+      this.deactivateWarningTitle = "Remove " + trait.name + " from " + this.activeProgram!.name + "?";
+      this.deactivateActive = true;
+    } else {
+      Vue.$log.error('Could not find object to delete')
+    }
+  }
+
+  modalDeleteHandler() {
+    this.deactivateActive = false;
+
+    if (this.deleteTrait) {
+      if (this.deleteTrait.id) {
+        if (this.deleteTrait.name) {
+          const deleteId: string = this.deleteTrait.id;
+          const deleteName: string = this.deleteTrait.name;
+          TraitService.delete(this.activeProgram!.id!, deleteId).then(() => {
+            this.getTraitss();
+            this.$emit('show-success-notification', `${deleteName} removed from program`);
+          }).catch(() => {
+            this.$emit('show-error-notification', `Unable to remove trait, ${deleteName}.`);
+          })
+          return;
+        }
+      }
+    }
+    this.$emit('show-error-notification', `Unable to remove trait`);
+  }
+
+}
+
+</script>
