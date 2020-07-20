@@ -20,12 +20,14 @@ import {Method} from "@/breeding-insight/model/Method";
 import {Scale} from "@/breeding-insight/model/Scale";
 
 export class Trait {
+  id?: string;
   traitName?: string;
   programObservationLevel?: ProgramObservationLevel;
   method?: Method;
   scale?: Scale;
 
-  constructor(traitName?:string, 
+  constructor(id?:string,
+              traitName?:string, 
               programObservationLevel?: ProgramObservationLevel,
               method?: Method,
               scale?: Scale
