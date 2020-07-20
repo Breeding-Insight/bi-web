@@ -48,10 +48,8 @@
             No traits in file.
           </p>
           <p>
-            You can add a user to your program from this panel. When you remove a user from your
-            program, their account and membership in other programs is not affected.
+            Add traits to the file to see data here.
           </p>
-          <p>You can add, edit, and delete users from your program from this panel.</p>
         </EmptyTableMessage>
       </template>
     </BaseTable>

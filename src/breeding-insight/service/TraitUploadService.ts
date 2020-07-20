@@ -34,11 +34,9 @@ export class TraitUploadService {
 
           let traits: Trait[] = [];
 
-          if (result.data) {
-            traits = biResponse.result.data.map((trait: any) => {
-              return trait as Trait;
-            });
-          }
+          traits = biResponse.result.data.map((trait: any) => {
+            return trait as Trait;
+          });
 
           const upload = new ProgramUpload(result.id, traits);
           resolve(upload);
@@ -66,12 +64,10 @@ export class TraitUploadService {
           biResponse.result.data = PaginationController.mockSortRecords(biResponse.result.data);
           let traits: Trait[] = [];
       
-          // TODO: workaround for no program users for now
-          if (biResponse.result.data) {
-            traits = biResponse.result.data.map((trait: any) => {
-              return trait as Trait;
-            });
-          }
+          traits = biResponse.result.data.map((trait: any) => {
+            return trait as Trait;
+          });
+
           //TODO: Remove when backend pagination is implemented
           let newPagination;
           [traits, newPagination] = PaginationController.mockPagination(traits, paginationQuery!.page, paginationQuery!.pageSize, paginationQuery!.showAll);
