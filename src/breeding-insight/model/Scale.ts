@@ -15,13 +15,14 @@
  * limitations under the License.
  */
 
+import {Category} from "@/breeding-insight/model/Category";
+
 export class Scale {
   scaleName?: string;
   dataType?: string;
-  categories?: List<Category>;
-  
+  categories?: Array<Category>;
 
-  constructor(scaleName?:string, dataType?:string, categories?:List<Category>) {
+  constructor(scaleName?:string, dataType?:string, categories?:Array<Category>) {
     this.scaleName = scaleName;
     this.dataType = dataType;
     this.categories = categories;

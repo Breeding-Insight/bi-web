@@ -25,7 +25,6 @@ export class Trait {
   method?: Method;
   scale?: Scale;
 
-
   constructor(traitName?:string, 
               programObservationLevel?: ProgramObservationLevel,
               method?: Method,

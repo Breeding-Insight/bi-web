@@ -17,21 +17,20 @@
 
 <template>
   <div class="importing">
-    <h1 class="title">Importing...</h1>
+    <div class="box">
       <article class="message is-light">
-        <div class="message-body">
-          <div class="columns">
-            <div class="column">
-              <progress-bar v-bind:label="'Importing File ' + this.file.name"
-                            v-bind:estimated-time-text="'May take up to a minute'"
-              />
-            </div>
-            <div class="column">
-              <button class="button is-outlined" v-on:click="abort">Abort</button>
-            </div>
+        <div class="columns">
+          <div class="column">
+            <progress-bar v-bind:label="'Importing File ' + this.file.name"
+                          v-bind:estimated-time-text="'May take up to a minute'"
+            />
+          </div>
+          <div class="column">
+            <button class="button is-outlined" v-on:click="abort">Abort</button>
           </div>
         </div>
       </article>
+    </div>
   </div>
 </template>
 
