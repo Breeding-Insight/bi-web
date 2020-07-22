@@ -104,14 +104,12 @@ export class ProgramUserService {
           //TODO: Remove when backend sorts the data by default
           biResponse.result.data = PaginationController.mockSortRecords(biResponse.result.data);
           let programUsers: ProgramUser[] = [];
-      
-          // TODO: workaround for no program users for now
-          if (biResponse.result.data) {
-            programUsers = biResponse.result.data.map((programUser: any) => {
-              const newProgram = new Program(programUser.program.id, programUser.program.name);
-              return new ProgramUser(programUser.user.id, programUser.user.name, programUser.user.email, programUser.roles[0].id, newProgram, programUser.active);
-            });
-          }
+
+          programUsers = biResponse.result.data.map((programUser: any) => {
+            const newProgram = new Program(programUser.program.id, programUser.program.name);
+            return new ProgramUser(programUser.user.id, programUser.user.name, programUser.user.email, programUser.roles[0].id, newProgram, programUser.active);
+          });
+
           //TODO: Remove when backend pagination is implemented
           let newPagination;
           [programUsers, newPagination] = PaginationController.mockPagination(programUsers, paginationQuery!.page, paginationQuery!.pageSize, paginationQuery!.showAll);

@@ -88,14 +88,12 @@ export class ProgramService {
         biResponse.result.data = PaginationController.mockSortRecords(biResponse.result.data);
 
         let programs: Program[] = [];
-    
-        // TODO: workaround for no programs for now
-        if (biResponse.result.data) {
-          // Parse our programs into the vue programs param
-          programs = biResponse.result.data.map((program: any) => {
-            return new Program(program.id, program.name, program.species.id);
-          });
-        }
+
+        // Parse our programs into the vue programs param
+        programs = biResponse.result.data.map((program: any) => {
+          return new Program(program.id, program.name, program.species.id);
+        });
+
         //TODO: Remove when backend pagination is implemented
         let newPagination;
         [programs, newPagination] = PaginationController.mockPagination(programs, paginationQuery!.page, paginationQuery!.pageSize, paginationQuery!.showAll);
