@@ -17,34 +17,41 @@
 
 import {TraitDAO} from "@/breeding-insight/dao/TraitDAO";
 import {Trait} from "@/breeding-insight/model/Trait";
+import {Metadata} from "@/breeding-insight/model/BiResponse";
+import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
+import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
 
 export class TraitService {
 
-  static getAll(programId: string): Promise<Trait[]> {
-    return new Promise<Trait[]>(((resolve, reject) => {
+    static getAll(programId: string, paginationQuery?: PaginationQuery): Promise<Trait[], Metadata> {
+        return new Promise<Trait[], Metadata>(((resolve, reject) => {
+
+      if (paginationQuery === undefined){
+        paginationQuery = new PaginationQuery(0, 0, true);
+      }
 
       if (programId) {
-        TraitDAO.getAll(programId).then((biResponse) => {
+          TraitDAO.getAll(programId, paginationQuery).then((biResponse) => {
 
+          //TODO: Remove when pagination implemented on backend
+          biResponse.result.data = PaginationController.mockSortRecords(biResponse.result.data);
           let traits: Trait[] = [];
-      
+
           if (biResponse.result.data) {
             traits = biResponse.result.data.map((trait: any) => {
-              return new Trait(
-                trait.id,
-                programId,
-                trait.traitName,
-                trait.programObservationLevel.name,
-                trait.method.methodName,
-                trait.scale.scaleName
-              );
+                return trait as Trait;
             });
           }
-      
-          resolve(trait);
-      
+
+          //TODO: Remove when backend pagination is implemented
+          let newPagination;
+          [traits, newPagination] = PaginationController.mockPagination(traits, paginationQuery!.page, paginationQuery!.pageSize, paginationQuery!.showAll);
+          biResponse.metadata.pagination = newPagination;
+
+              resolve([traits, biResponse.metadata]);
+
         }).catch((error) => reject(error));
-      
+
       } else {
         reject();
       }

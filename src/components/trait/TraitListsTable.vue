@@ -78,23 +78,27 @@
       v-bind:headers="traitTableHeaders"
       v-bind:records.sync="traits"
       v-bind:row-validations="traitValidations"
-      v-bind:editable="true"
+      v-bind:editable="false"
+      v-bind:pagination="traitsPagination"
       v-on:submit="updateTrait($event)"
       v-on:remove="displayWarning($event)"
       v-on:show-error-notification="$emit('show-error-notification', $event)"
+      v-on:paginate="paginationController.updatePage($event)"
+      v-on:paginate-toggle-all="paginationController.toggleShowAll()"
+      v-on:paginate-page-size="paginationController.updatePageSize($event)"
     >
       <template v-slot:columns="data">
         <TableRowColumn name="name">
-          {{ data.name }}
+          {{ data.traitName }}
         </TableRowColumn>
         <TableRowColumn name="level">
-          {{ data.level }}
+          {{ data.programObservationLevel.name }}
         </TableRowColumn>
         <TableRowColumn name="method">
-          {{ data.method }}
+          {{ data.method.methodName }}
         </TableRowColumn>
         <TableRowColumn name="scale">
-          {{ data.scale }}
+          {{ data.scale.scaleName }}
         </TableRowColumn>        
       </template>
       <template v-slot:edit="{editData, validations}">
@@ -118,9 +122,7 @@
           <p class="has-text-weight-bold">
             No traits are currently defined for this program.
           </p>
-          Traits are used in trials and experiments.<br>
-          Any traits created when setting up trials and experiments will appear in this list automatically.<br>
-          You can also add, edit, and delete traits from this panel.  
+          Create new traits by clicking either "New Trait" or "Import Traits".
         </EmptyTableMessage>
       </template>
     </BaseTable>
@@ -128,7 +130,7 @@
 </template>
 
 <script lang="ts">
-import {Component, Prop, Vue} from 'vue-property-decorator'
+import {Component, Prop, Vue, Watch} from 'vue-property-decorator'
 import WarningModal from '@/components/modals/WarningModal.vue'
 import {PlusCircleIcon} from 'vue-feather-icons'
 import {validationMixin} from 'vuelidate';
@@ -143,6 +145,9 @@ import BaseTable from "@/components/tables/BaseTable.vue";
 import {TraitService} from "@/breeding-insight/service/TraitService";
 import EmptyTableMessage from "@/components/tables/EmtpyTableMessage.vue";
 import TableRowColumn from "@/components/tables/TableRowColumn.vue";
+import {Metadata, Pagination} from "@/breeding-insight/model/BiResponse";
+import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
+import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
 
 @Component({
   mixins: [validationMixin],
@@ -157,9 +162,11 @@ import TableRowColumn from "@/components/tables/TableRowColumn.vue";
 })
 export default class TraitTable extends Vue {
 
-  private traitTableHeaders: string[] = ['Name', '# Experiments'];
+  private traitTableHeaders: string[] = ['Name', 'Level', 'Method', 'Scale'];
   private activeProgram?: Program;
   private traits: Trait[] = [];
+  private traitsPagination?: Pagination = new Pagination();
+  private paginationController: PaginationController = new PaginationController();
   private deactivateActive: boolean = false;
   private newTraitActive: boolean = false;
   private deactivateWarningTitle: string = "Remove trait from Program name?";
@@ -175,14 +182,29 @@ export default class TraitTable extends Vue {
     this.getTraits();
   }
 
+  @Watch('paginationController', { deep: true})
   getTraits() {
-    TraitService.getAll(this.activeProgram!.id!).then((traits: Trait[]) => {
-      this.traits = traitss;
+    let paginationQuery: PaginationQuery = PaginationController.getPaginationSelections(
+      this.paginationController.currentPage, this.paginationController.pageSize, this.paginationController.showAll);
+    this.paginationController.setCurrentCall(paginationQuery);
+
+    TraitService.getAll(this.activeProgram!.id!, paginationQuery).then(([traits, metadata]) => {
+      if (this.paginationController.matchesCurrentRequest(metadata.pagination)){
+        this.traits = traits;
+        this.traitsPagination = metadata.pagination;
+      }
     }).catch((error) => {
       // Display error that traits cannot be loaded
       this.$emit('show-error-notification', 'Error while trying to load traits');
       throw error;
+    }).finally(() => {
+      this.loadedData();
     });
+  }
+
+  loadedData() {
+    this.loaded = true;
+    this.$emit('loaded');
   }
 
   createTrait() {
@@ -205,7 +227,7 @@ export default class TraitTable extends Vue {
     this.newTrait.programId = this.activeProgram!.id;
 
     TraitService.create(this.newTrait).then((trait: Trait) => {
-      this.getTraitss();
+      this.getTraits();
       this.$emit('show-success-notification', 'Success! ' + this.Trait.name + ' added.');
       this.newTrait = new Trait();
       this.newTraitActive = false;
@@ -216,7 +238,7 @@ export default class TraitTable extends Vue {
   }
 
   cancelNewTrait() {
-    this.newTrait = new ProgramTrait();
+    this.newTrait = new Trait();
     this.newTraitActive = false;
   }
 

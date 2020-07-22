@@ -13,29 +13,27 @@
   - WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   - See the License for the specific language governing permissions and
   - limitations under the License.
-  --
+  -->
 
 <template>
-  <div id="traits-list">
-    <TraitsList
-      v-on:show-success-notification="$emit('show-success-notification', $event)"
-      v-on:show-error-notification="$emit('show-error-notification', $event)"
+  <div class="traits-list">
+    <TraitListsTable
+    v-on:show-success-notification="$emit('show-success-notification', $event)"
+    v-on:show-error-notification="$emit('show-error-notification', $event)"
     >
-    </TraitsList>
+    </TraitListsTable>
   </div>
 </template>
 
 <script lang="ts">
   import { Component, Prop, Vue } from 'vue-property-decorator'
-  import TraitListsTable from "@/components/trait/TraitListsTable.vue"
+  import TraitListsTable from '@/components/trait/TraitListsTable.vue'
   import ProgramsBase from "@/components/program/ProgramsBase.vue";
-
   @Component({
     components: {
       TraitListsTable
     }
   })
   export default class TraitsList extends ProgramsBase {
-
   }
 </script>

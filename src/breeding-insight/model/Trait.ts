@@ -15,19 +15,25 @@
  * limitations under the License.
  */
 
+import {ProgramObservationLevel} from "@/breeding-insight/model/ProgramObservationLevel";
+import {Method} from "@/breeding-insight/model/Method";
+import {Scale} from "@/breeding-insight/model/Scale";
+
 export class Trait {
   id?: string;
-  programId?: string;
-  name?: string;
-  level?: string;
-  method?: string;
-  scale?: string
+  traitName?: string;
+  programObservationLevel?: ProgramObservationLevel;
+  method?: Method;
+  scale?: Scale
 
-  constructor(id?: string, programId?: string, name?: string, level?: string, method?: string, scale?: string) {
+    constructor(id?: string,
+                traitName?: string,
+                programObservationLevel?: ProgramObservationLevel,
+                method?: Method,
+                scale?: Scale) {
     this.id = id;
-    this.programId = programId;
-    this.name = name;
-    this.level = level;
+    this.traitName = traitName;
+    this.programObservationLevel = programObservationLevel;
     this.method = method;
     this.scale = scale;
   }

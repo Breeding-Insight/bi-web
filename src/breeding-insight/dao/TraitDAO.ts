@@ -15,17 +15,17 @@
  * limitations under the License.
  */
 
-import {Trait} from "@/breeding-insight/model/Trait";
 import {BiResponse} from "@/breeding-insight/model/BiResponse";
 import * as api from "@/util/api";
+import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
 
 export class TraitDAO {
 
-  static getAll(programId: string): Promise<BiResponse> {
+    static getAll(programId: string, paginationQuery: PaginationQuery): Promise<BiResponse> {
 
     return new Promise<BiResponse>(((resolve, reject) => {
 
-      api.call({ url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/traits`, method: 'get' })
+        api.call({ url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/traits`, method: 'get', params: paginationQuery })
         .then((response: any) => {
           const biResponse = new BiResponse(response.data);
           resolve(biResponse);
