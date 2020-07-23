@@ -28,7 +28,7 @@ export class TraitUploadService {
 
     return new Promise<ProgramUpload>((resolve, reject) => {
 
-      if (file !== null) {
+      if (file !== null && programId) {
         TraitUploadDAO.update(programId, file).then((biResponse) => {
           const result: any = biResponse.result;
 

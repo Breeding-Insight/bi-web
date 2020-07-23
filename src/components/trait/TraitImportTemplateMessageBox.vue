@@ -31,8 +31,8 @@
           <div class="level-right">
             <div class="level-item">
               <div class="has-text-dark has-text-centered is-size-7">
-                <!-- temporary link until the backend card is done, need github access to our private repo -->
-                <a href="https://github.com/Breeding-Insight/requirements/raw/master/file-formats/bi_traits_import_template_v01.xls" 
+                <!-- temporary link until the backend card is done -->
+                <a href="https://cornell.box.com/shared/static/k81yyufnght4ucufrglrh1t8vulkyscc.xls"
                   class="button is-outlined is-primary">Download the Trait Import Template</a>
                 <br/>Template version placeholder
               </div>
