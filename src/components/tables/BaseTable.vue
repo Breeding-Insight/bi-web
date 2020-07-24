@@ -17,146 +17,59 @@
 
 <template>
   <div>
-    <template
-      v-if="tableRows.length > 0"
+    <table
+      class="table is-striped is-narrow is-hoverable is-fullwidth"
     >
-      <table
-
-        class="table is-striped is-narrow is-hoverable is-fullwidth"
-      >
-        <thead>
-          <tr>
-            <template v-for="(header, index) in headers">
-              <th
-                v-bind:key="'header' + index"
-                v-bind:class="{'is-hidden-mobile': hideMobileHeaders !== undefined && hideMobileHeaders.indexOf(header) !== -1 }"
-              >
-                {{ header }}
-              </th>
-            </template>
-            <template v-if="editable">
-              <th />
-            </template>
-          </tr>
-        </thead>
-        <tbody>
-          <template v-for="(row, index) in tableRows">
-            <BaseTableRow
-              v-bind:key="'row' + index"
-              v-bind:row-data="row"
-              v-on:edit="row.toggleEdit()"
-              v-on:remove="$emit('remove', row.data)"
+      <thead>
+        <tr>
+          <template v-for="(header, index) in headers">
+            <th
+              v-bind:key="'header' + index"
+              v-bind:class="{'is-hidden-mobile': hideMobileHeaders !== undefined && hideMobileHeaders.indexOf(header) !== -1 }"
             >
-              <slot
-                v-bind="row.data"
-                name="columns"
-              />
-            </BaseTableRow>
-            <template v-if="row.edit">
-              <tr
-                v-bind:key="'edit' + index"
-                v-bind:class="{'is-selected': row.edit, 'is-new': row.new}"
-              >
-                <td v-bind:colspan="columnSpan">
-                  <EditDataRowForm
-                    @submit="validateAndSubmit(index)"
-                    @cancel="cancelEdit(row, index)"
-                  >
-                    <slot
-                      v-bind:editData="row.editData"
-                      v-bind:validations="getValidations(index)"
-                      name="edit"
-                    />
-                  </EditDataRowForm>
-                </td>
-              </tr>
-            </template>
+              {{ header }}
+            </th>
           </template>
-        </tbody>
-      </table>
-
-      <b-pagination
-          v-if="pagination"
-          :total="pagination.totalCount"
-          :current="pagination.currentPage"
-          range-before="1"
-          range-after="1"
-          order="is-centered"
-          size="is-small"
-          :simple="false"
-          :rounded="false"
-          :per-page="pagination.pageSize"
-          aria-next-label="Next page"
-          aria-previous-label="Previous page"
-          aria-page-label="Page"
-          aria-current-label="Current page"
-          v-on:change="$emit('paginate', $event)"
-      >
-        <b-pagination-button
-            slot="previous"
-            slot-scope="props"
-            :page="props.page"
-            tag="a"
-        >
-          Previous
-        </b-pagination-button>
-
-        <template
-            slot="next"
-            slot-scope="props"
-        >
-          <b-pagination-button
-              :page="props.page"
-              tag="a"
+          <template v-if="editable">
+            <th />
+          </template>
+        </tr>
+      </thead>
+      <tbody>
+        <template v-for="(row, index) in tableRows">
+          <BaseTableRow
+            v-bind:key="'row' + index"
+            v-bind:row-data="row"
+            v-on:edit="row.toggleEdit()"
+            v-on:remove="$emit('remove', row.data)"
           >
-            Next
-          </b-pagination-button>
-
-          <div class="pagination-extras">
-            <div class="page-size-select pagination-link">
-              <div class="select is-small">
-                <select
-                    v-model="pagination.pageSize"
-                    v-on:change="$emit('paginate-page-size', $event.target.value)"
-                >
-                  <option value="10">
-                    10
-                  </option>
-                  <option value="20">
-                    20
-                  </option>
-                  <option value="50">
-                    50
-                  </option>
-                  <option value="100">
-                    100
-                  </option>
-                  <option value="200">
-                    200
-                  </option>
-                </select>
-              </div>
-              <span>per page</span>
-            </div>
-
-            <a
-                role="button"
-                class="pagination-link show-all-button"
-                v-bind:class="{ 'has-background-info': pagination.totalPages === 1}"
-                v-on:click="$emit('paginate-toggle-all')"
+            <slot
+              v-bind="row.data"
+              name="columns"
+            />
+          </BaseTableRow>
+          <template v-if="row.edit">
+            <tr
+              v-bind:key="'edit' + index"
+              v-bind:class="{'is-selected': row.edit, 'is-new': row.new}"
             >
-              Show All
-            </a>
-          </div>
+              <td v-bind:colspan="columnSpan">
+                <EditDataRowForm
+                  @submit="validateAndSubmit(index)"
+                  @cancel="cancelEdit(row, index)"
+                >
+                  <slot
+                    v-bind:editData="row.editData"
+                    v-bind:validations="getValidations(index)"
+                    name="edit"
+                  />
+                </EditDataRowForm>
+              </td>
+            </tr>
+          </template>
         </template>
-      </b-pagination>
-
-    </template>
-    <div v-else>
-      <slot name="emptyMessage" />
-    </div>
-
-
+      </tbody>
+    </table>
   </div>
 </template>
 
@@ -168,7 +81,6 @@
   import {TableRow} from "@/breeding-insight/model/view_models/TableRow"
   import EditDataRowForm from '@/components/forms/EditDataRowForm.vue'
   import {Validations} from "vuelidate-property-decorators";
-  import {Pagination} from "@/breeding-insight/model/BiResponse";
 
   @Component({
     components: { BaseTableRow, EditDataRowForm }
@@ -183,11 +95,9 @@
     @Prop()
     records!: Array<any>;
     @Prop()
-    rowValidations!: Object;
-    @Prop()
     editable!: boolean;
     @Prop()
-    pagination!: Pagination;
+    rowValidations!: Object;
 
     initialUpdate: boolean = false;
 
@@ -228,6 +138,11 @@
       this.tableRows = rowArray;
     }
 
+
+    get columnSpan() {
+      return this.editable ? this.headers.length + 1 : this.headers.length;
+    }
+
     @Validations()
     validations() {
       if (this.rowValidations) {
@@ -244,11 +159,7 @@
 
       return {}
     }
-
-    get columnSpan() {
-      return this.editable ? this.headers.length + 1 : this.headers.length;
-    }
-
+  
     getValidations(index: number) {
       return this.$v.tableRows.$each![index]!.editData;
     }
