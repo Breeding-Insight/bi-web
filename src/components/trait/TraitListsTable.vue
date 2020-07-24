@@ -35,45 +35,6 @@
       </div>              
     </WarningModal>
 
-    <button
-      v-show="!newTraitActive & traits.length > 0"
-      class="button is-primary has-text-weight-bold is-pulled-right"
-      v-on:click="newTraitActive = true"
-    >
-      <span class="icon is-small">
-        <PlusCircleIcon
-          size="1.5x"
-          aria-hidden="true"
-        />
-      </span>
-      <span>
-        New Trait
-      </span>
-    </button>
-
-    <NewDataForm
-      v-if="newTraitActive"
-      v-bind:row-validations="traitValidations"
-      v-bind:new-record.sync="newTrait"
-      v-on:submit="saveTrait"
-      v-on:cancel="cancelNewTrait"
-      v-on:show-error-notification="$emit('show-error-notification', $event)"
-    >
-      <template v-slot="validations">
-        <div class="columns">
-          <div class="column is-two-fifths">
-            <BasicInputField
-              v-model="newTrait.name"
-              v-bind:validations="validations.name"
-              v-bind:field-name="'Name'"
-              v-bind:field-help="'Trait name as preferred. All Unicode special characters accepted.'"
-              :placeholder="'New Trait Name'"
-            />
-          </div>
-        </div>
-      </template>
-    </NewDataForm>
-
     <BaseTable
       v-bind:headers="traitTableHeaders"
       v-bind:records.sync="traits"
@@ -115,14 +76,11 @@
       </template>
       <template v-slot:emptyMessage>
         <EmptyTableMessage
-          v-bind:button-view-toggle="!newTraitActive"
-          v-bind:button-text="'New Trait'"
-          v-on:newClick="newTraitActive = true"
         >
           <p class="has-text-weight-bold">
             No traits are currently defined for this program.
           </p>
-          Create new traits by clicking either "New Trait" or "Import Traits".
+          Create new traits by clicking "Import Traits".
         </EmptyTableMessage>
       </template>
     </BaseTable>

@@ -17,6 +17,7 @@
 
 <template>
   <div class="traits-list">
+    <h1 class="title">All Traits</h1>
     <TraitListsTable
     v-on:show-success-notification="$emit('show-success-notification', $event)"
     v-on:show-error-notification="$emit('show-error-notification', $event)"
