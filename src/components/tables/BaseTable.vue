@@ -37,36 +37,8 @@
       </thead>
       <tbody>
         <template v-for="(row, index) in tableRows">
-          <BaseTableRow
-            v-bind:key="'row' + index"
-            v-bind:row-data="row"
-            v-on:edit="row.toggleEdit()"
-            v-on:remove="$emit('remove', row.data)"
-          >
-            <slot
-              v-bind="row.data"
-              name="columns"
-            />
-          </BaseTableRow>
-          <template v-if="row.edit">
-            <tr
-              v-bind:key="'edit' + index"
-              v-bind:class="{'is-selected': row.edit, 'is-new': row.new}"
-            >
-              <td v-bind:colspan="columnSpan">
-                <EditDataRowForm
-                  @submit="validateAndSubmit(index)"
-                  @cancel="cancelEdit(row, index)"
-                >
-                  <slot
-                    v-bind:editData="row.editData"
-                    v-bind:validations="getValidations(index)"
-                    name="edit"
-                  />
-                </EditDataRowForm>
-              </td>
-            </tr>
-          </template>
+          <!-- slot to customize each row in table -->
+          <slot name="row" v-bind:row="row" v-bind:index="index"></slot>
         </template>
       </tbody>
     </table>
@@ -77,13 +49,11 @@
 <script lang="ts">
 
   import {Component, Prop, Vue, Watch} from 'vue-property-decorator'
-  import BaseTableRow from "@/components/tables/BaseTableRow.vue"
   import {TableRow} from "@/breeding-insight/model/view_models/TableRow"
-  import EditDataRowForm from '@/components/forms/EditDataRowForm.vue'
-  import {Validations} from "vuelidate-property-decorators";
 
   @Component({
-    components: { BaseTableRow, EditDataRowForm }
+    components: {
+    }
   })
   export default class BaseTable extends Vue {
     //<slot name="table-row" v-bind:row-data="program"></slot>
@@ -96,9 +66,7 @@
     records!: Array<any>;
     @Prop()
     editable!: boolean;
-    @Prop()
-    rowValidations!: Object;
-
+    
     initialUpdate: boolean = false;
 
     private tableRows: Array<TableRow<any>> = new Array<TableRow<any>>();
@@ -136,54 +104,6 @@
         rowArray.push(newTableRow);
       }
       this.tableRows = rowArray;
-    }
-
-
-    get columnSpan() {
-      return this.editable ? this.headers.length + 1 : this.headers.length;
-    }
-
-    @Validations()
-    validations() {
-      if (this.rowValidations) {
-        return {
-          tableRows: {
-            $each: {
-              editData: {
-                ...this.rowValidations
-              }
-            }
-          }
-        }
-      }
-
-      return {}
-    }
-  
-    getValidations(index: number) {
-      return this.$v.tableRows.$each![index]!.editData;
-    }
-
-    validateAndSubmit(rowIndex: number) {
-
-      this.$v.tableRows.$each![rowIndex]!.editData.$touch();
-      if (this.$v.tableRows.$each![rowIndex]!.editData.$anyError){
-        this.$emit('show-error-notification', 'Fix Invalid Fields');
-        return;
-      }
-      else {
-        // Check all of our fields to see if they were required
-        this.$v.tableRows.$each![rowIndex]!.editData.$reset();
-        const editedRecord = this.tableRows[rowIndex].editData;
-        this.$emit('submit', editedRecord);
-      }
-    }
-
-    cancelEdit(record: TableRow<any>, rowIndex: number) {
-      record.toggleEdit();
-      record.revertChanges();
-      // clear form
-      this.$v.tableRows.$each![rowIndex]!.editData.$reset();
     }
 
   }
