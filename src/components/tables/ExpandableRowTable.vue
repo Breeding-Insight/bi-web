@@ -22,9 +22,48 @@
         v-bind="$props"
         v-on="$listeners"
       >
+        <!-- 
+          Table row slot customization
+          row:   TableRow<any>
+          index: number
+        -->
+        <template v-slot:row="{row, index}">
+          <BaseTableRow
+            v-bind:key="'row' + index"
+            v-bind:row-data="row"
+            v-on:edit="row.toggleEdit()"
+            v-on:remove="$emit('remove', row.data)"
+          >
+            <slot
+              v-bind="row.data"
+              name="columns"
+            />
+          </BaseTableRow>
+          <template v-if="row.edit">
+            <tr
+              v-bind:key="'edit' + index"
+              v-bind:class="{'is-selected': row.edit, 'is-new': row.new}"
+            >
+              <td v-bind:colspan="columnSpan">
+                <EditDataRowForm
+                  @submit="validateAndSubmit(index)"
+                  @cancel="cancelEdit(row, index)"
+                >
+                  <slot
+                    v-bind:editData="row.editData"
+                    v-bind:validations="getValidations(index)"
+                    name="edit"
+                  />
+                </EditDataRowForm>
+              </td>
+            </tr>
+          </template>
+        </template>
+
         <slot v-for="(_, name) in $slots" :name="name" :slot="name" />
         <template v-for="(_, name) in $scopedSlots" :slot="name" slot-scope="slotData"><slot :name="name" v-bind="slotData" /></template>
       </base-table>
+
       <pagination-controls v-bind="$props" v-on="$listeners"/>
     </template>
     <template v-else>
@@ -41,11 +80,14 @@
   import BaseTable from '@/components/tables/BaseTable.vue'
   import {Pagination} from "@/breeding-insight/model/BiResponse";
   import PaginationControls from '@/components/tables/PaginationControls.vue'
+  import BaseTableRow from "@/components/tables/BaseTableRow.vue"
+  import EditDataRowForm from '@/components/forms/EditDataRowForm.vue'
+  import {Validations} from "vuelidate-property-decorators";
 
   @Component({
-    components: { BaseTable, PaginationControls }
+    components: { BaseTable, BaseTableRow, EditDataRowForm, PaginationControls }
   })
-  export default class ExpandableRowTable extends Vue {
+  export default class ExpandableRowTable extends BaseTable {
     @Prop()
     headers!: string[];
     @Prop()
@@ -58,6 +100,31 @@
     editable!: boolean;
     @Prop()
     pagination!: Pagination;
+
+    @Validations()
+    validations() {
+      if (this.rowValidations) {
+        return {
+          tableRows: {
+            $each: {
+              editData: {
+                ...this.rowValidations
+              }
+            }
+          }
+        }
+      }
+
+      return {}
+    }
+  
+    getValidations(index: number) {
+      return this.$v.tableRows.$each[index].editData;
+    }
+
+    get columnSpan() {
+      return this.editable ? this.headers.length + 1 : this.headers.length;
+    }
    
   }
 </script>
