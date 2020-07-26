@@ -33,6 +33,7 @@ $magenta: #9c27b0;
 $applegreen: #C1ED2F;
 $turquoise: #3FB3B6;
 $darkmenu: #4a4a4a; // $grey-dark, can't specify here because variables not loaded
+$link-light: #edf3fd; // variables not loaded
 $pending: $applegreen;
 $pending-invert: #363636; // $grey-darker
 $error: $red;
@@ -72,6 +73,10 @@ $modal-card-body-padding:0 3em 1em 3em;
 $modal-card-head-background-color:white;
 $modal-card-head-border-bottom:none;
 $modal-card-foot-border-top:none;
+
+$table-row-hover-background-color:$link-light;
+$table-striped-row-even-hover-background-color:$link-light;
+
 //$table-row-active-background-color: $primary-light;
 // TODO: see if we can get this working instead of using css stuff below
 
