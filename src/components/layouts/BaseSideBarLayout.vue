@@ -72,7 +72,7 @@
               </div>
             </div>
           </div>
-          <section class="section">
+          <section class="section pt-0">
             <slot name="content"></slot>
           </section>
         </main>
