@@ -16,13 +16,14 @@
   -->
 
 <template>
-  <tr v-on:click="selectRow()" v-bind:class="{'is-new': (rowData.new && !rowData.edit), 'is-selected': rowData.edit}" >
+  <tr v-on:click="$emit('selected')" 
+      v-bind:class="{'is-new': (rowData.new && !rowData.edit), 'is-selected': rowData.edit}" >
     <slot></slot>
     <template v-if="rowData.editable">
       <td class="has-text-right is-narrow">
         <a
-          v-on:click="$emit('expand')"
-          v-on:keypress.enter.space="$emit('expand')"
+          v-on:click="$emit('details')"
+          v-on:keypress.enter.space="$emit('details')"
           tabindex="0"
         >
           Show details
@@ -46,9 +47,7 @@
     @Prop()
     rowData!: any;
 
-    selectRow() {
-      this.$emit('click');
-      this.rowData.edit = false;
-    }
+
+
   }
 </script>
