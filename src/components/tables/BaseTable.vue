@@ -20,25 +20,36 @@
     <table
       class="table is-striped is-narrow is-hoverable is-fullwidth"
     >
-      <thead>
+      <thead v-if="updatedColumns.length">
         <tr>
-          <template v-for="(header, index) in headers">
-            <th
-              v-bind:key="'header' + index"
-              v-bind:class="{'is-hidden-mobile': hideMobileHeaders !== undefined && hideMobileHeaders.indexOf(header) !== -1 }"
-            >
-              {{ header }}
-            </th>
-          </template>
-          <template v-if="editable">
+          <!-- Header space for left row icon if desired -->
+          <th v-if="showRowIcon" width="40px"/>
+          <th v-for="(column, index) in visibleColumns"
+              v-bind:key="index"
+              v-bind:style="{
+                width: column.width === undefined ? null :
+                (isNaN(column.width) ? column.width : column.width + 'px')
+              }"
+          >
+            {{ column.label }}
+          </th>
+          <!-- Add a header column to match spacing for row controls if specified -->
+          <template v-if="showExpandControls">
             <th />
           </template>
         </tr>
       </thead>
       <tbody>
         <template v-for="(row, index) in tableRows">
+
+          <slot name="icon"></slot>
+
           <!-- slot to customize each row in table -->
           <slot name="row" v-bind:row="row" v-bind:index="index"></slot>
+
+          <slot name="controls"></slot>
+
+
         </template>
       </tbody>
     </table>
@@ -50,6 +61,7 @@
 
   import {Component, Prop, Vue, Watch} from 'vue-property-decorator'
   import {TableRow} from "@/breeding-insight/model/view_models/TableRow"
+  import { TableColumn } from '../../breeding-insight/model/view_models/TableColumn';
 
   @Component({
     components: {
@@ -66,14 +78,42 @@
     records!: Array<any>;
     @Prop()
     editable!: boolean;
+    @Prop({default: () => []})
+    columns!: Array<TableColumn>;
+    @Prop()
+    showExpandControls!: boolean;
+    @Prop()
+    showRowIcon!: boolean;
     
     initialUpdate: boolean = false;
 
     private tableRows: Array<TableRow<any>> = new Array<TableRow<any>>();
+    public updatedColumns: Array<TableColumn> = [...this.columns];
+    public isTable = true;
+
+    private previouslyVisible: Array<TableColumn> = [];
 
     updated() {
       this.initialUpdate = true;
     }
+
+    /*
+    @Watch('columns')
+    updateColumns() {
+      // don't allow hiding columns until collapse is undone
+      if (!this.collapseTable) {
+        this.updatedColumns = [...this.columns];
+      }
+    }
+    */
+
+    get visibleColumns() {
+      return this.updatedColumns.filter((column) => {
+          return column.visible || column.visible === undefined
+      })
+    }
+
+
 
     @Watch('records', {immediate: true, deep:true})
     updateTableRows(newRecords: any, oldRecords: any) {
