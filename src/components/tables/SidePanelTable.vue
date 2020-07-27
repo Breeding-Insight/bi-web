@@ -21,7 +21,7 @@
               v-bind:row-data="row"
               v-on:edit="row.toggleEdit()"
               v-on:remove="$emit('remove', row.data)"
-              v-on:selected="row.selected = true"
+              v-on:selected="rowSelected"
             >
               <slot
                 v-bind="row.data"
@@ -36,8 +36,12 @@
       </div>
       <!-- <div class="column is-narrow is-gapless px-0"> -->
       <!-- is-one-third-desktop is-half-tablet -is-half-mobile -->
-      <div class="column is-one-third-desktop is-half-tablet -is-half-mobile is-gapless pl-0">
-        <slot name="side-panel"/>
+      <div v-bind:class="{'column is-narrow is-gapless pl-0': !panelOpen, 'column is-one-third-desktop is-half-tablet is-half-mobile is-gapless pl-0': panelOpen}" >
+        <side-panel v-if="panelOpen" v-on:close-panel="panelOpen = false" v-bind:background-color-class="'has-background-info-light'">
+          <slot name="side-panel"/>
+        </side-panel>
+        
+        <!-- <slot v-if="panelOpen" name="side-panel"/> -->
         <!-- <side-panel v-bind:background-color-class="'has-background-info-light'" /> -->
         <!-- sidepanel stuff -->
       </div>
@@ -94,11 +98,11 @@
     editable!: boolean;
     @Prop()
     pagination!: Pagination;
-    //@Prop({default: false})
+
+    private panelOpen = false;
+
     private collapseColumns: boolean = false;
-
     private columns: Array<any> = [];
-
     private CollapseColumnsState = CollapseColumnsState;
     private BreakpointEvent = BreakpointEvent;
     private CollapseColumnAction = CollapseColumnAction;
@@ -111,7 +115,6 @@
         [CollapseColumnsState.NOT_COLLAPSED]: {
           entry: CollapseColumnAction.UNCOLLAPSE,
           on: {
-            //[BreakpointEvent.DESKTOP]: CollapseColumnsState.NOT_COLLAPSED,
             [BreakpointEvent.TABLET]: CollapseColumnsState.COLLAPSED,
             [BreakpointEvent.MOBILE]: CollapseColumnsState.COLLAPSED,
           } 
@@ -120,8 +123,6 @@
           entry: CollapseColumnAction.COLLAPSE,
           on: { 
             [BreakpointEvent.DESKTOP]: CollapseColumnsState.NOT_COLLAPSED,
-            //[BreakpointEvent.TABLET]: CollapseColumnsState.NOT_COLLAPSED,
-            //[BreakpointEvent.MOBILE]: CollapseColumnsState.COLLAPSED,
           }
         },
       }
@@ -149,21 +150,20 @@
       this.collapseService.start();
     }
 
+    // send events and allow caller to customize what column(s) are shown for collapsed state
     collapse() {
       console.log('collapse')
       this.$emit('collapse-columns');
-      this.collapseColumns = true;
     }
 
     unCollapse() {
       console.log('uncollapse')
       this.$emit('uncollapse-columns');
-      this.collapseColumns = false;
     }
 
-    @Watch('collapseTable')
-    collapseT() {
-      
+    rowSelected() {
+      console.log('row selected');
+      this.panelOpen = true;
     }
 
   }
