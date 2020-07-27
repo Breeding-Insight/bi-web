@@ -16,27 +16,39 @@
   -->
 
 <template>
-  <div v-bind:class="['box is-full-content-height', backgroundColorClass]"> <!-- v-bind:style="'width: 500px'" -->
-    <button class="delete is-pulled-right" v-on:click="$emit('close')" aria-label="close"/>
-    <slot/>
-  </div>
+  <tr v-on:click="selectRow()" v-bind:class="{'is-new': (rowData.new && !rowData.edit), 'is-selected': rowData.edit}" >
+    <slot></slot>
+    <template v-if="rowData.editable">
+      <td class="has-text-right is-narrow">
+        <a
+          v-on:click="$emit('expand')"
+          v-on:keypress.enter.space="$emit('expand')"
+          tabindex="0"
+        >
+          Show details
+        </a>
+      </td>
+    </template>
+  </tr>
 </template>
 
 <script lang="ts">
-
-  import {Component, Prop, Vue, Watch} from 'vue-property-decorator'
+  import {Component, Prop, Vue} from "vue-property-decorator";
 
   @Component({
-    components: { }
+    components: {
+
+    }
   })
-  export default class SidePanel extends Vue {
+  export default class SidePanelTableRow extends Vue {
+
+    // Knows its row values and its column objects
     @Prop()
-    backgroundColorClass!: string;
+    rowData!: any;
+
+    selectRow() {
+      this.$emit('click');
+      this.rowData.edit = false;
+    }
   }
 </script>
-
-<style scoped>
-.is-full-content-height {
-  height: 100%;
-}
-</style>
