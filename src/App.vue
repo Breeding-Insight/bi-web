@@ -23,7 +23,7 @@
       <InfoNotification ref="infoNotification" class="is-marginless"></InfoNotification>
     </div>
     
-    <component v-bind:is="layout" v-bind:username="username" v-bind:title="layoutTitle" @logout="logOut">
+    <component v-bind:is="layout" v-bind:username="username" @logout="logOut">
         <router-view
             @show-success-notification="showSuccessNotification"
             @show-info-notification="showInfoNotification"
