@@ -1,6 +1,6 @@
 <template>
   <div class="side-panel-table">
-    <div class="columns">
+    <div class="columns is-mobile">
       <div class="column pr-0">
         <v-breakpoint v-on:mobile="collapseService.send(BreakpointEvent.MOBILE)"></v-breakpoint>
         <v-breakpoint v-on:tablet="collapseService.send(BreakpointEvent.TABLET)"></v-breakpoint>
@@ -19,9 +19,10 @@
             <SidePanelTableRow
               v-bind:key="'row' + index"
               v-bind:row-data="row"
+              v-bind:selectedRow="selectedRow"
               v-on:edit="row.toggleEdit()"
               v-on:remove="$emit('remove', row.data)"
-              v-on:selected="rowSelected"
+              v-on:selected="rowSelected(row)"
             >
               <slot
                 v-bind="row.data"
@@ -37,7 +38,7 @@
       <!-- <div class="column is-narrow is-gapless px-0"> -->
       <!-- is-one-third-desktop is-half-tablet -is-half-mobile -->
       <div v-bind:class="{'column is-narrow is-gapless pl-0': !panelOpen, 'column is-one-third-desktop is-half-tablet is-half-mobile is-gapless pl-0': panelOpen}" >
-        <side-panel v-if="panelOpen" v-on:close-panel="panelOpen = false" v-bind:background-color-class="'has-background-info-light'">
+        <side-panel v-if="panelOpen" v-on:close-panel="closePanel" v-bind:background-color-class="'has-background-info-light'">
           <slot name="side-panel"/>
         </side-panel>
         
@@ -60,6 +61,7 @@
   import PaginationControls from '@/components/tables/PaginationControls.vue'
   import { TableColumn } from '../../breeding-insight/model/view_models/TableColumn';
   import { VBreakpoint } from '@/components/VBreakpoint';
+  import {TableRow} from "@/breeding-insight/model/view_models/TableRow"
 
   import { createMachine, interpret } from '@xstate/fsm';
 
@@ -72,6 +74,11 @@
     MOBILE = "MOBILE",
     TABLET = "TABLET",
     DESKTOP = "DESKTOP",
+  }
+
+  enum PanelEvent {
+    OPEN = "OPEN",
+    CLOSED = "CLOSED",
   }
 
   enum CollapseColumnAction {
@@ -105,7 +112,9 @@
     private columns: Array<any> = [];
     private CollapseColumnsState = CollapseColumnsState;
     private BreakpointEvent = BreakpointEvent;
+    private PanelEvent = PanelEvent;
     private CollapseColumnAction = CollapseColumnAction;
+    private selectedRow: TableRow<any> = new TableRow(false, {});
 
     private state = CollapseColumnsState.NOT_COLLAPSED;
     private collapseStateMachine = createMachine({
@@ -123,6 +132,8 @@
           entry: CollapseColumnAction.COLLAPSE,
           on: { 
             [BreakpointEvent.DESKTOP]: CollapseColumnsState.NOT_COLLAPSED,
+            [PanelEvent.CLOSED]: CollapseColumnsState.NOT_COLLAPSED,
+            [PanelEvent.OPEN]: CollapseColumnsState.COLLAPSED
           }
         },
       }
@@ -161,9 +172,18 @@
       this.$emit('uncollapse-columns');
     }
 
-    rowSelected() {
+    rowSelected(row: TableRow<any>) {
       console.log('row selected');
+      row.selected = true;
+      this.selectedRow = row;
       this.panelOpen = true;
+      this.collapseService.send(PanelEvent.OPEN);
+    }
+
+    closePanel() {
+      this.panelOpen = false
+      this.selectedRow = new TableRow(false, {});
+      this.collapseService.send(PanelEvent.CLOSED);
     }
 
   }
