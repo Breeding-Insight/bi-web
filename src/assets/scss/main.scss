@@ -34,6 +34,8 @@ $applegreen: #C1ED2F;
 $turquoise: #3FB3B6;
 $darkmenu: #4a4a4a; // $grey-dark, can't specify here because variables not loaded
 $link-light: #edf3fd; // variables not loaded
+//$info-light:#f0fafa;
+//$dark: hsl(0, 0%, 21%);
 $pending: $applegreen;
 $pending-invert: #363636; // $grey-darker
 $error: $red;
@@ -76,6 +78,8 @@ $modal-card-foot-border-top:none;
 
 $table-row-hover-background-color:$link-light;
 $table-striped-row-even-hover-background-color:$link-light;
+//$table-row-active-background-color:$info-light;
+//$table-row-active-color:$dark;
 
 //$table-row-active-background-color: $primary-light;
 // TODO: see if we can get this working instead of using css stuff below
@@ -238,7 +242,7 @@ nav.tabs li.is-active {
 }
 
 // TODO: see if we can get this in bulma variable
-.table tr.is-selected {
+.table tr.is-edited {
   border-left: 5px solid $primary;
   background-color: $primary-light;
   td {
@@ -249,7 +253,17 @@ nav.tabs li.is-active {
   }
 }
 
-.table.is-striped tbody tr:not(.is-selected):nth-child(2n).is-new {
+.table tr.is-selected {
+  background-color: $info-light;
+  td {
+    color:$dark;
+  }
+  a {
+    color:$link;
+  }
+}
+
+.table.is-striped tbody tr:not(.is-edited):nth-child(2n).is-new {
   background-color: $success-light;
   td {
     color:$dark;

@@ -17,7 +17,7 @@
 
 <template>
   <tr v-on:click="$emit('selected')" 
-      v-bind:class="{'is-new': (rowData.new && !rowData.edit), 'is-selected': rowData.edit}" >
+      v-bind:class="{'is-new': (rowData.new && !rowData.edit), 'is-selected': rowData === selectedRow}" >
     <slot></slot>
     <template v-if="rowData.editable">
       <td class="has-text-right is-narrow">
@@ -35,6 +35,7 @@
 
 <script lang="ts">
   import {Component, Prop, Vue} from "vue-property-decorator";
+import { TableRow } from '../../breeding-insight/model/view_models/TableRow';
 
   @Component({
     components: {
@@ -47,7 +48,8 @@
     @Prop()
     rowData!: any;
 
-
+    @Prop()
+    selectedRow!: TableRow<any>;
 
   }
 </script>
