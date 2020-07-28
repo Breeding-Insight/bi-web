@@ -19,27 +19,28 @@
   <tr v-on:click="$emit('selected')" 
       v-bind:class="{'is-new': (rowData.new && !rowData.edit), 'is-selected': rowData === selectedRow}" >
     <slot></slot>
-    <template v-if="rowData.editable">
-      <td class="has-text-right is-narrow">
-        <a
-          v-on:click="$emit('details')"
-          v-on:keypress.enter.space="$emit('details')"
-          tabindex="0"
-        >
-          Show details
-        </a>
-      </td>
-    </template>
+    <td class="has-text-right is-narrow">
+      <a v-if="!panelOpen"
+        v-on:click="$emit('details')"
+        v-on:keypress.enter.space="$emit('details')"
+        tabindex="0"
+      >
+        Show details
+      </a>
+      <ChevronRightIcon v-if="!panelOpen || rowData === selectedRow" class="has-vertical-align-middle has-text-link" size="1x" aria-hidden="true"></ChevronRightIcon>
+    </td>
+    
   </tr>
 </template>
 
 <script lang="ts">
   import {Component, Prop, Vue} from "vue-property-decorator";
-import { TableRow } from '../../breeding-insight/model/view_models/TableRow';
+  import { TableRow } from '../../breeding-insight/model/view_models/TableRow';
+  import {ChevronRightIcon} from 'vue-feather-icons'
 
   @Component({
     components: {
-
+      ChevronRightIcon
     }
   })
   export default class SidePanelTableRow extends Vue {
@@ -50,6 +51,9 @@ import { TableRow } from '../../breeding-insight/model/view_models/TableRow';
 
     @Prop()
     selectedRow!: TableRow<any>;
+
+    @Prop()
+    panelOpen!: boolean;
 
   }
 </script>
