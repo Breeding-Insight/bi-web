@@ -14,17 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-export class Method {
-  methodName?: string;
-  methodClass?: string;
-  description?: string;
-  formula?: string;
-
-  constructor(methodName?:string, methodClass?:string, description?:string, formula?:string) {
-    this.methodName = methodName;
-    this.methodClass = methodClass;
-    this.description = description;
-    this.formula = formula;
+ 
+export class Category {
+  label?: string;
+  value?: string;
+  
+  constructor(label?:string, value?:string) {
+    this.label = label;
+    this.value = value;
   }
 }

@@ -16,25 +16,43 @@
   -->
 
 <template>
-  <div class="traits-list">
-    <h1 class="title">All Traits</h1>
-    <TraitListsTable
-    v-on:show-success-notification="$emit('show-success-notification', $event)"
-    v-on:show-error-notification="$emit('show-error-notification', $event)"
-    >
-    </TraitListsTable>
+  <div class="importing">
+    <div class="box">
+      <article>
+        <div class="columns">
+          <div class="column">
+            <progress-bar v-bind:label="'Importing File ' + this.file.name"
+                          v-bind:estimated-time-text="'May take up to a minute'"
+            />
+          </div>
+          <div class="column">
+            <button class="button is-outlined" v-on:click="abort">Abort</button>
+          </div>
+        </div>
+      </article>
+    </div>
   </div>
 </template>
 
 <script lang="ts">
   import { Component, Prop, Vue } from 'vue-property-decorator'
-  import TraitListsTable from '@/components/trait/TraitListsTable.vue'
-  import ProgramsBase from "@/components/program/ProgramsBase.vue";
+  import ProgressBar from '@/components/forms/ProgressBar.vue'
+
   @Component({
     components: {
-      TraitListsTable
+      ProgressBar
     }
   })
-  export default class TraitsList extends ProgramsBase {
+  export default class ImportingMessageBox extends Vue {
+
+    @Prop()
+    private file!: File;
+
+    abort() {
+      this.$emit('abort');
+    }
+
   }
 </script>
+
+

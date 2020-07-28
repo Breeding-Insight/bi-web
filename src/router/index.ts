@@ -28,8 +28,11 @@ import store from '@/store/index.ts';
 import {LOGIN, LOGOUT, REQUESTED_PATH, ERROR_STATE, SET_ACTIVE_PROGRAM} from '@/store/mutation-types';
 import ProgramLocationsManagement from "@/views/ProgramLocationsManagement.vue";
 import ProgramUserManagement from "@/views/ProgramUsersManagement.vue";
-import Traits from "@/views/Traits.vue";
+import Traits from '@/views/Traits.vue'
 import TraitsList from "@/views/TraitsList.vue";
+import TraitsFavorites from "@/views/TraitsFavorites.vue";
+import TraitsImport from "@/views/TraitsImport.vue";
+import TraitsArchived from "@/views/TraitsArchived.vue";
 import ProgramSelection from "@/views/ProgramSelection.vue";
 import {UserService} from "@/breeding-insight/service/UserService";
 import {User} from "@/breeding-insight/model/User";
@@ -166,6 +169,33 @@ const routes = [
           layout: layouts.userSideBar
         },
         component: TraitsList
+      },
+      {
+        path: 'favorites',
+        name: 'traits-favorites',
+        meta: {
+          title: 'Favorites',
+          layout: layouts.userSideBar
+        },
+        component: TraitsFavorites
+      },
+      {
+        path: 'import',
+        name: 'traits-import',
+        meta: {
+          title: 'Import Traits',
+          layout: layouts.userSideBar
+        },
+        component: TraitsImport
+      },
+      {
+        path: 'archived',
+        name: 'traits-archived',
+        meta: {
+          title: 'Archived Traits',
+          layout: layouts.userSideBar
+        },
+        component: TraitsArchived
       }
     ]
   },

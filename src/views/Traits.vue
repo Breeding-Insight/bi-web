@@ -28,7 +28,9 @@
 <script lang="ts">
   import { Component } from 'vue-property-decorator'
   import ProgramsBase from "@/components/program/ProgramsBase.vue";
+
   @Component
   export default class Traits extends ProgramsBase {
+
   }
 </script>

@@ -16,25 +16,20 @@
   -->
 
 <template>
-  <div class="traits-list">
-    <h1 class="title">All Traits</h1>
-    <TraitListsTable
-    v-on:show-success-notification="$emit('show-success-notification', $event)"
-    v-on:show-error-notification="$emit('show-error-notification', $event)"
-    >
-    </TraitListsTable>
+  <div class="traits-archived">
+    <h1 class="title">Archived Traits</h1>
   </div>
 </template>
 
 <script lang="ts">
   import { Component, Prop, Vue } from 'vue-property-decorator'
-  import TraitListsTable from '@/components/trait/TraitListsTable.vue'
   import ProgramsBase from "@/components/program/ProgramsBase.vue";
+
   @Component({
     components: {
-      TraitListsTable
     }
   })
-  export default class TraitsList extends ProgramsBase {
+  export default class TraitsArchived extends ProgramsBase {
+
   }
 </script>

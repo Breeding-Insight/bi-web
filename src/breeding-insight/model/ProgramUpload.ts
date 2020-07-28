@@ -15,16 +15,14 @@
  * limitations under the License.
  */
 
-export class Method {
-  methodName?: string;
-  methodClass?: string;
-  description?: string;
-  formula?: string;
+import {Trait} from "@/breeding-insight/model/Trait";
 
-  constructor(methodName?:string, methodClass?:string, description?:string, formula?:string) {
-    this.methodName = methodName;
-    this.methodClass = methodClass;
-    this.description = description;
-    this.formula = formula;
+export class ProgramUpload {
+  id?: string;
+  data?: Array<Trait>;
+
+  constructor(id?:string, data?:Array<Trait>) {
+    this.id = id;
+    this.data = data;
   }
 }

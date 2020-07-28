@@ -132,6 +132,21 @@
                   Trait List
                 </router-link>
               </li>
+              <li>
+                <router-link v-bind:to="{name: 'traits-favorites', params: {programId: activeProgram.id}}">
+                  Favorites
+                </router-link>
+              </li>
+              <li>
+                <router-link v-bind:to="{name: 'traits-import', params: {programId: activeProgram.id}}">
+                  Import Traits
+                </router-link>
+              </li>
+              <li>
+                <router-link v-bind:to="{name: 'traits-archived', params: {programId: activeProgram.id}}">
+                  Archived Traits
+                </router-link>
+              </li>
             </ul>
           </li>
           <li>
