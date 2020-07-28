@@ -6,6 +6,7 @@
         <v-breakpoint v-on:tablet="collapseService.send(BreakpointEvent.TABLET)"></v-breakpoint>
         <v-breakpoint v-on:desktop="collapseService.send(BreakpointEvent.DESKTOP)"></v-breakpoint>
         <base-table 
+          v-bind:show-expand-controls="true"
           v-bind="$props"
           v-on="$listeners"
         >          
@@ -20,6 +21,7 @@
               v-bind:key="'row' + index"
               v-bind:row-data="row"
               v-bind:selectedRow="selectedRow"
+              v-bind:panelOpen="panelOpen"
               v-on:edit="row.toggleEdit()"
               v-on:remove="$emit('remove', row.data)"
               v-on:selected="rowSelected(row)"
