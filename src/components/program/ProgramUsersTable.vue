@@ -183,6 +183,8 @@ import EmptyTableMessage from "@/components/tables/EmtpyTableMessage.vue";
   import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
   import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
   import {Pagination} from "@/breeding-insight/model/BiResponse";
+  import { User } from '@/breeding-insight/model/User';
+  import {UserService} from "@/breeding-insight/service/UserService";
 
 @Component({
   mixins: [validationMixin],
@@ -199,6 +201,7 @@ export default class ProgramUsersTable extends Vue {
 
   private activeProgram?: Program;
   public users: ProgramUser[] = [];
+  public systemUsers: User[] = [];
   private usersPagination?: Pagination = new Pagination();
   userTableHeaders: string[] = ['Name', 'Email', 'Role'];
 
@@ -223,6 +226,7 @@ export default class ProgramUsersTable extends Vue {
   mounted() {
     this.getRoles();
     this.getUsers();
+    this.getSystemUsers();
   }
 
   @Watch('paginationController', { deep: true})
@@ -275,17 +279,62 @@ export default class ProgramUsersTable extends Vue {
   saveUser() {
 
     this.newUser.program = this.activeProgram;
+    this.newUser = this.checkExistingUserByEmail(this.newUser, this.systemUsers);
 
     ProgramUserService.create(this.newUser).then((user: ProgramUser) => {
       this.paginationController.updatePage(1);
       this.getUsers();
-      this.$emit('show-success-notification', 'Success! ' + this.newUser.name + ' added.');
+
+      // See if the user already existed
+      //TODO: Reconsider when user search feature is added
+      if (this.getSystemUserById(user, this.systemUsers)){
+        this.$emit('show-success-notification', 'Success! Existing user ' + user.name + ' added to program.');
+      } else {
+        this.$emit('show-success-notification', 'Success! ' + this.newUser.name + ' added.');
+      }
+
+      this.getSystemUsers();
       this.newUser = new ProgramUser();
       this.newUserActive = false;
     }).catch((error) => {
       this.$emit('show-error-notification', error.errorMessage);
     })
 
+  }
+
+  //TODO: Reconsider when user search feature is added
+  getSystemUsers() {
+
+    UserService.getAll().then(([users, metadata]) => {
+      this.systemUsers = users;
+    }).catch((error) => {
+      // Display error that users cannot be loaded
+      this.$emit('show-error-notification', 'Error while trying to load system users');
+      throw error;
+    });
+
+  }
+
+  //TODO: Reconsider when user search feature is added
+  checkExistingUserByEmail(user: ProgramUser, systemUsers: User[]): ProgramUser {
+    for (const systemUser of systemUsers){
+      if (user.email === systemUser.email){
+        if (systemUser.id){
+          user.id = systemUser.id;
+        }
+      }
+    }
+    return user;
+  }
+
+  //TODO: Reconsider when user search feature is added
+  getSystemUserById(user: ProgramUser, systemUsers: User[]): User | undefined {
+    for (const systemUser of systemUsers){
+      if (user.id === systemUser.id){
+        return systemUser;
+      }
+    }
+    return undefined;
   }
 
   cancelNewUser() {
