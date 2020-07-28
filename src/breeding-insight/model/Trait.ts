@@ -24,14 +24,14 @@ export class Trait {
   traitName?: string;
   programObservationLevel?: ProgramObservationLevel;
   method?: Method;
-  scale?: Scale;
+  scale?: Scale
 
-  constructor(id?:string,
-              traitName?:string, 
-              programObservationLevel?: ProgramObservationLevel,
-              method?: Method,
-              scale?: Scale
-              ) {
+    constructor(id?: string,
+                traitName?: string,
+                programObservationLevel?: ProgramObservationLevel,
+                method?: Method,
+                scale?: Scale) {
+    this.id = id;
     this.traitName = traitName;
     this.programObservationLevel = programObservationLevel;
     this.method = method;

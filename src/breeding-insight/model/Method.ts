@@ -19,7 +19,7 @@ export class Method {
   methodName?: string;
   methodClass?: string;
   description?: string;
-  formula?: string; 
+  formula?: string;
 
   constructor(methodName?:string, methodClass?:string, description?:string, formula?:string) {
     this.methodName = methodName;

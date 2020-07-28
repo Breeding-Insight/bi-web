@@ -203,7 +203,7 @@
   import {EventBus} from "@/util/event-bus";
   import ClickOutside from 'vue-click-outside';
 
-  @Component( {
+@Component( {
     components: {BaseSideBarLayout, MoreVerticalIcon, MoreHorizontalIcon, ChevronDownIcon},
     computed: {
       ...mapGetters([
@@ -225,11 +225,9 @@
 
     @Prop()
     username!: string;
-
     created() {
       EventBus.bus.$on(EventBus.programChange, this.getPrograms);
     }
-
     mounted() {
       this.setActiveLinkSubmenus();
       this.getPrograms();
@@ -238,7 +236,6 @@
       this.setActiveLinkSubmenus();
       this.getPrograms();
     }
-
     get title(): string {
       var path: string = this.$route.path;
       if (path.startsWith("/admin")){
@@ -252,7 +249,6 @@
         }
       }
     }
-
     getPrograms() {
       ProgramService.getAll().then(([programs, metadata]) => {
         this.programs = programs;
@@ -267,17 +263,13 @@
         throw error;
       });
     }
-
     setActiveLinkSubmenus() {
       var path: string = this.$route.path;
       this.programManagementActive = path.includes('/program-management/');
       this.traitsActive = path.includes('/traits/');
     }
-
     hideProgramSelect() {
       this.programSelectActive = false;
     }
-
   }
-
 </script>
