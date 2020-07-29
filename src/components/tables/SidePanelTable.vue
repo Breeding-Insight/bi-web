@@ -41,7 +41,7 @@
       <!-- is-one-third-desktop is-half-tablet -is-half-mobile -->
       <div v-bind:class="{'column is-narrow is-gapless pl-0': !panelOpen, 'column is-one-third-desktop is-half-tablet is-half-mobile is-gapless pl-0': panelOpen}" >
         <side-panel v-if="panelOpen" v-on:close-panel="closePanel" v-bind:background-color-class="'has-background-info-light'">
-          <slot name="side-panel"/>
+          <slot v-bind:data="selectedRow.data" name="side-panel"/>
         </side-panel>
         
         <!-- <slot v-if="panelOpen" name="side-panel"/> -->

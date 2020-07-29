@@ -35,7 +35,7 @@
         data: T
       -->
       <template v-slot:columns="data">
-        <TableColumn name="name" v-bind:label="'Name'" v-bind:width="200">
+        <TableColumn name="name" v-bind:label="'Name'"> <!-- v-bind:width="200" -->
           {{ data.traitName }}
         </TableColumn>
         <TableColumn name="level" v-bind:label="'Level'" v-bind:visible="!collapseColumns">
@@ -49,8 +49,12 @@
         </TableColumn>
       </template>
 
-      <template v-slot:side-panel>
-        <trait-detail-panel v-bind:trait="traits[0]"/>
+      <!-- 
+        Side panel data slot specification
+        data: T
+      -->
+      <template v-slot:side-panel="data">
+        <trait-detail-panel v-bind:data="data"/>
       </template>
 
       <!-- 
