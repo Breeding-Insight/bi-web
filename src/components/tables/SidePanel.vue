@@ -32,6 +32,7 @@
   export default class SidePanel extends Vue {
     @Prop()
     backgroundColorClass!: string;
+
   }
 </script>
 
