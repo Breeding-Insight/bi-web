@@ -382,6 +382,11 @@ nav.tabs li.is-active {
   height:100vh;
 }
 
+
+.stuck {
+  position: sticky; 
+  top: 0;
+}
 a.is-underlined {
   text-decoration: underline;
 }
