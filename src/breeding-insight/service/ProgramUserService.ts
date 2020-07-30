@@ -31,7 +31,7 @@ export class ProgramUserService {
 
     return new Promise<ProgramUser>((resolve, reject) => {
 
-      if (programUser.id === undefined && programUser.program) {
+      if (programUser.program) {
 
           ProgramUserDAO.create(programUser).then((biResponse) => {
             const result: any = biResponse.result;
