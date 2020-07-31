@@ -90,6 +90,7 @@
               v-bind:field-help="'New users will receive an email at this address to activate their account.'"
             />
           </div>
+          <!--TODO: Remove when registration flow is complete -->
           <div class="column is-one-fourth">
             <BasicInputField
                 v-model="newUserOrcid"

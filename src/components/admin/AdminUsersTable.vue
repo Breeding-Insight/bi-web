@@ -122,6 +122,7 @@
               v-bind:field-name="'Email'"
             />
           </div>
+          <!--TODO: Remove when registration flow is complete -->
           <div class="column is-one-fourth">
             <BasicInputField
                 v-model="newUser.orcid"
