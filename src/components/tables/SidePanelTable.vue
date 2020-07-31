@@ -25,6 +25,7 @@
               v-on:edit="row.toggleEdit()"
               v-on:remove="$emit('remove', row.data)"
               v-on:selected="rowSelected(row)"
+              v-on:details="rowSelected(row)"
             >
               <slot
                 v-bind="row.data"

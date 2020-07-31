@@ -27,15 +27,21 @@
       <p class="has-text-weight-bold mb-0">Description of collection method</p>
       <p>{{trait.method.description}}</p>
 
-
-      
       <!-- maybe break out controls for reuse -->
       <div class="columns is-mobile is-centered pt-6">
         <div class="column is-narrow">
-          <a>Edit</a>
+          <a v-on:click="$emit('edit')"
+             v-on:keypress.enter.space="$emit('edit')"
+             tabindex="0">
+            Edit
+          </a>
         </div>
         <div class="column is-narrow">
-          <a>Archive</a>
+          <a v-on:click="$emit('archive')"
+             v-on:keypress.enter.space="$emit('archive')"
+             tabindex="0">
+            Archive
+          </a>
         </div>
       </div>
     </template>
