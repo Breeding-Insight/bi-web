@@ -41,21 +41,13 @@
       </thead>
       <tbody>
         <template v-for="(row, index) in tableRows">
-
-          <slot name="icon"></slot>
-
           <!-- slot to customize each row in table -->
           <slot name="row" v-bind:row="row" v-bind:index="index"></slot>
-
-          <slot name="controls"></slot>
-
-
         </template>
       </tbody>
     </table>
   </div>
 </template>
-
 
 <script lang="ts">
 
@@ -70,8 +62,6 @@
   export default class BaseTable extends Vue {
     //<slot name="table-row" v-bind:row-data="program"></slot>
     // Knows all of the data
-    @Prop()
-    headers!: string[];
     @Prop()
     hideMobileHeaders!: string[];
     @Prop()
@@ -97,23 +87,16 @@
       this.initialUpdate = true;
     }
 
-    /*
-    @Watch('columns')
-    updateColumns() {
-      // don't allow hiding columns until collapse is undone
-      if (!this.collapseTable) {
-        this.updatedColumns = [...this.columns];
-      }
+    @Watch('updatedColumns', {immediate:true})
+    updateColSpan() {
+      this.$emit('colspan', this.visibleColumns.length);
     }
-    */
 
     get visibleColumns() {
       return this.updatedColumns.filter((column) => {
           return column.visible || column.visible === undefined
       })
     }
-
-
 
     @Watch('records', {immediate: true, deep:true})
     updateTableRows(newRecords: any, oldRecords: any) {
@@ -139,12 +122,13 @@
         if (difference.length === 1) {
           if (record.id === difference[0]) {
             newTableRow.toggleNew();
+            this.$emit('new-row', newTableRow);
           }
         }
         rowArray.push(newTableRow);
       }
       this.tableRows = rowArray;
     }
-
+    
   }
 </script>

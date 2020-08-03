@@ -18,8 +18,10 @@
 <template>
   <div>
     <template v-if="records.length > 0">
-      <base-table 
+      <base-table
+        v-bind:show-expand-controls="true"
         v-bind="$props"
+        v-on:colspan="colSpan = $event + 1"
         v-on="$listeners"
       >
         <!-- 
@@ -42,16 +44,16 @@
           <template v-if="row.edit">
             <tr
               v-bind:key="'edit' + index"
-              v-bind:class="{'is-selected': row.edit, 'is-new': row.new}"
+              v-bind:class="{'is-edited': row.edit, 'is-new': row.new}"
             >
-              <td v-bind:colspan="columnSpan">
-                <EditDataRowForm
-                  @submit="validateAndSubmit(index)"
+              <td v-bind:colspan="colSpan" class="py-0 px-0">
+                <EditDataRowForm class="mb-0"
+                  @submit="validateAndSubmit(row, index)"
                   @cancel="cancelEdit(row, index)"
                 >
                   <slot
                     v-bind:editData="row.editData"
-                    v-bind:validations="getValidations(index)"
+                    v-bind:validations="getValidations(row, index)"
                     name="edit"
                   />
                 </EditDataRowForm>
@@ -75,7 +77,7 @@
 
 <script lang="ts">
 
-  import {Component, Prop, Vue, Watch} from 'vue-property-decorator'
+  import {Component, Prop, Vue, Watch, Mixins} from 'vue-property-decorator'
   import {TableRow} from "@/breeding-insight/model/view_models/TableRow"
   import BaseTable from '@/components/tables/BaseTable.vue'
   import {Pagination} from "@/breeding-insight/model/BiResponse";
@@ -84,12 +86,12 @@
   import EditDataRowForm from '@/components/forms/EditDataRowForm.vue'
   import {Validations} from "vuelidate-property-decorators";
 
+  import ValidationMixin from '@/mixins/ValidationMixin'
+
   @Component({
     components: { BaseTable, BaseTableRow, EditDataRowForm, PaginationControls }
   })
-  export default class ExpandableRowTable extends BaseTable {
-    @Prop()
-    headers!: string[];
+  export default class ExpandableRowTable extends Mixins(ValidationMixin) {
     @Prop()
     hideMobileHeaders!: string[];
     @Prop()
@@ -101,30 +103,10 @@
     @Prop()
     pagination!: Pagination;
 
-    @Validations()
-    validations() {
-      if (this.rowValidations) {
-        return {
-          tableRows: {
-            $each: {
-              editData: {
-                ...this.rowValidations
-              }
-            }
-          }
-        }
-      }
+    private colSpan = 0;
 
-      return {}
-    }
-  
-    getValidations(index: number) {
-      return this.$v.tableRows.$each[index].editData;
-    }
-
-    get columnSpan() {
-      return this.editable ? this.headers.length + 1 : this.headers.length;
-    }
+    
+    
    
   }
 </script>
