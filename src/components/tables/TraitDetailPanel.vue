@@ -16,15 +16,49 @@
   -->
 
 <template>
-  <div class="trait-details-panel"> <!-- is-full-content-height -->
-    <!-- <side-panel v-bind:background-color-class="'has-background-info-light'"> -->
+  <div class="trait-details-panel is-full-content-height">
     <template v-if="trait">
-      <p class="is-size-5 has-text-weight-bold mb-0">{{trait.traitName}}</p>
+      <p v-if="trait.traitName" class="is-size-5 has-text-weight-bold mb-0">{{trait.traitName}}</p>
+
+      <!-- just shows first abbreviation AKA main abbreviation -->
       <template v-if="trait.abbreviations && trait.abbreviations.length > 0">
         <p class="is-size-7">{{trait.abbreviations[0]}}</p>
       </template>
 
-      <p class="has-text-weight-bold mb-0">Description of collection method</p>
+      <p v-if="scaleTypeString" class="has-text-weight-bold">{{scaleTypeString}}</p>
+
+      <!-- scale types hardcoded for now until we can get them from bi-api -->
+      <template v-if="scaleType && Scale.dataTypeEquals(scaleType, DataType.Ordinal)">
+        <p class="mb-0" v-for="category in trait.scale.categories" :key="category.label">
+          {{ category.label }} = {{category.value}}
+        </p>
+      </template>
+
+      <template v-if="scaleType && Scale.dataTypeEquals(scaleType, DataType.Text)">
+        <!-- TODO -->
+      </template>
+
+      <template v-if="scaleType && Scale.dataTypeEquals(scaleType, DataType.Numerical)">
+        <!-- TODO -->
+      </template>
+
+      <template v-if="scaleType && Scale.dataTypeEquals(scaleType, DataType.Date)">
+        <!-- TODO -->
+      </template>
+
+      <template v-if="scaleType && Scale.dataTypeEquals(scaleType, DataType.Duration)">
+        <!-- TODO -->
+      </template>
+
+      <template v-if="scaleType && Scale.dataTypeEquals(scaleType, DataType.Code)">
+        <!-- TODO -->
+      </template>
+
+      <template v-if="scaleType && Scale.dataTypeEquals(scaleType, DataType.Nominal)">
+        <!-- TODO -->
+      </template>
+
+      <p class="has-text-weight-bold mt-3 mb-0">Description of collection method</p>
       <p>{{trait.method.description}}</p>
 
       <!-- maybe break out controls for reuse -->
@@ -53,6 +87,7 @@
   import {Component, Prop, Vue, Watch} from 'vue-property-decorator'
   import SidePanel from '@/components/tables/SidePanel.vue'
   import {Trait} from '@/breeding-insight/model/Trait'
+  import {Scale, DataType} from '@/breeding-insight/model/Scale'
 
   @Component({
     components: { SidePanel }
@@ -61,20 +96,54 @@
 
     @Prop()
     private data!: any;
-
     private trait: Trait | null = null;
+    private DataType = DataType;
+    private Scale = Scale;
 
     @Watch('data', {immediate: true})
     updatedData() {
       console.log('updated trait data');
       this.trait = this.data.data as Trait;
     }
+
+    get abbreviationsSynonymsString() {
+      var synonyms;
+      var abbsyn = "";
+      if (this.trait && this.trait.abbreviations.length > 0) {
+        abbsyn = this.trait.abbreviations[0];
+      }
+
+
+      return null;
+    }
+
+    get scaleType() {
+      if (this.trait && this.trait.scale && this.trait.scale.dataType) {
+        return this.trait.scale.dataType;
+      }
+      return undefined;
+    }
+
+    get scaleTypeString() {
+      if (this.trait && this.trait.programObservationLevel && this.trait.method && this.trait.scale) {
+        return this.trait.programObservationLevel.name + " " +
+               this.trait.method.methodClass + " using " +
+               this.formatScaleType(this.trait.scale.dataType!);
+      }
+      return undefined;
+    }
+
+    formatScaleType(type: string) : string {
+      return type.charAt(0).toUpperCase() + type.substr(1).toLowerCase();
+    }
     
   }
 </script>
+
 
 <style scoped>
 .is-full-content-height {
   height: 100%;
 }
 </style>
+

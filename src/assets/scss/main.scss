@@ -382,11 +382,15 @@ nav.tabs li.is-active {
   height:100vh;
 }
 
-
-.stuck {
-  position: sticky; 
+.side-panel-scroll {
+  position: sticky;
   top: 0;
+  height: 100vh;
+  overflow-y: scroll;
+  overflow-x: hidden;
 }
+
 a.is-underlined {
   text-decoration: underline;
 }
+
