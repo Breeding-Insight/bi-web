@@ -35,9 +35,3 @@
 
   }
 </script>
-
-<style scoped>
-.is-full-content-height {
-  height: 100%;
-}
-</style>
