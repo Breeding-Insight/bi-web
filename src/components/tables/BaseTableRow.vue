@@ -16,7 +16,7 @@
   -->
 
 <template>
-  <tr v-bind:class="{'is-new': (rowData.new && !rowData.edit), 'is-selected': rowData.edit}" >
+  <tr v-bind:class="{'is-new': (rowData.new && !rowData.edit), 'is-edited': rowData.edit}" >
     <slot></slot>
     <template v-if="rowData.editable">
       <td class="has-text-right is-narrow">
