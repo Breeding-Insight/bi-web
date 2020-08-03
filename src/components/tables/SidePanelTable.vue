@@ -41,7 +41,7 @@
       <!-- <div class="column is-narrow is-gapless px-0"> -->
       <!-- is-one-third-desktop is-half-tablet -is-half-mobile -->
       <div v-bind:class="{'column is-narrow is-gapless pl-0': !panelOpen, 'column is-one-third-desktop is-half-tablet is-half-mobile is-gapless pl-0': panelOpen}" >
-        <side-panel class="stuck" v-if="panelOpen" v-on:close-panel="closePanel" v-bind:background-color-class="'has-background-info-light'">
+        <side-panel class="side-panel-scroll" v-if="panelOpen" v-on:close-panel="closePanel" v-bind:background-color-class="'has-background-info-light'">
           <slot v-bind:data="selectedRow.data" name="side-panel"/>
         </side-panel>
         
@@ -69,8 +69,10 @@
   import { createMachine, interpret } from '@xstate/fsm';
 
   enum CollapseColumnsState {
-    NOT_COLLAPSED = "NOT_COLLAPSED",
-    COLLAPSED = "COLLAPSED",
+    SMALL_PANEL_OPEN = "SMALL_PANEL_OPEN",
+    SMALL_PANEL_CLOSED = "SMALL_PANEL_CLOSED",
+    NORMAL_PANEL_OPEN = "NORMAL_PANEL_OPEN",
+    NORMAL_PANEL_CLOSED = "NORMAL_PANEL_CLOSED"
   }
 
   enum BreakpointEvent {
@@ -119,24 +121,40 @@
     private CollapseColumnAction = CollapseColumnAction;
     private selectedRow: TableRow<any> = new TableRow(false, {});
 
-    private state = CollapseColumnsState.NOT_COLLAPSED;
+    private state = CollapseColumnsState.NORMAL_PANEL_CLOSED;
     private collapseStateMachine = createMachine({
       id: 'collapse',
-      initial: CollapseColumnsState.NOT_COLLAPSED,
+      initial: CollapseColumnsState.NORMAL_PANEL_CLOSED,
       states: {
-        [CollapseColumnsState.NOT_COLLAPSED]: {
-          entry: CollapseColumnAction.UNCOLLAPSE,
+        [CollapseColumnsState.NORMAL_PANEL_CLOSED]: {
           on: {
-            [BreakpointEvent.TABLET]: CollapseColumnsState.COLLAPSED,
-            [BreakpointEvent.MOBILE]: CollapseColumnsState.COLLAPSED,
+            [BreakpointEvent.TABLET]: CollapseColumnsState.SMALL_PANEL_CLOSED,
+            [BreakpointEvent.MOBILE]: CollapseColumnsState.SMALL_PANEL_CLOSED,
+            [PanelEvent.OPEN]: CollapseColumnsState.NORMAL_PANEL_OPEN,
           } 
         },
-        [CollapseColumnsState.COLLAPSED]: {
+        [CollapseColumnsState.NORMAL_PANEL_OPEN]: {
+          on: {
+            [BreakpointEvent.TABLET]: CollapseColumnsState.SMALL_PANEL_OPEN,
+            [BreakpointEvent.MOBILE]: CollapseColumnsState.SMALL_PANEL_OPEN,
+            [PanelEvent.CLOSED]: CollapseColumnsState.NORMAL_PANEL_CLOSED,
+          } 
+        },
+        [CollapseColumnsState.SMALL_PANEL_CLOSED]: {
+          entry: CollapseColumnAction.UNCOLLAPSE,
+          on: { 
+            [BreakpointEvent.DESKTOP]: CollapseColumnsState.NORMAL_PANEL_CLOSED,
+            [PanelEvent.OPEN]: CollapseColumnsState.SMALL_PANEL_OPEN
+          }
+        },
+        [CollapseColumnsState.SMALL_PANEL_OPEN]: {
           entry: CollapseColumnAction.COLLAPSE,
           on: { 
-            [BreakpointEvent.DESKTOP]: CollapseColumnsState.NOT_COLLAPSED,
-            [PanelEvent.CLOSED]: CollapseColumnsState.NOT_COLLAPSED,
-            [PanelEvent.OPEN]: CollapseColumnsState.COLLAPSED
+            [BreakpointEvent.DESKTOP]: {
+              target: CollapseColumnsState.NORMAL_PANEL_OPEN,
+              actions: [CollapseColumnAction.UNCOLLAPSE]
+            },
+            [PanelEvent.CLOSED]: CollapseColumnsState.SMALL_PANEL_CLOSED,
           }
         },
       }
