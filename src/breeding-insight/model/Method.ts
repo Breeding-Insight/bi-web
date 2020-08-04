@@ -15,6 +15,14 @@
  * limitations under the License.
  */
 
+export enum MethodClass {
+  Computation = "COMPUTATION",
+  Observation = "OBSERVATION",
+  Measurement = "MEASUREMENT",
+  Counting = "COUNTING",
+  Estimation = "ESTIMATION"
+}
+
 export class Method {
   methodName?: string;
   methodClass?: string;
@@ -26,5 +34,9 @@ export class Method {
     this.methodClass = methodClass;
     this.description = description;
     this.formula = formula;
+  }
+
+  static methodClassEquals(classString: string, type: MethodClass): boolean {
+    return classString.toUpperCase() === type;
   }
 }
