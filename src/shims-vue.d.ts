@@ -31,13 +31,19 @@ declare module 'validations' {
     }
   }
 
+  type TableRowValidation = {
+    currentValidationRow: {
+      editData: Validation
+    }
+  }
+
   type NewRecord = {
     newRecord: Validation;
   }
 
   module 'vue/types/vue' {
     interface Vue {
-      $v: TableValidation & NewRecord;
+      $v: TableValidation & NewRecord & TableRowValidation;
     }
   }
 
