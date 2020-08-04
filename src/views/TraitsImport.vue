@@ -71,6 +71,7 @@
 
     <template v-if="state === ImportState.IMPORT_ERROR">
         <h1 class="title">Importing...</h1>
+      <trait-import-template-message-box class="mb-5"/>
         <file-select-message-box v-model="file"
                                  v-bind:fileTypes="'.csv, .xls, .xlsx'"
                                  v-bind:errors="import_errors"
