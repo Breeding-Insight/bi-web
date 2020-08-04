@@ -106,7 +106,7 @@
     private fileChosen = false;
     private file : File | null = null;
 
-    private numDisplayedErrors: number = 5;
+    private numDisplayedErrors: number = 10;
     private displayAllErrors: boolean = false;
 
     @Prop()
