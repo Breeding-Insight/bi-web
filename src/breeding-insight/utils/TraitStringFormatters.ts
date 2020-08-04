@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-import {Scale} from "@/breeding-insight/model/Scale";
+import {Scale, DataType} from "@/breeding-insight/model/Scale";
 import {StringFormatters} from "@/breeding-insight/utils/StringFormatters";
 
 export class TraitStringFormatters {
   
   static getScaleTypeString(scale: Scale): string | undefined {
     if (scale.dataType) {
-      if (scale.categories) {
+      if (scale.categories && (Scale.dataTypeEquals(scale.dataType, DataType.Nominal) || Scale.dataTypeEquals(scale.dataType, DataType.Ordinal))) {
         return StringFormatters.toStartCase(scale.dataType) + " (" + scale.categories.length + ")";
       }
       else {

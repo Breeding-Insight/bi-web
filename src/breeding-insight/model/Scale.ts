@@ -31,11 +31,17 @@ export class Scale {
   scaleName?: string;
   dataType?: string;
   categories?: Array<Category>;
+  decimalPlaces?: number;
+  validValueMin?: number;
+  validValueMax?: number;
 
-  constructor(scaleName?:string, dataType?:string, categories?:Array<Category>) {
+  constructor(scaleName?:string, dataType?:string, categories?:Array<Category>, decimalPlaces?:number, validValueMin?:number, validValueMax?: number) {
     this.scaleName = scaleName;
     this.dataType = dataType;
     this.categories = categories;
+    this.decimalPlaces = decimalPlaces;
+    this.validValueMin = validValueMin;
+    this.validValueMax = validValueMax;
   }
 
   static dataTypeEquals(typeString: string, type: DataType): boolean {
