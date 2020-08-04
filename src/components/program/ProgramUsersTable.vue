@@ -211,7 +211,7 @@ export default class ProgramUsersTable extends Vue {
   public users: ProgramUser[] = [];
   public systemUsers: User[] = [];
   private usersPagination?: Pagination = new Pagination();
-  userTableHeaders: string[] = ['Name', 'Email', 'Orcid', 'Role'];
+  userTableHeaders: string[] = ['Name', 'Email', 'Role'];
 
   private deactivateActive: boolean = false;
   private newUserActive: boolean = false;
