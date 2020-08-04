@@ -88,6 +88,7 @@
   import SidePanel from '@/components/tables/SidePanel.vue'
   import {Trait} from '@/breeding-insight/model/Trait'
   import {Scale, DataType} from '@/breeding-insight/model/Scale'
+  import {StringFormatters} from '@/breeding-insight/utils/StringFormatters'
 
   @Component({
     components: { SidePanel }
@@ -128,13 +129,9 @@
       if (this.trait && this.trait.programObservationLevel && this.trait.method && this.trait.scale) {
         return this.trait.programObservationLevel.name + " " +
                this.trait.method.methodClass + " using " +
-               this.formatScaleType(this.trait.scale.dataType!);
+               StringFormatters.toStartCase(this.trait.scale.dataType!);
       }
       return undefined;
-    }
-
-    formatScaleType(type: string) : string {
-      return type.charAt(0).toUpperCase() + type.substr(1).toLowerCase();
     }
     
   }
