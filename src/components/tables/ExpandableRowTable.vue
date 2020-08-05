@@ -104,9 +104,6 @@
     pagination!: Pagination;
 
     private colSpan = 0;
-
-    
-    
    
   }
 </script>
