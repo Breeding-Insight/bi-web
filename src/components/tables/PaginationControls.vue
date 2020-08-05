@@ -78,6 +78,8 @@
 
 <script lang="ts">
   import { Component, Prop, Vue } from 'vue-property-decorator'
+  import {Pagination} from "@/breeding-insight/model/BiResponse";
+
 
   @Component({
     components: {
