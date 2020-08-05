@@ -111,8 +111,7 @@
       </template>
     </NewDataForm>
 
-    <BaseTable
-      v-bind:headers="userTableHeaders"
+    <ExpandableRowTable
       v-bind:records.sync="users"
       v-bind:row-validations="userValidations"
       v-bind:editable="true"
@@ -124,19 +123,21 @@
       v-on:paginate-toggle-all="paginationController.toggleShowAll()"
       v-on:paginate-page-size="paginationController.updatePageSize($event)"
     >
+
       <template v-slot:columns="data">
-        <TableRowColumn name="name">
+        <TableColumn name="name" v-bind:label="'Name'">
           {{ data.name }}
-        </TableRowColumn>
-        <TableRowColumn name="email">
+        </TableColumn>
+        <TableColumn name="email" v-bind:label="'Email'">
           {{ data.email }}
-        </TableRowColumn>
-        <TableRowColumn name="roles">
+        </TableColumn>
+        <TableColumn name="roles" v-bind:label="'Roles'">
           <template v-if="rolesMap.size > 0">
             {{ getRoleName(data.roleId) }}
           </template>
-        </TableRowColumn>
+        </TableColumn>
       </template>
+
       <template v-slot:edit="{editData, validations}">
         <div class="columns">
           <div class="column is-two-fifths">
@@ -166,29 +167,29 @@
           <p>You can add, edit, and delete users from your program from this panel.</p>
         </EmptyTableMessage>
       </template>
-    </BaseTable>
+    </ExpandableRowTable>
   </section>
 </template>
 
 <script lang="ts">
   import {Component, Prop, Vue, Watch} from 'vue-property-decorator'
-import {PlusCircleIcon} from 'vue-feather-icons'
-import {validationMixin} from 'vuelidate'
-import {required, email} from 'vuelidate/lib/validators'
+  import {PlusCircleIcon} from 'vue-feather-icons'
+  import {validationMixin} from 'vuelidate'
+  import {required, email} from 'vuelidate/lib/validators'
 
-import WarningModal from '@/components/modals/WarningModal.vue'
-import NewDataForm from '@/components/forms/NewDataForm.vue'
-import BasicInputField from "@/components/forms/BasicInputField.vue";
-import BasicSelectField from "@/components/forms/BasicSelectField.vue";
-import BaseTable from "@/components/tables/BaseTable.vue";
-import {ProgramUser} from '@/breeding-insight/model/ProgramUser'
-import TableRowColumn from "@/components/tables/TableRowColumn.vue";
-import {Role} from '@/breeding-insight/model/Role'
-import {ProgramUserService} from "@/breeding-insight/service/ProgramUserService";
-import {RoleService} from "@/breeding-insight/service/RoleService";
-import { mapGetters } from 'vuex'
-import {Program} from "@/breeding-insight/model/Program";
-import EmptyTableMessage from "@/components/tables/EmtpyTableMessage.vue";
+  import WarningModal from '@/components/modals/WarningModal.vue'
+  import NewDataForm from '@/components/forms/NewDataForm.vue'
+  import BasicInputField from "@/components/forms/BasicInputField.vue";
+  import BasicSelectField from "@/components/forms/BasicSelectField.vue";
+  import ExpandableRowTable from "@/components/tables/ExpandableRowTable.vue";
+  import {ProgramUser} from '@/breeding-insight/model/ProgramUser'
+  import TableColumn from "@/components/tables/TableColumn.vue";
+  import {Role} from '@/breeding-insight/model/Role'
+  import {ProgramUserService} from "@/breeding-insight/service/ProgramUserService";
+  import {RoleService} from "@/breeding-insight/service/RoleService";
+  import { mapGetters } from 'vuex'
+  import {Program} from "@/breeding-insight/model/Program";
+  import EmptyTableMessage from "@/components/tables/EmtpyTableMessage.vue";
   import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
   import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
   import {Pagination} from "@/breeding-insight/model/BiResponse";
@@ -197,8 +198,8 @@ import EmptyTableMessage from "@/components/tables/EmtpyTableMessage.vue";
 
 @Component({
   mixins: [validationMixin],
-  components: { NewDataForm, BasicInputField, BasicSelectField, BaseTable, TableRowColumn,
-                WarningModal, PlusCircleIcon, EmptyTableMessage
+  components: { NewDataForm, BasicInputField, BasicSelectField, TableColumn,
+                WarningModal, PlusCircleIcon, EmptyTableMessage, ExpandableRowTable
               },
   computed: {
     ...mapGetters([
@@ -212,7 +213,6 @@ export default class ProgramUsersTable extends Vue {
   public users: ProgramUser[] = [];
   public systemUsers: User[] = [];
   private usersPagination?: Pagination = new Pagination();
-  userTableHeaders: string[] = ['Name', 'Email', 'Role'];
 
   private deactivateActive: boolean = false;
   private newUserActive: boolean = false;
