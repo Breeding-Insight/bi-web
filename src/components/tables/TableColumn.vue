@@ -25,14 +25,12 @@
 
 <script lang="ts">
 
-  import {Component, Prop, Vue, Inject} from "vue-property-decorator";
+  import {Component, Prop, Vue} from "vue-property-decorator";
   import BaseTable from '@/components/tables/BaseTable.vue';
 
   @Component({
   })
   export default class TableColumn extends Vue {
-
-    @Inject('table') readonly table!: BaseTable;
 
     @Prop({ default: true })
     private visible!: boolean;
@@ -46,6 +44,8 @@
     @Prop([Number, String])
     private width!: number | string | undefined;
 
+    private table!: BaseTable;
+
     get isVisible() {
       return this.visible;
     }
@@ -57,10 +57,18 @@
     // any update to column props here will update column in parent table
     // that's how reactive changes are propagated up
     beforeMount() {
-      if (!this.table) {
+      // find table component and add this component to list of columns
+      // based on buefy data table method
+      var parent = this.$parent;
+      while(parent !== undefined && !parent.$data.isTable) {
+        parent = parent.$parent;
+      }
+
+      if (parent === undefined) {
         this.$destroy()
         throw new Error('TableColumn should be a child of BaseTable');
       }
+      this.table = parent;
       this.table.addColumn(this);
     }
 
