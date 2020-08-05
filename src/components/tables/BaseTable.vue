@@ -17,6 +17,9 @@
 
 <template>
   <div>
+    <v-breakpoint v-on:mobile="emitAndUpdateIsMobile('mobile')"></v-breakpoint>
+    <v-breakpoint v-on:tablet="emitAndUpdateIsMobile('tablet')"></v-breakpoint>
+    <v-breakpoint v-on:desktop="emitAndUpdateIsMobile('desktop')"></v-breakpoint>
     <table
       class="table is-striped is-narrow is-hoverable is-fullwidth"
     >
@@ -51,22 +54,19 @@
 
 <script lang="ts">
 
-  import {Component, Prop, Vue, Watch, Provide} from 'vue-property-decorator'
+  import {Component, Prop, Vue, Watch} from 'vue-property-decorator'
   import {TableRow} from "@/breeding-insight/model/view_models/TableRow"
   import TableColumn from "@/components/tables/TableColumn.vue";
+  import { VBreakpoint } from '@/components/VBreakpoint';
 
   @Component({
-    components: {
+    components: { VBreakpoint
     }
   })
   export default class BaseTable extends Vue {
 
-    @Provide('table') table = this;
-    
     //<slot name="table-row" v-bind:row-data="program"></slot>
     // Knows all of the data
-    @Prop()
-    hideMobileHeaders!: string[];
     @Prop()
     records!: Array<any>;
     @Prop()
@@ -82,6 +82,8 @@
     private previouslyVisible: Array<TableColumn> = [];
     private tableRows: Array<TableRow<any>> = new Array<TableRow<any>>();
     private updatedColumns: Array<TableColumn> = [...this.columns];
+    private isMobile = false;
+    private isTable = true;
 
     updated() {
       this.initialUpdate = true;
@@ -122,7 +124,6 @@
         if (difference.length === 1) {
           if (record.id === difference[0]) {
             newTableRow.toggleNew();
-            this.$emit('new-row', newTableRow);
           }
         }
         rowArray.push(newTableRow);
@@ -147,6 +148,22 @@
           (col) => col.newKey).indexOf(column.newKey)
         if (index >= 0) {
           this.updatedColumns.splice(index, 1);
+        }
+      }
+    }
+
+    emitAndUpdateIsMobile(event: string) {
+      this.$emit(event);
+      if (this.isMobile) {
+        if (event === 'tablet' || event === 'desktop') {
+          this.isMobile = false;
+          this.$emit('is-mobile', false);
+        }
+      }
+      else {
+        if (event === 'mobile') {
+          this.isMobile = true;
+          this.$emit('is-mobile', true);
         }
       }
     }
