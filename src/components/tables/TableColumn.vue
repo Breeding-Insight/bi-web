@@ -25,10 +25,14 @@
 
 <script lang="ts">
 
-  import {Component, Prop, Vue} from "vue-property-decorator";
+  import {Component, Prop, Vue, Inject} from "vue-property-decorator";
+  import BaseTable from '@/components/tables/BaseTable.vue';
 
-  @Component
+  @Component({
+  })
   export default class TableColumn extends Vue {
+
+    @Inject('table') readonly table!: BaseTable;
 
     @Prop({ default: true })
     private visible!: boolean;
@@ -42,44 +46,27 @@
     @Prop([Number, String])
     private width!: number | string | undefined;
 
-    private newKey = this.label;
-
-    private table!: Vue;
-
     get isVisible() {
       return this.visible;
+    }
+
+    get newKey() {
+      return this.label;
     }
 
     // any update to column props here will update column in parent table
     // that's how reactive changes are propagated up
     beforeMount() {
-
-      // find table component and add this component to list of columns
-      // based on buefy data table method
-      var parent = this.$parent;
-      while(parent !== undefined && !parent.$data.isTable) {
-        parent = parent.$parent;
+      if (!this.table) {
+        this.$destroy()
+        throw new Error('TableColumn should be a child of BaseTable');
       }
-      const repeated = parent.$data.updatedColumns.some(
-          (column) => column.newKey === this.newKey)
-
-      if (!repeated) {
-        this.table = parent;
-        parent.$data.updatedColumns.push(this);
-      }
+      this.table.addColumn(this);
     }
 
     beforeDestroy() {
       if (!this.table) return;
-      if (!this.table.$data.tableRows.length) return;
-      if (this.table.$data.updatedColumns.length !== 1) return;
-      if (this.table.$data.updatedColumns.length) {
-          const index = this.table.$data.updatedColumns.map(
-              (column) => column.newKey).indexOf(this.newKey)
-          if (index >= 0) {
-              this.table.$data.updatedColumns.splice(index, 1);
-          }
-      }
+      this.table.removeColumn(this);
     }
   }
 
