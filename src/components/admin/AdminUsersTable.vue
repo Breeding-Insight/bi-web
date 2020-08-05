@@ -141,9 +141,7 @@
       </template>
     </NewDataForm>
 
-    <BaseTable
-      v-bind:headers="userTableHeaders"
-      v-bind:hide-mobile-headers="hideMobileHeaders"
+    <ExpandableRowTable
       v-bind:records.sync="users"
       v-bind:row-validations="userValidations"
       v-bind:editable="true"
@@ -154,24 +152,25 @@
       v-on:paginate="paginationController.updatePage($event)"
       v-on:paginate-toggle-all="paginationController.toggleShowAll()"
       v-on:paginate-page-size="paginationController.updatePageSize($event)"
+      v-on:is-mobile="isMobile = $event"
     >
       <template v-slot:columns="data">
-        <TableRowColumn name="name">
+        <TableColumn name="name" v-bind:label="'Name'">
           {{ data.name }}
-        </TableRowColumn>
-        <TableRowColumn name="email" class="is-hidden-mobile">
+        </TableColumn>
+         <TableColumn name="email" v-bind:label="'Email'" v-bind:visible="!isMobile">
           {{ data.email }}
-        </TableRowColumn>
+        </TableColumn>
         <!--TODO: Remove when registration flow is complete -->
-        <TableRowColumn name="orcid" class="is-hidden-mobile">
+        <TableColumn name="orcid" v-bind:label="'Orcid'" v-bind:visible="!isMobile">
           {{ data.orcid }}
-        </TableRowColumn>
-        <TableRowColumn name="roles">
+        </TableColumn>
+        <TableColumn name="roles" v-bind:label="'Role'">
           <template v-if="rolesMap.size > 0">
             {{ getRoleName(data.roleId) }}
           </template>
-        </TableRowColumn>
-        <TableRowColumn>
+        </TableColumn>
+        <TableColumn name="programs" v-bind:label="'Programs'">
           <template
             v-if="getRoleName(data.roleId) === 'admin'"
           >
@@ -197,7 +196,7 @@
               <span v-if="index !== data.programRoles.length - 1">, </span>
             </span>
           </template>
-        </TableRowColumn>
+        </TableColumn>
       </template>
       <template v-slot:edit="{editData, validations}">
         <div class="columns">
@@ -236,36 +235,36 @@
           </div>
         </div>
       </template>
-    </BaseTable>
+    </ExpandableRowTable>
   </div>
 </template>
 
 <script lang="ts">
   import {Component, Prop, Vue, Watch} from 'vue-property-decorator'
-import { User } from '@/breeding-insight/model/User'
-import { PlusCircleIcon } from 'vue-feather-icons'
-import WarningModal from '@/components/modals/WarningModal.vue'
+  import { User } from '@/breeding-insight/model/User'
+  import { PlusCircleIcon } from 'vue-feather-icons'
+  import WarningModal from '@/components/modals/WarningModal.vue'
 
-import {required, email} from 'vuelidate/lib/validators'
-import BaseTable from "@/components/tables/BaseTable.vue";
-import TableRowColumn from "@/components/tables/TableRowColumn.vue";
-import BasicInputField from "@/components/forms/BasicInputField.vue";
-import {UserService} from "@/breeding-insight/service/UserService";
-import NewDataForm from "@/components/forms/NewDataForm.vue";
-import {RoleService} from "@/breeding-insight/service/RoleService";
-import {Role} from "@/breeding-insight/model/Role";
-import {SystemRoleService} from "@/breeding-insight/service/SystemRoleService";
-import BasicSelectField from "@/components/forms/BasicSelectField.vue";
-import {PromiseHandler} from "@/breeding-insight/service/PromiseHandler";
-import {PromiseResult} from "promise.allsettled/types";
-import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
+  import {required, email} from 'vuelidate/lib/validators'
+  import ExpandableRowTable from "@/components/tables/ExpandableRowTable.vue";
+  import TableColumn from "@/components/tables/TableColumn.vue";
+  import BasicInputField from "@/components/forms/BasicInputField.vue";
+  import {UserService} from "@/breeding-insight/service/UserService";
+  import NewDataForm from "@/components/forms/NewDataForm.vue";
+  import {RoleService} from "@/breeding-insight/service/RoleService";
+  import {Role} from "@/breeding-insight/model/Role";
+  import {SystemRoleService} from "@/breeding-insight/service/SystemRoleService";
+  import BasicSelectField from "@/components/forms/BasicSelectField.vue";
+  import {PromiseHandler} from "@/breeding-insight/service/PromiseHandler";
+  import {PromiseResult} from "promise.allsettled/types";
+  import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
   import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
   import {Pagination} from "@/breeding-insight/model/BiResponse";
 
 
 @Component({
   components: {
-    NewDataForm, PlusCircleIcon, WarningModal, BaseTable, TableRowColumn, BasicInputField, BasicSelectField
+    NewDataForm, PlusCircleIcon, WarningModal, ExpandableRowTable, TableColumn, BasicInputField, BasicSelectField
   }
 })
 export default class AdminUsersTable extends Vue {
@@ -276,6 +275,7 @@ export default class AdminUsersTable extends Vue {
   private currentDeleteUser: User | undefined;
   private roles: Role[] = [];
   private rolesMap: Map<string, Role> = new Map();
+  private isMobile = false;
 
   userValidations = {
     name: {required},
@@ -287,8 +287,6 @@ export default class AdminUsersTable extends Vue {
 
   public users: User[] = [];
   private usersPagination?: Pagination = new Pagination();
-  private userTableHeaders = ['Name', 'Email', 'Orcid', 'Role', 'Programs'];
-  private hideMobileHeaders = ['Email', 'Orcid'];
 
   mounted() {
     this.getRoles();

@@ -2,12 +2,13 @@
   <div class="side-panel-table">
     <div class="columns is-mobile">
       <div class="column pr-0">
-        <v-breakpoint v-on:mobile="collapseService.send(BreakpointEvent.MOBILE)"></v-breakpoint>
-        <v-breakpoint v-on:tablet="collapseService.send(BreakpointEvent.TABLET)"></v-breakpoint>
-        <v-breakpoint v-on:desktop="collapseService.send(BreakpointEvent.DESKTOP)"></v-breakpoint>
+        
         <base-table 
           v-bind:show-expand-controls="true"
           v-bind="$props"
+          v-on:mobile="collapseService.send(BreakpointEvent.MOBILE)"
+          v-on:tablet="collapseService.send(BreakpointEvent.TABLET)"
+          v-on:desktop="collapseService.send(BreakpointEvent.DESKTOP)"
           v-on="$listeners"
         >          
 
@@ -62,10 +63,7 @@
   import BaseTableRow from '@/components/tables/BaseTableRow.vue'
   import SidePanelTableRow from '@/components/tables/SidePanelTableRow.vue'
   import PaginationControls from '@/components/tables/PaginationControls.vue'
-  import { TableColumn } from '../../breeding-insight/model/view_models/TableColumn';
-  import { VBreakpoint } from '@/components/VBreakpoint';
   import {TableRow} from "@/breeding-insight/model/view_models/TableRow"
-
   import { createMachine, interpret } from '@xstate/fsm';
 
   enum CollapseColumnsState {
@@ -93,15 +91,11 @@
 
   @Component({
     components: {
-      BaseTable, SidePanel, BaseTableRow, SidePanelTableRow, PaginationControls, VBreakpoint
+      BaseTable, SidePanel, BaseTableRow, SidePanelTableRow, PaginationControls
     }
   })
   export default class SidePanelTable extends Vue {
 
-    @Prop()
-    headers!: string[];
-    @Prop()
-    hideMobileHeaders!: string[];
     @Prop()
     records!: Array<any>;
     @Prop()
@@ -176,7 +170,6 @@
 
     created() {
       this.collapseService.subscribe(state => {
-        console.log(state);
         this.state = CollapseColumnsState[state.value as keyof typeof CollapseColumnsState];
       });
       this.collapseService.start();
@@ -184,17 +177,14 @@
 
     // send events and allow caller to customize what column(s) are shown for collapsed state
     collapse() {
-      console.log('collapse')
       this.$emit('collapse-columns');
     }
 
     unCollapse() {
-      console.log('uncollapse')
       this.$emit('uncollapse-columns');
     }
 
     rowSelected(row: TableRow<any>) {
-      console.log('row selected');
       row.selected = true;
       this.selectedRow = row;
       this.panelOpen = true;

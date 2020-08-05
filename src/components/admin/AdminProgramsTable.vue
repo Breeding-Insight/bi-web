@@ -91,8 +91,7 @@
       </template>
     </NewDataForm>
 
-    <BaseTable
-      v-bind:headers="programTableHeaders"
+    <ExpandableRowTable
       v-bind:records.sync="programs"
       v-bind:row-validations="programValidations"
       v-bind:editable="true"
@@ -105,21 +104,21 @@
       v-on:paginate-page-size="paginationController.updatePageSize($event)"
     >
       <template v-slot:columns="data">
-        <TableRowColumn name="name">
+        <TableColumn name="name" v-bind:label="'Name'">
           <router-link
             v-bind:to="{name: 'program-home', params: {programId: data.id}}"
           >
             {{ data.name }}
           </router-link>
-        </TableRowColumn>
-        <TableRowColumn name="species">
+        </TableColumn>
+        <TableColumn name="species" v-bind:label="'Species'">
           <template v-if="speciesMap.size > 0">
             {{ getSpeciesName(data.speciesId) }}
           </template>
-        </TableRowColumn>
-        <TableRowColumn name="numUsers">
+        </TableColumn>
+        <TableColumn name="numUsers" v-bind:label="'# Users'">
           {{ data.numUsers }}
-        </TableRowColumn>
+        </TableColumn>
       </template>
       <template v-slot:edit="{editData, validations}">
         <div class="columns">
@@ -154,31 +153,31 @@
           You can add, edit, and delete programs from this panel.
         </EmtpyTableMessage>
       </template>
-    </BaseTable>
+    </ExpandableRowTable>
   </section>
 </template>
 
 <script lang="ts">
   import {Component, Prop, Vue, Watch} from 'vue-property-decorator'
-import {PlusCircleIcon} from 'vue-feather-icons'
-import {validationMixin} from 'vuelidate'
-import {required} from 'vuelidate/lib/validators'
+  import {PlusCircleIcon} from 'vue-feather-icons'
+  import {validationMixin} from 'vuelidate'
+  import {required} from 'vuelidate/lib/validators'
 
-import WarningModal from '@/components/modals/WarningModal.vue'
-import EditDataRowForm from '@/components/forms/EditDataRowForm.vue'
-import {Program} from '@/breeding-insight/model/Program'
-import {Species} from '@/breeding-insight/model/Species'
-import BaseTable from "@/components/tables/BaseTable.vue";
-import TableRowColumn from "@/components/tables/TableRowColumn.vue";
-import BasicInputField from "@/components/forms/BasicInputField.vue";
-import BasicSelectField from "@/components/forms/BasicSelectField.vue";
-import {ProgramService} from "@/breeding-insight/service/ProgramService";
-import {SpeciesService} from "@/breeding-insight/service/SpeciesService";
-import NewDataForm from "@/components/forms/NewDataForm.vue";
-import EmtpyTableMessage from "@/components/tables/EmtpyTableMessage.vue";
-import {EventBus} from "@/util/event-bus";
-import {Metadata, Pagination} from "@/breeding-insight/model/BiResponse";
-import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
+  import WarningModal from '@/components/modals/WarningModal.vue'
+  import EditDataRowForm from '@/components/forms/EditDataRowForm.vue'
+  import {Program} from '@/breeding-insight/model/Program'
+  import {Species} from '@/breeding-insight/model/Species'
+  import ExpandableRowTable from "@/components/tables/ExpandableRowTable.vue";
+  import TableColumn from "@/components/tables/TableColumn.vue";
+  import BasicInputField from "@/components/forms/BasicInputField.vue";
+  import BasicSelectField from "@/components/forms/BasicSelectField.vue";
+  import {ProgramService} from "@/breeding-insight/service/ProgramService";
+  import {SpeciesService} from "@/breeding-insight/service/SpeciesService";
+  import NewDataForm from "@/components/forms/NewDataForm.vue";
+  import EmtpyTableMessage from "@/components/tables/EmtpyTableMessage.vue";
+  import {EventBus} from "@/util/event-bus";
+  import {Metadata, Pagination} from "@/breeding-insight/model/BiResponse";
+  import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
   import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
 
 @Component({
@@ -186,14 +185,13 @@ import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
   components: {
     EmtpyTableMessage,
     NewDataForm, EditDataRowForm, WarningModal, PlusCircleIcon,
-    BaseTable, TableRowColumn, BasicInputField, BasicSelectField
+    ExpandableRowTable, TableColumn, BasicInputField, BasicSelectField
   }
 })
 export default class AdminProgramsTable extends Vue {
 
   private programs: Array<Program> = [];
   private programsPagination?: Pagination = new Pagination();
-  programTableHeaders: string[] = ['Name', 'Species', '# Users'];
 
   private deactivateActive: boolean = false;
   private newProgramActive: boolean = false;

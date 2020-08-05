@@ -93,8 +93,6 @@
   })
   export default class ExpandableRowTable extends Mixins(ValidationMixin) {
     @Prop()
-    hideMobileHeaders!: string[];
-    @Prop()
     records!: Array<any>;
     @Prop()
     rowValidations!: Object;
