@@ -114,7 +114,6 @@
 
     @Watch('data', {immediate: true})
     updatedData() {
-      console.log('updated trait data');
       this.trait = this.data.data as Trait;
     }
 
