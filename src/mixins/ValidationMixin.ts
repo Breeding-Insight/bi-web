@@ -25,10 +25,7 @@ class ValidationMixin extends Vue {
     }
   
     getValidations(record: TableRow<any>, index: number) {
-      console.log('GET VALIDATIONS');
       this.currentValidationRow = record;
-      console.log(this.currentValidationRow);
-      console.log(this.$v);
       return this.$v.currentValidationRow;
     }
 
