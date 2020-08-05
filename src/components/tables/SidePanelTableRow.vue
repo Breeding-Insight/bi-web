@@ -17,7 +17,7 @@
 
 <template>
   <tr v-on:click="$emit('selected')" 
-      v-bind:class="{'is-new': (rowData.new && !rowData.edit), 'is-selected': rowData === selectedRow}" >
+      v-bind:class="{'is-new': (rowData.new && !rowData.selected), 'is-selected': rowData === selectedRow}" >
     <slot></slot>
     <td class="has-text-right is-narrow">
       <a v-if="!panelOpen"
@@ -35,7 +35,7 @@
 
 <script lang="ts">
   import {Component, Prop, Vue} from "vue-property-decorator";
-  import { TableRow } from '../../breeding-insight/model/view_models/TableRow';
+  import { TableRow } from '@/breeding-insight/model/view_models/TableRow';
   import {ChevronRightIcon} from 'vue-feather-icons'
 
   @Component({

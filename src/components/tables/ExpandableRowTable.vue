@@ -30,7 +30,7 @@
           index: number
         -->
         <template v-slot:row="{row, index}">
-          <BaseTableRow
+          <ExpandableTableRow
             v-bind:key="'row' + index"
             v-bind:row-data="row"
             v-on:edit="row.toggleEdit()"
@@ -40,7 +40,7 @@
               v-bind="row.data"
               name="columns"
             />
-          </BaseTableRow>
+          </ExpandableTableRow>
           <template v-if="row.edit">
             <tr
               v-bind:key="'edit' + index"
@@ -82,14 +82,14 @@
   import BaseTable from '@/components/tables/BaseTable.vue'
   import {Pagination} from "@/breeding-insight/model/BiResponse";
   import PaginationControls from '@/components/tables/PaginationControls.vue'
-  import BaseTableRow from "@/components/tables/BaseTableRow.vue"
+  import ExpandableTableRow from "@/components/tables/ExpandableTableRow.vue"
   import EditDataRowForm from '@/components/forms/EditDataRowForm.vue'
   import {Validations} from "vuelidate-property-decorators";
 
   import ValidationMixin from '@/mixins/ValidationMixin'
 
   @Component({
-    components: { BaseTable, BaseTableRow, EditDataRowForm, PaginationControls }
+    components: { BaseTable, ExpandableTableRow, EditDataRowForm, PaginationControls }
   })
   export default class ExpandableRowTable extends Mixins(ValidationMixin) {
     @Prop()

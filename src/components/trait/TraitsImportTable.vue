@@ -35,7 +35,7 @@
         data: T
       -->
       <template v-slot:columns="data">
-        <TableColumn name="name" v-bind:label="'Name'"> <!-- v-bind:width="200" -->
+        <TableColumn name="name" v-bind:label="'Name'">
           {{ data.traitName }}
         </TableColumn>
         <TableColumn name="level" v-bind:label="'Level'" v-bind:visible="!collapseColumns">
@@ -79,7 +79,6 @@
   import {Component, Prop, Vue, Watch} from 'vue-property-decorator'
   import {PlusCircleIcon} from 'vue-feather-icons'
   import {validationMixin} from 'vuelidate'
-  import BaseTable from "@/components/tables/BaseTable.vue";
   import SidePanelTable from "@/components/tables/SidePanelTable.vue";
   import TraitDetailPanel from "@/components/tables/TraitDetailPanel.vue";
   import TableColumn from "@/components/tables/TableColumn.vue";
@@ -97,7 +96,7 @@
   
 @Component({
   mixins: [validationMixin],
-  components: { BaseTable, TableColumn, SidePanelTable, TraitDetailPanel,
+  components: { TableColumn, SidePanelTable, TraitDetailPanel,
                 PlusCircleIcon, EmptyTableMessage
               },
   computed: {

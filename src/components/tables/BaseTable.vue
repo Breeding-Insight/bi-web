@@ -102,7 +102,6 @@
 
     @Watch('records', {immediate: true, deep:true})
     updateTableRows(newRecords: any, oldRecords: any) {
-
       let difference: Array<string> = [];
       if (oldRecords !== null && this.initialUpdate) {
         const newSet: Set<string> = new Set(newRecords
