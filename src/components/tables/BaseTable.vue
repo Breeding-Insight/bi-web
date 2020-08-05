@@ -51,15 +51,18 @@
 
 <script lang="ts">
 
-  import {Component, Prop, Vue, Watch} from 'vue-property-decorator'
+  import {Component, Prop, Vue, Watch, Provide} from 'vue-property-decorator'
   import {TableRow} from "@/breeding-insight/model/view_models/TableRow"
-  import { TableColumn } from '../../breeding-insight/model/view_models/TableColumn';
+  import TableColumn from "@/components/tables/TableColumn.vue";
 
   @Component({
     components: {
     }
   })
   export default class BaseTable extends Vue {
+
+    @Provide('table') table = this;
+    
     //<slot name="table-row" v-bind:row-data="program"></slot>
     // Knows all of the data
     @Prop()
@@ -75,13 +78,10 @@
     @Prop()
     showRowIcon!: boolean;
     
-    initialUpdate: boolean = false;
-
-    private tableRows: Array<TableRow<any>> = new Array<TableRow<any>>();
-    public updatedColumns: Array<TableColumn> = [...this.columns];
-    public isTable = true;
-
+    private initialUpdate: boolean = false;
     private previouslyVisible: Array<TableColumn> = [];
+    private tableRows: Array<TableRow<any>> = new Array<TableRow<any>>();
+    private updatedColumns: Array<TableColumn> = [...this.columns];
 
     updated() {
       this.initialUpdate = true;
@@ -94,7 +94,7 @@
 
     get visibleColumns() {
       return this.updatedColumns.filter((column) => {
-          return column.visible || column.visible === undefined
+          return column.isVisible || column.isVisible === undefined
       })
     }
 
@@ -129,6 +129,27 @@
       }
       this.tableRows = rowArray;
     }
-    
+
+    addColumn(column: TableColumn) {
+      const repeated = this.updatedColumns.some(
+          (col) => col.newKey === column.newKey)
+
+      if (!repeated) {
+        this.updatedColumns.push(column);
+      }
+    }
+
+    removeColumn(column: TableColumn) {
+      if (!this.tableRows.length) return;
+      if (this.updatedColumns.length !== 1) return;
+      if (this.updatedColumns.length) {
+        const index = this.updatedColumns.map(
+          (col) => col.newKey).indexOf(column.newKey)
+        if (index >= 0) {
+          this.updatedColumns.splice(index, 1);
+        }
+      }
+    }
+
   }
 </script>
