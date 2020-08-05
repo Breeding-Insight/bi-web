@@ -52,7 +52,7 @@
   @Component({
     components: { ChevronRightIcon, ChevronDownIcon }
   })
-  export default class BaseTableRow extends Vue {
+  export default class ExpandableTableRow extends Vue {
 
     // Knows its row values and its column objects
     @Prop()

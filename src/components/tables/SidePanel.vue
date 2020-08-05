@@ -16,7 +16,7 @@
   -->
 
 <template>
-  <div v-bind:class="['box', backgroundColorClass]"> <!-- v-bind:style="'width: 500px'" -->
+  <div v-bind:class="['box', backgroundColorClass]">
     <button class="delete is-pulled-right has-text-right px-0" v-on:click="$emit('close-panel')" aria-label="close"/>
     <slot/>
   </div>

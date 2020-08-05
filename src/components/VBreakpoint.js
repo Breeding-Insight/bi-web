@@ -17,13 +17,12 @@
 
 import { extend } from 'vue-breakpoint-component'
  
-// Default configuration:
 const config = {
-  // breakpoints for bulma, need to still mess with stuff to get matching with bulma classes
+  // breakpoints for bulma
   breakpoints: {
-    mobile: '(min-width: 529px)',//768
-    tablet: '(min-width: 768px)',//1024
-    desktop: '(min-width: 1024px)',//1216
+    mobile: '(min-width: 529px)',
+    tablet: '(min-width: 768px)',
+    desktop: '(min-width: 1024px)'
   },
   debounceTime: 100,
   experimental: false

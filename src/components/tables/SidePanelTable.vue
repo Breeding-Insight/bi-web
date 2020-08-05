@@ -54,7 +54,6 @@
   import {Pagination} from "@/breeding-insight/model/BiResponse";
   import BaseTable from '@/components/tables/BaseTable.vue'
   import SidePanel from '@/components/tables/SidePanel.vue'
-  import BaseTableRow from '@/components/tables/BaseTableRow.vue'
   import SidePanelTableRow from '@/components/tables/SidePanelTableRow.vue'
   import PaginationControls from '@/components/tables/PaginationControls.vue'
   import {TableRow} from "@/breeding-insight/model/view_models/TableRow"
@@ -85,7 +84,7 @@
 
   @Component({
     components: {
-      BaseTable, SidePanel, BaseTableRow, SidePanelTableRow, PaginationControls
+      BaseTable, SidePanel, SidePanelTableRow, PaginationControls
     }
   })
   export default class SidePanelTable extends Vue {
