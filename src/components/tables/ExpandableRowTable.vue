@@ -17,58 +17,60 @@
 
 <template>
   <div>
-    <template v-if="records.length > 0">
-      <base-table
-        v-bind:show-expand-controls="true"
-        v-bind="$props"
-        v-on:colspan="colSpan = $event + 1"
-        v-on="$listeners"
-      >
-        <!-- 
-          Table row slot customization
-          row:   TableRow<any>
-          index: number
-        -->
-        <template v-slot:row="{row, index}">
-          <ExpandableTableRow
-            v-bind:key="'row' + index"
-            v-bind:row-data="row"
-            v-on:edit="row.toggleEdit()"
-            v-on:remove="$emit('remove', row.data)"
+    <!-- need to have base-table loaded for watching records 
+         for new highlighting so use v-show 
+    -->
+    <base-table
+      v-show="records.length > 0"
+      v-bind:show-expand-controls="true"
+      v-bind="$props"
+      v-on:colspan="colSpan = $event + 1"
+      v-on="$listeners"
+    >
+      <!-- 
+        Table row slot customization
+        row:   TableRow<any>
+        index: number
+      -->
+      <template v-slot:row="{row, index}">
+        <ExpandableTableRow
+          v-bind:key="'row' + index"
+          v-bind:row-data="row"
+          v-on:edit="row.toggleEdit()"
+          v-on:remove="$emit('remove', row.data)"
+        >
+          <slot
+            v-bind="row.data"
+            name="columns"
+          />
+        </ExpandableTableRow>
+        <template v-if="row.edit">
+          <tr
+            v-bind:key="'edit' + index"
+            v-bind:class="{'is-edited': row.edit, 'is-new': row.new}"
           >
-            <slot
-              v-bind="row.data"
-              name="columns"
-            />
-          </ExpandableTableRow>
-          <template v-if="row.edit">
-            <tr
-              v-bind:key="'edit' + index"
-              v-bind:class="{'is-edited': row.edit, 'is-new': row.new}"
-            >
-              <td v-bind:colspan="colSpan" class="py-0 px-0">
-                <EditDataRowForm class="mb-0"
-                  @submit="validateAndSubmit(row, index)"
-                  @cancel="cancelEdit(row, index)"
-                >
-                  <slot
-                    v-bind:editData="row.editData"
-                    v-bind:validations="getValidations(row, index)"
-                    name="edit"
-                  />
-                </EditDataRowForm>
-              </td>
-            </tr>
-          </template>
+            <td v-bind:colspan="colSpan" class="py-0 px-0">
+              <EditDataRowForm class="mb-0"
+                @submit="validateAndSubmit(row, index)"
+                @cancel="cancelEdit(row, index)"
+              >
+                <slot
+                  v-bind:editData="row.editData"
+                  v-bind:validations="getValidations(row, index)"
+                  name="edit"
+                />
+              </EditDataRowForm>
+            </td>
+          </tr>
         </template>
+      </template>
 
-        <slot v-for="(_, name) in $slots" :name="name" :slot="name" />
-        <template v-for="(_, name) in $scopedSlots" :slot="name" slot-scope="slotData"><slot :name="name" v-bind="slotData" /></template>
-      </base-table>
+      <slot v-for="(_, name) in $slots" :name="name" :slot="name" />
+      <template v-for="(_, name) in $scopedSlots" :slot="name" slot-scope="slotData"><slot :name="name" v-bind="slotData" /></template>
+    </base-table>
+    <pagination-controls v-show="records.length > 0" v-bind="$props" v-on="$listeners"/>
 
-      <pagination-controls v-bind="$props" v-on="$listeners"/>
-    </template>
-    <template v-else>
+    <template v-if="records.length === 0">
       <slot name="emptyMessage" />
     </template>
 
@@ -85,7 +87,6 @@
   import ExpandableTableRow from "@/components/tables/ExpandableTableRow.vue"
   import EditDataRowForm from '@/components/forms/EditDataRowForm.vue'
   import {Validations} from "vuelidate-property-decorators";
-
   import ValidationMixin from '@/mixins/ValidationMixin'
 
   @Component({

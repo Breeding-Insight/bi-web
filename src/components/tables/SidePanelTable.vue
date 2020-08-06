@@ -2,8 +2,8 @@
   <div class="side-panel-table">
     <div class="columns is-mobile">
       <div class="column pr-0">
-        
-        <base-table 
+        <base-table
+          v-show="records.length > 0"
           v-bind:show-expand-controls="true"
           v-bind="$props"
           v-on:mobile="collapseService.send(BreakpointEvent.MOBILE)"
@@ -40,12 +40,16 @@
         </base-table>
       </div>
       <div v-bind:class="{'column is-narrow is-gapless pl-0': !panelOpen, 'column is-one-third-desktop is-half-tablet is-half-mobile is-gapless pl-0': panelOpen}" >
-        <side-panel class="side-panel-scroll" v-if="panelOpen" v-on:close-panel="closePanel" v-bind:background-color-class="'has-background-info-light'">
+        <side-panel v-show="records.length > 0" class="side-panel-scroll" v-if="panelOpen" v-on:close-panel="closePanel" v-bind:background-color-class="'has-background-info-light'">
           <slot v-bind:data="selectedRow.data" name="side-panel"/>
         </side-panel>
       </div>
     </div>
-    <pagination-controls v-bind="$props" v-on="$listeners"/>
+    <pagination-controls v-show="records.length > 0" v-bind="$props" v-on="$listeners"/>
+    
+    <template v-if="records.length === 0">
+      <slot name="emptyMessage" />
+    </template>
   </div>
 </template>
 
