@@ -43,7 +43,7 @@
               </template>
               <template v-else>
                 <span>... and {{allErrors.length - numDisplayedErrors}} more.</span>
-                <a href="#" v-on:click="displayAllErrors = true" class="is-underlined">
+                <a href="#" v-on:click="displayAllErrors = true" class="is-underlined ml-3">
                   View All Errors &gt;
                 </a>
               </template>
