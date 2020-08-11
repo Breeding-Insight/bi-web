@@ -190,6 +190,10 @@
               target: ImportState.CHOOSE_FILE,
               actions: ImportAction.DELETE
             },
+            [ImportEvent.CONFIRMED]: {
+              target: ImportState.CHOOSE_FILE,
+              actions: ImportAction.CONFIRM
+            },
           }
         }
       }
