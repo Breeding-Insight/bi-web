@@ -215,6 +215,9 @@
         [ImportAction.STOP_LOADING]: (context, event) => {
           this.stopLoading();
         },
+        [ImportAction.CONFIRM]: (context, event) => {
+          this.confirm();
+        },
         [ImportAction.DELETE]: (context, event) => {
           this.delete();
         }
