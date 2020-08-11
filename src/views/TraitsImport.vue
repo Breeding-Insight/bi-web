@@ -281,8 +281,13 @@
       this.tableLoaded = true;
     }
 
-    confirm() {
-      //TODO POST /traits
+    async confirm() {
+      try {
+        const [uploadedTraits, metadata] = await TraitUploadService.getTraits(this.activeProgram!.id!);
+        console.log(uploadedTraits);
+      } catch(err) {
+        console.log(err);
+      }
     }
 
     reset() {
