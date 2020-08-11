@@ -288,6 +288,12 @@
         const response = await TraitService.createTraits(this.activeProgram!.id!, uploadedTraits);
         console.log(response);
         console.log(uploadedTraits);
+        this.$router.push({
+          name: 'traits-list',
+          params: {
+            programId: this.activeProgram!.id!
+          },
+        });
       } catch(err) {
         console.log(err);
       }
