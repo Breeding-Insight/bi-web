@@ -87,6 +87,7 @@
   import {ProgramUpload} from '@/breeding-insight/model/ProgramUpload'
   import {Program} from '@/breeding-insight/model/Program'
   import {TraitUploadService} from "@/breeding-insight/service/TraitUploadService";
+  import {TraitService} from "@/breeding-insight/service/TraitService";
 
   import { createMachine, interpret } from '@xstate/fsm';
 
@@ -283,7 +284,10 @@
 
     async confirm() {
       try {
-        const [uploadedTraits, metadata] = await TraitUploadService.getTraits(this.activeProgram!.id!);
+        const [uploadedTraits, uploadMeta] = await TraitUploadService.getTraits(this.activeProgram!.id!);
+        //const [savedTraits, traitMeta] = await TraitService.createTraits(this.activeProgram!.id!, uploadedTraits);
+        const dummy = await TraitService.createTraits(this.activeProgram!.id!, uploadedTraits);
+        console.log(dummy);
         console.log(uploadedTraits);
       } catch(err) {
         console.log(err);

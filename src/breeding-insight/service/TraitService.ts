@@ -23,6 +23,14 @@ import {PaginationController} from "@/breeding-insight/model/view_models/Paginat
 
 export class TraitService {
 
+    static async createTraits(programId: string, newTraits: Trait[]): string {
+        try {
+            return `${newTraits.length} dummy traits`;
+        } catch(err) {
+            console.log(err);
+        }
+    }
+
     static getAll(programId: string, paginationQuery?: PaginationQuery): Promise<Trait[], Metadata> {
         return new Promise<Trait[], Metadata>(((resolve, reject) => {
 
