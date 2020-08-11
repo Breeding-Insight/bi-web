@@ -23,9 +23,14 @@ import {PaginationController} from "@/breeding-insight/model/view_models/Paginat
 
 export class TraitService {
 
-    static async createTraits(programId: string, newTraits: Trait[]): string {
+    static async createTraits(programId: string, newTraits: Trait[]): Promise<Trait[], Metadata> {
         try {
-            return `${newTraits.length} dummy traits`;
+            if (programId) {
+                const { result: { data }, metadata } = await TraitDAO.createTraits(programId, newTraits);
+                console.log(data);
+                console.log(metadata);
+                return [data, metadata];
+            }
         } catch(err) {
             console.log(err);
         }

@@ -36,22 +36,19 @@ export class TraitDAO {
     }))
   }
 
-  // static postTraits(programId: string ): Promise<BiResponse> {
 
-  //   return new Promise<BiResponse>(((resolve, reject) => {
+  static async createTraits(programId: string, newTraits: Trait[]): Promise<BiResponse> {
+      try {
+          const { data } =  await api.call({
+              url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/traits`,
+              method: 'post',
+              data: newTraits
+          });
+          return new BiResponse(data);
+      } catch(err) {
+          console.log(data);
+      }
 
-  //       // Construct request body
-  //       const body = {'name': programLocation.name };
-
-  //       api.call({ url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/traits`, method: 'post' })
-  //       .then((response: any) => {
-  //         const biResponse = new BiResponse(response.data);
-  //         resolve(biResponse);
-  //       }).catch((error) => {
-  //         reject(error);
-  //       })
-
-  //   }))
-  // }
+  }
 
 }

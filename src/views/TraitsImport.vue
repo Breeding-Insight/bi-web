@@ -285,9 +285,8 @@
     async confirm() {
       try {
         const [uploadedTraits, uploadMeta] = await TraitUploadService.getTraits(this.activeProgram!.id!);
-        //const [savedTraits, traitMeta] = await TraitService.createTraits(this.activeProgram!.id!, uploadedTraits);
-        const dummy = await TraitService.createTraits(this.activeProgram!.id!, uploadedTraits);
-        console.log(dummy);
+        const response = await TraitService.createTraits(this.activeProgram!.id!, uploadedTraits);
+        console.log(response);
         console.log(uploadedTraits);
       } catch(err) {
         console.log(err);
