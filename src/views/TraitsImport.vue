@@ -288,6 +288,7 @@
         const response = await TraitService.createTraits(this.activeProgram!.id!, uploadedTraits);
         console.log(response);
         console.log(uploadedTraits);
+        this.$emit('show-success-notification', `Imported traits have been added to ${this.activeProgram.name}.`);
         this.$router.push({
           name: 'traits-list',
           params: {
@@ -295,6 +296,7 @@
           },
         });
       } catch(err) {
+        this.$emit('show-error-notification', `Error: Imported traits were not added to ${this.activeProgram.name}.`);
         console.log(err);
       }
     }
