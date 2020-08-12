@@ -22,7 +22,8 @@ const ora = require('ora');
   let spinner = ora({prefixText: ' ', color: 'yellow'});
   try {
     spinner = spinner.start('linting');
-    let {exitCode, stdout} = await execa('vue-cli-service', ['lint']);
+    // Get build success
+    let {exitCode, stdout} = await execa('vue-cli-service', ['lint', '--no-fix', '--max-errors=0', '--max-warnings=Infinity']);
     if (exitCode === 0) {
       spinner = spinner.clear()
                        .succeed('linting finished');
@@ -30,7 +31,11 @@ const ora = require('ora');
     }
 
   } catch(err) {
-    spinner = spinner.fail('lint ' + err.stdout);
+    // Get full message
+    let {exitCode, stdout} = await execa('vue-cli-service', ['lint', '--no-fix', '--max-errors=Infinity', '--max-warnings=Infinity']);
+    console.log(stdout);
+    spinner = spinner.fail('linting found errors');
+    process.exit(err.exitCode);
   } finally {
     spinner.stop();
   }

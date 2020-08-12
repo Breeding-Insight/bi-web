@@ -1,0 +1,47 @@
+#
+#    See the NOTICE file distributed with this work for additional information
+#    regarding copyright ownership.
+#
+#    Licensed under the Apache License, Version 2.0 (the "License");
+#    you may not use this file except in compliance with the License.
+#    You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+#    Unless required by applicable law or agreed to in writing, software
+#    distributed under the License is distributed on an "AS IS" BASIS,
+#    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#    See the License for the specific language governing permissions and
+#    limitations under the License.
+#
+
+name: npm build and lint
+
+on:
+  pull_request:
+    type: [opened, edited]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+        matrix:
+          node-version: [8.x, 10.x, 12.x]
+          
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Install dependencies
+        run: npm install
+      - name: Check secureness of dependencies
+        run: npm run test:packages
+      # Only checks for lint errors, might want to fail on warnings some day
+      - name: Checking linting errors
+        run: npm run lint
+      #TODO: Run tests when they aren't broken anymore
