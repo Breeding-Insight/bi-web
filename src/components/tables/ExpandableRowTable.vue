@@ -51,12 +51,12 @@
           >
             <td v-bind:colspan="colSpan" class="py-0 px-0">
               <EditDataRowForm class="mb-0"
-                @submit="validateAndSubmit(row, index)"
-                @cancel="cancelEdit(row, index)"
+                @submit="validateAndSubmit(row)"
+                @cancel="cancelEdit(row)"
               >
                 <slot
                   v-bind:editData="row.editData"
-                  v-bind:validations="getValidations(row, index)"
+                  v-bind:validations="getValidations(row)"
                   name="edit"
                 />
               </EditDataRowForm>
@@ -64,9 +64,6 @@
           </tr>
         </template>
       </template>
-
-      <slot v-for="(_, name) in $slots" :name="name" :slot="name" />
-      <template v-for="(_, name) in $scopedSlots" :slot="name" slot-scope="slotData"><slot :name="name" v-bind="slotData" /></template>
     </base-table>
     <pagination-controls v-show="records.length > 0" v-bind="$props" v-on="$listeners"/>
 
@@ -95,8 +92,6 @@
   export default class ExpandableRowTable extends Mixins(ValidationMixin) {
     @Prop()
     records!: Array<any>;
-    @Prop()
-    rowValidations!: Object;
     @Prop()
     editable!: boolean;
     @Prop()

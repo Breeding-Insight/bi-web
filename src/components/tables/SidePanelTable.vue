@@ -35,8 +35,6 @@
             </SidePanelTableRow>
           </template>
 
-          <slot v-for="(_, name) in $slots" :name="name" :slot="name" />
-          <template v-for="(_, name) in $scopedSlots" :slot="name" slot-scope="slotData"><slot :name="name" v-bind="slotData" /></template>
         </base-table>
       </div>
       <div v-bind:class="{'column is-narrow is-gapless pl-0': !panelOpen, 'column is-one-third-desktop is-half-tablet is-half-mobile is-gapless pl-0': panelOpen}" >
