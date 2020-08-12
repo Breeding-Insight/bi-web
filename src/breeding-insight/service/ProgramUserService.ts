@@ -21,32 +21,54 @@ import {Program} from "@/breeding-insight/model/Program";
 import {Metadata} from "@/breeding-insight/model/BiResponse";
 import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
 import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
+import {User} from "@/breeding-insight/model/User";
+import {UserService} from "@/breeding-insight/service/UserService";
 
 export class ProgramUserService {
 
   static errorEmailInUse: String = "Error creating user, a user with this email already exists";
   static errorCreatingUser: String = "Error while creating user";
+  static errorAssignedUserToProgramErrorOrcid = "Successfully assigned user to program, error assigning orcid to user.";
+  static errorOrcidRequired = "Orcid required when creating a new user to add to the program";
 
-  static create(programUser: ProgramUser): Promise<ProgramUser> {
+  static create(programUser: ProgramUser, orcid: string | undefined): Promise<ProgramUser> {
 
     return new Promise<ProgramUser>((resolve, reject) => {
 
       if (programUser.program) {
+        //TODO: Remove once registration flow is implemented
+        if (programUser.id === undefined && orcid === undefined){
+          const error = {'errorMessage': this.errorOrcidRequired}
+          reject(error);
+        }
 
-          ProgramUserDAO.create(programUser).then((biResponse) => {
-            const result: any = biResponse.result;
-            const newProgram = new Program(result.program.id, result.program.name);
-            const newProgramUser  = new ProgramUser(result.user.id, result.user.name, result.user.email, result.roles[0].id, newProgram, result.active);
-            resolve(newProgramUser);
+        ProgramUserDAO.create(programUser).then((biResponse) => {
+          const result: any = biResponse.result;
+          const newProgram = new Program(result.program.id, result.program.name);
+          const newProgramUser  = new ProgramUser(result.user.id, result.user.name, result.user.email, result.roles[0].id, newProgram, result.active);
 
-          }).catch((error) => {
-            if (error.response && error.response.status === 409) {
-              error['errorMessage'] = this.errorEmailInUse;
-            } else {
-              error['errorMessage'] = this.errorCreatingUser;
-            }
-            reject(error)
-          });
+          // If orcid was passed, update orcid id
+          //TODO: Remove once registration flow is implemented
+          const user = new User(newProgramUser.id, newProgramUser.name, orcid, newProgramUser.email);
+          if (orcid){
+            UserService.updateOrcid(user).then((updatedUser) => {
+              resolve(newProgramUser);
+            }).catch((error) => {
+              error['errorMessage'] = this.errorAssignedUserToProgramErrorOrcid;
+              reject(error);
+            })
+          }
+
+          resolve(newProgramUser);
+
+        }).catch((error) => {
+          if (error.response && error.response.status === 409) {
+            error['errorMessage'] = this.errorEmailInUse;
+          } else {
+            error['errorMessage'] = this.errorCreatingUser;
+          }
+          reject(error)
+        });
       }
       else {
         reject();

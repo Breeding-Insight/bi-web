@@ -69,6 +69,15 @@
       <traits-import-table v-on:loaded="importService.send(ImportEvent.TABLE_LOADED)"/>
     </template>
 
+    <template v-if="state === ImportState.IMPORT_ERROR">
+        <h1 class="title">Importing...</h1>
+      <trait-import-template-message-box class="mb-5"/>
+        <file-select-message-box v-model="file"
+                                 v-bind:fileTypes="'.csv, .xls, .xlsx'"
+                                 v-bind:errors="import_errors"
+                                 v-on:import="importService.send(ImportEvent.IMPORT_STARTED)"/>
+    </template>
+
   </div>
 </template>
 
@@ -84,19 +93,20 @@
   import FileSelectMessageBox from "@/components/file-import/FileSelectMessageBox.vue"
   import WarningModal from '@/components/modals/WarningModal.vue'
 
-  import {ProgramUpload} from '@/breeding-insight/model/ProgramUpload'
   import {Program} from '@/breeding-insight/model/Program'
   import {TraitUploadService} from "@/breeding-insight/service/TraitUploadService";
   import {TraitService} from "@/breeding-insight/service/TraitService";
 
   import { createMachine, interpret } from '@xstate/fsm';
+  import {ValidationError} from "@/breeding-insight/model/errors/ValidationError";
 
   enum ImportState {
     CHOOSE_FILE = "CHOOSE_FILE",
     FILE_CHOSEN = "FILE_CHOSEN",
     IMPORTING = "IMPORTING",
     LOADING = "LOADING",
-    CURATE = "CURATE"
+    CURATE = "CURATE",
+    IMPORT_ERROR = "IMPORT_ERROR"
   }
 
   enum ImportEvent {
@@ -137,6 +147,7 @@
   export default class TraitsImport extends ProgramsBase {
 
     private file : File | null = null;
+    private import_errors: ValidationError | string | null = null;
     private activeProgram?: Program;
     private tableLoaded = false;
     private numTraits = 0;
@@ -170,7 +181,7 @@
               actions: ImportAction.ABORT
             },
             [ImportEvent.IMPORT_SUCCESS]: ImportState.LOADING,
-            [ImportEvent.IMPORT_ERROR]: ImportState.CHOOSE_FILE,
+            [ImportEvent.IMPORT_ERROR]: ImportState.IMPORT_ERROR,
           }
         },
         [ImportState.LOADING]: {
@@ -195,6 +206,11 @@
               target: ImportState.CHOOSE_FILE,
               actions: ImportAction.CONFIRM
             },
+          }
+        },
+        [ImportState.IMPORT_ERROR]: {
+          on: {
+            [ImportEvent.IMPORT_STARTED]: ImportState.IMPORTING
           }
         }
       }
@@ -247,9 +263,8 @@
       TraitUploadService.uploadFile(this.activeProgram!.id!, this.file!).then((response) => {
         this.numTraits = response.data!.length;
         this.importService.send(ImportEvent.IMPORT_SUCCESS);
-      }).catch((error) => {
-        // proper error handling is not part of ONT-21
-        this.$emit('show-error-notification', error.response.statusText);
+      }).catch((error: ValidationError | string) => {
+        this.import_errors = error;
         this.importService.send(ImportEvent.IMPORT_ERROR);
       });
     }

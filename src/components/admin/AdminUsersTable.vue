@@ -107,7 +107,7 @@
     >
       <template v-slot="validations">
         <div class="columns">
-          <div class="column is-one-third">
+          <div class="column is-one-fourth">
             <BasicInputField
               v-model="newUser.name"
               v-bind:validations="validations.name"
@@ -115,14 +115,22 @@
               v-bind:field-help="'Name of user. All Unicode special characters accepted.'"
             />
           </div>
-          <div class="column is-one-third">
+          <div class="column is-one-fourth">
             <BasicInputField
               v-model="newUser.email"
               v-bind:validations="validations.email"
               v-bind:field-name="'Email'"
             />
           </div>
-          <div class="column is-one-third">
+          <!--TODO: Remove when registration flow is complete -->
+          <div class="column is-one-fourth">
+            <BasicInputField
+                v-model="newUser.orcid"
+                v-bind:validations="validations.orcid"
+                v-bind:field-name="'Orcid'"
+            />
+          </div>
+          <div class="column is-one-fourth">
             <BasicSelectField
               v-model="newUser.roleId"
               v-bind:options="roles"
@@ -151,8 +159,12 @@
         <TableRowColumn name="name">
           {{ data.name }}
         </TableRowColumn>
-        <TableRowColumn name="species" class="is-hidden-mobile">
+        <TableRowColumn name="email" class="is-hidden-mobile">
           {{ data.email }}
+        </TableRowColumn>
+        <!--TODO: Remove when registration flow is complete -->
+        <TableRowColumn name="orcid" class="is-hidden-mobile">
+          {{ data.orcid }}
         </TableRowColumn>
         <TableRowColumn name="roles">
           <template v-if="rolesMap.size > 0">
@@ -202,6 +214,15 @@
               v-model="editData.email"
               v-bind:validations="validations.email"
               v-bind:field-name="'Email'"
+            />
+          </div>
+          <!--TODO: Remove when registration flow is complete -->
+          <div class="column is-one-half">
+            <BasicInputField
+                v-model="editData.orcid"
+                v-bind:validations="validations.orcid"
+                v-bind:field-name="'Orcid'"
+                v-bind:field-help="'Orcid to link account to.'"
             />
           </div>
           <div class="column is-one-third">
@@ -259,14 +280,15 @@ export default class AdminUsersTable extends Vue {
   userValidations = {
     name: {required},
     email: {required, email},
+    orcid: {required}
   }
 
   private paginationController: PaginationController = new PaginationController();
 
   public users: User[] = [];
   private usersPagination?: Pagination = new Pagination();
-  private userTableHeaders = ['Name', 'Email', 'Role', 'Programs'];
-  private hideMobileHeaders = ['Email'];
+  private userTableHeaders = ['Name', 'Email', 'Orcid', 'Role', 'Programs'];
+  private hideMobileHeaders = ['Email', 'Orcid'];
 
   mounted() {
     this.getRoles();
@@ -346,13 +368,14 @@ export default class AdminUsersTable extends Vue {
   addUser() {
 
     UserService.create(this.newUser).then((user: User) => {
-      this.paginationController.updatePage(1);
       this.getUsers();
+      this.paginationController.updatePage(1);
       this.newUser = new User();
       this.newUserActive = false;
       this.$emit('show-success-notification', 'User successfully created');
     }).catch((error) => {
       this.$emit('show-error-notification', error.errorMessage);
+      this.getUsers();
     });
 
   }

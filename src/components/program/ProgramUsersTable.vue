@@ -74,7 +74,7 @@
     >
       <template v-slot="validations">
         <div class="columns">
-          <div class="column is-two-fifths">
+          <div class="column is-one-fourth">
             <BasicInputField
               v-model="newUser.name"
               v-bind:validations="validations.name"
@@ -82,7 +82,7 @@
               v-bind:field-help="'Full name as preferred. All Unicode special characters accepted.'"
             />
           </div>
-          <div class="column is-two-fifths">
+          <div class="column is-one-fourth">
             <BasicInputField
               v-model="newUser.email"
               v-bind:validations="validations.email"
@@ -90,7 +90,15 @@
               v-bind:field-help="'New users will receive an email at this address to activate their account.'"
             />
           </div>
-          <div class="column is-one-fifth">
+          <!--TODO: Remove when registration flow is complete -->
+          <div class="column is-one-fourth">
+            <BasicInputField
+                v-model="newUserOrcid"
+                v-bind:field-name="'Orcid'"
+                v-bind:field-help="'Orcid Id to link account to.'"
+            />
+          </div>
+          <div class="column is-one-fourth">
             <BasicSelectField
               v-model="newUser.roleId"
               v-bind:validations="validations.roleId"
@@ -203,12 +211,13 @@ export default class ProgramUsersTable extends Vue {
   public users: ProgramUser[] = [];
   public systemUsers: User[] = [];
   private usersPagination?: Pagination = new Pagination();
-  userTableHeaders: string[] = ['Name', 'Email', 'Role'];
+  userTableHeaders: string[] = ['Name', 'Email', 'Orcid', 'Role'];
 
   private deactivateActive: boolean = false;
   private newUserActive: boolean = false;
   private deactivateWarningTitle: string = "Remove user's access to Program name?";
   private newUser = new ProgramUser();
+  private newUserOrcid = "";
   private roles: Array<Role> = [];
 
   private deleteUser?: ProgramUser;
@@ -279,11 +288,12 @@ export default class ProgramUsersTable extends Vue {
   saveUser() {
 
     this.newUser.program = this.activeProgram;
-    this.newUser = this.checkExistingUserByEmail(this.newUser, this.systemUsers);
+    this.newUser = this.checkExistingUserByEmailOrOrcid(this.newUser, this.newUserOrcid, this.systemUsers);
 
-    ProgramUserService.create(this.newUser).then((user: ProgramUser) => {
+    ProgramUserService.create(this.newUser, this.newUserOrcid).then((user: ProgramUser) => {
       this.paginationController.updatePage(1);
       this.getUsers();
+      this.getSystemUsers();
 
       // See if the user already existed
       //TODO: Reconsider when user search feature is added
@@ -295,9 +305,12 @@ export default class ProgramUsersTable extends Vue {
 
       this.getSystemUsers();
       this.newUser = new ProgramUser();
+      this.newUserOrcid = "";
       this.newUserActive = false;
     }).catch((error) => {
       this.$emit('show-error-notification', error.errorMessage);
+      this.getUsers();
+      this.getSystemUsers();
     })
 
   }
@@ -316,9 +329,10 @@ export default class ProgramUsersTable extends Vue {
   }
 
   //TODO: Reconsider when user search feature is added
-  checkExistingUserByEmail(user: ProgramUser, systemUsers: User[]): ProgramUser {
+  checkExistingUserByEmailOrOrcid(user: ProgramUser, userOrcid: string, systemUsers: User[]): ProgramUser {
+    user.id = undefined;
     for (const systemUser of systemUsers){
-      if (user.email === systemUser.email){
+      if (user.email === systemUser.email || userOrcid === systemUser.orcid){
         if (systemUser.id){
           user.id = systemUser.id;
         }
@@ -339,6 +353,7 @@ export default class ProgramUsersTable extends Vue {
 
   cancelNewUser() {
     this.newUser = new ProgramUser();
+    this.newUserOrcid = "";
     this.newUserActive = false;
   }
 

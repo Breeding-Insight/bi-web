@@ -21,12 +21,18 @@ import {Metadata} from "@/breeding-insight/model/BiResponse";
 import {Trait} from "@/breeding-insight/model/Trait";
 import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
 import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
+import {ValidationError} from "@/breeding-insight/model/errors/ValidationError";
 
 export class TraitUploadService {
 
+<<<<<<< HEAD
   static async deleteTraits(programId: string): Promise<> {
     await TraitUploadDAO.deleteTraits(programId);
   }
+=======
+  static errorContactingServer: string = "Unknown error when contacting server. Please try again.";
+  static errorUnknown: string = "Unable to determine reason for failure upload. Please check file and try again."
+>>>>>>> develop
 
   static uploadFile(programId: string, file: File): Promise<ProgramUpload> {
 
@@ -45,7 +51,14 @@ export class TraitUploadService {
           const upload = new ProgramUpload(result.id, traits);
           resolve(upload);
 
-        }).catch((error) => reject(error));
+        }).catch((error) => {
+          if (error.response){
+            reject(this.parseError(error));
+          } else {
+            reject(this.errorContactingServer);
+          }
+
+        });
       }
       else {
         reject();
@@ -87,4 +100,25 @@ export class TraitUploadService {
     }));
   }
 
+  static parseError(error: any): ValidationError | string {
+
+    const jsonError = error.response;
+    if (jsonError.data){
+      const rowErrors = jsonError.data.rowErrors;
+      if (rowErrors) {
+        let validationError: ValidationError = new ValidationError(rowErrors);
+        return validationError;
+      } else {
+        return jsonError;
+      }
+    } else {
+      if (jsonError.statusText){
+        return jsonError.statusText;
+      } else {
+        return this.errorUnknown;
+      }
+    }
+  }
+
 }
+

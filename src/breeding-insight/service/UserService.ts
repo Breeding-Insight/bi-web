@@ -33,6 +33,10 @@ export class UserService {
   static errorGetUsers: string = 'Error while trying to load roles';
   static errorDeleteUserNotFound: string = 'Unable to find user to deactivate';
   static errorPermissionsEditUser: string = "You don't have permissions to edit this user.";
+  static errorUpdatingOrcidOnPost: string = "User created, but could not assign orcid";
+  static errorUpdatingOrcidOnPut: string = "User updated, but could not update orcid";
+  static errorUpdatingOrcidOnPostDuplicate: string = "User created, but could not assign orcid. Orcid Id already in use.";
+  static errorUpdatingOrcidOnPutDuplicate: string = "User updated, but could not update orcid. Orcid Id already in use.";
 
   static getUserInfo(): Promise<User> {
 
@@ -50,15 +54,29 @@ export class UserService {
     //TODO: Check everything is good
     return new Promise<User>((resolve, reject) => {
 
-      if (user.id === undefined) {
+      //TODO: Remove orcid check when registration flow is complete
+      if (user.id === undefined && user.orcid) {
         const systemRoles = [];
         if (user.roleId) { systemRoles.push(new Role(user.roleId)) }
 
         UserDAO.create(user, systemRoles).then((biResponse) => {
           const result: any = biResponse.result;
           const role: Role | undefined = this.parseSystemRoles(result.systemRoles);
-          const newUser = new User(result.id, result.name, result.orcid, result.email, role);
-          resolve(newUser);
+          let newUser = new User(result.id, result.name, result.orcid, result.email, role);
+
+          //TODO: Remove this when registration flow is complete
+          let copyUser: User = new User(newUser.id, user.name, user.orcid, user.email);
+          this.updateOrcid(copyUser).then((updatedUser) => {
+            newUser.orcid = updatedUser.orcid;
+            resolve(newUser);
+          }).catch((error) => {
+            if (error.response && error.response.status === 409) {
+              error['errorMessage'] = this.errorUpdatingOrcidOnPostDuplicate;
+            } else {
+              error['errorMessage'] = this.errorUpdatingOrcidOnPost;
+            }
+            reject(error);
+          })
 
         }).catch((error) => {
           if (error.response && error.response.status === 409) {
@@ -86,8 +104,20 @@ export class UserService {
         UserDAO.update(user.id, user).then((biResponse) => {
           const result: any = biResponse.result;
           const role: Role | undefined = this.parseSystemRoles(result.systemRoles);
-          const newUser = new User(result.id, result.name, result.orcid, result.email, role);
-          resolve(newUser);
+          let newUser = new User(result.id, result.name, result.orcid, result.email, role);
+
+          //TODO: Remove this when registration flow is complete
+          this.updateOrcid(user).then((updatedUser) => {
+            newUser.orcid = updatedUser.orcid;
+            resolve(newUser);
+          }).catch((error) => {
+            if (error.response && error.response.status === 409) {
+              error['errorMessage'] = this.errorUpdatingOrcidOnPutDuplicate;
+            } else {
+              error['errorMessage'] = this.errorUpdatingOrcidOnPut;
+            }
+            reject(error);
+          });
 
         }).catch((error) => {
           if (error.response && error.response.status === 409) {
@@ -188,6 +218,26 @@ export class UserService {
       }
       reject();
     });
+  }
+
+  static updateOrcid(user: User) {
+
+    return new Promise<User>((resolve, reject) => {
+      //TODO: Remove when registration flow is complete
+      if (user.id){
+        UserDAO.updateOrcid(user.id, user.orcid!).then((biResponse) => {
+          const result: any = biResponse.result;
+          user.orcid = result.orcid;
+          resolve(user);
+        }).catch((error) => {
+          Vue.$log.fatal(error);
+          reject(error);
+        })
+      } else {
+        reject();
+      }
+    });
+
   }
 
   private static parseSystemRoles(systemRoles: any[]): Role | undefined {
