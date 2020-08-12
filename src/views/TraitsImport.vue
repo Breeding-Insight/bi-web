@@ -292,6 +292,9 @@
         if (message === 'Successful Query') {
           this.$emit('show-success-notification', `Imported traits have been added to ${this.activeProgram.name}.`);
 
+          // delete uploaded traits
+          await TraitUploadService.deleteTraits(this.activeProgram!.id!);
+
           // show all program traits
           this.$router.push({
             name: 'traits-list',

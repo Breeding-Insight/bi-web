@@ -24,6 +24,10 @@ import {PaginationController} from "@/breeding-insight/model/view_models/Paginat
 
 export class TraitUploadService {
 
+  static async deleteTraits(programId: string): Promise<> {
+    await TraitUploadDAO.deleteTraits(programId);
+  }
+
   static uploadFile(programId: string, file: File): Promise<ProgramUpload> {
 
     return new Promise<ProgramUpload>((resolve, reject) => {
@@ -63,7 +67,7 @@ export class TraitUploadService {
           //TODO: Remove when backend sorts the data by default
           biResponse.result.data = PaginationController.mockSortRecords(biResponse.result.data);
           let traits: Trait[] = [];
-      
+
           traits = biResponse.result.data.map((trait: any) => {
             return trait as Trait;
           });
@@ -74,9 +78,9 @@ export class TraitUploadService {
           biResponse.metadata.pagination = newPagination;
 
           resolve([traits, biResponse.metadata]);
-      
+
         }).catch((error) => reject(error));
-      
+
       } else {
         reject();
       }
