@@ -24,16 +24,10 @@ import {PaginationController} from "@/breeding-insight/model/view_models/Paginat
 export class TraitService {
 
     static async createTraits(programId: string, newTraits: Trait[]): Promise<Trait[], Metadata> {
-        try {
-            if (programId) {
-                const { result: { data }, metadata } = await TraitDAO.createTraits(programId, newTraits);
-                console.log(data);
-                console.log(metadata);
-                return [data, metadata];
-            }
-        } catch(err) {
-            console.log(err);
-        }
+         if (programId) {
+             const { result: { data }, metadata } = await TraitDAO.createTraits(programId, newTraits);
+             return [data, metadata];
+         }
     }
 
     static getAll(programId: string, paginationQuery?: PaginationQuery): Promise<Trait[], Metadata> {

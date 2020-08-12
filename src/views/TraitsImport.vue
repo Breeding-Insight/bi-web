@@ -284,20 +284,27 @@
 
     async confirm() {
       try {
+        // fetch uploaded traits
         const [uploadedTraits, uploadMeta] = await TraitUploadService.getTraits(this.activeProgram!.id!);
-        const response = await TraitService.createTraits(this.activeProgram!.id!, uploadedTraits);
-        console.log(response);
-        console.log(uploadedTraits);
-        this.$emit('show-success-notification', `Imported traits have been added to ${this.activeProgram.name}.`);
-        this.$router.push({
-          name: 'traits-list',
-          params: {
-            programId: this.activeProgram!.id!
-          },
-        });
+
+        // add traits to program
+        const [newTraits, { status: [ { message } ] } ] = await TraitService.createTraits(this.activeProgram!.id!, uploadedTraits);
+        if (message === 'Successful Query') {
+          this.$emit('show-success-notification', `Imported traits have been added to ${this.activeProgram.name}.`);
+
+          // show all program traits
+          this.$router.push({
+            name: 'traits-list',
+            params: {
+              programId: this.activeProgram!.id!
+            },
+          });
+        } else {
+          throw new Error();
+        }
       } catch(err) {
         this.$emit('show-error-notification', `Error: Imported traits were not added to ${this.activeProgram.name}.`);
-        console.log(err);
+        this.$log.debug(err);
       }
     }
 

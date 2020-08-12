@@ -38,16 +38,13 @@ export class TraitDAO {
 
 
   static async createTraits(programId: string, newTraits: Trait[]): Promise<BiResponse> {
-      try {
-          const { data } =  await api.call({
-              url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/traits`,
-              method: 'post',
-              data: newTraits
-          });
-          return new BiResponse(data);
-      } catch(err) {
-          console.log(data);
-      }
+      const { data } =  await api.call({
+          url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/traits`,
+          method: 'post',
+          data: newTraits
+      });
+
+      return new BiResponse(data);
 
   }
 
