@@ -8,7 +8,7 @@
     "postinstall": "mkdir -p $npm_package_task_path/log",
     "lint": "node $npm_package_task_path/lint.js",
     "serve": "node $npm_package_task_path/serve.js",
-    "test:packages": "node $npm_package_task_path/checkAudit.js --dev-audit-level=high --prod-audit-level=medium",
+    "test:packages": "node $npm_package_task_path/checkAudit.js --dev-audit-level=high --prod-audit-level=moderate",
     "test:accessibility": "node $npm_package_task_path/testAccessibility.js --port $npm_package_devport --config $npm_package_task_path/.pa11yTargets.json --out $npm_package_task_path/log/pa11yResults.json",
     "test:e2e": "node $npm_package_task_path/testE2e.js",
     "test:unit": "jest"
@@ -53,7 +53,8 @@
     "vuelidate": "^0.7.5",
     "vuelidate-property-decorators": "^1.0.28",
     "vuex": "^3.1.2",
-    "vuex-class": "^0.3.2"
+    "vuex-class": "^0.3.2",
+    "serialize-javascript": "3.0.0"
   },
   "devDependencies": {
     "@types/chai": "^4.2.7",

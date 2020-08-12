@@ -32,7 +32,7 @@ const parseArgs = require('minimist');
 
   let allowableDevLevel = argv['dev-audit-level'];
   let allowableProdLevel = argv['prod-audit-level'];
-  let severities = ['low', 'medium', 'high', 'critical'];
+  let severities = ['low', 'moderate', 'high', 'critical'];
   console.log(`Flagging audit errors with severity higher than ${allowableDevLevel} for dev packages`);
   console.log(`Flagging audit errors with severity higher than ${allowableProdLevel} for prod packages`);
 
