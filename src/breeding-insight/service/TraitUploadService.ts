@@ -25,14 +25,12 @@ import {ValidationError} from "@/breeding-insight/model/errors/ValidationError";
 
 export class TraitUploadService {
 
-<<<<<<< HEAD
+  static errorContactingServer: string = "Unknown error when contacting server. Please try again.";
+  static errorUnknown: string = "Unable to determine reason for failure upload. Please check file and try again."
+
   static async deleteTraits(programId: string): Promise<> {
     await TraitUploadDAO.deleteTraits(programId);
   }
-=======
-  static errorContactingServer: string = "Unknown error when contacting server. Please try again.";
-  static errorUnknown: string = "Unable to determine reason for failure upload. Please check file and try again."
->>>>>>> develop
 
   static uploadFile(programId: string, file: File): Promise<ProgramUpload> {
 
@@ -121,4 +119,3 @@ export class TraitUploadService {
   }
 
 }
-
