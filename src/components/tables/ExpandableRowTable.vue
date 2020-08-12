@@ -77,13 +77,11 @@
 <script lang="ts">
 
   import {Component, Prop, Vue, Watch, Mixins} from 'vue-property-decorator'
-  import {TableRow} from "@/breeding-insight/model/view_models/TableRow"
   import BaseTable from '@/components/tables/BaseTable.vue'
   import {Pagination} from "@/breeding-insight/model/BiResponse";
   import PaginationControls from '@/components/tables/PaginationControls.vue'
   import ExpandableTableRow from "@/components/tables/ExpandableTableRow.vue"
   import EditDataRowForm from '@/components/forms/EditDataRowForm.vue'
-  import {Validations} from "vuelidate-property-decorators";
   import ValidationMixin from '@/mixins/ValidationMixin'
 
   @Component({
