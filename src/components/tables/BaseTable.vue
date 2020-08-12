@@ -83,6 +83,10 @@
     private tableRows: Array<TableRow<any>> = new Array<TableRow<any>>();
     private updatedColumns: Array<TableColumn> = [...this.columns];
     private isMobile = false;
+
+    /**
+     * Used by TableColumn component to find it's parent BaseTable
+     */
     private isTable = true;
 
     updated() {
