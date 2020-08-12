@@ -130,6 +130,10 @@
       this.tableRows = rowArray;
     }
 
+    /**
+     * Used by TableColumn component to add itself to BaseTable
+     * @param column
+     */
     addColumn(column: TableColumn) {
       const repeated = this.updatedColumns.some(
           (col) => col.newKey === column.newKey)
@@ -139,6 +143,10 @@
       }
     }
 
+    /**
+     * Used by TableColumn component to remove itself from BaseTable
+     * @param column
+     */
     removeColumn(column: TableColumn) {
       if (!this.tableRows.length) return;
       if (this.updatedColumns.length !== 1) return;
