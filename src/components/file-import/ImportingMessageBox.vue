@@ -21,7 +21,7 @@
       <article>
         <div class="columns">
           <div class="column">
-            <progress-bar v-bind:label="'Importing File ' + this.file.name"
+            <ProgressBar v-bind:label="'Importing File ' + this.file.name"
                           v-bind:estimated-time-text="'May take up to a minute'"
             />
           </div>
