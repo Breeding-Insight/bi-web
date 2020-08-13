@@ -80,7 +80,7 @@
   import {PlusCircleIcon} from 'vue-feather-icons'
   import {validationMixin} from 'vuelidate'
   import SidePanelTable from "@/components/tables/SidePanelTable.vue";
-  import TraitDetailPanel from "@/components/tables/TraitDetailPanel.vue";
+  import TraitDetailPanel from "@/components/trait/TraitDetailPanel.vue";
   import TableColumn from "@/components/tables/TableColumn.vue";
   import {Trait} from '@/breeding-insight/model/Trait'
   import { mapGetters } from 'vuex'
