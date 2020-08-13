@@ -101,15 +101,8 @@
     pagination!: Pagination;
 
     private panelOpen = false;
-
-    private collapseColumns: boolean = false;
-    private columns: Array<any> = [];
-    private CollapseColumnsState = CollapseColumnsState;
     private BreakpointEvent = BreakpointEvent;
-    private PanelEvent = PanelEvent;
-    private CollapseColumnAction = CollapseColumnAction;
     private selectedRow: TableRow<any> = new TableRow(false, {});
-
     private state = CollapseColumnsState.NORMAL_PANEL_CLOSED;
     private collapseStateMachine = createMachine({
       id: 'collapse',
