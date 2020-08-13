@@ -93,7 +93,8 @@
           <!--TODO: Remove when registration flow is complete -->
           <div class="column is-one-fourth">
             <BasicInputField
-                v-model="newUserOrcid"
+                v-model="newUser.orcid"
+                v-bind:validations="validations.orcid"
                 v-bind:field-name="'Orcid'"
                 v-bind:field-help="'Orcid Id to link account to.'"
             />
@@ -229,7 +230,8 @@ export default class ProgramUsersTable extends Vue {
   userValidations = {
     name: {required},
     email: {required, email},
-    roleId: {required}
+    roleId: {required},
+    orcid: {required}
   }
 
   mounted() {
@@ -287,6 +289,7 @@ export default class ProgramUsersTable extends Vue {
 
   saveUser() {
 
+    this.newUserOrcid = this.newUser.orcid!;
     this.newUser.program = this.activeProgram;
     this.newUser = this.checkExistingUserByEmailOrOrcid(this.newUser, this.newUserOrcid, this.systemUsers);
 

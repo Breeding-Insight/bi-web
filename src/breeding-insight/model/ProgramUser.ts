@@ -25,6 +25,8 @@ export class ProgramUser {
   roleId?: string;
   program?: Program;
   active?: boolean;
+  //TODO: Remove when full registration flow is complete
+  orcid?: string;
 
   constructor(id?: string, name?:string, email?: string, roleId?: string, program?: Program, active?: boolean) {
     this.id = id;
