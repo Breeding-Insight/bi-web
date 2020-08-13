@@ -250,19 +250,19 @@
     }
 
     getValidations(index: number) {
-      return this.$v.tableRows.$each[index].editData;
+      return this.$v.tableRows.$each![index]!.editData;
     }
 
     validateAndSubmit(rowIndex: number) {
 
-      this.$v.tableRows.$each[rowIndex].editData.$touch();
-      if (this.$v.tableRows.$each[rowIndex].editData.$anyError){
+      this.$v.tableRows.$each![rowIndex]!.editData.$touch();
+      if (this.$v.tableRows.$each![rowIndex]!.editData.$anyError){
         this.$emit('show-error-notification', 'Fix Invalid Fields');
         return;
       }
       else {
         // Check all of our fields to see if they were required
-        this.$v.tableRows.$each[rowIndex].editData.$reset();
+        this.$v.tableRows.$each![rowIndex]!.editData.$reset();
         const editedRecord = this.tableRows[rowIndex].editData;
         this.$emit('submit', editedRecord);
       }
@@ -272,7 +272,7 @@
       record.toggleEdit();
       record.revertChanges();
       // clear form
-      this.$v.tableRows.$each[rowIndex].editData.$reset();
+      this.$v.tableRows.$each![rowIndex]!.editData.$reset();
     }
 
   }

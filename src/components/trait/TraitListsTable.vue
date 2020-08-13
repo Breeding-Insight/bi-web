@@ -131,6 +131,7 @@ export default class TraitTable extends Vue {
   private newTrait = new Trait();
   private traitName: string = "Program Trait";
   private deleteTrait?: Trait;
+  private loaded: boolean = false;
 
   traitValidations = {
     name: {required}
@@ -169,31 +170,33 @@ export default class TraitTable extends Vue {
     this.newTraitActive = true;
   }
 
-  updateTrait(updatedTrait: Trait) {
+  //TODO: Use this when we can update traits
+  /*updateTrait(updatedTrait: Trait) {
 
     TraitService.update(updatedTrait).then(() => {
       this.getTraits();
-      this.$emit('show-success-notification', 'Success! ' + updatedTrait.name + ' updated.');
+      this.$emit('show-success-notification', 'Success! ' + updatedTrait.traitName + ' updated.');
     }).catch(() => {
       this.$emit('show-error-notification', 'Error updating trait');
     });
 
-  }
+  }*/
 
-  saveTrait() {
+  //TODO: Use this when we can create traits on this page
+  /*saveTrait() {
 
     this.newTrait.programId = this.activeProgram!.id;
 
     TraitService.create(this.newTrait).then((trait: Trait) => {
       this.getTraits();
-      this.$emit('show-success-notification', 'Success! ' + this.Trait.name + ' added.');
+      this.$emit('show-success-notification', 'Success! ' + this.newTrait.traitName + ' added.');
       this.newTrait = new Trait();
       this.newTraitActive = false;
     }).catch(() => {
-      this.$emit('show-error-notification', 'Error while creating trait, ' + this.newTrait.name);
+      this.$emit('show-error-notification', 'Error while creating trait, ' + this.newTrait.traitName);
     })
 
-  }
+  }*/
 
   cancelNewTrait() {
     this.newTrait = new Trait();
@@ -204,7 +207,7 @@ export default class TraitTable extends Vue {
 
     if (trait){
       this.deleteTrait = trait;
-      this.deactivateWarningTitle = "Remove " + trait.name + " from " + this.activeProgram!.name + "?";
+      this.deactivateWarningTitle = "Remove " + trait.traitName + " from " + this.activeProgram!.name + "?";
       this.deactivateActive = true;
     } else {
       Vue.$log.error('Could not find object to delete')
@@ -216,15 +219,16 @@ export default class TraitTable extends Vue {
 
     if (this.deleteTrait) {
       if (this.deleteTrait.id) {
-        if (this.deleteTrait.name) {
+        if (this.deleteTrait.traitName) {
           const deleteId: string = this.deleteTrait.id;
-          const deleteName: string = this.deleteTrait.name;
-          TraitService.delete(this.activeProgram!.id!, deleteId).then(() => {
-            this.getTraitss();
+          const deleteName: string = this.deleteTrait.traitName;
+          //TODO: Uncomment this when you can delete stuff
+          /*TraitService.delete(this.activeProgram!.id!, deleteId).then(() => {
+            this.getTraits();
             this.$emit('show-success-notification', `${deleteName} removed from program`);
           }).catch(() => {
             this.$emit('show-error-notification', `Unable to remove trait, ${deleteName}.`);
-          })
+          })*/
           return;
         }
       }
