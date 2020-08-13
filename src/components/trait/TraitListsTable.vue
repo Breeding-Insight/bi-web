@@ -88,12 +88,10 @@
 </template>
 
 <script lang="ts">
-import {Component, Prop, Vue, Watch} from 'vue-property-decorator'
+import {Component, Vue, Watch} from 'vue-property-decorator'
 import WarningModal from '@/components/modals/WarningModal.vue'
 import {PlusCircleIcon} from 'vue-feather-icons'
 import {validationMixin} from 'vuelidate';
-import {Validations} from 'vuelidate-property-decorators'
-import {required} from 'vuelidate/lib/validators'
 import {Trait} from '@/breeding-insight/model/Trait'
 import { mapGetters } from 'vuex'
 import {Program} from "@/breeding-insight/model/Program";
@@ -104,7 +102,7 @@ import TraitDetailPanel from "@/components/trait/TraitDetailPanel.vue";
 import {TraitService} from "@/breeding-insight/service/TraitService";
 import EmptyTableMessage from "@/components/tables/EmtpyTableMessage.vue";
 import TableColumn from "@/components/tables/TableColumn.vue";
-import {Metadata, Pagination} from "@/breeding-insight/model/BiResponse";
+import {Pagination} from "@/breeding-insight/model/BiResponse";
 import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
 import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
 import { StringFormatters } from '@/breeding-insight/utils/StringFormatters';
@@ -128,12 +126,8 @@ export default class TraitTable extends Vue {
   private traitsPagination?: Pagination = new Pagination();
   private paginationController: PaginationController = new PaginationController();
   private deactivateActive: boolean = false;
-  private newTraitActive: boolean = false;
   private deactivateWarningTitle: string = "Remove trait from Program name?";
-  private newTrait = new Trait();
   private traitName: string = "Program Trait";
-  private deleteTrait?: Trait;
-
   private collapseColumns = false;
   private StringFormatters = StringFormatters;
   private TraitStringFormatters = TraitStringFormatters;
