@@ -47,11 +47,18 @@ let spinner = ora({prefixText: ' ', color: 'yellow'});
   spinner.clear()
     .succeed('dependencies passed inspection');
 
-  // Try building the vue code
-  spinner.start('building the Vue app');
-  let {stdout} = await execa('vue-cli-service', ['build'], {preferLocal: true});
-  spinner = spinner.clear()
-    .succeed('Vue app build finished');
+  try {
+    // Try building the vue code
+    spinner.start('building the Vue app');
+    let {stdout} = await execa('vue-cli-service', ['build'], {preferLocal: true});
+    spinner = spinner.clear()
+      .succeed('Vue app build finished');
+  } catch (error) {
+    console.log(error.stdout);
+    spinner.fail(`error building vue-cli-service`);
+    process.exit(1);
+  }
+
 
 })();
 
