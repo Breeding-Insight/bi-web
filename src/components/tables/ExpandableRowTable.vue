@@ -20,7 +20,7 @@
     <!-- need to have base-table loaded for watching records 
          for new highlighting so use v-show 
     -->
-    <base-table
+    <BaseTable
       v-show="records.length > 0"
       v-bind:show-expand-controls="true"
       v-bind="$props"
@@ -64,7 +64,7 @@
           </tr>
         </template>
       </template>
-    </base-table>
+    </BaseTable>
     <pagination-controls v-show="records.length > 0" v-bind="$props" v-on="$listeners"/>
 
     <template v-if="records.length === 0">

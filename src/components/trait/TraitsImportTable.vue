@@ -54,7 +54,7 @@
         data: T
       -->
       <template v-slot:side-panel="data">
-        <trait-detail-panel v-bind:data="data"/>
+        <TraitDetailPanel v-bind:data="data"/>
       </template>
 
       <!-- 
