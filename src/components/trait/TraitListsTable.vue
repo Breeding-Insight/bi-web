@@ -100,7 +100,7 @@ import {Program} from "@/breeding-insight/model/Program";
 import NewDataForm from '@/components/forms/NewDataForm.vue'
 import BasicInputField from "@/components/forms/BasicInputField.vue";
 import SidePanelTable from "@/components/tables/SidePanelTable.vue";
-import TraitDetailPanel from "@/components/tables/TraitDetailPanel.vue";
+import TraitDetailPanel from "@/components/trait/TraitDetailPanel.vue";
 import {TraitService} from "@/breeding-insight/service/TraitService";
 import EmptyTableMessage from "@/components/tables/EmtpyTableMessage.vue";
 import TableColumn from "@/components/tables/TableColumn.vue";
