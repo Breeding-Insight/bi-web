@@ -22,7 +22,7 @@
 
       <!-- just shows first abbreviation AKA main abbreviation and first synonym -->
       <template v-if="abbreviationsSynonymsString">
-        <p class="is-size-7">{{abbreviationsSynonymsString}}</p>
+        <p class="is-size-7">{{abbreviationsSynonymsString(2)}}</p>
       </template>
       <template v-else>
         <p class="mb-3"/>
@@ -117,14 +117,18 @@
       this.trait = this.data.data as Trait;
     }
 
-    get abbreviationsSynonymsString() {
-      var abbSyn = "";
+    abbreviationsSynonymsString(synonymsMaxLength: number) : string | undefined {
+      let abbSyn = "";
       if (this.trait && this.trait.abbreviations && this.trait.abbreviations.length > 0) {
         abbSyn = this.trait.abbreviations[0];
       }
       if (this.trait && this.trait.synonyms && this.trait.synonyms.length > 0) {
-        abbSyn = (abbSyn === "") ? this.trait.synonyms[0] : abbSyn + ", " + this.trait.synonyms[0];
-        abbSyn = this.trait.synonyms.length > 0 ? abbSyn + ", ...": "";
+        // Up to synonymsMaxLength synonyms will be shown before , ... cutoff
+        const synonyms = this.trait.synonyms.slice(0, Math.min(this.trait.synonyms.length, synonymsMaxLength)).join(", ");
+        abbSyn = (abbSyn === "") ? synonyms : abbSyn + ", " + synonyms;
+        if (this.trait.synonyms.length > synonymsMaxLength && this.trait.synonyms.length !== 1) {
+          abbSyn = abbSyn + ", ...";
+        }
       }
 
       return abbSyn === "" ? undefined : abbSyn;
