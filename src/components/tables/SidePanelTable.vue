@@ -43,8 +43,12 @@
         </SidePanel>
       </div>
     </div>
-    <PaginationControls v-show="records.length > 0" v-bind="$props" v-on="$listeners"/>
-    
+    <PaginationControls v-show="records.length > 0"
+                        v-bind="$props"
+                        v-on:paginate="closePanelAndReEmit('paginate', $event)"
+                        v-on:paginate-toggle-all="closePanelAndReEmit('paginate-toggle-all', $event)"
+                        v-on:paginate-page-size="closePanelAndReEmit('paginate-page-size', $event)"/>
+
     <template v-if="records.length === 0">
       <slot name="emptyMessage" />
     </template>
@@ -183,6 +187,16 @@
       this.panelOpen = false
       this.selectedRow = new TableRow(false, {});
       this.collapseService.send(PanelEvent.CLOSED);
+    }
+
+    closePanelAndReEmit(eventType: string, event: any) {
+      this.closePanel();
+      if (event) {
+        this.$emit(eventType, event);
+      }
+      else {
+        this.$emit(eventType);
+      }
     }
 
   }
