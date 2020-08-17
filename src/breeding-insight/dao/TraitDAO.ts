@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+import {Trait} from "@/breeding-insight/model/Trait";
 import {BiResponse} from "@/breeding-insight/model/BiResponse";
 import * as api from "@/util/api";
 import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
