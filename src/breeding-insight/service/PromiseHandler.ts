@@ -20,6 +20,7 @@ import {PromiseResultTuple} from "promise.allsettled/types";
 
 export class PromiseHandler {
   promises: Promise<any>[] = [];
+  static fulfilled: String = 'fulfilled';
 
   constructor(promises: Promise<any>[]) {
     this.promises = promises;
@@ -37,10 +38,7 @@ export class PromiseHandler {
         if (successResults.every((result: PromiseResolution<any>) => result.status === 'fulfilled')) {
           resolve(successResults.map((result: PromiseResolution<any>) => result.value));
         } else {
-          const rejectionResults: PromiseRejection<any>[] = results as PromiseRejection<any>[];
-          const failedResults = rejectionResults.filter((result: PromiseRejection<any>) => result.reason !== undefined)
-            .map((failedResult: PromiseRejection<any>) => failedResult.reason);
-          reject(failedResults);
+          reject(results);
         }
       })
     });
