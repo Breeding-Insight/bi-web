@@ -111,6 +111,7 @@
     private MethodClass = MethodClass;
     private Scale = Scale;
     private Method = Method;
+    private scalePostfix = new Set<string>().add(DataType.Ordinal).add(DataType.Nominal);
 
     @Watch('data', {immediate: true})
     updatedData() {
@@ -150,11 +151,26 @@
 
     get scaleTypeString() {
       if (this.trait && this.trait.programObservationLevel && this.trait.method && this.trait.scale) {
-        return this.trait.programObservationLevel.name + " " +
-               this.trait.method.methodClass + " using " +
-               StringFormatters.toStartCase(this.trait.scale.dataType!);
+        let str = this.trait.programObservationLevel.name + " " +
+                  this.trait.method.methodClass + " using " +
+                  StringFormatters.toStartCase(this.trait.scale.dataType!);
+        const postfix = this.scalePostFix(this.trait.scale.dataType!);
+        if (postfix !== "") {
+          str = str + " " + postfix;
+        }
+        return str;
       }
       return undefined;
+    }
+
+    scalePostFix(dataType: string) : string {
+      if (this.scalePostfix.has(dataType.toUpperCase())) {
+        return "Scale";
+      } else if (Scale.dataTypeEquals(dataType, DataType.Numerical)) {
+        return "Units";
+      } else {
+        return "";
+      }
     }
 
     valueOrNA(value: any) {
