@@ -32,6 +32,7 @@ export class UserService {
   static errorDeleteUser: string = 'Unable to archive user';
   static errorGetUsers: string = 'Error while trying to load roles';
   static errorDeleteUserNotFound: string = 'Unable to find user to deactivate';
+  static errorDeleteUserNotAllowed: string = 'You are not allowed to deactivate this user.';
   static errorPermissionsEditUser: string = "You don't have permissions to edit this user.";
   static errorUpdatingOrcidOnPost: string = "User created, but could not assign orcid";
   static errorUpdatingOrcidOnPut: string = "User updated, but could not update orcid";
@@ -146,6 +147,8 @@ export class UserService {
           .catch((error) => {
             if (error.response && error.response.status === 404) {
               error['errorMessage'] = this.errorDeleteUserNotFound;
+            } else if (error.response && error.response.status === 403) {
+              error['errorMessage'] = this.errorDeleteUserNotAllowed;
             } else {
               error['errorMessage'] = this.errorDeleteUser;
             }
