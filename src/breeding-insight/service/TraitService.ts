@@ -23,15 +23,19 @@ import {PaginationController} from "@/breeding-insight/model/view_models/Paginat
 
 export class TraitService {
 
-    static getAll(programId: string, paginationQuery?: PaginationQuery): Promise<[Trait[], Metadata]> {
+    static getAll(programId: string, paginationQuery?: PaginationQuery, full?: boolean): Promise<[Trait[], Metadata]> {
         return new Promise<[Trait[], Metadata]>(((resolve, reject) => {
 
       if (paginationQuery === undefined){
         paginationQuery = new PaginationQuery(0, 0, true);
       }
 
+      if (full === undefined) {
+        full = false;
+      }
+
       if (programId) {
-          TraitDAO.getAll(programId, paginationQuery).then((biResponse) => {
+          TraitDAO.getAll(programId, paginationQuery, full).then((biResponse) => {
 
           //TODO: Remove when pagination implemented on backend
           biResponse.result.data = PaginationController.mockSortRecords(biResponse.result.data);
