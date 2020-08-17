@@ -21,7 +21,7 @@ import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
 
 export class TraitUploadDAO {
 
-  static async deleteTraits(programId: string): Promise<> {
+  static async deleteTraits(programId: string): Promise<void> {
     await api.call({
       url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/trait-upload`,
       method: 'delete'
