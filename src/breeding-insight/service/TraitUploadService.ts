@@ -28,7 +28,7 @@ export class TraitUploadService {
   static errorContactingServer: string = "Unknown error when contacting server. Please try again.";
   static errorUnknown: string = "Unable to determine reason for failure upload. Please check file and try again."
 
-  static async deleteTraits(programId: string): Promise<> {
+  static async deleteTraits(programId: string): Promise<void> {
     await TraitUploadDAO.deleteTraits(programId);
   }
 
