@@ -142,7 +142,7 @@ export default class TraitTable extends Vue {
       this.paginationController.currentPage, this.paginationController.pageSize, this.paginationController.showAll);
     this.paginationController.setCurrentCall(paginationQuery);
 
-    TraitService.getAll(this.activeProgram!.id!, paginationQuery).then(([traits, metadata]) => {
+    TraitService.getAll(this.activeProgram!.id!, paginationQuery, true).then(([traits, metadata]) => {
       if (this.paginationController.matchesCurrentRequest(metadata.pagination)){
         this.traits = traits;
         this.traitsPagination = metadata.pagination;
