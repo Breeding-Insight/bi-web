@@ -22,15 +22,15 @@ const parseArgs = require('minimist');
 // Parse command line arguments
 var argv = parseArgs(process.argv.slice(2), {
     default: {
-      'dev-audit-level': 'high',
-      'prod-audit-level': 'low'
+      'dev-audit-level': 'critical',
+      'prod-audit-level': 'none'
     }
   }
 );
 
 let allowableDevLevel = argv['dev-audit-level'];
 let allowableProdLevel = argv['prod-audit-level'];
-let severities = ['low', 'moderate', 'high', 'critical'];
+let severities = ['none', 'low', 'moderate', 'high', 'critical'];
 console.log(`Flagging audit errors with severity higher than ${allowableDevLevel} for dev packages`);
 console.log(`Flagging audit errors with severity higher than ${allowableProdLevel} for prod packages`);
 

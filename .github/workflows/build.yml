@@ -38,7 +38,7 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - name: Install dependencies
-        run: npm install
+        run: npm ci
       - name: Checking linting and build app
         run: npm run build
       #TODO: Run tests when they aren't broken anymore
