@@ -31,15 +31,19 @@ export class TraitService {
         else return;
     }
 
-    static getAll(programId: string, paginationQuery?: PaginationQuery): Promise<[Trait[], Metadata]> {
-        return new Promise<Trait[], Metadata>(((resolve, reject) => {
+    static getAll(programId: string, paginationQuery?: PaginationQuery, full?: boolean): Promise<[Trait[], Metadata]> {
+        return new Promise<[Trait[], Metadata]>(((resolve, reject) => {
 
       if (paginationQuery === undefined){
         paginationQuery = new PaginationQuery(0, 0, true);
       }
 
+      if (full === undefined) {
+        full = false;
+      }
+            
       if (programId) {
-          TraitDAO.getAll(programId, paginationQuery).then((biResponse) => {
+          TraitDAO.getAll(programId, paginationQuery, full).then((biResponse) => {
 
           //TODO: Remove when pagination implemented on backend
           biResponse.result.data = PaginationController.mockSortRecords(biResponse.result.data);

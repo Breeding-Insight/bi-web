@@ -299,7 +299,7 @@
     async confirm() {
       try {
         // fetch uploaded traits
-        const [uploadedTraits, uploadMeta] = await TraitUploadService.getTraits(this.activeProgram!.id!);
+        const [uploadedTraits, uploadMeta] = await TraitUploadService.getTraits(this.activeProgram!.id!, undefined, true);
 
         // add traits to program
         const [newTraits, { status } ] = await TraitService.createTraits(this.activeProgram!.id!, uploadedTraits);
