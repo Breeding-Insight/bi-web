@@ -146,22 +146,6 @@
       }
     }
 
-    /**
-     * Used by TableColumn component to remove itself from BaseTable
-     * @param column
-     */
-    removeColumn(column: TableColumn) {
-      if (!this.tableRows.length) return;
-      if (this.updatedColumns.length !== 1) return;
-      if (this.updatedColumns.length) {
-        const index = this.updatedColumns.map(
-          (col) => col.newKey).indexOf(column.newKey)
-        if (index >= 0) {
-          this.updatedColumns.splice(index, 1);
-        }
-      }
-    }
-
     emitAndUpdateIsMobile(event: string) {
       this.$emit(event);
       if (this.isMobile) {

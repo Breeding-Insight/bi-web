@@ -102,7 +102,6 @@
     toggleRowEdit(row: TableRow<any>) {
       row.toggleEdit();
       if (row.edit){
-        console.log('here');
         this.setValidationRow(row);
       }
     }

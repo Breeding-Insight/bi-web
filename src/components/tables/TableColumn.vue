@@ -72,10 +72,6 @@
       this.table.addColumn(this);
     }
 
-    beforeDestroy() {
-      if (!this.table) return;
-      this.table.removeColumn(this);
-    }
   }
 
 </script>
