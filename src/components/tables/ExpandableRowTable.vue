@@ -36,7 +36,7 @@
         <ExpandableTableRow
           v-bind:key="'row' + index"
           v-bind:row-data="row"
-          v-on:edit="row.toggleEdit()"
+          v-on:edit="toggleRowEdit(row)"
           v-on:remove="$emit('remove', row.data)"
         >
           <slot
@@ -56,7 +56,7 @@
               >
                 <slot
                   v-bind:editData="row.editData"
-                  v-bind:validations="getValidations(row)"
+                  v-bind:validations="getValidations()"
                   name="edit"
                 />
               </EditDataRowForm>
@@ -83,11 +83,13 @@
   import ExpandableTableRow from "@/components/tables/ExpandableTableRow.vue"
   import EditDataRowForm from '@/components/forms/EditDataRowForm.vue'
   import ValidationMixin from '@/mixins/ValidationMixin'
+  import {TableRow} from "@/breeding-insight/model/view_models/TableRow";
 
   @Component({
     components: { BaseTable, ExpandableTableRow, EditDataRowForm, PaginationControls }
   })
   export default class ExpandableRowTable extends Mixins(ValidationMixin) {
+
     @Prop()
     records!: Array<any>;
     @Prop()
@@ -96,6 +98,13 @@
     pagination!: Pagination;
 
     private colSpan = 0;
-   
+
+    toggleRowEdit(row: TableRow<any>) {
+      row.toggleEdit();
+      if (row.edit){
+        console.log('here');
+        this.setValidationRow(row);
+      }
+    }
   }
 </script>

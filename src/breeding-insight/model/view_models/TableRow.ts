@@ -63,7 +63,7 @@ export class TableRow<T extends Object> {
   }
 
   cancelEdit() {
-    this.toggleEdit();
+    this.edit = false;
     this.revertChanges();
   }
 
