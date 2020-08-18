@@ -302,13 +302,13 @@
         const [uploadedTraits, uploadMeta] = await TraitUploadService.getTraits(this.activeProgram!.id!, undefined, true);
 
         // add traits to program
-        const [newTraits, { status } ] = await TraitService.createTraits(this.activeProgram!.id!, uploadedTraits);
+        const [newTraits, { status } ] = await TraitService.createTraits(this.activeProgram!.id!, uploadedTraits) as [Trait[], Metadata];
 
         // delete uploaded traits
         await TraitUploadService.deleteTraits(this.activeProgram!.id!);
 
         // show all program traits
-        this.$emit('show-success-notification', `Imported traits have been added to ${this.activeProgram.name}.`);
+        this.$emit('show-success-notification', `Imported traits have been added to ${this.activeProgram.name || 'the program'}.`);
         this.$router.push({
           name: 'traits-list',
           params: {
@@ -316,7 +316,7 @@
           },
         });
       } catch(err) {
-        this.$emit('show-error-notification', `Error: Imported traits were not added to ${this.activeProgram.name}.`);
+        this.$emit('show-error-notification', `Error: Imported traits were not added to ${this.activeProgram.name || 'the program'}.`);
         this.$log.debug(err);
       }
     }
