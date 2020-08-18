@@ -20,6 +20,10 @@ import {BiResponse} from "@/breeding-insight/model/BiResponse";
 import * as api from "@/util/api";
 import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
 
+interface Response {
+  data: any
+}
+
 export class TraitDAO {
 
     static getAll(programId: string, paginationQuery: PaginationQuery, full : boolean): Promise<BiResponse> {
@@ -37,14 +41,12 @@ export class TraitDAO {
     }))
   }
 
-
   static async createTraits(programId: string, newTraits: Trait[]): Promise<BiResponse> {
       const { data } =  await api.call({
           url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/traits`,
           method: 'post',
           data: newTraits
-      });
-
+      }) as Response;
       return new BiResponse(data);
 
   }
