@@ -25,7 +25,7 @@ const ora = require('ora');
     let {exitCode, stdout} = await execa('vue-cli-service', ['lint']);
     if (exitCode === 0) {
       spinner = spinner.clear()
-                       .succeed('linting finished');
+        .succeed('linting finished');
       console.log(stdout);
     }
 

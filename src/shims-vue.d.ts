@@ -68,6 +68,7 @@ declare module 'constants' {
         loginRedirectUrl: string
       }
     }
+  }
 }
 
 declare module 'vue-feather-icons';
