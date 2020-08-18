@@ -23,8 +23,8 @@ import {PaginationController} from "@/breeding-insight/model/view_models/Paginat
 
 export class TraitService {
 
-    static getAll(programId: string, paginationQuery?: PaginationQuery): Promise<Trait[], Metadata> {
-        return new Promise<Trait[], Metadata>(((resolve, reject) => {
+    static getAll(programId: string, paginationQuery?: PaginationQuery): Promise<[Trait[], Metadata]> {
+        return new Promise<[Trait[], Metadata]>(((resolve, reject) => {
 
       if (paginationQuery === undefined){
         paginationQuery = new PaginationQuery(0, 0, true);

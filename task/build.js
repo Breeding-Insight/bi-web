@@ -17,37 +17,84 @@
 
 const execa = require('execa');
 const ora = require('ora');
+const parseArgs = require('minimist');
+
+// Parse command line arguments
+var argv = parseArgs(process.argv.slice(2), {
+    default: {
+      'dev-audit-level': 'critical',
+      'prod-audit-level': 'none'
+    }
+  }
+);
+
+let allowableDevLevel = argv['dev-audit-level'];
+let allowableProdLevel = argv['prod-audit-level'];
+let severities = ['none', 'low', 'moderate', 'high', 'critical'];
+console.log(`Flagging audit errors with severity higher than ${allowableDevLevel} for dev packages`);
+console.log(`Flagging audit errors with severity higher than ${allowableProdLevel} for prod packages`);
+
+let spinner = ora({prefixText: ' ', color: 'yellow'});
 
 (async () => {
-  let spinner = ora({prefixText: ' ', color: 'yellow'});
+  spinner = spinner.start('checking for node modules vulnerabilities');
+
   try {
-    spinner = spinner.start('checking for node modules vulnerabilities');
-    let {exitCode} = await execa('npm', ['audit']);
-    if (exitCode === 0) {
-      spinner = spinner.clear()
-                       .succeed('no known vulnerabilities in node modules');
+    let {exitCode} = await execa('npm', ['audit', '--json']);
+  } catch (error) {
+    parseAuditErrors(error);
+  }
+  spinner.clear()
+    .succeed('dependencies passed inspection');
 
-      // only build if no vulnerabilities found
-      spinner.start('building the Vue app');
-      let {stdout} = await execa('vue-cli-service', ['build'], {preferLocal: true});
-      spinner = spinner.clear()
-                       .succeed('Vue app build finished');
-      console.log(stdout);
-    }
-
-  } catch(err) {
-
-    // check if the npm audit found one or more vulnerabilities
-    if(err.exitCode === 1) {
-      spinner = spinner.fail(`build aborted because vulnerabilities found in npm modules
-     run 'npm audit' for more information`);
-    } else {
-
-      // show short message for all other non-audit exceptions
-      spinner.fail(err.shortMessage);
-    }
-  } finally {
-    spinner.stop();
+  try {
+    // Try building the vue code
+    spinner.start('building the Vue app');
+    let {stdout} = await execa('vue-cli-service', ['build'], {preferLocal: true});
+    spinner = spinner.clear()
+      .succeed('Vue app build finished');
+  } catch (error) {
+    console.log(error.stdout);
+    spinner.fail(`error building vue-cli-service`);
+    process.exit(1);
   }
 
+
 })();
+
+function parseAuditErrors(err) {
+
+  const stdout = err.stdout;
+  const errors = JSON.parse(stdout);
+  const actions = errors.actions;
+  const advisories = errors.advisories;
+  console.log(stdout);
+
+  for (const action of actions){
+    const resolves = action.resolves;
+    for (const resolve of resolves){
+      const error = advisories[resolve.id];
+
+      if (resolve.dev){
+        // Dev dependency
+
+        if (severities.indexOf(error.severity) < 0 ||
+          severities.indexOf(error.severity) > severities.indexOf(allowableDevLevel) ){
+          console.log("Dependencies exceed allowable error level");
+          spinner = spinner.fail(`build aborted because vulnerabilities found in npm modules
+     run 'npm audit' for more information`);
+          process.exit(1);
+        }
+      } else {
+        // Production dependency
+        if (severities.indexOf(error.severity) < 0 ||
+          severities.indexOf(error.severity) > severities.indexOf(allowableProdLevel) ){
+          console.log("Dependencies exceed allowable error level");
+          spinner = spinner.fail(`build aborted because vulnerabilities found in npm modules
+     run 'npm audit' for more information`);
+          process.exit(1);
+        }
+      }
+    }
+  }
+}

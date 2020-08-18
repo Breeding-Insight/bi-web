@@ -22,6 +22,7 @@ import Vuex from 'vuex'
 import localVue from '../index'
 import { User } from '@/breeding-insight/model/User'
 import { TableRow } from '@/breeding-insight/model/view_models/TableRow'
+import {Role} from "@/breeding-insight/model/Role";
 
 describe('UserManagement.vue', () => {
 
@@ -34,9 +35,10 @@ describe('UserManagement.vue', () => {
   const wrapper = shallowMount(UserManagement, {localVue});
 
   it('populates rows correctly', () => {
+    const role: Role = new Role('1', 'admin');
     wrapper.vm.$data.users = [
-      new TableRow(true, new User('1', 'Tester1', 'tester1@test.com', ['admin'])),
-      new TableRow(true, new User('2', 'Tester2', 'tester2@test.com', ['admin']))
+      new TableRow(true, new User('1', 'Tester1', '1111-1111-1111-1111', 'tester1@test.com', role)),
+      new TableRow(true, new User('2', 'Tester2', '1111-1111-1111-1111','tester2@test.com', role))
     ]
 
     expect(wrapper.html()).toContain('Tester1');
