@@ -68,7 +68,7 @@
         this.$destroy()
         throw new Error('TableColumn should be a child of BaseTable');
       }
-      this.table = parent;
+      this.table = parent as BaseTable;
       this.table.addColumn(this);
     }
 
