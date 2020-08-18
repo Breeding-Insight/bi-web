@@ -59,9 +59,9 @@ class ValidationMixin extends Vue {
 
   validateAndSubmit(record: TableRow<any>) {
     this.currentValidationRow = record;
-    this.$v.currentValidationRow.editData.$touch();
+    this.$v.currentValidationRow.editData!.$touch();
 
-    if (this.$v.currentValidationRow.editData.$anyError){
+    if (this.$v.currentValidationRow.editData!.$anyError){
       this.$emit('show-error-notification', 'Fix Invalid Fields');
       return;
     }
@@ -70,14 +70,14 @@ class ValidationMixin extends Vue {
       
       const editedRecord = record.editData;
       this.$emit('submit', editedRecord);
-      this.$v.currentValidationRow.editData.$reset();
+      this.$v.currentValidationRow.editData!.$reset();
     }
   }
 
   cancelEdit(record: TableRow<any>) {
     record.cancelEdit();
     // clear form
-    this.$v.currentValidationRow.editData.$reset();
+    this.$v.currentValidationRow.editData!.$reset();
   }
 }
 export default ValidationMixin
