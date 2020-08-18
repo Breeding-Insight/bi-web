@@ -393,7 +393,7 @@ export default class AdminUsersTable extends Vue {
           this.$emit('show-success-notification', 'User roles successfully updated');
         }
         if (errors[1].status === PromiseHandler.fulfilled){
-          this.$emit('show-success-notification', 'User info successfully updated');
+          this.$emit('show-success-notification', 'User info (name/email/ORCID/program) successfully updated');
         }
 
         // Shows any that are errors
