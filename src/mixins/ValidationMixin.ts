@@ -36,7 +36,7 @@ class ValidationMixin extends Vue {
         currentValidationRow: {
           editData: {
             ...this.rowValidations
-          } 
+          }
         }
       }
     }
@@ -44,8 +44,16 @@ class ValidationMixin extends Vue {
     return {}
   }
 
-  getValidations(record: TableRow<any>) {
+  setValidationRow(record: TableRow<any>) {
+    if (this.currentValidationRow && this.currentValidationRow !== record){
+      this.cancelEdit(this.currentValidationRow);
+    }
+
+    // Set the new edit row
     this.currentValidationRow = record;
+  }
+
+  getValidations(){
     return this.$v.currentValidationRow.editData;
   }
 
@@ -67,8 +75,7 @@ class ValidationMixin extends Vue {
   }
 
   cancelEdit(record: TableRow<any>) {
-    record.toggleEdit();
-    record.revertChanges();
+    record.cancelEdit();
     // clear form
     this.$v.currentValidationRow.editData.$reset();
   }

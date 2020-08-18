@@ -58,7 +58,6 @@
     get validationSpec(): Object[] {
 
       if (this.validations) {
-
         const validations: string[] = Object.keys(this.validations.$params);
         const validationArray: Map<string, string>[] = [];
 
