@@ -17,189 +17,95 @@
 
 <template>
   <div>
-    <template
-      v-if="tableRows.length > 0"
+    <v-breakpoint v-on:mobile="emitAndUpdateIsMobile('mobile')"></v-breakpoint>
+    <v-breakpoint v-on:tablet="emitAndUpdateIsMobile('tablet')"></v-breakpoint>
+    <v-breakpoint v-on:desktop="emitAndUpdateIsMobile('desktop')"></v-breakpoint>
+    <table
+      class="table is-striped is-narrow is-hoverable is-fullwidth"
     >
-      <table
-
-        class="table is-striped is-narrow is-hoverable is-fullwidth"
-      >
-        <thead>
-          <tr>
-            <template v-for="(header, index) in headers">
-              <th
-                v-bind:key="'header' + index"
-                v-bind:class="{'is-hidden-mobile': hideMobileHeaders !== undefined && hideMobileHeaders.indexOf(header) !== -1 }"
-              >
-                {{ header }}
-              </th>
-            </template>
-            <template v-if="editable">
-              <th />
-            </template>
-          </tr>
-        </thead>
-        <tbody>
-          <template v-for="(row, index) in tableRows">
-            <BaseTableRow
-              v-bind:key="'row' + index"
-              v-bind:row-data="row"
-              v-on:edit="row.toggleEdit()"
-              v-on:remove="$emit('remove', row.data)"
-            >
-              <slot
-                v-bind="row.data"
-                name="columns"
-              />
-            </BaseTableRow>
-            <template v-if="row.edit">
-              <tr
-                v-bind:key="'edit' + index"
-                v-bind:class="{'is-selected': row.edit, 'is-new': row.new}"
-              >
-                <td v-bind:colspan="columnSpan">
-                  <EditDataRowForm
-                    @submit="validateAndSubmit(index)"
-                    @cancel="cancelEdit(row, index)"
-                  >
-                    <slot
-                      v-bind:editData="row.editData"
-                      v-bind:validations="getValidations(index)"
-                      name="edit"
-                    />
-                  </EditDataRowForm>
-                </td>
-              </tr>
-            </template>
-          </template>
-        </tbody>
-      </table>
-
-      <b-pagination
-          v-if="pagination"
-          :total="pagination.totalCount"
-          :current="pagination.currentPage"
-          range-before="1"
-          range-after="1"
-          order="is-centered"
-          size="is-small"
-          :simple="false"
-          :rounded="false"
-          :per-page="pagination.pageSize"
-          aria-next-label="Next page"
-          aria-previous-label="Previous page"
-          aria-page-label="Page"
-          aria-current-label="Current page"
-          v-on:change="$emit('paginate', $event)"
-      >
-        <b-pagination-button
-            slot="previous"
-            slot-scope="props"
-            :page="props.page"
-            tag="a"
-        >
-          Previous
-        </b-pagination-button>
-
-        <template
-            slot="next"
-            slot-scope="props"
-        >
-          <b-pagination-button
-              :page="props.page"
-              tag="a"
+      <thead v-if="updatedColumns.length">
+        <tr>
+          <!-- Header space for left row icon if desired -->
+          <th v-if="showRowIcon" width="40px" scope="col"/>
+          <th v-for="(column, index) in visibleColumns"
+              scope="col"
+              v-bind:key="index"
+              v-bind:style="{
+                width: column.width === undefined ? null :
+                (isNaN(column.width) ? column.width : column.width + 'px')
+              }"
           >
-            Next
-          </b-pagination-button>
-
-          <div class="pagination-extras">
-            <div class="page-size-select pagination-link">
-              <div class="select is-small">
-                <select
-                    v-model="pagination.pageSize"
-                    v-on:change="$emit('paginate-page-size', $event.target.value)"
-                >
-                  <option value="10">
-                    10
-                  </option>
-                  <option value="20">
-                    20
-                  </option>
-                  <option value="50">
-                    50
-                  </option>
-                  <option value="100">
-                    100
-                  </option>
-                  <option value="200">
-                    200
-                  </option>
-                </select>
-              </div>
-              <span>per page</span>
-            </div>
-
-            <a
-                role="button"
-                class="pagination-link show-all-button"
-                v-bind:class="{ 'has-background-info': pagination.totalPages === 1}"
-                v-on:click="$emit('paginate-toggle-all')"
-            >
-              Show All
-            </a>
-          </div>
+            {{ column.label }}
+          </th>
+          <!-- Add a header column to match spacing for row controls if specified -->
+          <template v-if="showExpandControls">
+            <td />
+          </template>
+        </tr>
+      </thead>
+      <tbody>
+        <template v-for="(row, index) in tableRows">
+          <!-- slot to customize each row in table -->
+          <slot name="row" v-bind:row="row" v-bind:index="index"></slot>
         </template>
-      </b-pagination>
-
-    </template>
-    <div v-else>
-      <slot name="emptyMessage" />
-    </div>
-
-
+      </tbody>
+    </table>
   </div>
 </template>
-
 
 <script lang="ts">
 
   import {Component, Prop, Vue, Watch} from 'vue-property-decorator'
-  import BaseTableRow from "@/components/tables/BaseTableRow.vue"
   import {TableRow} from "@/breeding-insight/model/view_models/TableRow"
-  import EditDataRowForm from '@/components/forms/EditDataRowForm.vue'
-  import {Validations} from "vuelidate-property-decorators";
-  import {Pagination} from "@/breeding-insight/model/BiResponse";
+  import TableColumn from "@/components/tables/TableColumn.vue";
+  import { VBreakpoint } from '@/components/VBreakpoint';
 
   @Component({
-    components: { BaseTableRow, EditDataRowForm }
+    components: { VBreakpoint
+    }
   })
   export default class BaseTable extends Vue {
+
     //<slot name="table-row" v-bind:row-data="program"></slot>
     // Knows all of the data
     @Prop()
-    headers!: string[];
-    @Prop()
-    hideMobileHeaders!: string[];
-    @Prop()
     records!: Array<any>;
     @Prop()
-    rowValidations!: Object;
-    @Prop()
     editable!: boolean;
+    @Prop({default: () => []})
+    columns!: Array<TableColumn>;
     @Prop()
-    pagination!: Pagination;
-
-    initialUpdate: boolean = false;
-
+    showExpandControls!: boolean;
+    @Prop()
+    showRowIcon!: boolean;
+    
+    private initialUpdate: boolean = false;
     private tableRows: Array<TableRow<any>> = new Array<TableRow<any>>();
+    private updatedColumns: Array<TableColumn> = [...this.columns];
+    private isMobile = false;
+
+    /**
+     * Used by TableColumn component to find it's parent BaseTable
+     */
+    private isTable = true;
 
     updated() {
       this.initialUpdate = true;
     }
 
+    @Watch('updatedColumns', {immediate:true})
+    updateColSpan() {
+      this.$emit('colspan', this.visibleColumns.length);
+    }
+
+    get visibleColumns() {
+      return this.updatedColumns.filter((column) => {
+          return column.isVisible || column.isVisible === undefined
+      })
+    }
+
     @Watch('records', {immediate: true, deep:true})
     updateTableRows(newRecords: any, oldRecords: any) {
-
       let difference: Array<string> = [];
       if (oldRecords !== null && this.initialUpdate) {
         const newSet: Set<string> = new Set(newRecords
@@ -228,51 +134,33 @@
       this.tableRows = rowArray;
     }
 
-    @Validations()
-    validations() {
-      if (this.rowValidations) {
-        return {
-          tableRows: {
-            $each: {
-              editData: {
-                ...this.rowValidations
-              }
-            }
-          }
+    /**
+     * Used by TableColumn component to add itself to BaseTable
+     * @param column
+     */
+    addColumn(column: TableColumn) {
+      const repeated = this.updatedColumns.some(
+          (col) => col.newKey === column.newKey)
+
+      if (!repeated) {
+        this.updatedColumns.push(column);
+      }
+    }
+
+    emitAndUpdateIsMobile(event: string) {
+      this.$emit(event);
+      if (this.isMobile) {
+        if (event === 'tablet' || event === 'desktop') {
+          this.isMobile = false;
+          this.$emit('is-mobile', false);
         }
       }
-
-      return {}
-    }
-
-    get columnSpan() {
-      return this.editable ? this.headers.length + 1 : this.headers.length;
-    }
-
-    getValidations(index: number) {
-      return this.$v.tableRows.$each![index]!.editData;
-    }
-
-    validateAndSubmit(rowIndex: number) {
-
-      this.$v.tableRows.$each![rowIndex]!.editData.$touch();
-      if (this.$v.tableRows.$each![rowIndex]!.editData.$anyError){
-        this.$emit('show-error-notification', 'Fix Invalid Fields');
-        return;
-      }
       else {
-        // Check all of our fields to see if they were required
-        this.$v.tableRows.$each![rowIndex]!.editData.$reset();
-        const editedRecord = this.tableRows[rowIndex].editData;
-        this.$emit('submit', editedRecord);
+        if (event === 'mobile') {
+          this.isMobile = true;
+          this.$emit('is-mobile', true);
+        }
       }
-    }
-
-    cancelEdit(record: TableRow<any>, rowIndex: number) {
-      record.toggleEdit();
-      record.revertChanges();
-      // clear form
-      this.$v.tableRows.$each![rowIndex]!.editData.$reset();
     }
 
   }

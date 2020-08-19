@@ -15,28 +15,21 @@
  * limitations under the License.
  */
 
-export enum MethodClass {
-  Computation = "COMPUTATION",
-  Observation = "OBSERVATION",
-  Measurement = "MEASUREMENT",
-  Counting = "COUNTING",
-  Estimation = "ESTIMATION"
-}
+import {Scale, DataType} from "@/breeding-insight/model/Scale";
+import {StringFormatters} from "@/breeding-insight/utils/StringFormatters";
 
-export class Method {
-  methodName?: string;
-  methodClass?: string;
-  description?: string;
-  formula?: string;
-
-  constructor(methodName?:string, methodClass?:string, description?:string, formula?:string) {
-    this.methodName = methodName;
-    this.methodClass = methodClass;
-    this.description = description;
-    this.formula = formula;
+export class TraitStringFormatters {
+  
+  static getScaleTypeString(scale: Scale): string | undefined {
+    if (scale.dataType) {
+      if (scale.categories && (Scale.dataTypeEquals(scale.dataType, DataType.Nominal) || Scale.dataTypeEquals(scale.dataType, DataType.Ordinal))) {
+        return StringFormatters.toStartCase(scale.dataType) + " (" + scale.categories.length + ")";
+      }
+      else {
+        return StringFormatters.toStartCase(scale.dataType);
+      }
+    }
+    return undefined;
   }
 
-  static methodClassEquals(classString: string, type: MethodClass): boolean {
-    return classString.toUpperCase() === type;
-  }
 }

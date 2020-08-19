@@ -15,28 +15,21 @@
  * limitations under the License.
  */
 
-export enum MethodClass {
-  Computation = "COMPUTATION",
-  Observation = "OBSERVATION",
-  Measurement = "MEASUREMENT",
-  Counting = "COUNTING",
-  Estimation = "ESTIMATION"
+import { extend } from 'vue-breakpoint-component'
+ 
+const config = {
+  // breakpoints for bulma
+  breakpoints: {
+    mobile: '(min-width: 529px)',
+    tablet: '(min-width: 768px)',
+    desktop: '(min-width: 1024px)'
+  },
+  debounceTime: 100,
+  experimental: false
 }
-
-export class Method {
-  methodName?: string;
-  methodClass?: string;
-  description?: string;
-  formula?: string;
-
-  constructor(methodName?:string, methodClass?:string, description?:string, formula?:string) {
-    this.methodName = methodName;
-    this.methodClass = methodClass;
-    this.description = description;
-    this.formula = formula;
-  }
-
-  static methodClassEquals(classString: string, type: MethodClass): boolean {
-    return classString.toUpperCase() === type;
-  }
-}
+ 
+const { VShowAt, VHideAt, VBreakpoint } = extend(config)
+ 
+export default VBreakpoint
+ 
+export { VShowAt, VHideAt, VBreakpoint }

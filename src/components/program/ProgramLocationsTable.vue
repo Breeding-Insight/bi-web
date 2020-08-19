@@ -74,8 +74,7 @@
       </template>
     </NewDataForm>
 
-    <BaseTable
-      v-bind:headers="locationTableHeaders"
+    <ExpandableRowTable
       v-bind:records.sync="locations"
       v-bind:row-validations="locationValidations"
       v-bind:editable="true"
@@ -88,12 +87,12 @@
       v-on:paginate-page-size="paginationController.updatePageSize($event)"
     >
       <template v-slot:columns="data">
-        <TableRowColumn name="name">
+        <TableColumn name="name" v-bind:label="'Name'">
           {{ data.name }}
-        </TableRowColumn>
-        <TableRowColumn name="numExperiments">
+        </TableColumn>
+        <TableColumn name="numExperiments" v-bind:label="'# Experiments'">
           {{ data.numExperiments }}
-        </TableRowColumn>
+        </TableColumn>
       </template>
       <template v-slot:edit="{editData, validations}">
         <div class="columns">
@@ -121,33 +120,33 @@
           You can also add, edit, and delete locations from this panel.  
         </EmptyTableMessage>
       </template>
-    </BaseTable>
+    </ExpandableRowTable>
   </section>
 </template>
 
 <script lang="ts">
   import {Component, Prop, Vue, Watch} from 'vue-property-decorator'
-import WarningModal from '@/components/modals/WarningModal.vue'
-import {PlusCircleIcon} from 'vue-feather-icons'
-import {validationMixin} from 'vuelidate';
-import {Validations} from 'vuelidate-property-decorators'
-import {required} from 'vuelidate/lib/validators'
-import {ProgramLocation} from '@/breeding-insight/model/ProgramLocation'
-import { mapGetters } from 'vuex'
-import {Program} from "@/breeding-insight/model/Program";
-import NewDataForm from '@/components/forms/NewDataForm.vue'
-import BasicInputField from "@/components/forms/BasicInputField.vue";
-import BaseTable from "@/components/tables/BaseTable.vue";
-import {ProgramLocationService} from "@/breeding-insight/service/ProgramLocationService";
-import EmptyTableMessage from "@/components/tables/EmtpyTableMessage.vue";
-import TableRowColumn from "@/components/tables/TableRowColumn.vue";
+  import WarningModal from '@/components/modals/WarningModal.vue'
+  import {PlusCircleIcon} from 'vue-feather-icons'
+  import {validationMixin} from 'vuelidate';
+  import {Validations} from 'vuelidate-property-decorators'
+  import {required} from 'vuelidate/lib/validators'
+  import {ProgramLocation} from '@/breeding-insight/model/ProgramLocation'
+  import { mapGetters } from 'vuex'
+  import {Program} from "@/breeding-insight/model/Program";
+  import NewDataForm from '@/components/forms/NewDataForm.vue'
+  import BasicInputField from "@/components/forms/BasicInputField.vue";
+  import ExpandableRowTable from "@/components/tables/ExpandableRowTable.vue";
+  import {ProgramLocationService} from "@/breeding-insight/service/ProgramLocationService";
+  import EmptyTableMessage from "@/components/tables/EmtpyTableMessage.vue";
+  import TableColumn from "@/components/tables/TableColumn.vue";
   import {Metadata, Pagination} from "@/breeding-insight/model/BiResponse";
   import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
   import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
 
 @Component({
   mixins: [validationMixin],
-  components: { NewDataForm, BasicInputField, BaseTable, EmptyTableMessage, TableRowColumn,
+  components: { NewDataForm, BasicInputField, ExpandableRowTable, EmptyTableMessage, TableColumn,
                 WarningModal, 
                 PlusCircleIcon },
   computed: {
@@ -158,7 +157,6 @@ import TableRowColumn from "@/components/tables/TableRowColumn.vue";
 })
 export default class ProgramLocationsTable extends Vue {
 
-  private locationTableHeaders: string[] = ['Name', '# Experiments'];
   private activeProgram?: Program;
   private locations: ProgramLocation[] = [];
   private locationsPagination?: Pagination = new Pagination();

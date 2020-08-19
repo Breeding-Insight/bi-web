@@ -32,7 +32,7 @@
           <div class="level-item is-hidden-desktop is-pulled-left">
             <a role="button"
                class="navbar-hamburger has-text-dark"
-               aria-label="menu"
+               aria-label="Open Navigation Menu"
                aria-expanded="false"
                @click="sideMenuShownMobile = !sideMenuShownMobile"
             >
@@ -65,14 +65,14 @@
             <div class="level-left"></div>
             <div class="level-right">
               <div class="level-item">
-                <p>Logged in as <strong>{{username}}</strong></p>
+                <p class="mb-0">Logged in as <strong>{{username}}</strong></p>
               </div>
               <div class="level-item">
                 <button class="button is-outlined is-primary" @click="$emit('logout')">Log out</button>
               </div>
             </div>
           </div>
-          <section class="section">
+          <section class="section pt-0">
             <slot name="content"></slot>
           </section>
         </main>

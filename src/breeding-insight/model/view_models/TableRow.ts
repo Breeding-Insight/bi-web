@@ -19,6 +19,7 @@ export class TableRow<T extends Object> {
   data!: T;
   edit: boolean;
   new: boolean;
+  selected: boolean;
   editable: boolean;
   nameError: boolean;
   emailError: boolean;
@@ -31,6 +32,7 @@ export class TableRow<T extends Object> {
     this.new = false;
     this.edit = false;
     this.new = false;
+    this.selected = false;
     this.nameError = false;
     this.emailError = false;
     this.data = data;
@@ -39,6 +41,8 @@ export class TableRow<T extends Object> {
     }
       
   }
+
+
 
   confirmChanges() {
     this.data = {...this.editData};
@@ -59,7 +63,7 @@ export class TableRow<T extends Object> {
   }
 
   cancelEdit() {
-    this.toggleEdit();
+    this.edit = false;
     this.revertChanges();
   }
 

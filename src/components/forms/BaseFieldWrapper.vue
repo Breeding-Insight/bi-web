@@ -17,7 +17,7 @@
 
 <template>
   <div class="field" v-bind:class="{ 'field--error': fieldError }">
-    <label class="label">
+    <label class="label" v-bind:for="fieldName">
       {{ fieldName }}
     </label>
     <div class="control">
@@ -58,7 +58,6 @@
     get validationSpec(): Object[] {
 
       if (this.validations) {
-
         const validations: string[] = Object.keys(this.validations.$params);
         const validationArray: Map<string, string>[] = [];
 

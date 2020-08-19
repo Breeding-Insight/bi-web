@@ -70,9 +70,9 @@
             </div>
             <div class="level-item">
               <div class="has-text-dark">
-                <file-selector v-model="file"
+                <FileSelector v-model="file"
                                v-bind:fileTypes="fileTypes">
-                </file-selector>
+                </FileSelector>
               </div>
             </div>
           </div>

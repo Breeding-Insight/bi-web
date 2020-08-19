@@ -23,6 +23,7 @@
   >
     <div class="select is-fullwidth">
       <select
+          v-bind:id="fieldName"
           v-on:input="$emit('input', $event.target.value)"
           class="select is-fullwidth"
       >

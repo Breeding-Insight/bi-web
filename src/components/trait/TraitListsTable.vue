@@ -35,45 +35,45 @@
       </div>              
     </WarningModal>
 
-    <BaseTable
-      v-bind:headers="traitTableHeaders"
+    <SidePanelTable
       v-bind:records.sync="traits"
-      v-bind:row-validations="traitValidations"
       v-bind:editable="false"
       v-bind:pagination="traitsPagination"
-      v-on:submit="updateTrait($event)"
-      v-on:remove="displayWarning($event)"
       v-on:show-error-notification="$emit('show-error-notification', $event)"
       v-on:paginate="paginationController.updatePage($event)"
       v-on:paginate-toggle-all="paginationController.toggleShowAll()"
       v-on:paginate-page-size="paginationController.updatePageSize($event)"
+      v-on:collapse-columns="collapseColumns = true"
+      v-on:uncollapse-columns="collapseColumns = false"
     >
+
+      <!-- 
+        Table row column slot specification
+        data: T
+      -->
       <template v-slot:columns="data">
-        <TableRowColumn name="name">
+        <TableColumn name="name" v-bind:label="'Name'">
           {{ data.traitName }}
-        </TableRowColumn>
-        <TableRowColumn name="level">
+        </TableColumn>
+        <TableColumn name="level" v-bind:label="'Level'" v-bind:visible="!collapseColumns">
           {{ data.programObservationLevel.name }}
-        </TableRowColumn>
-        <TableRowColumn name="method">
-          {{ data.method.methodName }}
-        </TableRowColumn>
-        <TableRowColumn name="scale">
-          {{ data.scale.scaleName }}
-        </TableRowColumn>        
+        </TableColumn>
+        <TableColumn name="method" v-bind:label="'Method'" v-bind:visible="!collapseColumns">
+          {{ StringFormatters.toStartCase(data.method.methodClass) }}
+        </TableColumn>
+        <TableColumn name="scale" v-bind:label="'Scale'" v-bind:visible="!collapseColumns">
+          {{ TraitStringFormatters.getScaleTypeString(data.scale) }}
+        </TableColumn>        
       </template>
-      <template v-slot:edit="{editData, validations}">
-        <div class="columns">
-          <div class="column is-two-fifths">
-            <BasicInputField
-              v-model="editData.name"
-              v-bind:validations="validations.name"
-              v-bind:field-name="'Name'"
-              v-bind:field-help="'Trait name as preferred. All Unicode special characters accepted.'"
-            />
-          </div>
-        </div>
+
+      <!-- 
+        Side panel data slot specification
+        data: T
+      -->
+      <template v-slot:side-panel="data">
+        <TraitDetailPanel v-bind:data="data"/>
       </template>
+
       <template v-slot:emptyMessage>
         <EmptyTableMessage
         >
@@ -83,34 +83,35 @@
           Create new traits by clicking "Import Traits".
         </EmptyTableMessage>
       </template>
-    </BaseTable>
+    </SidePanelTable>
   </section>
 </template>
 
 <script lang="ts">
-import {Component, Prop, Vue, Watch} from 'vue-property-decorator'
+import {Component, Vue, Watch} from 'vue-property-decorator'
 import WarningModal from '@/components/modals/WarningModal.vue'
 import {PlusCircleIcon} from 'vue-feather-icons'
 import {validationMixin} from 'vuelidate';
-import {Validations} from 'vuelidate-property-decorators'
-import {required} from 'vuelidate/lib/validators'
 import {Trait} from '@/breeding-insight/model/Trait'
 import { mapGetters } from 'vuex'
 import {Program} from "@/breeding-insight/model/Program";
 import NewDataForm from '@/components/forms/NewDataForm.vue'
 import BasicInputField from "@/components/forms/BasicInputField.vue";
-import BaseTable from "@/components/tables/BaseTable.vue";
+import SidePanelTable from "@/components/tables/SidePanelTable.vue";
+import TraitDetailPanel from "@/components/trait/TraitDetailPanel.vue";
 import {TraitService} from "@/breeding-insight/service/TraitService";
 import EmptyTableMessage from "@/components/tables/EmtpyTableMessage.vue";
-import TableRowColumn from "@/components/tables/TableRowColumn.vue";
-import {Metadata, Pagination} from "@/breeding-insight/model/BiResponse";
+import TableColumn from "@/components/tables/TableColumn.vue";
+import {Pagination} from "@/breeding-insight/model/BiResponse";
 import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
 import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
+import { StringFormatters } from '@/breeding-insight/utils/StringFormatters';
+import { TraitStringFormatters } from '@/breeding-insight/utils/TraitStringFormatters';
 
 @Component({
   mixins: [validationMixin],
-  components: { NewDataForm, BasicInputField, BaseTable, EmptyTableMessage, TableRowColumn,
-                WarningModal, 
+  components: { NewDataForm, BasicInputField, SidePanelTable, EmptyTableMessage, TableColumn,
+                WarningModal, TraitDetailPanel,
                 PlusCircleIcon },
   computed: {
     ...mapGetters([
@@ -120,22 +121,16 @@ import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
 })
 export default class TraitTable extends Vue {
 
-  private traitTableHeaders: string[] = ['Name', 'Level', 'Method', 'Scale'];
   private activeProgram?: Program;
   private traits: Trait[] = [];
   private traitsPagination?: Pagination = new Pagination();
   private paginationController: PaginationController = new PaginationController();
   private deactivateActive: boolean = false;
-  private newTraitActive: boolean = false;
   private deactivateWarningTitle: string = "Remove trait from Program name?";
-  private newTrait = new Trait();
   private traitName: string = "Program Trait";
-  private deleteTrait?: Trait;
-  private loaded: boolean = false;
-
-  traitValidations = {
-    name: {required}
-  }
+  private collapseColumns = false;
+  private StringFormatters = StringFormatters;
+  private TraitStringFormatters = TraitStringFormatters;
 
   mounted() {
     this.getTraits();
@@ -147,7 +142,7 @@ export default class TraitTable extends Vue {
       this.paginationController.currentPage, this.paginationController.pageSize, this.paginationController.showAll);
     this.paginationController.setCurrentCall(paginationQuery);
 
-    TraitService.getAll(this.activeProgram!.id!, paginationQuery).then(([traits, metadata]) => {
+    TraitService.getAll(this.activeProgram!.id!, paginationQuery, true).then(([traits, metadata]) => {
       if (this.paginationController.matchesCurrentRequest(metadata.pagination)){
         this.traits = traits;
         this.traitsPagination = metadata.pagination;
@@ -156,84 +151,7 @@ export default class TraitTable extends Vue {
       // Display error that traits cannot be loaded
       this.$emit('show-error-notification', 'Error while trying to load traits');
       throw error;
-    }).finally(() => {
-      this.loadedData();
     });
-  }
-
-  loadedData() {
-    this.loaded = true;
-    this.$emit('loaded');
-  }
-
-  createTrait() {
-    this.newTraitActive = true;
-  }
-
-  //TODO: Use this when we can update traits
-  /*updateTrait(updatedTrait: Trait) {
-
-    TraitService.update(updatedTrait).then(() => {
-      this.getTraits();
-      this.$emit('show-success-notification', 'Success! ' + updatedTrait.traitName + ' updated.');
-    }).catch(() => {
-      this.$emit('show-error-notification', 'Error updating trait');
-    });
-
-  }*/
-
-  //TODO: Use this when we can create traits on this page
-  /*saveTrait() {
-
-    this.newTrait.programId = this.activeProgram!.id;
-
-    TraitService.create(this.newTrait).then((trait: Trait) => {
-      this.getTraits();
-      this.$emit('show-success-notification', 'Success! ' + this.newTrait.traitName + ' added.');
-      this.newTrait = new Trait();
-      this.newTraitActive = false;
-    }).catch(() => {
-      this.$emit('show-error-notification', 'Error while creating trait, ' + this.newTrait.traitName);
-    })
-
-  }*/
-
-  cancelNewTrait() {
-    this.newTrait = new Trait();
-    this.newTraitActive = false;
-  }
-
-  displayWarning(trait: Trait) {
-
-    if (trait){
-      this.deleteTrait = trait;
-      this.deactivateWarningTitle = "Remove " + trait.traitName + " from " + this.activeProgram!.name + "?";
-      this.deactivateActive = true;
-    } else {
-      Vue.$log.error('Could not find object to delete')
-    }
-  }
-
-  modalDeleteHandler() {
-    this.deactivateActive = false;
-
-    if (this.deleteTrait) {
-      if (this.deleteTrait.id) {
-        if (this.deleteTrait.traitName) {
-          const deleteId: string = this.deleteTrait.id;
-          const deleteName: string = this.deleteTrait.traitName;
-          //TODO: Uncomment this when you can delete stuff
-          /*TraitService.delete(this.activeProgram!.id!, deleteId).then(() => {
-            this.getTraits();
-            this.$emit('show-success-notification', `${deleteName} removed from program`);
-          }).catch(() => {
-            this.$emit('show-error-notification', `Unable to remove trait, ${deleteName}.`);
-          })*/
-          return;
-        }
-      }
-    }
-    this.$emit('show-error-notification', `Unable to remove trait`);
   }
 
 }

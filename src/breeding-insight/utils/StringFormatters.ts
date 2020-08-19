@@ -15,28 +15,13 @@
  * limitations under the License.
  */
 
-export enum MethodClass {
-  Computation = "COMPUTATION",
-  Observation = "OBSERVATION",
-  Measurement = "MEASUREMENT",
-  Counting = "COUNTING",
-  Estimation = "ESTIMATION"
-}
-
-export class Method {
-  methodName?: string;
-  methodClass?: string;
-  description?: string;
-  formula?: string;
-
-  constructor(methodName?:string, methodClass?:string, description?:string, formula?:string) {
-    this.methodName = methodName;
-    this.methodClass = methodClass;
-    this.description = description;
-    this.formula = formula;
+export class StringFormatters {
+  
+  static toStartCase(type: string) : string | undefined {
+    if (type) {
+      return type.charAt(0).toUpperCase() + type.substr(1).toLowerCase();
+    }
+    return undefined;
   }
 
-  static methodClassEquals(classString: string, type: MethodClass): boolean {
-    return classString.toUpperCase() === type;
-  }
 }

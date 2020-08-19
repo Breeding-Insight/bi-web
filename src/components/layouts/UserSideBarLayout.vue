@@ -31,10 +31,12 @@
           <button
             v-on:click.stop="programSelectActive = !programSelectActive"
             class="button is-small"
+            v-bind:aria-expanded="programSelectActive.toString()"
             aria-haspopup="true"
             aria-controls="program-menu"
           >
             <span class="icon is-small">
+              <span class="is-sr-only">Show Program Menu</span>
               <ChevronDownIcon></ChevronDownIcon>
             </span>
           </button>
@@ -56,6 +58,7 @@
                 v-on:click.native="programSelectActive = false"
                 class="dropdown-item"
                 active-class="is-active"
+                role="menuitem"
               >
                 {{program.name}}
               </router-link>

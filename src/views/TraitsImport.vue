@@ -17,7 +17,7 @@
 
 <template>
   <div class="traits-import">
-    <warning-modal
+    <WarningModal
       v-bind:active.sync="showAbortModal"
       v-bind:msg-title="'Abort This Import'"
       v-on:deactivate="showAbortModal = false"
@@ -43,36 +43,36 @@
           </button>
         </div>
       </div>              
-    </warning-modal>
+    </WarningModal>
 
     <template v-if="state === ImportState.CHOOSE_FILE || state === ImportState.FILE_CHOSEN">
       <h1 class="title">Import Traits</h1>
-      <trait-import-template-message-box class="mb-5"/>
-      <file-select-message-box v-model="file" 
+      <TraitImportTemplateMessageBox class="mb-5"/>
+      <FileSelectMessageBox v-model="file"
                                v-bind:fileTypes="'.csv, .xls, .xlsx'"
                                v-on:import="importService.send(ImportEvent.IMPORT_STARTED)"/>        
     </template>
     
     <template v-if="state === ImportState.IMPORTING || state === ImportState.LOADING">
       <h1 class="title">Importing...</h1>
-      <importing-message-box v-bind:file="file" v-on:abort="importService.send(ImportEvent.ABORT_IMPORT)"/>
+      <ImportingMessageBox v-bind:file="file" v-on:abort="importService.send(ImportEvent.ABORT_IMPORT)"/>
     </template>
     
     <template v-if="state === ImportState.LOADING || state === ImportState.CURATE">
       <template v-if="tableLoaded">
         <h1 class="title">Curate and Confirm New Traits</h1>
-        <confirm-import-message-box v-bind:num-traits="numTraits" 
+        <ConfirmImportMessageBox v-bind:num-traits="numTraits"
                                     v-on:abort="showAbortModal = true" 
                                     v-on:confirm="importService.send(ImportEvent.CONFIRMED)"
                                     class="mb-4"/>
       </template>
-      <traits-import-table v-on:loaded="importService.send(ImportEvent.TABLE_LOADED)"/>
+      <TraitsImportTable v-on:loaded="importService.send(ImportEvent.TABLE_LOADED)"/>
     </template>
 
     <template v-if="state === ImportState.IMPORT_ERROR">
         <h1 class="title">Importing...</h1>
-      <trait-import-template-message-box class="mb-5"/>
-        <file-select-message-box v-model="file"
+      <TraitImportTemplateMessageBox class="mb-5"/>
+        <FileSelectMessageBox v-model="file"
                                  v-bind:fileTypes="'.csv, .xls, .xlsx'"
                                  v-bind:errors="import_errors"
                                  v-on:import="importService.send(ImportEvent.IMPORT_STARTED)"/>

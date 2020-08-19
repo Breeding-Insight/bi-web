@@ -24,17 +24,24 @@ export class Trait {
   traitName?: string;
   programObservationLevel?: ProgramObservationLevel;
   method?: Method;
-  scale?: Scale
+  scale?: Scale;
+  abbreviations?: Array<string>;
+  synonyms?: Array<string>;
 
-    constructor(id?: string,
-                traitName?: string,
-                programObservationLevel?: ProgramObservationLevel,
-                method?: Method,
-                scale?: Scale) {
+  constructor(id?:string,
+              traitName?:string, 
+              programObservationLevel?: ProgramObservationLevel,
+              method?: Method,
+              scale?: Scale,
+              abbreviations?: Array<string>,
+              synonyms?: Array<string>
+              ) {
     this.id = id;
     this.traitName = traitName;
     this.programObservationLevel = programObservationLevel;
     this.method = method;
     this.scale = scale;
+    this.abbreviations = abbreviations;
+    this.synonyms = synonyms;
   }
 }
