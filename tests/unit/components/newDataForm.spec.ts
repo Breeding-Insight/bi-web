@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-describe('Input error is displayed appropriately when validation error occurs.');
+describe('Input error is displayed appropriately when validation error occurs.', () => {});
 
 describe('Events emitted properly.', () => {
 

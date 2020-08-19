@@ -16,13 +16,17 @@
  */
 
 module.exports = {
-  plugins: [
-    'cypress'
+  moduleFileExtensions: [
+    "js",
+    "ts",
+    "json",
+    "vue"
   ],
-  env: {
-    'cypress/globals': true
+  moduleNameMapper: {
+    "^@/(.*)$": "<rootDir>/src/$1"
   },
-  rules: {
-    strict: 'off'
-  }
-}
+  testURL: "http://localhost:8080/",
+  transformIgnorePatterns: ['/node_modules/(?!vuelidate-property-decorators)'],
+  preset: '@vue/cli-plugin-unit-jest/presets/typescript-and-babel'
+};
+
