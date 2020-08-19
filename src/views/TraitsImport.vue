@@ -299,6 +299,7 @@ export default class TraitsImport extends ProgramsBase {
   }
 
   async confirm() {
+    const name = this.activeProgram && this.activeProgram.name ? this.activeProgram.name : 'the program';  
     try {
       // fetch uploaded traits
         const [ uploadedTraits ] = await TraitUploadService.getTraits(this.activeProgram!.id!) as [Trait[], Metadata];
@@ -310,7 +311,6 @@ export default class TraitsImport extends ProgramsBase {
       await TraitUploadService.deleteTraits(this.activeProgram!.id!);
 
       // show all program traits
-      const name = this.activeProgram && this.activeProgram.name ? this.activeProgram.name : 'the program';  
       this.$emit('show-success-notification', `Imported traits have been added to ${name}.`);
       this.$router.push({
         name: 'traits-list',
