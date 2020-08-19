@@ -301,7 +301,7 @@ export default class TraitsImport extends ProgramsBase {
   async confirm() {
     try {
       // fetch uploaded traits
-      const [ uploadedTraits ] = await TraitUploadService.getTraits(this.activeProgram!.id!, undefined, true) as [Trait[]];
+        const [ uploadedTraits ] = await TraitUploadService.getTraits(this.activeProgram!.id!) as [Trait[], Metadata];
 
       // add traits to program
       await TraitService.createTraits(this.activeProgram!.id!, uploadedTraits)
