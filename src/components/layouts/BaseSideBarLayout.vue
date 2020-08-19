@@ -32,7 +32,7 @@
           <div class="level-item is-hidden-desktop is-pulled-left">
             <a role="button"
                class="navbar-hamburger has-text-dark"
-               aria-label="menu"
+               aria-label="Open Navigation Menu"
                aria-expanded="false"
                @click="sideMenuShownMobile = !sideMenuShownMobile"
             >

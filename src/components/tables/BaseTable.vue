@@ -38,7 +38,7 @@
           </th>
           <!-- Add a header column to match spacing for row controls if specified -->
           <template v-if="showExpandControls">
-            <th />
+            <td />
           </template>
         </tr>
       </thead>
