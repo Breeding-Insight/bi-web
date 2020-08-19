@@ -22,6 +22,7 @@
     v-bind:field-name="fieldName"
   >
     <input
+        v-bind:id="fieldName"
         :value="value"
         @input="$emit('input', $event.target.value)"
         class="input"

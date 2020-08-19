@@ -26,8 +26,9 @@
       <thead v-if="updatedColumns.length">
         <tr>
           <!-- Header space for left row icon if desired -->
-          <th v-if="showRowIcon" width="40px"/>
+          <th v-if="showRowIcon" width="40px" scope="col"/>
           <th v-for="(column, index) in visibleColumns"
+              scope="col"
               v-bind:key="index"
               v-bind:style="{
                 width: column.width === undefined ? null :
@@ -38,7 +39,7 @@
           </th>
           <!-- Add a header column to match spacing for row controls if specified -->
           <template v-if="showExpandControls">
-            <th />
+            <td />
           </template>
         </tr>
       </thead>

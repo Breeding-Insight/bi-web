@@ -39,7 +39,9 @@
       <div class="pagination-extras">
         <div class="page-size-select pagination-link">
           <div class="select is-small">
+            <label for="paginationSelect" class="is-sr-only">Results Per Page</label>
             <select
+                id="paginationSelect"
                 v-model="pagination.pageSize"
                 v-on:change="$emit('paginate-page-size', $event.target.value)"
             >
