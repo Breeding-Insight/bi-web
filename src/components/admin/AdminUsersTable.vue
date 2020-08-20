@@ -389,16 +389,16 @@ export default class AdminUsersTable extends Vue {
         this.$emit('show-success-notification', 'User successfully updated');
       }).catch((errors: any[]) => {
         // Show success if one of them succeeded
-        if (errors[0].status === PromiseHandler.fulfilled){
+        if (errors[0].status === PromiseHandler.FULFILLED){
           this.$emit('show-success-notification', 'User roles successfully updated');
         }
-        if (errors[1].status === PromiseHandler.fulfilled){
+        if (errors[1].status === PromiseHandler.FULFILLED){
           this.$emit('show-success-notification', 'User info (name/email/ORCID/program) successfully updated');
         }
 
         // Shows any that are errors
         for (const error of errors) {
-          if (error.status !== PromiseHandler.fulfilled){
+          if (error.status !== PromiseHandler.FULFILLED){
             //TODO: This is where multiple error messages could be handy
             this.$emit('show-error-notification', error.reason.errorMessage);
           }
