@@ -308,7 +308,8 @@ export default class TraitsImport extends ProgramsBase {
       await TraitService.createTraits(this.activeProgram!.id!, uploadedTraits)
 
       // delete uploaded traits
-      await TraitUploadService.deleteTraits(this.activeProgram!.id!);
+      const err = await TraitUploadService.deleteTraits(this.activeProgram!.id!) as void|Error;
+      if(err) throw new Error(err.message);
 
       // show all program traits
       this.$emit('show-success-notification', `Imported traits have been added to ${name}.`);
