@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+import { Vue } from 'vue-property-decorator'
 import {ProgramUpload} from "@/breeding-insight/model/ProgramUpload";
 import { TraitUploadDAO } from '@/breeding-insight/dao/TraitUploadDAO';
 import {Metadata} from "@/breeding-insight/model/BiResponse";
@@ -29,7 +30,12 @@ export class TraitUploadService {
   static errorUnknown: string = "Unable to determine reason for failure upload. Please check file and try again."
 
   static async deleteTraits(programId: string): Promise<void> {
-    await TraitUploadDAO.deleteTraits(programId);
+    try {
+      await TraitUploadDAO.deleteTraits(programId);
+    } catch(err) {
+      Vue.$log.error(err);
+      return;
+    }
   }
 
   static uploadFile(programId: string, file: File): Promise<ProgramUpload> {

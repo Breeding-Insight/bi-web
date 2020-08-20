@@ -320,7 +320,7 @@ export default class TraitsImport extends ProgramsBase {
       });
     } catch(err) {
       this.$emit('show-error-notification', `Error: Imported traits were not added to ${name}.`);
-      this.$log.debug(err);
+      Vue.$log.error(err);
     }
   }
 
