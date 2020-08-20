@@ -309,7 +309,7 @@ export default class TraitsImport extends ProgramsBase {
 
       // delete uploaded traits
       const err = await TraitUploadService.deleteTraits(this.activeProgram!.id!) as void|Error;
-      if(err) throw new Error(err.message);
+      if(err) throw new Error('Uploaded traits were not deleted');
 
       // show all program traits
       this.$emit('show-success-notification', `Imported traits have been added to ${name}.`);
@@ -320,7 +320,8 @@ export default class TraitsImport extends ProgramsBase {
         },
       });
     } catch(err) {
-      this.$emit('show-error-notification', `Error: Imported traits were not added to ${name}.`);
+      const note = err.message ? err.message : `Error: Imported traits were not added to ${name}.`;
+      this.$emit('show-error-notification', `${note}`);
       Vue.$log.error(err);
     }
   }

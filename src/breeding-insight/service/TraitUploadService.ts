@@ -29,11 +29,11 @@ export class TraitUploadService {
   static errorUnknown: string = "Unable to determine reason for failure upload. Please check file and try again."
 
   static async deleteTraits(programId: string): Promise<void|Error> {
-      try {
-          if(programId) throw new Error();
+    try {
+      if(programId) throw new Error();
       await TraitUploadDAO.deleteTraits(programId);
     } catch(err) {
-        return new Error(err.message);
+      return new Error(err.message);
     }
   }
 
