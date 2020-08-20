@@ -30,7 +30,6 @@ export class TraitUploadService {
 
   static async deleteTraits(programId: string): Promise<void|Error> {
     try {
-      if(programId) throw new Error();
       await TraitUploadDAO.deleteTraits(programId);
     } catch(err) {
       return new Error(err.message);
