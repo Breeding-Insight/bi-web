@@ -33,7 +33,7 @@ export class UserService {
   static errorGetUsers: string = 'Error while trying to load roles';
   static errorDeleteUserNotFound: string = 'Unable to find user to deactivate';
   static errorDeleteUserNotAllowed: string = 'You are not allowed to deactivate this user.';
-  static errorPermissionsEditUser: string = "You don't have permissions to edit this user.";
+  static errorPermissionsEditUser: string = "You don't have permissions to edit the roles of this user.";
   static errorUpdatingOrcidOnPost: string = "User created, but could not assign orcid";
   static errorUpdatingOrcidOnPut: string = "User updated, but could not update orcid";
   static errorUpdatingOrcidOnPostDuplicate: string = "User created, but could not assign orcid. Orcid Id already in use.";
