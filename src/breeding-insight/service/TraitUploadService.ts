@@ -28,6 +28,14 @@ export class TraitUploadService {
   static errorContactingServer: string = "Unknown error when contacting server. Please try again.";
   static errorUnknown: string = "Unable to determine reason for failure upload. Please check file and try again."
 
+  static async deleteTraits(programId: string): Promise<void|Error> {
+    try {
+      await TraitUploadDAO.deleteTraits(programId);
+    } catch(err) {
+      return new Error(err.message);
+    }
+  }
+
   static uploadFile(programId: string, file: File): Promise<ProgramUpload> {
 
     return new Promise<ProgramUpload>((resolve, reject) => {
@@ -74,7 +82,7 @@ export class TraitUploadService {
           //TODO: Remove when backend sorts the data by default
           biResponse.result.data = PaginationController.mockSortRecords(biResponse.result.data);
           let traits: Trait[] = [];
-      
+
           traits = biResponse.result.data.map((trait: any) => {
             return trait as Trait;
           });
@@ -85,9 +93,9 @@ export class TraitUploadService {
           biResponse.metadata.pagination = newPagination;
 
           resolve([traits, biResponse.metadata]);
-      
+
         }).catch((error) => reject(error));
-      
+
       } else {
         reject();
       }

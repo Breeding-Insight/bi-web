@@ -21,6 +21,15 @@ import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
 
 export class TraitUploadDAO {
 
+  static async deleteTraits(programId: string): Promise<void> {
+    await api.call({
+      url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/trait-upload`,
+      method: 'delete'
+    });
+
+    return;
+  }
+
   static update(programId: string, file: File): Promise<BiResponse> {
 
     return new Promise<BiResponse>((resolve, reject) => {
