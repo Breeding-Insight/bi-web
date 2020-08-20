@@ -15,21 +15,14 @@
  * limitations under the License.
  */
 
-import { createLocalVue } from '@vue/test-utils'
-import VueRouter from 'vue-router'
-import Vuex from 'vuex'
-import Buefy from 'buefy'
-import router from '@/router/index.ts'
-import Vue from "vue";
+describe('Breakpoints emit properly', () => {
 
-const localVue = createLocalVue();
-localVue.use(VueRouter);
+  it('Is mobile event fires when switching from tablet to mobile', () => {});
 
-// Setup beufy
-localVue.use(Buefy); 
+  it('Is mobile event fires when switching from desktop to mobile', () => {});
 
-// Set our Vuex library
-localVue.use(Vuex);
+  it('Is mobile event fires when switching from mobile to desktop', () => {});
 
+  it('Is mobile event fires when switching from mobile to tablet', () => {});
 
-export default localVue;
+});

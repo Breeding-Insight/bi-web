@@ -15,11 +15,8 @@
  * limitations under the License.
  */
 
-describe('Input error is displayed appropriately when validation error occurs.', () => {});
+describe('Edit data form works properly', () => {
 
-describe('Events emitted properly.', () => {
+  it('Displays edit form when edit button is clicked', () => {});
 
-  it('Emits submit event with edited object on editing save', () => {});
-
-})
-
+});

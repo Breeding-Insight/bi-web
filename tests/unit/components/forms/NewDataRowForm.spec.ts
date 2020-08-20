@@ -15,21 +15,13 @@
  * limitations under the License.
  */
 
-import { createLocalVue } from '@vue/test-utils'
-import VueRouter from 'vue-router'
-import Vuex from 'vuex'
-import Buefy from 'buefy'
-import router from '@/router/index.ts'
-import Vue from "vue";
+describe('Input error is displayed appropriately when validation error occurs.', () => {});
 
-const localVue = createLocalVue();
-localVue.use(VueRouter);
+describe('Events emitted properly.', () => {
 
-// Setup beufy
-localVue.use(Buefy); 
+  it('Emits submit event with edited object on editing save', () => {});
 
-// Set our Vuex library
-localVue.use(Vuex);
+  it('Emits cancel event with edited object on editing cancel', () => {});
 
+})
 
-export default localVue;
