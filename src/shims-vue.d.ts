@@ -49,6 +49,14 @@ declare module 'validations' {
 
 }
 
+declare module 'vue/types/vue' {
+  import VueRouter, { Route } from 'vue-router'
+
+  interface Vue {
+    $router: VueRouter
+  }
+}
+
 declare module 'vuejs-logger' {
   import {PluginFunction} from "vue";
   export const install: PluginFunction<{}>
