@@ -15,13 +15,30 @@
  * limitations under the License.
  */
 
+import localVue, {defaultStore} from "../../index";
+import {mount} from "@vue/test-utils";
+import NewDataRowForm from "@/components/forms/NewDataRowForm.vue";
+
 describe('Input error is displayed appropriately when validation error occurs.', () => {});
 
 describe('Events emitted properly.', () => {
 
-  it('Emits submit event with edited object on editing save', () => {});
+  const store = defaultStore;
+  const wrapper = mount(NewDataRowForm, {localVue, store});
 
-  it('Emits cancel event with edited object on editing cancel', () => {});
+  it('Emits submit event with edited object on editing save', async () => {
+    const saveBtn = wrapper.find('button[data-testid="save"]');
+    expect(saveBtn.exists()).toBeTruthy();
+    await saveBtn.trigger('click');
+    expect(wrapper.emitted('submit')).toHaveLength(1);
+  });
+
+  it('Emits cancel event with edited object on editing cancel', async () => {
+    const cancelBtn = wrapper.find('button[data-testid="cancel"]');
+    expect(cancelBtn.exists()).toBeTruthy();
+    await cancelBtn.trigger('click');
+    expect(wrapper.emitted('cancel')).toHaveLength(1);
+  });
 
 })
 

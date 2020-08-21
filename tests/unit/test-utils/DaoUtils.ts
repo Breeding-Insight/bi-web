@@ -15,29 +15,26 @@
  * limitations under the License.
  */
 
-import { createLocalVue } from '@vue/test-utils'
-import VueRouter from 'vue-router'
-import Vuex from 'vuex'
-import Buefy from 'buefy'
-import Vue from "vue";
-import {Program} from "@/breeding-insight/model/Program";
-import Vuelidate from "vuelidate";
+import {BiResponse, Metadata} from "@/breeding-insight/model/BiResponse";
 
-const localVue = createLocalVue();
-localVue.use(VueRouter);
+export default class DaoUtils {
 
-// Setup beufy
-localVue.use(Buefy);
+  static formatBiResponse(data: any[]): BiResponse {
+    const metadata: Metadata = new Metadata({
+      pagination: {
+        totalPages: 1,
+        currentPage: 1,
+        totalCount: data.length,
+        pageSize: data.length
+      },
+      status: []
+    });
 
-// Set our Vuex library
-localVue.use(Vuex);
-
-Vue.use(Vuelidate);
-
-export const defaultStore = new Vuex.Store({
-  getters: {
-    activeProgram: () => new Program('1', 'Test Program')
+    return new BiResponse({
+      metadata,
+      result: {
+        data: data
+      }
+    });
   }
-});
-
-export default localVue;
+}
