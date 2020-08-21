@@ -26,41 +26,40 @@ describe('Breakpoints emit properly', () => {
   const records: TableRow<any>[] = [
     new TableRow(false, {name: 'test'})
   ]
-  // Change the viewport to 500px.
-  global.innerWidth = 500;
-  // Trigger the window resize event.
-  global.dispatchEvent(new Event('resize'));
+
 
   const wrapper = mount(BaseTable, {localVue, store, propsData: {records}});
 
-  const emitted = wrapper.emitted();
+  it('Mobile event fires', async () => {
 
-  it('Test starts out set at 1024px', () => {
-    expect(global.innerWidth).toEqual(1024);
-    expect(emitted['is-mobile']).toBeUndefined();
-  });
+    const breakpoint = wrapper.findComponent(VBreakpoint);
+    expect(breakpoint.exists()).toBeTruthy();
 
-  it('Is mobile event fires when switching from desktop to mobile', async () => {
-    // Change the viewport to 500px.
-    global.innerWidth = 500;
-    // Trigger the window resize event.
-    global.dispatchEvent(new Event('resize'));
-    expect(global.innerWidth).toEqual(500);
-    await wrapper.vm.$nextTick();
+    await breakpoint.vm.$emit('mobile');
     expect(wrapper.emitted('mobile')).toHaveLength(1);
+    const emitted = wrapper.emitted('is-mobile');
+    expect(emitted).toHaveLength(1);
+    expect(emitted!.pop().pop()).toBeTruthy();
   });
 
-  it('Is mobile event fires when switching from mobile to desktop', async () => {
-    // Change the viewport to 500px.
-    global.innerWidth = 1024;
-    // Trigger the window resize event.
-    await global.dispatchEvent(new Event('resize'));
-    expect(global.innerWidth).toEqual(1024);
-    expect(emitted['desktop']).toBeTruthy();
+  it('Tablet event fires', async () => {
+
+    const breakpoint = wrapper.findAllComponents(VBreakpoint).at(1);
+    expect(breakpoint.exists()).toBeTruthy();
+    await breakpoint.vm.$emit('tablet');
+    expect(wrapper.emitted('tablet')).toHaveLength(1);
+    const emitted = wrapper.emitted('is-mobile');
+    expect(emitted).toHaveLength(1);
+    expect(emitted!.pop().pop()).toBeFalsy();
   });
 
-  it('Is mobile event fires when switching from tablet to mobile', () => {});
-
-  it('Is mobile event fires when switching from mobile to tablet', () => {});
-
+  it('Desktop event fires, is-mobile does not switching from tablet to desktop', async () => {
+    const breakpoint = wrapper.findAllComponents(VBreakpoint).at(2);
+    expect(breakpoint.exists()).toBeTruthy();
+    await breakpoint.vm.$emit('desktop');
+    expect(wrapper.emitted('desktop')).toHaveLength(1);
+    //
+    const emitted = wrapper.emitted('is-mobile');
+    expect(emitted).toHaveLength(0);
+  });
 });
