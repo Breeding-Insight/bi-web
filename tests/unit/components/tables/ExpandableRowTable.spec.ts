@@ -15,8 +15,200 @@
  * limitations under the License.
  */
 
-describe('Edit data form works properly', () => {
+// Uses user location management to test
 
-  it('Displays edit form when edit button is clicked', () => {});
+import {ProgramLocation} from "@/breeding-insight/model/ProgramLocation";
+import {mocked} from "ts-jest";
+import DaoUtils from "../../test-utils/DaoUtils";
+import {ProgramLocationDAO} from "@/breeding-insight/dao/ProgramLocationDAO";
+import ProgramLocationsTable from "@/components/program/ProgramLocationsTable.vue";
+import localVue, {defaultStore} from "../../index";
+import {mount, Wrapper} from "@vue/test-utils";
+import ExpandableTableRow from "@/components/tables/ExpandableTableRow.vue";
+import EditDataRowForm from "@/components/forms/EditDataRowForm.vue";
+import PaginationControls from "@/components/tables/PaginationControls.vue";
+import {Pagination} from "@/breeding-insight/model/BiResponse";
+import ExpandableRowTable from "@/components/tables/ExpandableRowTable.vue";
+
+jest.mock('@/breeding-insight/dao/ProgramLocationDAO');
+let locations: ProgramLocation[] = [];
+
+function setup() {
+
+  const range = [...Array(200).keys()];
+  locations = range.map((i:number) => new ProgramLocation(i.toString(), '1', `Test${i}`));
+  const response = DaoUtils.formatBiResponse(locations);
+
+  const programLocationDAO = mocked(ProgramLocationDAO, true);
+  programLocationDAO.getAll.mockResolvedValue(response);
+
+}
+
+setup();
+
+describe('Edit data form works properly', () => {
+  const store = defaultStore;
+  const wrapper = mount(ProgramLocationsTable, {localVue, store});
+
+  it('Displays edit form when edit button is clicked', async() => {
+
+    const row = wrapper.findComponent(ExpandableTableRow);
+    expect(row.exists()).toBeTruthy();
+    const editBtn = row.find('a[data-testid="edit"]');
+    expect(editBtn.exists()).toBeTruthy();
+    let editForm = wrapper.findComponent(EditDataRowForm);
+    expect(editForm.exists()).toBeFalsy();
+    await editBtn.trigger('click');
+
+    editForm = wrapper.findComponent(EditDataRowForm);
+    expect(editForm.exists()).toBeTruthy();
+  });
+
+  it('Closes edit form when cancel button is clicked', async() => {
+
+    const editForm = wrapper.findComponent(EditDataRowForm);
+    const cancelBtn = editForm.find('button[data-testid="cancel"]');
+    expect(cancelBtn.exists()).toBeTruthy();
+  });
 
 });
+
+describe('Works with expandable table', () => {
+
+  const store = defaultStore;
+  const wrapper = mount(ProgramLocationsTable, {localVue, store});
+  const pagination = wrapper.findComponent(PaginationControls);
+
+  it('Displays only specified number of rows', () => {
+    expect(pagination.exists()).toBeTruthy();
+    expect(pagination.isVisible()).toBeTruthy();
+
+    const rows = wrapper.findAllComponents(ExpandableTableRow);
+    expect(rows.length).toEqual(pagination.props().pagination.pageSize);
+  });
+
+  it('Page size selection works when expandable closed', async () => {
+    const editForm = wrapper.find(EditDataRowForm);
+    expect(editForm.exists()).toBeFalsy();
+
+    const numSelect = pagination.find('select#paginationSelect');
+    await numSelect.find('option[value="100"]').setSelected();
+    await wrapper.vm.$nextTick();
+
+    const rows = wrapper.findAllComponents(ExpandableTableRow);
+    expect(rows.length).toEqual(100);
+  });
+
+  it('Page selection button works when expandable open', async () => {
+    await openEditForm(wrapper);
+
+    const numSelect = pagination.find('select#paginationSelect');
+    await numSelect.find('option[value="50"]').setSelected();
+    await wrapper.vm.$nextTick();
+
+    const rows = wrapper.findAllComponents(ExpandableTableRow);
+    expect(rows.length).toEqual(50);
+
+    const editForm = wrapper.findComponent(EditDataRowForm);
+    expect(editForm.exists()).toBeFalsy();
+  });
+
+  it('Show all selection works when expandable closed', async () => {
+
+    let editForm = wrapper.findComponent(EditDataRowForm);
+    expect(editForm.exists()).toBeFalsy();
+
+    const showAllBtn = wrapper.find('a[data-testid="showAll"]');
+    await showAllBtn.trigger('click');
+    await wrapper.vm.$nextTick();
+
+    const rows = wrapper.findAllComponents(ExpandableTableRow);
+    expect(rows.length).toEqual(200);
+
+    // Unselect
+    await showAllBtn.trigger('click');
+    await wrapper.vm.$nextTick();
+  });
+
+  it('Show all selection works when expandable open', async () => {
+    await openEditForm(wrapper);
+
+    const showAllBtn = wrapper.find('a[data-testid="showAll"]');
+    await showAllBtn.trigger('click');
+    await wrapper.vm.$nextTick();
+
+    const rows = wrapper.findAllComponents(ExpandableTableRow);
+    expect(rows.length).toEqual(200);
+
+    const editForm = wrapper.findComponent(EditDataRowForm);
+    expect(editForm.exists()).toBeFalsy();
+  });
+
+  it('Next page button works when expandable closed', async () => {
+
+    let editForm = wrapper.findComponent(EditDataRowForm);
+    expect(editForm.exists()).toBeFalsy();
+
+    const numSelect = pagination.find('select#paginationSelect');
+    await numSelect.find('option[value="50"]').setSelected();
+    await wrapper.vm.$nextTick();
+
+    const nextPageBtn = wrapper.find('a[aria-label="Next page"');
+    await nextPageBtn.trigger('click');
+    await wrapper.vm.$nextTick();
+
+    const row = wrapper.findComponent(ExpandableTableRow);
+    const firstRowName = row.find('td[name="name"]');
+    expect(firstRowName.text()).toEqual('Test50');
+
+  });
+
+  it('Next page button works when expandable open', async () => {
+    await openEditForm(wrapper);
+
+    const nextPageBtn = wrapper.find('a[aria-label="Next page"');
+    await nextPageBtn.trigger('click');
+    await wrapper.vm.$nextTick();
+
+    const row = wrapper.findComponent(ExpandableTableRow);
+    const firstRowName = row.find('td[name="name"]');
+    expect(firstRowName.text()).toEqual('Test100');
+  });
+
+  it('Previous page button works when expandable open', async () => {
+    await openEditForm(wrapper);
+
+    const nextPageBtn = wrapper.find('a[aria-label="Previous page"');
+    await nextPageBtn.trigger('click');
+    await wrapper.vm.$nextTick();
+
+    const row = wrapper.findComponent(ExpandableTableRow);
+    const firstRowName = row.find('td[name="name"]');
+    expect(firstRowName.text()).toEqual('Test50');
+
+    const editForm = wrapper.findComponent(EditDataRowForm);
+    expect(editForm.exists()).toBeFalsy();
+  });
+
+  it('Previous page button works when expandable closed', async () => {
+    let editForm = wrapper.findComponent(EditDataRowForm);
+    expect(editForm.exists()).toBeFalsy();
+
+    const nextPageBtn = wrapper.find('a[aria-label="Previous page"');
+    await nextPageBtn.trigger('click');
+    await wrapper.vm.$nextTick();
+
+    const row = wrapper.findComponent(ExpandableTableRow);
+    const firstRowName = row.find('td[name="name"]');
+    expect(firstRowName.text()).toEqual('Test0');
+  });
+
+});
+
+async function openEditForm(wrapper: Wrapper<any>) {
+  const row = wrapper.findComponent(ExpandableTableRow);
+  const editBtn = row.find('a[data-testid="edit"]');
+  await editBtn.trigger('click');
+  let editForm = wrapper.findComponent(EditDataRowForm);
+  expect(editForm.exists()).toBeTruthy();
+}

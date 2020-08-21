@@ -66,6 +66,7 @@
         </div>
 
         <a
+            data-testid="showAll"
             role="button"
             class="pagination-link show-all-button"
             v-bind:class="{ 'has-background-info': pagination.totalPages === 1}"
