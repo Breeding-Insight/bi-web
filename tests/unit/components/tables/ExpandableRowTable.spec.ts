@@ -27,8 +27,6 @@ import {mount, Wrapper} from "@vue/test-utils";
 import ExpandableTableRow from "@/components/tables/ExpandableTableRow.vue";
 import EditDataRowForm from "@/components/forms/EditDataRowForm.vue";
 import PaginationControls from "@/components/tables/PaginationControls.vue";
-import {Pagination} from "@/breeding-insight/model/BiResponse";
-import ExpandableRowTable from "@/components/tables/ExpandableRowTable.vue";
 
 jest.mock('@/breeding-insight/dao/ProgramLocationDAO');
 let locations: ProgramLocation[] = [];
@@ -66,14 +64,18 @@ describe('Edit data form works properly', () => {
 
   it('Closes edit form when cancel button is clicked', async() => {
 
-    const editForm = wrapper.findComponent(EditDataRowForm);
+    let editForm = wrapper.findComponent(EditDataRowForm);
     const cancelBtn = editForm.find('button[data-testid="cancel"]');
     expect(cancelBtn.exists()).toBeTruthy();
+    await cancelBtn.trigger('click');
+
+    editForm = wrapper.findComponent(EditDataRowForm);
+    expect(editForm.exists()).toBeFalsy();
   });
 
 });
 
-describe('Works with expandable table', () => {
+describe('Pagination works with expandable table', () => {
 
   const store = defaultStore;
   const wrapper = mount(ProgramLocationsTable, {localVue, store});

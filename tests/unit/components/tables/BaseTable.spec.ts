@@ -17,7 +17,7 @@
 
 import BaseTable from "@/components/tables/BaseTable.vue";
 import localVue, {defaultStore} from "../../index";
-import {mount, shallowMount} from "@vue/test-utils";
+import {mount} from "@vue/test-utils";
 import {TableRow} from "@/breeding-insight/model/view_models/TableRow";
 import {VBreakpoint} from "@/components/VBreakpoint";
 
@@ -58,7 +58,7 @@ describe('Breakpoints emit properly', () => {
     expect(breakpoint.exists()).toBeTruthy();
     await breakpoint.vm.$emit('desktop');
     expect(wrapper.emitted('desktop')).toHaveLength(1);
-    //
+    // is-mobile doesn't trigger switching from non-mobile to non-mobile
     const emitted = wrapper.emitted('is-mobile');
     expect(emitted).toHaveLength(0);
   });
