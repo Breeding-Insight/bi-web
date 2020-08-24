@@ -27,6 +27,8 @@ import {mocked} from 'ts-jest'
 import {TraitUploadDAO} from "@/breeding-insight/dao/TraitUploadDAO";
 import SidePanelTableRow from "@/components/tables/SidePanelTableRow.vue";
 import DaoUtils from "../../test-utils/DaoUtils";
+import PaginationControls from "@/components/tables/PaginationControls.vue";
+import EditDataRowForm from "@/components/forms/EditDataRowForm.vue";
 
 jest.mock('@/breeding-insight/dao/TraitUploadDAO');
 let traits: Trait[] = [];
@@ -37,10 +39,9 @@ function setup() {
   const method = new Method('Test Method', 'Computation', 'A method', '1=1');
   const scale = new Scale('Test Scale', 'Number', undefined, 3, 0, 999);
   const level = new ProgramObservationLevel('Plant');
-  traits = [
-    new Trait('1', 'Trait1', level, method, scale),
-    new Trait('2', 'Trait2', level, method, scale)
-  ]
+  const range = [...Array(200).keys()];
+  traits = range.map((i:number) => new Trait(i.toString(), `Trait${i}`, level, method, scale));
+
   const response = DaoUtils.formatBiResponse(traits);
 
   const traitUploadDAO = mocked(TraitUploadDAO, true);
@@ -89,22 +90,142 @@ describe('Details panel works properly', () => {
 
 });
 
-describe('Pagination works with side panel table', () => {
+describe('Pagination works with side table', () => {
 
-  it('Next page button works when side panel open', () => {});
+  const store = defaultStore;
+  const wrapper = mount(TraitsImportTable, {localVue, store});
+  let pagination: Wrapper<any>;
 
-  it('Next page button works when side panel closed', () => {});
+  it('Displays only specified number of rows', () => {
+    pagination = wrapper.findComponent(PaginationControls);
+    expect(pagination.exists()).toBeTruthy();
+    expect(pagination.isVisible()).toBeTruthy();
 
-  it('Previous page button works when side panel open', () => {});
+    const rows = wrapper.findAllComponents(SidePanelTableRow);
+    expect(rows.length).toEqual(pagination.props().pagination.pageSize);
+  });
 
-  it('Previous page button works when side panel closed', () => {});
+  it('Page size selection works when details closed', async () => {
+    const editForm = wrapper.find(EditDataRowForm);
+    expect(editForm.exists()).toBeFalsy();
 
-  it('Page selection button works when side panel open', () => {});
+    const numSelect = pagination.find('select#paginationSelect');
+    await numSelect.find('option[value="100"]').setSelected();
+    await wrapper.vm.$nextTick();
 
-  it('Page selection button works when side panel open', () => {});
+    const rows = wrapper.findAllComponents(SidePanelTableRow);
+    expect(rows.length).toEqual(100);
+  });
 
-  it('Page size selection works when side panel open', () => {});
+  it('Page selection button works when details open', async () => {
+    await openEditForm(wrapper);
 
-  it('Page size selection works when side panel closed', () => {});
+    const numSelect = pagination.find('select#paginationSelect');
+    await numSelect.find('option[value="50"]').setSelected();
+    await wrapper.vm.$nextTick();
 
+    const rows = wrapper.findAllComponents(SidePanelTableRow);
+    expect(rows.length).toEqual(50);
+
+    const editForm = wrapper.findComponent(SidePanel);
+    expect(editForm.exists()).toBeFalsy();
+  });
+
+  it('Show all selection works when details closed', async () => {
+
+    let editForm = wrapper.findComponent(SidePanel);
+    expect(editForm.exists()).toBeFalsy();
+
+    const showAllBtn = wrapper.find('a[data-testid="showAll"]');
+    await showAllBtn.trigger('click');
+    await wrapper.vm.$nextTick();
+
+    const rows = wrapper.findAllComponents(SidePanelTableRow);
+    expect(rows.length).toEqual(200);
+
+    // Unselect
+    await showAllBtn.trigger('click');
+    await wrapper.vm.$nextTick();
+  });
+
+  it('Show all selection works when details open', async () => {
+    await openEditForm(wrapper);
+
+    const showAllBtn = wrapper.find('a[data-testid="showAll"]');
+    await showAllBtn.trigger('click');
+    await wrapper.vm.$nextTick();
+
+    const rows = wrapper.findAllComponents(SidePanelTableRow);
+    expect(rows.length).toEqual(200);
+
+    const editForm = wrapper.findComponent(SidePanel);
+    expect(editForm.exists()).toBeFalsy();
+  });
+
+  it('Next page button works when details closed', async () => {
+
+    let editForm = wrapper.findComponent(SidePanel);
+    expect(editForm.exists()).toBeFalsy();
+
+    const numSelect = pagination.find('select#paginationSelect');
+    await numSelect.find('option[value="50"]').setSelected();
+    await wrapper.vm.$nextTick();
+
+    const nextPageBtn = wrapper.find('a[aria-label="Next page"');
+    await nextPageBtn.trigger('click');
+    await wrapper.vm.$nextTick();
+
+    const row = wrapper.findComponent(SidePanelTableRow);
+    const firstRowName = row.find('td[name="name"]');
+    expect(firstRowName.text()).toEqual('Trait50');
+
+  });
+
+  it('Next page button works when details open', async () => {
+    await openEditForm(wrapper);
+
+    const nextPageBtn = wrapper.find('a[aria-label="Next page"');
+    await nextPageBtn.trigger('click');
+    await wrapper.vm.$nextTick();
+
+    const row = wrapper.findComponent(SidePanelTableRow);
+    const firstRowName = row.find('td[name="name"]');
+    expect(firstRowName.text()).toEqual('Trait100');
+  });
+
+  it('Previous page button works when details open', async () => {
+    await openEditForm(wrapper);
+
+    const nextPageBtn = wrapper.find('a[aria-label="Previous page"');
+    await nextPageBtn.trigger('click');
+    await wrapper.vm.$nextTick();
+
+    const row = wrapper.findComponent(SidePanelTableRow);
+    const firstRowName = row.find('td[name="name"]');
+    expect(firstRowName.text()).toEqual('Trait50');
+
+    const editForm = wrapper.findComponent(SidePanel);
+    expect(editForm.exists()).toBeFalsy();
+  });
+
+  it('Previous page button works when details closed', async () => {
+    let editForm = wrapper.findComponent(SidePanel);
+    expect(editForm.exists()).toBeFalsy();
+
+    const nextPageBtn = wrapper.find('a[aria-label="Previous page"');
+    await nextPageBtn.trigger('click');
+    await wrapper.vm.$nextTick();
+
+    const row = wrapper.findComponent(SidePanelTableRow);
+    const firstRowName = row.find('td[name="name"]');
+    expect(firstRowName.text()).toEqual('Trait0');
+  });
 });
+
+async function openEditForm(wrapper: Wrapper<any>) {
+  const row = wrapper.findComponent(SidePanelTableRow);
+  const editBtn = row.find('a[data-testid="showDetails"]');
+  await editBtn.trigger('click');
+  let editForm = wrapper.findComponent(SidePanel);
+  expect(editForm.exists()).toBeTruthy();
+}
