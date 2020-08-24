@@ -36,6 +36,7 @@
     </WarningModal>
 
     <button
+      data-testid="newDataForm"
       v-show="!newLocationActive & locations.length > 0"
       class="button is-primary has-text-weight-bold is-pulled-right"
       v-on:click="newLocationActive = true"
