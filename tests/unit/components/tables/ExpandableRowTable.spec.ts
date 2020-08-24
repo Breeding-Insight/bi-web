@@ -29,6 +29,7 @@ import EditDataRowForm from "@/components/forms/EditDataRowForm.vue";
 import PaginationControls from "@/components/tables/PaginationControls.vue";
 import BasicInputField from "@/components/forms/BasicInputField.vue";
 import BaseFieldWrapper from "@/components/forms/BaseFieldWrapper.vue";
+import NewDataForm from "@/components/forms/NewDataForm.vue";
 
 jest.mock('@/breeding-insight/dao/ProgramLocationDAO');
 let locations: ProgramLocation[] = [];
@@ -94,6 +95,54 @@ describe('Edit data form works properly', () => {
   });
 
 });
+
+
+describe('New data form works properly', () => {
+  const store = defaultStore;
+  const wrapper = mount(ProgramLocationsTable, {localVue, store});
+
+  it('Input error is displayed appropriately when validation error occurs.', async () => {
+    const newBtn = wrapper.find('button[data-testid="newDataForm"]');
+    expect(newBtn.exists()).toBeTruthy();
+    await newBtn.trigger('click');
+
+    const newDataForm = wrapper.findComponent(NewDataForm);
+    expect(newDataForm.exists()).toBeTruthy();
+
+    let fieldWrapper = newDataForm.findComponent(BaseFieldWrapper);
+    let fieldError = fieldWrapper.element.classList.contains('field--error');
+    expect(fieldError).toBeFalsy();
+
+    const saveBtn = newDataForm.find('button[data-testid="save"]');
+    await saveBtn.trigger('click');
+
+    fieldWrapper = newDataForm.findComponent(BaseFieldWrapper);
+    fieldError = fieldWrapper.element.classList.contains('field--error');
+    expect(fieldError).toBeTruthy();
+  });
+
+  it('Emits submit event with edited object on editing save', async () => {
+    const newDataForm = wrapper.findComponent(NewDataForm);
+
+    const nameInput = newDataForm.findComponent(BasicInputField);
+    const input = nameInput.find('input');
+    await input.setValue('test');
+
+    const saveBtn = newDataForm.find('button[data-testid="save"]');
+    expect(saveBtn.exists()).toBeTruthy();
+    await saveBtn.trigger('click');
+    expect(newDataForm.emitted('submit')).toHaveLength(1);
+  });
+
+  it('Emits cancel event with edited object on editing cancel', async () => {
+    const newDataForm = wrapper.findComponent(NewDataForm);
+    const cancelBtn = newDataForm.find('button[data-testid="cancel"]');
+    expect(cancelBtn.exists()).toBeTruthy();
+    await cancelBtn.trigger('click');
+    expect(newDataForm.emitted('cancel')).toHaveLength(1);
+  });
+});
+
 
 describe('Pagination works with expandable table', () => {
 
