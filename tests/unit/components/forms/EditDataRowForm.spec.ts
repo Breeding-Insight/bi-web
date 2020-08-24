@@ -19,8 +19,6 @@ import localVue, {defaultStore} from "../../index";
 import {mount} from "@vue/test-utils";
 import EditDataRowForm from "@/components/forms/EditDataRowForm.vue";
 
-describe('Input error is displayed appropriately when validation error occurs.', () => {});
-
 describe('Events emitted properly.', () => {
 
   const store = defaultStore;

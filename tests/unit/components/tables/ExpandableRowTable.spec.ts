@@ -27,6 +27,8 @@ import {mount, Wrapper} from "@vue/test-utils";
 import ExpandableTableRow from "@/components/tables/ExpandableTableRow.vue";
 import EditDataRowForm from "@/components/forms/EditDataRowForm.vue";
 import PaginationControls from "@/components/tables/PaginationControls.vue";
+import BasicInputField from "@/components/forms/BasicInputField.vue";
+import BaseFieldWrapper from "@/components/forms/BaseFieldWrapper.vue";
 
 jest.mock('@/breeding-insight/dao/ProgramLocationDAO');
 let locations: ProgramLocation[] = [];
@@ -60,6 +62,24 @@ describe('Edit data form works properly', () => {
 
     editForm = wrapper.findComponent(EditDataRowForm);
     expect(editForm.exists()).toBeTruthy();
+  });
+
+  it('Displays input error when form validation occurs', async () => {
+
+    let editForm = wrapper.findComponent(EditDataRowForm);
+    const nameInput = editForm.findComponent(BasicInputField);
+    const input = nameInput.find('input');
+    await input.setValue('');
+
+    let fieldWrapper = editForm.findComponent(BaseFieldWrapper);
+    let fieldError = fieldWrapper.element.classList.contains('field--error');
+    expect(fieldError).toBeFalsy();
+
+    const submitBtn = editForm.find('button[data-testid="save"]');
+    await submitBtn.trigger('click');
+
+    fieldError = fieldWrapper.element.classList.contains('field--error');
+    expect(fieldError).toBeTruthy();
   });
 
   it('Closes edit form when cancel button is clicked', async() => {
@@ -204,7 +224,6 @@ describe('Pagination works with expandable table', () => {
     const firstRowName = row.find('td[name="name"]');
     expect(firstRowName.text()).toEqual('Test0');
   });
-
 });
 
 async function openEditForm(wrapper: Wrapper<any>) {

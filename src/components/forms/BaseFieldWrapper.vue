@@ -24,6 +24,7 @@
       <slot></slot>
       <template v-for="(validationMap, index) in validationSpec">
         <span
+            data-testid="formError"
             v-bind:key="fieldName + validationMap.name + index"
             class="form-error has-text-danger"
             :class="{ 'is-hidden': ( validateTypeError(validationMap.name) ) }"
