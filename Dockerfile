@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-FROM node
+FROM node:lts
 
 ARG HOST_USER_ID=1001
 ARG HOST_GROUP_ID=1001
@@ -40,7 +40,8 @@ WORKDIR /home/${CONT_USERNAME}/biweb
 # Install the app dependencies and configuration
 COPY --chown=host:host ["babel.config.js", ".browserslistrc", "cypress.json", ".eslintrc.js", ".npmrc", "tsconfig.json", "vue.config.js", ".env.development","./"]
 COPY --chown=host:host ["package.json", "/home/host/biweb/package.json"]
-RUN ["npm", "install"]
+COPY --chown=host:host ["package-lock.json", "/home/host/biweb/package-lock.json"]
+RUN ["npm", "ci"]
 
 # start the web server
 ENTRYPOINT ["npm", "run", "serve"]
