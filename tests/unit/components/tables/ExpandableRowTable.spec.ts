@@ -159,7 +159,7 @@ describe('Pagination works with expandable table', () => {
   });
 
   it('Page size selection works when expandable closed', async () => {
-    const editForm = wrapper.find(EditDataRowForm);
+    const editForm = wrapper.findComponent(EditDataRowForm);
     expect(editForm.exists()).toBeFalsy();
 
     const numSelect = pagination.find('select#paginationSelect');
@@ -244,6 +244,9 @@ describe('Pagination works with expandable table', () => {
     const row = wrapper.findComponent(ExpandableTableRow);
     const firstRowName = row.find('td[name="name"]');
     expect(firstRowName.text()).toEqual('Test100');
+
+    const editForm = wrapper.findComponent(EditDataRowForm);
+    expect(editForm.exists()).toBeFalsy();
   });
 
   it('Previous page button works when expandable open', async () => {

@@ -29,6 +29,8 @@ import SidePanelTableRow from "@/components/tables/SidePanelTableRow.vue";
 import DaoUtils from "../../test-utils/DaoUtils";
 import PaginationControls from "@/components/tables/PaginationControls.vue";
 import EditDataRowForm from "@/components/forms/EditDataRowForm.vue";
+import {VBreakpoint} from "@/components/VBreakpoint";
+import SidePanelTable from "@/components/tables/SidePanelTable.vue";
 
 jest.mock('@/breeding-insight/dao/TraitUploadDAO');
 let traits: Trait[] = [];
@@ -106,7 +108,7 @@ describe('Pagination works with side table', () => {
   });
 
   it('Page size selection works when details closed', async () => {
-    const editForm = wrapper.find(EditDataRowForm);
+    const editForm = wrapper.findComponent(EditDataRowForm);
     expect(editForm.exists()).toBeFalsy();
 
     const numSelect = pagination.find('select#paginationSelect');
@@ -191,6 +193,9 @@ describe('Pagination works with side table', () => {
     const row = wrapper.findComponent(SidePanelTableRow);
     const firstRowName = row.find('td[name="name"]');
     expect(firstRowName.text()).toEqual('Trait100');
+
+    const editForm = wrapper.findComponent(SidePanel);
+    expect(editForm.exists()).toBeFalsy();
   });
 
   it('Previous page button works when details open', async () => {
@@ -221,6 +226,112 @@ describe('Pagination works with side table', () => {
     expect(firstRowName.text()).toEqual('Trait0');
   });
 });
+
+describe('Column collpase state machine works properly', () => {
+
+  const store = defaultStore;
+  const wrapper = mount(TraitsImportTable, {localVue, store});
+  let sidePanelTable: Wrapper<any>;
+  let row: Wrapper<any>;
+
+  it('Collapses columns when panel is opened and change to mobile', async () => {
+
+    sidePanelTable = wrapper.findComponent(SidePanelTable);
+    row = wrapper.findComponent(SidePanelTableRow);
+    await row.trigger('click');
+    const sidePanel = wrapper.findComponent(SidePanel);
+    expect(sidePanel.exists()).toBeTruthy();
+
+    const breakpoint = wrapper.findComponent(VBreakpoint);
+    expect(breakpoint.exists()).toBeTruthy();
+    await breakpoint.vm.$emit('mobile');
+
+    const emmitted = sidePanelTable.emitted('collapse-columns');
+    expect(emmitted).toHaveLength(1);
+    emmitted!.pop();
+  });
+
+  it('Uncollapses columns when on mobile and panel closed', async () => {
+
+    const sidePanel = wrapper.findComponent(SidePanel);
+    const closeBtn = sidePanel.find('[aria-label="close"]');
+    await closeBtn.trigger('click');
+
+    const emmitted = sidePanelTable.emitted('uncollapse-columns');
+    expect(emmitted).toHaveLength(1);
+    emmitted!.pop();
+  });
+
+  it('Collapses columns when on mobile and panel opened', async () => {
+
+    await row.trigger('click');
+    const sidePanel = wrapper.findComponent(SidePanel);
+    expect(sidePanel.exists()).toBeTruthy();
+
+    const emmitted = sidePanelTable.emitted('collapse-columns');
+    expect(emmitted).toHaveLength(1);
+    emmitted!.pop();
+  });
+
+  it('Columns stay collapsed when panel is opened and switch to tablet', async () => {
+
+    const breakpoint = wrapper.findAllComponents(VBreakpoint).at(1);
+    expect(breakpoint.exists()).toBeTruthy();
+    await breakpoint.vm.$emit('tablet');
+
+    // Columns stay collapsed
+    const emmitted = sidePanelTable.emitted('collapse-columns');
+    expect(emmitted).toHaveLength(0);
+  });
+
+  it('Uncollapses colums when on tablet and panel closed', async () => {
+
+    const sidePanel = wrapper.findComponent(SidePanel);
+    const closeBtn = sidePanel.find('[aria-label="close"]');
+    await closeBtn.trigger('click');
+
+    const emmitted = sidePanelTable.emitted('uncollapse-columns');
+    expect(emmitted).toHaveLength(1);
+    emmitted!.pop();
+  });
+
+  it('Collapses when on tablet and panel is open', async () => {
+
+    await row.trigger('click');
+    const sidePanel = wrapper.findComponent(SidePanel);
+    expect(sidePanel.exists()).toBeTruthy();
+
+    const emmitted = sidePanelTable.emitted('collapse-columns');
+    expect(emmitted).toHaveLength(1);
+    emmitted!.pop();
+  });
+
+  it('Uncollapses when panel opened and switch to desktop', async () => {
+
+    const breakpoint = wrapper.findAllComponents(VBreakpoint).at(2);
+    expect(breakpoint.exists()).toBeTruthy();
+    await breakpoint.vm.$emit('desktop');
+
+    const emmitted = sidePanelTable.emitted('uncollapse-columns');
+    expect(emmitted).toHaveLength(1);
+    emmitted!.pop();
+  });
+
+  it('Stays uncollapsed when panel is closed', async () => {
+
+    const sidePanel = wrapper.findComponent(SidePanel);
+    const closeBtn = sidePanel.find('[aria-label="close"]');
+    await closeBtn.trigger('click');
+
+    // No events should be called
+    let emmitted = sidePanelTable.emitted('uncollapse-columns');
+    expect(emmitted).toHaveLength(0);
+
+    emmitted = sidePanelTable.emitted('collapse-columns');
+    expect(emmitted).toHaveLength(0);
+  });
+
+})
 
 async function openEditForm(wrapper: Wrapper<any>) {
   const row = wrapper.findComponent(SidePanelTableRow);
