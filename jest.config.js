@@ -15,29 +15,18 @@
  * limitations under the License.
  */
 
-import { createLocalVue } from '@vue/test-utils'
-import VueRouter from 'vue-router'
-import Vuex from 'vuex'
-import Buefy from 'buefy'
-import Vue from "vue";
-import {Program} from "@/breeding-insight/model/Program";
-import Vuelidate from "vuelidate";
+module.exports = {
+  moduleFileExtensions: [
+    "js",
+    "ts",
+    "json",
+    "vue"
+  ],
+  moduleNameMapper: {
+    "^@/(.*)$": "<rootDir>/src/$1"
+  },
+  testURL: "http://localhost:8080/",
+  transformIgnorePatterns: ['/node_modules/(?!vuelidate-property-decorators)'],
+  preset: '@vue/cli-plugin-unit-jest/presets/typescript-and-babel'
+};
 
-const localVue = createLocalVue();
-localVue.use(VueRouter);
-
-// Setup beufy
-localVue.use(Buefy);
-
-// Set our Vuex library
-localVue.use(Vuex);
-
-Vue.use(Vuelidate);
-
-export const defaultStore = new Vuex.Store({
-  getters: {
-    activeProgram: () => new Program('1', 'Test Program')
-  }
-});
-
-export default localVue;

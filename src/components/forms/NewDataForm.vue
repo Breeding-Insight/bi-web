@@ -23,7 +23,7 @@
     <slot v-bind="getValidation()"></slot>
     <div class="columns">
       <div class="column is-whole has-text-centered buttons">
-        <button type="button" class="button is-primary" @click="checkSubmit()">
+        <button data-testid="save" type="button" class="button is-primary" @click="checkSubmit()">
           <span class="icon is-small">
             <CheckCircleIcon size="1.5x" aria-hidden="true"></CheckCircleIcon>
             <span class="is-sr-only">Confirm Edits</span>
@@ -32,7 +32,7 @@
             Save
           </span>
         </button>
-        <button type="button" class="button" @click="checkCancel()">Cancel</button>
+        <button data-testid="cancel" type="button" class="button" @click="checkCancel()">Cancel</button>
       </div>
     </div>
   </form>

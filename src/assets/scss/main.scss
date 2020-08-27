@@ -168,14 +168,17 @@ footer {
   flex-shrink:0;
 }
 
-.field.field--error {
-  & span.form-error {
-    display: block;
+.field {
+  &.field--error {
+    & span.form-error {
+      display: block;
+    }
   }
-}
-
-span.form-error:not(.field--error) {
-  display: none;
+  &:not(.field--error) {
+    & span.form-error {
+      display: none;
+    }
+  }
 }
 
 img {

@@ -21,6 +21,7 @@
     <slot></slot>
     <td class="has-text-right is-narrow">
       <a v-if="!panelOpen"
+        data-testid="showDetails"
         v-on:click="$emit('details')"
         v-on:keypress.enter.space="$emit('details')"
         tabindex="0"

@@ -15,11 +15,26 @@
  * limitations under the License.
  */
 
-describe('Input error is displayed appropriately when validation error occurs.');
+import {BiResponse, Metadata} from "@/breeding-insight/model/BiResponse";
 
-describe('Events emitted properly.', () => {
+export default class DaoUtils {
 
-  it('Emits submit event with edited object on editing save', () => {});
+  static formatBiResponse(data: any[]): BiResponse {
+    const metadata: Metadata = new Metadata({
+      pagination: {
+        totalPages: 1,
+        currentPage: 1,
+        totalCount: data.length,
+        pageSize: data.length
+      },
+      status: []
+    });
 
-})
-
+    return new BiResponse({
+      metadata,
+      result: {
+        data: data
+      }
+    });
+  }
+}

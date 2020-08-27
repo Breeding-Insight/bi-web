@@ -21,6 +21,7 @@
     <template v-if="rowData.editable">
       <td class="has-text-right is-narrow">
         <a
+          data-testid="edit"
           v-on:click="$emit('edit')"
           v-on:keypress.enter.space="$emit('edit')"
           tabindex="0"

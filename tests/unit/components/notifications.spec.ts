@@ -17,7 +17,7 @@
 
 import { mount } from '@vue/test-utils'
 import App from '@/App.vue'
-import UserManagement from '@/views/UserManagement.vue'
+import AdminUserManagement from '@/views/AdminUserManagement.vue'
 import VueRouter from 'vue-router'
 import Vuex from 'vuex'
 import localVue from '../index'
@@ -29,7 +29,7 @@ describe('notifications display', () => {
   const router = new VueRouter({
     routes: [{
         path: '/usermanagement', 
-        component: UserManagement
+        component: AdminUserManagement
     }]
   });
     
@@ -49,7 +49,7 @@ describe('notifications display', () => {
     expect(wrapper.html()).not.toContain(successMsg);
 
     // Emit event
-    wrapper.find(UserManagement).vm.$emit('show-success-notification', successMsg);     
+    wrapper.findComponent(AdminUserManagement).vm.$emit('show-success-notification', successMsg);
 
     // Wait for our page to load
     await wrapper.vm.$nextTick();
@@ -64,7 +64,7 @@ describe('notifications display', () => {
     expect(wrapper.html()).not.toContain(errorMsg);
 
     // Emit event
-    wrapper.find(UserManagement).vm.$emit('show-error-notification', errorMsg);     
+    wrapper.findComponent(AdminUserManagement).vm.$emit('show-error-notification', errorMsg);
 
     // Wait for our page to load
     await wrapper.vm.$nextTick();
@@ -79,7 +79,7 @@ describe('notifications display', () => {
     expect(wrapper.html()).not.toContain(infoMsg);
 
     // Emit event
-    wrapper.find(UserManagement).vm.$emit('show-info-notification', infoMsg);     
+    wrapper.findComponent(AdminUserManagement).vm.$emit('show-info-notification', infoMsg);
 
     // Wait for our page to load
     await wrapper.vm.$nextTick();
