@@ -66,7 +66,7 @@
 
     <NewDataForm
       v-if="newUserActive"
-      v-bind:row-validations="userValidations"
+      v-bind:row-validations="newUserValidations"
       v-bind:new-record.sync="newUser"
       v-on:submit="saveUser"
       v-on:cancel="cancelNewUser"
@@ -113,7 +113,7 @@
 
     <ExpandableRowTable
       v-bind:records.sync="users"
-      v-bind:row-validations="userValidations"
+      v-bind:row-validations="editUserValidations"
       v-bind:editable="true"
       v-bind:pagination="usersPagination"
       v-on:submit="updateUser($event)"
@@ -174,7 +174,6 @@
 <script lang="ts">
   import {Component, Prop, Vue, Watch} from 'vue-property-decorator'
   import {PlusCircleIcon} from 'vue-feather-icons'
-  import {validationMixin} from 'vuelidate'
   import {required, email} from 'vuelidate/lib/validators'
 
   import WarningModal from '@/components/modals/WarningModal.vue'
@@ -197,7 +196,6 @@
   import {UserService} from "@/breeding-insight/service/UserService";
 
 @Component({
-  mixins: [validationMixin],
   components: { NewDataForm, BasicInputField, BasicSelectField, TableColumn,
                 WarningModal, PlusCircleIcon, EmptyTableMessage, ExpandableRowTable
               },
@@ -223,15 +221,18 @@ export default class ProgramUsersTable extends Vue {
 
   private deleteUser?: ProgramUser;
   private rolesMap: Map<string, Role> = new Map();
-  private programName: string = "Program Name";
 
   private paginationController: PaginationController = new PaginationController();
 
-  userValidations = {
+  newUserValidations = {
     name: {required},
     email: {required, email},
     roleId: {required},
     orcid: {required}
+  }
+
+  editUserValidations = {
+    roleId: {required}
   }
 
   mounted() {
