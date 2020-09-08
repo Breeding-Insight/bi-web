@@ -292,9 +292,16 @@ export default class ProgramUsersTable extends Vue {
 
     this.newUserOrcid = this.newUser.orcid!;
     this.newUser.program = this.activeProgram;
-    this.newUser = this.checkExistingUserByEmailOrOrcid(this.newUser, this.newUserOrcid, this.systemUsers);
 
-    ProgramUserService.create(this.newUser, this.newUserOrcid).then((user: ProgramUser) => {
+    try {
+      this.newUser = this.checkExistingUserByEmailOrOrcid(this.newUser, this.newUserOrcid, this.systemUsers);
+    } catch (err) {
+      this.$emit('show-error-notification', err);
+      return;
+    }
+    let orcid: string|undefined = this.newUser.id ? undefined : this.newUserOrcid;
+
+    ProgramUserService.create(this.newUser, orcid).then((user: ProgramUser) => {
       this.paginationController.updatePage(1);
       this.getUsers();
       this.getSystemUsers();
@@ -335,13 +342,20 @@ export default class ProgramUsersTable extends Vue {
   //TODO: Reconsider when user search feature is added
   checkExistingUserByEmailOrOrcid(user: ProgramUser, userOrcid: string, systemUsers: User[]): ProgramUser {
     user.id = undefined;
+    let usersFound = 0;
     for (const systemUser of systemUsers){
       if (user.email === systemUser.email || userOrcid === systemUser.orcid){
+        usersFound += 1;
         if (systemUser.id){
           user.id = systemUser.id;
         }
       }
     }
+
+    if (usersFound > 1){
+      throw "Email and Orcid match two different users.";
+    }
+
     return user;
   }
 
