@@ -52,6 +52,7 @@
       v-show="!newUserActive & users.length > 0"
       class="button is-primary has-text-weight-bold is-pulled-right"
       v-on:click="newUserActive = true"
+      data-testid="newUserBtn"
     >
       <span class="icon is-small">
         <PlusCircleIcon
