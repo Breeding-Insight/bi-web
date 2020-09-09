@@ -27,14 +27,16 @@ function setup() {
                   'program': {'id':'1', 'name':'Test Program'}, 'active':'true' };
     users.push(user);
     const response = DaoUtils.formatBiResponse(users);
+    const singleResponse = DaoUtils.formatBiResponseSingle(user);
 
-    const programUserDAO = mocked(ProgramUserDAO, true);
+    const programUserDAO = mocked(ProgramUserDAO, false);
     programUserDAO.getAll.mockResolvedValue(response);
+    programUserDAO.create.mockResolvedValue(singleResponse);
 
     roles.push({'id':'1', 'domain':'test role'});
     const rolesResponse = DaoUtils.formatBiResponse(roles);
 
-    const roleDAO = mocked(RoleDAO, true);
+    const roleDAO = mocked(RoleDAO, false);
     roleDAO.getAll.mockResolvedValue(rolesResponse);
 
     const systemUser = {'id':'1', 'name':'Test user', 'email':'testuser@test.com', 'active':'true',
@@ -53,11 +55,15 @@ function setup() {
     systemUsers.push(systemUser, systemUser1, systemUser2);
     const systemUsersResponse = DaoUtils.formatBiResponse(systemUsers);
 
-    const userDAO = mocked(UserDAO, true);
+    const userDAO = mocked(UserDAO, false);
     userDAO.getAll.mockResolvedValue(systemUsersResponse);
 }
 
 setup();
+
+afterEach(() => {
+    jest.clearAllMocks();
+})
 
 describe('Edit data form works properly', () => {
     const store = defaultStore;
@@ -132,7 +138,42 @@ describe('New Program User action works properly', () => {
         expect(notification.pop()).toEqual('Email and Orcid match two different users.')
     });
 
-    it('does not overwrite orcid when email matches existing system user', () => {
-        //TODO: Spy on createUser service method
+    it('does not overwrite orcid when email matches existing system user', async () => {
+        let newUserForm = wrapper.findComponent(NewDataForm);
+        let orcidInput = newUserForm.find('input#Orcid');
+        await orcidInput.setValue('111');
+
+        let saveBtn = newUserForm.find('button[data-testid="save"]');
+        await saveBtn.trigger('click');
+
+        const createSpy = jest.spyOn(ProgramUserDAO, 'create');
+        const updateOrcidSpy = jest.spyOn(UserDAO, 'updateOrcid');
+        expect(createSpy).toHaveBeenCalled();
+        expect(updateOrcidSpy).toHaveBeenCalledTimes(0);
+    });
+
+    it('updates user orcid with new program user', async () => {
+
+        let newUserBtn = wrapper.find('button[data-testid="newUserBtn"]');
+        await newUserBtn.trigger('click');
+        let newUserForm = wrapper.findComponent(NewDataForm);
+        let nameInput = newUserForm.find('input#Name');
+        let emailInput = newUserForm.find('input#Email');
+        let orcidInput = newUserForm.find('input#Orcid');
+        let roleInput = newUserForm.find('select#Role');
+
+        await roleInput.find('option:last-child').setSelected();
+        await roleInput.trigger('input');
+        await nameInput.setValue('new test user');
+        await emailInput.setValue('newemail@test.com');
+        await orcidInput.setValue('123-456-789');
+
+        let saveBtn = newUserForm.find('button[data-testid="save"]');
+        await saveBtn.trigger('click');
+
+        const createSpy = jest.spyOn(ProgramUserDAO, 'create');
+        const updateOrcidSpy = jest.spyOn(UserDAO, 'updateOrcid');
+        expect(createSpy).toHaveBeenCalled();
+        expect(updateOrcidSpy).toHaveBeenCalled();
     });
 })
