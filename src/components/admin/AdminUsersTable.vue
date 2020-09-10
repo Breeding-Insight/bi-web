@@ -85,6 +85,7 @@
       v-show="!newUserActive"
       class="button is-primary has-text-weight-bold is-pulled-right"
       v-on:click="newUserActive = true"
+      data-testid="newFormBtn"
     >
       <span class="icon is-small">
         <PlusCircleIcon
@@ -259,10 +260,11 @@
   import {PromiseResult} from "promise.allsettled/types";
   import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
   import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
-  import {Pagination} from "@/breeding-insight/model/BiResponse";
+  import {Metadata, Pagination} from "@/breeding-insight/model/BiResponse";
+  import {helpers} from "vuelidate/lib/validators";
 
 
-@Component({
+  @Component({
   components: {
     NewDataForm, PlusCircleIcon, WarningModal, ExpandableRowTable, TableColumn, BasicInputField, BasicSelectField
   }
@@ -276,11 +278,12 @@ export default class AdminUsersTable extends Vue {
   private roles: Role[] = [];
   private rolesMap: Map<string, Role> = new Map();
   private isMobile = false;
+  private orcidCheck = helpers.regex('alpha', /^\d{4}-\d{4}-\d{4}-\d{4}$/);
 
   userValidations = {
     name: {required},
     email: {required, email},
-    orcid: {required}
+    orcid: {required, orcid: this.orcidCheck}
   }
 
   private paginationController: PaginationController = new PaginationController();
@@ -363,19 +366,44 @@ export default class AdminUsersTable extends Vue {
 
   }
 
-  addUser() {
+  async addUser() {
 
-    UserService.create(this.newUser).then((user: User) => {
-      this.getUsers();
+    // Check that a user with this orcid doesn't already exist
+    let allUsers: User[];
+    try {
+      [allUsers] = await UserService.getAll();
+      const matchingUsers: User[] = allUsers.filter(user => user.orcid === this.newUser.orcid);
+      if (matchingUsers.length > 0){
+        this.$emit('show-error-notification', 'Orcid is in use by another user.');
+        return;
+      }
+    } catch (error) {
+      this.$emit('show-error-notification', 'Error creating new user');
+      Vue.$log.error(error);
+      return;
+    }
+
+    let user: User | undefined = undefined;
+    try {
+      user = await UserService.create(this.newUser);
       this.paginationController.updatePage(1);
-      this.newUser = new User();
       this.newUserActive = false;
-      this.$emit('show-success-notification', 'User successfully created');
-    }).catch((error) => {
+      this.$emit('show-success-notification', 'User sucessfully created');
+    } catch (error) {
       this.$emit('show-error-notification', error.errorMessage);
-      this.getUsers();
-    });
+      return;
+    }
 
+    //TODO: Remove when full registration flow is complete
+    try {
+      user.orcid = this.newUser.orcid;
+      await UserService.updateOrcid(user!);
+    } catch (error) {
+      this.$emit('show-error-notification', error.errorMessage);
+    }
+
+    this.newUser = new User();
+    this.getUsers();
   }
 
   updateUser(user: User) {
