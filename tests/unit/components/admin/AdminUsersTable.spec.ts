@@ -4,14 +4,12 @@ import {SystemRoleDao} from "@/breeding-insight/dao/SystemRoleDao";
 import {UserDAO} from "@/breeding-insight/dao/UserDAO";
 import localVue, {defaultStore} from "../../index";
 import {mount} from "@vue/test-utils";
-import ProgramUsersTable from "@/components/program/ProgramUsersTable.vue";
 import AdminUsersTable from "@/components/admin/AdminUsersTable.vue";
 import NewDataForm from "@/components/forms/NewDataForm.vue";
 import BaseFieldWrapper from "@/components/forms/BaseFieldWrapper.vue";
 import ExpandableTableRow from "@/components/tables/ExpandableTableRow.vue";
 import EditDataRowForm from "@/components/forms/EditDataRowForm.vue";
 import {UserService} from "@/breeding-insight/service/UserService";
-import flushPromises from "flush-promises";
 
 jest.mock('@/breeding-insight/dao/SystemRoleDao');
 jest.mock('@/breeding-insight/dao/UserDAO');
