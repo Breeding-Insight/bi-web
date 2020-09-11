@@ -22,7 +22,7 @@
     v-bind:field-name="fieldName"
   >
     <input
-        v-bind:id="fieldName"
+        v-bind:id="fieldName.replace(' ', '-')"
         :value="value"
         @input="$emit('input', $event.target.value)"
         class="input"

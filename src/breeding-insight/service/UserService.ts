@@ -34,10 +34,10 @@ export class UserService {
   static errorDeleteUserNotFound: string = 'Unable to find user to deactivate';
   static errorDeleteUserNotAllowed: string = 'You are not allowed to deactivate this user.';
   static errorPermissionsEditUser: string = "You don't have permissions to edit the roles of this user.";
-  static errorUpdatingOrcidOnPost: string = "User created, but could not assign orcid";
-  static errorUpdatingOrcidOnPut: string = "User updated, but could not update orcid";
-  static errorUpdatingOrcidOnPostDuplicate: string = "User created, but could not assign orcid. Orcid Id already in use.";
-  static errorUpdatingOrcidOnPutDuplicate: string = "User updated, but could not update orcid. Orcid Id already in use.";
+  static errorUpdatingOrcidOnPost: string = "User created, but could not assign ORCID iD";
+  static errorUpdatingOrcidOnPut: string = "User updated, but could not update ORCID iD";
+  static errorUpdatingOrcidOnPostDuplicate: string = "User created, but could not assign ORCID iD. ORCID iD Id already in use.";
+  static errorUpdatingOrcidOnPutDuplicate: string = "User updated, but could not update ORCID iD. ORCID iD Id already in use.";
 
   static getUserInfo(): Promise<User> {
 

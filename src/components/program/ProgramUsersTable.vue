@@ -96,8 +96,8 @@
             <BasicInputField
                 v-model="newUser.orcid"
                 v-bind:validations="validations.orcid"
-                v-bind:field-name="'Orcid'"
-                v-bind:field-help="'Orcid Id to link account to.'"
+                v-bind:field-name="'ORCID iD'"
+                v-bind:field-help="'ORCID iD to link account to.'"
             />
           </div>
           <div class="column is-one-fourth">
@@ -354,7 +354,7 @@ export default class ProgramUsersTable extends Vue {
     }
 
     if (usersFound > 1){
-      throw "Email and Orcid match two different users.";
+      throw "Email and ORCID iD match two different users.";
     }
 
     return user;

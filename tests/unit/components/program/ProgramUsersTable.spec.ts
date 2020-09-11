@@ -116,7 +116,7 @@ describe('New Program User action works properly', () => {
         expect(nameInput.exists()).toBeTruthy();
         let emailInput = newUserForm.find('input#Email');
         expect(emailInput.exists()).toBeTruthy();
-        let orcidInput = newUserForm.find('input#Orcid');
+        let orcidInput = newUserForm.find('input#ORCID-iD');
         expect(orcidInput.exists()).toBeTruthy();
         let roleInput = newUserForm.find('select#Role');
         expect(roleInput.exists()).toBeTruthy();
@@ -135,12 +135,12 @@ describe('New Program User action works properly', () => {
         expect(error!.length).toEqual(1);
         let notification = error!.pop();
         expect(notification.length).toEqual(1);
-        expect(notification.pop()).toEqual('Email and Orcid match two different users.')
+        expect(notification.pop()).toEqual('Email and ORCID iD match two different users.')
     });
 
     it('does not overwrite orcid when email matches existing system user', async () => {
         let newUserForm = wrapper.findComponent(NewDataForm);
-        let orcidInput = newUserForm.find('input#Orcid');
+        let orcidInput = newUserForm.find('input#ORCID-iD');
         await orcidInput.setValue('111');
 
         let saveBtn = newUserForm.find('button[data-testid="save"]');
@@ -159,7 +159,7 @@ describe('New Program User action works properly', () => {
         let newUserForm = wrapper.findComponent(NewDataForm);
         let nameInput = newUserForm.find('input#Name');
         let emailInput = newUserForm.find('input#Email');
-        let orcidInput = newUserForm.find('input#Orcid');
+        let orcidInput = newUserForm.find('input#ORCID-iD');
         let roleInput = newUserForm.find('select#Role');
 
         await roleInput.find('option:last-child').setSelected();

@@ -127,7 +127,7 @@
             <BasicInputField
                 v-model="newUser.orcid"
                 v-bind:validations="validations.orcid"
-                v-bind:field-name="'Orcid'"
+                v-bind:field-name="'ORCID iD'"
             />
           </div>
           <div class="column is-one-fourth">
@@ -162,7 +162,7 @@
           {{ data.email }}
         </TableColumn>
         <!--TODO: Remove when registration flow is complete -->
-        <TableColumn name="orcid" v-bind:label="'Orcid'" v-bind:visible="!isMobile">
+        <TableColumn name="orcid" v-bind:label="'ORCID iD'" v-bind:visible="!isMobile">
           {{ data.orcid }}
         </TableColumn>
         <TableColumn name="roles" v-bind:label="'Role'">
@@ -220,8 +220,8 @@
             <BasicInputField
                 v-model="editData.orcid"
                 v-bind:validations="validations.orcid"
-                v-bind:field-name="'Orcid'"
-                v-bind:field-help="'Orcid to link account to.'"
+                v-bind:field-name="'ORCID iD'"
+                v-bind:field-help="'ORCID iD to link account to.'"
             />
           </div>
           <div class="column is-one-third">
