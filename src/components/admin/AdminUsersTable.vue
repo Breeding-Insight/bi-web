@@ -252,12 +252,10 @@
   import BasicInputField from "@/components/forms/BasicInputField.vue";
   import {UserService} from "@/breeding-insight/service/UserService";
   import NewDataForm from "@/components/forms/NewDataForm.vue";
-  import {RoleService} from "@/breeding-insight/service/RoleService";
   import {Role} from "@/breeding-insight/model/Role";
   import {SystemRoleService} from "@/breeding-insight/service/SystemRoleService";
   import BasicSelectField from "@/components/forms/BasicSelectField.vue";
   import {PromiseHandler} from "@/breeding-insight/service/PromiseHandler";
-  import {PromiseResult} from "promise.allsettled/types";
   import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
   import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
   import {Metadata, Pagination} from "@/breeding-insight/model/BiResponse";
@@ -374,7 +372,7 @@ export default class AdminUsersTable extends Vue {
       [allUsers] = await UserService.getAll();
       const matchingUsers: User[] = allUsers.filter(user => user.orcid === this.newUser.orcid);
       if (matchingUsers.length > 0){
-        this.$emit('show-error-notification', 'Orcid is in use by another user.');
+        this.$emit('show-error-notification', 'ORCID iD is in use by another user.');
         return;
       }
     } catch (error) {

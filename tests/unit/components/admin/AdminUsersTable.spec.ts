@@ -7,6 +7,7 @@ import {mount} from "@vue/test-utils";
 import AdminUsersTable from "@/components/admin/AdminUsersTable.vue";
 import NewDataForm from "@/components/forms/NewDataForm.vue";
 import BaseFieldWrapper from "@/components/forms/BaseFieldWrapper.vue";
+import BasicInputField from "@/components/forms/BasicInputField.vue";
 import ExpandableTableRow from "@/components/tables/ExpandableTableRow.vue";
 import EditDataRowForm from "@/components/forms/EditDataRowForm.vue";
 import {UserService} from "@/breeding-insight/service/UserService";
@@ -57,33 +58,33 @@ describe('validations work properly', () => {
     await saveBtn.trigger('click');
 
     // Get orcid field
-    let orcidWrapper = wrapper.findAll(BaseFieldWrapper).at(2);
-    let orcidInput = orcidWrapper.find('input#Orcid');
+    let orcidWrapper = wrapper.findAllComponents(BaseFieldWrapper).at(2);
+    let orcidInput = orcidWrapper.find('input#ORCID-iD');
     expect(orcidInput.exists()).toBeTruthy();
     expect(orcidWrapper.element.classList.contains('field--error')).toBeTruthy()
     await orcidInput.setValue('');
     let error = orcidWrapper.find('span[data-testid="formError"]:not(.is-hidden)');
     expect(error.exists()).toBeTruthy();
-    expect(error.text()).toEqual('Orcid is required');
+    expect(error.text()).toEqual('ORCID iD is required');
   });
 
   it ('shows validation error when new form orcid is improper format', async () => {
 
-    let orcidWrapper = wrapper.findAll(BaseFieldWrapper).at(2);
-    let orcidInput = orcidWrapper.find('input#Orcid');
+    let orcidWrapper = wrapper.findAllComponents(BaseFieldWrapper).at(2);
+    let orcidInput = orcidWrapper.find('input#ORCID-iD');
     expect(orcidInput.exists()).toBeTruthy();
     await orcidInput.setValue('1234');
 
     expect(orcidWrapper.element.classList.contains('field--error')).toBeTruthy()
     let error = orcidWrapper.find('span[data-testid="formError"]:not(.is-hidden)');
     expect(error.exists()).toBeTruthy();
-    expect(error.text()).toEqual('Orcid must be in orcid format');
+    expect(error.text()).toEqual('ORCID iD must be in orcid format');
   });
 
   it('does not show validation error when orcid in proper format', async () => {
 
-    let orcidWrapper = wrapper.findAll(BaseFieldWrapper).at(2);
-    let orcidInput = orcidWrapper.find('input#Orcid');
+    let orcidWrapper = wrapper.findAllComponents(BaseFieldWrapper).at(2);
+    let orcidInput = orcidWrapper.find('input#ORCID-iD');
     expect(orcidInput.exists()).toBeTruthy();
     await orcidInput.setValue('1234-5678-9101-1121');
 
@@ -105,8 +106,8 @@ describe('validations work properly', () => {
 
     let editForm = wrapper.findComponent(EditDataRowForm);
     expect(editForm.exists()).toBeTruthy();
-    let orcidWrapper = editForm.findAll(BaseFieldWrapper).at(2);
-    let orcidInput = orcidWrapper.find('input#Orcid');
+    let orcidWrapper = editForm.findAllComponents(BaseFieldWrapper).at(2);
+    let orcidInput = orcidWrapper.find('input#ORCID-iD');
     expect(orcidInput.exists()).toBeTruthy();
     await orcidInput.setValue('');
 
@@ -114,31 +115,32 @@ describe('validations work properly', () => {
     expect(saveBtn.exists()).toBeTruthy();
     await saveBtn.trigger('click');
 
+    console.log(wrapper.html());
     expect(orcidWrapper.element.classList.contains('field--error')).toBeTruthy();
     let error = orcidWrapper.find('span[data-testid="formError"]:not(.is-hidden)');
     expect(error.exists()).toBeTruthy();
-    expect(error.text()).toEqual('Orcid is required');
+    expect(error.text()).toEqual('ORCID iD is required');
   });
 
   it ('shows validation error when edit form orcid is improper format', async () => {
 
     let editForm = wrapper.findComponent(EditDataRowForm);
-    let orcidWrapper = editForm.findAll(BaseFieldWrapper).at(2);
-    let orcidInput = orcidWrapper.find('input#Orcid');
+    let orcidWrapper = editForm.findAllComponents(BaseFieldWrapper).at(2);
+    let orcidInput = orcidWrapper.find('input#ORCID-iD');
     expect(orcidInput.exists()).toBeTruthy();
     await orcidInput.setValue('1234');
 
     expect(orcidWrapper.element.classList.contains('field--error')).toBeTruthy();
     let error = orcidWrapper.find('span[data-testid="formError"]:not(.is-hidden)');
     expect(error.exists()).toBeTruthy();
-    expect(error.text()).toEqual('Orcid must be in orcid format');
+    expect(error.text()).toEqual('ORCID iD must be in orcid format');
   });
 
   it('does not show validation error when edit form orcid is properly formatted', async () => {
 
     let editForm = wrapper.findComponent(EditDataRowForm);
-    let orcidWrapper = editForm.findAll(BaseFieldWrapper).at(2);
-    let orcidInput = orcidWrapper.find('input#Orcid');
+    let orcidWrapper = editForm.findAllComponents(BaseFieldWrapper).at(2);
+    let orcidInput = orcidWrapper.find('input#ORCID-iD');
     expect(orcidInput.exists()).toBeTruthy();
     await orcidInput.setValue('1234-6789-1012-1234');
 
@@ -156,12 +158,12 @@ describe('new data form works properly', () => {
     expect(newFormBtn.exists()).toBeTruthy();
     await newFormBtn.trigger('click');
 
-    let newForm = wrapper.find(NewDataForm);
+    let newForm = wrapper.findComponent(NewDataForm);
     expect(newForm.exists()).toBeTruthy();
 
     let nameInput = newForm.find('input#Name');
     let emailInput = newForm.find('input#Email');
-    let orcidInput = newForm.find('input#Orcid');
+    let orcidInput = newForm.find('input#ORCID-iD');
     expect(nameInput.exists()).toBeTruthy();
     expect(emailInput.exists()).toBeTruthy();
     expect(orcidInput.exists()).toBeTruthy();
@@ -183,7 +185,7 @@ describe('new data form works properly', () => {
     expect(error!.length).toEqual(1);
     let notification = error!.pop();
     expect(notification.length).toEqual(1);
-    expect(notification.pop()).toEqual('Orcid is in use by another user.');
+    expect(notification.pop()).toEqual('ORCID iD is in use by another user.');
   });
 
   it('closes new data form when user successfully created, but update orcid returns error', async () => {
@@ -191,7 +193,7 @@ describe('new data form works properly', () => {
     let newForm = wrapper.find(NewDataForm);
     expect(newForm.exists()).toBeTruthy();
 
-    let orcidInput = newForm.find('input#Orcid');
+    let orcidInput = newForm.find('input#ORCID-iD');
     expect(orcidInput.exists()).toBeTruthy();
 
     await orcidInput.setValue('2222-2222-2222-2222');
@@ -206,7 +208,7 @@ describe('new data form works properly', () => {
     // Wait another DOM update. A little hacky, probably should find better way to do this in the future.
     await wrapper.vm.$nextTick();
 
-    newForm = wrapper.find(NewDataForm);
+    newForm = wrapper.findComponent(NewDataForm);
     expect(newForm.exists()).toBeFalsy();
   });
 });
