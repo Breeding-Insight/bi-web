@@ -26,4 +26,5 @@ export interface RootState {
   apiUnavailable: boolean;
   loginServerError: boolean;
   requestedPath?: string;
+  firstVisit?: boolean;
 }
