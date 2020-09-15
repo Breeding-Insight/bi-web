@@ -33,5 +33,9 @@ declare global {
     allSettled(arg0: Promise<any>[]): Promise<[]>;
   }
 
+  interface Window {
+    ATL_JQ_PAGE_PROPS: any;
+  }
+
 }
 

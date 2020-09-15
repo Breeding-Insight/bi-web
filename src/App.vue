@@ -21,6 +21,8 @@
       <SuccessNotification ref="successNotification" class="is-marginless"></SuccessNotification>
       <ErrorNotification ref="errorNotification" class="is-marginless"></ErrorNotification>
       <InfoNotification ref="infoNotification" class="is-marginless"></InfoNotification>
+      <SandboxPublicNotification v-bind:active.sync="showPublicSandboxNotification" class="is-marginless"></SandboxPublicNotification>
+      <SandboxCoordinatorNotification v-bind:active.sync="showCoordinatorSandboxNotification" class="is-marginless"></SandboxCoordinatorNotification>
     </div>
     
     <component v-bind:is="layout" v-bind:username="username" @logout="logOut">
@@ -89,28 +91,30 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator'
+import { Component, Watch, Vue } from 'vue-property-decorator'
 import SuccessNotification from '@/components/notifications/SuccessNotification.vue'
 import InfoNotification from '@/components/notifications/InfoNotification.vue'
 import ErrorNotification from '@/components/notifications/ErrorNotification.vue'
 import SimpleLayout from '@/components/layouts/SimpleLayout.vue'
 import UserSideBarLayout from './components/layouts/UserSideBarLayout.vue'
 import NoSideBarLayout from './components/layouts/NoSideBarLayout.vue'
+import SandboxPublicNotification from "@/components/notifications/SandboxPublicNotification.vue";
+import SandboxCoordinatorNotification from "@/components/notifications/SandboxCoordinatorNotification.vue";
 
 @Component({
   watch: {
-      $route(to, from) {
-          document.title = to.meta.title + ' | Breeding Insight Platform' || 'Breeding Insight Platform'
-      },
-      loggedIn(isLoggedIn) {
-          if(!isLoggedIn) {
-            this.$router.push({name: 'home',
-              params: {
-                sessionExpired: 'true'
-              }
-            });
+    $route(to, from) {
+      document.title = to.meta.title + ' | Breeding Insight Platform' || 'Breeding Insight Platform';
+    },
+    loggedIn(isLoggedIn) {
+      if(!isLoggedIn) {
+        this.$router.push({name: 'home',
+          params: {
+            sessionExpired: 'true'
           }
-      },
+        });
+      }
+    }
   },
   computed: {
     layout() {
@@ -121,6 +125,8 @@ import NoSideBarLayout from './components/layouts/NoSideBarLayout.vue'
     }
   },
   components: {
+    SandboxCoordinatorNotification,
+    SandboxPublicNotification,
     SuccessNotification,
     InfoNotification,
     ErrorNotification,
@@ -133,11 +139,41 @@ export default class App extends Vue {
   public loading: boolean = false;
   public t: string = "Title";
 
+  public showPublicSandboxNotification = false;
+  public showCoordinatorSandboxNotification = false;
+
   public $refs!: {
     successNotification: SuccessNotification,
-    infoNotification: InfoNotification, 
-    errorNotification: ErrorNotification
+    infoNotification: InfoNotification,
+    errorNotification: ErrorNotification,
   };
+
+  @Watch('firstVisit', {immediate: true})
+  onFirstVisitChanged(newVal: any, oldVal: any) {
+    if(newVal) {
+      if (process.env.VUE_APP_SANDBOX === 'public') {
+        this.showPublicSandboxNotification = true;
+      } else if (process.env.VUE_APP_SANDBOX === 'coordinator') {
+        this.showCoordinatorSandboxNotification = true;
+      }
+    }
+  }
+
+  mounted() {
+    // load the appropriate JIRA issue collector script depending on sandbox type
+    let issueCollectorScript = document.createElement('script');
+    issueCollectorScript.setAttribute('type', 'text/javascript');
+    if (process.env.VUE_APP_SANDBOX === 'public') {
+      issueCollectorScript.setAttribute('src', 'https://breedinginsight.atlassian.net/s/d41d8cd98f00b204e9800998ecf8427e-T/-egccmf/b/24/a44af77267a987a660377e5c46e0fb64/_/download/batch/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector.js?locale=en-US&collectorId=d2cbfe89');
+    } else if (process.env.VUE_APP_SANDBOX === 'coordinator') {
+      issueCollectorScript.setAttribute('src', 'https://breedinginsight.atlassian.net/s/d41d8cd98f00b204e9800998ecf8427e-T/vd1cif/b/24/a44af77267a987a660377e5c46e0fb64/_/download/batch/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector.js?locale=en-US&collectorId=b57acf4a');
+    }
+    document.head.appendChild(issueCollectorScript);
+  }
+
+  get firstVisit() {
+    return this.$store.state.firstVisit;
+  }
 
   get loggedIn () {
     return this.$store.state.loggedIn;
@@ -169,5 +205,6 @@ export default class App extends Vue {
     this.$refs.errorNotification.active = true;
     this.$refs.errorNotification.msg = msg;
   }
+
 }
 </script>
