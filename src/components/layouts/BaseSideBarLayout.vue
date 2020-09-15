@@ -39,6 +39,17 @@
               <MenuIcon></MenuIcon>
             </a>
           </div>
+          <div v-if="sandboxConfig !== undefined" class="level-item">
+            <div v-bind:class="{'notification is-warning px-5 has-text-centered': sandboxConfig === 'public',
+                                'notification is-info px-5 has-text-centered': sandboxConfig === 'coordinator'}">
+              <p class="title is-size-4">Sandbox</p>
+              <p>
+                <a href="#" v-on:click="$showCollectorDialog()" v-bind:class="{'has-text-link': sandboxConfig === 'public',
+                                                                               'has-text-white': sandboxConfig === 'coordinator'}">Feedback
+                </a>
+              </p>
+            </div>
+          </div>
         </div>
         <div class="level-right program-selection-level">
           <slot name="title"></slot>
@@ -99,6 +110,10 @@
     @Watch('$route')
     onUrlChange(){
       this.sideMenuShownMobile = false;
+    }
+
+    get sandboxConfig() : string {
+      return process.env.VUE_APP_SANDBOX;
     }
   }
 
