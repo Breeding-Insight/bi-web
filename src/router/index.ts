@@ -25,7 +25,15 @@ import ProgramManagement from '@/views/ProgramManagement.vue'
 import AdminProgramManagement from '@/views/AdminProgramManagement.vue'
 import AdminUserManagement from '@/views/AdminUserManagement.vue'
 import store from '@/store/index.ts';
-import {LOGIN, LOGOUT, REQUESTED_PATH, ERROR_STATE, SET_ACTIVE_PROGRAM} from '@/store/mutation-types';
+import {
+  LOGIN,
+  LOGOUT,
+  REQUESTED_PATH,
+  ERROR_STATE,
+  SET_ACTIVE_PROGRAM,
+  FIRST_VISIT,
+  RETURN_VISIT
+} from '@/store/mutation-types';
 import ProgramLocationsManagement from "@/views/ProgramLocationsManagement.vue";
 import ProgramUserManagement from "@/views/ProgramUsersManagement.vue";
 import Traits from '@/views/Traits.vue'
@@ -242,6 +250,15 @@ router.beforeEach((to: Route, from: Route, next: Function) => {
     store.commit(REQUESTED_PATH, {path: undefined});
   }
 
+  const firstVisitCookie = Vue.prototype.$cookieNames.firstVisit;
+  if (Vue.$cookies.get(firstVisitCookie) === null) {
+    // expires after 1 week
+    Vue.$cookies.set(firstVisitCookie, 'visited', 604800);
+    store.commit(FIRST_VISIT);
+  } else {
+    store.commit(RETURN_VISIT);
+  }
+
   // Clear path dependent store data for easier state management
   if (!isProgramsPath(to)){
     store.commit(SET_ACTIVE_PROGRAM, undefined);
@@ -278,8 +295,5 @@ router.beforeEach((to: Route, from: Route, next: Function) => {
   // Set page title
   document.title = to.meta.title + ' | Breeding Insight Platform' || 'Breeding Insight Platform'
 });
-
-
-
 
 export default router
