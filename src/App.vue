@@ -100,6 +100,7 @@ import UserSideBarLayout from './components/layouts/UserSideBarLayout.vue'
 import NoSideBarLayout from './components/layouts/NoSideBarLayout.vue'
 import SandboxPublicNotification from "@/components/notifications/SandboxPublicNotification.vue";
 import SandboxCoordinatorNotification from "@/components/notifications/SandboxCoordinatorNotification.vue";
+import {SandboxMode} from "@/util/config";
 
 @Component({
   watch: {
@@ -151,9 +152,9 @@ export default class App extends Vue {
   @Watch('firstVisit', {immediate: true})
   onFirstVisitChanged(newVal: any, oldVal: any) {
     if(newVal) {
-      if (process.env.VUE_APP_SANDBOX === 'public') {
+      if (process.env.VUE_APP_SANDBOX === SandboxMode.Public) {
         this.showPublicSandboxNotification = true;
-      } else if (process.env.VUE_APP_SANDBOX === 'coordinator') {
+      } else if (process.env.VUE_APP_SANDBOX === SandboxMode.Coordinator) {
         this.showCoordinatorSandboxNotification = true;
       }
     }
@@ -163,9 +164,9 @@ export default class App extends Vue {
     // load the appropriate JIRA issue collector script depending on sandbox type
     let issueCollectorScript = document.createElement('script');
     issueCollectorScript.setAttribute('type', 'text/javascript');
-    if (process.env.VUE_APP_SANDBOX === 'public') {
+    if (process.env.VUE_APP_SANDBOX === SandboxMode.Public) {
       issueCollectorScript.setAttribute('src', 'https://breedinginsight.atlassian.net/s/d41d8cd98f00b204e9800998ecf8427e-T/-egccmf/b/24/a44af77267a987a660377e5c46e0fb64/_/download/batch/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector.js?locale=en-US&collectorId=d2cbfe89');
-    } else if (process.env.VUE_APP_SANDBOX === 'coordinator') {
+    } else if (process.env.VUE_APP_SANDBOX === SandboxMode.Coordinator) {
       issueCollectorScript.setAttribute('src', 'https://breedinginsight.atlassian.net/s/d41d8cd98f00b204e9800998ecf8427e-T/vd1cif/b/24/a44af77267a987a660377e5c46e0fb64/_/download/batch/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector.js?locale=en-US&collectorId=b57acf4a');
     }
     document.head.appendChild(issueCollectorScript);
