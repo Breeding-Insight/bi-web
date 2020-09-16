@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-export const enum SandboxMode {
+export enum SandboxMode {
     Public = "public",
     Coordinator = "coordinator"
 }

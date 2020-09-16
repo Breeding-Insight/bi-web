@@ -114,7 +114,7 @@
       this.sideMenuShownMobile = false;
     }
 
-    get sandboxConfig() : string {
+    get sandboxConfig() {
       return process.env.VUE_APP_SANDBOX;
     }
   }
