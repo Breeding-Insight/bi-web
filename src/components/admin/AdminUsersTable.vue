@@ -386,7 +386,6 @@ export default class AdminUsersTable extends Vue {
       user = await UserService.create(this.newUser);
       this.paginationController.updatePage(1);
       this.newUserActive = false;
-      this.$emit('show-success-notification', 'User sucessfully created');
     } catch (error) {
       this.$emit('show-error-notification', error.errorMessage);
       return;
@@ -396,8 +395,9 @@ export default class AdminUsersTable extends Vue {
     try {
       user.orcid = this.newUser.orcid;
       await UserService.updateOrcid(user!);
+      this.$emit('show-success-notification', 'User successfully created');
     } catch (error) {
-      this.$emit('show-error-notification', error.errorMessage);
+      this.$emit('show-warning-notification', 'User created, but could not assign ORCID iD. ORCID iD already in use');
     }
 
     this.newUser = new User();
