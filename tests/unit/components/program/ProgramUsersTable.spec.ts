@@ -131,7 +131,6 @@ describe('New Program User action works properly', () => {
         await wrapper.vm.$nextTick();
 
         let error = wrapper.emitted('show-error-notification');
-        console.log(error);
         expect(error!.length).toEqual(1);
         let notification = error!.pop();
         expect(notification.length).toEqual(1);

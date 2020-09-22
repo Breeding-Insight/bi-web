@@ -21,6 +21,7 @@
       <SuccessNotification ref="successNotification" class="is-marginless"></SuccessNotification>
       <ErrorNotification ref="errorNotification" class="is-marginless"></ErrorNotification>
       <InfoNotification ref="infoNotification" class="is-marginless"></InfoNotification>
+      <WarningNotification ref="warningNotification" class="is-marginless"></WarningNotification>
     </div>
     
     <component v-bind:is="layout" v-bind:username="username" @logout="logOut">
@@ -28,6 +29,7 @@
             @show-success-notification="showSuccessNotification"
             @show-info-notification="showInfoNotification"
             @show-error-notification="showErrorNotification"
+            @show-warning-notification="showWarningNotification"
         />
     </component>
 
@@ -96,6 +98,7 @@ import ErrorNotification from '@/components/notifications/ErrorNotification.vue'
 import SimpleLayout from '@/components/layouts/SimpleLayout.vue'
 import UserSideBarLayout from './components/layouts/UserSideBarLayout.vue'
 import NoSideBarLayout from './components/layouts/NoSideBarLayout.vue'
+import WarningNotification from "@/components/notifications/WarningNotification.vue";
 
 @Component({
   watch: {
@@ -121,6 +124,7 @@ import NoSideBarLayout from './components/layouts/NoSideBarLayout.vue'
     }
   },
   components: {
+    WarningNotification,
     SuccessNotification,
     InfoNotification,
     ErrorNotification,
@@ -137,6 +141,7 @@ export default class App extends Vue {
     successNotification: SuccessNotification,
     infoNotification: InfoNotification, 
     errorNotification: ErrorNotification
+    warningNotification: WarningNotification
   };
 
   get loggedIn () {
@@ -168,6 +173,11 @@ export default class App extends Vue {
   showErrorNotification(msg: string) {
     this.$refs.errorNotification.active = true;
     this.$refs.errorNotification.msg = msg;
+  }
+
+  showWarningNotification(msg: string) {
+    this.$refs.warningNotification.active = true;
+    this.$refs.warningNotification.msg = msg;
   }
 }
 </script>
