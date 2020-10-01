@@ -41,6 +41,7 @@ WORKDIR /home/${CONT_USERNAME}/biweb
 COPY --chown=host:host ["babel.config.js", ".browserslistrc", "cypress.json", ".eslintrc.js", ".npmrc", "tsconfig.json", "vue.config.js", ".env.development","./"]
 COPY --chown=host:host ["package.json", "/home/host/biweb/package.json"]
 COPY --chown=host:host ["package-lock.json", "/home/host/biweb/package-lock.json"]
+COPY ./src ./src/
 RUN ["npm", "ci"]
 
 # start the web server
