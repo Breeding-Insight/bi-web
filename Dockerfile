@@ -42,6 +42,7 @@ COPY --chown=host:host ["babel.config.js", ".browserslistrc", "cypress.json", ".
 COPY --chown=host:host ["package.json", "/home/host/biweb/package.json"]
 COPY --chown=host:host ["package-lock.json", "/home/host/biweb/package-lock.json"]
 COPY ./src ./src/
+COPY ./task ./task/
 RUN ["npm", "ci"]
 
 # start the web server
