@@ -50,7 +50,7 @@ export class TraitUploadDAO {
 
     return new Promise<BiResponse>(((resolve, reject) => {
 
-      api.call({ url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/trait-upload`, method: 'get', params: paginationQuery })
+      api.call({ url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/trait-upload`, method: 'get' })
         .then((response: any) => {
           const biResponse = new BiResponse(response.data);
           resolve(biResponse);
