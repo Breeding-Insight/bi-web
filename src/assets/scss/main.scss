@@ -1,42 +1,392 @@
-@import 'bulma/bulma';
+/*!
+ * See the NOTICE file distributed with this work for additional information
+ * regarding copyright ownership.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
+@charset "utf-8";
 
-  > .container {
-    padding-bottom: 3rem;
-  }
+// Import a Google Font
+@import url('https://fonts.googleapis.com/css?family=Fira+Sans:400,600,700');
+@import url('https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600');
 
-}
+// Override Bulma default colors
+$red: #E20057;
+$yellow: #FFCC21;
+$green: #2AB14E;
+$blue: #1B64DD;
 
-#nav {
-  padding: 30px;
+// Custom colors
+$purple: #763FCE;
+$magenta: #9c27b0;
+$applegreen: #C1ED2F;
+$turquoise: #3FB3B6;
+$darkmenu: #4a4a4a; // $grey-dark, can't specify here because variables not loaded
+$link-light: #edf3fd; // variables not loaded
+$pending: $applegreen;
+$pending-invert: #363636; // $grey-darker
+$error: $red;
+$error-invert: #FFFFFF;
+$custom-colors: (
+  "pending": ($pending, $pending-invert), "error": ($error, $error-invert)
+);
 
+// Update Bulma's global variables
+$family-sans-serif: "Source Sans Pro", "Segoe UI", "Ubuntu", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+$primary: $purple;
+$info: $turquoise;
+$family-heading: "Fira Sans", "Segoe UI", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+$code: $magenta;
+$menu-item-color: white;
+$menu-label-color: white;
+
+$menu-item-active-background-color: none;
+$menu-item-radius: 0;
+$menu-item-hover-background-color: $info;
+$menu-item-hover-color: white;
+$menu-nested-list-padding-left: 0;
+
+$footer-padding: 1rem 2.5rem;
+$level-item-spacing: 2rem;
+
+$tabs-boxed-link-radius: 1px;
+$tabs-link-active-color: $turquoise;
+$tabs-boxed-link-hover-border-bottom-color: $turquoise;
+$tabs-border-bottom-color: $turquoise;
+$tabs-boxed-link-active-border-color: $turquoise;
+$tabs-boxed-link-border-width: 3px;
+$modal-background-background-color: rgba(black, 0.3);
+$modal-content-width: 500px;
+$message-body-radius: 0px;
+$modal-card-body-padding:0 3em 1em 3em;
+$modal-card-head-background-color:white;
+$modal-card-head-border-bottom:none;
+$modal-card-foot-border-top:none;
+
+$table-row-hover-background-color:$link-light;
+$table-striped-row-even-hover-background-color:$link-light;
+
+//$margin-right: 2 rem;
+
+// Update some of Bulma's component variables
+
+//Enable this import line when Bulma is in a local folder called "bulma"
+//@import 'bulma/bulma';
+// Enable this import line instead when Bulma is in package.json
+@import '../../../node_modules/bulma/bulma.sass';
+
+// Overrides that can't be done with variables go here
+// may be broken out into a separate file later
+
+main {
+  /*
   a {
-    font-weight: bold;
-    color: #2c3e50;
-
-    &.router-link-exact-active {
-      color: #42b983;
+    text-decoration: underline;
+  }
+  */
+  p,
+  dl,
+  ol,
+  ul,
+  blockquote,
+  pre,
+  table {
+    &:not(last-child) {
+      margin-bottom: 1em;
     }
   }
 }
 
-.card.auth {
-  .eauth img {
-    width: 200px;
-    padding: 0;
+main ul {
+  list-style: disc outside;
+  margin-left: 2em;
+  ul {
+    list-style-type: circle;
+    margin-top: .5em;
   }
+}
 
-  .idp {
-    margin-top: 10px;
+
+
+nav.pagination {
+  align-items: normal;
+  justify-content: flex-start;
+  & ul.pagination-list {
+    list-style-type: none;
+    margin-left: 0;
+    flex-grow: 0;
+    flex-shrink: 0;
+    & li a.is-current {
+      background-color: $info;
+      border: none;
+    }
   }
+  & div.pagination-extras {
+    order: 4;
+    display: flex;
+    flex-grow: 1;
+    flex-shrink: 0;
+    justify-content: flex-start;
+    margin-left: 2em;
+
+    & div.page-size-select {
+      order: 1;
+      border: none;
+      & span {
+        margin-left: 4px;
+      }
+    }
+    & a.show-all-button {
+      order: 2;
+    }
+  }
+}
+
+main ol {
+    list-style-position: outside;
+    margin-left: 2em;
+    margin-top: 1em;
+}
+
+main li {
+  // messed up tab style, figure out how to handle
+  //margin-bottom: .5em;
+}
+
+footer {
+  flex-shrink:0;
+}
+
+.field {
+  &.field--error {
+    & span.form-error {
+      display: block;
+    }
+  }
+  &:not(.field--error) {
+    & span.form-error {
+      display: none;
+    }
+  }
+}
+
+img {
+  vertical-align: middle;
+}
+
+  // Custom styles go here, may be broken out into a seperate file later
+#app {
+  font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: #363636;  //$grey-darker
+  display:flex;
+  min-height:100vh;
+  flex-direction: column;
+  &.has-navbar-fixed-top-touch {
+    @extend body.has-navbar-fixed-top-touch;
+  }
+}
+
+.sidebarlayout {
+  display: flex;
+  flex-direction: column;
+  flex: 1 0 auto;
+  & > .columns {
+    flex: 1 0 auto;
+  }
+}
+
+.tagline {
+  border-top: 1px #363636 solid;
+  border-bottom: 1px #363636 solid;
+  padding: 2em;
+  p {
+    text-align: center;
+    width: 100%;
+  }
+}
+
+.modal-card .message.is-info, .modal-card .message.is-danger {
+  background-color: white;
+}
+
+nav.tabs li.is-active {
+  border-top: 2px $turquoise solid;
+  li {
+    margin-bottom: 0em;
+  }
+}
+
+.table td {
+  vertical-align: middle;
+}
+
+.tab-content {
+  margin-left: 2em;
+}
+
+// TODO: see if we can get this in bulma variable
+.table tr.is-edited {
+  border-left: 5px solid $primary;
+  background-color: $primary-light;
+  td {
+    color:$dark;
+  }
+  a {
+    color:$link;
+  }
+}
+
+.table tr.is-selected {
+  background-color: $info-light;
+  td {
+    color:$dark;
+  }
+  a {
+    color:$link;
+  }
+}
+
+.table.is-striped tbody tr:not(.is-edited):nth-child(2n).is-new {
+  background-color: $success-light;
+  td {
+    color:$dark;
+  }
+  a {
+    color:$link;
+  }
+}
+
+.is-new {
+  border-left: 5px solid $success;
+  background-color: $success-light;
+  td {
+    color:$dark;
+  }
+}
+
+.header-title {
+  border-bottom: 1px #363636 solid;
+  padding: 0 2.5em 0 2.5em;
+  margin-bottom: 0;
+  @include until($desktop) {
+    padding: .5em 2.5em .5em 1em;
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    z-index: 30;
+    background-color: white;
+  }
+  & .navbar-hamburger {
+    padding-top: .5em;
+  }
+}
+
+.side-menu {
+  background-color: $darkmenu;
+  padding: 1em 1em 1em 0;
+  p {
+    padding-left: 2em;
+  }
+  li {
+    padding: 0.25em 0 0.25em 0;
+    a {
+      padding-left: 2em;
+      border-left: 5px solid transparent;
+
+      &.is-active, &.router-link-active {
+        border-left: 5px solid $info;
+      }
+    }
+    ul {
+      margin-left:2.5em;
+    }
+  }
+}
+
+.new-form {
+  background-color: $primary-light;
+  padding: 1.5em 1.5em 1.5em 1.5em;
+  border-top: 2px solid $grey-lighter;
+  border-bottom: 2px solid $grey-lighter;
+  margin-bottom: 1em;
+}
+
+.edit-form {
+  background-color: $primary-light;
+  padding: 1.5em 1.5em 1.5em 1.5em;
+  margin-bottom: 1em;
+}
+
+.has-vertical-align-middle {
+  vertical-align: middle;
+  padding-bottom: 0.15em;
+}
+
+.edit-table-row {
+  background-color: $primary-light;
+}
+
+.orcidBtn {
+  margin-bottom: 7em;
+}
+
+.modal-background {
+  backdrop-filter: blur(5px);
+}
+
+.program-selection-level {
+  .level-item:not(:last-child) {
+    margin-right:0.5em !important;
+  }
+}
+
+.no-padding {
+  padding-top: 0em;
+}
+
+.pad-right-2 {
+  padding-right: 2rem;
+}
+
+.margin-right-2 {
+  margin-right: 2rem;
+}
+
+.top-align {
+  vertical-align: text-top;
+}
+
+.bottom-align {
+  vertical-align: text-bottom;
+}
+
+.is-full-length {
+  height:100vh;
+}
+
+.side-panel-scroll {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
+
+a.is-underlined {
+  text-decoration: underline;
 }
 
