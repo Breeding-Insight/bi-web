@@ -23,6 +23,7 @@
       <InfoNotification ref="infoNotification" class="is-marginless"></InfoNotification>
       <SandboxPublicNotification v-bind:active.sync="showPublicSandboxNotification" class="is-marginless"></SandboxPublicNotification>
       <SandboxCoordinatorNotification v-bind:active.sync="showCoordinatorSandboxNotification" class="is-marginless"></SandboxCoordinatorNotification>
+      <WarningNotification ref="warningNotification" class="is-marginless"></WarningNotification>
     </div>
     
     <component v-bind:is="layout" v-bind:username="username" @logout="logOut">
@@ -30,6 +31,7 @@
             @show-success-notification="showSuccessNotification"
             @show-info-notification="showInfoNotification"
             @show-error-notification="showErrorNotification"
+            @show-warning-notification="showWarningNotification"
         />
     </component>
 
@@ -101,6 +103,7 @@ import NoSideBarLayout from './components/layouts/NoSideBarLayout.vue'
 import SandboxPublicNotification from "@/components/notifications/SandboxPublicNotification.vue";
 import SandboxCoordinatorNotification from "@/components/notifications/SandboxCoordinatorNotification.vue";
 import {SandboxMode} from "@/util/config";
+import WarningNotification from "@/components/notifications/WarningNotification.vue";
 
 @Component({
   watch: {
@@ -128,6 +131,7 @@ import {SandboxMode} from "@/util/config";
   components: {
     SandboxCoordinatorNotification,
     SandboxPublicNotification,
+    WarningNotification,
     SuccessNotification,
     InfoNotification,
     ErrorNotification,
@@ -146,7 +150,8 @@ export default class App extends Vue {
   public $refs!: {
     successNotification: SuccessNotification,
     infoNotification: InfoNotification,
-    errorNotification: ErrorNotification,
+    errorNotification: ErrorNotification
+    warningNotification: WarningNotification
   };
 
   @Watch('firstVisit', {immediate: true})
@@ -207,5 +212,9 @@ export default class App extends Vue {
     this.$refs.errorNotification.msg = msg;
   }
 
+  showWarningNotification(msg: string) {
+    this.$refs.warningNotification.active = true;
+    this.$refs.warningNotification.msg = msg;
+  }
 }
 </script>

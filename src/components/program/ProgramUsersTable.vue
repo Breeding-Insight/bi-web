@@ -52,6 +52,7 @@
       v-show="!newUserActive & users.length > 0"
       class="button is-primary has-text-weight-bold is-pulled-right"
       v-on:click="newUserActive = true"
+      data-testid="newUserBtn"
     >
       <span class="icon is-small">
         <PlusCircleIcon
@@ -66,7 +67,7 @@
 
     <NewDataForm
       v-if="newUserActive"
-      v-bind:row-validations="userValidations"
+      v-bind:row-validations="newUserValidations"
       v-bind:new-record.sync="newUser"
       v-on:submit="saveUser"
       v-on:cancel="cancelNewUser"
@@ -95,8 +96,8 @@
             <BasicInputField
                 v-model="newUser.orcid"
                 v-bind:validations="validations.orcid"
-                v-bind:field-name="'Orcid'"
-                v-bind:field-help="'Orcid Id to link account to.'"
+                v-bind:field-name="'ORCID iD'"
+                v-bind:field-help="'ORCID iD to link account to.'"
             />
           </div>
           <div class="column is-one-fourth">
@@ -113,7 +114,7 @@
 
     <ExpandableRowTable
       v-bind:records.sync="users"
-      v-bind:row-validations="userValidations"
+      v-bind:row-validations="editUserValidations"
       v-bind:editable="true"
       v-bind:pagination="usersPagination"
       v-on:submit="updateUser($event)"
@@ -174,7 +175,6 @@
 <script lang="ts">
   import {Component, Prop, Vue, Watch} from 'vue-property-decorator'
   import {PlusCircleIcon} from 'vue-feather-icons'
-  import {validationMixin} from 'vuelidate'
   import {required, email} from 'vuelidate/lib/validators'
 
   import WarningModal from '@/components/modals/WarningModal.vue'
@@ -197,7 +197,6 @@
   import {UserService} from "@/breeding-insight/service/UserService";
 
 @Component({
-  mixins: [validationMixin],
   components: { NewDataForm, BasicInputField, BasicSelectField, TableColumn,
                 WarningModal, PlusCircleIcon, EmptyTableMessage, ExpandableRowTable
               },
@@ -223,15 +222,18 @@ export default class ProgramUsersTable extends Vue {
 
   private deleteUser?: ProgramUser;
   private rolesMap: Map<string, Role> = new Map();
-  private programName: string = "Program Name";
 
   private paginationController: PaginationController = new PaginationController();
 
-  userValidations = {
+  newUserValidations = {
     name: {required},
     email: {required, email},
     roleId: {required},
     orcid: {required}
+  }
+
+  editUserValidations = {
+    roleId: {required}
   }
 
   mounted() {
@@ -291,9 +293,16 @@ export default class ProgramUsersTable extends Vue {
 
     this.newUserOrcid = this.newUser.orcid!;
     this.newUser.program = this.activeProgram;
-    this.newUser = this.checkExistingUserByEmailOrOrcid(this.newUser, this.newUserOrcid, this.systemUsers);
 
-    ProgramUserService.create(this.newUser, this.newUserOrcid).then((user: ProgramUser) => {
+    try {
+      this.newUser = this.checkExistingUserByEmailOrOrcid(this.newUser, this.newUserOrcid, this.systemUsers);
+    } catch (err) {
+      this.$emit('show-error-notification', err);
+      return;
+    }
+    let orcid: string|undefined = this.newUser.id ? undefined : this.newUserOrcid;
+
+    ProgramUserService.create(this.newUser, orcid).then((user: ProgramUser) => {
       this.paginationController.updatePage(1);
       this.getUsers();
       this.getSystemUsers();
@@ -334,13 +343,20 @@ export default class ProgramUsersTable extends Vue {
   //TODO: Reconsider when user search feature is added
   checkExistingUserByEmailOrOrcid(user: ProgramUser, userOrcid: string, systemUsers: User[]): ProgramUser {
     user.id = undefined;
+    let usersFound = 0;
     for (const systemUser of systemUsers){
       if (user.email === systemUser.email || userOrcid === systemUser.orcid){
+        usersFound += 1;
         if (systemUser.id){
           user.id = systemUser.id;
         }
       }
     }
+
+    if (usersFound > 1){
+      throw "Email and ORCID iD match two different users.";
+    }
+
     return user;
   }
 

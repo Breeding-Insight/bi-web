@@ -28,8 +28,8 @@ export class ProgramUserService {
 
   static errorEmailInUse: String = "Error creating user, a user with this email already exists";
   static errorCreatingUser: String = "Error while creating user";
-  static errorAssignedUserToProgramErrorOrcid = "Successfully assigned user to program, error assigning orcid to user.";
-  static errorOrcidRequired = "Orcid required when creating a new user to add to the program";
+  static errorAssignedUserToProgramErrorOrcid = "Successfully assigned user to program, error assigning ORCID iD to user.";
+  static errorOrcidRequired = "ORCID iD required when creating a new user to add to the program";
 
   static create(programUser: ProgramUser, orcid: string | undefined): Promise<ProgramUser> {
 

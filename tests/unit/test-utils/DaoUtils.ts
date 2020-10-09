@@ -37,4 +37,21 @@ export default class DaoUtils {
       }
     });
   }
+
+  static formatBiResponseSingle(data: any): BiResponse {
+    const metadata: Metadata = new Metadata({
+      pagination: {
+        totalPages: 1,
+        currentPage: 1,
+        totalCount: 1,
+        pageSize: 1
+      },
+      status: []
+    });
+
+    return new BiResponse({
+      metadata,
+      result: data
+    });
+  }
 }
