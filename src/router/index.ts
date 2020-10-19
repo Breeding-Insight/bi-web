@@ -67,7 +67,8 @@ const routes = [
     component: Index,
     props: (route: Route) => ({
       loginRedirect: route.params.loginRedirect || false,
-      sessionExpired: route.params.sessionExpired || false
+      sessionExpired: route.params.sessionExpired || false,
+      loginError: route.query.loginError || false
     })
   },
   {
@@ -243,7 +244,7 @@ router.beforeEach((to: Route, from: Route, next: Function) => {
   Vue.$cookies.remove(loginRedirectUrlCookieName);
 
   // Check the url for a redirect-login url. Also check if they were redirected because of expired session
-  if (store.state.requestedPath){
+  if (store.state.requestedPath && to.params.loginRedirect) {
     // Expires in 1 hr
     Vue.$cookies.set(loginRedirectUrlCookieName, store.state.requestedPath, 60*60);
     // reset our state

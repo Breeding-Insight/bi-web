@@ -283,4 +283,14 @@ export class UserService {
     }
   }
 
+  static openIdLogout(): Promise<any> {
+    if (process.env.VUE_APP_OPENID_LOGOUT_URL) {
+      return UserDAO.openIdLogout(process.env.VUE_APP_OPENID_LOGOUT_URL);
+    } else {
+      Vue.$log.info("Open ID logout url not specified. Skipping forced login.");
+      return new Promise((resolve) => {resolve()});
+    }
+
+  }
+
 }
