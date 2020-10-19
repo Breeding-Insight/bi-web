@@ -268,8 +268,6 @@
     public sessionExpired!: boolean;
     @Prop()
     public loginError!: boolean;
-    @Prop()
-    public openIdLogoutUrl!: String;
 
     mounted() {
       if (this.loginRedirect || this.sessionExpired || this.loginError){
