@@ -90,6 +90,17 @@ describe('validations work properly', () => {
 
     expect(orcidWrapper.element.classList.contains('field--error')).toBeFalsy();
 
+  });
+
+  it('does not show validation error when orcid has X in last character', async () => {
+
+    let orcidWrapper = wrapper.findAllComponents(BaseFieldWrapper).at(2);
+    let orcidInput = orcidWrapper.find('input#ORCID-iD');
+    expect(orcidInput.exists()).toBeTruthy();
+    await orcidInput.setValue('1234-5678-9101-112X');
+
+    expect(orcidWrapper.element.classList.contains('field--error')).toBeFalsy();
+
     // close form
     let closeBtn = wrapper.find('button[data-testid="cancel"]');
     expect(closeBtn.exists()).toBeTruthy();

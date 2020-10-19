@@ -276,7 +276,7 @@ export default class AdminUsersTable extends Vue {
   private roles: Role[] = [];
   private rolesMap: Map<string, Role> = new Map();
   private isMobile = false;
-  private orcidCheck = helpers.regex('alpha', /^\d{4}-\d{4}-\d{4}-\d{4}$/);
+  private orcidCheck = helpers.regex('alpha', /^\d{4}-\d{4}-\d{4}-\d{3}[\dX]$/);
 
   userValidations = {
     name: {required},
