@@ -181,6 +181,12 @@
         Your session has expired. Please login again to continue.
       </h1>
       <h1
+        v-else-if="loginError"
+        class="is-size-5 has-text-primary"
+      >
+        An error has occurred during login. Please try again.
+      </h1>
+      <h1
         v-else
         class="is-size-5 has-text-primary"
       >
@@ -190,18 +196,20 @@
         To access to your breeding program, please log in.
       </p>
       <button
-        id="connect-orcid-button"
-        class="orcidBtn"
-        v-on:click="orcidLogin"
+          id="connect-orcid-button"
+          class="button orcidBtn"
+          v-bind:class="{'is-loading': loginProcessing}"
+          v-bind:disabled="loginProcessing"
+          v-on:click="orcidLogin"
       >
         SIGN IN with ORCID
         <img
-          id="orcid-id-icon"
-          src="https://orcid.org/sites/default/files/images/orcid_24x24.png"
-          width="24"
-          height="24"
-          class="is-pulled-right"
-          alt="ORCID iD icon"
+            id="orcid-id-icon"
+            src="https://orcid.org/sites/default/files/images/orcid_24x24.png"
+            width="24"
+            height="24"
+            class="is-pulled-right"
+            alt="ORCID iD icon"
         >
       </button>
       <p class="is-size-7 has-text-left">
@@ -245,6 +253,7 @@
   import InfoModal from '@/components/modals/InfoModal.vue'
   import WarningModal from '@/components/modals/WarningModal.vue'
   import {ServerManagementService} from "@/breeding-insight/service/ServerManagementService";
+  import {UserService} from "@/breeding-insight/service/UserService";
 
   @Component({
     components: {InfoModal, BaseModal, WarningModal}
@@ -253,26 +262,41 @@
 
     public isLoginModalActive: boolean = false;
     public isLoginServerErrorModalActive: boolean = false;
+    public loginProcessing: boolean = false;
     @Prop()
     public loginRedirect!: boolean;
     @Prop()
     public sessionExpired!: boolean;
+    @Prop()
+    public loginError!: boolean;
 
     mounted() {
-      if (this.loginRedirect || this.sessionExpired){
+      if (this.loginRedirect || this.sessionExpired || this.loginError){
         this.isLoginModalActive = true;
       }
     }
 
     // Methods
-    orcidLogin() {
+    async orcidLogin() {
       // Check the server can be contacted
-      this.isLoginModalActive = false;
-      ServerManagementService.checkHealth().then((response) => {
-        window.location.href = process.env.VUE_APP_BI_API_ROOT+'/sso/start';
-      }).catch((error) => {
+      this.loginProcessing = true;
+      try {
+        await ServerManagementService.checkHealth();
+      } catch (error) {
         this.isLoginServerErrorModalActive = true;
-      })
+        this.loginProcessing = false;
+        return;
+      }
+
+      // Log them out of openid
+      try {
+        await UserService.openIdLogout();
+      } catch (error) {
+        Vue.$log.error(error);
+      }
+
+      // Start login process
+      window.location.href = process.env.VUE_APP_BI_API_ROOT+'/sso/start';
     }
 
   }

@@ -118,7 +118,10 @@ export class UserDAO {
         }).catch((error) => reject(error));
 
     });
+  }
 
+  static openIdLogout(logoutUrl: string) {
+    return api.call({url: logoutUrl, method: 'get'});
   }
 
 }
