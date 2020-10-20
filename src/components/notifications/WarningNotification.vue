@@ -16,41 +16,31 @@
   -->
 
 <template>
-  <div class="admin-user-management">
-    <h1 class="title">
-      Users
-    </h1>
-    <AdminUsersTable
-        v-on="$listeners"
-    >
-    </AdminUsersTable>
-  </div>
+  <b-notification type="is-warning" v-bind:active.sync="active" aria-close-label="Close Notification"
+                  role="alert">
+    <div class="level">
+      <div class="level-left">
+        <div class="level-item">
+          <AlertTriangleIcon size="1.5x"></AlertTriangleIcon>
+        </div>
+        <div class="level-item">
+          {{msg}}
+        </div>
+      </div>
+    </div>
+  </b-notification>
 </template>
 
 <script lang="ts">
-  import { Component, Prop, Vue } from 'vue-property-decorator'
-  import AdminUsersTable from '@/components/admin/AdminUsersTable.vue'
+  import { Component, Vue } from 'vue-property-decorator';
+  import { AlertTriangleIcon } from 'vue-feather-icons'
 
   @Component({
-    components: {AdminUsersTable}
+    components: {AlertTriangleIcon}
   })
-  export default class AdminUserManagement extends Vue {
-
-    // get this when endpoint is implemented
-    private programName: string = "Program Name";
-
-    mounted() {
-
-    }
-
-    showSuccessNotification(msg: string) {
-      this.$emit('show-success-notification', msg);
-    }
-
-    showErrorNotification(msg: string) {
-      this.$emit('show-error-notification', msg);
-    }
-
-
+  export default class WarningNotification extends Vue {
+    public active: boolean = false;
+    public msg : string = '';
   }
+
 </script>

@@ -34,10 +34,10 @@ export class UserService {
   static errorDeleteUserNotFound: string = 'Unable to find user to deactivate';
   static errorDeleteUserNotAllowed: string = 'You are not allowed to deactivate this user.';
   static errorPermissionsEditUser: string = "You don't have permissions to edit the roles of this user.";
-  static errorUpdatingOrcidOnPost: string = "User created, but could not assign orcid";
-  static errorUpdatingOrcidOnPut: string = "User updated, but could not update orcid";
-  static errorUpdatingOrcidOnPostDuplicate: string = "User created, but could not assign orcid. Orcid Id already in use.";
-  static errorUpdatingOrcidOnPutDuplicate: string = "User updated, but could not update orcid. Orcid Id already in use.";
+  static errorUpdatingOrcid: string = "Error assigning ORCID iD to user.";
+  static errorUpdatingOrcidDuplicate: string = "ORCID iD already in use by another user.";
+  static errorUpdatingOrcidOnPutDuplicate: string = "User updated, but could not update ORCID iD. ORCID iD already in use.";
+  static errorUpdatingOrcidOnPut: string = "User updated, but could not update ORCID iD";
 
   static getUserInfo(): Promise<User> {
 
@@ -64,21 +64,7 @@ export class UserService {
           const result: any = biResponse.result;
           const role: Role | undefined = this.parseSystemRoles(result.systemRoles);
           let newUser = new User(result.id, result.name, result.orcid, result.email, role);
-
-          //TODO: Remove this when registration flow is complete
-          let copyUser: User = new User(newUser.id, user.name, user.orcid, user.email);
-          this.updateOrcid(copyUser).then((updatedUser) => {
-            newUser.orcid = updatedUser.orcid;
-            resolve(newUser);
-          }).catch((error) => {
-            if (error.response && error.response.status === 409) {
-              error['errorMessage'] = this.errorUpdatingOrcidOnPostDuplicate;
-            } else {
-              error['errorMessage'] = this.errorUpdatingOrcidOnPost;
-            }
-            reject(error);
-          })
-
+          resolve(newUser);
         }).catch((error) => {
           if (error.response && error.response.status === 409) {
             Vue.$log.info('Email already exists');
@@ -223,16 +209,21 @@ export class UserService {
     });
   }
 
+  //TODO: Remove when registration flow is complete
   static updateOrcid(user: User) {
 
     return new Promise<User>((resolve, reject) => {
-      //TODO: Remove when registration flow is complete
-      if (user.id){
+      if (user.id && user.orcid){
         UserDAO.updateOrcid(user.id, user.orcid!).then((biResponse) => {
           const result: any = biResponse.result;
           user.orcid = result.orcid;
           resolve(user);
         }).catch((error) => {
+          if (error.response && error.response.status === 409) {
+            error['errorMessage'] = this.errorUpdatingOrcidDuplicate;
+          } else {
+            error['errorMessage'] = this.errorUpdatingOrcid;
+          }
           Vue.$log.fatal(error);
           reject(error);
         })

@@ -85,6 +85,7 @@
       v-show="!newUserActive"
       class="button is-primary has-text-weight-bold is-pulled-right"
       v-on:click="newUserActive = true"
+      data-testid="newFormBtn"
     >
       <span class="icon is-small">
         <PlusCircleIcon
@@ -127,7 +128,7 @@
             <BasicInputField
                 v-model="newUser.orcid"
                 v-bind:validations="validations.orcid"
-                v-bind:field-name="'Orcid'"
+                v-bind:field-name="'ORCID iD'"
             />
           </div>
           <div class="column is-one-fourth">
@@ -162,7 +163,7 @@
           {{ data.email }}
         </TableColumn>
         <!--TODO: Remove when registration flow is complete -->
-        <TableColumn name="orcid" v-bind:label="'Orcid'" v-bind:visible="!isMobile">
+        <TableColumn name="orcid" v-bind:label="'ORCID iD'" v-bind:visible="!isMobile">
           {{ data.orcid }}
         </TableColumn>
         <TableColumn name="roles" v-bind:label="'Role'">
@@ -220,8 +221,8 @@
             <BasicInputField
                 v-model="editData.orcid"
                 v-bind:validations="validations.orcid"
-                v-bind:field-name="'Orcid'"
-                v-bind:field-help="'Orcid to link account to.'"
+                v-bind:field-name="'ORCID iD'"
+                v-bind:field-help="'ORCID iD to link account to.'"
             />
           </div>
           <div class="column is-one-third">
@@ -251,18 +252,17 @@
   import BasicInputField from "@/components/forms/BasicInputField.vue";
   import {UserService} from "@/breeding-insight/service/UserService";
   import NewDataForm from "@/components/forms/NewDataForm.vue";
-  import {RoleService} from "@/breeding-insight/service/RoleService";
   import {Role} from "@/breeding-insight/model/Role";
   import {SystemRoleService} from "@/breeding-insight/service/SystemRoleService";
   import BasicSelectField from "@/components/forms/BasicSelectField.vue";
   import {PromiseHandler} from "@/breeding-insight/service/PromiseHandler";
-  import {PromiseResult} from "promise.allsettled/types";
   import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
   import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
-  import {Pagination} from "@/breeding-insight/model/BiResponse";
+  import {Metadata, Pagination} from "@/breeding-insight/model/BiResponse";
+  import {helpers} from "vuelidate/lib/validators";
 
 
-@Component({
+  @Component({
   components: {
     NewDataForm, PlusCircleIcon, WarningModal, ExpandableRowTable, TableColumn, BasicInputField, BasicSelectField
   }
@@ -276,11 +276,12 @@ export default class AdminUsersTable extends Vue {
   private roles: Role[] = [];
   private rolesMap: Map<string, Role> = new Map();
   private isMobile = false;
+  private orcidCheck = helpers.regex('alpha', /^\d{4}-\d{4}-\d{4}-\d{3}[\dX]$/);
 
   userValidations = {
     name: {required},
     email: {required, email},
-    orcid: {required}
+    orcid: {required, orcid: this.orcidCheck}
   }
 
   private paginationController: PaginationController = new PaginationController();
@@ -363,19 +364,44 @@ export default class AdminUsersTable extends Vue {
 
   }
 
-  addUser() {
+  async addUser() {
 
-    UserService.create(this.newUser).then((user: User) => {
-      this.getUsers();
+    // Check that a user with this orcid doesn't already exist
+    let allUsers: User[];
+    try {
+      [allUsers] = await UserService.getAll();
+      const matchingUsers: User[] = allUsers.filter(user => user.orcid === this.newUser.orcid);
+      if (matchingUsers.length > 0){
+        this.$emit('show-error-notification', 'ORCID iD is in use by another user.');
+        return;
+      }
+    } catch (error) {
+      this.$emit('show-error-notification', 'Error creating new user');
+      Vue.$log.error(error);
+      return;
+    }
+
+    let user: User | undefined = undefined;
+    try {
+      user = await UserService.create(this.newUser);
       this.paginationController.updatePage(1);
-      this.newUser = new User();
       this.newUserActive = false;
-      this.$emit('show-success-notification', 'User successfully created');
-    }).catch((error) => {
+    } catch (error) {
       this.$emit('show-error-notification', error.errorMessage);
-      this.getUsers();
-    });
+      return;
+    }
 
+    //TODO: Remove when full registration flow is complete
+    try {
+      user.orcid = this.newUser.orcid;
+      await UserService.updateOrcid(user!);
+      this.$emit('show-success-notification', 'User successfully created');
+    } catch (error) {
+      this.$emit('show-warning-notification', 'User created, but could not assign ORCID iD. ORCID iD already in use');
+    }
+
+    this.newUser = new User();
+    this.getUsers();
   }
 
   updateUser(user: User) {
