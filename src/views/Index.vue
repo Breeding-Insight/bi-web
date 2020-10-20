@@ -198,7 +198,8 @@
       <button
           id="connect-orcid-button"
           class="button orcidBtn"
-          v-bind:class="{'is-loading': loginProcessing, 'disabled': loginProcessing}"
+          v-bind:class="{'is-loading': loginProcessing}"
+          v-bind:disabled="loginProcessing"
           v-on:click="orcidLogin"
       >
         SIGN IN with ORCID
