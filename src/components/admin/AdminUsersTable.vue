@@ -123,14 +123,6 @@
               v-bind:field-name="'Email'"
             />
           </div>
-          <!--TODO: Remove when registration flow is complete -->
-          <div class="column is-one-fourth">
-            <BasicInputField
-                v-model="newUser.orcid"
-                v-bind:validations="validations.orcid"
-                v-bind:field-name="'ORCID iD'"
-            />
-          </div>
           <div class="column is-one-fourth">
             <BasicSelectField
               v-model="newUser.roleId"
@@ -161,10 +153,6 @@
         </TableColumn>
          <TableColumn name="email" v-bind:label="'Email'" v-bind:visible="!isMobile">
           {{ data.email }}
-        </TableColumn>
-        <!--TODO: Remove when registration flow is complete -->
-        <TableColumn name="orcid" v-bind:label="'ORCID iD'" v-bind:visible="!isMobile">
-          {{ data.orcid }}
         </TableColumn>
         <TableColumn name="roles" v-bind:label="'Role'">
           <template v-if="rolesMap.size > 0">
@@ -214,15 +202,6 @@
               v-model="editData.email"
               v-bind:validations="validations.email"
               v-bind:field-name="'Email'"
-            />
-          </div>
-          <!--TODO: Remove when registration flow is complete -->
-          <div class="column is-one-half">
-            <BasicInputField
-                v-model="editData.orcid"
-                v-bind:validations="validations.orcid"
-                v-bind:field-name="'ORCID iD'"
-                v-bind:field-help="'ORCID iD to link account to.'"
             />
           </div>
           <div class="column is-one-third">
@@ -276,12 +255,10 @@ export default class AdminUsersTable extends Vue {
   private roles: Role[] = [];
   private rolesMap: Map<string, Role> = new Map();
   private isMobile = false;
-  private orcidCheck = helpers.regex('alpha', /^\d{4}-\d{4}-\d{4}-\d{3}[\dX]$/);
 
   userValidations = {
     name: {required},
-    email: {required, email},
-    orcid: {required, orcid: this.orcidCheck}
+    email: {required, email}
   }
 
   private paginationController: PaginationController = new PaginationController();
@@ -366,21 +343,6 @@ export default class AdminUsersTable extends Vue {
 
   async addUser() {
 
-    // Check that a user with this orcid doesn't already exist
-    let allUsers: User[];
-    try {
-      [allUsers] = await UserService.getAll();
-      const matchingUsers: User[] = allUsers.filter(user => user.orcid === this.newUser.orcid);
-      if (matchingUsers.length > 0){
-        this.$emit('show-error-notification', 'ORCID iD is in use by another user.');
-        return;
-      }
-    } catch (error) {
-      this.$emit('show-error-notification', 'Error creating new user');
-      Vue.$log.error(error);
-      return;
-    }
-
     let user: User | undefined = undefined;
     try {
       user = await UserService.create(this.newUser);
@@ -389,15 +351,6 @@ export default class AdminUsersTable extends Vue {
     } catch (error) {
       this.$emit('show-error-notification', error.errorMessage);
       return;
-    }
-
-    //TODO: Remove when full registration flow is complete
-    try {
-      user.orcid = this.newUser.orcid;
-      await UserService.updateOrcid(user!);
-      this.$emit('show-success-notification', 'User successfully created');
-    } catch (error) {
-      this.$emit('show-warning-notification', 'User created, but could not assign ORCID iD. ORCID iD already in use');
     }
 
     this.newUser = new User();
@@ -419,7 +372,7 @@ export default class AdminUsersTable extends Vue {
           this.$emit('show-success-notification', 'User roles successfully updated');
         }
         if (errors[1].status === PromiseHandler.FULFILLED){
-          this.$emit('show-success-notification', 'User info (name/email/ORCID/program) successfully updated');
+          this.$emit('show-success-notification', 'User info (name/email/program) successfully updated');
         }
 
         // Shows any that are errors
