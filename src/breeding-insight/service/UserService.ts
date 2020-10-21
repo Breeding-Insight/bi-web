@@ -250,4 +250,8 @@ export class UserService {
 
   }
 
+  static resendWelcomeEmail(id: string): Promise<any> {
+    return UserDAO.resendWelcomeEmail(id);
+  }
+
 }

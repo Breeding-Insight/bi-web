@@ -186,6 +186,16 @@
             </span>
           </template>
         </TableColumn>
+        <TableColumn>
+          <a
+              v-if="!data.orcid"
+              v-on:click="resendEmail(data.id)"
+              v-on:keypress.enter.space="resendEmail(data.id)"
+              tabindex="0"
+          >
+            Resend Email
+          </a>
+        </TableColumn>
       </template>
       <template v-slot:edit="{editData, validations}">
         <div class="columns">
@@ -385,6 +395,17 @@ export default class AdminUsersTable extends Vue {
       }).finally(() => {
         this.getUsers();
       });
+  }
+
+  async resendEmail(id: string) {
+    console.log('here');
+    try {
+      await UserService.resendWelcomeEmail(id);
+      this.$emit('show-success-notification', 'Account email sent.');
+    } catch (e) {
+      // TODO: More detailed error messages
+      this.$emit('show-error-notification', 'Unable to send welcome email to user');
+    }
   }
 
   displayWarning(user: User) {
