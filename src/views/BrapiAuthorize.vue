@@ -37,7 +37,6 @@
 <script lang="ts">
 
 import {Component, Prop, Vue} from 'vue-property-decorator'
-import {ApiTokenService} from "@/breeding-insight/service/ApiTokenService";
 
 @Component({
   components: { }
@@ -49,11 +48,8 @@ export default class BrapiAuthorize extends Vue {
   @Prop()
   public returnUrl!: string;
 
-  async getToken() {
-    // TODO: handle error case
-    const token = await ApiTokenService.getApiToken();
-    const redirectUrl = this.returnUrl + "?status=200&token=" + token.accessToken;
-    window.location.href = redirectUrl;
+  getToken() {
+    window.location.href = process.env.VUE_APP_BI_API_ROOT+'/v1/api-token?returnUrl='+this.returnUrl;
   }
 
 }
