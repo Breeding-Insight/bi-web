@@ -25,7 +25,7 @@
             <p class="has-text-dark">
               <strong>{{applicationName}}</strong> would like permission to access your account.
             </p>
-            <button class="button is-success has-text-weight-bold is-fullwidth">Authorize {{applicationName}}</button>
+            <button class="button is-success has-text-weight-bold is-fullwidth" v-on:click="getToken">Authorize {{applicationName}}</button>
           </div>
         </div>
       </div>
@@ -37,6 +37,7 @@
 <script lang="ts">
 
 import {Component, Prop, Vue} from 'vue-property-decorator'
+import {ApiTokenService} from "@/breeding-insight/service/ApiTokenService";
 
 @Component({
   components: { }
@@ -47,6 +48,13 @@ export default class BrapiAuthorize extends Vue {
 
   @Prop()
   public returnUrl!: string;
+
+  async getToken() {
+    // TODO: handle error case
+    const token = await ApiTokenService.getApiToken();
+    const redirectUrl = this.returnUrl + "?status=200&token=" + token.accessToken;
+    window.location.href = redirectUrl;
+  }
 
 }
 </script>
