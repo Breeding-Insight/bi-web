@@ -52,7 +52,7 @@ import SandboxPublicNotification from "@/components/notifications/SandboxPublicN
 import SandboxCoordinatorNotification from "@/components/notifications/SandboxCoordinatorNotification.vue";
 import {SandboxMode} from "@/util/config";
 import WarningNotification from "@/components/notifications/WarningNotification.vue";
-import Footer from "@/components/layouts/Footer";
+import Footer from "@/components/layouts/Footer.vue";
 
 @Component({
   watch: {
