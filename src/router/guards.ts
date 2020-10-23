@@ -20,6 +20,7 @@ import store from "@/store";
 import {ProgramService} from "@/breeding-insight/service/ProgramService";
 import {Program} from "@/breeding-insight/model/Program";
 import {SET_ACTIVE_PROGRAM} from "@/store/mutation-types";
+import Vue from "vue";
 
 export function processProgramNavigation(to: Route, from: Route, next: Function) {
 
@@ -37,6 +38,14 @@ export function processProgramNavigation(to: Route, from: Route, next: Function)
         });
     } else { next(); }
   } else { next(); }
+}
+
+export function signupRequireAccountToken(to: Route, from: Route, next: Function) {
+  if (!to.query[Vue.prototype.$cookieNames.accountToken]) {
+    next({name: 'home'});
+  } else {
+    next();
+  }
 }
 
 export function isProgramsPath(to: Route): boolean {
