@@ -25,7 +25,7 @@
       <SandboxCoordinatorNotification v-bind:active.sync="showCoordinatorSandboxNotification" class="is-marginless"></SandboxCoordinatorNotification>
       <WarningNotification ref="warningNotification" class="is-marginless"></WarningNotification>
     </div>
-    
+
     <component v-bind:is="layout" v-bind:username="username" @logout="logOut">
         <router-view
             @show-success-notification="showSuccessNotification"
@@ -35,60 +35,8 @@
         />
     </component>
 
-    <footer class="footer">
-      <div class="level">
-        <div class="level-left">
-          <nav class="level-item">
-            <div class="level">
-              <div class="level-item">
-                <a href="/">Terms of Use</a>
-              </div>
-              <div class="level-item">
-                <a href="/">Privacy Policy</a>
-              </div>
-              <div class="level-item">
-                <a href="/">Contact Us</a>
-              </div>
-              <div class="level-item">
-                <a href="/">About</a>
-              </div>
-            </div>
-          </nav>
-        </div>
+    <Footer />
 
-        <div class="level-right">
-
-          <div class="level-item">
-            <p class="has-text-right is-hidden-touch">
-              <strong>&copy; 2020 Breeding Insight</strong>
-              <br>
-              Funded by the USDA through Cornell University
-            </p>
-            <p class="has-text-centered is-hidden-desktop">
-              <strong>&copy; 2020 Breeding Insight</strong>
-              <br>
-              Funded by the USDA through Cornell University
-            </p>
-          </div>
-          <div class="level-item">
-            <img 
-            src="./assets/img/usda.svg" 
-            alt="USDA Logo" 
-            width="75" 
-            >
-          </div>
-          <div class="level-item">
-            <img 
-            src="./assets/img/cornell_seal.svg" 
-            alt="Cornell University Logo" 
-            width="56" 
-            >
-          </div>
-          
-        </div>
-      </div>
-    </footer>
-      
   </div>
 </template>
 
@@ -104,6 +52,7 @@ import SandboxPublicNotification from "@/components/notifications/SandboxPublicN
 import SandboxCoordinatorNotification from "@/components/notifications/SandboxCoordinatorNotification.vue";
 import {SandboxMode} from "@/util/config";
 import WarningNotification from "@/components/notifications/WarningNotification.vue";
+import Footer from "@/components/layouts/Footer";
 
 @Component({
   watch: {
@@ -137,7 +86,8 @@ import WarningNotification from "@/components/notifications/WarningNotification.
     ErrorNotification,
     simpleLayout: SimpleLayout,
     userSideBarLayout: UserSideBarLayout,
-    noSideBarLayout: NoSideBarLayout
+    noSideBarLayout: NoSideBarLayout,
+    Footer
   }
 })
 export default class App extends Vue {

@@ -300,6 +300,7 @@ nav.tabs li.is-active {
 }
 
 .side-menu {
+  position: relative;
   background-color: $darkmenu;
   padding: 1em 1em 1em 0;
   p {
@@ -418,4 +419,15 @@ a.is-underlined {
   margin: 0 .5em 0 .5em;
   padding: 0;
   float: left;
+}
+
+#versionInfo {
+  position: absolute;
+  bottom: 10px;
+  color: white;
+  width: 100%;
+
+  a {
+    color: white;
+  }
 }
