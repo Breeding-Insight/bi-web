@@ -93,22 +93,18 @@ export default class Footer extends Vue {
   }
 
   get versionName() {
-    console.log("version name: "+process.env.VUE_APP_VERSION);
     return process.env.VUE_APP_VERSION;
   }
 
   get versionInfo () {
-    console.log("version info: "+process.env.VUE_APP_VERSION_INFO);
     return process.env.VUE_APP_VERSION_INFO;
   }
 
   get apiVersionName() {
-    // console.log("api version name: "+this.apiInfo.version);
     return this.apiInfo.version;
   }
 
   get apiVersionInfo () {
-    // console.log("api version info: "+this.apiInfo.versionInfo);
     return this.apiInfo.versionInfo;
   }
 
