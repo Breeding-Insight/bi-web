@@ -249,7 +249,10 @@ const routes = [
       title: 'Account Activation Error',
       layout: layouts.noSideBar
     },
-    component: AccountCreationFailure
+    component: AccountCreationFailure,
+    props: (route: Route) => ({
+      error: route.query.error
+    }),
   },
   {
     path: '/account-success',

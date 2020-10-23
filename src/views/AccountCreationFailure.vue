@@ -29,9 +29,17 @@
               </figure>
               <div class="media-content">
                 <div class="content">
-                  <h3 class="is-5 title has-text-danger">
-                    Error Activating Account
+                  <h3
+                    v-if="error==='409'"
+                    class="is-5 title has-text-danger">
+                    OrcID is already linked to a different account
                   </h3>
+                  <h3
+                    v-else
+                    class="is-5 title has-text-danger">
+                      Error Activating Account
+                  </h3>
+
                 </div>
               </div>
             </article>
@@ -55,15 +63,16 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
   import Component from "vue-class-component";
-  import {Vue} from "vue-property-decorator";
+  import {Prop, Vue} from "vue-property-decorator";
   import {AlertTriangleIcon} from "vue-feather-icons";
 
   @Component({
     components: {AlertTriangleIcon}
   })
   export default class AccountCreationFailure extends Vue {
-
+    @Prop()
+    public error: string | undefined;
   }
 </script>
