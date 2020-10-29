@@ -63,7 +63,7 @@
           :class="{ 'is-hidden-touch': !sideMenuShownMobile }"
       >
         <nav role="navigation" aria-label="main navigation">
-          <aside id="sideMenu" class="menu">
+          <aside id="sideMenu" class="menu mb-5">
             <slot name="menu"></slot>
           </aside>
         </nav>

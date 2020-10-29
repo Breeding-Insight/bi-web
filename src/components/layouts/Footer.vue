@@ -68,13 +68,13 @@
         </div>
       </div>
     </div>
-    <div class="level">
-      <div class="level-left"></div>
-      <div class="level-right">
+    <div v-if="showVersionInfo" class="level">
+      <div class="level-left">
         <div class="level-item is-size-7">
           <a :href="versionInfo" target="_blank">web {{ versionName }}</a> / <a :href="apiVersionInfo" target="_blank">api {{ apiVersionName }}</a>
         </div>
       </div>
+      <div class="level-right"></div>
     </div>
   </footer>
 </template>
@@ -106,6 +106,10 @@ export default class Footer extends Vue {
 
   get apiVersionInfo () {
     return this.apiInfo.versionInfo;
+  }
+
+  get showVersionInfo() {
+    return !this.$route.meta.layout || this.$route.meta.layout == "simple" || this.$route.meta.layout == "noSideBar";
   }
 
   fetchApiVersion () {
