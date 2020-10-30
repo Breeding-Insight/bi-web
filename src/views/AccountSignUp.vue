@@ -25,7 +25,7 @@
           Welcome to Breeding Insight!
         </h1>
         <p>
-          To activate your breeding program, please log in.
+          To activate your account, please log in.
         </p>
         <button
             id="connect-orcid-button"
