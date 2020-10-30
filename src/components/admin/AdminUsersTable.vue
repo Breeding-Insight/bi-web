@@ -358,6 +358,7 @@ export default class AdminUsersTable extends Vue {
       user = await UserService.create(this.newUser);
       this.paginationController.updatePage(1);
       this.newUserActive = false;
+      this.$emit('show-success-notification', this.newUser.name + ' successful created');
     } catch (error) {
       this.$emit('show-error-notification', error.errorMessage);
       return;
@@ -398,7 +399,6 @@ export default class AdminUsersTable extends Vue {
   }
 
   async resendEmail(id: string) {
-    console.log('here');
     try {
       await UserService.resendWelcomeEmail(id);
       this.$emit('show-success-notification', 'Account email sent.');

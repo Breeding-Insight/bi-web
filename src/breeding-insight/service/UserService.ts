@@ -87,7 +87,7 @@ export class UserService {
           const result: any = biResponse.result;
           const role: Role | undefined = this.parseSystemRoles(result.systemRoles);
           let newUser = new User(result.id, result.name, result.orcid, result.email, role);
-
+          resolve(newUser);
         }).catch((error) => {
           if (error.response && error.response.status === 409) {
             Vue.$log.info('Email already exists');
