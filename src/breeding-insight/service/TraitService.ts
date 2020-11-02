@@ -44,9 +44,7 @@ export class TraitService {
             
       if (programId) {
           TraitDAO.getAll(programId, paginationQuery, full).then((biResponse) => {
-
-          //TODO: Remove when pagination implemented on backend
-          biResponse.result.data = PaginationController.mockSortRecords(biResponse.result.data);
+              
           let traits: Trait[] = [];
 
           if (biResponse.result.data) {
