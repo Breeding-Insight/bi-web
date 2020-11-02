@@ -71,7 +71,7 @@
     <div v-if="showVersionInfo" class="level">
       <div class="level-left">
         <div class="level-item is-size-7">
-          <a :href="versionInfo" target="_blank">web {{ versionName }}</a> / <a :href="apiVersionInfo" target="_blank">api {{ apiVersionName }}</a>
+          <VersionInfo/>
         </div>
       </div>
       <div class="level-right"></div>
@@ -80,45 +80,15 @@
 </template>
 
 <script lang="ts">
-import {Component, Prop, Watch, Vue} from 'vue-property-decorator'
-import * as api from "@/util/api";
-import {ApiInfo} from "@/breeding-insight/model/ApiInfo";
+import { Component, Vue } from 'vue-property-decorator';
+import VersionInfo from '@/components/layouts/VersionInfo.vue';
 
-@Component
+@Component({
+  components: { VersionInfo }
+})
 export default class Footer extends Vue {
-  private apiInfo: ApiInfo = new ApiInfo("v0.0.0", "");
-
-  mounted() {
-    this.fetchApiVersion();
-  }
-
-  get versionName() {
-    return process.env.VUE_APP_VERSION;
-  }
-
-  get versionInfo () {
-    return process.env.VUE_APP_VERSION_INFO;
-  }
-
-  get apiVersionName() {
-    return this.apiInfo.version;
-  }
-
-  get apiVersionInfo () {
-    return this.apiInfo.versionInfo;
-  }
-
-  get showVersionInfo() {
-    return !this.$route.meta.layout || this.$route.meta.layout == "simple" || this.$route.meta.layout == "noSideBar";
-  }
-
-  fetchApiVersion () {
-    api.call({
-      url: `${process.env.VUE_APP_BI_API_V1_PATH}/serverInfo`,
-      method: 'get'
-    }).then((response:any) => {
-      this.apiInfo = new ApiInfo(response.data.version, response.data.versionInfo);
-    })
+  get showVersionInfo () {
+    return !this.$route.meta.layout || this.$route.meta.layout == 'simple' || this.$route.meta.layout == 'noSideBar';
   }
 }
 
