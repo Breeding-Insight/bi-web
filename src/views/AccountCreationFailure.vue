@@ -32,7 +32,7 @@
                   <h3
                     v-if="error==='409'"
                     class="is-5 title has-text-danger">
-                    OrcID is already linked to a different account
+                    A Breeding Insight user with this ORCID iD already exists.
                   </h3>
                   <h3
                     v-else
@@ -43,7 +43,16 @@
                 </div>
               </div>
             </article>
-            <p class="has-text-dark">
+            <p
+              v-if="error==='409'"
+              class="has-text-dark"
+              >
+              Check with your program to confirm that you do not have an account under another email address.
+              Contact a system administrator if the problem persists.
+            </p>
+            <p
+              v-else
+              class="has-text-dark">
               There was an error creating your account. Ask your administrator for assistance
               in retrying the account creation process.
             </p>

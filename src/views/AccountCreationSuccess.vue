@@ -36,11 +36,15 @@
               </div>
             </article>
             <p class="has-text-dark">
-              Your account has been successfully activated. To log in, return to the home page
-              and sign in.
+              Your account has been successfully activated. Visit your account page to get started!
             </p>
-            <router-link v-bind:to="{name:'home'}" v-bind:replace="true">
-              Return to Home Page
+            <router-link
+              tag="button"
+              v-bind:to="{name:'program-selection'}"
+              v-bind:replace="true"
+              class="button is-primary"
+            >
+              Go to my account
             </router-link>
           </div>
         </div>
