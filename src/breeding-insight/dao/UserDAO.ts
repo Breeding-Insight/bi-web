@@ -110,7 +110,7 @@ export class UserDAO {
   }
 
   static resendWelcomeEmail(id: string) {
-    return api.call({ url: `${process.env.VUE_APP_BI_API_V1_PATH}/users/${id}/resend_email`, method: 'put'});
+    return api.call({ url: `${process.env.VUE_APP_BI_API_V1_PATH}/users/${id}/resend-email`, method: 'put'});
   }
 
 }
