@@ -31,36 +31,17 @@ export class ProgramUserService {
   static errorAssignedUserToProgramErrorOrcid = "Successfully assigned user to program, error assigning ORCID iD to user.";
   static errorOrcidRequired = "ORCID iD required when creating a new user to add to the program";
 
-  static create(programUser: ProgramUser, orcid: string | undefined): Promise<ProgramUser> {
+  static create(programUser: ProgramUser): Promise<ProgramUser> {
 
     return new Promise<ProgramUser>((resolve, reject) => {
 
       if (programUser.program) {
-        //TODO: Remove once registration flow is implemented
-        if (programUser.id === undefined && orcid === undefined){
-          const error = {'errorMessage': this.errorOrcidRequired}
-          reject(error);
-        }
 
         ProgramUserDAO.create(programUser).then((biResponse) => {
           const result: any = biResponse.result;
           const newProgram = new Program(result.program.id, result.program.name);
           const newProgramUser  = new ProgramUser(result.user.id, result.user.name, result.user.email, result.roles[0].id, newProgram, result.active);
-
-          // If orcid was passed, update orcid id
-          //TODO: Remove once registration flow is implemented
-          const user = new User(newProgramUser.id, newProgramUser.name, orcid, newProgramUser.email);
-          if (orcid){
-            UserService.updateOrcid(user).then((updatedUser) => {
-              resolve(newProgramUser);
-            }).catch((error) => {
-              error['errorMessage'] = this.errorAssignedUserToProgramErrorOrcid;
-              reject(error);
-            })
-          }
-
           resolve(newProgramUser);
-
         }).catch((error) => {
           if (error.response && error.response.status === 409) {
             error['errorMessage'] = this.errorEmailInUse;

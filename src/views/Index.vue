@@ -227,23 +227,11 @@
       </p>
     </BaseModal>
 
-    <WarningModal
-      v-bind:active.sync="isLoginServerErrorModalActive"
-      v-bind:msg-title="'Server Error: Login Failed'"
-      v-on:deactivate="isLoginServerErrorModalActive = false"
-    >
-      <section>
-        <p class="has-text-dark">
-          This application was unable to establish a connection with our servers. Please try again.
-        </p>
-        <p class="has-text-dark">
-          If you continue to experience problems, try
-          <a href="http://status.orcid.org/">checking the ORCID status page</a>.
-          If all else fails,
-          <a href="#!">contact Breeding Insight support</a>.
-        </p>
-      </section>
-    </WarningModal>
+    <ServerContactErrorModal
+        v-bind:active.sync="isLoginServerErrorModalActive"
+        v-on:deactivate="isLoginServerErrorModalActive = false"
+    />
+
   </div>
 </template>
 
@@ -251,12 +239,12 @@
   import {Component, Prop, Vue} from 'vue-property-decorator'
   import BaseModal from '@/components/modals/BaseModal.vue'
   import InfoModal from '@/components/modals/InfoModal.vue'
-  import WarningModal from '@/components/modals/WarningModal.vue'
   import {ServerManagementService} from "@/breeding-insight/service/ServerManagementService";
   import {UserService} from "@/breeding-insight/service/UserService";
+  import ServerContactErrorModal from "@/components/modals/ServerContactErrorModal.vue";
 
   @Component({
-    components: {InfoModal, BaseModal, WarningModal}
+    components: {ServerContactErrorModal, InfoModal, BaseModal}
   })
   export default class Index extends Vue {
 
@@ -301,32 +289,3 @@
 
   }
 </script>
-
-<style scoped lang="scss">
-
-#connect-orcid-button{
-	border: 1px solid #D3D3D3;
-	padding: .3em;
-	background-color: #fff;
-	border-radius: 8px;
-	box-shadow: 1px 1px 3px #999;
-	cursor: pointer;
-	color: #999;
-	font-weight: bold;
-	font-size: .8em;
-	line-height: 24px;
-	vertical-align: middle;
-}
-
-#connect-orcid-button:hover{
-	border: 1px solid #338caf;
-	color: #338caf;
-}
-
-#orcid-id-icon{
-	display: block;
-	margin: 0 .5em 0 .5em;
-	padding: 0;
-	float: left;
-}
-</style>
