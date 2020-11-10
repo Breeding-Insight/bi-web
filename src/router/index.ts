@@ -75,6 +75,20 @@ const routes = [
     })
   },
   {
+    path: '/welcome',
+    name: 'home2',
+    meta: {
+      title: 'Welcome2',
+      layout: layouts.noSideBar
+    },
+    component: Index2,
+    props: (route: Route) => ({
+      loginRedirect: route.params.loginRedirect || false,
+      sessionExpired: route.params.sessionExpired || false,
+      loginError: route.query.loginError || false
+    })
+  },
+  {
     path: '/style-guide',
     name: 'style-guide',
     meta: {
@@ -113,7 +127,7 @@ const routes = [
     meta: {
       title: 'Admin User Management',
       layout: layouts.userSideBar
-    }, 
+    },
     component: AdminUserManagement
   },
   {
