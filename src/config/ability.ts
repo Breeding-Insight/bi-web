@@ -38,7 +38,7 @@ const rolePermissions: Record<string, DefinePermissions> = {
   admin(user, { can }) {
     can('create', 'ProgramUser');
     can('update', 'ProgramUser');
-    can('delete', 'ProgramUser');
+    can('archive', 'ProgramUser');
     can('manage', 'User');
     can('access', 'AdminSection');
   }
