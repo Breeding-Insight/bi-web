@@ -55,7 +55,7 @@ export default class EmptyTableMessage extends Vue {
   buttonViewToggle!: boolean;
   @Prop()
   buttonText!: string;
-  @Prop()
+  @Prop({default: true})
   createEnabled!: boolean;
 }
 </script>
