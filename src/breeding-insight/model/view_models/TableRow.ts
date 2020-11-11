@@ -21,14 +21,16 @@ export class TableRow<T extends Object> {
   new: boolean;
   selected: boolean;
   editable: boolean;
+  archivable: boolean;
   nameError: boolean;
   emailError: boolean;
   editData!: T;
 
-  constructor(editable: boolean, data: T) {
+  constructor(editable: boolean, archivable: boolean, data: T) {
     //this.data = new User(id, name, email, roles);
     //this.editData = Object.assign({}, this.data);
     this.editable = editable;
+    this.archivable = archivable;
     this.new = false;
     this.edit = false;
     this.new = false;

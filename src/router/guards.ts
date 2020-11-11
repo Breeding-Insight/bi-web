@@ -21,6 +21,7 @@ import {ProgramService} from "@/breeding-insight/service/ProgramService";
 import {Program} from "@/breeding-insight/model/Program";
 import {SET_ACTIVE_PROGRAM} from "@/store/mutation-types";
 import Vue from "vue";
+import {defineAbilityFor} from "@/config/ability";
 
 export function processProgramNavigation(to: Route, from: Route, next: Function) {
 
@@ -30,6 +31,8 @@ export function processProgramNavigation(to: Route, from: Route, next: Function)
       ProgramService.getOne(to.params['programId'])
         .then((program: Program) => {
           store.commit(SET_ACTIVE_PROGRAM, program);
+          const { rules } = defineAbilityFor(store.state.user, store.state.program);
+          Vue.prototype.$ability.update(rules);
           next();
         })
         .catch((error) => {

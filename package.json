@@ -13,6 +13,8 @@
     "test:unit": "vue-cli-service test:unit"
   },
   "dependencies": {
+    "@casl/ability": "^4.1.6",
+    "@casl/vue": "^1.1.1",
     "@types/promise.allsettled": "^1.0.3",
     "@types/vuelidate": "^0.7.10",
     "@xstate/fsm": "^1.4.0",
