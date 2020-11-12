@@ -41,176 +41,28 @@ afterEach(() => {
   jest.clearAllMocks();
 });
 
-describe('validations work properly', () => {
-  const store = defaultStore;
-  const wrapper = mount(AdminUsersTable, {localVue, store});
-
-  it('shows validation error when new form orcid is empty', async () => {
-    let newFormBtn = wrapper.find('button[data-testid="newFormBtn"]');
-    expect(newFormBtn.exists()).toBeTruthy();
-    await newFormBtn.trigger('click');
-
-    let newForm = wrapper.find(NewDataForm);
-    expect(newForm.exists()).toBeTruthy();
-
-    let saveBtn = newForm.find('button[data-testid="save"]');
-    expect(saveBtn.exists()).toBeTruthy();
-    await saveBtn.trigger('click');
-
-    // Get orcid field
-    let orcidWrapper = wrapper.findAllComponents(BaseFieldWrapper).at(2);
-    let orcidInput = orcidWrapper.find('input#ORCID-iD');
-    expect(orcidInput.exists()).toBeTruthy();
-    expect(orcidWrapper.element.classList.contains('field--error')).toBeTruthy()
-    await orcidInput.setValue('');
-    let error = orcidWrapper.find('span[data-testid="formError"]:not(.is-hidden)');
-    expect(error.exists()).toBeTruthy();
-    expect(error.text()).toEqual('ORCID iD is required');
-  });
-
-  it ('shows validation error when new form orcid is improper format', async () => {
-
-    let orcidWrapper = wrapper.findAllComponents(BaseFieldWrapper).at(2);
-    let orcidInput = orcidWrapper.find('input#ORCID-iD');
-    expect(orcidInput.exists()).toBeTruthy();
-    await orcidInput.setValue('1234');
-
-    expect(orcidWrapper.element.classList.contains('field--error')).toBeTruthy()
-    let error = orcidWrapper.find('span[data-testid="formError"]:not(.is-hidden)');
-    expect(error.exists()).toBeTruthy();
-    expect(error.text()).toEqual('ORCID iD must be in orcid format');
-  });
-
-  it('does not show validation error when orcid in proper format', async () => {
-
-    let orcidWrapper = wrapper.findAllComponents(BaseFieldWrapper).at(2);
-    let orcidInput = orcidWrapper.find('input#ORCID-iD');
-    expect(orcidInput.exists()).toBeTruthy();
-    await orcidInput.setValue('1234-5678-9101-1121');
-
-    expect(orcidWrapper.element.classList.contains('field--error')).toBeFalsy();
-
-  });
-
-  it('does not show validation error when orcid has X in last character', async () => {
-
-    let orcidWrapper = wrapper.findAllComponents(BaseFieldWrapper).at(2);
-    let orcidInput = orcidWrapper.find('input#ORCID-iD');
-    expect(orcidInput.exists()).toBeTruthy();
-    await orcidInput.setValue('1234-5678-9101-112X');
-
-    expect(orcidWrapper.element.classList.contains('field--error')).toBeFalsy();
-
-    // close form
-    let closeBtn = wrapper.find('button[data-testid="cancel"]');
-    expect(closeBtn.exists()).toBeTruthy();
-    await closeBtn.trigger('click');
-  })
-
-  it('shows validation error when edit form orcid is empty', async () => {
-
-    let row = wrapper.findComponent(ExpandableTableRow);
-    expect(row.exists()).toBeTruthy();
-    const editBtn = row.find('a[data-testid="edit"]');
-    expect(editBtn.exists()).toBeTruthy();
-    await editBtn.trigger('click');
-
-    let editForm = wrapper.findComponent(EditDataRowForm);
-    expect(editForm.exists()).toBeTruthy();
-    let orcidWrapper = editForm.findAllComponents(BaseFieldWrapper).at(2);
-    let orcidInput = orcidWrapper.find('input#ORCID-iD');
-    expect(orcidInput.exists()).toBeTruthy();
-    await orcidInput.setValue('');
-
-    let saveBtn = editForm.find('button[data-testid="save"]');
-    expect(saveBtn.exists()).toBeTruthy();
-    await saveBtn.trigger('click');
-
-    console.log(wrapper.html());
-    expect(orcidWrapper.element.classList.contains('field--error')).toBeTruthy();
-    let error = orcidWrapper.find('span[data-testid="formError"]:not(.is-hidden)');
-    expect(error.exists()).toBeTruthy();
-    expect(error.text()).toEqual('ORCID iD is required');
-  });
-
-  it ('shows validation error when edit form orcid is improper format', async () => {
-
-    let editForm = wrapper.findComponent(EditDataRowForm);
-    let orcidWrapper = editForm.findAllComponents(BaseFieldWrapper).at(2);
-    let orcidInput = orcidWrapper.find('input#ORCID-iD');
-    expect(orcidInput.exists()).toBeTruthy();
-    await orcidInput.setValue('1234');
-
-    expect(orcidWrapper.element.classList.contains('field--error')).toBeTruthy();
-    let error = orcidWrapper.find('span[data-testid="formError"]:not(.is-hidden)');
-    expect(error.exists()).toBeTruthy();
-    expect(error.text()).toEqual('ORCID iD must be in orcid format');
-  });
-
-  it('does not show validation error when edit form orcid is properly formatted', async () => {
-
-    let editForm = wrapper.findComponent(EditDataRowForm);
-    let orcidWrapper = editForm.findAllComponents(BaseFieldWrapper).at(2);
-    let orcidInput = orcidWrapper.find('input#ORCID-iD');
-    expect(orcidInput.exists()).toBeTruthy();
-    await orcidInput.setValue('1234-6789-1012-1234');
-
-    expect(orcidWrapper.element.classList.contains('field--error')).toBeFalsy();
-  });
-});
-
 describe('new data form works properly', () => {
   const store = defaultStore;
   const wrapper = mount(AdminUsersTable, {localVue, store});
 
-  it('cancels save if orcid is already in use', async () => {
+  it('closes new data form when user successfully created', async () => {
 
     let newFormBtn = wrapper.find('button[data-testid="newFormBtn"]');
     expect(newFormBtn.exists()).toBeTruthy();
     await newFormBtn.trigger('click');
 
-    let newForm = wrapper.findComponent(NewDataForm);
+    let newForm = wrapper.find(NewDataForm);
     expect(newForm.exists()).toBeTruthy();
 
     let nameInput = newForm.find('input#Name');
     let emailInput = newForm.find('input#Email');
-    let orcidInput = newForm.find('input#ORCID-iD');
     expect(nameInput.exists()).toBeTruthy();
     expect(emailInput.exists()).toBeTruthy();
-    expect(orcidInput.exists()).toBeTruthy();
 
     await nameInput.setValue('new test user');
     await emailInput.setValue('newtestuser@tester.com');
-    await orcidInput.setValue(systemUsers[0].orcid);
-
-    let saveBtn = newForm.find('button[data-testid="save"]');
-    expect(saveBtn.exists()).toBeTruthy();
-    await saveBtn.trigger('click');
-    await wrapper.vm.$nextTick();
-
-    // make sure the create function was not called
-    const createSpy = jest.spyOn(UserService, 'create');
-    expect(createSpy).toHaveBeenCalledTimes(0);
-
-    let error = wrapper.emitted('show-error-notification');
-    expect(error!.length).toEqual(1);
-    let notification = error!.pop();
-    expect(notification.length).toEqual(1);
-    expect(notification.pop()).toEqual('ORCID iD is in use by another user.');
-  });
-
-  it('closes new data form when user successfully created, but update orcid returns error', async () => {
-
-    let newForm = wrapper.find(NewDataForm);
-    expect(newForm.exists()).toBeTruthy();
-
-    let orcidInput = newForm.find('input#ORCID-iD');
-    expect(orcidInput.exists()).toBeTruthy();
-
-    await orcidInput.setValue('2222-2222-2222-2222');
 
     const userDAO = mocked(UserDAO, true);
-    userDAO.updateOrcid.mockRejectedValueOnce({error: {response: {status: 409}}});
     userDAO.create.mockResolvedValue(DaoUtils.formatBiResponseSingle(systemUsers[0]));
     let saveBtn = newForm.find('button[data-testid="save"]');
     expect(saveBtn.exists()).toBeTruthy();

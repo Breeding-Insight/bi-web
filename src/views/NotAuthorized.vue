@@ -25,7 +25,7 @@
           <a href="#!">contact your breeding program leader</a> or
           <a href="#!">Breeding Insight support</a>.
         </p>
-        <router-link v-bind:to="{name:'home'}">
+        <router-link v-bind:to="{name:'home'}" v-bind:replace="true">
           Return to Home Page
         </router-link>
       </div>
