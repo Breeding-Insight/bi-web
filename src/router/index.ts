@@ -243,6 +243,7 @@ const routes = [
       returnUrl: route.query.return_url
     })
   },
+  {
     path: '/signup',
     name: 'signup',
     meta: {
