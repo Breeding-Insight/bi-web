@@ -17,152 +17,102 @@
 
 <template>
   <div class="home">
-    <div class="columns is-mobile">
-      <img
-        class="column is-2 is-offset-5"
-        alt="Breeding Insight Logo"
-        src="../assets/img/bi-logo.svg"
-      >
-    </div>
-    <div class="is-divider" />
-    <nav class="level">
-      <p class="level-item has-text-centered">
-        Combining genomics and informatics to accelerate genetic gains
-      </p>
-    </nav>
-    <div class="is-divider" />
     <div class="columns">
-      <div class="column is-three-fifths">
-        <div class="columns is-mobile">
-          <div class="column is-narrow">
-            <p>Part of a Breeding Insight program?</p>
-          </div>
-          <div class="column is-narrow">
-            <b-button
-              class="button is-primary"
-              @click="isLoginModalActive = true"
-            >
-              LOG IN
-            </b-button>
-          </div>
-        </div>
-        <div class="columns is-mobile">
-          <div class="column is-narrow">
-            <p class="title is-5">
-              Our current specialty breeding programs:
-            </p>
-          </div>
-        </div>
+      <div class="column side-menu is-2"> <!-- guest logins -->
+        <aside role="complementary">
+          <h1 class="title has-text-warning is-5">Guest Accounts</h1>
+          <p class="has-text-light is-paddingless">Use these credentials to explore sample data and currently available features.</p>
+          <hr class="is-light" />
+          <div class="columns is-gapless">
+            <div class="column is-narrow mr-2">
+              <b-button
+                class="button is-primary"
+                @click="isLoginModalActive = true"
+              >
+                LOG IN
+              </b-button>
+            </div>
+            <div class="column">
+              <p class="is-paddingless is-marginless has-text-light is-size-7">using one of the supplied guest accounts</p>
+            </div>
+          </div> <!-- end login -->
+          <hr class="is-light" />
 
-        <div class="tile is-ancestor">
-          <div class="tile is-4 is-vertical is-parent">
-            <div class="tile is-child box has-background-grey-lighter">
-              <div class="columns is-mobile">
-                <div class="column">
-                  <p class="title is-5">
-                    BLUEBERRY
-                  </p>
-                </div>
-                <div class="column">
-                  <img
-                    class="is-pulled-right"
-                    alt="Blueberry Icon"
-                    src="../assets/img/icon-blueberry.png"
-                    style="height: 80px; "
-                  >
-                </div>
-              </div>
-            </div>
-            <div class="tile is-child box has-background-grey-lighter">
-              <div class="columns is-mobile">
-                <div class="column">
-                  <p class="title is-5">
-                    SALMONIDS
-                  </p>
-                </div>
-                <div class="column">
-                  <img
-                    class="is-pulled-right"
-                    alt="Trout Icon"
-                    src="../assets/img/icon-trout.png"
-                    style="height: 60px; "
-                  >
-                </div>
-              </div>
-            </div>
-            <div class="tile is-child box has-background-grey-lighter">
-              <div class="columns is-mobile">
-                <div class="column">
-                  <p class="title is-5">
-                    SWEET POTATO
-                  </p>
-                </div>
-                <div class="column">
-                  <img
-                    class="is-pulled-right"
-                    alt="Sweet Potato Icon"
-                    src="../assets/img/icon-sweetpotato.png"
-                    style="height: 60px; "
-                  >
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="tile is-4 is-vertical is-parent">
-            <div class="tile is-child box has-background-grey-lighter">
-              <div class="column">
-                <p class="title is-5">
-                  ALFALFA
-                </p>
-              </div>
-              <div class="column">
-                <img
-                  class="is-pulled-right"
-                  alt="Alfalfa Icon"
-                  src="../assets/img/icon-alfalfa.png"
-                  style="height: 80px; "
-                >
-              </div>
-            </div>
-            <div class="tile is-child box has-background-grey-lighter">
-              <div class="column">
-                <p class="title is-5">
-                  GRAPE
-                </p>
-              </div>
-              <div class="column">
-                <img
-                  class="is-pulled-right"
-                  alt="Grape Icon"
-                  src="../assets/img/icon-grape.png"
-                  style="height: 80px; "
-                >
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+          <article>
+            <h2 class="has-text-warning is-5 is-normal">Alfalfa Guest</h2>
+            <p class="has-text-light is-paddingless is-marginless">user: alfalfa@mailinator.com</p>
+            <p class="has-text-light is-paddingless">password: alfalfa1</p>
+          </article>
+          <article>
+            <h2 class="has-text-warning is-5 is-normal">Blueberry Guest</h2>
+            <p class="has-text-light is-paddingless is-marginless">user: blueberry@mailinator.com</p>
+            <p class="has-text-light is-paddingless">password: blueberry1</p>
+          </article>
+          <article>
+            <h2 class="has-text-warning is-5 is-normal">Grape Guest</h2>
+            <p class="has-text-light is-paddingless is-marginless">user: grape@mailinator.com</p>
+            <p class="has-text-light is-paddingless">password: grape--1</p>
+          </article>
+          <article>
+            <h2 class="has-text-warning is-5 is-normal">Salmonids Guest</h2>
+            <p class="has-text-light is-paddingless is-marginless">user: salmonid@mailinator.com</p>
+            <p class="has-text-light is-paddingless">password: salmonid1</p>
+          </article>
+          <article>
+            <h2 class="has-text-warning is-5 is-normal">Sweetpotato Guest</h2>
+            <p class="has-text-light is-paddingless is-marginless">user: sweetpotato@mailinator.com</p>
+            <p class="has-text-light is-paddingless">password: sweetpotato1</p>
+          </article>
+        </aside>
+      </div> <!-- end guest logins -->
       <div class="column">
-        <h5 class="title is-5">
-          Our Mission
-        </h5>
-        <p>
-          By combining genomics with the powerful tools of informatics, breeding for genetic gain has undergone
-          a revolution. But due to high-costs, some smaller breeding programs have been left behind. The mission
-          of the Breeding Insight team is to make high-tech breeding a reality for smaller programs.
-        </p>
-        <br>
-        <p>
-          Breeding Insight is funded by the U.S. Department of Agriculture (USDA) Agricultural
-          Research Service (ARS) through Cornell University. The USDA ARS delivers scientific solutions
-          to national and global agricultural challenges. As a global leader in agricultural discovery through
-          scientific excellence, ARS is committed to delivering cutting-edge, scientific tools and innovative
-          solutions for American farmers, producers, industry, and communities to support the nourishment
-          and well-being of all people; sustaining our nation’s agroecosystems and natural resources; and
-          ensuring the economic competitiveness and excellence of our agriculture.
-        </p>
+        <div class="columns is-multiline is-align-items-stretch"> <!-- primary content -->
+          <article class="column">
+            <div class="box" style="height:100%">
+              <h1 class="title has-text-primary is-4">About the sandbox</h1>
+              <p>This site is a demo of current development for Breeding Insight's data management software. You can use one of the provided guest accounts to explore sample data.</p>
+              <p class="has-text-weight-bold">Please note:</p>
+              <ul>
+                <li>All submitted data are public; do not submit private data.</li>
+                <li>The database is routinely reset and submitted data may be removed without notice.</li>
+              </ul>
+              <p>We encourage you to share your experiences using the sandbox with us!</p>
+              <p class="is-centered"><a class="button is-primary">Send feedback to our team</a></p>
+          </div>
+          </article>
+          <article class="column">
+            <div class="box" style="height:100%">
+              <h1 class="title has-text-primary is-4">About Breeding Insight</h1>
+              <p>We provide scientific consultation and data management software to the specialty crop and animal breeding communities.</p>
+              <ul>
+                <li>Genomics</li>
+                <li>Phenomics</li>
+                <li>Data Management</li>
+                <li>Software Tools</li>
+                <li>Analysis</li>
+              </ul>
+              <p>Breeding Insight is funded by the U.S. Department of Agriculture (USDA) Agricultural Research Service (ARS) through Cornell University.</p>
+            </div>
+          </article>
+          <article class="column">
+            <div class="box" style="height:100%">
+              <h1 class="title has-text-primary is-4">Our breeding collaborators</h1>
+              <p>The USDA Agricultural Research Service (ARS) supports breeding programs for approximately 90 specialty species.</p>
+              <p>Breeding Insight is currently working with six species:</p>
+              <ul>
+                <li>Alfalfa</li>
+                <li>Blueberry</li>
+                <li>Table Grape</li>
+                <li>Atlantic Salmon</li>
+                <li>Rainbow Trout</li>
+                <li>Sweetpotato</li>
+              </ul>
+              <p>Learn more about our projects for each species at <a href="https://www.breedinginsight.org">www.breedinginsight.org</a>.</p>
+            </div>
+          </article>
+        </div> <!-- end primary content -->
       </div>
-    </div>
+    </div> <!-- end columns -->
     <BaseModal
       v-bind:active="isLoginModalActive"
       v-bind:body-class="'has-text-centered'"

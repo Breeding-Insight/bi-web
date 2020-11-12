@@ -65,23 +65,9 @@ const routes = [
     name: 'home',
     meta: {
       title: 'Welcome',
-      layout: layouts.simple
+      layout: layouts.NoSideBar
     },
     component: Index,
-    props: (route: Route) => ({
-      loginRedirect: route.params.loginRedirect || false,
-      sessionExpired: route.params.sessionExpired || false,
-      loginError: route.query.loginError || false
-    })
-  },
-  {
-    path: '/welcome',
-    name: 'home2',
-    meta: {
-      title: 'Welcome2',
-      layout: layouts.noSideBar
-    },
-    component: Index2,
     props: (route: Route) => ({
       loginRedirect: route.params.loginRedirect || false,
       sessionExpired: route.params.sessionExpired || false,
