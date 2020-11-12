@@ -181,6 +181,12 @@
         Your session has expired. Please login again to continue.
       </h1>
       <h1
+        v-else-if="loginError"
+        class="is-size-5 has-text-primary"
+      >
+        An error has occurred during login. Please try again.
+      </h1>
+      <h1
         v-else
         class="is-size-5 has-text-primary"
       >
@@ -190,18 +196,20 @@
         To access to your breeding program, please log in.
       </p>
       <button
-        id="connect-orcid-button"
-        class="orcidBtn"
-        v-on:click="orcidLogin"
+          id="connect-orcid-button"
+          class="button orcidBtn"
+          v-bind:class="{'is-loading': loginProcessing}"
+          v-bind:disabled="loginProcessing"
+          v-on:click="orcidLogin"
       >
         SIGN IN with ORCID
         <img
-          id="orcid-id-icon"
-          src="https://orcid.org/sites/default/files/images/orcid_24x24.png"
-          width="24"
-          height="24"
-          class="is-pulled-right"
-          alt="ORCID iD icon"
+            id="orcid-id-icon"
+            src="https://orcid.org/sites/default/files/images/orcid_24x24.png"
+            width="24"
+            height="24"
+            class="is-pulled-right"
+            alt="ORCID iD icon"
         >
       </button>
       <p class="is-size-7 has-text-left">
@@ -219,23 +227,11 @@
       </p>
     </BaseModal>
 
-    <WarningModal
-      v-bind:active.sync="isLoginServerErrorModalActive"
-      v-bind:msg-title="'Server Error: Login Failed'"
-      v-on:deactivate="isLoginServerErrorModalActive = false"
-    >
-      <section>
-        <p class="has-text-dark">
-          This application was unable to establish a connection with our servers. Please try again.
-        </p>
-        <p class="has-text-dark">
-          If you continue to experience problems, try
-          <a href="http://status.orcid.org/">checking the ORCID status page</a>.
-          If all else fails,
-          <a href="#!">contact Breeding Insight support</a>.
-        </p>
-      </section>
-    </WarningModal>
+    <ServerContactErrorModal
+        v-bind:active.sync="isLoginServerErrorModalActive"
+        v-on:deactivate="isLoginServerErrorModalActive = false"
+    />
+
   </div>
 </template>
 
@@ -243,66 +239,53 @@
   import {Component, Prop, Vue} from 'vue-property-decorator'
   import BaseModal from '@/components/modals/BaseModal.vue'
   import InfoModal from '@/components/modals/InfoModal.vue'
-  import WarningModal from '@/components/modals/WarningModal.vue'
   import {ServerManagementService} from "@/breeding-insight/service/ServerManagementService";
+  import {UserService} from "@/breeding-insight/service/UserService";
+  import ServerContactErrorModal from "@/components/modals/ServerContactErrorModal.vue";
 
   @Component({
-    components: {InfoModal, BaseModal, WarningModal}
+    components: {ServerContactErrorModal, InfoModal, BaseModal}
   })
   export default class Index extends Vue {
 
     public isLoginModalActive: boolean = false;
     public isLoginServerErrorModalActive: boolean = false;
+    public loginProcessing: boolean = false;
     @Prop()
     public loginRedirect!: boolean;
     @Prop()
     public sessionExpired!: boolean;
+    @Prop()
+    public loginError!: boolean;
 
     mounted() {
-      if (this.loginRedirect || this.sessionExpired){
+      if (this.loginRedirect || this.sessionExpired || this.loginError){
         this.isLoginModalActive = true;
       }
     }
 
     // Methods
-    orcidLogin() {
+    async orcidLogin() {
       // Check the server can be contacted
-      this.isLoginModalActive = false;
-      ServerManagementService.checkHealth().then((response) => {
-        window.location.href = process.env.VUE_APP_BI_API_ROOT+'/sso/start';
-      }).catch((error) => {
+      this.loginProcessing = true;
+      try {
+        await ServerManagementService.checkHealth();
+      } catch (error) {
         this.isLoginServerErrorModalActive = true;
-      })
+        this.loginProcessing = false;
+        return;
+      }
+
+      // Log them out of openid
+      try {
+        await UserService.openIdLogout();
+      } catch (error) {
+        Vue.$log.error(error);
+      }
+
+      // Start login process
+      window.location.href = process.env.VUE_APP_BI_API_ROOT+'/sso/start';
     }
 
   }
 </script>
-
-<style scoped lang="scss">
-
-#connect-orcid-button{
-	border: 1px solid #D3D3D3;
-	padding: .3em;
-	background-color: #fff;
-	border-radius: 8px;
-	box-shadow: 1px 1px 3px #999;
-	cursor: pointer;
-	color: #999;
-	font-weight: bold;
-	font-size: .8em;
-	line-height: 24px;
-	vertical-align: middle;
-}
-
-#connect-orcid-button:hover{
-	border: 1px solid #338caf;
-	color: #338caf;
-}
-
-#orcid-id-icon{
-	display: block;
-	margin: 0 .5em 0 .5em;
-	padding: 0;
-	float: left;
-}
-</style>

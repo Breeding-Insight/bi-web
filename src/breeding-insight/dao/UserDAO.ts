@@ -105,20 +105,12 @@ export class UserDAO {
     });
   }
 
-  //TODO: Remove when registration flow is complete
-  static updateOrcid(id: string, orcid: string){
+  static openIdLogout(logoutUrl: string) {
+    return api.call({url: logoutUrl, method: 'get'});
+  }
 
-    return new Promise<BiResponse>((resolve, reject) => {
-      const body = {'orcid': orcid}
-
-      api.call({ url: `${process.env.VUE_APP_BI_API_V1_PATH}/users/${id}/orcid`, method: 'put', data: body})
-        .then((response: any) => {
-          const biResponse = new BiResponse(response.data);
-          resolve(biResponse);
-        }).catch((error) => reject(error));
-
-    });
-
+  static resendWelcomeEmail(id: string) {
+    return api.call({ url: `${process.env.VUE_APP_BI_API_V1_PATH}/users/${id}/resend-email`, method: 'put'});
   }
 
 }

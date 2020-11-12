@@ -50,7 +50,8 @@ Vue.use(VueLogger, options);
 // Vue constants
 const cookieNames = {
   loginRedirectUrl: 'redirect-login',
-  firstVisit: 'first-visit'
+  firstVisit: 'first-visit',
+  accountToken: 'account-token'
 }
 Vue.prototype.$cookieNames = cookieNames;
 

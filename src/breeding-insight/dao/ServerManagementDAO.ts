@@ -17,6 +17,7 @@
 
 import {BiResponse} from "@/breeding-insight/model/BiResponse";
 import * as api from "@/util/api";
+import { ApiInfo } from '@/breeding-insight/model/ApiInfo';
 
 export class ServerManagementDAO {
 
@@ -30,6 +31,19 @@ export class ServerManagementDAO {
         reject(error);
       })
 
+    }))
+  }
+
+  static getApiInfo() {
+    return new Promise<ApiInfo>(((resolve, reject) => {
+      api.call({
+        url: `${process.env.VUE_APP_BI_API_V1_PATH}/server-info`,
+        method: 'get'
+      }).then((response:any) => {
+        resolve(new ApiInfo(response.data.version, response.data.versionInfo));
+      }).catch((error) => {
+        reject(error);
+      })
     }))
   }
 }

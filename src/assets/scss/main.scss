@@ -218,7 +218,11 @@ img {
   }
 }
 
-.modal-card .message.is-info, .modal-card .message.is-danger {
+.message.is-info, .message.is-danger, message.is-success {
+  background-color: white;
+}
+
+.message.is-success .message-body {
   background-color: white;
 }
 
@@ -296,6 +300,7 @@ nav.tabs li.is-active {
 }
 
 .side-menu {
+  position: relative;
   background-color: $darkmenu;
   padding: 1em 1em 1em 0;
   p {
@@ -390,3 +395,39 @@ a.is-underlined {
   text-decoration: underline;
 }
 
+#connect-orcid-button{
+  border: 1px solid #D3D3D3;
+  padding: .3em;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 1px 1px 3px #999;
+  cursor: pointer;
+  color: #999;
+  font-weight: bold;
+  font-size: .8em;
+  line-height: 24px;
+  vertical-align: middle;
+}
+
+#connect-orcid-button:hover{
+  border: 1px solid #338caf;
+  color: #338caf;
+}
+
+#orcid-id-icon{
+  display: block;
+  margin: 0 .5em 0 .5em;
+  padding: 0;
+  float: left;
+}
+
+#versionInfo {
+  position: absolute;
+  bottom: 10px;
+  color: white;
+  width: 100%;
+
+  a {
+    color: white;
+  }
+}
