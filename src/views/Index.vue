@@ -68,7 +68,13 @@
       <div class="column">
         <div class="columns is-multiline is-align-items-stretch"> <!-- primary content -->
           <article class="column">
-            <div class="box" style="height:100%">
+            <div class="card" style="height:100%">
+              <div class="card-image">
+                <figure class="image">
+                  <img src="../assets/img/sand.jpg" />
+                </figure>
+              </div>
+              <div class="card-content">
               <h1 class="title has-text-primary is-4">About the sandbox</h1>
               <p>This site is a demo of current development for Breeding Insight's data management software. You can use one of the provided guest accounts to explore sample data.</p>
               <p class="has-text-weight-bold">Please note:</p>
@@ -79,23 +85,37 @@
               <p>We encourage you to share your experiences using the sandbox with us!</p>
               <p class="is-centered"><a class="button is-primary">Send feedback to our team</a></p>
           </div>
+        </div>
           </article>
           <article class="column">
-            <div class="box" style="height:100%">
-              <h1 class="title has-text-primary is-4">About Breeding Insight</h1>
-              <p>We provide scientific consultation and data management software to the specialty crop and animal breeding communities.</p>
-              <ul>
-                <li>Genomics</li>
-                <li>Phenomics</li>
-                <li>Data Management</li>
-                <li>Software Tools</li>
-                <li>Analysis</li>
-              </ul>
-              <p>Breeding Insight is funded by the U.S. Department of Agriculture (USDA) Agricultural Research Service (ARS) through Cornell University.</p>
+            <div class="card" style="height:100%">
+              <div class="card-image">
+                <figure class="image">
+                  <img src="../assets/img/logo-banner.png" />
+                </figure>
+              </div>
+              <div class="card-content">
+                <h1 class="title has-text-primary is-4">About Breeding Insight</h1>
+                <p>We provide scientific consultation and data management software to the specialty crop and animal breeding communities.</p>
+                <ul>
+                  <li>Genomics</li>
+                  <li>Phenomics</li>
+                  <li>Data Management</li>
+                  <li>Software Tools</li>
+                  <li>Analysis</li>
+                </ul>
+                <p>Breeding Insight is funded by the U.S. Department of Agriculture (USDA) Agricultural Research Service (ARS) through Cornell University.</p>
+              </div>
             </div>
           </article>
           <article class="column">
-            <div class="box" style="height:100%">
+            <div class="card" style="height:100%">
+              <div class="card-image">
+                <figure class="image">
+                  <img src="../assets/img/species-collage.jpg" />
+                </figure>
+              </div>
+              <div class="card-content">
               <h1 class="title has-text-primary is-4">Our breeding collaborators</h1>
               <p>The USDA Agricultural Research Service (ARS) supports breeding programs for approximately 90 specialty species.</p>
               <p>Breeding Insight is currently working with six species:</p>
@@ -109,6 +129,7 @@
               </ul>
               <p>Learn more about our projects for each species at <a href="https://www.breedinginsight.org">www.breedinginsight.org</a>.</p>
             </div>
+          </div>
           </article>
         </div> <!-- end primary content -->
       </div>

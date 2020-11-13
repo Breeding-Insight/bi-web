@@ -65,7 +65,7 @@ const routes = [
     name: 'home',
     meta: {
       title: 'Welcome',
-      layout: layouts.NoSideBar
+      layout: layouts.noSideBar
     },
     component: Index,
     props: (route: Route) => ({
