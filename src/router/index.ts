@@ -56,7 +56,9 @@ const layouts = {
   adminSideBar: 'adminSideBar',
   userSideBar: 'userSideBar',
   simple: 'simple',
-  noSideBar: 'noSideBar'
+  noSideBar: 'noSideBar',
+  infoSideBar: 'infoSideBar',
+  baseSideBar: 'baseSideBar'
 }
 
 const routes = [
@@ -65,7 +67,7 @@ const routes = [
     name: 'home',
     meta: {
       title: 'Welcome',
-      layout: layouts.noSideBar
+      layout: layouts.infoSideBar
     },
     component: Index,
     props: (route: Route) => ({

@@ -25,7 +25,7 @@
       <SandboxCoordinatorNotification v-bind:active.sync="showCoordinatorSandboxNotification" class="is-marginless"></SandboxCoordinatorNotification>
       <WarningNotification ref="warningNotification" class="is-marginless"></WarningNotification>
     </div>
-    
+
     <component v-bind:is="layout" v-bind:username="username" @logout="logOut">
         <router-view
             @show-success-notification="showSuccessNotification"
@@ -71,24 +71,24 @@
             </p>
           </div>
           <div class="level-item">
-            <img 
-            src="./assets/img/usda.svg" 
-            alt="USDA Logo" 
-            width="75" 
+            <img
+            src="./assets/img/usda.svg"
+            alt="USDA Logo"
+            width="75"
             >
           </div>
           <div class="level-item">
-            <img 
-            src="./assets/img/cornell_seal.svg" 
-            alt="Cornell University Logo" 
-            width="56" 
+            <img
+            src="./assets/img/cornell_seal.svg"
+            alt="Cornell University Logo"
+            width="56"
             >
           </div>
-          
+
         </div>
       </div>
     </footer>
-      
+
   </div>
 </template>
 
@@ -100,6 +100,8 @@ import ErrorNotification from '@/components/notifications/ErrorNotification.vue'
 import SimpleLayout from '@/components/layouts/SimpleLayout.vue'
 import UserSideBarLayout from './components/layouts/UserSideBarLayout.vue'
 import NoSideBarLayout from './components/layouts/NoSideBarLayout.vue'
+import InfoSideBarLayout from './components/layouts/InfoSideBarLayout.vue'
+import BaseSideBarLayout from './components/layouts/BaseSideBarLayout.vue'
 import SandboxPublicNotification from "@/components/notifications/SandboxPublicNotification.vue";
 import SandboxCoordinatorNotification from "@/components/notifications/SandboxCoordinatorNotification.vue";
 import {SandboxMode} from "@/util/config";
@@ -137,7 +139,9 @@ import WarningNotification from "@/components/notifications/WarningNotification.
     ErrorNotification,
     simpleLayout: SimpleLayout,
     userSideBarLayout: UserSideBarLayout,
-    noSideBarLayout: NoSideBarLayout
+    noSideBarLayout: NoSideBarLayout,
+    infoSideBarLayout: InfoSideBarLayout,
+    baseSideBarLayout: BaseSideBarLayout
   }
 })
 export default class App extends Vue {

@@ -96,9 +96,20 @@ npx npm-check -u
 See [Configuration Reference](https://cli.vuejs.org/config/).
 
 ## Style and layout
-A guide to visual design conventions and writing style can be found at `/styleguide` after authentication. 
+A guide to visual design conventions and writing style can be found at `/styleguide` after authentication.
 For example, if you are running the app locally on port 8080, the style guide URL would be [http://localhost:8080/styleguide].
 
+## Layout template usage standards
+General guidance for using each of the layout templates in `/components/layouts`:
+**SimpleLayout** is the most basic page. As inferred by the name, it draws a simple full-screen, full-width page with one content slot. Currently this layout is only used for the 401 error page and the style guide.
+
+**NoSidebarLayout** provides the standard header and footer for all current pages, and a simple content container. Used for program selection, account confirmation, success pages.
+
+**BaseSidebarLayout** provides the standard header and footer, a main content container, and a consistently styled sidebar container. This sidebar is **not** designated as a nav container and may be used for general content in the sidebar.
+
+**InfoSideBarLayout** provides guest account information in the sidebar, a child of BaseSideBarLayout. This is used for the **index page**, allowing display of guest user account information or system instructions for our sandboxes. Not entirely sure if this layout is necessary; might be able to add this content to Index.vue instead and use BaseSideBarLayout?
+
+**UserSidebarLayout** provides the standard header and footer, a primary content container, and a sidebar that has nav designation and user-related menu items. This layout is used for **most pages that involve being logged in**.
 
 ## License
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FBreeding-Insight%2Fbi-web.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2FBreeding-Insight%2Fbi-web?ref=badge_large)

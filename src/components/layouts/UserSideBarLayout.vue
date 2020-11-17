@@ -68,126 +68,128 @@
       </div>
     </template>
     <template v-slot:menu>
-      <template v-if="activeUser && activeUser.hasRole('admin')">
-        <p class="menu-label">
-          Admin
-        </p>
-        <ul class="menu-list">
-          <li>
-            <router-link to="/admin/user-management">
-              Users
-            </router-link>
-          </li>
-          <li>
-            <router-link to="/admin/program-management">
-              Programs
-            </router-link>
-            <ul class="menu-list">
-              <template v-for="program of programs">
-                <li v-bind:key="program.id">
-                  <router-link v-bind:to="{name: 'program', params: {programId: program.id}}">
-                    {{program.name}}
+      <nav role="navigation" aria-label="main navigation">
+        <template v-if="activeUser && activeUser.hasRole('admin')">
+          <p class="menu-label">
+            Admin
+          </p>
+          <ul class="menu-list">
+            <li>
+              <router-link to="/admin/user-management">
+                Users
+              </router-link>
+            </li>
+            <li>
+              <router-link to="/admin/program-management">
+                Programs
+              </router-link>
+              <ul class="menu-list">
+                <template v-for="program of programs">
+                  <li v-bind:key="program.id">
+                    <router-link v-bind:to="{name: 'program', params: {programId: program.id}}">
+                      {{program.name}}
+                    </router-link>
+                  </li>
+                </template>
+              </ul>
+            </li>
+          </ul>
+          <template v-if="activeProgram">
+            <hr style="margin:5px;">
+            <p class="menu-label">
+              {{activeProgram.name}}
+            </p>
+          </template>
+        </template>
+        <template v-if="activeProgram">
+
+          <ul class="menu-list">
+            <li>
+              <router-link v-bind:to="{name: 'program-home', params: {programId: activeProgram.id}}">
+                Home
+              </router-link>
+            </li>
+            <li>
+              <a>Trials and Experiments</a>
+            </li>
+            <li>
+              <a>Germplasm Inventory</a>
+            </li>
+            <li>
+              <router-link
+                v-bind:to="{name: 'traits', params: {programId: activeProgram.id}}"
+                v-bind:class="{ 'is-active': traitsActive }"
+              >
+                Traits
+                <MoreVerticalIcon
+                  v-if="!traitsActive"
+                  class="is-pulled-right"
+                />
+                <MoreHorizontalIcon
+                  v-if="traitsActive"
+                  class="is-pulled-right"
+                />
+              </router-link>
+              <ul v-show="traitsActive">
+                <li>
+                  <router-link v-bind:to="{name: 'traits-list', params: {programId: activeProgram.id}}">
+                    Trait List
                   </router-link>
                 </li>
-              </template>
-            </ul>
-          </li>
-        </ul>
-        <template v-if="activeProgram">
-          <hr style="margin:5px;">
-          <p class="menu-label">
-            {{activeProgram.name}}
-          </p>
+                <li>
+                  <router-link v-bind:to="{name: 'traits-favorites', params: {programId: activeProgram.id}}">
+                    Favorites
+                  </router-link>
+                </li>
+                <li>
+                  <router-link v-bind:to="{name: 'traits-import', params: {programId: activeProgram.id}}">
+                    Import Traits
+                  </router-link>
+                </li>
+                <li>
+                  <router-link v-bind:to="{name: 'traits-archived', params: {programId: activeProgram.id}}">
+                    Archived Traits
+                  </router-link>
+                </li>
+              </ul>
+            </li>
+            <li>
+              <a>Labels</a>
+            </li>
+            <li>
+              <a>Reports</a>
+            </li>
+            <li>
+              <router-link
+                v-bind:to="{name: 'program-management', params: {programId: activeProgram.id}}"
+                v-bind:class="{ 'is-active': programManagementActive }"
+              >
+                Program Management
+                <MoreVerticalIcon
+                  v-if="!programManagementActive"
+                  class="is-pulled-right"
+                />
+                <MoreHorizontalIcon
+                  v-if="programManagementActive"
+                  class="is-pulled-right"
+                />
+              </router-link>
+              <ul v-show="programManagementActive">
+                <li>
+                  <router-link v-bind:to="{name: 'program-locations', params: {programId: activeProgram.id}}">
+                    Locations
+                  </router-link>
+                </li>
+                <li>
+                  <router-link v-bind:to="{name: 'program-users', params: {programId: activeProgram.id}}">
+                    Users
+                  </router-link>
+                </li>
+              </ul>
+            </li>
+          </ul>
         </template>
-      </template>
-      <template v-if="activeProgram">
-
-        <ul class="menu-list">
-          <li>
-            <router-link v-bind:to="{name: 'program-home', params: {programId: activeProgram.id}}">
-              Home
-            </router-link>
-          </li>
-          <li>
-            <a>Trials and Experiments</a>
-          </li>
-          <li>
-            <a>Germplasm Inventory</a>
-          </li>
-          <li>
-            <router-link
-              v-bind:to="{name: 'traits', params: {programId: activeProgram.id}}"
-              v-bind:class="{ 'is-active': traitsActive }"
-            >
-              Traits
-              <MoreVerticalIcon
-                v-if="!traitsActive"
-                class="is-pulled-right"
-              />
-              <MoreHorizontalIcon
-                v-if="traitsActive"
-                class="is-pulled-right"
-              />
-            </router-link>
-            <ul v-show="traitsActive">
-              <li>
-                <router-link v-bind:to="{name: 'traits-list', params: {programId: activeProgram.id}}">
-                  Trait List
-                </router-link>
-              </li>
-              <li>
-                <router-link v-bind:to="{name: 'traits-favorites', params: {programId: activeProgram.id}}">
-                  Favorites
-                </router-link>
-              </li>
-              <li>
-                <router-link v-bind:to="{name: 'traits-import', params: {programId: activeProgram.id}}">
-                  Import Traits
-                </router-link>
-              </li>
-              <li>
-                <router-link v-bind:to="{name: 'traits-archived', params: {programId: activeProgram.id}}">
-                  Archived Traits
-                </router-link>
-              </li>
-            </ul>
-          </li>
-          <li>
-            <a>Labels</a>
-          </li>
-          <li>
-            <a>Reports</a>
-          </li>
-          <li>
-            <router-link
-              v-bind:to="{name: 'program-management', params: {programId: activeProgram.id}}"
-              v-bind:class="{ 'is-active': programManagementActive }"
-            >
-              Program Management
-              <MoreVerticalIcon
-                v-if="!programManagementActive"
-                class="is-pulled-right"
-              />
-              <MoreHorizontalIcon
-                v-if="programManagementActive"
-                class="is-pulled-right"
-              />
-            </router-link>
-            <ul v-show="programManagementActive">
-              <li>
-                <router-link v-bind:to="{name: 'program-locations', params: {programId: activeProgram.id}}">
-                  Locations
-                </router-link>
-              </li>
-              <li>
-                <router-link v-bind:to="{name: 'program-users', params: {programId: activeProgram.id}}">
-                  Users
-                </router-link>
-              </li>
-            </ul>
-          </li>
-        </ul>
-      </template>
+      </nav>
     </template>
     <template v-slot:content>
       <slot />
@@ -219,6 +221,7 @@
     }
   })
   export default class UserSideBarLayout extends Vue {
+    sideMenuShownMobile: boolean = false;
     private activeProgram?: Program;
     private activeUser?: User;
     programManagementActive: boolean =  true;

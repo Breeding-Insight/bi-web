@@ -39,6 +39,15 @@
               <MenuIcon></MenuIcon>
             </a>
           </div>
+          <div class="level-item is-hidden-desktop">
+            <a href="/">
+              <img
+                  src="../../assets/img/bi-logo.svg"
+                  alt="Breeding Insight home"
+                  width="175"
+              >
+            </a>
+          </div>
           <div v-if="sandboxConfig !== undefined" class="level-item">
             <div v-bind:class="{'notification is-warning px-5 has-text-centered': sandboxConfig === SandboxMode.Public,
                                 'notification is-info px-5 has-text-centered': sandboxConfig === SandboxMode.Coordinator}">
@@ -62,17 +71,14 @@
           class="column side-menu is-one-fifth"
           :class="{ 'is-hidden-touch': !sideMenuShownMobile }"
       >
-        <nav role="navigation" aria-label="main navigation">
           <aside id="sideMenu" class="menu">
             <slot name="menu"></slot>
           </aside>
-        </nav>
       </div>
-
 
       <div class="column">
         <main>
-          <div class="level is-mobile">
+          <div v-if="username !== undefined" class="level is-mobile">
             <div class="level-left"></div>
             <div class="level-right">
               <div class="level-item">
@@ -103,7 +109,7 @@
     components: {MenuIcon}
   })
   export default class SideBarMaster extends Vue {
-    sideMenuShownMobile: boolean = false;
+    sideMenuShownMobile: boolean = true;
     SandboxMode = SandboxMode;
 
     @Prop()
