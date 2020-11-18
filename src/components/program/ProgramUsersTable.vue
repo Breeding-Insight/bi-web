@@ -196,13 +196,15 @@
               },
   computed: {
     ...mapGetters([
-      'activeProgram'
+      'activeProgram',
+      'activeUser'
     ])
   }
 })
 export default class ProgramUsersTable extends Vue {
 
   private activeProgram?: Program;
+  private activeUser?: User;
   public users: ProgramUser[] = [];
   public systemUsers: User[] = [];
   private usersPagination?: Pagination = new Pagination();
@@ -387,6 +389,9 @@ export default class ProgramUsersTable extends Vue {
           ProgramUserService.delete(this.activeProgram!.id!, deleteId).then(() => {
             this.getUsers();
             this.$emit('show-success-notification', `${deleteName} removed from program`);
+            if (deleteId === this.activeUser!.id) {
+              this.$router.push({name: 'program-selection'});
+            }
           }).catch(() => {
             this.$emit('show-error-notification', `Unable to remove user, ${deleteName}.`);
           })

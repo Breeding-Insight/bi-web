@@ -61,6 +61,7 @@ export function defineAbilityFor(user: User | undefined, program: Program | unde
         for (const programRole of user.programRoles) {
           if (programRole.program && programRole.program.id &&
             programRole.program.id === program.id && programRole.domain &&
+            programRole.active &&
             typeof rolePermissions[programRole.domain] === 'function') {
 
             rolePermissions[programRole.domain](user, builder);
