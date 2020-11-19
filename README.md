@@ -107,7 +107,7 @@ General guidance for using each of the layout templates in `/components/layouts`
 
 **BaseSidebarLayout** provides the standard header and footer, a main content container, and a consistently styled sidebar container. This sidebar is **not** designated as a nav container and may be used for general content in the sidebar.
 
-**InfoSideBarLayout** provides guest account information in the sidebar, a child of BaseSideBarLayout. This is used for the **index page**, allowing display of guest user account information or system instructions for our sandboxes. Not entirely sure if this layout is necessary; might be able to add this content to Index.vue instead and use BaseSideBarLayout?
+**InfoSideBarLayout** provides guest account information in the sidebar, a child of BaseSideBarLayout. This is used for the **index page**, allowing display of guest user account information or system instructions for our sandboxes. Some modal information was moved from Index.vue to this layout file to support the login buttons in the header and sidebar.
 
 **UserSidebarLayout** provides the standard header and footer, a primary content container, and a sidebar that has nav designation and user-related menu items. This layout is used for **most pages that involve being logged in**.
 

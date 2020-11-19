@@ -46,7 +46,7 @@
             <li>The database is routinely reset and submitted data may be removed without notice.</li>
           </ul>
           <p>We encourage you to share your experiences using the sandbox with us!</p>
-          <p class="is-centered">
+          <p class="has-text-centered">
             <a class="button is-primary">
               Send feedback to our team
             </a>
