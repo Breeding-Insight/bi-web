@@ -109,12 +109,14 @@
                 Home
               </router-link>
             </li>
+            <!--
             <li>
               <a>Trials and Experiments</a>
             </li>
             <li>
               <a>Germplasm Inventory</a>
             </li>
+            -->
             <li>
               <router-link
                 v-bind:to="{name: 'traits', params: {programId: activeProgram.id}}"
@@ -153,12 +155,14 @@
                 </li>
               </ul>
             </li>
+            <!--
             <li>
               <a>Labels</a>
             </li>
             <li>
               <a>Reports</a>
             </li>
+            -->
             <li>
               <router-link
                 v-bind:to="{name: 'program-management', params: {programId: activeProgram.id}}"
