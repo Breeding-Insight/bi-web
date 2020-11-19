@@ -1,4 +1,3 @@
-
 /*
  * See the NOTICE file distributed with this work for additional information
  * regarding copyright ownership.
@@ -16,26 +15,10 @@
  * limitations under the License.
  */
 
-import {Program} from "@/breeding-insight/model/Program";
+import {Ability, AbilityClass} from '@casl/ability';
 
-export class ProgramUser {
-  id?: string;
-  name?: string;
-  email?: string;
-  roleId?: string;
-  domain?: string;
-  program?: Program;
-  active?: boolean;
+type Actions = 'manage' | 'create' | 'read' | 'update' | 'delete' | 'archive' | 'access';
+type Subjects = 'ProgramUser' | 'Location' | 'User' | 'AdminSection' | 'Trait';
 
-  constructor(id?: string, name?:string, email?: string, roleId?: string, domain?: string,
-              program?: Program, active?: boolean) {
-    this.id = id;
-    this.name = name;
-    this.email = email;
-    this.roleId = roleId;
-    this.domain = domain;
-    this.program = program;
-    this.active = active;
-  }
-  
-}
+export type AppAbility = Ability<[Actions, Subjects]>;
+export const AppAbility = Ability as AbilityClass<AppAbility>;

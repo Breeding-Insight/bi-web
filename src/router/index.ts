@@ -49,6 +49,7 @@ import {isProgramsPath, processProgramNavigation, signupRequireAccountToken} fro
 import AccountSignUp from "@/views/AccountSignUp.vue";
 import AccountCreationFailure from "@/views/AccountCreationFailure.vue"
 import AccountCreationSuccess from "@/views/AccountCreationSuccess.vue"
+import {defineAbilityFor} from "@/config/ability";
 
 
 Vue.use(VueRouter);
@@ -327,6 +328,8 @@ router.beforeEach((to: Route, from: Route, next: Function) => {
     UserService.getUserInfo()
     .then((user: User) => {
       store.commit(LOGIN, user);
+      const { rules } = defineAbilityFor(store.state.user, store.state.program);
+      Vue.prototype.$ability.update(rules);
       if (!unauthUsersOnly.includes(to.name!)) { next(); }
       else { next({name: 'program-selection'})}
     })

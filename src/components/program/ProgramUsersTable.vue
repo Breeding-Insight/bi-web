@@ -50,6 +50,7 @@
 
     <button
       v-show="!newUserActive & users.length > 0"
+      v-if="$ability.can('create', 'ProgramUser')"
       class="button is-primary has-text-weight-bold is-pulled-right"
       v-on:click="newUserActive = true"
       data-testid="newUserBtn"
@@ -106,7 +107,8 @@
     <ExpandableRowTable
       v-bind:records.sync="users"
       v-bind:row-validations="editUserValidations"
-      v-bind:editable="true"
+      v-bind:editable="$ability.can('update', 'ProgramUser')"
+      v-bind:archivable="$ability.can('archive', 'ProgramUser')"
       v-bind:pagination="usersPagination"
       v-on:submit="updateUser($event)"
       v-on:remove="displayWarning($event)"
@@ -147,6 +149,7 @@
         <EmptyTableMessage
           v-bind:button-view-toggle="!newUserActive"
           v-bind:button-text="'New User'"
+          v-bind:create-enabled="$ability.can('create', 'ProgramUser')"
           v-on:newClick="newUserActive = true"
         >
           <p class="has-text-weight-bold">
@@ -193,13 +196,15 @@
               },
   computed: {
     ...mapGetters([
-      'activeProgram'
+      'activeProgram',
+      'activeUser'
     ])
   }
 })
 export default class ProgramUsersTable extends Vue {
 
   private activeProgram?: Program;
+  private activeUser?: User;
   public users: ProgramUser[] = [];
   public systemUsers: User[] = [];
   private usersPagination?: Pagination = new Pagination();
@@ -272,8 +277,8 @@ export default class ProgramUsersTable extends Vue {
     ProgramUserService.update(updatedUser).then(() => {
       this.getUsers();
       this.$emit('show-success-notification', 'Success! ' + updatedUser.name + ' updated.');
-    }).catch(() => {
-      this.$emit('show-error-notification', 'Error updating program');
+    }).catch((error) => {
+      this.$emit('show-error-notification', error['errorMessage']);
     });
 
   }
@@ -384,6 +389,9 @@ export default class ProgramUsersTable extends Vue {
           ProgramUserService.delete(this.activeProgram!.id!, deleteId).then(() => {
             this.getUsers();
             this.$emit('show-success-notification', `${deleteName} removed from program`);
+            if (deleteId === this.activeUser!.id) {
+              this.$router.push({name: 'program-selection'});
+            }
           }).catch(() => {
             this.$emit('show-error-notification', `Unable to remove user, ${deleteName}.`);
           })

@@ -26,7 +26,8 @@ import {ValidationError} from "@/breeding-insight/model/errors/ValidationError";
 export class TraitUploadService {
 
   static errorContactingServer: string = "Unknown error when contacting server. Please try again.";
-  static errorUnknown: string = "Unable to determine reason for failure upload. Please check file and try again."
+  static errorUnknown: string = "Unable to determine reason for failure upload. Please check file and try again.";
+  static forbiddenUploadingFile: string = "You do not have permission to upload traits";
 
   static async deleteTraits(programId: string): Promise<void|Error> {
     try {
@@ -54,6 +55,9 @@ export class TraitUploadService {
           resolve(upload);
 
         }).catch((error) => {
+          if (error.response && error.response.status === 403) {
+            reject(this.forbiddenUploadingFile);
+          }
           if (error.response){
             reject(this.parseError(error));
           } else {

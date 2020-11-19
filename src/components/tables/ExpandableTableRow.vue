@@ -18,9 +18,10 @@
 <template>
   <tr v-bind:class="{'is-new': (rowData.new && !rowData.edit), 'is-edited': rowData.edit}" >
     <slot></slot>
-    <template v-if="rowData.editable">
+    <template v-if="rowData.editable || rowData.archivable">
       <td class="has-text-right is-narrow">
         <a
+          v-if="rowData.editable"
           data-testid="edit"
           v-on:click="$emit('edit')"
           v-on:keypress.enter.space="$emit('edit')"
@@ -35,6 +36,7 @@
           <ChevronDownIcon size="1x" aria-hidden="true"></ChevronDownIcon>
         </span>
         <a
+          v-if="rowData.archivable"
           v-on:click="$emit('remove')"
           v-on:keypress.enter.space="$emit('remove')"
           tabindex="0"

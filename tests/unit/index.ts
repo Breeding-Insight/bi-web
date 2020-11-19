@@ -22,6 +22,11 @@ import Buefy from 'buefy'
 import Vue from "vue";
 import {Program} from "@/breeding-insight/model/Program";
 import Vuelidate from "vuelidate";
+import { abilitiesPlugin } from '@casl/vue';
+import { defineAbilityFor } from '@/config/ability';
+import {User} from "@/breeding-insight/model/User";
+import {ProgramUser} from "@/breeding-insight/model/ProgramUser";
+import {Role} from "@/breeding-insight/model/Role";
 
 const localVue = createLocalVue();
 localVue.use(VueRouter);
@@ -34,10 +39,16 @@ localVue.use(Vuex);
 
 Vue.use(Vuelidate);
 
+const fakeProgram = new Program('1', 'Test Program');
 export const defaultStore = new Vuex.Store({
   getters: {
-    activeProgram: () => new Program('1', 'Test Program')
+    activeProgram: () => fakeProgram
   }
 });
+
+const fakeUser: User = new User('1', 'Test User','1', 'email@email.com',
+  new Role('1', 'admin'),
+  [new ProgramUser('1', 'Test User', 'email@email.com', '1', 'breeder', fakeProgram, true)]);
+localVue.use(abilitiesPlugin, defineAbilityFor(fakeUser, fakeProgram));
 
 export default localVue;

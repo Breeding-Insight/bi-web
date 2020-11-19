@@ -68,7 +68,7 @@
       </div>
     </template>
     <template v-slot:menu>
-      <template v-if="activeUser && activeUser.hasRole('admin')">
+      <template v-if="$ability.can('access', 'AdminSection')">
         <p class="menu-label">
           Admin
         </p>
@@ -140,7 +140,9 @@
                   Favorites
                 </router-link>
               </li>
-              <li>
+              <li
+                v-if="$ability.can('create', 'Trait')"
+              >
                 <router-link v-bind:to="{name: 'traits-import', params: {programId: activeProgram.id}}">
                   Import Traits
                 </router-link>
