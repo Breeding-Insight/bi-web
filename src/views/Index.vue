@@ -47,7 +47,7 @@
           </ul>
           <p>We encourage you to share your experiences using the sandbox with us!</p>
           <p class="has-text-centered">
-            <a class="button is-primary">
+            <a class="button is-primary" href="#" v-on:click="$showCollectorDialog()">
               Send feedback to our team
             </a>
           </p>
@@ -130,6 +130,7 @@
   import {ServerManagementService} from "@/breeding-insight/service/ServerManagementService";
   import {UserService} from "@/breeding-insight/service/UserService";
   import ServerContactErrorModal from "@/components/modals/ServerContactErrorModal.vue";
+  import {SandboxMode} from '@/util/config';
 
   @Component({
     components: {ServerContactErrorModal, InfoModal, BaseModal}
@@ -145,6 +146,7 @@
     public sessionExpired!: boolean;
     @Prop()
     public loginError!: boolean;
+    SandboxMode = SandboxMode;
 
     mounted() {
       if (this.loginRedirect || this.sessionExpired || this.loginError){

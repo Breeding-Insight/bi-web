@@ -29,7 +29,27 @@
         </div>
       </template>
       <template v-slot:menu>
-        <div class="pl-3">
+        <div v-if="sandboxConfig == undefined" class="pl-3">
+          <h1
+            class="title has-text-warning is-5"
+          >
+            Developer mode
+          </h1>
+          <p class="has-text-light is-paddingless">
+            For now, this message should only show up if there is no sandbox mode set.
+          </p>
+        </div>
+        <div v-if="sandboxConfig == SandboxMode.Coordinator" class="pl-3">
+          <h1
+            class="title has-text-warning is-5"
+          >
+            Coordinator Mode
+          </h1>
+          <p class="has-text-light is-paddingless">
+            Use your <span class="has-text-weight-bold">ORCID sandbox</span> login to access this site.
+          </p>
+        </div>
+        <div v-if="sandboxConfig == SandboxMode.Public" class="pl-3">
           <h1
             class="title has-text-warning is-5"
           >
@@ -198,6 +218,7 @@
   import {ServerManagementService} from "@/breeding-insight/service/ServerManagementService";
   import {UserService} from "@/breeding-insight/service/UserService";
   import ServerContactErrorModal from "@/components/modals/ServerContactErrorModal.vue";
+  import {SandboxMode} from '@/util/config';
 
 @Component( {
     components: {BaseSideBarLayout, BaseModal, ServerContactErrorModal}
@@ -216,6 +237,7 @@
     public loginError!: boolean;
     @Prop()
     username!: string;
+    SandboxMode = SandboxMode;
 
     mounted() {
       if (this.loginRedirect || this.sessionExpired || this.loginError){
@@ -246,5 +268,9 @@
       window.location.href = process.env.VUE_APP_BI_API_ROOT+'/sso/start';
     }
 
+    get sandboxConfig() {
+      return process.env.VUE_APP_SANDBOX;
+    }
+    
     }
 </script>
