@@ -16,7 +16,8 @@
   -->
 
 <template>
-  <div>
+  <div class="sidebarlayout">
+  <!-- the redundant sidebarlayout div here fixes the vertical height issue, don't remove -->
     <BaseSideBarLayout>
       <template v-slot:title>
         <div class="level-item">
@@ -271,6 +272,6 @@
     get sandboxConfig() {
       return process.env.VUE_APP_SANDBOX;
     }
-    
+
     }
 </script>
