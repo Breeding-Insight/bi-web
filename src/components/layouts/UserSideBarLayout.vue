@@ -69,7 +69,8 @@
     </template>
     <template v-slot:menu>
       <nav role="navigation" aria-label="main navigation">
-        <template v-if="activeUser && activeUser.hasRole('admin')">
+        <template v-if="$ability.can('access', 'AdminSection')">
+
           <p class="menu-label">
             Admin
           </p>
@@ -102,7 +103,6 @@
           </template>
         </template>
         <template v-if="activeProgram">
-
           <ul class="menu-list">
             <li>
               <router-link v-bind:to="{name: 'program-home', params: {programId: activeProgram.id}}">
@@ -143,7 +143,9 @@
                     Favorites
                   </router-link>
                 </li>
-                <li>
+                <li
+                  v-if="$ability.can('create', 'Trait')"
+                >
                   <router-link v-bind:to="{name: 'traits-import', params: {programId: activeProgram.id}}">
                     Import Traits
                   </router-link>

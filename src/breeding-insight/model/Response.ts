@@ -1,4 +1,3 @@
-
 /*
  * See the NOTICE file distributed with this work for additional information
  * regarding copyright ownership.
@@ -16,26 +15,6 @@
  * limitations under the License.
  */
 
-import {Program} from "@/breeding-insight/model/Program";
-
-export class ProgramUser {
-  id?: string;
-  name?: string;
-  email?: string;
-  roleId?: string;
-  domain?: string;
-  program?: Program;
-  active?: boolean;
-
-  constructor(id?: string, name?:string, email?: string, roleId?: string, domain?: string,
-              program?: Program, active?: boolean) {
-    this.id = id;
-    this.name = name;
-    this.email = email;
-    this.roleId = roleId;
-    this.domain = domain;
-    this.program = program;
-    this.active = active;
-  }
-  
+export interface Response {
+    data: any
 }

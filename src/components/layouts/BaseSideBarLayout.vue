@@ -71,9 +71,14 @@
           class="column side-menu is-one-fifth"
           :class="{ 'is-hidden-touch': !sideMenuShownMobile }"
       >
-          <aside id="sideMenu" class="menu">
-            <slot name="menu"></slot>
-          </aside>
+        <aside id="sideMenu" class="menu mb-5">
+          <slot name="menu"></slot>
+        </aside>
+        <div id="versionInfo" class="is-size-7 is-justify-content-center is-align-content-center is-flex">
+          <span class="is-centered">
+            <VersionInfo />
+          </span>
+        </div>
       </div>
 
       <div class="column">
@@ -100,13 +105,14 @@
 </template>
 
 <script lang="ts">
-  import {Component, Prop, Watch, Vue} from 'vue-property-decorator'
-  import { MenuIcon } from 'vue-feather-icons'
-  import {SandboxMode} from '@/util/config'
+import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
+import { MenuIcon } from 'vue-feather-icons';
+import { SandboxMode } from '@/util/config';
+import VersionInfo from '@/components/layouts/VersionInfo.vue';
 
 
-  @Component( {
-    components: {MenuIcon}
+@Component( {
+    components: { VersionInfo, MenuIcon}
   })
   export default class SideBarMaster extends Vue {
     sideMenuShownMobile: boolean = true;

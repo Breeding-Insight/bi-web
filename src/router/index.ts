@@ -21,6 +21,7 @@ import Index from '@/views/Index.vue'
 import Home from '@/views/Home.vue'
 import StyleGuide from '@/views/StyleGuide.vue'
 import NotAuthorized from '@/views/NotAuthorized.vue'
+import BrapiAuthorize from '@/views/BrapiAuthorize.vue'
 import ProgramManagement from '@/views/ProgramManagement.vue'
 import AdminProgramManagement from '@/views/AdminProgramManagement.vue'
 import AdminUserManagement from '@/views/AdminUserManagement.vue'
@@ -48,6 +49,7 @@ import {isProgramsPath, processProgramNavigation, signupRequireAccountToken} fro
 import AccountSignUp from "@/views/AccountSignUp.vue";
 import AccountCreationFailure from "@/views/AccountCreationFailure.vue"
 import AccountCreationSuccess from "@/views/AccountCreationSuccess.vue"
+import {defineAbilityFor} from "@/config/ability";
 
 
 Vue.use(VueRouter);
@@ -232,6 +234,19 @@ const routes = [
     component: NotAuthorized
   },
   {
+    path: '/brapi/authorize',
+    name: 'brapi-authorize',
+    meta: {
+      title: 'BrAPI Authorize',
+      layout: layouts.noSideBar
+    },
+    component: BrapiAuthorize,
+    props: (route: Route) => ({
+      applicationName: route.query.display_name,
+      returnUrl: route.query.return_url
+    })
+  },
+  {
     path: '/signup',
     name: 'signup',
     meta: {
@@ -315,6 +330,8 @@ router.beforeEach((to: Route, from: Route, next: Function) => {
     UserService.getUserInfo()
     .then((user: User) => {
       store.commit(LOGIN, user);
+      const { rules } = defineAbilityFor(store.state.user, store.state.program);
+      Vue.prototype.$ability.update(rules);
       if (!unauthUsersOnly.includes(to.name!)) { next(); }
       else { next({name: 'program-selection'})}
     })

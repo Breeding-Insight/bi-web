@@ -22,7 +22,7 @@
     -->
     <BaseTable
       v-show="records.length > 0"
-      v-bind:show-expand-controls="true"
+      v-bind:show-expand-controls="editable || archivable"
       v-bind="$props"
       v-on:colspan="colSpan = $event + 1"
       v-on="$listeners"
@@ -94,6 +94,8 @@
     records!: Array<any>;
     @Prop()
     editable!: boolean;
+    @Prop()
+    archivable!: boolean;
     @Prop()
     pagination!: Pagination;
 

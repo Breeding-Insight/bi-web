@@ -41,7 +41,8 @@ export class UserService {
       UserDAO.getUserInfo().then((biResponse: BiResponse) => {
         const result: any = biResponse.result;
         const role: Role | undefined = this.parseSystemRoles(result.systemRoles);
-        const user = new User(result.id, result.name, result.orcid, result.email, role);
+        const programRoles: ProgramUser[] | undefined = this.parseProgramRoles(result.programRoles);
+        const user = new User(result.id, result.name, result.orcid, result.email, role, programRoles);
         resolve(user);
       }).catch((error: any) => reject(error));
     });
@@ -232,7 +233,7 @@ export class UserService {
         // Both need to exist for us to assign the data to the user
         if (role && program){
           const newProgramUser: ProgramUser = new ProgramUser(programRole.id, undefined, undefined,
-            role.id, program, programRole.active);
+            role.id, role.name, program, programRole.active);
           programRoles.push(newProgramUser);
         }
       }

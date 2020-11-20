@@ -19,23 +19,29 @@ import {Route} from "vue-router";
 import store from "@/store";
 import {ProgramService} from "@/breeding-insight/service/ProgramService";
 import {Program} from "@/breeding-insight/model/Program";
-import {SET_ACTIVE_PROGRAM} from "@/store/mutation-types";
+import {LOGIN, SET_ACTIVE_PROGRAM} from "@/store/mutation-types";
 import Vue from "vue";
+import {defineAbilityFor} from "@/config/ability";
+import {UserService} from "@/breeding-insight/service/UserService";
+import {User} from "@/breeding-insight/model/User";
 
-export function processProgramNavigation(to: Route, from: Route, next: Function) {
+export async function processProgramNavigation(to: Route, from: Route, next: Function) {
 
   // Navigating to programs path
   if (isProgramsPath(to)) {
     if (store.state.program === undefined || store.state.program.id !== to.params.programId) {
-      ProgramService.getOne(to.params['programId'])
-        .then((program: Program) => {
-          store.commit(SET_ACTIVE_PROGRAM, program);
-          next();
-        })
-        .catch((error) => {
-          //TODO: Redirect to internal server page, or not found page
-          next({name: 'program-selection'});
-        });
+      try {
+        const user: User = await UserService.getUserInfo();
+        store.commit(LOGIN, user);
+        const program: Program = await ProgramService.getOne(to.params['programId']);
+        store.commit(SET_ACTIVE_PROGRAM, program);
+        const { rules } = defineAbilityFor(store.state.user, store.state.program);
+        Vue.prototype.$ability.update(rules);
+        next();
+      } catch (error) {
+        //TODO: Redirect to internal server page, or not found page
+        next({name: 'program-selection'});
+      }
     } else { next(); }
   } else { next(); }
 }

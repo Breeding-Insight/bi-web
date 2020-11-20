@@ -72,6 +72,8 @@
     records!: Array<any>;
     @Prop()
     editable!: boolean;
+    @Prop()
+    archivable!: boolean;
     @Prop({default: () => []})
     columns!: Array<TableColumn>;
     @Prop()
@@ -121,7 +123,7 @@
 
       const rowArray = new Array<TableRow<any>>();
       for (const record of this.records){
-        const newTableRow = new TableRow<any>(this.editable, record);
+        const newTableRow = new TableRow<any>(this.editable, this.archivable, record);
 
         // See if it is our new row
         if (difference.length === 1) {

@@ -24,7 +24,7 @@ import {VBreakpoint} from "@/components/VBreakpoint";
 describe('Breakpoints emit properly', () => {
   const store = defaultStore;
   const records: TableRow<any>[] = [
-    new TableRow(false, {name: 'test'})
+    new TableRow(false, false, {name: 'test'})
   ]
 
 

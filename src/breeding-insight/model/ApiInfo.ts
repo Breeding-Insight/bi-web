@@ -1,6 +1,5 @@
 /*
- * See the NOTICE file distributed with this work for additional information
- * regarding copyright ownership.
+ * See the NOTICE file distributed with this work for additional information regarding copyright ownership.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,16 +14,12 @@
  * limitations under the License.
  */
 
-const fs = require('fs')
-const packageJson = fs.readFileSync('./package.json')
-const version = JSON.parse(packageJson).version || 0
-const versionInfo = JSON.parse(packageJson).versionTag || 0
+export class ApiInfo {
+  version?: string;
+  versionInfo?: string;
 
-process.env.VUE_APP_VERSION = version;
-process.env.VUE_APP_VERSION_INFO = versionInfo;
-
-module.exports = {
-  devServer: {
-    disableHostCheck: true
+  constructor(version?:string, versionInfo?:string) {
+    this.version = version;
+    this.versionInfo = versionInfo;
   }
-};
+}

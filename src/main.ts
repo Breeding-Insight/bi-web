@@ -25,7 +25,10 @@ import Buefy from 'buefy';
 import VueLogger from 'vuejs-logger';
 import Vuelidate from 'vuelidate';
 import VueCookies from 'vue-cookies';
+import { abilitiesPlugin } from '@casl/vue';
+import { defineAbilityFor } from './config/ability';
 
+Vue.use(abilitiesPlugin, defineAbilityFor(undefined, undefined));
 Vue.config.productionTip = false;
 Vue.use(Buefy);
 Vue.use(Vuelidate);
