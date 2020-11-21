@@ -34,7 +34,6 @@
             @show-warning-notification="showWarningNotification"
         />
     </component>
-
     <Footer />
 
   </div>
@@ -48,6 +47,8 @@ import ErrorNotification from '@/components/notifications/ErrorNotification.vue'
 import SimpleLayout from '@/components/layouts/SimpleLayout.vue'
 import UserSideBarLayout from './components/layouts/UserSideBarLayout.vue'
 import NoSideBarLayout from './components/layouts/NoSideBarLayout.vue'
+import InfoSideBarLayout from './components/layouts/InfoSideBarLayout.vue'
+import BaseSideBarLayout from './components/layouts/BaseSideBarLayout.vue'
 import SandboxPublicNotification from "@/components/notifications/SandboxPublicNotification.vue";
 import SandboxCoordinatorNotification from "@/components/notifications/SandboxCoordinatorNotification.vue";
 import {SandboxMode} from "@/util/config";
@@ -87,6 +88,8 @@ import Footer from "@/components/layouts/Footer.vue";
     simpleLayout: SimpleLayout,
     userSideBarLayout: UserSideBarLayout,
     noSideBarLayout: NoSideBarLayout,
+    infoSideBarLayout: InfoSideBarLayout,
+    baseSideBarLayout: BaseSideBarLayout,
     Footer
   }
 })
