@@ -15,14 +15,12 @@
  * limitations under the License.
  */
 
-import {Trait} from "@/breeding-insight/model/Trait";
-
-export class ProgramUpload {
+export class ObservationLevel {
   id?: string;
-  data?: Trait[];
+  name?: string;
 
-  constructor(id?:string, data?:Array<Trait>) {
+  constructor(id?:string, name?:string) {
     this.id = id;
-    this.data = data;
+    this.name = name;
   }
 }

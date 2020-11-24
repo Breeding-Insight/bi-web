@@ -93,6 +93,7 @@
   import { Method } from '../../breeding-insight/model/Method';
   import { StringFormatters } from '@/breeding-insight/utils/StringFormatters';
   import { TraitStringFormatters } from '@/breeding-insight/utils/TraitStringFormatters';
+  import {ProgramUpload} from "@/breeding-insight/model/ProgramUpload";
   
 @Component({
   mixins: [validationMixin],
@@ -112,6 +113,7 @@ export default class TraitsImportTable extends Vue {
   private traitsPagination?: Pagination = new Pagination();
   private paginationController: PaginationController = new PaginationController();
   private traits : Trait[] = [];
+  private upload?: ProgramUpload;
   private loaded = false;
   private collapseColumns = false;
 
@@ -129,9 +131,9 @@ export default class TraitsImportTable extends Vue {
       this.paginationController.currentPage, this.paginationController.pageSize, this.paginationController.showAll);
     this.paginationController.setCurrentCall(paginationQuery);
 
-    TraitUploadService.getTraits(this.activeProgram!.id!, paginationQuery).then(([traits, metadata]) => {
+    TraitUploadService.getTraits(this.activeProgram!.id!, paginationQuery).then(([upload, metadata]) => {
       if (this.paginationController.matchesCurrentRequest(metadata.pagination)){
-        this.traits = traits;
+        this.traits = upload.data || [];
         this.traitsPagination = metadata.pagination;
       }
 

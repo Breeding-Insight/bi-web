@@ -79,12 +79,23 @@ $table-striped-row-even-hover-background-color:$link-light;
 
 //$margin-right: 2 rem;
 
+// Import buefy before bulma
+@import "~bulma/sass/utilities/_all";
+
+// Customize buefy if you want to here
+
+
 // Update some of Bulma's component variables
 
 //Enable this import line when Bulma is in a local folder called "bulma"
 //@import 'bulma/bulma';
 // Enable this import line instead when Bulma is in package.json
-@import '../../../node_modules/bulma/bulma.sass';
+@import '~bulma';
+@import "~buefy/src/scss/buefy";
+
+// Bulma extensions
+$divider-margin-inner-size: 0;
+@import "~@creativebulma/bulma-divider";
 
 // Overrides that can't be done with variables go here
 // may be broken out into a separate file later
@@ -170,12 +181,12 @@ footer {
 
 .field {
   &.field--error {
-    & span.form-error {
+    & .field span.form-error {
       display: block;
     }
   }
   &:not(.field--error) {
-    & span.form-error {
+    & .field span.form-error {
       display: none;
     }
   }
@@ -430,4 +441,20 @@ a.is-underlined {
   a {
     color: white;
   }
+}
+
+div.sentence-input {
+  display: flex;
+  align-items: flex-start;
+  p.is-input-prepend {
+  }
+  .field {
+    margin-left: 10px;
+  }
+}
+
+// Buefy messes this up
+.icon svg {
+  fill: none;
+  stroke-width: 2;
 }

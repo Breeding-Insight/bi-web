@@ -71,20 +71,22 @@
     }
 
     checkSubmit() {
-      this.$v.newRecord.$touch();
-      if (this.$v.newRecord.$anyError){
+
+      if (this.$v.newRecord) { this.$v.newRecord.$touch(); }
+
+      if (this.$v.newRecord && this.$v.newRecord.$anyError){
 
         this.$emit('show-error-notification', 'Fix Invalid Fields');
         return;
       } else {
 
         this.$emit('submit');
-        this.$v.newRecord.$reset();
+        if (this.$v.newRecord) { this.$v.newRecord.$reset(); }
       }
     }
 
     checkCancel() {
-      this.$v.newRecord.$reset();
+      if (this.$v.newRecord) { this.$v.newRecord.$reset(); }
       this.$emit('cancel');
     }
 

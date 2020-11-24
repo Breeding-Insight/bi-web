@@ -20,6 +20,7 @@ import {Program} from "@/breeding-insight/model/Program";
 import {Metadata, Pagination} from "@/breeding-insight/model/BiResponse";
 import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
 import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
+import {ProgramObservationLevel} from "@/breeding-insight/model/ProgramObservationLevel";
 
 export class ProgramService {
 
@@ -120,6 +121,14 @@ export class ProgramService {
       }).catch((error) => reject(error));
 
     }));
+  }
+
+  static async getObservationLevels(programId: string): Promise<[ProgramObservationLevel[], Metadata] | void> {
+    if (programId) {
+      const { result: { data }, metadata } = await ProgramDAO.getObservationLevels(programId);
+      return [data, metadata];
+    }
+    else return;
   }
 
 }
