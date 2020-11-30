@@ -304,7 +304,6 @@ export default class TraitsImport extends ProgramsBase {
     try {
       // fetch uploaded traits
       const [ upload ] = await TraitUploadService.getTraits(this.activeProgram!.id!) as [ProgramUpload, Metadata];
-      console.log(upload);
       await TraitUploadService.confirmUpload(this.activeProgram!.id!, upload!.id!);
 
       // show all program traits

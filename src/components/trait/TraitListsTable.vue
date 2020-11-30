@@ -188,8 +188,6 @@ export default class TraitTable extends Vue {
   mounted() {
     this.getTraits();
     this.getObservationLevels();
-    console.log(this.methodClassOptions);
-    console.log(this.scaleClassOptions);
   }
 
   @Watch('paginationController', { deep: true})
@@ -212,7 +210,6 @@ export default class TraitTable extends Vue {
 
   async saveTrait() {
     try {
-      console.log(this.newTrait);
       await TraitService.createTraits(this.activeProgram!.id!, [this.newTrait]);
       this.$emit('show-success-notification', 'Trait creation successful.');
       this.getTraits();
@@ -223,7 +220,7 @@ export default class TraitTable extends Vue {
       if (error instanceof ValidationError) {
         const fieldErrors: FieldError[] = error.rows[0].errors;
         for (const fieldError of fieldErrors) {
-          console.log(fieldError);
+          this.$log.error(fieldError);
         }
       }
 
