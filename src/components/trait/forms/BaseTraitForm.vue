@@ -64,7 +64,7 @@
       <BasicInputField
         v-bind:field-name="'Abbreviation(s)'"
         v-bind:field-help="'Semicolon separated list, with primary abbreviation as first term.'"
-        v-on:input="trait.abbreviations = parseCommaList($event)"
+        v-on:input="setAbbreviations($event)"
       />
 
       <BasicInputField
@@ -131,6 +131,11 @@ export default class TraitTable extends Vue {
   setObservationLevel(value: string) {
     // TODO: update model to accept id for program observation level
     this.trait!.programObservationLevel = new ProgramObservationLevel(value);
+  }
+  setAbbreviations(value: string) {
+    const abbreviations = this.parseCommaList(value);
+    this.trait.abbreviations = abbreviations;
+    if (abbreviations.length > 0) {this.trait.mainAbbreviation = this.trait.abbreviations[0]}
   }
   parseCommaList(value: string): string[] {
     return value.split(',');
