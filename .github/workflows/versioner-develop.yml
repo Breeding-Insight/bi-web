@@ -18,7 +18,7 @@ jobs:
       - name: Update version
         run: 'sed -i -E "s/\"version\": \"(v[0-9]*\.[0-9]*\.[0-9]*).*,/\"version\": \"\1+${{ github.run_number }}\",/" package.json'
       - name: Update version info
-        run: 'sed -i -E "s~\"versionInfo\": \".*~\"versionInfo\": \"https://github.com/Breeding-Insight/bi-web/commit/${{ github.sha }}\",~" package.json'
+        run: 'sed -i -E "s~\"versionInfo\": \".*~\"versionInfo\": \"https://github.com/Breeding-Insight/bi-web/commit/${{ github.sha }}\"~" package.json'
       - name: Commit package.json
         run: |
           git config --local user.email "bidevteam@cornell.edu"
