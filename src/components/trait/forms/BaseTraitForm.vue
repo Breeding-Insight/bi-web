@@ -50,6 +50,25 @@
       </div>
 
       <!-- Scale options -->
+      <template v-if="trait.scale && trait.scale.dataType === DataType.Ordinal">
+        <OrdinalTraitForm />
+      </template>
+      <template v-if="trait.scale && trait.scale.dataType === DataType.Text">
+        <TextTraitForm />
+      </template>
+      <template v-if="trait.scale && trait.scale.dataType === DataType.Date">
+        <DateTraitForm />
+      </template>
+      <template v-if="trait.scale && trait.scale.dataType === DataType.Duration">
+        <DurationTraitForm />
+      </template>
+      <template v-if="trait.scale && trait.scale.dataType === DataType.Nominal">
+        <NominalTraitForm />
+      </template>
+      <template v-if="trait.scale && trait.scale.dataType === DataType.Numerical">
+        <NumericalTraitForm />
+      </template>
+      <!-- TODO: Add formula -->
     </div>
     <div class="divider is-vertical" />
 
@@ -84,11 +103,21 @@ import BasicInputField from "@/components/forms/BasicInputField.vue";
 import BasicSelectField from "@/components/forms/BasicSelectField.vue";
 import {Trait} from "@/breeding-insight/model/Trait";
 import {Method} from "@/breeding-insight/model/Method";
-import { Scale } from '@/breeding-insight/model/Scale';
+import { Scale, DataType } from '@/breeding-insight/model/Scale';
 import { ProgramObservationLevel } from '@/breeding-insight/model/ProgramObservationLevel';
+import OrdinalTraitForm from "@/components/trait/forms/OrdinalTraitForm.vue";
+import TextTraitForm from "@/components/trait/forms/TextTraitForm.vue";
+import DateTraitForm from "@/components/trait/forms/DateTraitForm.vue";
+import DurationTraitForm from "@/components/trait/forms/DurationTraitForm.vue";
+import NominalTraitForm from "@/components/trait/forms/NominalTraitForm.vue";
+import NumericalTraitForm from "@/components/trait/forms/NumericalTraitForm.vue";
 
 @Component({
-  components: {BasicSelectField, BasicInputField}
+  components: {
+    NumericalTraitForm,
+    NominalTraitForm,
+    DurationTraitForm, DateTraitForm, TextTraitForm, OrdinalTraitForm, BasicSelectField, BasicInputField},
+  data: () => ({DataType})
 })
 export default class TraitTable extends Vue {
   @Prop()
@@ -141,7 +170,6 @@ export default class TraitTable extends Vue {
   parseSemiColonList(value: string): string[] {
     return value.split(';');
   }
-
 }
 
 </script>

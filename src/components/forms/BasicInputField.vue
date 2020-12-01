@@ -20,6 +20,7 @@
     v-bind:validations="validations"
     v-bind:field-help="fieldHelp"
     v-bind:field-name="fieldName"
+    v-bind:show-label="showLabel"
   >
     <input
         v-bind:id="fieldName.replace(' ', '-')"
@@ -50,6 +51,8 @@
     fieldHelp!: string;
     @Prop()
     validations!: any;
+    @Prop()
+    showLabel!: boolean;
 
     get fieldTypeComputed() {
       return this.fieldType ? this.fieldType : 'text';
