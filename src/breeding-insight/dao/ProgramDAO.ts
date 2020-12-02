@@ -92,7 +92,7 @@ export class ProgramDAO {
   static async getObservationLevels(programId: string): Promise<BiResponse> {
 
     const { data } =  await api.call({
-      url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/observation_level`,
+      url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/observation-level`,
       method: 'get'
     }) as Response;
     return new BiResponse(data);
