@@ -17,36 +17,52 @@
 
 <template>
   <div>
-    <div class="columns is-vcentered is-mobile">
-      <div class="column is-one-fifth">
-        <BasicInputField
-          v-bind:field-name="'Label'"
-          v-bind:show-label="false"
-        />
-      </div>
-      <div class="column">
-        <p class="is-size-2">=</p>
-      </div>
-      <div class="column is-four-fifths">
-        <BasicInputField
-          v-bind:field-name="'Value'"
-          v-bind:show-label="false"
-          :placeholder="'e.g. Very thin (< 4mm)'"
-        />
-      </div>
-    </div>
+    <template v-for="[i, item] of data.entries()">
+      <LabelValueRow
+        v-bind:label="item.label"
+        v-bind:value="item.value"
+        v-on:delete="removeRow(i)"
+        v-on:value-change="item.value = $event"
+        v-on:label-change="item.label = $event"
+        v-bind:id="item.label"
+      />
+    </template>
   </div>
 </template>
 
-<script>
+<script lang="ts">
 
-import {Component, Vue} from "vue-property-decorator";
-import BasicInputField from "@/components/forms/BasicInputField";
+import {Component, Prop, Vue, Watch} from "vue-property-decorator";
+import {Category} from "@/breeding-insight/model/Category";
+import LabelValueRow from "@/components/trait/forms/LabelValueRow.vue";
+import BasicInputField from "@/components/forms/BasicInputField.vue";
 
 @Component({
-  components: {BasicInputField}
+  components: {BasicInputField, LabelValueRow}
 })
 export default class OrdinalTraitForm extends Vue {
 
+  @Prop({default: () => []})
+  private data!: Category[];
+  @Prop({default: true})
+  private new!: boolean;
+
+  @Watch('data', {immediate: true, deep: true})
+  emitData(){
+    this.$emit('update', this.data);
+  }
+
+
+  mounted() {
+    if (this.new) {
+      for (const i of Array(5).keys()) {
+        this.data.push(new Category(i.toString(), ''));
+      }
+    }
+  }
+
+  removeRow(index: number) {
+    this.data.splice(index,1);
+  }
 }
 </script>

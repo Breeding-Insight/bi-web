@@ -51,7 +51,9 @@
 
       <!-- Scale options -->
       <template v-if="trait.scale && trait.scale.dataType === DataType.Ordinal">
-        <OrdinalTraitForm />
+        <OrdinalTraitForm
+          v-on:update="trait.scale.categories = $event"
+        />
       </template>
       <template v-if="trait.scale && trait.scale.dataType === DataType.Text">
         <TextTraitForm />
