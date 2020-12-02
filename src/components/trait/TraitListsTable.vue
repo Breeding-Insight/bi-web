@@ -122,7 +122,7 @@
           <p class="has-text-weight-bold">
             No traits are currently defined for this program.
           </p>
-          Create new traits by clicking "Import Traits".
+          Create new traits by clicking "New Trait" or navigating to "Import Traits".
         </EmptyTableMessage>
       </template>
     </SidePanelTable>

@@ -23,12 +23,12 @@
     v-bind:show-label="showLabel"
   >
     <input
-        v-bind:id="fieldName.replace(' ', '-')"
-        :value="value"
+        v-bind:id="inputId ? inputId : fieldName.replace(' ', '-')"
+        v-bind:value="value"
         @input="$emit('input', $event.target.value)"
         class="input"
-        :type="fieldTypeComputed"
-        v-bind:placeholder="fieldName"
+        v-bind:type="fieldTypeComputed"
+        v-bind:placeholder="placeholder ? placeholder : fieldName"
     />
   </BaseFieldWrapper>
 </template>
@@ -53,6 +53,10 @@
     validations!: any;
     @Prop()
     showLabel!: boolean;
+    @Prop()
+    placeholder: boolean | undefined;
+    @Prop()
+    inputId: string | undefined;
 
     get fieldTypeComputed() {
       return this.fieldType ? this.fieldType : 'text';

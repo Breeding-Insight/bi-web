@@ -24,6 +24,7 @@
             v-bind:show-label="false"
             v-bind:value="label"
             v-on:input="$emit('label-change', $event)"
+            v-bind:input-id="'label' + Math.random()"
         />
       </div>
       <div class="column is-1 has-text-centered">
@@ -35,9 +36,10 @@
             <BasicInputField
                 v-bind:field-name="'Value'"
                 v-bind:show-label="false"
-                v-bind:placeholder="'e.g. Very thin (< 4mm)'"
+                v-bind:placeholder="valuePlaceholder"
                 v-bind:value="value"
                 v-on:input="$emit('value-change', $event)"
+                v-bind:input-id="'value' + Math.random()"
             />
           </div>
           <div class="column is-one-fifth ml-2">
@@ -64,6 +66,8 @@ export default class LabelValueRow extends Vue {
   label!: string;
   @Prop()
   value!: string;
+  @Prop()
+  valuePlaceholder: string | undefined;
 }
 
 </script>

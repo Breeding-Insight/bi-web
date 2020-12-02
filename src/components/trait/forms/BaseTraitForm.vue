@@ -158,6 +158,10 @@ export default class TraitTable extends Vue {
     this.trait!.method!.methodClass = value;
   }
   setScaleClass(value: string) {
+    if (this.trait.scale!.scaleName === DataType.Nominal || this.trait.scale!.scaleName === DataType.Ordinal) {
+      this.trait.scale!.categories = undefined;
+    }
+
     this.trait!.scale!.scaleName = value;
     this.trait!.scale!.dataType = value;
   }
