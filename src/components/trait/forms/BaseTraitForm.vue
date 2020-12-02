@@ -69,8 +69,8 @@
 
       <BasicInputField
         v-bind:field-name="'Synonyms'"
-        v-bind:field-help="'Comma separated list.'"
-        v-on:input="trait.synonyms = parseCommaList($event)"
+        v-bind:field-help="'Semicolon separated list.'"
+        v-on:input="trait.synonyms = parseSemiColonList($event)"
       />
     </div>
   </div>
@@ -133,12 +133,12 @@ export default class TraitTable extends Vue {
     this.trait!.programObservationLevel = new ProgramObservationLevel(value);
   }
   setAbbreviations(value: string) {
-    const abbreviations = this.parseCommaList(value);
+    const abbreviations = this.parseSemiColonList(value);
     this.trait.abbreviations = abbreviations;
     if (abbreviations.length > 0) {this.trait.mainAbbreviation = this.trait.abbreviations[0]}
   }
-  parseCommaList(value: string): string[] {
-    return value.split(',');
+  parseSemiColonList(value: string): string[] {
+    return value.split(';');
   }
 
 }
