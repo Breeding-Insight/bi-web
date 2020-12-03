@@ -16,11 +16,11 @@
  */
 
 export enum MethodClass {
-  Computation = "COMPUTATION",
-  Observation = "OBSERVATION",
-  Measurement = "MEASUREMENT",
-  Counting = "COUNTING",
-  Estimation = "ESTIMATION"
+  Computation = "Computation",
+  Observation = "Observation",
+  Measurement = "Measurement",
+  Counting = "Counting",
+  Estimation = "Estimation"
 }
 
 export class Method {
@@ -37,6 +37,6 @@ export class Method {
   }
 
   static methodClassEquals(classString: string, type: MethodClass): boolean {
-    return classString.toUpperCase() === type;
+    return classString.toUpperCase() === type.toUpperCase();
   }
 }

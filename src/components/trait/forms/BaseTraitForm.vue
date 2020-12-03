@@ -14,12 +14,14 @@
         <b-field
           label="Observation Level"
           v-bind:custom-class="'is-sr-only'"
+          class="is-flex-grow-1"
         >
           <b-autocomplete
             v-model="name"
             v-bind:open-on-focus="true"
             v-bind:data="filteredDataObj(programObservationLevels)"
             v-on:input="setObservationLevel($event)"
+            placeholder="Start typing to see suggestions"
           />
         </b-field>
       </div>
@@ -129,7 +131,6 @@ export default class TraitTable extends Vue {
     this.trait!.scale!.dataType = value;
   }
   setObservationLevel(value: string) {
-    // TODO: update model to accept id for program observation level
     this.trait!.programObservationLevel = new ProgramObservationLevel(value);
   }
   setAbbreviations(value: string) {

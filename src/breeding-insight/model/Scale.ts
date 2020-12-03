@@ -18,12 +18,12 @@
 import {Category} from "@/breeding-insight/model/Category";
 
 export enum DataType {
-  Date = "DATE",
-  Duration = "DURATION",
-  Nominal = "NOMINAL",
-  Numerical = "NUMERICAL",
-  Ordinal = "ORDINAL",
-  Text = "TEXT"
+  Date = "Date",
+  Duration = "Duration",
+  Nominal = "Nominal",
+  Numerical = "Numerical",
+  Ordinal = "Ordinal",
+  Text = "Text"
 }
 
 export class Scale {
@@ -44,6 +44,6 @@ export class Scale {
   }
 
   static dataTypeEquals(typeString: string, type: DataType): boolean {
-    return typeString.toUpperCase() === type;
+    return typeString.toUpperCase() === type.toUpperCase();
   }
 }
