@@ -23,7 +23,7 @@
     <slot v-bind="getValidation()"></slot>
     <div class="columns">
       <div class="column is-whole has-text-centered buttons">
-        <button data-testid="save" type="button" class="button is-primary" @click="checkSubmit()">
+        <button data-testid="save" type="button" class="button is-primary" @click="checkSubmit()" v-bind:disabled="!saveBtnActive">
           <span class="icon is-small">
             <CheckCircleIcon size="1.5x" aria-hidden="true"></CheckCircleIcon>
             <span class="is-sr-only">Confirm Edits</span>
@@ -52,6 +52,8 @@
     rowValidations!: Object;
     @Prop()
     newRecord!: Object;
+    @Prop({default: true})
+    saveBtnActive!: boolean;
 
     @Validations()
     validations() {

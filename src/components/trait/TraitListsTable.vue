@@ -59,6 +59,7 @@
     <NewDataForm
         v-if="newTraitActive"
         v-bind:new-record.sync="newTrait"
+        v-bind:save-btn-active="newFormBtnActive"
         v-on:submit="saveTrait"
         v-on:cancel="cancelNewTrait"
         v-on:show-error-notification="$emit('show-error-notification', $event)"
@@ -172,6 +173,7 @@ export default class TraitTable extends Vue {
   private activeProgram?: Program;
   private traits: Trait[] = [];
   private newTrait: Trait = new Trait();
+  private newFormBtnActive: boolean = true;
   private traitsPagination?: Pagination = new Pagination();
   private paginationController: PaginationController = new PaginationController();
   private deactivateActive: boolean = false;
@@ -210,6 +212,7 @@ export default class TraitTable extends Vue {
 
   async saveTrait() {
     try {
+      this.newFormBtnActive = false;
       await TraitService.createTraits(this.activeProgram!.id!, [this.newTrait]);
       this.$emit('show-success-notification', 'Trait creation successful.');
       this.getTraits();
@@ -223,10 +226,10 @@ export default class TraitTable extends Vue {
           this.$log.error(fieldError);
         }
       }
-
       this.$emit('show-error-notification', 'Error creating');
     }
 
+    this.newFormBtnActive = true;
   }
 
   cancelNewTrait() {
