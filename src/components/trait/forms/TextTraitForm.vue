@@ -16,10 +16,10 @@
   -->
 
 <template>
-  <p>I am a text trait form</p>
+  <p>No options are available for configuring this field.</p>
 </template>
 
-<script>
+<script lang="ts">
 
 import {Component, Vue} from "vue-property-decorator";
 

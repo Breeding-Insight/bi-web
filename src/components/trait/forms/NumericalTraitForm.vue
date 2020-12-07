@@ -16,17 +16,62 @@
   -->
 
 <template>
-  <p>I am a numerical trait form</p>
+  <div>
+    <div class="columns is-vcentered">
+      <div class="column is-half">
+        <BasicInputField
+            v-bind:field-name="'Unit'"
+            v-bind:value="unit"
+            v-on:input="$emit('unit-change', $event)"
+            v-bind:field-help="'Can be any measurable unit.'"
+        />
+      </div>
+      <div class="column is-half">
+        <BasicInputField
+            v-bind:field-name="'Decimal Places'"
+            v-bind:value="decimalPlaces"
+            v-on:input="$emit('decimal-change', $event)"
+            v-bind:field-help="'Leave blank to constrain to integers.'"
+        />
+      </div>
+    </div>
+    <div class="columns is-vcentered">
+      <div class="column is-half">
+        <BasicInputField
+            v-bind:field-name="'Minimum Valid Value'"
+            v-bind:value="validMin"
+            v-on:input="$emit('min-change', $event)"
+            v-bind:field-help="'Numbers only. Decimals ok.'"
+        />
+      </div>
+      <div class="column is-half">
+        <BasicInputField
+            v-bind:field-name="'Maximum Valid Value'"
+            v-bind:value="validMax"
+            v-on:input="$emit('max-change', $event)"
+            v-bind:field-help="'Numbers only. Decimals ok.'"
+        />
+      </div>
+    </div>
+  </div>
 </template>
 
-<script>
+<script lang="ts">
 
-import {Component, Vue} from "vue-property-decorator";
+  import {Component, Prop, Vue} from "vue-property-decorator";
+  import BasicInputField from "@/components/forms/BasicInputField.vue";
 
 @Component({
-  components: {}
+  components: {BasicInputField}
 })
 export default class NumericalTraitForm extends Vue {
-
+  @Prop()
+  private unit: string | undefined;
+  @Prop()
+  private decimalPlaces: number | undefined;
+  @Prop()
+  private validMin: number | undefined;
+  @Prop()
+  private validMax: number | undefined;
 }
 </script>

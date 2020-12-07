@@ -45,6 +45,7 @@
       </template>
 
       <template v-if="scaleType && Scale.dataTypeEquals(scaleType, DataType.Numerical)">
+        <p class="mb-0">Units: {{valueOrNA(trait.scale.scaleName)}}</p>
         <p class="mb-0">Decimal Places: {{valueOrNA(trait.scale.decimalPlaces)}}</p>
         <p class="mb-0">Minimum valid value: {{valueOrNA(trait.scale.validValueMin)}}</p>
         <p class="mb-0">Maximum valid value: {{valueOrNA(trait.scale.validValueMax)}}</p>
