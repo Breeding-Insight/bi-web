@@ -51,8 +51,9 @@
 
       <!-- Scale options -->
       <template v-if="trait.scale && trait.scale.dataType === DataType.Ordinal">
-        <OrdinalTraitForm
+        <CategoryTraitForm
           v-on:update="trait.scale.categories = $event"
+          v-bind:type="DataType.Ordinal"
         />
       </template>
       <template v-if="trait.scale && trait.scale.dataType === DataType.Text">
@@ -65,7 +66,10 @@
         <DurationTraitForm />
       </template>
       <template v-if="trait.scale && trait.scale.dataType === DataType.Nominal">
-        <NominalTraitForm />
+        <CategoryTraitForm
+            v-on:update="trait.scale.categories = $event"
+            v-bind:type="DataType.Nominal"
+        />
       </template>
       <template v-if="trait.scale && trait.scale.dataType === DataType.Numerical">
         <NumericalTraitForm />
@@ -107,15 +111,17 @@ import {Trait} from "@/breeding-insight/model/Trait";
 import {Method} from "@/breeding-insight/model/Method";
 import { Scale, DataType } from '@/breeding-insight/model/Scale';
 import { ProgramObservationLevel } from '@/breeding-insight/model/ProgramObservationLevel';
-import OrdinalTraitForm from "@/components/trait/forms/OrdinalTraitForm.vue";
+import OrdinalTraitForm from "@/components/trait/forms/CategoryTraitForm.vue";
 import TextTraitForm from "@/components/trait/forms/TextTraitForm.vue";
 import DateTraitForm from "@/components/trait/forms/DateTraitForm.vue";
 import DurationTraitForm from "@/components/trait/forms/DurationTraitForm.vue";
 import NominalTraitForm from "@/components/trait/forms/NominalTraitForm.vue";
 import NumericalTraitForm from "@/components/trait/forms/NumericalTraitForm.vue";
+import CategoryTraitForm from "@/components/trait/forms/CategoryTraitForm.vue";
 
 @Component({
   components: {
+    CategoryTraitForm,
     NumericalTraitForm,
     NominalTraitForm,
     DurationTraitForm, DateTraitForm, TextTraitForm, OrdinalTraitForm, BasicSelectField, BasicInputField},
