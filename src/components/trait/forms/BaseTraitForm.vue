@@ -115,7 +115,6 @@ import OrdinalTraitForm from "@/components/trait/forms/CategoryTraitForm.vue";
 import TextTraitForm from "@/components/trait/forms/TextTraitForm.vue";
 import DateTraitForm from "@/components/trait/forms/DateTraitForm.vue";
 import DurationTraitForm from "@/components/trait/forms/DurationTraitForm.vue";
-import NominalTraitForm from "@/components/trait/forms/NominalTraitForm.vue";
 import NumericalTraitForm from "@/components/trait/forms/NumericalTraitForm.vue";
 import CategoryTraitForm from "@/components/trait/forms/CategoryTraitForm.vue";
 
@@ -123,7 +122,6 @@ import CategoryTraitForm from "@/components/trait/forms/CategoryTraitForm.vue";
   components: {
     CategoryTraitForm,
     NumericalTraitForm,
-    NominalTraitForm,
     DurationTraitForm, DateTraitForm, TextTraitForm, OrdinalTraitForm, BasicSelectField, BasicInputField},
   data: () => ({DataType})
 })
@@ -164,7 +162,20 @@ export default class TraitTable extends Vue {
     this.trait!.method!.methodClass = value;
   }
   setScaleClass(value: string) {
-    if (this.trait.scale!.scaleName === DataType.Nominal || this.trait.scale!.scaleName === DataType.Ordinal) {
+    // Switching from nominal to ordinal
+    if (this.trait.scale!.scaleName === DataType.Nominal && value === DataType.Ordinal) {
+      for (const [i, value] of this.trait.scale!.categories!.entries()) {
+        this.trait.scale!.categories![i].label = (i +1).toString();
+      }
+    }
+    // Switching from ordinal to nominal
+    else if (this.trait.scale!.scaleName === DataType.Ordinal && value === DataType.Nominal) {
+      for (const [i, value] of this.trait.scale!.categories!.entries()) {
+        this.trait.scale!.categories![i].label = undefined;
+      }
+    }
+    // Switching for ordinal or nominal to something else
+    else {
       this.trait.scale!.categories = undefined;
     }
 

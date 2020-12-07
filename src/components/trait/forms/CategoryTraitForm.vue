@@ -110,7 +110,7 @@ export default class CategoryTraitForm extends Vue {
   @Prop()
   private type!: DataType;
 
-  private placeholders = ['ex. Very thin (< 4mm)', 'Thin (4 - 6mm)', 'Intermediate (7 - 9mm)', 'Thick (10 - 12mm)', 'Very Thick (> 12mm)'];
+  private placeholders = ['ex. Very thin (< 4mm)', 'ex. Thin (4 - 6mm)', 'ex. Intermediate (7 - 9mm)', 'ex. Thick (10 - 12mm)', 'ex. Very Thick (> 12mm)'];
   private deleteWarningTitle: string = "Remove category?"
   private activeRemoveRowIndex?: number;
   private deleteModalActive: boolean = false;
@@ -125,7 +125,7 @@ export default class CategoryTraitForm extends Vue {
     if (this.new) {
       for (const i of Array(5).keys()) {
         if (this.type === DataType.Ordinal) {
-          this.data.push(new Category(i.toString(), ''));
+          this.data.push(new Category((i + 1).toString(), ''));
         } else {
           this.data.push(new Category(undefined, ''));
         }
