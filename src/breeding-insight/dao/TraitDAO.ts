@@ -16,13 +16,9 @@
  */
 
 import {Trait} from "@/breeding-insight/model/Trait";
-import {BiResponse} from "@/breeding-insight/model/BiResponse";
+import {BiResponse, Response} from "@/breeding-insight/model/BiResponse";
 import * as api from "@/util/api";
 import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
-
-interface Response {
-  data: any
-}
 
 export class TraitDAO {
 

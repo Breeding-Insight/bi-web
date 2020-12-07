@@ -61,5 +61,11 @@ export class TraitUploadDAO {
     }))
   }
 
+  static async confirmUpload(programId: string, traitUploadId: string) {
+    await api.call({
+      url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/trait-upload/${traitUploadId}`,
+      method: 'post' });
+  }
+
 
 }

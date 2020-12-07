@@ -20,6 +20,7 @@
       v-bind:validations="validations"
       v-bind:field-help="fieldHelp"
       v-bind:field-name="fieldName"
+      v-bind:show-label="showLabel"
   >
     <div class="select is-fullwidth">
       <select
@@ -35,11 +36,11 @@
         </template>
         <option
             v-for="option in options"
-            v-bind:key="option.id"
-            v-bind:selected="option.id === selectedId"
-            v-bind:value="option.id"
+            v-bind:key="option.id || option"
+            v-bind:selected="option.id ? option.id === selectedId : option === selectedId"
+            v-bind:value="option.id || option"
         >
-          {{ option.name }}
+          {{ option.name || option }}
         </option>
       </select>
     </div>
@@ -66,6 +67,8 @@
     validations!: any;
     @Prop()
     emptyValueName!: string;
+    @Prop()
+    showLabel!: boolean;
 
 
     displayDefault() {

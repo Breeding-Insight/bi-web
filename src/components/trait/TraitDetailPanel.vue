@@ -55,10 +55,6 @@
         <p class="mb-0">Maximum valid value: {{valueOrNA(trait.scale.validValueMax)}}</p>
       </template>
 
-      <template v-if="scaleType && Scale.dataTypeEquals(scaleType, DataType.Code)">
-        <!-- TODO: Not showing anything for this now -->
-      </template>
-
       <!-- if computation method, show formula as well -->
       <template v-if="methodClass && Method.methodClassEquals(methodClass, MethodClass.Computation)">
         <p class="has-text-weight-bold mt-3 mb-0">Formula</p>

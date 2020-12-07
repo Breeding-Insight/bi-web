@@ -101,6 +101,7 @@ import { createMachine, interpret } from '@xstate/fsm';
 import {ValidationError} from "@/breeding-insight/model/errors/ValidationError";
 import {Metadata} from "@/breeding-insight/model/BiResponse";
 import {Trait} from "@/breeding-insight/model/Trait";
+import {ProgramUpload} from "@/breeding-insight/model/ProgramUpload";
 
 enum ImportState {
   CHOOSE_FILE = "CHOOSE_FILE",
@@ -302,14 +303,8 @@ export default class TraitsImport extends ProgramsBase {
     const name = this.activeProgram && this.activeProgram.name ? this.activeProgram.name : 'the program';  
     try {
       // fetch uploaded traits
-        const [ uploadedTraits ] = await TraitUploadService.getTraits(this.activeProgram!.id!) as [Trait[], Metadata];
-
-      // add traits to program
-      await TraitService.createTraits(this.activeProgram!.id!, uploadedTraits)
-
-      // delete uploaded traits
-      const err = await TraitUploadService.deleteTraits(this.activeProgram!.id!) as void|Error;
-      if(err) throw new Error('Uploaded traits were not deleted');
+      const [ upload ] = await TraitUploadService.getTraits(this.activeProgram!.id!) as [ProgramUpload, Metadata];
+      await TraitUploadService.confirmUpload(this.activeProgram!.id!, upload!.id!);
 
       // show all program traits
       this.$emit('show-success-notification', `Imported traits have been added to ${name}.`);

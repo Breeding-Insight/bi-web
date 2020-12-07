@@ -27,6 +27,7 @@ export class Trait {
   scale?: Scale;
   abbreviations?: Array<string>;
   synonyms?: Array<string>;
+  mainAbbreviation?: string;
 
   constructor(id?:string,
               traitName?:string, 

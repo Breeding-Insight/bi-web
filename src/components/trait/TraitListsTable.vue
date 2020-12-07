@@ -35,6 +35,45 @@
       </div>              
     </WarningModal>
 
+    <div class="columns has-text-right mb-0">
+      <div class="column">
+        <button
+            data-testid="newDataForm"
+            v-show="!newTraitActive & traits.length > 0"
+            class="button is-primary has-text-weight-bold"
+            v-on:click="newTraitActive = true"
+        >
+        <span class="icon is-small">
+          <PlusCircleIcon
+              size="1.5x"
+              aria-hidden="true"
+          />
+        </span>
+          <span>
+          New Trait
+        </span>
+        </button>
+      </div>
+    </div>
+
+    <NewDataForm
+        v-if="newTraitActive"
+        v-bind:new-record.sync="newTrait"
+        v-bind:save-btn-active="newFormBtnActive"
+        v-on:submit="saveTrait"
+        v-on:cancel="cancelNewTrait"
+        v-on:show-error-notification="$emit('show-error-notification', $event)"
+    >
+      <template v-slot="validations">
+        <BaseTraitForm
+            v-on:trait-change="newTrait = $event"
+            v-bind:scale-options="scaleClassOptions"
+            v-bind:method-options="methodClassOptions"
+            v-bind:program-observation-levels="observationLevelOptions"
+        ></BaseTraitForm>
+      </template>
+    </NewDataForm>
+
     <SidePanelTable
       v-bind:records.sync="traits"
       v-bind:editable="false"
@@ -76,6 +115,9 @@
 
       <template v-slot:emptyMessage>
         <EmptyTableMessage
+            v-bind:button-view-toggle="!newTraitActive"
+            v-bind:button-text="'New Trait'"
+            v-on:newClick="newTraitActive = true"
         >
           <p class="has-text-weight-bold">
             No traits are currently defined for this program.
@@ -107,10 +149,17 @@ import {PaginationController} from "@/breeding-insight/model/view_models/Paginat
 import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
 import { StringFormatters } from '@/breeding-insight/utils/StringFormatters';
 import { TraitStringFormatters } from '@/breeding-insight/utils/TraitStringFormatters';
+import BaseTraitForm from "@/components/trait/forms/BaseTraitForm.vue";
+import {ValidationError} from "@/breeding-insight/model/errors/ValidationError";
+import {FieldError} from "@/breeding-insight/model/errors/FieldError";
+import {ProgramService} from "@/breeding-insight/service/ProgramService";
+import {MethodClass} from "@/breeding-insight/model/Method";
+import {DataType} from "@/breeding-insight/model/Scale";
 
 @Component({
   mixins: [validationMixin],
-  components: { NewDataForm, BasicInputField, SidePanelTable, EmptyTableMessage, TableColumn,
+  components: {
+    BaseTraitForm, NewDataForm, BasicInputField, SidePanelTable, EmptyTableMessage, TableColumn,
                 WarningModal, TraitDetailPanel,
                 PlusCircleIcon },
   computed: {
@@ -123,6 +172,8 @@ export default class TraitTable extends Vue {
 
   private activeProgram?: Program;
   private traits: Trait[] = [];
+  private newTrait: Trait = new Trait();
+  private newFormBtnActive: boolean = true;
   private traitsPagination?: Pagination = new Pagination();
   private paginationController: PaginationController = new PaginationController();
   private deactivateActive: boolean = false;
@@ -131,9 +182,14 @@ export default class TraitTable extends Vue {
   private collapseColumns = false;
   private StringFormatters = StringFormatters;
   private TraitStringFormatters = TraitStringFormatters;
+  private newTraitActive = false;
+  private methodClassOptions: string[] = Object.values(MethodClass);
+  private observationLevelOptions?: string[];
+  private scaleClassOptions: string[] = Object.values(DataType);
 
   mounted() {
     this.getTraits();
+    this.getObservationLevels();
   }
 
   @Watch('paginationController', { deep: true})
@@ -152,6 +208,47 @@ export default class TraitTable extends Vue {
       this.$emit('show-error-notification', 'Error while trying to load traits');
       throw error;
     });
+  }
+
+  async saveTrait() {
+    try {
+      this.newFormBtnActive = false;
+      await TraitService.createTraits(this.activeProgram!.id!, [this.newTrait]);
+      this.$emit('show-success-notification', 'Trait creation successful.');
+      this.getTraits();
+      await this.getObservationLevels();
+      this.newTraitActive = false;
+    } catch (error) {
+      // TODO: Pass errors to the new data form
+      if (error instanceof ValidationError) {
+        const fieldErrors: FieldError[] = error.rows[0].errors;
+        for (const fieldError of fieldErrors) {
+          this.$log.error(fieldError);
+        }
+      }
+      this.$emit('show-error-notification', 'Error creating');
+    }
+
+    this.newFormBtnActive = true;
+  }
+
+  cancelNewTrait() {
+    this.newTrait = new Trait();
+    this.newTraitActive = false;
+  }
+
+  async getObservationLevels() {
+    try {
+      const response = await ProgramService.getObservationLevels(this.activeProgram!.id!);
+      if (response) {
+        const [observationLevels, metadata] = response;
+        this.observationLevelOptions = observationLevels.map(value => value.name!);
+        return;
+      }
+    } catch (error) {
+      this.$emit('show-error-notification', 'Unable to retrieve observation levels');
+    }
+    this.$emit('show-error-notification', 'Unable to retrieve observation levels');
   }
 
 }

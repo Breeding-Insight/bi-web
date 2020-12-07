@@ -17,27 +17,33 @@
 
 <template>
   <div class="field" v-bind:class="{ 'field--error': fieldError }">
-    <label class="label" v-bind:for="fieldName">
-      {{ fieldName }}
-    </label>
-    <div class="control">
-      <slot></slot>
-      <template v-for="(validationMap, index) in validationSpec">
-        <span
-            data-testid="formError"
-            v-bind:key="fieldName + validationMap.name + index"
-            class="form-error has-text-danger"
-            :class="{ 'is-hidden': ( validateTypeError(validationMap.name) ) }"
-        >
-          {{ validationMap.message }}
-        </span>
-      </template>
-      <p
-          v-if="fieldHelp !== null"
-          class="help"
-      >
-        {{ fieldHelp }}
-      </p>
+    <div class="field-label is-normal has-text-left">
+      <label class="label is-left" v-bind:for="fieldName" v-bind:class="{'is-sr-only': !showLabel}">
+        {{ fieldName }}
+      </label>
+    </div>
+    <div class="field-body">
+      <div class="field">
+        <div class="control">
+          <slot></slot>
+          <template v-for="(validationMap, index) in validationSpec">
+            <span
+                data-testid="formError"
+                v-bind:key="fieldName + validationMap.name + index"
+                class="form-error has-text-danger"
+                :class="{ 'is-hidden': ( validateTypeError(validationMap.name) ) }"
+            >
+              {{ validationMap.message }}
+            </span>
+          </template>
+          <p
+              v-if="fieldHelp !== null"
+              class="help"
+          >
+            {{ fieldHelp }}
+          </p>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -55,6 +61,8 @@
     fieldHelp!: string;
     @Prop()
     validations!: any;
+    @Prop({default: true})
+    showLabel!: boolean;
 
     get validationSpec(): Object[] {
 

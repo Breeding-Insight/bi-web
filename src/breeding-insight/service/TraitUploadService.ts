@@ -22,6 +22,7 @@ import {Trait} from "@/breeding-insight/model/Trait";
 import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
 import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
 import {ValidationError} from "@/breeding-insight/model/errors/ValidationError";
+import {ProgramDAO} from "@/breeding-insight/dao/ProgramDAO";
 
 export class TraitUploadService {
 
@@ -73,8 +74,8 @@ export class TraitUploadService {
     });
   }
 
-  static getTraits(programId: string, paginationQuery?: PaginationQuery): Promise<[Trait[], Metadata]> {
-    return new Promise<[Trait[], Metadata]>(((resolve, reject) => {
+  static getTraits(programId: string, paginationQuery?: PaginationQuery): Promise<[ProgramUpload, Metadata]> {
+    return new Promise<[ProgramUpload, Metadata]>(((resolve, reject) => {
 
       if (paginationQuery === undefined){
         paginationQuery = new PaginationQuery(0, 0, true);
@@ -96,7 +97,9 @@ export class TraitUploadService {
           [traits, newPagination] = PaginationController.mockPagination(traits, paginationQuery!.page, paginationQuery!.pageSize, paginationQuery!.showAll);
           biResponse.metadata.pagination = newPagination;
 
-          resolve([traits, biResponse.metadata]);
+          let upload: ProgramUpload = new ProgramUpload(biResponse.result.id, traits);
+
+          resolve([upload, biResponse.metadata]);
 
         }).catch((error) => reject(error));
 
@@ -104,6 +107,15 @@ export class TraitUploadService {
         reject();
       }
     }));
+  }
+
+  static async confirmUpload(programId: string, traitUploadId: string): Promise<void|Error> {
+    try {
+      await TraitUploadDAO.confirmUpload(programId, traitUploadId);
+      return;
+    } catch (error) {
+      throw 'Error saving traits';
+    }
   }
 
   static parseError(error: any): ValidationError | string {
