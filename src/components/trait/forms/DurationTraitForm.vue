@@ -16,17 +16,73 @@
   -->
 
 <template>
-  <p>I am a duration trait form</p>
+  <div>
+    <div class="columns is-vcentered">
+      <div class="column">
+        <b-field
+            label="Unit of Time"
+        >
+          <b-autocomplete
+              v-bind:value="unit"
+              v-bind:open-on-focus="true"
+              v-bind:data="filteredDataObj(unitOptions)"
+              v-on:input="$emit('unit-change', $event)"
+              placeholder="Start typing to see suggestions"
+          />
+        </b-field>
+      </div>
+    </div>
+    <div class="columns is-vcentered">
+      <div class="column is-half">
+        <BasicInputField
+            v-bind:field-name="'Minimum Valid Value'"
+            v-bind:value="validMin"
+            v-on:input="$emit('min-change', $event)"
+            v-bind:field-help="'Leave blank to specify no lower limit.'"
+        />
+      </div>
+      <div class="column is-half">
+        <BasicInputField
+            v-bind:field-name="'Maximum Valid Value'"
+            v-bind:value="validMax"
+            v-on:input="$emit('max-change', $event)"
+            v-bind:field-help="'Leave blank to specify no upper limit.'"
+        />
+      </div>
+    </div>
+  </div>
 </template>
 
-<script>
+<script lang="ts">
 
-import {Component, Vue} from "vue-property-decorator";
+  import {Component, Prop, Vue} from "vue-property-decorator";
+  import BasicInputField from "@/components/forms/BasicInputField.vue";
 
-@Component({
-  components: {}
-})
-export default class DurationTraitForm extends Vue {
+  @Component({
+    components: {BasicInputField}
+  })
+  export default class DurationTraitForm extends Vue {
+    @Prop()
+    private unit!: string;
+    @Prop()
+    private validMin!: number;
+    @Prop()
+    private validMax!: number;
 
-}
+    private unitOptions: string[] = ["seconds","minutes","days","weeks","months"];
+
+    filteredDataObj(data: string[]): string[] {
+      if (this.unit) {
+        return data.filter(option => {
+          return (
+            option
+              .toLowerCase()
+              .indexOf(this.unit.toLowerCase()) >= 0
+          )
+        });
+      } else {
+        return data;
+      }
+    }
+  }
 </script>
