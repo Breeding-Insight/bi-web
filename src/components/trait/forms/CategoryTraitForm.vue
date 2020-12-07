@@ -47,16 +47,29 @@
       </div>
     </WarningModal>
 
-    <template v-for="[i, item] of data.entries()">
-      <LabelValueRow
-        v-bind:label="item.label"
-        v-bind:value="item.value"
-        v-on:delete="checkRemoveRow(i)"
-        v-on:value-change="item.value = $event"
-        v-on:label-change="item.label = $event"
-        v-bind:value-placeholder="placeholders[i]"
-        v-bind:key="i"
-      />
+    <template v-if="type === DataType.Ordinal">
+      <template v-for="[i, item] of data.entries()">
+        <LabelValueRow
+          v-bind:label="item.label"
+          v-bind:value="item.value"
+          v-on:delete="checkRemoveRow(i)"
+          v-on:value-change="item.value = $event"
+          v-on:label-change="item.label = $event"
+          v-bind:value-placeholder="placeholders[i]"
+          v-bind:key="i"
+        />
+      </template>
+    </template>
+    <template v-if="type === DataType.Nominal">
+      <template v-for="[i, item] of data.entries()">
+        <ValueRow
+            v-bind:value="item.value"
+            v-on:delete="checkRemoveRow(i)"
+            v-on:value-change="item.value = $event"
+            v-bind:value-placeholder="placeholders[i]"
+            v-bind:key="i"
+        />
+      </template>
     </template>
     <button data-testid="new" type="button" class="button" @click="addRow()">
           <span class="icon is-small">
@@ -81,18 +94,23 @@ import LabelValueRow from "@/components/trait/forms/LabelValueRow.vue";
 import BasicInputField from "@/components/forms/BasicInputField.vue";
 import WarningModal from "@/components/modals/WarningModal.vue";
 import {PlusCircleIcon} from "vue-feather-icons";
+import {DataType} from "@/breeding-insight/model/Scale";
+import ValueRow from "@/components/trait/forms/ValueRow.vue";
 
 @Component({
-  components: {BasicInputField, LabelValueRow, WarningModal, PlusCircleIcon}
+  components: {ValueRow, BasicInputField, LabelValueRow, WarningModal, PlusCircleIcon},
+  data: () => ({DataType})
 })
-export default class OrdinalTraitForm extends Vue {
+export default class CategoryTraitForm extends Vue {
 
   @Prop({default: () => []})
   private data!: Category[];
   @Prop({default: true})
   private new!: boolean;
+  @Prop()
+  private type!: DataType;
 
-  private placeholders = ['ex. Very thin (< 4mm)', 'Thin (4 - 6mm)', 'Intermediate (7 - 9mm)', 'Thick (10 - 12mm)', 'Very Thick (> 12mm)'];
+  private placeholders = ['ex. Very thin (< 4mm)', 'ex. Thin (4 - 6mm)', 'ex. Intermediate (7 - 9mm)', 'ex. Thick (10 - 12mm)', 'ex. Very Thick (> 12mm)'];
   private deleteWarningTitle: string = "Remove category?"
   private activeRemoveRowIndex?: number;
   private deleteModalActive: boolean = false;
@@ -106,7 +124,11 @@ export default class OrdinalTraitForm extends Vue {
   mounted() {
     if (this.new) {
       for (const i of Array(5).keys()) {
-        this.data.push(new Category(i.toString(), ''));
+        if (this.type === DataType.Ordinal) {
+          this.data.push(new Category((i + 1).toString(), ''));
+        } else {
+          this.data.push(new Category(undefined, ''));
+        }
       }
     }
   }
