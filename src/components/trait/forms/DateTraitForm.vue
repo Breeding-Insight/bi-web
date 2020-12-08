@@ -16,7 +16,7 @@
   -->
 
 <template>
-  <p>I am a date trait form</p>
+  <p>No options are available for configuring this field.</p>
 </template>
 
 <script>
