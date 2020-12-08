@@ -41,13 +41,24 @@
           using
         </p>
         <BasicSelectField
-          v-bind:options="scaleOptions"
+          v-bind:selected-id="trait.scale ? trait.scale.dataType : undefined"
+          v-bind:options="getScaleOptions()"
           v-bind:field-name="'Scale'"
           v-bind:show-label="false"
           v-bind:field-help="'Note: additional options for this field will appear after selection'"
           v-on:input="setScaleClass($event)"
         />
       </div>
+
+      <!-- Formula -->
+      <template v-if="trait.method && trait.method.methodClass === MethodClass.Computation">
+        <BasicInputField
+            v-bind:field-name="'Formula'"
+            v-bind:field-help="'Operations accepted: *^.+/(); calculations will use FOIL order of operations.'"
+            :placeholder="'Number of flowers on single plant / 100'"
+            v-on:input="trait.method.formula = $event"
+        />
+      </template>
 
       <!-- Scale options -->
       <template v-if="trait.scale && trait.scale.dataType === DataType.Ordinal">
@@ -89,7 +100,6 @@
           v-on:max-change="trait.scale.validValueMax = $event"
         />
       </template>
-      <!-- TODO: Add formula -->
     </div>
     <div class="divider is-vertical" />
 
@@ -123,7 +133,7 @@ import {Component, Prop, Vue, Watch} from 'vue-property-decorator'
 import BasicInputField from "@/components/forms/BasicInputField.vue";
 import BasicSelectField from "@/components/forms/BasicSelectField.vue";
 import {Trait} from "@/breeding-insight/model/Trait";
-import {Method} from "@/breeding-insight/model/Method";
+import {Method, MethodClass} from "@/breeding-insight/model/Method";
 import { Scale, DataType } from '@/breeding-insight/model/Scale';
 import { ProgramObservationLevel } from '@/breeding-insight/model/ProgramObservationLevel';
 import OrdinalTraitForm from "@/components/trait/forms/CategoryTraitForm.vue";
@@ -138,7 +148,7 @@ import CategoryTraitForm from "@/components/trait/forms/CategoryTraitForm.vue";
     CategoryTraitForm,
     NumericalTraitForm,
     DurationTraitForm, DateTraitForm, TextTraitForm, OrdinalTraitForm, BasicSelectField, BasicInputField},
-  data: () => ({DataType})
+  data: () => ({DataType, MethodClass})
 })
 export default class TraitTable extends Vue {
   @Prop()
@@ -173,9 +183,22 @@ export default class TraitTable extends Vue {
     return result;
   }
 
+  getScaleOptions() {
+    if (this.trait.method && this.trait.method!.methodClass === MethodClass.Computation) {
+      return [DataType.Numerical];
+    } else {
+      return this.scaleOptions;
+    }
+  }
+
   setMethodClass(value: string) {
     this.trait!.method!.methodClass = value;
+
+    if (this.trait!.method!.methodClass === MethodClass.Computation) {
+      this.trait!.scale!.dataType = DataType.Numerical;
+    }
   }
+
   setScaleClass(value: string) {
     // Switching from nominal to ordinal
     if (this.trait.scale!.scaleName === DataType.Nominal && value === DataType.Ordinal) {
