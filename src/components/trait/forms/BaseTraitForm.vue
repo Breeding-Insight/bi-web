@@ -53,6 +53,7 @@
       <!-- Formula -->
       <template v-if="trait.method && trait.method.methodClass === MethodClass.Computation">
         <BasicInputField
+            v-bind:value="trait.method.formula"
             v-bind:field-name="'Formula'"
             v-bind:field-help="'Operations accepted: *^.+/(); calculations will use FOIL order of operations.'"
             :placeholder="'Number of flowers on single plant / 100'"
@@ -61,10 +62,11 @@
       </template>
 
       <!-- Scale options -->
-      <template v-if="trait.scale && trait.scale.dataType === DataType.Ordinal">
+      <template v-if="trait.scale && (trait.scale.dataType === DataType.Ordinal || trait.scale.dataType === DataType.Nominal)">
         <CategoryTraitForm
+          v-bind:data="trait.scale.categories"
           v-on:update="trait.scale.categories = $event"
-          v-bind:type="DataType.Ordinal"
+          v-bind:type="trait.scale.dataType"
         />
       </template>
       <template v-if="trait.scale && trait.scale.dataType === DataType.Text">
@@ -81,12 +83,6 @@
             v-on:unit-change="trait.scale.scaleName = $event"
             v-on:min-change="trait.scale.validValueMin = $event"
             v-on:max-change="trait.scale.validValueMax = $event"/>
-      </template>
-      <template v-if="trait.scale && trait.scale.dataType === DataType.Nominal">
-        <CategoryTraitForm
-            v-on:update="trait.scale.categories = $event"
-            v-bind:type="DataType.Nominal"
-        />
       </template>
       <template v-if="trait.scale && trait.scale.dataType === DataType.Numerical">
         <NumericalTraitForm
@@ -105,7 +101,6 @@
 
     <!-- Right Side -->
     <div class="column">
-      <!--TODO: needs to be a paragraph -->
       <BasicInputField
         v-bind:field-name="'Description of collection method'"
         v-bind:field-help="'All unicode characters are accepted.'"
@@ -160,6 +155,8 @@ export default class TraitTable extends Vue {
 
   name: string = '';
   private trait: Trait = new Trait();
+  private methodHistory: {[key: string]: Method} = {};
+  private scaleHistory: {[key: string]: Scale} = {};
 
   mounted() {
     this.trait.method = new Method();
@@ -192,42 +189,46 @@ export default class TraitTable extends Vue {
   }
 
   setMethodClass(value: string) {
-    this.trait!.method!.methodClass = value;
+    // Save our current method
+    if (this.trait!.method!.methodClass) {
+      this.methodHistory[this.trait!.method!.methodClass] = {...this.trait!.method!};
+    }
 
+    // Set the new method class and get formula history if available
+    this.trait!.method!.methodClass = value;
+    if (this.methodHistory[value]) {
+      this.trait.method!.formula = this.methodHistory[value].formula;
+    } else {
+      this.trait.method!.formula = undefined;
+    }
+
+    // Computation method class is always numerical
     if (this.trait!.method!.methodClass === MethodClass.Computation) {
-      this.trait!.scale!.dataType = DataType.Numerical;
+      this.setScaleClass(DataType.Numerical);
     }
   }
 
   setScaleClass(value: string) {
-    // Switching from nominal to ordinal
-    if (this.trait.scale!.scaleName === DataType.Nominal && value === DataType.Ordinal) {
-      for (const [i, value] of this.trait.scale!.categories!.entries()) {
-        this.trait.scale!.categories![i].label = (i +1).toString();
-      }
-    }
-    // Switching from ordinal to nominal
-    else if (this.trait.scale!.scaleName === DataType.Ordinal && value === DataType.Nominal) {
-      for (const [i, value] of this.trait.scale!.categories!.entries()) {
-        this.trait.scale!.categories![i].label = undefined;
-      }
-    }
-    // Switching for ordinal or nominal to something else
-    else {
-      this.trait.scale!.categories = undefined;
+
+    // Save history of current scale class
+    if (this.trait.scale!.dataType) {
+      this.scaleHistory[this.trait.scale!.dataType] = {...this.trait.scale!};
     }
 
-    // Switching to and from numerical scale class
-    if (value === DataType.Numerical || value === DataType.Duration) {
-      this.trait!.scale!.scaleName = undefined;
+    // Look in history for existing scale
+    if (this.scaleHistory[value]) {
+      this.trait.scale = this.scaleHistory[value];
     } else {
-      this.trait!.scale!.scaleName = value;
-    }
+      this.trait.scale = new Scale();
+      this.trait.scale.dataType = value;
 
-    this.trait!.scale!.decimalPlaces = undefined;
-    this.trait!.scale!.validValueMin = undefined;
-    this.trait!.scale!.validValueMax = undefined;
-    this.trait!.scale!.dataType = value;
+      // Allow for units in the numerical and duration traits
+      if (value === DataType.Numerical || value === DataType.Duration) {
+        this.trait!.scale!.scaleName = undefined;
+      } else {
+        this.trait!.scale!.scaleName = value;
+      }
+    }
   }
 
   setObservationLevel(value: string) {
