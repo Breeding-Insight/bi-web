@@ -70,6 +70,7 @@
             v-bind:scale-options="scaleClassOptions"
             v-bind:method-options="methodClassOptions"
             v-bind:program-observation-levels="observationLevelOptions"
+            v-bind:validation-handler="validationHandler"
         ></BaseTraitForm>
       </template>
     </NewDataForm>
@@ -151,7 +152,6 @@ import { StringFormatters } from '@/breeding-insight/utils/StringFormatters';
 import { TraitStringFormatters } from '@/breeding-insight/utils/TraitStringFormatters';
 import BaseTraitForm from "@/components/trait/forms/BaseTraitForm.vue";
 import {ValidationError} from "@/breeding-insight/model/errors/ValidationError";
-import {FieldError} from "@/breeding-insight/model/errors/FieldError";
 import {ProgramService} from "@/breeding-insight/service/ProgramService";
 import {MethodClass} from "@/breeding-insight/model/Method";
 import {DataType} from "@/breeding-insight/model/Scale";
@@ -186,6 +186,7 @@ export default class TraitTable extends Vue {
   private methodClassOptions: string[] = Object.values(MethodClass);
   private observationLevelOptions?: string[];
   private scaleClassOptions: string[] = Object.values(DataType);
+  private validationHandler = new ValidationError();
 
   mounted() {
     this.getTraits();
@@ -219,12 +220,8 @@ export default class TraitTable extends Vue {
       await this.getObservationLevels();
       this.newTraitActive = false;
     } catch (error) {
-      // TODO: Pass errors to the new data form
       if (error instanceof ValidationError) {
-        const fieldErrors: FieldError[] = error.rows[0].errors;
-        for (const fieldError of fieldErrors) {
-          this.$log.error(fieldError);
-        }
+        this.validationHandler = error;
       }
       this.$emit('show-error-notification', 'Error creating');
     }

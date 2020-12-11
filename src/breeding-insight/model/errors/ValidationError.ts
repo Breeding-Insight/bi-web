@@ -16,11 +16,37 @@
  */
 
 import {RowError} from "@/breeding-insight/model/errors/RowError";
+import {FieldError} from "@/breeding-insight/model/errors/FieldError";
 
 export class ValidationError {
-  rows: RowError[];
+  rows?: RowError[];
 
-  constructor(rows: RowError[]){
-    this.rows = rows;
+  constructor(rows?: RowError[]){
+    if (rows) {
+      this.rows = rows.map(row => new RowError(row.rowIndex, row.errors));
+    }
+  }
+
+  getValidation(rowIndex: number, errorName: string) {
+    return this.getFieldErrorMessage(rowIndex, errorName);
+  }
+
+  private getFieldErrorMessage(rowIndex: number, errorName: string): FieldError[] {
+
+    const rowError: RowError | undefined = this.rows ? this.rows[rowIndex] : undefined;
+    if (rowError) {
+      return rowError.getValidation(errorName);
+    } else {
+      return [];
+    }
+  }
+
+  overrideMessage(rowIndex: number, errorName: string, message: string, statusCode: number) {
+    let errors: FieldError[] = this.getFieldErrorMessage(rowIndex, errorName);
+    for (const [index, error] of errors.entries()) {
+      if (error.httpStatusCode === statusCode) {
+        errors[index].errorMessage = message;
+      }
+    }
   }
 }

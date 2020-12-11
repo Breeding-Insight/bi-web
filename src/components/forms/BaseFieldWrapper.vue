@@ -36,6 +36,15 @@
               {{ validationMap.message }}
             </span>
           </template>
+          <template v-for="(fieldError, index) in serverValidations">
+            <span
+                data-testid="formError"
+                v-bind:key="fieldName + fieldError.field + index"
+                class="form-error has-text-danger"
+            >
+              {{ fieldError.errorMessage }}
+            </span>
+          </template>
           <p
               v-if="fieldHelp !== null"
               class="help"
@@ -51,6 +60,7 @@
 <script lang="ts">
 
   import {Component, Prop, Vue} from "vue-property-decorator";
+  import {FieldError} from "@/breeding-insight/model/errors/FieldError";
 
   @Component
   export default class BaseFieldWrapper extends Vue {
@@ -61,6 +71,8 @@
     fieldHelp!: string;
     @Prop()
     validations!: any;
+    @Prop()
+    serverValidations!: FieldError[];
     @Prop({default: true})
     showLabel!: boolean;
 
@@ -95,6 +107,8 @@
     get fieldError() {
       if (this.validations) {
         return this.validations.$anyError;
+      } else if (this.serverValidations) {
+        return this.serverValidations.length > 0;
       } else {
         return false;
       }
