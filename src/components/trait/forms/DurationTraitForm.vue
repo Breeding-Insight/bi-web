@@ -75,7 +75,7 @@
 
     private unitOptions: string[] = ["seconds","minutes","days","weeks","months"];
 
-    @Watch('validationHandler', {deep: true})
+    @Watch('validationHandler', {immediate: true, deep: true})
     overrideScaleName() {
       // Overwrite missing scale name message
       if (this.validationHandler && this.validationHandler.getValidation(this.validationIndex!, TraitError.ScaleName).length > 0) {

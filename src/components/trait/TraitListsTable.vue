@@ -186,7 +186,7 @@ export default class TraitTable extends Vue {
   private methodClassOptions: string[] = Object.values(MethodClass);
   private observationLevelOptions?: string[];
   private scaleClassOptions: string[] = Object.values(DataType);
-  private validationHandler = new ValidationError();
+  private validationHandler: ValidationError  = new ValidationError();
 
   mounted() {
     this.getTraits();
@@ -214,6 +214,7 @@ export default class TraitTable extends Vue {
   async saveTrait() {
     try {
       this.newFormBtnActive = false;
+      this.validationHandler = new ValidationError();
       await TraitService.createTraits(this.activeProgram!.id!, [this.newTrait]);
       this.$emit('show-success-notification', 'Trait creation successful.');
       this.getTraits();

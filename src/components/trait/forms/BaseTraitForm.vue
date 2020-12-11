@@ -2,6 +2,7 @@
   <div class="columns">
     <div class="column">
       <BasicInputField
+        v-bind:value="trait.traitName"
         v-bind:field-name="'Trait name'"
         v-bind:field-help="'All unicode characters are accepted.'"
         v-bind:placeholder="'Trait Name'"
@@ -108,6 +109,7 @@
     <!-- Right Side -->
     <div class="column">
       <BasicInputField
+        v-bind:value="trait.method.description"
         v-bind:field-name="'Description of collection method'"
         v-bind:field-help="'All unicode characters are accepted.'"
         v-bind:placeholder="'Trait Name'"
@@ -116,6 +118,7 @@
       />
 
       <BasicInputField
+        v-bind:value="trait.abbreviations"
         v-bind:field-name="'Abbreviation(s)'"
         v-bind:field-help="'Semicolon separated list, with primary abbreviation as first term.'"
         v-bind:server-validations="validationHandler.getValidation(0, TraitError.Abbreviations)"
@@ -123,6 +126,7 @@
       />
 
       <BasicInputField
+        v-bind:value="trait.synonyms"
         v-bind:field-name="'Synonyms'"
         v-bind:field-help="'Semicolon separated list.'"
         v-on:input="trait.synonyms = parseSemiColonList($event)"
@@ -157,7 +161,7 @@ import AutoCompleteField from "@/components/forms/AutoCompleteField.vue";
     DurationTraitForm, DateTraitForm, TextTraitForm, OrdinalTraitForm, BasicSelectField, BasicInputField},
   data: () => ({DataType, MethodClass, TraitError})
 })
-export default class TraitTable extends Vue {
+export default class BaseTraitForm extends Vue {
   @Prop()
   programObservationLevels?: string[];
   @Prop()
@@ -172,7 +176,7 @@ export default class TraitTable extends Vue {
   private methodHistory: {[key: string]: Method} = {};
   private scaleHistory: {[key: string]: Scale} = {};
 
-  mounted() {
+  created() {
     this.trait.method = new Method();
     this.trait.scale = new Scale();
   }
@@ -180,18 +184,6 @@ export default class TraitTable extends Vue {
   @Watch('trait', {deep: true})
   emitTrait(val: Trait) {
     this.$emit('trait-change', val);
-  }
-
-  filteredDataObj(data: string[]): string[] {
-    const result = data.filter(option => {
-      return (
-        option
-          .toLowerCase()
-          .indexOf(this.name.toLowerCase()) >= 0
-      )
-    });
-
-    return result;
   }
 
   getScaleOptions() {

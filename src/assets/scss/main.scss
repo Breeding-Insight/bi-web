@@ -184,6 +184,12 @@ footer {
     & .field span.form-error {
       display: block;
     }
+    & input {
+      border-color: $danger;
+    }
+    & select {
+      border-color: $danger;
+    }
   }
   &:not(.field--error) {
     & .field span.form-error {
