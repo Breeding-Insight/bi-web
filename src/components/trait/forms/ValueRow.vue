@@ -42,7 +42,7 @@
   import BasicInputField from "@/components/forms/BasicInputField.vue";
   import {XIcon} from 'vue-feather-icons';
   import {RowError} from "@/breeding-insight/model/errors/RowError";
-  import {TraitError} from "@/breeding-insight/model/errors/TraitErrorHandler";
+  import {TraitError} from "@/breeding-insight/model/errors/TraitError";
 
   @Component({
     components: {BasicInputField, XIcon},

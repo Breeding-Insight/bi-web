@@ -60,7 +60,7 @@
 import BasicInputField from "@/components/forms/BasicInputField.vue";
 import {XIcon} from 'vue-feather-icons';
 import {FieldError} from "@/breeding-insight/model/errors/FieldError";
-import {TraitError} from "@/breeding-insight/model/errors/TraitErrorHandler";
+import {TraitError} from "@/breeding-insight/model/errors/TraitError";
 import {ValidationError} from "@/breeding-insight/model/errors/ValidationError";
   import {RowError} from "@/breeding-insight/model/errors/RowError";
 

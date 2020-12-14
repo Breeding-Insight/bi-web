@@ -53,7 +53,7 @@
 
   import {Component, Prop, Vue, Watch} from "vue-property-decorator";
   import BasicInputField from "@/components/forms/BasicInputField.vue";
-  import {TraitError} from "@/breeding-insight/model/errors/TraitErrorHandler";
+  import {TraitError} from "@/breeding-insight/model/errors/TraitError";
   import {ValidationError} from "@/breeding-insight/model/errors/ValidationError";
   import AutoCompleteField from "@/components/forms/AutoCompleteField.vue";
 

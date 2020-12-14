@@ -149,7 +149,7 @@ import DateTraitForm from "@/components/trait/forms/DateTraitForm.vue";
 import DurationTraitForm from "@/components/trait/forms/DurationTraitForm.vue";
 import NumericalTraitForm from "@/components/trait/forms/NumericalTraitForm.vue";
 import CategoryTraitForm from "@/components/trait/forms/CategoryTraitForm.vue";
-import {TraitError} from "@/breeding-insight/model/errors/TraitErrorHandler";
+import {TraitError} from "@/breeding-insight/model/errors/TraitError";
 import {ValidationError} from "@/breeding-insight/model/errors/ValidationError";
 import AutoCompleteField from "@/components/forms/AutoCompleteField.vue";
 

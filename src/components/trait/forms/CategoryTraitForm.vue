@@ -99,7 +99,7 @@ import {PlusCircleIcon} from "vue-feather-icons";
 import {DataType} from "@/breeding-insight/model/Scale";
 import ValueRow from "@/components/trait/forms/ValueRow.vue";
 import {ValidationError} from "@/breeding-insight/model/errors/ValidationError";
-import {TraitError} from "@/breeding-insight/model/errors/TraitErrorHandler";
+import {TraitError} from "@/breeding-insight/model/errors/TraitError";
 import {FieldError} from "@/breeding-insight/model/errors/FieldError";
 import {RowError} from "@/breeding-insight/model/errors/RowError";
 

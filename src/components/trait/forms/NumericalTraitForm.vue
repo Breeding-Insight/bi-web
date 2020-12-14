@@ -62,7 +62,7 @@
   import {Component, Prop, Vue, Watch} from "vue-property-decorator";
   import BasicInputField from "@/components/forms/BasicInputField.vue";
   import {ValidationError} from "@/breeding-insight/model/errors/ValidationError";
-  import {TraitError} from "@/breeding-insight/model/errors/TraitErrorHandler";
+  import {TraitError} from "@/breeding-insight/model/errors/TraitError";
   import {DataType} from "@/breeding-insight/model/Scale";
 
 @Component({

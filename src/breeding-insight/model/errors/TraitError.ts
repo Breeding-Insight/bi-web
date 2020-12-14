@@ -15,8 +15,6 @@
  * limitations under the License.
  */
 
-import {ValidationError} from "@/breeding-insight/model/errors/ValidationError";
-
 export enum TraitError {
   MethodDescription = "method.description",
   MethodClass = "method.methodClass",
@@ -29,8 +27,4 @@ export enum TraitError {
   Abbreviations = "abbreviations",
   CategoryLabel = "scale.categories.label",
   CategoryValue = "scale.categories.value"
-}
-
-export class TraitErrorHandler extends ValidationError {
-  
 }
