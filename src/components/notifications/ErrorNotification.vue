@@ -18,14 +18,12 @@
 <template>
   <b-notification type="is-danger" v-bind:active.sync="active" aria-close-label="Close Notification" 
     role="alert">
-    <div class="level">
-      <div class="level-left">
-        <div class="level-item">
-            <AlertCircleIcon size="1.5x"></AlertCircleIcon>
-        </div>
-        <div class="level-item">
-            {{msg}}
-        </div>
+    <div class="columns has-vertical-align-middle">
+      <div class="column is-flex-grow-0">
+          <AlertCircleIcon size="1.5x"></AlertCircleIcon>
+      </div>
+      <div class="column">
+        {{msg}}
       </div>
     </div>
   </b-notification>

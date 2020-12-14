@@ -33,17 +33,19 @@
                 class="form-error has-text-danger"
                 :class="{ 'is-hidden': ( validateTypeError(validationMap.name) ) }"
             >
+              <AlertTriangleIcon size="1x" aria-hidden="true" class="mr-1"></AlertTriangleIcon>
               {{ validationMap.message }}
             </span>
           </template>
           <template v-for="(fieldError, index) in serverValidations">
-            <span
-                data-testid="formError"
-                v-bind:key="fieldName + fieldError.field + index"
-                class="form-error has-text-danger"
-            >
-              {{ fieldError.errorMessage }}
-            </span>
+              <span
+                  v-bind:key="fieldName + fieldError.field + index"
+                  data-testid="formError"
+                  class="form-error has-text-danger"
+              >
+                <AlertTriangleIcon size="1x" aria-hidden="true" class="mr-1"></AlertTriangleIcon>
+                {{ fieldError.errorMessage }}
+              </span>
           </template>
           <p
               v-if="fieldHelp !== null"
@@ -61,8 +63,11 @@
 
   import {Component, Prop, Vue} from "vue-property-decorator";
   import {FieldError} from "@/breeding-insight/model/errors/FieldError";
+  import { AlertTriangleIcon } from 'vue-feather-icons';
 
-  @Component
+  @Component({
+    components: {AlertTriangleIcon}
+  })
   export default class BaseFieldWrapper extends Vue {
 
     @Prop()

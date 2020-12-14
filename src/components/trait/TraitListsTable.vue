@@ -223,8 +223,10 @@ export default class TraitTable extends Vue {
     } catch (error) {
       if (error instanceof ValidationError) {
         this.validationHandler = error;
+        this.$emit('show-error-notification', `Error creating trait. ${this.validationHandler.condenseErrorsSingleRow()}`);
+      } else {
+        this.$emit('show-error-notification', 'Error creating trait.');
       }
-      this.$emit('show-error-notification', 'Error creating');
     }
 
     this.newFormBtnActive = true;

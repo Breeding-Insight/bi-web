@@ -49,4 +49,18 @@ export class ValidationError {
       }
     }
   }
+
+  condenseErrorsSingleRow() {
+    let errorSentence: string = '';
+    if (this.rows) {
+      for (const row of this.rows) {
+        if (row.errors) {
+          for (const field of row.errors) {
+            errorSentence += `${field.field}: ${field.errorMessage}; `;
+          }
+        }
+      }
+    }
+    return errorSentence;
+  }
 }
