@@ -63,7 +63,13 @@
         <DateTraitForm />
       </template>
       <template v-if="trait.scale && trait.scale.dataType === DataType.Duration">
-        <DurationTraitForm />
+        <DurationTraitForm
+            v-bind:unit="trait.scale.scaleName"
+            v-bind:valid-min="trait.scale.validValueMin"
+            v-bind:valid-max="trait.scale.validValueMax"
+            v-on:unit-change="trait.scale.scaleName = $event"
+            v-on:min-change="trait.scale.validValueMin = $event"
+            v-on:max-change="trait.scale.validValueMax = $event"/>
       </template>
       <template v-if="trait.scale && trait.scale.dataType === DataType.Nominal">
         <CategoryTraitForm
@@ -72,7 +78,16 @@
         />
       </template>
       <template v-if="trait.scale && trait.scale.dataType === DataType.Numerical">
-        <NumericalTraitForm />
+        <NumericalTraitForm
+          v-bind:unit="trait.scale.scaleName"
+          v-bind:decimal-places="trait.scale.decimalPlaces"
+          v-bind:valid-min="trait.scale.validValueMin"
+          v-bind:valid-max="trait.scale.validValueMax"
+          v-on:unit-change="trait.scale.scaleName = $event"
+          v-on:decimal-change="trait.scale.decimalPlaces = $event"
+          v-on:min-change="trait.scale.validValueMin = $event"
+          v-on:max-change="trait.scale.validValueMax = $event"
+        />
       </template>
       <!-- TODO: Add formula -->
     </div>
@@ -179,9 +194,19 @@ export default class TraitTable extends Vue {
       this.trait.scale!.categories = undefined;
     }
 
-    this.trait!.scale!.scaleName = value;
+    // Switching to and from numerical scale class
+    if (value === DataType.Numerical || value === DataType.Duration) {
+      this.trait!.scale!.scaleName = undefined;
+    } else {
+      this.trait!.scale!.scaleName = value;
+    }
+
+    this.trait!.scale!.decimalPlaces = undefined;
+    this.trait!.scale!.validValueMin = undefined;
+    this.trait!.scale!.validValueMax = undefined;
     this.trait!.scale!.dataType = value;
   }
+
   setObservationLevel(value: string) {
     this.trait!.programObservationLevel = new ProgramObservationLevel(value);
   }

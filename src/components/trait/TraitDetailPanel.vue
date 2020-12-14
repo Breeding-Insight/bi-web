@@ -45,14 +45,19 @@
       </template>
 
       <template v-if="scaleType && Scale.dataTypeEquals(scaleType, DataType.Numerical)">
+        <p class="mb-0">Units: {{valueOrNA(trait.scale.scaleName)}}</p>
         <p class="mb-0">Decimal Places: {{valueOrNA(trait.scale.decimalPlaces)}}</p>
         <p class="mb-0">Minimum valid value: {{valueOrNA(trait.scale.validValueMin)}}</p>
         <p class="mb-0">Maximum valid value: {{valueOrNA(trait.scale.validValueMax)}}</p>
       </template>
 
-      <template v-if="scaleType && Scale.dataTypeEquals(scaleType, DataType.Date) || Scale.dataTypeEquals(scaleType, DataType.Duration)">
+      <template v-if="Scale.dataTypeEquals(scaleType, DataType.Duration)">
+        <p class="mb-0">Unit of time: {{valueOrNA(trait.scale.scaleName)}}</p>
         <p class="mb-0">Minimum valid value: {{valueOrNA(trait.scale.validValueMin)}}</p>
         <p class="mb-0">Maximum valid value: {{valueOrNA(trait.scale.validValueMax)}}</p>
+      </template>
+
+      <template v-if="scaleType && Scale.dataTypeEquals(scaleType, DataType.Date)">
       </template>
 
       <!-- if computation method, show formula as well -->
