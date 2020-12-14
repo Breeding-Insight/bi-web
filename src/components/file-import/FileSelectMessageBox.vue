@@ -135,12 +135,15 @@
       let errors = [];
       if (this.isValidationError){
         const validationErrors = this.errors as ValidationError;
-        for (const error of validationErrors.rows){
-          for (const fieldError of error.errors){
-            errors.push(`${fieldError.field}: ${fieldError.errorMessage} in row ${error.rowIndex}`);
+        if (validationErrors.rows) {
+          for (const error of validationErrors.rows){
+            if (error.errors) {
+              for (const fieldError of error.errors){
+                errors.push(`${fieldError.field}: ${fieldError.errorMessage} in row ${error.rowIndex}`);
+              }
+            }
           }
         }
-
         return errors;
       } else if (this.errors != null) {
         return [this.errors!] as string[];
