@@ -56,7 +56,7 @@ export class ValidationError {
       for (const row of this.rows) {
         if (row.errors) {
           for (const field of row.errors) {
-            errorSentence += `${field.field}: ${field.errorMessage}; `;
+            errorSentence += `${field.errorMessage}; `;
           }
         }
       }
