@@ -36,7 +36,19 @@ export class Method {
     this.formula = formula;
   }
 
+  static assign(method: Method) {
+    return new Method(method.methodName, method.methodClass, method.description, method.formula);
+  }
+
   static methodClassEquals(classString: string, type: MethodClass): boolean {
     return classString.toUpperCase() === type.toUpperCase();
+  }
+
+  equals(method?: Method): boolean {
+    if (!method) {return false;}
+    return (this.methodName === method.methodName) &&
+      (this.methodClass === method.methodClass) &&
+      (this.description === method.description) &&
+      (this.formula === method.formula);
   }
 }

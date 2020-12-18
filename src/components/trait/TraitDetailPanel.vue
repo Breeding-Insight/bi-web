@@ -16,8 +16,8 @@
   -->
 
 <template>
-  <div class="trait-details-panel is-full-content-height">
-    <template v-if="trait">
+  <div class="is-full-length">
+    <template v-if="trait && !SidePanelTableEventBus.editActive">
       <p v-if="trait.traitName" class="is-size-5 has-text-weight-bold mb-0">{{trait.traitName}}</p>
 
       <!-- just shows first abbreviation AKA main abbreviation and first synonym -->
@@ -73,8 +73,8 @@
       <!-- maybe break out controls for reuse eventually -->
       <div class="columns is-mobile is-centered pt-6">
         <div class="column is-narrow">
-          <a v-on:click="$emit('edit')"
-             v-on:keypress.enter.space="$emit('edit')"
+          <a v-on:click="SidePanelTableEventBus.bus.$emit(SidePanelTableEventBus.activateEditEvent, trait)"
+             v-on:keypress.enter.space="SidePanelTableEventBus.bus.$emit(SidePanelTableEventBus.activateEditEvent, trait)"
              tabindex="0">
             Edit
           </a>
@@ -88,6 +88,23 @@
         </div>
       </div>
     </template>
+    <template v-if="trait && SidePanelTableEventBus.editActive">
+      <EditDataForm
+        v-bind:save-btn-active="editBtnActive"
+        v-on:cancel="SidePanelTableEventBus.bus.$emit(SidePanelTableEventBus.deactivateEditEvent)"
+        v-on:submit="SidePanelTableEventBus.bus.$emit(SidePanelTableEventBus.submitEditEvent)"
+      >
+        <BaseTraitForm
+            v-bind:trait="trait"
+            v-bind:edit-format="true"
+            v-on:trait-change="$emit('trait-change', $event)"
+            v-bind:scale-options="scaleClassOptions"
+            v-bind:method-options="methodClassOptions"
+            v-bind:program-observation-levels="observationLevelOptions"
+            v-bind:validation-handler="validationHandler"
+        ></BaseTraitForm>
+      </EditDataForm>
+    </template>
   </div>
 </template>
 
@@ -99,24 +116,56 @@
   import {Scale, DataType} from '@/breeding-insight/model/Scale'
   import {Method, MethodClass} from '@/breeding-insight/model/Method'
   import {StringFormatters} from '@/breeding-insight/utils/StringFormatters'
+  import {ValidationError} from "@/breeding-insight/model/errors/ValidationError";
+  import BaseTraitForm from "@/components/trait/forms/BaseTraitForm.vue";
+  import EditDataForm from "@/components/forms/EditDataForm.vue";
+  import {SidePanelTableEventBus} from "@/components/tables/SidePanelTableEventBus";
 
   @Component({
-    components: { SidePanel }
+    components: {EditDataForm, SidePanel, BaseTraitForm },
+    data: () => ({DataType, MethodClass, Scale, Method, SidePanelTableEventBus})
   })
   export default class TraitDetailPanel extends Vue {
 
     @Prop()
     private data!: any;
+    @Prop()
+    private observationLevelOptions!: string[];
+
+    private editActive: boolean = false;
+    private editBtnActive: boolean = true;
     private trait: Trait | null = null;
-    private DataType = DataType;
-    private MethodClass = MethodClass;
-    private Scale = Scale;
-    private Method = Method;
     private scalePostfix = new Set<string>().add(DataType.Ordinal).add(DataType.Nominal);
+
+    // Variables for edit form
+    private methodClassOptions: string[] = Object.values(MethodClass);
+    private scaleClassOptions: string[] = Object.values(DataType);
+    private validationHandler: ValidationError  = new ValidationError();
+
+    created() {
+      // Events
+      //SidePanelTableEventBus.bus.$on(SidePanelTableEventBus.activateEdit, this.activateEdit);
+      //SidePanelTableEventBus.bus.$on(SidePanelTableEventBus.deactivateEdit, this.deactivateEdit);
+      //SidePanelTableEventBus.bus.$on(SidePanelTableEventBus.submitEdit, this.submitEdit);
+    }
+
+    activateEdit() {
+      console.log('here');
+      this.editActive = true;
+      this.editBtnActive = true;
+    }
+
+    deactivateEdit() {
+      this.editActive = false;
+    }
+
+    submitEdit() {
+      this.editBtnActive = false;
+    }
 
     @Watch('data', {immediate: true})
     updatedData() {
-      this.trait = this.data.data as Trait;
+      this.trait = Trait.assign({...this.data.data});
     }
 
     abbreviationsSynonymsString(synonymsMaxLength: number) : string | undefined {
@@ -180,11 +229,4 @@
     
   }
 </script>
-
-
-<style scoped>
-.is-full-content-height {
-  height: 100%;
-}
-</style>
 

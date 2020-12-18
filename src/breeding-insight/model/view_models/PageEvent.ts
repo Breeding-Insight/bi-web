@@ -15,19 +15,12 @@
  * limitations under the License.
  */
 
-export class ProgramObservationLevel {
-  name?: string;
+export class PageEvent {
+  public eventType: string;
+  public event: any;
 
-  constructor(name?:string) {
-    this.name = name;
-  }
-
-  static assign(level: ProgramObservationLevel) {
-    return new ProgramObservationLevel(level.name);
-  }
-
-  equals(level?: ProgramObservationLevel) {
-    if (!level) {return false;}
-    return this.name === level.name;
+  constructor(eventType: string, event: any) {
+    this.eventType = eventType;
+    this.event = event;
   }
 }

@@ -41,7 +41,7 @@
             data-testid="newDataForm"
             v-show="!newTraitActive & traits.length > 0"
             class="button is-primary has-text-weight-bold"
-            v-on:click="newTraitActive = true"
+            v-on:click="activateNewTraitForm"
         >
         <span class="icon is-small">
           <PlusCircleIcon
@@ -76,15 +76,18 @@
     </NewDataForm>
 
     <SidePanelTable
-      v-bind:records.sync="traits"
-      v-bind:editable="false"
+      v-bind:records="traits"
       v-bind:pagination="traitsPagination"
+      v-bind:panel-open="detailPanelActive"
+      v-bind:selected-row="selectedTrait"
       v-on:show-error-notification="$emit('show-error-notification', $event)"
       v-on:paginate="paginationController.updatePage($event)"
       v-on:paginate-toggle-all="paginationController.toggleShowAll()"
       v-on:paginate-page-size="paginationController.updatePageSize($event)"
       v-on:collapse-columns="collapseColumns = true"
       v-on:uncollapse-columns="collapseColumns = false"
+      v-on:close-panel="deactivateEdit()"
+      v-on:open-panel="selectRow($event)"
     >
 
       <!-- 
@@ -111,7 +114,16 @@
         data: T
       -->
       <template v-slot:side-panel="data">
-        <TraitDetailPanel v-bind:data="data"/>
+        <TraitDetailPanel
+          v-bind:data="data"
+          v-bind:observation-level-options="observationLevelOptions"
+          v-bind:edit-active="editActive"
+          v-bind:edit-btn-active="editFormBtnActive"
+          v-on:activate-edit="activateEdit($event)"
+          v-on:deactivate-edit="deactivateEdit"
+          v-on:trait-change="editTrait = Trait.assign({...$event})"
+          v-on:submit="updateTrait"
+        />
       </template>
 
       <template v-slot:emptyMessage>
@@ -131,30 +143,32 @@
 </template>
 
 <script lang="ts">
-  import {Component, Vue, Watch} from 'vue-property-decorator'
-  import WarningModal from '@/components/modals/WarningModal.vue'
-  import {PlusCircleIcon} from 'vue-feather-icons'
-  import {validationMixin} from 'vuelidate';
-  import {Trait} from '@/breeding-insight/model/Trait'
-  import {mapGetters} from 'vuex'
-  import {Program} from "@/breeding-insight/model/Program";
-  import NewDataForm from '@/components/forms/NewDataForm.vue'
-  import BasicInputField from "@/components/forms/BasicInputField.vue";
-  import SidePanelTable from "@/components/tables/SidePanelTable.vue";
-  import TraitDetailPanel from "@/components/trait/TraitDetailPanel.vue";
-  import {TraitService} from "@/breeding-insight/service/TraitService";
-  import EmptyTableMessage from "@/components/tables/EmtpyTableMessage.vue";
-  import TableColumn from "@/components/tables/TableColumn.vue";
-  import {Pagination} from "@/breeding-insight/model/BiResponse";
-  import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
-  import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
-  import {StringFormatters} from '@/breeding-insight/utils/StringFormatters';
-  import {TraitStringFormatters} from '@/breeding-insight/utils/TraitStringFormatters';
-  import BaseTraitForm from "@/components/trait/forms/BaseTraitForm.vue";
-  import {ValidationError} from "@/breeding-insight/model/errors/ValidationError";
-  import {ProgramService} from "@/breeding-insight/service/ProgramService";
-  import {MethodClass} from "@/breeding-insight/model/Method";
-  import {DataType, Scale} from "@/breeding-insight/model/Scale";
+import {Component, Vue, Watch} from 'vue-property-decorator'
+import WarningModal from '@/components/modals/WarningModal.vue'
+import {PlusCircleIcon} from 'vue-feather-icons'
+import {validationMixin} from 'vuelidate';
+import {Trait} from '@/breeding-insight/model/Trait'
+import { mapGetters } from 'vuex'
+import {Program} from "@/breeding-insight/model/Program";
+import NewDataForm from '@/components/forms/NewDataForm.vue'
+import BasicInputField from "@/components/forms/BasicInputField.vue";
+import SidePanelTable from "@/components/tables/SidePanelTable.vue";
+import TraitDetailPanel from "@/components/trait/TraitDetailPanel.vue";
+import {TraitService} from "@/breeding-insight/service/TraitService";
+import EmptyTableMessage from "@/components/tables/EmtpyTableMessage.vue";
+import TableColumn from "@/components/tables/TableColumn.vue";
+import {Pagination} from "@/breeding-insight/model/BiResponse";
+import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
+import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
+import { StringFormatters } from '@/breeding-insight/utils/StringFormatters';
+import { TraitStringFormatters } from '@/breeding-insight/utils/TraitStringFormatters';
+import BaseTraitForm from "@/components/trait/forms/BaseTraitForm.vue";
+import {ValidationError} from "@/breeding-insight/model/errors/ValidationError";
+import {ProgramService} from "@/breeding-insight/service/ProgramService";
+import {MethodClass} from "@/breeding-insight/model/Method";
+import {DataType} from "@/breeding-insight/model/Scale";
+import {TableRow} from "@/breeding-insight/model/view_models/TableRow";
+import {SidePanelTableEventBus} from "@/components/tables/SidePanelTableEventBus";
 
   @Component({
   mixins: [validationMixin],
@@ -166,7 +180,8 @@
     ...mapGetters([
       'activeProgram'
     ])
-  }
+  },
+  data: () => ({Trait, SidePanelTableEventBus})
 })
 export default class TraitTable extends Vue {
 
@@ -174,10 +189,14 @@ export default class TraitTable extends Vue {
   private traits: Trait[] = [];
   private newTrait: Trait = new Trait();
   private newFormBtnActive: boolean = true;
+  private editActive: boolean = false;
+  private editFormBtnActive: boolean = true;
+  private detailPanelActive: boolean = false;
   private traitsPagination?: Pagination = new Pagination();
   private paginationController: PaginationController = new PaginationController();
   private deactivateActive: boolean = false;
   private deactivateWarningTitle: string = "Remove trait from Program name?";
+  private closeEditModalActive: boolean = false;
   private traitName: string = "Program Trait";
   private collapseColumns = false;
   private StringFormatters = StringFormatters;
@@ -186,8 +205,16 @@ export default class TraitTable extends Vue {
   private methodClassOptions: string[] = Object.values(MethodClass);
   private observationLevelOptions?: string[];
   private scaleClassOptions: string[] = Object.values(DataType);
-  private validationHandler: ValidationError  = new ValidationError();
+  private validationHandler: ValidationError = new ValidationError();
+  private editValidationHandler: ValidationError = new ValidationError();
+  private editTrait?: Trait;
+  private originalTrait?: Trait;
+  private selectedTrait?: TableRow<Trait> = new TableRow<Trait>(false, false, {} as Trait);
 
+  created() {
+    // Events
+    //SidePanelTableEventBus.bus.$on(SidePanelTableEventBus.openEdit, this.activateEdit);
+  }
   mounted() {
     this.getTraits();
     this.getObservationLevels();
@@ -209,6 +236,47 @@ export default class TraitTable extends Vue {
       this.$emit('show-error-notification', 'Error while trying to load traits');
       throw error;
     });
+  }
+
+  selectRow(selectedTrait: TableRow<any>) {
+    this.selectedTrait = selectedTrait;
+  }
+
+  activateEdit(editTrait: Trait) {
+    this.editActive = true;
+    this.originalTrait = Trait.assign({...editTrait} as Trait);
+    this.editTrait = Trait.assign({...editTrait} as Trait);
+  }
+
+  deactivateEdit() {
+    if (this.editTrait) {
+      if (this.editTrait.equals(this.originalTrait)) {
+        this.closeEdit();
+      } else {
+        // Show an error dialog
+        this.closeEditModalActive = true;
+      }
+    }
+  }
+
+  activateNewTraitForm() {
+    // TODO: Check for trait changes
+    SidePanelTableEventBus.bus.$emit(SidePanelTableEventBus.closePanel, false);
+    /*if (this.editActive) {
+      this.deactivateEdit();
+    }
+    this.newTraitActive = true;*/
+  }
+
+  closeEdit() {
+    this.closeEditModalActive = false;
+    this.editActive = false;
+    this.detailPanelActive = false;
+    this.editTrait = undefined;
+  }
+
+  cancelCloseEdit() {
+    this.closeEditModalActive = false;
   }
 
   async saveTrait() {
@@ -246,9 +314,30 @@ export default class TraitTable extends Vue {
     this.newFormBtnActive = true;
   }
 
+  async updateTrait() {
+    try {
+      this.editFormBtnActive = false;
+      this.editValidationHandler = new ValidationError();
+      await TraitService.updateTraits(this.activeProgram!.id!, [this.editTrait!]);
+      this.$emit('show-success-notification', 'Trait edit successful.');
+      //TODO: Do we keep the focus on this trait? If so, just update this trait with the result, don't reload all
+      this.getTraits();
+      await this.getObservationLevels();
+      this.editActive = false;
+    } catch (error) {
+      if (error instanceof ValidationError) {
+        this.editValidationHandler = error;
+        this.$emit('show-error-notification', `Error updating trait. ${this.editValidationHandler.condenseErrorsSingleRow()}`);
+      } else {
+        this.$emit('show-error-notification', 'Error updating trait.');
+      }
+    }
+  }
+
   cancelNewTrait() {
     this.newTrait = new Trait();
     this.newTraitActive = false;
+    this.validationHandler = new ValidationError();
   }
 
   async getObservationLevels() {

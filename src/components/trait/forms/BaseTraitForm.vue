@@ -1,6 +1,6 @@
 <template>
-  <div class="columns">
-    <div class="column">
+  <div class="columns is-multiline">
+    <div class="column" v-bind:class="{'is-full': editFormat}">
       <BasicInputField
         v-bind:value="trait.traitName"
         v-bind:field-name="'Trait name'"
@@ -27,6 +27,7 @@
           by
         </p>
         <BasicSelectField
+          v-bind:selected-id="trait.method.methodClass"
           v-bind:options="methodOptions"
           v-bind:field-name="'Method'"
           v-bind:show-label="false"
@@ -39,7 +40,7 @@
           using
         </p>
         <BasicSelectField
-          v-bind:selected-id="trait.scale ? trait.scale.dataType : undefined"
+          v-bind:selected-id="StringFormatters.toStartCase(trait.scale.dataType)"
           v-bind:options="getScaleOptions()"
           v-bind:field-name="'Scale'"
           v-bind:show-label="false"
@@ -62,7 +63,7 @@
       </template>
 
       <!-- Scale options -->
-      <template v-if="trait.scale && (trait.scale.dataType === DataType.Ordinal || trait.scale.dataType === DataType.Nominal)">
+      <template v-if="trait.scale && (Scale.dataTypeEquals(trait.scale.dataType, DataType.Ordinal) || Scale.dataTypeEquals(trait.scale.dataType, DataType.Nominal))">
         <CategoryTraitForm
           v-bind:data="trait.scale.categories"
           v-on:update="trait.scale.categories = $event"
@@ -71,13 +72,13 @@
           v-bind:validation-index="0"
         />
       </template>
-      <template v-if="trait.scale && trait.scale.dataType === DataType.Text">
+      <template v-if="trait.scale && Scale.dataTypeEquals(trait.scale.dataType, DataType.Text)">
         <TextTraitForm />
       </template>
-      <template v-if="trait.scale && trait.scale.dataType === DataType.Date">
+      <template v-if="trait.scale && Scale.dataTypeEquals(trait.scale.dataType, DataType.Date)">
         <DateTraitForm />
       </template>
-      <template v-if="trait.scale && trait.scale.dataType === DataType.Duration">
+      <template v-if="trait.scale && Scale.dataTypeEquals(trait.scale.dataType, DataType.Duration)">
         <DurationTraitForm
             v-bind:unit="trait.scale.scaleName"
             v-bind:valid-min="trait.scale.validValueMin"
@@ -89,7 +90,7 @@
             v-bind:validation-index="0"
         />
       </template>
-      <template v-if="trait.scale && trait.scale.dataType === DataType.Numerical">
+      <template v-if="trait.scale && Scale.dataTypeEquals(trait.scale.dataType, DataType.Numerical)">
         <NumericalTraitForm
           v-bind:unit="trait.scale.scaleName"
           v-bind:decimal-places="trait.scale.decimalPlaces"
@@ -104,10 +105,11 @@
         />
       </template>
     </div>
+
     <div class="divider is-vertical" />
 
     <!-- Right Side -->
-    <div class="column">
+    <div class="column" v-bind:class="{'is-full': editFormat}">
       <BasicInputField
         v-bind:value="trait.method.description"
         v-bind:field-name="'Description of collection method'"
@@ -118,7 +120,7 @@
       />
 
       <BasicInputField
-        v-bind:value="trait.abbreviations"
+        v-bind:value="trait.abbreviations ? trait.abbreviations.toString().replace(',', ';') : undefined"
         v-bind:field-name="'Abbreviation(s)'"
         v-bind:field-help="'Semicolon separated list, with primary abbreviation as first term.'"
         v-bind:server-validations="validationHandler.getValidation(0, TraitError.Abbreviations)"
@@ -126,7 +128,7 @@
       />
 
       <BasicInputField
-        v-bind:value="trait.synonyms"
+        v-bind:value="trait.synonyms ? trait.synonyms.toString().replace(',', ';') : undefined"
         v-bind:field-name="'Synonyms'"
         v-bind:field-help="'Semicolon separated list.'"
         v-on:input="trait.synonyms = parseSemiColonList($event)"
@@ -152,6 +154,7 @@ import CategoryTraitForm from "@/components/trait/forms/CategoryTraitForm.vue";
 import {TraitError} from "@/breeding-insight/model/errors/TraitError";
 import {ValidationError} from "@/breeding-insight/model/errors/ValidationError";
 import AutoCompleteField from "@/components/forms/AutoCompleteField.vue";
+import { StringFormatters } from '@/breeding-insight/utils/StringFormatters';
 
 @Component({
   components: {
@@ -159,7 +162,7 @@ import AutoCompleteField from "@/components/forms/AutoCompleteField.vue";
     CategoryTraitForm,
     NumericalTraitForm,
     DurationTraitForm, DateTraitForm, TextTraitForm, OrdinalTraitForm, BasicSelectField, BasicInputField},
-  data: () => ({DataType, MethodClass, TraitError})
+  data: () => ({DataType, MethodClass, TraitError, StringFormatters, Scale})
 })
 export default class BaseTraitForm extends Vue {
   @Prop()
@@ -170,15 +173,22 @@ export default class BaseTraitForm extends Vue {
   scaleOptions?: string[];
   @Prop()
   validationHandler!: ValidationError;
+  @Prop({default: () => new Trait()})
+  trait!: Trait;
+  @Prop({default: false})
+  editFormat!: boolean;
 
   name: string = '';
-  private trait: Trait = new Trait();
   private methodHistory: {[key: string]: Method} = {};
   private scaleHistory: {[key: string]: Scale} = {};
 
   created() {
-    this.trait.method = new Method();
-    this.trait.scale = new Scale();
+    if (!this.trait.method) {
+      this.trait.method = new Method();
+    }
+    if (!this.trait.scale){
+      this.trait.scale = new Scale();
+    }
   }
 
   @Watch('trait', {deep: true})

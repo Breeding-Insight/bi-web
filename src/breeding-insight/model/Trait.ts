@@ -29,8 +29,8 @@ export class Trait {
   synonyms?: Array<string>;
   mainAbbreviation?: string;
 
-  constructor(id?:string,
-              traitName?:string, 
+  constructor(id?: string,
+              traitName?: string,
               programObservationLevel?: ProgramObservationLevel,
               method?: Method,
               scale?: Scale,
@@ -39,10 +39,43 @@ export class Trait {
               ) {
     this.id = id;
     this.traitName = traitName;
-    this.programObservationLevel = programObservationLevel;
-    this.method = method;
-    this.scale = scale;
+    if (programObservationLevel) {
+      this.programObservationLevel = ProgramObservationLevel.assign({...programObservationLevel} as ProgramObservationLevel);
+    }
+    if (method){
+      this.method = Method.assign({...method} as Method);
+    }
+    if (scale) {
+      this.scale = Scale.assign({...scale} as Scale);
+    }
     this.abbreviations = abbreviations;
     this.synonyms = synonyms;
+  }
+
+  static assign(trait: Trait): Trait {
+    return new Trait(trait.id, trait.traitName, trait.programObservationLevel, trait.method,
+      trait.scale, trait.abbreviations, trait.synonyms);
+  }
+
+  equals(trait?: Trait): boolean {
+    if (!trait) {return false;}
+    return (this.id === trait.id) &&
+      (this.traitName === trait.traitName) &&
+      (this.traitName === trait.traitName) &&
+      (this.abbreviations === trait.abbreviations) &&
+      (this.synonyms === trait.synonyms) &&
+      (this.mainAbbreviation === trait.mainAbbreviation) &&
+      (
+        (this.programObservationLevel && this.programObservationLevel.equals(trait.programObservationLevel)) ||
+        (!this.programObservationLevel && !trait.programObservationLevel)
+      ) &&
+      (
+        (this.scale && this.scale.equals(trait.scale)) ||
+        (!this.scale && !trait.scale)
+      ) &&
+      (
+        (this.method && this.method.equals(trait.method)) ||
+        (!this.method && !trait.method)
+      );
   }
 }

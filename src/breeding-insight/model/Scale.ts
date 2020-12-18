@@ -43,7 +43,26 @@ export class Scale {
     this.validValueMax = validValueMax;
   }
 
+  static assign(scale: Scale) {
+    return new Scale(scale.scaleName, scale.dataType, scale.categories, scale.decimalPlaces,
+      scale.validValueMin, scale.validValueMax);
+  }
+
   static dataTypeEquals(typeString: string, type: DataType): boolean {
-    return typeString.toUpperCase() === type.toUpperCase();
+    if (typeString) {
+      return typeString.toUpperCase() === type.toUpperCase();
+    } else {
+      return false;
+    }
+  }
+
+  equals(scale?: Scale): boolean {
+    if (!scale) {return false;}
+    return (this.scaleName === scale.scaleName) &&
+      (this.dataType === scale.dataType) &&
+      (this.categories === scale.categories) &&
+      (this.decimalPlaces === scale.decimalPlaces) &&
+      (this.validValueMin === scale.validValueMin) &&
+      (this.validValueMax === scale.validValueMax);
   }
 }
