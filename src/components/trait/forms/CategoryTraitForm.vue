@@ -120,15 +120,19 @@ export default class CategoryTraitForm extends Vue {
     this.$emit('update', this.data);
   }
 
+  @Watch('type', {immediate: true})
+  updateCategories() {
+    if (this.data.length === 0) {
+      this.prepopulateCategories();
+    }
+  }
 
-  mounted() {
-    if (this.new) {
-      for (const i of Array(5).keys()) {
-        if (this.type === DataType.Ordinal) {
-          this.data.push(new Category((i + 1).toString(), ''));
-        } else {
-          this.data.push(new Category(undefined, ''));
-        }
+  prepopulateCategories() {
+    for (const i of Array(5).keys()) {
+      if (this.type === DataType.Ordinal) {
+        this.data.push(new Category((i + 1).toString(), ''));
+      } else {
+        this.data.push(new Category(undefined, ''));
       }
     }
   }

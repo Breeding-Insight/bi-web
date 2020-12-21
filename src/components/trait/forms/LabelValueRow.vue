@@ -43,7 +43,7 @@
             />
           </div>
           <div class="column is-one-fifth ml-2">
-            <a class="delete" v-on:click="$emit('delete')"></a>
+            <button type="button" class="delete" v-on:click="$emit('delete')"></button>
           </div>
 
         </div>
