@@ -212,13 +212,37 @@ export default class TraitTable extends Vue {
 
     // Save history of current scale class
     if (this.trait.scale!.dataType) {
-      this.scaleHistory[this.trait.scale!.dataType] = {...this.trait.scale!};
+      // Nominal and ordinal save histories
+      if (this.trait.scale!.dataType === DataType.Nominal || this.trait.scale!.dataType === DataType.Ordinal) {
+        this.scaleHistory[DataType.Ordinal] = {...this.trait.scale!};
+      } else {
+        this.scaleHistory[this.trait.scale!.dataType] = {...this.trait.scale!};
+      }
     }
 
     // Look in history for existing scale
-    if (this.scaleHistory[value]) {
+    if ((value === DataType.Nominal || value === DataType.Ordinal) && this.scaleHistory[DataType.Ordinal]) {
+      console.log(this.scaleHistory)
+      this.trait.scale = this.scaleHistory[DataType.Ordinal];
+      this.trait.scale.dataType = value;
+      this.trait.scale.scaleName = value;
+
+      if (value === DataType.Nominal) {
+        // Clear the labels
+        if (this.trait.scale.categories) {
+          this.trait.scale.categories.forEach(category => category.label = undefined);
+        }
+      } else {
+        if (this.trait.scale.categories) {
+          this.trait.scale.categories.forEach((category, index) => category.label = index.toString());
+        }
+      }
+    } else if (this.scaleHistory[value]) {
       this.trait.scale = this.scaleHistory[value];
+      this.trait.scale.dataType = value;
+      this.trait!.scale!.scaleName = value;
     } else {
+      // No history
       this.trait.scale = new Scale();
       this.trait.scale.dataType = value;
 
@@ -229,6 +253,7 @@ export default class TraitTable extends Vue {
         this.trait!.scale!.scaleName = value;
       }
     }
+
   }
 
   setObservationLevel(value: string) {
