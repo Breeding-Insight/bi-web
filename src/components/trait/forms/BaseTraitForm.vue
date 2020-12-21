@@ -222,7 +222,6 @@ export default class TraitTable extends Vue {
 
     // Look in history for existing scale
     if ((value === DataType.Nominal || value === DataType.Ordinal) && this.scaleHistory[DataType.Ordinal]) {
-      console.log(this.scaleHistory)
       this.trait.scale = this.scaleHistory[DataType.Ordinal];
       this.trait.scale.dataType = value;
       this.trait.scale.scaleName = value;
