@@ -32,7 +32,7 @@
             <div class="level-item">
               <div class="has-text-dark has-text-centered is-size-7">
                 <!-- temporary link until the backend card is done -->
-                <a href="https://cornell.box.com/shared/static/9021uvpq8o3atsibbyu2anhqcowob1a5.xls"
+                <a href="https://cornell.box.com/shared/static/snf69ydrzmmr27qfqby0pcr0mw34qulr.xls"
                   class="button is-outlined is-primary">Download the Trait Import Template</a>
                 <br/>Template version placeholder
               </div>
