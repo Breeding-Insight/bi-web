@@ -33,7 +33,7 @@
                 class="form-error has-text-danger"
                 :class="{ 'is-hidden': ( validateTypeError(validationMap.name) ) }"
             >
-              <AlertTriangleIcon size="1x" aria-hidden="true" class="mr-1"></AlertTriangleIcon>
+              <AlertTriangleIcon size="1x" aria-hidden="true" class="has-vertical-align-middle mr-1"></AlertTriangleIcon>
               {{ validationMap.message }}
             </span>
           </template>
@@ -43,7 +43,7 @@
                   data-testid="formError"
                   class="form-error has-text-danger"
               >
-                <AlertTriangleIcon size="1x" aria-hidden="true" class="mr-1"></AlertTriangleIcon>
+                <AlertTriangleIcon size="1x" aria-hidden="true" class="has-vertical-align-middle mr-1"></AlertTriangleIcon>
                 {{ fieldError.errorMessage }}
               </span>
           </template>

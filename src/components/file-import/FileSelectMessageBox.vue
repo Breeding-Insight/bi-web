@@ -25,7 +25,7 @@
 
           <!-- Multiple errors list -->
           <template v-if="isValidationError">
-            <AlertTriangleIcon size="1x" aria-hidden="true"></AlertTriangleIcon>
+            <AlertTriangleIcon size="1x" aria-hidden="true" class="has-vertical-align-middle"></AlertTriangleIcon>
             <span class="has-text-weight-bold ml-1">File contains data errors</span>
             <ul>
               <template v-if="displayAllErrors">
@@ -52,7 +52,7 @@
 
           <!-- Single Error -->
           <template v-else>
-            <AlertTriangleIcon size="1x" aria-hidden="true"></AlertTriangleIcon>
+            <AlertTriangleIcon size="1x" aria-hidden="true" class="has-vertical-align-middle"></AlertTriangleIcon>
             <span class="has-text-weight-bold ml-1">{{allErrors[0]}}</span>
           </template>
 
