@@ -50,13 +50,25 @@ export class ValidationError {
     }
   }
 
-  condenseErrorsSingleRow() {
+  condenseErrorsSingleRow(deletions?: string[]) {
+
     let errorSentence: string = '';
     if (this.rows) {
       for (const row of this.rows) {
         if (row.errors) {
           for (const field of row.errors) {
-            errorSentence += `${field.errorMessage}; `;
+
+            // Check our deletions
+            let addMsg: boolean = true;
+            if (deletions && deletions.length) {
+              if (deletions.indexOf(field.field) !== -1) {
+                addMsg = false;
+              }
+            }
+
+            if (addMsg) {
+              errorSentence += `${field.errorMessage}; `;
+            }
           }
         }
       }
