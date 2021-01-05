@@ -1,6 +1,6 @@
 {
   "name": "bi-web",
-  "version": "v0.3.0+50",
+  "version": "v0.3.0+52",
   "private": true,
   "scripts": {
     "build": "node $npm_package_task_path/build.js --dev-audit-level=critical --prod-audit-level=none",
@@ -75,5 +75,5 @@
   },
   "devport": "8080",
   "task_path": "./task",
-  "versionInfo": "https://github.com/Breeding-Insight/bi-web/commit/2ed8db737cdf0b296d3cee5e8627026394bedad3"
+  "versionInfo": "https://github.com/Breeding-Insight/bi-web/commit/380811c86c37989c4b1555ae0c4964168af28449"
 }
