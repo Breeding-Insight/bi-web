@@ -58,13 +58,22 @@ export class Scale {
     }
   }
 
+  private categoriesEqual(categories: Category[] | undefined) {
+    if (this.categories && categories && this.categories.length === categories.length) {
+      return this.categories.filter((value,index) => {
+        return value.value !== categories[index].value || value.label !== categories[index].label;
+      }).length === 0;
+    }
+    return false;
+  }
+
   equals(scale?: Scale): boolean {
     if (!scale) {return false;}
     return (this.scaleName === scale.scaleName) &&
       (this.dataType === scale.dataType) &&
-      (this.categories === scale.categories) &&
       (this.decimalPlaces === scale.decimalPlaces) &&
       (this.validValueMin === scale.validValueMin) &&
-      (this.validValueMax === scale.validValueMax);
+      (this.validValueMax === scale.validValueMax) &&
+      (this.categoriesEqual(scale.categories));
   }
 }

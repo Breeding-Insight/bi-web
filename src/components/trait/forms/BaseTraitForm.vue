@@ -229,20 +229,22 @@ export default class BaseTraitForm extends Vue {
     // Save history of current scale class
     if (this.trait.scale!.dataType) {
       // Nominal and ordinal save histories
-      if (this.trait.scale!.dataType === DataType.Nominal || this.trait.scale!.dataType === DataType.Ordinal) {
-        this.scaleHistory[DataType.Ordinal] = {...this.trait.scale!} as Scale;
+      if (Scale.dataTypeEquals(this.trait.scale!.dataType, DataType.Nominal) ||
+        Scale.dataTypeEquals(this.trait.scale!.dataType, DataType.Ordinal))
+      {
+        this.scaleHistory[DataType.Ordinal.toLowerCase()] = Scale.assign({...this.trait.scale!} as Scale);
       } else {
-        this.scaleHistory[this.trait.scale!.dataType] = {...this.trait.scale!} as Scale;
+        this.scaleHistory[this.trait.scale!.dataType.toLowerCase()] = Scale.assign({...this.trait.scale!} as Scale);
       }
     }
 
     // Look in history for existing scale
-    if ((value === DataType.Nominal || value === DataType.Ordinal) && this.scaleHistory[DataType.Ordinal]) {
-      this.trait.scale = this.scaleHistory[DataType.Ordinal];
-      this.trait.scale.dataType = value;
-      this.trait.scale.scaleName = value;
+    if ((Scale.dataTypeEquals(value, DataType.Nominal) || Scale.dataTypeEquals(value, DataType.Ordinal)) &&
+      this.scaleHistory[DataType.Ordinal.toLowerCase()])
+    {
+      this.trait.scale = this.scaleHistory[DataType.Ordinal.toLowerCase()];
 
-      if (value === DataType.Nominal) {
+      if (Scale.dataTypeEquals(value, DataType.Nominal)) {
         // Clear the labels
         if (this.trait.scale.categories) {
           this.trait.scale.categories.forEach(category => category.label = undefined);
@@ -252,8 +254,8 @@ export default class BaseTraitForm extends Vue {
           this.trait.scale.categories.forEach((category, index) => category.label = index.toString());
         }
       }
-    } else if (this.scaleHistory[value]) {
-      this.trait.scale = this.scaleHistory[value];
+    } else if (this.scaleHistory[value.toLowerCase()]) {
+      this.trait.scale = this.scaleHistory[value.toLowerCase()];
       this.trait.scale.dataType = value;
       this.trait!.scale!.scaleName = value;
     } else {
@@ -262,7 +264,7 @@ export default class BaseTraitForm extends Vue {
       this.trait.scale.dataType = value;
 
       // Allow for units in the numerical and duration traits
-      if (value === DataType.Numerical || value === DataType.Duration) {
+      if (Scale.dataTypeEquals(value, DataType.Numerical) || Scale.dataTypeEquals(value, DataType.Duration)) {
         this.trait!.scale!.scaleName = undefined;
       } else {
         this.trait!.scale!.scaleName = value;

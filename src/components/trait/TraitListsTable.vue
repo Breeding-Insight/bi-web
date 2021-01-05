@@ -120,7 +120,7 @@
           v-bind:edit-btn-active="editFormBtnActive"
           v-bind:editable="true"
           v-on:activate-edit="activateEdit($event)"
-          v-on:deactivate-edit="deactivateEdit"
+          v-on:deactivate-edit="closePanel"
           v-on:trait-change="editTrait = Trait.assign({...$event})"
           v-on:submit="updateTrait"
         />
@@ -215,8 +215,11 @@ export default class TraitTable extends Vue {
   private paginationController: PaginationController = new PaginationController();
   private collapseColumns = false;
 
+  mounted() {
+    this.getTraits();
+    this.getObservationLevels();
 
-  created() {
+    // Events
     // TODO: Can we make a continue function instead of calling specific function?
     this.traitSidePanelState.bus.$on(this.traitSidePanelState.requestClosePanelEvent, () => {
       this.closePanel();
@@ -229,11 +232,6 @@ export default class TraitTable extends Vue {
     this.traitSidePanelState.bus.$on(this.traitSidePanelState.cancelCloseEditEvent, () => {
       this.eventStore.clear();
     });
-  }
-
-  mounted() {
-    this.getTraits();
-    this.getObservationLevels();
   }
 
   @Watch('paginationController', { deep: true})
@@ -261,12 +259,6 @@ export default class TraitTable extends Vue {
     this.editTrait = Trait.assign({...editTrait} as Trait);
   }
 
-  deactivateEdit() {
-    if (this.editTrait) {
-      this.traitSidePanelState.bus.$emit(this.traitSidePanelState.deactivateEditEvent, !this.editTrait.equals(this.originalTrait));
-    }
-  }
-
   activateNewTraitForm() {
     this.eventStore.addEvent(() => { this.newTraitActive = true; });
     this.closePanel();
@@ -278,6 +270,8 @@ export default class TraitTable extends Vue {
     } else {
       this.traitSidePanelState.bus.$emit(this.traitSidePanelState.deactivateEditEvent,false);
     }
+    this.editTrait = undefined;
+    this.originalTrait = undefined;
   }
 
   async saveTrait() {
@@ -316,30 +310,29 @@ export default class TraitTable extends Vue {
     }
   }
 
-  //TODO: Mock the trait dao to return the updated trait
   async updateTrait() {
     try {
       this.editFormBtnActive = false;
       this.editValidationHandler = new ValidationError();
       const [data] = await TraitService.updateTraits(this.activeProgram!.id!, [this.editTrait!]) as [Trait[], Metadata];
-      console.log(data);
-      this.$emit('show-success-notification', 'Trait edit successful.');
 
-      // Only update the given trait.
+      // Temporary: Only update the given trait.
+      // TODO: Select all traits and find the edited trait within results to keep row open
       if (data.length > 0){
         const traitInd = this.traits.findIndex(trait => trait.id === data[0].id);
         const traitCopy = [...this.traits];
-        if (traitInd) {
+        if (traitInd >= 0) {
           traitCopy[traitInd] = {...data[0]} as Trait;
         }
         this.traits = traitCopy;
       }
 
       await this.getObservationLevels();
-      //TODO: Detail panel should stay open
-      this.traitSidePanelState.bus.$emit(this.traitSidePanelState.deactivateEditEvent, false);
+      this.traitSidePanelState.bus.$emit(this.traitSidePanelState.successEditEvent);
+      this.editTrait = undefined;
+      this.originalTrait = undefined;
+      this.$emit('show-success-notification', 'Trait edit successful.');
     } catch (error) {
-      console.log(error);
       if (error instanceof ValidationError) {
         this.editValidationHandler = error;
         this.$emit('show-error-notification', `Error updating trait. ${this.editValidationHandler.condenseErrorsSingleRow()}`);

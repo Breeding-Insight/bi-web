@@ -23,15 +23,12 @@ export class SidePanelTableEventBusHandler {
 
   // Events
   openPanelEvent = 'open-panel';
-  selectRowEvent = 'select-row';
   activateEditEvent = 'activate-edit';
   deactivateEditEvent = 'deactive-edit';
   requestClosePanelEvent = 'request-close-panel';
   confirmCloseEditEvent = 'confirm-close-edit';
   cancelCloseEditEvent = 'cancel-close-edit';
-  paginateEvent = 'paginate-event';
-  paginateToggleAllEvent = 'paginate-toggle-all-event';
-  pageSizeEvent = 'page-size-event';
+  successEditEvent = 'success-edit-event';
 
   // State variables
   public panelOpen: boolean = false;
@@ -65,16 +62,10 @@ export class SidePanelTableEventBusHandler {
     this.bus.$on(this.cancelCloseEditEvent, () => {
       this.closeEditModalActive = false;
     });
-    //TODO: These might be able to go into a separate bus
-    this.bus.$on(this.paginateEvent, (page: number) => {
-      // Update page
-    });
-    this.bus.$on(this.paginateToggleAllEvent, () => {
-      // Toggle show all
-    });
-    this.bus.$on(this.pageSizeEvent, () => {
-      // Update page size
-    });
+    this.bus.$on(this.successEditEvent, () => {
+      this.editActive = false;
+      this.panelOpen = true;
+    })
   }
 
   reset() {
