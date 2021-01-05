@@ -38,6 +38,10 @@ RUN ["mkdir", "/home/host/biweb"]
 WORKDIR /home/${CONT_USERNAME}/biweb
 
 # Install the app dependencies and configuration
+COPY --chown=host:host ["./src", "/home/host/biweb/src/"]
+COPY --chown=host:host ["./task", "/home/host/biweb/task/"]
+COPY --chown=host:host ["./tests", "/home/host/biweb/test/"]
+COPY --chown=host:host ["./public", "/home/host/biweb/public/"]
 COPY --chown=host:host ["babel.config.js", ".browserslistrc", "cypress.json", ".eslintrc.js", ".npmrc", "tsconfig.json", "vue.config.js", ".env.development","./"]
 COPY --chown=host:host ["package.json", "/home/host/biweb/package.json"]
 COPY --chown=host:host ["package-lock.json", "/home/host/biweb/package-lock.json"]
