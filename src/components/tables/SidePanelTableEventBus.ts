@@ -18,30 +18,69 @@
 import Vue from 'vue';
 import {TableRow} from "@/breeding-insight/model/view_models/TableRow";
 
-class SidePanelTableEventBusHandler {
+export class SidePanelTableEventBusHandler {
   bus = new Vue();
-  // Events
-  closePanelEvent = 'close-panel';
-  openPanelEvent = 'open-panel';
 
+  // Events
+  openPanelEvent = 'open-panel';
   selectRowEvent = 'select-row';
   activateEditEvent = 'activate-edit';
   deactivateEditEvent = 'deactive-edit';
-  submitEditEvent = 'submit-edit';
+  requestClosePanelEvent = 'request-close-panel';
+  confirmCloseEditEvent = 'confirm-close-edit';
+  cancelCloseEditEvent = 'cancel-close-edit';
+  paginateEvent = 'paginate-event';
+  paginateToggleAllEvent = 'paginate-toggle-all-event';
+  pageSizeEvent = 'page-size-event';
 
-  // Selected row
+  // State variables
   public panelOpen: boolean = false;
   public editActive: boolean = false;
+  public closeEditModalActive: boolean = false;
   public openedRow?: TableRow<any>;
 
   constructor() {
+    this.reset();
     // Set up events on bus
-    this.bus.$on(this.closePanelEvent, () => {this.panelOpen = false});
     this.bus.$on(this.openPanelEvent, (row: TableRow<any>) => {
       this.panelOpen = true
       this.openedRow = row;
     });
+    this.bus.$on(this.activateEditEvent, (row: TableRow<any>) => {
+      this.editActive = true
+    });
+    this.bus.$on(this.deactivateEditEvent, (showCloseEditModal: boolean) => {
+      if (showCloseEditModal){
+        this.closeEditModalActive = true;
+      } else {
+        this.bus.$emit(this.confirmCloseEditEvent);
+      }
+    });
+    this.bus.$on(this.confirmCloseEditEvent, () => {
+      this.editActive = false;
+      this.panelOpen = false;
+      this.closeEditModalActive = false;
+      this.openedRow = undefined;
+    });
+    this.bus.$on(this.cancelCloseEditEvent, () => {
+      this.closeEditModalActive = false;
+    });
+    //TODO: These might be able to go into a separate bus
+    this.bus.$on(this.paginateEvent, (page: number) => {
+      // Update page
+    });
+    this.bus.$on(this.paginateToggleAllEvent, () => {
+      // Toggle show all
+    });
+    this.bus.$on(this.pageSizeEvent, () => {
+      // Update page size
+    });
+  }
+
+  reset() {
+    this.panelOpen = false;
+    this.editActive = false;
+    this.closeEditModalActive = false;
+    this.openedRow = undefined;
   }
 }
-
-export const SidePanelTableEventBus = new SidePanelTableEventBusHandler();

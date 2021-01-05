@@ -1,9 +1,9 @@
 <template>
   <div>
     <WarningModal
-        v-bind:active.sync="closeEditModalActive"
+        v-bind:active.sync="sidePanelState.closeEditModalActive"
         v-bind:msg-title="'Close edit panel?'"
-        v-on:deactivate="cancelCloseEdit"
+        v-on:deactivate="sidePanelState.bus.$emit(sidePanelState.cancelCloseEditEvent)"
     >
       <section>
         <p class="has-text-dark">
@@ -15,14 +15,14 @@
           <button
               class="button is-danger"
               type="button"
-              v-on:click="closePanel"
+              v-on:click="sidePanelState.bus.$emit(sidePanelState.confirmCloseEditEvent)"
           >
             <strong>Yes, close</strong>
           </button>
           <button
               class="button"
               type="button"
-              v-on:click="cancelCloseEdit"
+              v-on:click="sidePanelState.bus.$emit(sidePanelState.cancelCloseEditEvent)"
           >
             Cancel
           </button>
@@ -36,6 +36,7 @@
           <BaseTable
               v-show="records.length > 0"
               v-bind:show-expand-controls="true"
+              v-bind:editable="true"
               v-bind="$props"
               v-on:mobile="collapseService.send(BreakpointEvent.MOBILE)"
               v-on:tablet="collapseService.send(BreakpointEvent.TABLET)"
@@ -52,6 +53,7 @@
               <SidePanelTableRow
                   v-bind:key="'row' + index"
                   v-bind:row-data="row"
+                  v-bind:state="sidePanelState"
               >
                 <slot
                     v-bind="row.data"
@@ -64,17 +66,18 @@
         </div>
         <div
             class="column is-gapless pl-0"
-            v-bind:class="{'is-narrow': !SidePanelTableEventBus.panelOpen,
-              'is-one-third-desktop is-half-tablet is-half-mobile': (SidePanelTableEventBus.panelOpen & !SidePanelTableEventBus.editActive),
-              'is-one-half-desktop is-half-tablet is-half-mobile': (SidePanelTableEventBus.panelOpen & SidePanelTableEventBus.editActive)}"
+            v-bind:class="{'is-narrow': !sidePanelState.panelOpen,
+              'is-one-third-desktop is-half-tablet is-half-mobile': (sidePanelState.panelOpen & !sidePanelState.editActive),
+              'is-one-half-desktop is-half-tablet is-half-mobile': (sidePanelState.panelOpen & sidePanelState.editActive)}"
         >
           <SidePanel
+              v-bind:state="sidePanelState"
               v-show="records.length > 0"
               class="side-panel-scroll"
-              v-if="SidePanelTableEventBus.panelOpen"
-              v-bind:background-color-class="SidePanelTableEventBus.editActive ? 'has-background-primary-light' : 'has-background-info-light'"
+              v-if="sidePanelState.panelOpen"
+              v-bind:background-color-class="sidePanelState.editActive ? 'has-background-primary-light' : 'has-background-info-light'"
           >
-            <slot v-bind:data="SidePanelTableEventBus.openedRow.data" name="side-panel"/>
+            <slot v-bind:table-row="sidePanelState.openedRow" name="side-panel"/>
           </SidePanel>
         </div>
       </div>
@@ -102,7 +105,7 @@
   import {TableRow} from "@/breeding-insight/model/view_models/TableRow"
   import { createMachine, interpret } from '@xstate/fsm';
   import {PageEvent} from "@/breeding-insight/model/view_models/PageEvent";
-  import {SidePanelTableEventBus} from "@/components/tables/SidePanelTableEventBus";
+  import {SidePanelTableEventBusHandler} from "@/components/tables/SidePanelTableEventBus";
   import WarningModal from "@/components/modals/WarningModal.vue";
 
   enum CollapseColumnsState {
@@ -132,7 +135,7 @@
     components: {
       BaseTable, SidePanel, SidePanelTableRow, PaginationControls, WarningModal
     },
-    data: () => ({SidePanelTableEventBus})
+    data: () => ({})
   })
   export default class SidePanelTable extends Vue {
 
@@ -144,6 +147,10 @@
     pagination!: Pagination;
     @Prop({default: false})
     panelClose!: boolean;
+    @Prop()
+    autoHandleClosePanelEvent!: boolean;
+    @Prop()
+    sidePanelState!: SidePanelTableEventBusHandler;
 
     private closeEditModalActive = false;
     private storedEvent?: PageEvent;
@@ -202,33 +209,24 @@
     private initialState = this.collapseStateMachine;
     private collapseService = interpret(this.collapseStateMachine);
 
+    @Watch('autoHandleClosePanelEvent', {immediate: true})
+    public setupClosePanelEvent(newVal: boolean) {
+      if (newVal){
+        this.sidePanelState.bus.$on(this.sidePanelState.requestClosePanelEvent, this.confirmClose);
+      } else {
+        this.sidePanelState.bus.$off(this.sidePanelState.requestClosePanelEvent, this.confirmClose);
+      }
+    }
+
+    confirmClose() {
+      this.sidePanelState.bus.$emit(this.sidePanelState.confirmCloseEditEvent);
+    }
+
     created() {
       this.collapseService.subscribe(state => {
         this.state = CollapseColumnsState[state.value as keyof typeof CollapseColumnsState];
       });
       this.collapseService.start();
-
-      // Events
-      //SidePanelTableEventBus.bus.$on(SidePanelTableEventBus.closePanelEvent, this.closeSidePanel);
-      //SidePanelTableEventBus.bus.$on(SidePanelTableEventBus.openPanelEvent, this.rowSelected);
-      //SidePanelTableEventBus.bus.$on(SidePanelTableEventBus.selectRowEvent, this.rowSelected);
-      //SidePanelTableEventBus.bus.$on(SidePanelTableEventBus.activateEditEvent, this.activateEdit);
-    }
-
-    activateEdit(row: TableRow<any>) {
-      //this.editActive = true;
-    }
-
-    closeSidePanel(askConfirm: boolean) {
-      if (askConfirm) {
-        this.closeEditModalActive = true;
-      } else {
-        this.closePanel();
-      }
-    }
-
-    cancelCloseEdit() {
-      this.closeEditModalActive = false;
     }
 
     // send events and allow caller to customize what column(s) are shown for collapsed state

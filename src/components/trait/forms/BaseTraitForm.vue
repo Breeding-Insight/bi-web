@@ -207,7 +207,7 @@ export default class BaseTraitForm extends Vue {
   setMethodClass(value: string) {
     // Save our current method
     if (this.trait!.method!.methodClass) {
-      this.methodHistory[this.trait!.method!.methodClass] = {...this.trait!.method!};
+      this.methodHistory[this.trait!.method!.methodClass] = {...this.trait!.method!} as Method;
     }
 
     // Set the new method class and get formula history if available
@@ -230,9 +230,9 @@ export default class BaseTraitForm extends Vue {
     if (this.trait.scale!.dataType) {
       // Nominal and ordinal save histories
       if (this.trait.scale!.dataType === DataType.Nominal || this.trait.scale!.dataType === DataType.Ordinal) {
-        this.scaleHistory[DataType.Ordinal] = {...this.trait.scale!};
+        this.scaleHistory[DataType.Ordinal] = {...this.trait.scale!} as Scale;
       } else {
-        this.scaleHistory[this.trait.scale!.dataType] = {...this.trait.scale!};
+        this.scaleHistory[this.trait.scale!.dataType] = {...this.trait.scale!} as Scale;
       }
     }
 

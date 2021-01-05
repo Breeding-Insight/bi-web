@@ -41,12 +41,18 @@ export class Trait {
     this.traitName = traitName;
     if (programObservationLevel) {
       this.programObservationLevel = ProgramObservationLevel.assign({...programObservationLevel} as ProgramObservationLevel);
+    } else {
+      this.programObservationLevel = new ProgramObservationLevel();
     }
     if (method){
       this.method = Method.assign({...method} as Method);
+    } else {
+      this.method = new Method();
     }
     if (scale) {
       this.scale = Scale.assign({...scale} as Scale);
+    } else {
+      this.scale = new Scale();
     }
     this.abbreviations = abbreviations;
     this.synonyms = synonyms;

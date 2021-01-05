@@ -17,7 +17,7 @@
 
 <template>
   <div class="is-full-length">
-    <template v-if="trait && !SidePanelTableEventBus.editActive">
+    <template v-if="trait && !editActive">
       <p v-if="trait.traitName" class="is-size-5 has-text-weight-bold mb-0">{{trait.traitName}}</p>
 
       <!-- just shows first abbreviation AKA main abbreviation and first synonym -->
@@ -73,31 +73,37 @@
       <!-- maybe break out controls for reuse eventually -->
       <div class="columns is-mobile is-centered pt-6">
         <div class="column is-narrow">
-          <a v-on:click="SidePanelTableEventBus.bus.$emit(SidePanelTableEventBus.activateEditEvent, trait)"
-             v-on:keypress.enter.space="SidePanelTableEventBus.bus.$emit(SidePanelTableEventBus.activateEditEvent, trait)"
-             tabindex="0">
+          <a
+            v-if="editable"
+            v-on:click="$emit('activate-edit', trait)"
+            v-on:keypress.enter.space="$emit('activate-edit', trait)"
+            tabindex="0"
+          >
             Edit
           </a>
         </div>
         <div class="column is-narrow">
-          <a v-on:click="$emit('archive')"
-             v-on:keypress.enter.space="$emit('archive')"
-             tabindex="0">
+          <a
+            v-if="archivable"
+            v-on:click="$emit('archive')"
+            v-on:keypress.enter.space="$emit('archive')"
+            tabindex="0"
+            >
             Archive
           </a>
         </div>
       </div>
     </template>
-    <template v-if="trait && SidePanelTableEventBus.editActive">
+    <template v-if="trait && editActive">
       <EditDataForm
         v-bind:save-btn-active="editBtnActive"
-        v-on:cancel="SidePanelTableEventBus.bus.$emit(SidePanelTableEventBus.deactivateEditEvent)"
-        v-on:submit="SidePanelTableEventBus.bus.$emit(SidePanelTableEventBus.submitEditEvent)"
+        v-on:cancel="$emit('deactivate-edit')"
+        v-on:submit="$emit('submit')"
       >
         <BaseTraitForm
-            v-bind:trait="trait"
+            v-bind:trait="editTrait"
             v-bind:edit-format="true"
-            v-on:trait-change="$emit('trait-change', $event)"
+            v-on:trait-change="traitUpdate($event)"
             v-bind:scale-options="scaleClassOptions"
             v-bind:method-options="methodClassOptions"
             v-bind:program-observation-levels="observationLevelOptions"
@@ -119,22 +125,28 @@
   import {ValidationError} from "@/breeding-insight/model/errors/ValidationError";
   import BaseTraitForm from "@/components/trait/forms/BaseTraitForm.vue";
   import EditDataForm from "@/components/forms/EditDataForm.vue";
-  import {SidePanelTableEventBus} from "@/components/tables/SidePanelTableEventBus";
+  import {TableRow} from "@/breeding-insight/model/view_models/TableRow";
 
   @Component({
     components: {EditDataForm, SidePanel, BaseTraitForm },
-    data: () => ({DataType, MethodClass, Scale, Method, SidePanelTableEventBus})
+    data: () => ({DataType, MethodClass, Scale, Method})
   })
   export default class TraitDetailPanel extends Vue {
 
     @Prop()
-    private data!: any;
+    private data!: TableRow<Trait>;
     @Prop()
     private observationLevelOptions!: string[];
+    @Prop({default: false})
+    private editActive!: boolean;
+    @Prop({default: false})
+    private editable!: boolean;
+    @Prop({default: false})
+    private archivable!: boolean;
 
-    private editActive: boolean = false;
     private editBtnActive: boolean = true;
     private trait: Trait | null = null;
+    private editTrait: Trait | null = null;
     private scalePostfix = new Set<string>().add(DataType.Ordinal).add(DataType.Nominal);
 
     // Variables for edit form
@@ -142,30 +154,15 @@
     private scaleClassOptions: string[] = Object.values(DataType);
     private validationHandler: ValidationError  = new ValidationError();
 
-    created() {
-      // Events
-      //SidePanelTableEventBus.bus.$on(SidePanelTableEventBus.activateEdit, this.activateEdit);
-      //SidePanelTableEventBus.bus.$on(SidePanelTableEventBus.deactivateEdit, this.deactivateEdit);
-      //SidePanelTableEventBus.bus.$on(SidePanelTableEventBus.submitEdit, this.submitEdit);
-    }
-
-    activateEdit() {
-      console.log('here');
-      this.editActive = true;
-      this.editBtnActive = true;
-    }
-
-    deactivateEdit() {
-      this.editActive = false;
-    }
-
-    submitEdit() {
-      this.editBtnActive = false;
-    }
-
     @Watch('data', {immediate: true})
     updatedData() {
-      this.trait = Trait.assign({...this.data.data});
+      this.trait = Trait.assign({...this.data.data} as Trait);
+      this.editTrait = Trait.assign({...this.data.editData} as Trait);
+    }
+
+    public traitUpdate(trait: Trait) {
+      this.editTrait = trait;
+      this.$emit('trait-change', this.editTrait);
     }
 
     abbreviationsSynonymsString(synonymsMaxLength: number) : string | undefined {

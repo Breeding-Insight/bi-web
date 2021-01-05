@@ -37,7 +37,9 @@ export class Scale {
   constructor(scaleName?:string, dataType?:string, categories?:Array<Category>, decimalPlaces?:number, validValueMin?:number, validValueMax?: number) {
     this.scaleName = scaleName;
     this.dataType = dataType;
-    this.categories = categories;
+    if (categories) {
+      this.categories = categories.map(category => new Category(category.label, category.value));
+    }
     this.decimalPlaces = decimalPlaces;
     this.validValueMin = validValueMin;
     this.validValueMax = validValueMax;

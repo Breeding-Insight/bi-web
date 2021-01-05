@@ -40,7 +40,7 @@ export class TraitService {
   static async updateTraits(programId: string, traits: Trait[]): Promise<[Trait[], Metadata]> {
     if (programId && traits) {
       // Check that they all have a trait id
-      if (traits.filter(trait => !trait.id).length === 0) {
+      if (traits.filter(trait => trait.id).length === 0) {
         throw 'Unable to update trait';
       }
 
