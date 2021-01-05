@@ -134,7 +134,7 @@
   export default class TraitDetailPanel extends Vue {
 
     @Prop()
-    private data!: TableRow<Trait>;
+    private data!: Trait;
     @Prop()
     private observationLevelOptions!: string[];
     @Prop({default: false})
@@ -156,8 +156,8 @@
 
     @Watch('data', {immediate: true})
     updatedData() {
-      this.trait = Trait.assign({...this.data.data} as Trait);
-      this.editTrait = Trait.assign({...this.data.editData} as Trait);
+      this.trait = Trait.assign({...this.data} as Trait);
+      this.editTrait = Trait.assign({...this.data} as Trait);
     }
 
     public traitUpdate(trait: Trait) {

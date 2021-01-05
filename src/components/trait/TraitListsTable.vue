@@ -210,7 +210,7 @@ export default class TraitTable extends Vue {
   // Archive trait
   private deactivateActive: boolean = false;
 
-  // TODO: Remove these and put in side table event bus
+  // TODO: Move these into an event bus in the future
   private traitsPagination?: Pagination = new Pagination();
   private paginationController: PaginationController = new PaginationController();
   private collapseColumns = false;
@@ -319,10 +319,9 @@ export default class TraitTable extends Vue {
         this.traits = traitCopy;
       }
 
+      this.traitSidePanelState.bus.$emit(this.traitSidePanelState.successEditEvent, data[0]);
+      this.clearSelectedRow();
       await this.getObservationLevels();
-      this.traitSidePanelState.bus.$emit(this.traitSidePanelState.successEditEvent);
-      this.editTrait = undefined;
-      this.originalTrait = undefined;
       this.$emit('show-success-notification', 'Trait edit successful.');
     } catch (error) {
       if (error instanceof ValidationError) {

@@ -40,16 +40,16 @@ export class SidePanelTableEventBusHandler {
   public panelOpen: boolean = false;
   public editActive: boolean = false;
   public closeEditModalActive: boolean = false;
-  public openedRow?: TableRow<any>;
+  public openedRow?: any;
 
   constructor() {
     this.reset();
     // Set up events on bus
-    this.bus.$on(this.selectRowEvent, (row: TableRow<any>) => {
+    this.bus.$on(this.selectRowEvent, (row: any) => {
       this.eventStore.addEvent(() => { this.openPanel(row); });
       this.bus.$emit(this.requestClosePanelEvent, () => this.showCloseWarningModal(), () => this.executeNextEvent());
     });
-    this.bus.$on(this.openPanelEvent, (row: TableRow<any>) => {
+    this.bus.$on(this.openPanelEvent, (row: any) => {
       this.eventStore.addEvent(() => { this.openPanel(row); });
       this.bus.$emit(this.requestClosePanelEvent, () => this.showCloseWarningModal(), () => this.executeNextEvent());
     });
@@ -77,7 +77,8 @@ export class SidePanelTableEventBusHandler {
       this.cancelCloseEdit();
       this.eventStore.clear();
     });
-    this.bus.$on(this.successEditEvent, () => {
+    this.bus.$on(this.successEditEvent, (updatedRow: any) => {
+      if (updatedRow) { this.openedRow = updatedRow; }
       this.cancelEdit();
       this.eventStore.clear();
     });

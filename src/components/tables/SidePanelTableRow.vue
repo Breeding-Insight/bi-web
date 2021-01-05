@@ -16,15 +16,15 @@
   -->
 
 <template>
-  <tr v-on:click="state.bus.$emit(state.selectRowEvent, rowData)"
-      v-bind:class="{'is-new': (rowData.new && !rowData.selected), 'is-selected': checkIsOpen()}" >
+  <tr v-on:click="state.bus.$emit(state.selectRowEvent, rowData.data)"
+      v-bind:class="{'is-new': (rowData.new && !checkIsOpen()), 'is-selected': checkIsOpen()}" >
     <slot></slot>
     <td class="has-text-right is-narrow">
         <a
           v-if="!checkIsOpen()"
           data-testid="showDetails"
-          v-on:click.stop="state.bus.$emit(state.openPanelEvent, rowData)"
-          v-on:keypress.enter.space.stop="state.bus.$emit(state.openPanelEvent, rowData)"
+          v-on:click.stop="state.bus.$emit(state.openPanelEvent, rowData.data)"
+          v-on:keypress.enter.space.stop="state.bus.$emit(state.openPanelEvent, rowData.data)"
           tabindex="0"
         >
           Show details
@@ -60,7 +60,7 @@
     state!: SidePanelTableEventBusHandler;
 
     checkIsOpen(): boolean {
-      if (this.rowData === this.state.openedRow) {
+      if (this.state.openedRow && this.rowData.data.id === this.state.openedRow.id) {
         return true;
       } else {
         return false;
