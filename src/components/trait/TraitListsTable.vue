@@ -120,7 +120,7 @@
           v-bind:edit-btn-active="editFormBtnActive"
           v-bind:editable="true"
           v-on:activate-edit="activateEdit($event)"
-          v-on:deactivate-edit="closePanel"
+          v-on:deactivate-edit="traitSidePanelState.bus.$emit(traitSidePanelState.closePanelEvent)"
           v-on:trait-change="editTrait = Trait.assign({...$event})"
           v-on:submit="updateTrait"
         />
@@ -220,17 +220,15 @@ export default class TraitTable extends Vue {
     this.getObservationLevels();
 
     // Events
-    // TODO: Can we make a continue function instead of calling specific function?
-    this.traitSidePanelState.bus.$on(this.traitSidePanelState.requestClosePanelEvent, () => {
-      this.closePanel();
-    });
-    this.traitSidePanelState.bus.$on(this.traitSidePanelState.confirmCloseEditEvent, () => {
-      if (this.eventStore.hasEvent()) {
-        this.eventStore.pop()!.execute();
+    this.traitSidePanelState.bus.$on(this.traitSidePanelState.requestClosePanelEvent, (showWarningEvent: Function, confirmCloseEvent: Function) => {
+      if (this.editTrait && !this.editTrait.equals(this.originalTrait)) {
+        showWarningEvent();
+      } else {
+        confirmCloseEvent();
       }
     });
-    this.traitSidePanelState.bus.$on(this.traitSidePanelState.cancelCloseEditEvent, () => {
-      this.eventStore.clear();
+    this.traitSidePanelState.bus.$on(this.traitSidePanelState.confirmCloseEditEvent, () => {
+      this.clearSelectedRow();
     });
   }
 
@@ -260,16 +258,10 @@ export default class TraitTable extends Vue {
   }
 
   activateNewTraitForm() {
-    this.eventStore.addEvent(() => { this.newTraitActive = true; });
-    this.closePanel();
+    this.traitSidePanelState.bus.$emit(this.traitSidePanelState.closePanelEvent, () => { this.newTraitActive = true; });
   }
 
-  closePanel() {
-    if (this.editTrait) {
-      this.traitSidePanelState.bus.$emit(this.traitSidePanelState.deactivateEditEvent, !this.editTrait.equals(this.originalTrait));
-    } else {
-      this.traitSidePanelState.bus.$emit(this.traitSidePanelState.deactivateEditEvent,false);
-    }
+  clearSelectedRow() {
     this.editTrait = undefined;
     this.originalTrait = undefined;
   }

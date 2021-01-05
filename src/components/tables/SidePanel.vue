@@ -19,7 +19,7 @@
   <div v-bind:class="['box', backgroundColorClass]">
     <button
       class="delete is-pulled-right has-text-right px-0"
-      v-on:click="state.bus.$emit(state.requestClosePanelEvent)"
+      v-on:click="state.bus.$emit(state.closePanelEvent)"
       aria-label="close"
     />
     <slot/>
@@ -29,11 +29,10 @@
 <script lang="ts">
 
   import {Component, Prop, Vue} from 'vue-property-decorator'
-  import {SidePanelTableEventBus, SidePanelTableEventBusHandler} from "@/components/tables/SidePanelTableEventBus";
+  import {SidePanelTableEventBusHandler} from "@/components/tables/SidePanelTableEventBus";
 
   @Component({
-    components: { },
-    data: () => ({SidePanelTableEventBus})
+    components: {}
   })
   export default class SidePanel extends Vue {
     @Prop()

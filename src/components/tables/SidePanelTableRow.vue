@@ -49,8 +49,7 @@
   @Component({
     components: {
       ChevronRightIcon
-    },
-    data: () => ({})
+    }
   })
   export default class SidePanelTableRow extends Vue {
 
@@ -59,13 +58,6 @@
     rowData!: TableRow<any>;
     @Prop()
     state!: SidePanelTableEventBusHandler;
-
-    created() {
-      // Events
-      /*SidePanelTableEventBus.bus.$on(SidePanelTableEventBus.openPanel, this.checkRow);
-      SidePanelTableEventBus.bus.$on(SidePanelTableEventBus.selectRow, this.checkRow);
-      SidePanelTableEventBus.bus.$on(SidePanelTableEventBus.closePanel, this.checkCloseRow);*/
-    }
 
     checkIsOpen(): boolean {
       if (this.rowData === this.state.openedRow) {

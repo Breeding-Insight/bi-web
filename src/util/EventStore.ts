@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-class Event {
+export class Event {
   event?: () => void;
 
   constructor(event: any) {

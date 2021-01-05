@@ -104,7 +104,6 @@
   import PaginationControls from '@/components/tables/PaginationControls.vue'
   import {TableRow} from "@/breeding-insight/model/view_models/TableRow"
   import { createMachine, interpret } from '@xstate/fsm';
-  import {PageEvent} from "@/breeding-insight/model/view_models/PageEvent";
   import {SidePanelTableEventBusHandler} from "@/components/tables/SidePanelTableEventBus";
   import WarningModal from "@/components/modals/WarningModal.vue";
 
@@ -153,7 +152,6 @@
     sidePanelState!: SidePanelTableEventBusHandler;
 
     private closeEditModalActive = false;
-    private storedEvent?: PageEvent;
     private BreakpointEvent = BreakpointEvent;
     private selectedRow: TableRow<any> = new TableRow(false, false,{});
     private state = CollapseColumnsState.NORMAL_PANEL_CLOSED;

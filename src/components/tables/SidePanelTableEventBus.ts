@@ -17,18 +17,24 @@
 
 import Vue from 'vue';
 import {TableRow} from "@/breeding-insight/model/view_models/TableRow";
+import {Event, EventStore} from "@/util/EventStore";
 
 export class SidePanelTableEventBusHandler {
   bus = new Vue();
 
   // Events
   openPanelEvent = 'open-panel';
+  closePanelEvent = 'close-panel-event';
+  selectRowEvent = 'select-row';
   activateEditEvent = 'activate-edit';
-  deactivateEditEvent = 'deactive-edit';
+  cancelEditEvent = 'cancel-edit';
   requestClosePanelEvent = 'request-close-panel';
   confirmCloseEditEvent = 'confirm-close-edit';
   cancelCloseEditEvent = 'cancel-close-edit';
   successEditEvent = 'success-edit-event';
+
+  // Event store
+  private eventStore: EventStore = new EventStore();
 
   // State variables
   public panelOpen: boolean = false;
@@ -39,33 +45,75 @@ export class SidePanelTableEventBusHandler {
   constructor() {
     this.reset();
     // Set up events on bus
+    this.bus.$on(this.selectRowEvent, (row: TableRow<any>) => {
+      this.eventStore.addEvent(() => { this.openPanel(row); });
+      this.bus.$emit(this.requestClosePanelEvent, () => this.showCloseWarningModal(), () => this.executeNextEvent());
+    });
     this.bus.$on(this.openPanelEvent, (row: TableRow<any>) => {
-      this.panelOpen = true
-      this.openedRow = row;
+      this.eventStore.addEvent(() => { this.openPanel(row); });
+      this.bus.$emit(this.requestClosePanelEvent, () => this.showCloseWarningModal(), () => this.executeNextEvent());
     });
-    this.bus.$on(this.activateEditEvent, (row: TableRow<any>) => {
-      this.editActive = true
+    // Accepts a function to execute after panel closing
+    this.bus.$on(this.closePanelEvent, (event: () => void) => {
+      if (event) { this.eventStore.addEvent(event); }
+      this.eventStore.addEvent(() => { this.bus.$emit(this.confirmCloseEditEvent) });
+      this.bus.$emit(this.requestClosePanelEvent, () => this.showCloseWarningModal(), () => this.executeNextEvent());
     });
-    this.bus.$on(this.deactivateEditEvent, (showCloseEditModal: boolean) => {
-      if (showCloseEditModal){
-        this.closeEditModalActive = true;
-      } else {
-        this.bus.$emit(this.confirmCloseEditEvent);
-      }
+    this.bus.$on(this.cancelEditEvent, () => {
+      this.eventStore.addEvent(() => { this.cancelEdit(); });
+      this.bus.$emit(this.requestClosePanelEvent, () => this.showCloseWarningModal(), () => this.executeNextEvent());
+    });
+
+    // Final state events
+    this.bus.$on(this.activateEditEvent, () => {
+      this.activateEdit();
+      this.eventStore.clear();
     });
     this.bus.$on(this.confirmCloseEditEvent, () => {
-      this.editActive = false;
-      this.panelOpen = false;
-      this.closeEditModalActive = false;
-      this.openedRow = undefined;
+      this.closePanel();
+      this.executeNextEvent();
     });
     this.bus.$on(this.cancelCloseEditEvent, () => {
-      this.closeEditModalActive = false;
+      this.cancelCloseEdit();
+      this.eventStore.clear();
     });
     this.bus.$on(this.successEditEvent, () => {
-      this.editActive = false;
-      this.panelOpen = true;
-    })
+      this.cancelEdit();
+      this.eventStore.clear();
+    });
+  }
+
+  private openPanel(row: TableRow<any>) {
+    this.panelOpen = true
+    this.openedRow = row;
+  }
+
+  private closePanel() {
+    this.editActive = false;
+    this.panelOpen = false;
+    this.closeEditModalActive = false;
+    this.openedRow = undefined;
+  }
+
+  private showCloseWarningModal() {
+    this.closeEditModalActive = true;
+  }
+
+  private cancelCloseEdit() {
+    this.closeEditModalActive = false;
+  }
+
+  private executeNextEvent() {
+    if (this.eventStore.hasEvent()) {
+      this.eventStore.pop()!.execute();
+    }
+  }
+
+  private activateEdit() {
+    this.editActive = true;
+  }
+  private cancelEdit() {
+    this.editActive = false;
   }
 
   reset() {
