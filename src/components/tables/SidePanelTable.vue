@@ -102,7 +102,6 @@
   import SidePanel from '@/components/tables/SidePanel.vue'
   import SidePanelTableRow from '@/components/tables/SidePanelTableRow.vue'
   import PaginationControls from '@/components/tables/PaginationControls.vue'
-  import {TableRow} from "@/breeding-insight/model/view_models/TableRow"
   import { createMachine, interpret } from '@xstate/fsm';
   import {SidePanelTableEventBusHandler} from "@/components/tables/SidePanelTableEventBus";
   import WarningModal from "@/components/modals/WarningModal.vue";
@@ -151,9 +150,7 @@
     @Prop()
     sidePanelState!: SidePanelTableEventBusHandler;
 
-    private closeEditModalActive = false;
     private BreakpointEvent = BreakpointEvent;
-    private selectedRow: TableRow<any> = new TableRow(false, false,{});
     private state = CollapseColumnsState.NORMAL_PANEL_CLOSED;
     private collapseStateMachine = createMachine({
       id: 'collapse',
@@ -236,18 +233,7 @@
       this.$emit('uncollapse-columns');
     }
 
-    rowSelected(row: TableRow<any>) {
-      row.selected = true;
-      this.selectedRow = row;
-      //this.panelOpen = true;
-      this.collapseService.send(PanelEvent.OPEN);
-    }
-
     closePanel() {
-      //this.editActive = false;
-      //this.panelOpen = false;
-      this.closeEditModalActive = false;
-      this.selectedRow = new TableRow(false, false,{});
       this.collapseService.send(PanelEvent.CLOSED);
     }
 

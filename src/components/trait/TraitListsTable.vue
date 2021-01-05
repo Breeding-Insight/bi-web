@@ -168,7 +168,6 @@ import {ProgramService} from "@/breeding-insight/service/ProgramService";
 import {MethodClass} from "@/breeding-insight/model/Method";
 import {DataType, Scale} from "@/breeding-insight/model/Scale";
 import {SidePanelTableEventBusHandler} from "@/components/tables/SidePanelTableEventBus";
-import {EventStore} from "@/util/EventStore";
 
   @Component({
   mixins: [validationMixin],
@@ -201,7 +200,6 @@ export default class TraitTable extends Vue {
 
   // Side panel table
   private traitSidePanelState: SidePanelTableEventBusHandler = new SidePanelTableEventBusHandler();
-  private eventStore: EventStore = new EventStore();
 
   // Edit form
   private editFormBtnActive: boolean = true;

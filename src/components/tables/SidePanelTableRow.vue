@@ -60,7 +60,14 @@
     state!: SidePanelTableEventBusHandler;
 
     checkIsOpen(): boolean {
-      if (this.state.openedRow && this.rowData.data.id === this.state.openedRow.id) {
+      // A match is either the exact row for import confirmations
+      // or id match. This will have to be fixed in the future.
+      // TODO: Get this to match on table rows, but still work with the editing
+      if (this.state.openedRow &&
+        (
+          this.rowData.data === this.state.openedRow ||
+          (this.rowData.data.id && this.rowData.data.id === this.state.openedRow.id)))
+      {
         return true;
       } else {
         return false;

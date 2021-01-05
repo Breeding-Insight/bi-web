@@ -17,7 +17,7 @@
 
 import Vue from 'vue';
 import {TableRow} from "@/breeding-insight/model/view_models/TableRow";
-import {Event, EventStore} from "@/util/EventStore";
+import {EventStore} from "@/util/EventStore";
 
 export class SidePanelTableEventBusHandler {
   bus = new Vue();
