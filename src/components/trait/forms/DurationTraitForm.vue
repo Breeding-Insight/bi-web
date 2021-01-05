@@ -19,17 +19,13 @@
   <div>
     <div class="columns is-vcentered">
       <div class="column">
-        <b-field
-            label="Unit of Time"
-        >
-          <b-autocomplete
-              v-bind:value="unit"
-              v-bind:open-on-focus="true"
-              v-bind:data="filteredDataObj(unitOptions)"
-              v-on:input="$emit('unit-change', $event)"
-              placeholder="Start typing to see suggestions"
-          />
-        </b-field>
+        <AutoCompleteField
+            v-bind:options="unitOptions"
+            v-bind:value="unit"
+            v-bind:field-name="'Unit of Time'"
+            v-bind:server-validations="validationHandler.getValidation(0, TraitError.ScaleName)"
+            v-on:input="$emit('unit-change', $event)"
+        />
       </div>
     </div>
     <div class="columns is-vcentered">
@@ -55,11 +51,15 @@
 
 <script lang="ts">
 
-  import {Component, Prop, Vue} from "vue-property-decorator";
+  import {Component, Prop, Vue, Watch} from "vue-property-decorator";
   import BasicInputField from "@/components/forms/BasicInputField.vue";
+  import {TraitError} from "@/breeding-insight/model/errors/TraitError";
+  import {ValidationError} from "@/breeding-insight/model/errors/ValidationError";
+  import AutoCompleteField from "@/components/forms/AutoCompleteField.vue";
 
   @Component({
-    components: {BasicInputField}
+    components: {AutoCompleteField, BasicInputField},
+    data: () => ({TraitError})
   })
   export default class DurationTraitForm extends Vue {
     @Prop()
@@ -68,20 +68,18 @@
     private validMin!: number;
     @Prop()
     private validMax!: number;
+    @Prop()
+    private validationHandler!: ValidationError;
+    @Prop()
+    private validationIndex!: number;
 
     private unitOptions: string[] = ["seconds","minutes","days","weeks","months"];
 
-    filteredDataObj(data: string[]): string[] {
-      if (this.unit) {
-        return data.filter(option => {
-          return (
-            option
-              .toLowerCase()
-              .indexOf(this.unit.toLowerCase()) >= 0
-          )
-        });
-      } else {
-        return data;
+    @Watch('validationHandler', {immediate: true, deep: true})
+    overrideScaleName() {
+      // Overwrite missing scale name message
+      if (this.validationHandler && this.validationHandler.getValidation(this.validationIndex!, TraitError.ScaleName).length > 0) {
+        this.validationHandler.overrideMessage(this.validationIndex!, TraitError.ScaleName, 'Missing unit of time', 400);
       }
     }
   }

@@ -17,7 +17,7 @@
 
 <template>
   <div>
-    <div class="columns is-vcentered is-mobile is-gapless">
+    <div class="columns is-mobile is-gapless">
       <div class="column is-2">
         <BasicInputField
             v-bind:field-name="'Label'"
@@ -25,13 +25,14 @@
             v-bind:value="label"
             v-on:input="$emit('label-change', $event)"
             v-bind:input-id="'label' + Math.random()"
+            v-bind:server-validations="serverRowValidation ? serverRowValidation.getValidation(TraitError.CategoryLabel): undefined"
         />
       </div>
       <div class="column is-1 has-text-centered">
-        <p class="is-size-4 mb-2">=</p>
+        <p class="is-size-4 mt-2">=</p>
       </div>
       <div class="column is-9">
-        <div class="columns is-vcentered is-mobile is-gapless">
+        <div class="columns is-mobile is-gapless">
           <div class="column is-four-fifths">
             <BasicInputField
                 v-bind:field-name="'Value'"
@@ -40,10 +41,11 @@
                 v-bind:value="value"
                 v-on:input="$emit('value-change', $event)"
                 v-bind:input-id="'value' + Math.random()"
+                v-bind:server-validations="serverRowValidation ? serverRowValidation.getValidation(TraitError.CategoryValue): undefined"
             />
           </div>
           <div class="column is-one-fifth ml-2">
-            <button type="button" class="delete" v-on:click="$emit('delete')"></button>
+            <button type="button" class="delete mt-4" v-on:click="$emit('delete')"></button>
           </div>
 
         </div>
@@ -54,12 +56,17 @@
 
 <script lang="ts">
 
-import {Component, Prop, Vue} from "vue-property-decorator";
+  import {Component, Prop, Vue, Watch} from "vue-property-decorator";
 import BasicInputField from "@/components/forms/BasicInputField.vue";
 import {XIcon} from 'vue-feather-icons';
+import {FieldError} from "@/breeding-insight/model/errors/FieldError";
+import {TraitError} from "@/breeding-insight/model/errors/TraitError";
+import {ValidationError} from "@/breeding-insight/model/errors/ValidationError";
+  import {RowError} from "@/breeding-insight/model/errors/RowError";
 
 @Component({
-  components: {BasicInputField, XIcon}
+  components: {BasicInputField, XIcon},
+  data: () => ({TraitError})
 })
 export default class LabelValueRow extends Vue {
   @Prop()
@@ -68,6 +75,8 @@ export default class LabelValueRow extends Vue {
   value!: string;
   @Prop()
   valuePlaceholder: string | undefined;
+  @Prop()
+  serverRowValidation!: RowError;
 }
 
 </script>

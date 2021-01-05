@@ -15,22 +15,16 @@
  * limitations under the License.
  */
 
-import {RowError} from "@/breeding-insight/model/errors/RowError";
-
-export class FieldError {
-  field: string;
-  errorMessage: string;
-  httpStatus: string;
-  httpStatusCode: number;
-  rowErrors?: RowError[];
-
-  constructor(field: string, errorMessage: string, httpStatus: string, httpStatusCode: number, rowErrors?: RowError[]){
-    this.field = field;
-    this.errorMessage = errorMessage;
-    this.httpStatus = httpStatus;
-    this.httpStatusCode = httpStatusCode;
-    if (rowErrors) {
-      this.rowErrors = rowErrors.map(row => new RowError(row.rowIndex, row.errors));
-    }
-  }
+export enum TraitError {
+  MethodDescription = "method.description",
+  MethodClass = "method.methodClass",
+  ScaleName = "scale.scaleName",
+  ScaleType = "scale.dataType",
+  TraitName = "traitName",
+  ObservationLevel = "programObservationLevel.name",
+  MethodFormula = "method.formula",
+  ScaleCategories = "scale.categories",
+  Abbreviations = "abbreviations",
+  CategoryLabel = "scale.categories.label",
+  CategoryValue = "scale.categories.value"
 }

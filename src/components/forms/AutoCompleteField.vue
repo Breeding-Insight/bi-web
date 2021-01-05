@@ -22,45 +22,32 @@
       v-bind:field-name="fieldName"
       v-bind:show-label="showLabel"
       v-bind:server-validations="serverValidations"
+      class="is-flex-grow-1"
   >
-    <div class="select is-fullwidth">
-      <select
-          v-bind:id="fieldName.replace(' ', '-')"
-          v-on:input="$emit('input', $event.target.value)"
-          class="select is-fullwidth"
-      >
-        <option disabled v-bind:selected="displayDefault()" value="">Select a {{fieldName.toLowerCase()}}</option>
-        <template v-if="emptyValueName">
-          <option v-bind:value="undefined" v-bind:selected="selectedId === undefined">
-            {{emptyValueName}}
-          </option>
-        </template>
-        <option
-            v-for="option in options"
-            v-bind:key="option.id || option"
-            v-bind:selected="option.id ? option.id === selectedId : option === selectedId"
-            v-bind:value="option.id || option"
-        >
-          {{ option.name || option }}
-        </option>
-      </select>
-    </div>
+    <b-autocomplete
+        v-bind:value="value"
+        v-bind:open-on-focus="true"
+        v-bind:data="filteredDataObj(options)"
+        v-on:input="$emit('input', $event)"
+        placeholder="Start typing to see suggestions"
+    />
   </BaseFieldWrapper>
-
 </template>
 
 <script lang="ts">
-  import { Component, Prop, PropSync, Vue } from 'vue-property-decorator';
+  import { Component, Prop, Vue } from 'vue-property-decorator';
   import BaseFieldWrapper from "@/components/forms/BaseFieldWrapper.vue";
   import {FieldError} from "@/breeding-insight/model/errors/FieldError";
+
   @Component({
     components: {BaseFieldWrapper}
   })
-  export default class BasicSelectField extends Vue {
+  export default class BasicInputField extends Vue {
     @Prop()
-    selectedId!: string;
+    options!: string[];
     @Prop()
-    options!: any;
+    value!: string;
+
     @Prop()
     fieldName!: string;
     @Prop()
@@ -70,13 +57,22 @@
     @Prop()
     serverValidations!: FieldError[];
     @Prop()
-    emptyValueName!: string;
-    @Prop()
     showLabel!: boolean;
 
+    filteredDataObj(data: string[]): string[] {
+      if (!this.value) {
+        return data;
+      }
 
-    displayDefault() {
-      return this.selectedId === null || this.selectedId === undefined;
+      const result = data.filter(option => {
+        return (
+          option
+            .toLowerCase()
+            .indexOf(this.value.toLowerCase()) >= 0
+        )
+      });
+
+      return result;
     }
   }
 

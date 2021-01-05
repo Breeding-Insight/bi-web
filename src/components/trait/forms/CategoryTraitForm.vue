@@ -57,6 +57,7 @@
           v-on:label-change="item.label = $event"
           v-bind:value-placeholder="placeholders[i]"
           v-bind:key="i"
+          v-bind:server-row-validation="getCategoryErrors(i)"
         />
       </template>
     </template>
@@ -68,6 +69,7 @@
             v-on:value-change="item.value = $event"
             v-bind:value-placeholder="placeholders[i]"
             v-bind:key="i"
+            v-bind:server-row-validation="getCategoryErrors(i)"
         />
       </template>
     </template>
@@ -96,10 +98,14 @@ import WarningModal from "@/components/modals/WarningModal.vue";
 import {PlusCircleIcon} from "vue-feather-icons";
 import {DataType} from "@/breeding-insight/model/Scale";
 import ValueRow from "@/components/trait/forms/ValueRow.vue";
+import {ValidationError} from "@/breeding-insight/model/errors/ValidationError";
+import {TraitError} from "@/breeding-insight/model/errors/TraitError";
+import {FieldError} from "@/breeding-insight/model/errors/FieldError";
+import {RowError} from "@/breeding-insight/model/errors/RowError";
 
 @Component({
   components: {ValueRow, BasicInputField, LabelValueRow, WarningModal, PlusCircleIcon},
-  data: () => ({DataType})
+  data: () => ({DataType, TraitError})
 })
 export default class CategoryTraitForm extends Vue {
 
@@ -109,6 +115,10 @@ export default class CategoryTraitForm extends Vue {
   private new!: boolean;
   @Prop()
   private type!: DataType;
+  @Prop()
+  private validationHandler!: ValidationError;
+  @Prop()
+  private validationIndex!: number;
 
   private placeholders = ['ex. Very thin (< 4mm)', 'ex. Thin (4 - 6mm)', 'ex. Intermediate (7 - 9mm)', 'ex. Thick (10 - 12mm)', 'ex. Very Thick (> 12mm)'];
   private deleteWarningTitle: string = "Remove category?"
@@ -124,6 +134,24 @@ export default class CategoryTraitForm extends Vue {
   updateCategories() {
     if (this.data.length === 0) {
       this.prepopulateCategories();
+    }
+  }
+
+  getCategoryErrors(categoryIndex: number): RowError | undefined {
+    if (this.validationHandler) {
+      const fieldErrors: FieldError[] = this.validationHandler.getValidation(this.validationIndex, TraitError.ScaleCategories);
+      if (fieldErrors.length > 0) {
+        for (const [index, fieldError] of fieldErrors.entries()) {
+          // Check that it has nested errors for the catogeries
+          if (fieldError.rowErrors){
+            // Get the specific category index requested
+            const rowError: RowError[] = fieldError.rowErrors.filter(rowError => rowError.rowIndex === categoryIndex);
+            if (rowError && rowError.length > 0) {
+              return rowError[0];
+            }
+          }
+        }
+      }
     }
   }
 

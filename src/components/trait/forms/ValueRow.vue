@@ -26,6 +26,7 @@
             v-bind:value="value"
             v-on:input="$emit('value-change', $event)"
             v-bind:input-id="'value' + Math.random()"
+            v-bind:server-validations="serverRowValidation ? serverRowValidation.getValidation(TraitError.CategoryValue): undefined"
         />
       </div>
       <div class="column is-one-fifth ml-2">
@@ -40,15 +41,20 @@
   import {Component, Prop, Vue} from "vue-property-decorator";
   import BasicInputField from "@/components/forms/BasicInputField.vue";
   import {XIcon} from 'vue-feather-icons';
+  import {RowError} from "@/breeding-insight/model/errors/RowError";
+  import {TraitError} from "@/breeding-insight/model/errors/TraitError";
 
   @Component({
-    components: {BasicInputField, XIcon}
+    components: {BasicInputField, XIcon},
+    data: () => ({TraitError})
   })
   export default class ValueRow extends Vue {
     @Prop()
     value!: string;
     @Prop()
     valuePlaceholder: string | undefined;
+    @Prop()
+    serverRowValidation!: RowError;
   }
 
 </script>

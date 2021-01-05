@@ -70,6 +70,7 @@
             v-bind:scale-options="scaleClassOptions"
             v-bind:method-options="methodClassOptions"
             v-bind:program-observation-levels="observationLevelOptions"
+            v-bind:validation-handler="validationHandler"
         ></BaseTraitForm>
       </template>
     </NewDataForm>
@@ -130,33 +131,32 @@
 </template>
 
 <script lang="ts">
-import {Component, Vue, Watch} from 'vue-property-decorator'
-import WarningModal from '@/components/modals/WarningModal.vue'
-import {PlusCircleIcon} from 'vue-feather-icons'
-import {validationMixin} from 'vuelidate';
-import {Trait} from '@/breeding-insight/model/Trait'
-import { mapGetters } from 'vuex'
-import {Program} from "@/breeding-insight/model/Program";
-import NewDataForm from '@/components/forms/NewDataForm.vue'
-import BasicInputField from "@/components/forms/BasicInputField.vue";
-import SidePanelTable from "@/components/tables/SidePanelTable.vue";
-import TraitDetailPanel from "@/components/trait/TraitDetailPanel.vue";
-import {TraitService} from "@/breeding-insight/service/TraitService";
-import EmptyTableMessage from "@/components/tables/EmtpyTableMessage.vue";
-import TableColumn from "@/components/tables/TableColumn.vue";
-import {Pagination} from "@/breeding-insight/model/BiResponse";
-import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
-import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
-import { StringFormatters } from '@/breeding-insight/utils/StringFormatters';
-import { TraitStringFormatters } from '@/breeding-insight/utils/TraitStringFormatters';
-import BaseTraitForm from "@/components/trait/forms/BaseTraitForm.vue";
-import {ValidationError} from "@/breeding-insight/model/errors/ValidationError";
-import {FieldError} from "@/breeding-insight/model/errors/FieldError";
-import {ProgramService} from "@/breeding-insight/service/ProgramService";
-import {MethodClass} from "@/breeding-insight/model/Method";
-import {DataType} from "@/breeding-insight/model/Scale";
+  import {Component, Vue, Watch} from 'vue-property-decorator'
+  import WarningModal from '@/components/modals/WarningModal.vue'
+  import {PlusCircleIcon} from 'vue-feather-icons'
+  import {validationMixin} from 'vuelidate';
+  import {Trait} from '@/breeding-insight/model/Trait'
+  import {mapGetters} from 'vuex'
+  import {Program} from "@/breeding-insight/model/Program";
+  import NewDataForm from '@/components/forms/NewDataForm.vue'
+  import BasicInputField from "@/components/forms/BasicInputField.vue";
+  import SidePanelTable from "@/components/tables/SidePanelTable.vue";
+  import TraitDetailPanel from "@/components/trait/TraitDetailPanel.vue";
+  import {TraitService} from "@/breeding-insight/service/TraitService";
+  import EmptyTableMessage from "@/components/tables/EmtpyTableMessage.vue";
+  import TableColumn from "@/components/tables/TableColumn.vue";
+  import {Pagination} from "@/breeding-insight/model/BiResponse";
+  import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
+  import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
+  import {StringFormatters} from '@/breeding-insight/utils/StringFormatters';
+  import {TraitStringFormatters} from '@/breeding-insight/utils/TraitStringFormatters';
+  import BaseTraitForm from "@/components/trait/forms/BaseTraitForm.vue";
+  import {ValidationError} from "@/breeding-insight/model/errors/ValidationError";
+  import {ProgramService} from "@/breeding-insight/service/ProgramService";
+  import {MethodClass} from "@/breeding-insight/model/Method";
+  import {DataType, Scale} from "@/breeding-insight/model/Scale";
 
-@Component({
+  @Component({
   mixins: [validationMixin],
   components: {
     BaseTraitForm, NewDataForm, BasicInputField, SidePanelTable, EmptyTableMessage, TableColumn,
@@ -186,6 +186,7 @@ export default class TraitTable extends Vue {
   private methodClassOptions: string[] = Object.values(MethodClass);
   private observationLevelOptions?: string[];
   private scaleClassOptions: string[] = Object.values(DataType);
+  private validationHandler: ValidationError  = new ValidationError();
 
   mounted() {
     this.getTraits();
@@ -213,20 +214,33 @@ export default class TraitTable extends Vue {
   async saveTrait() {
     try {
       this.newFormBtnActive = false;
+      this.validationHandler = new ValidationError();
       await TraitService.createTraits(this.activeProgram!.id!, [this.newTrait]);
       this.$emit('show-success-notification', 'Trait creation successful.');
       this.getTraits();
       await this.getObservationLevels();
       this.newTraitActive = false;
     } catch (error) {
-      // TODO: Pass errors to the new data form
       if (error instanceof ValidationError) {
-        const fieldErrors: FieldError[] = error.rows[0].errors;
-        for (const fieldError of fieldErrors) {
-          this.$log.error(fieldError);
+        this.validationHandler = error;
+
+        // Set up overrides for error messages
+        let deletions: string[] = [];
+        if (!this.newTrait.scale!.dataType) {
+          // Remove scale name error
+          deletions.push('scale.scaleName');
+        } else if (Scale.dataTypeEquals(this.newTrait.scale!.dataType!, DataType.Numerical)) {
+          // Rename scale name to unit
+          this.validationHandler.overrideMessage(0, 'scale.scaleName', 'Missing unit', 400);
+        } else if (Scale.dataTypeEquals(this.newTrait.scale!.dataType!, DataType.Duration)) {
+          // Rename scale name to unit of time
+          this.validationHandler.overrideMessage(0, 'scale.scaleName', 'Missing unit of time', 400);
         }
+
+        this.$emit('show-error-notification', `Error creating trait. ${this.validationHandler.condenseErrorsSingleRow(deletions)}`);
+      } else {
+        this.$emit('show-error-notification', 'Error creating trait.');
       }
-      this.$emit('show-error-notification', 'Error creating');
     }
 
     this.newFormBtnActive = true;

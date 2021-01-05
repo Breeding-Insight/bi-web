@@ -24,6 +24,7 @@
             v-bind:value="unit"
             v-on:input="$emit('unit-change', $event)"
             v-bind:field-help="'Can be any measurable unit.'"
+            v-bind:server-validations="validationHandler.getValidation(validationIndex, TraitError.ScaleName)"
         />
       </div>
       <div class="column is-half">
@@ -58,11 +59,15 @@
 
 <script lang="ts">
 
-  import {Component, Prop, Vue} from "vue-property-decorator";
+  import {Component, Prop, Vue, Watch} from "vue-property-decorator";
   import BasicInputField from "@/components/forms/BasicInputField.vue";
+  import {ValidationError} from "@/breeding-insight/model/errors/ValidationError";
+  import {TraitError} from "@/breeding-insight/model/errors/TraitError";
+  import {DataType} from "@/breeding-insight/model/Scale";
 
 @Component({
-  components: {BasicInputField}
+  components: {BasicInputField},
+  data: () => ({TraitError})
 })
 export default class NumericalTraitForm extends Vue {
   @Prop()
@@ -73,5 +78,17 @@ export default class NumericalTraitForm extends Vue {
   private validMin: number | undefined;
   @Prop()
   private validMax: number | undefined;
+  @Prop()
+  private validationHandler: ValidationError | undefined;
+  @Prop()
+  private validationIndex: number | undefined;
+
+  @Watch('validationHandler', {immediate: true, deep: true})
+  overrideScaleName() {
+    // Overwrite missing scale name message
+    if (this.validationHandler && this.validationHandler.getValidation(this.validationIndex!, TraitError.ScaleName).length > 0) {
+      this.validationHandler.overrideMessage(this.validationIndex!, TraitError.ScaleName, 'Missing unit', 400);
+    }
+  }
 }
 </script>

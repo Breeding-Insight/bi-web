@@ -2,28 +2,25 @@
   <div class="columns">
     <div class="column">
       <BasicInputField
+        v-bind:value="trait.traitName"
         v-bind:field-name="'Trait name'"
         v-bind:field-help="'All unicode characters are accepted.'"
-        :placeholder="'Trait Name'"
+        v-bind:placeholder="'Trait Name'"
+        v-bind:server-validations="validationHandler.getValidation(0, TraitError.TraitName)"
         v-on:input="trait.traitName = $event"
       />
       <div class="sentence-input">
-        <p class="is-input-prepend mt-2">
+        <p class="is-input-prepend mt-3">
           is collected on
         </p>
-        <b-field
-          label="Observation Level"
-          v-bind:custom-class="'is-sr-only'"
-          class="is-flex-grow-1"
-        >
-          <b-autocomplete
-            v-model="name"
-            v-bind:open-on-focus="true"
-            v-bind:data="filteredDataObj(programObservationLevels)"
-            v-on:input="setObservationLevel($event)"
-            placeholder="Start typing to see suggestions"
-          />
-        </b-field>
+        <AutoCompleteField
+          v-bind:options="programObservationLevels"
+          v-bind:value="trait.programObservationLevel ? trait.programObservationLevel.name : undefined"
+          v-bind:field-name="'Observation Level'"
+          v-bind:show-label="false"
+          v-bind:server-validations="validationHandler.getValidation(0, TraitError.ObservationLevel)"
+          v-on:input="setObservationLevel($event)"
+        />
       </div>
       <div class="sentence-input">
         <p class="is-input-prepend mt-3">
@@ -33,6 +30,7 @@
           v-bind:options="methodOptions"
           v-bind:field-name="'Method'"
           v-bind:show-label="false"
+          v-bind:server-validations="validationHandler.getValidation(0, TraitError.MethodClass)"
           v-on:input="setMethodClass($event)"
         />
       </div>
@@ -46,6 +44,7 @@
           v-bind:field-name="'Scale'"
           v-bind:show-label="false"
           v-bind:field-help="'Note: additional options for this field will appear after selection'"
+          v-bind:server-validations="validationHandler.getValidation(0, TraitError.ScaleType)"
           v-on:input="setScaleClass($event)"
         />
       </div>
@@ -56,7 +55,8 @@
             v-bind:value="trait.method.formula"
             v-bind:field-name="'Formula'"
             v-bind:field-help="'Operations accepted: *^.+/(); calculations will use FOIL order of operations.'"
-            :placeholder="'Number of flowers on single plant / 100'"
+            v-bind:placeholder="'Number of flowers on single plant / 100'"
+            v-bind:server-validations="validationHandler.getValidation(0, TraitError.MethodFormula)"
             v-on:input="trait.method.formula = $event"
         />
       </template>
@@ -67,6 +67,8 @@
           v-bind:data="trait.scale.categories"
           v-on:update="trait.scale.categories = $event"
           v-bind:type="trait.scale.dataType"
+          v-bind:validation-handler="validationHandler"
+          v-bind:validation-index="0"
         />
       </template>
       <template v-if="trait.scale && trait.scale.dataType === DataType.Text">
@@ -82,7 +84,10 @@
             v-bind:valid-max="trait.scale.validValueMax"
             v-on:unit-change="trait.scale.scaleName = $event"
             v-on:min-change="trait.scale.validValueMin = $event"
-            v-on:max-change="trait.scale.validValueMax = $event"/>
+            v-on:max-change="trait.scale.validValueMax = $event"
+            v-bind:validation-handler="validationHandler"
+            v-bind:validation-index="0"
+        />
       </template>
       <template v-if="trait.scale && trait.scale.dataType === DataType.Numerical">
         <NumericalTraitForm
@@ -94,6 +99,8 @@
           v-on:decimal-change="trait.scale.decimalPlaces = $event"
           v-on:min-change="trait.scale.validValueMin = $event"
           v-on:max-change="trait.scale.validValueMax = $event"
+          v-bind:validation-handler="validationHandler"
+          v-bind:validation-index="0"
         />
       </template>
     </div>
@@ -102,19 +109,24 @@
     <!-- Right Side -->
     <div class="column">
       <BasicInputField
+        v-bind:value="trait.method.description"
         v-bind:field-name="'Description of collection method'"
         v-bind:field-help="'All unicode characters are accepted.'"
         v-bind:placeholder="'Trait Name'"
+        v-bind:server-validations="validationHandler.getValidation(0, TraitError.MethodDescription)"
         v-on:input="trait.method.description = $event"
       />
 
       <BasicInputField
+        v-bind:value="trait.abbreviations"
         v-bind:field-name="'Abbreviation(s)'"
         v-bind:field-help="'Semicolon separated list, with primary abbreviation as first term.'"
+        v-bind:server-validations="validationHandler.getValidation(0, TraitError.Abbreviations)"
         v-on:input="setAbbreviations($event)"
       />
 
       <BasicInputField
+        v-bind:value="trait.synonyms"
         v-bind:field-name="'Synonyms'"
         v-bind:field-help="'Semicolon separated list.'"
         v-on:input="trait.synonyms = parseSemiColonList($event)"
@@ -137,28 +149,34 @@ import DateTraitForm from "@/components/trait/forms/DateTraitForm.vue";
 import DurationTraitForm from "@/components/trait/forms/DurationTraitForm.vue";
 import NumericalTraitForm from "@/components/trait/forms/NumericalTraitForm.vue";
 import CategoryTraitForm from "@/components/trait/forms/CategoryTraitForm.vue";
+import {TraitError} from "@/breeding-insight/model/errors/TraitError";
+import {ValidationError} from "@/breeding-insight/model/errors/ValidationError";
+import AutoCompleteField from "@/components/forms/AutoCompleteField.vue";
 
 @Component({
   components: {
+    AutoCompleteField,
     CategoryTraitForm,
     NumericalTraitForm,
     DurationTraitForm, DateTraitForm, TextTraitForm, OrdinalTraitForm, BasicSelectField, BasicInputField},
-  data: () => ({DataType, MethodClass})
+  data: () => ({DataType, MethodClass, TraitError})
 })
-export default class TraitTable extends Vue {
+export default class BaseTraitForm extends Vue {
   @Prop()
   programObservationLevels?: string[];
   @Prop()
   methodOptions?: string[];
   @Prop()
   scaleOptions?: string[];
+  @Prop()
+  validationHandler!: ValidationError;
 
   name: string = '';
   private trait: Trait = new Trait();
   private methodHistory: {[key: string]: Method} = {};
   private scaleHistory: {[key: string]: Scale} = {};
 
-  mounted() {
+  created() {
     this.trait.method = new Method();
     this.trait.scale = new Scale();
   }
@@ -166,18 +184,6 @@ export default class TraitTable extends Vue {
   @Watch('trait', {deep: true})
   emitTrait(val: Trait) {
     this.$emit('trait-change', val);
-  }
-
-  filteredDataObj(data: string[]): string[] {
-    const result = data.filter(option => {
-      return (
-        option
-          .toLowerCase()
-          .indexOf(this.name.toLowerCase()) >= 0
-      )
-    });
-
-    return result;
   }
 
   getScaleOptions() {

@@ -21,6 +21,7 @@
     v-bind:field-help="fieldHelp"
     v-bind:field-name="fieldName"
     v-bind:show-label="showLabel"
+    v-bind:server-validations="serverValidations"
   >
     <input
         v-bind:id="inputId ? inputId : fieldName.replace(' ', '-')"
@@ -36,6 +37,7 @@
 <script lang="ts">
   import { Component, Prop, Vue } from 'vue-property-decorator';
   import BaseFieldWrapper from "@/components/forms/BaseFieldWrapper.vue";
+  import {FieldError} from "@/breeding-insight/model/errors/FieldError";
 
   @Component({
     components: {BaseFieldWrapper}
@@ -51,6 +53,8 @@
     fieldHelp!: string;
     @Prop()
     validations!: any;
+    @Prop()
+    serverValidations!: FieldError[];
     @Prop()
     showLabel!: boolean;
     @Prop()
