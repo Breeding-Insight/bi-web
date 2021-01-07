@@ -222,6 +222,9 @@
         this.state = CollapseColumnsState[state.value as keyof typeof CollapseColumnsState];
       });
       this.collapseService.start();
+
+      this.sidePanelState.bus.$on(this.sidePanelState.openPanelEvent, () => { this.collapseService.send(PanelEvent.OPEN); });
+      this.sidePanelState.bus.$on(this.sidePanelState.closePanelEvent, () => { this.collapseService.send(PanelEvent.CLOSED); });
     }
 
     // send events and allow caller to customize what column(s) are shown for collapsed state
