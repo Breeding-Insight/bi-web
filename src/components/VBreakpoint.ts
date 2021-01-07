@@ -20,7 +20,7 @@ import { extend } from 'vue-breakpoint-component'
 const config = {
   // breakpoints for bulma
   breakpoints: {
-    mobile: '(min-width: 529px)',
+    mobile: '(min-width: 0px)',
     tablet: '(min-width: 768px)',
     desktop: '(min-width: 1024px)'
   },

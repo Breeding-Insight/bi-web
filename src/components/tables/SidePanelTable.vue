@@ -234,18 +234,8 @@
       this.sidePanelState.bus.$emit(this.sidePanelState.uncollapseColumnsEvent);
     }
 
-    closePanel() {
-      this.collapseService.send(PanelEvent.CLOSED);
-    }
-
     closePanelAndReEmit(eventType: string, event: any) {
-      this.closePanel();
-      if (event) {
-        this.$emit(eventType, event);
-      }
-      else {
-        this.$emit(eventType);
-      }
+      this.sidePanelState.bus.$emit(this.sidePanelState.closePanelEvent, () => {this.$emit(eventType, event)});
     }
 
   }

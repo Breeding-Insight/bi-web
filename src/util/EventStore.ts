@@ -18,7 +18,7 @@
 export class Event {
   event?: () => void;
 
-  constructor(event: any) {
+  constructor(event: () => void) {
     this.event = event;
   }
 
@@ -31,7 +31,7 @@ export class EventStore {
 
   private store: Event[] = [];
 
-  addEvent(event?: () => void) {
+  addEvent(event: () => void) {
     this.store.push(new Event(event));
   }
 

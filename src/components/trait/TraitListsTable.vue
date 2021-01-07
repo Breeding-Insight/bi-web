@@ -245,7 +245,6 @@ export default class TraitTable extends Vue {
     });
   }
 
-  //TODO: Can we get these into a generic table state manager
   activateEdit(editTrait: Trait) {
     this.traitSidePanelState.bus.$emit(this.traitSidePanelState.activateEditEvent);
     this.originalTrait = Trait.assign({...editTrait} as Trait);
