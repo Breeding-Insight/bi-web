@@ -78,9 +78,8 @@ export class Trait {
     if (!trait) {return false;}
     return (this.id === trait.id) &&
       (this.traitName === trait.traitName) &&
-      (this.traitName === trait.traitName) &&
       (this.checkStringListEquals(this.abbreviations, trait.abbreviations)) &&
-      (this.checkStringListEquals(this.abbreviations, trait.abbreviations)) &&
+      (this.checkStringListEquals(this.synonyms, trait.synonyms)) &&
       (this.mainAbbreviation === trait.mainAbbreviation) &&
       (
         (this.programObservationLevel && this.programObservationLevel.equals(trait.programObservationLevel)) ||

@@ -143,8 +143,6 @@
     rowValidations!: Object;
     @Prop()
     pagination!: Pagination;
-    @Prop({default: false})
-    panelClose!: boolean;
     @Prop()
     autoHandleClosePanelEvent!: boolean;
     @Prop()
@@ -229,11 +227,11 @@
 
     // send events and allow caller to customize what column(s) are shown for collapsed state
     collapse() {
-      this.$emit('collapse-columns');
+      this.sidePanelState.bus.$emit(this.sidePanelState.collapseColumnsEvent);
     }
 
     unCollapse() {
-      this.$emit('uncollapse-columns');
+      this.sidePanelState.bus.$emit(this.sidePanelState.uncollapseColumnsEvent);
     }
 
     closePanel() {

@@ -32,6 +32,8 @@ export class SidePanelTableEventBusHandler {
   confirmCloseEditEvent = 'confirm-close-edit';
   cancelCloseEditEvent = 'cancel-close-edit';
   successEditEvent = 'success-edit-event';
+  collapseColumnsEvent = 'collapseColumns';
+  uncollapseColumnsEvent = 'uncollapse-columns';
 
   // Event store
   private eventStore: EventStore = new EventStore();
@@ -40,6 +42,7 @@ export class SidePanelTableEventBusHandler {
   public panelOpen: boolean = false;
   public editActive: boolean = false;
   public closeEditModalActive: boolean = false;
+  public collapseColumns: boolean = false;
   public openedRow?: any;
 
   constructor() {
@@ -82,10 +85,16 @@ export class SidePanelTableEventBusHandler {
       this.cancelEdit();
       this.eventStore.clear();
     });
+    this.bus.$on(this.collapseColumnsEvent, () => {
+      this.collapseColumns = true;
+    });
+    this.bus.$on(this.uncollapseColumnsEvent, () => {
+      this.collapseColumns = false;
+    })
   }
 
   private openPanel(row: TableRow<any>) {
-    this.panelOpen = true
+    this.panelOpen = true;
     this.openedRow = row;
   }
 

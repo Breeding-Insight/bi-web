@@ -85,8 +85,6 @@
       v-on:paginate="paginationController.updatePage($event)"
       v-on:paginate-toggle-all="paginationController.toggleShowAll()"
       v-on:paginate-page-size="paginationController.updatePageSize($event)"
-      v-on:collapse-columns="collapseColumns = true"
-      v-on:uncollapse-columns="collapseColumns = false"
     >
 
       <!-- 
@@ -97,13 +95,13 @@
         <TableColumn name="name" v-bind:label="'Name'">
           {{ data.traitName }}
         </TableColumn>
-        <TableColumn name="level" v-bind:label="'Level'" v-bind:visible="!collapseColumns">
+        <TableColumn name="level" v-bind:label="'Level'" v-bind:visible="!traitSidePanelState.collapseColumns">
           {{ data.programObservationLevel.name }}
         </TableColumn>
-        <TableColumn name="method" v-bind:label="'Method'" v-bind:visible="!collapseColumns">
+        <TableColumn name="method" v-bind:label="'Method'" v-bind:visible="!traitSidePanelState.collapseColumns">
           {{ StringFormatters.toStartCase(data.method.methodClass) }}
         </TableColumn>
-        <TableColumn name="scale" v-bind:label="'Scale'" v-bind:visible="!collapseColumns">
+        <TableColumn name="scale" v-bind:label="'Scale'" v-bind:visible="!traitSidePanelState.collapseColumns">
           {{ TraitStringFormatters.getScaleTypeString(data.scale) }}
         </TableColumn>        
       </template>
@@ -211,7 +209,6 @@ export default class TraitTable extends Vue {
   // TODO: Move these into an event bus in the future
   private traitsPagination?: Pagination = new Pagination();
   private paginationController: PaginationController = new PaginationController();
-  private collapseColumns = false;
 
   mounted() {
     this.getTraits();
