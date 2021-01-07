@@ -63,13 +63,24 @@ export class Trait {
       trait.scale, trait.abbreviations, trait.synonyms);
   }
 
+  checkStringListEquals(list: string[] | undefined, otherList: string[] | undefined): boolean {
+    if (!list && !otherList) { return true; }
+
+    if (list && otherList && list.length === otherList.length) {
+      return list.filter((value,index) => {
+        return value !== otherList[index];
+      }).length === 0;
+    }
+    return false;
+  }
+
   equals(trait?: Trait): boolean {
     if (!trait) {return false;}
     return (this.id === trait.id) &&
       (this.traitName === trait.traitName) &&
       (this.traitName === trait.traitName) &&
-      (this.abbreviations === trait.abbreviations) &&
-      (this.synonyms === trait.synonyms) &&
+      (this.checkStringListEquals(this.abbreviations, trait.abbreviations)) &&
+      (this.checkStringListEquals(this.abbreviations, trait.abbreviations)) &&
       (this.mainAbbreviation === trait.mainAbbreviation) &&
       (
         (this.programObservationLevel && this.programObservationLevel.equals(trait.programObservationLevel)) ||

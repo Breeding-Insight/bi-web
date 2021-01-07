@@ -120,7 +120,7 @@
       />
 
       <BasicInputField
-        v-bind:value="trait.abbreviations ? trait.abbreviations.toString().replace(',', ';') : undefined"
+        v-bind:value="trait.abbreviations ? trait.abbreviations.join(';') : undefined"
         v-bind:field-name="'Abbreviation(s)'"
         v-bind:field-help="'Semicolon separated list, with primary abbreviation as first term.'"
         v-bind:server-validations="validationHandler.getValidation(0, TraitError.Abbreviations)"
@@ -128,7 +128,7 @@
       />
 
       <BasicInputField
-        v-bind:value="trait.synonyms ? trait.synonyms.toString().replace(',', ';') : undefined"
+        v-bind:value="trait.synonyms ? trait.synonyms.join(';') : undefined"
         v-bind:field-name="'Synonyms'"
         v-bind:field-help="'Semicolon separated list.'"
         v-on:input="trait.synonyms = parseSemiColonList($event)"

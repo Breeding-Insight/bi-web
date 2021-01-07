@@ -59,6 +59,8 @@ export class Scale {
   }
 
   private categoriesEqual(categories: Category[] | undefined) {
+    if (!this.categories && !categories) { return true; }
+
     if (this.categories && categories && this.categories.length === categories.length) {
       return this.categories.filter((value,index) => {
         return value.value !== categories[index].value || value.label !== categories[index].label;
