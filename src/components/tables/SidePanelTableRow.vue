@@ -17,20 +17,20 @@
 
 <template>
   <tr v-on:click="state.bus.$emit(state.selectRowEvent, rowData.data)"
-      v-bind:class="{'is-new': (rowData.new && !checkIsOpen()), 'is-selected': checkIsOpen()}" >
+      v-bind:class="{'is-new': (rowData.new && !checkIsOpen()), 'is-selected': checkIsOpen(), 'is-edit-selected': state.editActive && checkIsOpen()}" >
     <slot></slot>
     <td class="has-text-right is-narrow">
         <a
-          v-if="!checkIsOpen()"
+          v-if="!state.openedRow && !checkIsOpen()"
           data-testid="showDetails"
-          v-on:click.stop="state.bus.$emit(state.openPanelEvent, rowData.data)"
-          v-on:keypress.enter.space.stop="state.bus.$emit(state.openPanelEvent, rowData.data)"
+          v-on:click.stop="state.bus.$emit(state.selectRowEvent, rowData.data)"
+          v-on:keypress.enter.space.stop="state.bus.$emit(state.selectRowEvent, rowData.data)"
           tabindex="0"
         >
           Show details
         </a>
         <ChevronRightIcon
-          v-if="!checkIsOpen()"
+          v-if="!state.openedRow || checkIsOpen()"
           class="has-vertical-align-middle has-text-link"
           size="1x"
           aria-hidden="true">
@@ -63,12 +63,13 @@
       // A match is either the exact row for import confirmations
       // or id match. This will have to be fixed in the future.
       // TODO: Get this to match on table rows, but still work with the editing
-      if (this.state.openedRow &&
-        (
-          this.rowData.data === this.state.openedRow ||
-          (this.rowData.data.id && this.rowData.data.id === this.state.openedRow.id)))
-      {
-        return true;
+      if (this.state.openedRow) {
+        if(this.rowData.data === this.state.openedRow ||
+          (this.rowData.data.id && this.rowData.data.id === this.state.openedRow.id)) {
+          console.log(this.rowData.data);
+        }
+        return this.rowData.data === this.state.openedRow ||
+          (this.rowData.data.id && this.rowData.data.id === this.state.openedRow.id);
       } else {
         return false;
       }

@@ -223,6 +223,7 @@ export default class TraitTable extends Vue {
       }
     });
     this.traitSidePanelState.bus.$on(this.traitSidePanelState.confirmCloseEditEvent, () => {
+      // TODO: Fire this when official close happens
       this.clearSelectedRow();
     });
   }

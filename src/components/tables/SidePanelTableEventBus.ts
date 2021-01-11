@@ -23,11 +23,9 @@ export class SidePanelTableEventBusHandler {
   bus = new Vue();
 
   // Events
-  openPanelEvent = 'open-panel';
   closePanelEvent = 'close-panel-event';
   selectRowEvent = 'select-row';
   activateEditEvent = 'activate-edit';
-  cancelEditEvent = 'cancel-edit';
   requestClosePanelEvent = 'request-close-panel';
   confirmCloseEditEvent = 'confirm-close-edit';
   cancelCloseEditEvent = 'cancel-close-edit';
@@ -50,21 +48,12 @@ export class SidePanelTableEventBusHandler {
     // Set up events on bus
     this.bus.$on(this.selectRowEvent, (row: any) => {
       this.eventStore.addEvent(() => { this.openPanel(row); });
-      this.bus.$emit(this.requestClosePanelEvent, () => this.showCloseWarningModal(), () => this.executeNextEvent());
-    });
-    this.bus.$on(this.openPanelEvent, (row: any) => {
-      this.eventStore.addEvent(() => { this.openPanel(row); });
-      this.bus.$emit(this.requestClosePanelEvent, () => this.showCloseWarningModal(), () => this.executeNextEvent());
+      this.bus.$emit(this.requestClosePanelEvent, () => this.showCloseWarningModal(), () => this.bus.$emit(this.confirmCloseEditEvent));
     });
     // Accepts a function to execute after panel closing
     this.bus.$on(this.closePanelEvent, (event: () => void) => {
       if (event) { this.eventStore.addEvent(event); }
-      this.eventStore.addEvent(() => { this.bus.$emit(this.confirmCloseEditEvent) });
-      this.bus.$emit(this.requestClosePanelEvent, () => this.showCloseWarningModal(), () => this.executeNextEvent());
-    });
-    this.bus.$on(this.cancelEditEvent, () => {
-      this.eventStore.addEvent(() => { this.cancelEdit(); });
-      this.bus.$emit(this.requestClosePanelEvent, () => this.showCloseWarningModal(), () => this.executeNextEvent());
+      this.bus.$emit(this.requestClosePanelEvent, () => this.showCloseWarningModal(), () => this.bus.$emit(this.confirmCloseEditEvent));
     });
 
     // Final state events
@@ -72,9 +61,14 @@ export class SidePanelTableEventBusHandler {
       this.activateEdit();
       this.eventStore.clear();
     });
-    this.bus.$on(this.confirmCloseEditEvent, () => {
-      this.closePanel();
-      this.executeNextEvent();
+    this.bus.$on(this.confirmCloseEditEvent, (event: () => void) => {
+      if (event) { event(); }
+      if (this.editActive) {
+        this.cancelEdit();
+      } else {
+        this.closePanel();
+      }
+      this.executeStoredEvents();
     });
     this.bus.$on(this.cancelCloseEditEvent, () => {
       this.cancelCloseEdit();
@@ -113,8 +107,8 @@ export class SidePanelTableEventBusHandler {
     this.closeEditModalActive = false;
   }
 
-  private executeNextEvent() {
-    if (this.eventStore.hasEvent()) {
+  private executeStoredEvents() {
+    while (this.eventStore.hasEvent()){
       this.eventStore.pop()!.execute();
     }
   }
@@ -123,6 +117,7 @@ export class SidePanelTableEventBusHandler {
     this.editActive = true;
   }
   private cancelEdit() {
+    this.closeEditModalActive = false;
     this.editActive = false;
   }
 
