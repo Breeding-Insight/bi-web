@@ -221,7 +221,7 @@
       });
       this.collapseService.start();
 
-      this.sidePanelState.bus.$on(this.sidePanelState.openPanelEvent, () => { this.collapseService.send(PanelEvent.OPEN); });
+      this.sidePanelState.bus.$on(this.sidePanelState.confirmOpenPanel, () => { this.collapseService.send(PanelEvent.OPEN); });
       this.sidePanelState.bus.$on(this.sidePanelState.closePanelEvent, () => { this.collapseService.send(PanelEvent.CLOSED); });
     }
 

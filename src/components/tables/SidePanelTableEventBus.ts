@@ -23,6 +23,7 @@ export class SidePanelTableEventBusHandler {
   bus = new Vue();
 
   // Events
+  confirmOpenPanel = 'confirm-open-panel';
   closePanelEvent = 'close-panel-event';
   selectRowEvent = 'select-row';
   activateEditEvent = 'activate-edit';
@@ -47,7 +48,7 @@ export class SidePanelTableEventBusHandler {
     this.reset();
     // Set up events on bus
     this.bus.$on(this.selectRowEvent, (row: any) => {
-      this.eventStore.addEvent(() => { this.openPanel(row); });
+      this.eventStore.addEvent(() => { this.bus.$emit(this.confirmOpenPanel, row); });
       this.bus.$emit(this.requestClosePanelEvent, () => this.showCloseWarningModal(), () => this.bus.$emit(this.confirmCloseEditEvent));
     });
     // Accepts a function to execute after panel closing
@@ -57,6 +58,9 @@ export class SidePanelTableEventBusHandler {
     });
 
     // Final state events
+    this.bus.$on(this.confirmOpenPanel, (row: any) => {
+      this.openPanel(row);
+    });
     this.bus.$on(this.activateEditEvent, () => {
       this.activateEdit();
       this.eventStore.clear();

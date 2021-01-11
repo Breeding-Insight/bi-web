@@ -64,10 +64,6 @@
       // or id match. This will have to be fixed in the future.
       // TODO: Get this to match on table rows, but still work with the editing
       if (this.state.openedRow) {
-        if(this.rowData.data === this.state.openedRow ||
-          (this.rowData.data.id && this.rowData.data.id === this.state.openedRow.id)) {
-          console.log(this.rowData.data);
-        }
         return this.rowData.data === this.state.openedRow ||
           (this.rowData.data.id && this.rowData.data.id === this.state.openedRow.id);
       } else {
