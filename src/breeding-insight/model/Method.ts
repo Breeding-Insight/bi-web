@@ -15,6 +15,8 @@
  * limitations under the License.
  */
 
+import {Comparators} from "@/breeding-insight/utils/Comparators";
+
 export enum MethodClass {
   Computation = "Computation",
   Observation = "Observation",
@@ -46,8 +48,8 @@ export class Method {
 
   equals(method?: Method): boolean {
     if (!method) {return false;}
-    return (this.methodName === method.methodName) &&
-      (this.methodClass === method.methodClass) &&
+    return Comparators.equalsIgnoreCase(this.methodName, method.methodName) &&
+      Comparators.equalsIgnoreCase(this.methodClass, method.methodClass) &&
       (this.description === method.description) &&
       (this.formula === method.formula);
   }

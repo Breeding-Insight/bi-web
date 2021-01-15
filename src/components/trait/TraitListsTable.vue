@@ -112,7 +112,7 @@
       -->
       <template v-slot:side-panel="{tableRow}">
         <TraitDetailPanel
-          v-bind:data="tableRow"
+          v-bind:data="traitSidePanelState.openedRow"
           v-bind:observation-level-options="observationLevelOptions"
           v-bind:edit-active="traitSidePanelState.editActive"
           v-bind:edit-btn-active="editFormBtnActive"
@@ -223,7 +223,6 @@ export default class TraitTable extends Vue {
       }
     });
     this.traitSidePanelState.bus.$on(this.traitSidePanelState.confirmCloseEditEvent, () => {
-      // TODO: Fire this when official close happens
       this.clearSelectedRow();
     });
   }
