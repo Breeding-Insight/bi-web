@@ -17,21 +17,27 @@
 
 <template>
   <div v-bind:class="['box', backgroundColorClass]">
-    <button class="delete is-pulled-right has-text-right px-0" v-on:click="$emit('close-panel')" aria-label="close"/>
+    <button
+      class="delete is-pulled-right has-text-right px-0"
+      v-on:click="state.bus.$emit(state.closePanelEvent)"
+      aria-label="close"
+    />
     <slot/>
   </div>
 </template>
 
 <script lang="ts">
 
-  import {Component, Prop, Vue, Watch} from 'vue-property-decorator'
+  import {Component, Prop, Vue} from 'vue-property-decorator'
+  import {SidePanelTableEventBusHandler} from "@/components/tables/SidePanelTableEventBus";
 
   @Component({
-    components: { }
+    components: {}
   })
   export default class SidePanel extends Vue {
     @Prop()
     backgroundColorClass!: string;
-
+    @Prop()
+    state!: SidePanelTableEventBusHandler;
   }
 </script>

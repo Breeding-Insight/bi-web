@@ -15,19 +15,14 @@
  * limitations under the License.
  */
 
-export class ProgramObservationLevel {
-  name?: string;
+export class Comparators {
 
-  constructor(name?:string) {
-    this.name = name;
-  }
-
-  static assign(level: ProgramObservationLevel) {
-    return new ProgramObservationLevel(level.name);
-  }
-
-  equals(level?: ProgramObservationLevel) {
-    if (!level) {return false;}
-    return this.name === level.name;
+  static equalsIgnoreCase(first: string | undefined, second: string | undefined) : boolean {
+    if (first && second) {
+      return first.toUpperCase() === second.toUpperCase();
+    } else {
+      // Accounts for both being undefined, which returns true
+      return first === second;
+    }
   }
 }

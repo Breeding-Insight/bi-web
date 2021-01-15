@@ -37,6 +37,23 @@ export class TraitService {
       else throw 'Unable to create trait';
     }
 
+  static async updateTraits(programId: string, traits: Trait[]): Promise<[Trait[], Metadata]> {
+    if (programId && traits) {
+      // Check that they all have a trait id
+      if (traits.filter(trait => trait.id).length === 0) {
+        throw 'Unable to update trait';
+      }
+
+      try {
+        const { result: { data }, metadata } = await TraitDAO.updateTraits(programId, traits);
+        return [data, metadata];
+      } catch (error) {
+        throw TraitUploadService.parseError(error);
+      }
+    }
+    else throw 'Unable to update trait';
+  }
+
     static getAll(programId: string, paginationQuery?: PaginationQuery, full?: boolean): Promise<[Trait[], Metadata]> {
         return new Promise<[Trait[], Metadata]>(((resolve, reject) => {
 
@@ -74,5 +91,6 @@ export class TraitService {
         reject();
       }
     }));
+
   }
 }

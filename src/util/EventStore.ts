@@ -15,19 +15,35 @@
  * limitations under the License.
  */
 
-export class ProgramObservationLevel {
-  name?: string;
+export class Event {
+  event?: () => void;
 
-  constructor(name?:string) {
-    this.name = name;
+  constructor(event: () => void) {
+    this.event = event;
   }
 
-  static assign(level: ProgramObservationLevel) {
-    return new ProgramObservationLevel(level.name);
+  execute() {
+    if (this.event){ this.event(); }
+  }
+}
+
+export class EventStore {
+
+  private store: Event[] = [];
+
+  addEvent(event: () => void) {
+    this.store.push(new Event(event));
   }
 
-  equals(level?: ProgramObservationLevel) {
-    if (!level) {return false;}
-    return this.name === level.name;
+  pop(): Event | undefined {
+    return this.store.pop();
+  }
+
+  hasEvent(): boolean {
+    return this.store.length > 0;
+  }
+
+  clear(): void {
+    this.store = [];
   }
 }

@@ -47,7 +47,7 @@
       </div>
     </WarningModal>
 
-    <template v-if="type === DataType.Ordinal">
+    <template v-if="Scale.dataTypeEquals(type, DataType.Ordinal)">
       <template v-for="[i, item] of data.entries()">
         <LabelValueRow
           v-bind:label="item.label"
@@ -61,7 +61,7 @@
         />
       </template>
     </template>
-    <template v-if="type === DataType.Nominal">
+    <template v-if="Scale.dataTypeEquals(type, DataType.Nominal)">
       <template v-for="[i, item] of data.entries()">
         <ValueRow
             v-bind:value="item.value"
@@ -96,7 +96,7 @@ import LabelValueRow from "@/components/trait/forms/LabelValueRow.vue";
 import BasicInputField from "@/components/forms/BasicInputField.vue";
 import WarningModal from "@/components/modals/WarningModal.vue";
 import {PlusCircleIcon} from "vue-feather-icons";
-import {DataType} from "@/breeding-insight/model/Scale";
+import {DataType, Scale} from "@/breeding-insight/model/Scale";
 import ValueRow from "@/components/trait/forms/ValueRow.vue";
 import {ValidationError} from "@/breeding-insight/model/errors/ValidationError";
 import {TraitError} from "@/breeding-insight/model/errors/TraitError";
@@ -105,7 +105,7 @@ import {RowError} from "@/breeding-insight/model/errors/RowError";
 
 @Component({
   components: {ValueRow, BasicInputField, LabelValueRow, WarningModal, PlusCircleIcon},
-  data: () => ({DataType, TraitError})
+  data: () => ({DataType, TraitError, Scale})
 })
 export default class CategoryTraitForm extends Vue {
 
