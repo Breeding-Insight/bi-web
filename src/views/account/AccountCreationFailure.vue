@@ -19,7 +19,7 @@
   <div class="columns is-centered">
     <div class="card column is-half">
       <div class="card-content">
-        <div class="message is-danger">
+        <div class="newaccount message is-danger">
           <div class="message-body">
             <article class="media">
               <figure class="media-left">
