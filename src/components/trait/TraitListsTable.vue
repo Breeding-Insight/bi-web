@@ -19,7 +19,7 @@
   <section id="traitTableLabel">
     <WarningModal
       v-bind:active.sync="deactivateActive"
-      v-bind:msg-title="'Remove trait from Program name?'"
+      v-bind:msg-title="deactivateWarningTitle"
       v-on:deactivate="deactivateActive = false"
     >
       <section>
@@ -122,7 +122,7 @@
           v-on:deactivate-edit="traitSidePanelState.bus.$emit(traitSidePanelState.closePanelEvent)"
           v-on:trait-change="editTrait = Trait.assign({...$event})"
           v-on:submit="updateTrait"
-          v-on:archive="deactivateActive = true"
+          v-on:archive="activateArchive"
         />
       </template>
 
@@ -206,6 +206,7 @@ export default class TraitTable extends Vue {
   private editValidationHandler: ValidationError = new ValidationError();
 
   // Archive trait
+  private deactivateWarningTitle: string;
   private deactivateActive: boolean = false;
 
   // TODO: Move these into an event bus in the future
@@ -245,6 +246,11 @@ export default class TraitTable extends Vue {
       this.$emit('show-error-notification', 'Error while trying to load traits');
       throw error;
     });
+  }
+
+  activateArchive(){
+    this.deactivateWarningTitle = `Remove trait from ${this.activeProgram.name}?`;
+    this.deactivateActive = true;
   }
 
   activateEdit(editTrait: Trait) {
