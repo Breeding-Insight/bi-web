@@ -121,6 +121,7 @@
           v-on:deactivate-edit="traitSidePanelState.bus.$emit(traitSidePanelState.closePanelEvent)"
           v-on:trait-change="editTrait = Trait.assign({...$event})"
           v-on:submit="updateTrait"
+          v-on:archive="deactivateActive = true"
         />
       </template>
 
