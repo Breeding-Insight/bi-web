@@ -1,6 +1,5 @@
 <!--
-  - See the NOTICE file distributed with this work for additional information
-  - regarding copyright ownership.
+  - See the NOTICE file distributed with this work for additional information regarding copyright ownership.
   -
   - Licensed under the Apache License, Version 2.0 (the "License");
   - you may not use this file except in compliance with the License.
@@ -54,7 +53,7 @@
 <script lang="ts">
   import { Component, Vue } from 'vue-property-decorator'
   import {Program} from "@/breeding-insight/model/Program";
-  import { ProgramService } from '../breeding-insight/service/ProgramService';
+  import { ProgramService } from '../../breeding-insight/service/ProgramService';
   import {mapGetters} from "vuex";
   import {User} from "@/breeding-insight/model/User";
   import {BiResponse} from "@/breeding-insight/model/BiResponse";
