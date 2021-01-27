@@ -29,7 +29,7 @@
       </section>
       <div class="columns">
         <div class="column is-whole has-text-centered buttons">
-          <button v-on:click="modalDeleteHandler()" class="button is-danger"><strong>Yes, remove</strong></button>
+          <button v-on:click="modalDeleteHandler" class="button is-danger"><strong>Yes, remove</strong></button>
           <button v-on:click="deactivateActive = false" class="button">Cancel</button>
         </div>
       </div>              
@@ -77,6 +77,7 @@
     </NewDataForm>
 
     <SidePanelTable
+      ref="sidePanelTable"
       v-bind:records="traits"
       v-bind:pagination="traitsPagination"
       v-bind:auto-handle-close-panel-event="false"
@@ -117,6 +118,7 @@
           v-bind:edit-active="traitSidePanelState.editActive"
           v-bind:editable="true"
           v-bind:edit-form-state="traitSidePanelState.dataFormState"
+          v-bind:archivable="true"
           v-on:activate-edit="activateEdit($event)"
           v-on:deactivate-edit="traitSidePanelState.bus.$emit(traitSidePanelState.closePanelEvent)"
           v-on:trait-change="editTrait = Trait.assign({...$event})"
@@ -205,7 +207,7 @@ export default class TraitTable extends Vue {
   private editValidationHandler: ValidationError = new ValidationError();
 
   // Archive trait
-  private deactivateWarningTitle: string;
+  private deactivateWarningTitle = 'Remove trait from this program?';
   private deactivateActive: boolean = false;
 
   // TODO: Move these into an event bus in the future
@@ -213,6 +215,7 @@ export default class TraitTable extends Vue {
   private paginationController: PaginationController = new PaginationController();
 
   mounted() {
+    this.deactivateWarningTitle = `Remove trait from ${this.activeProgram.name}?`;
     this.getTraits();
     this.getObservationLevels();
 
@@ -248,8 +251,12 @@ export default class TraitTable extends Vue {
   }
 
   activateArchive(){
-    this.deactivateWarningTitle = `Remove trait from ${this.activeProgram.name}?`;
     this.deactivateActive = true;
+  }
+
+  modalDeleteHandler(){
+    this.deactivateActive = false;
+    this.traitSidePanelState.bus.$emit(this.traitSidePanelState.closePanelEvent);
   }
 
   activateEdit(editTrait: Trait) {
