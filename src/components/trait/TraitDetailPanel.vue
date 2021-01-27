@@ -91,6 +91,14 @@
             >
             Archive
           </a>
+          <a
+              v-else
+              v-on:click="$emit('restore')"
+              v-on:keypress.enter.space="$emit('restore')"
+              tabindex="0"
+          >
+            Restore/Unarchive
+          </a>
         </div>
       </div>
     </template>
