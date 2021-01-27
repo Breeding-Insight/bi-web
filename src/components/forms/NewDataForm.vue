@@ -23,7 +23,7 @@
     <slot v-bind="getValidation()"></slot>
     <div class="columns">
       <div class="column is-whole has-text-centered buttons">
-        <button data-testid="save" type="button" class="button is-primary" @click="checkSubmit()" v-bind:disabled="!saveBtnActive">
+        <button data-testid="save" type="button" class="button is-primary" @click="checkSubmit()" v-bind:disabled="disableSaveBtn()" v-bind:class="{'is-loading': saveStarted}">
           <span class="icon is-small">
             <CheckCircleIcon size="1.5x" aria-hidden="true"></CheckCircleIcon>
             <span class="is-sr-only">Confirm Edits</span>
@@ -55,6 +55,8 @@
     @Prop({default: true})
     saveBtnActive!: boolean;
 
+    saveStarted = false;
+
     @Validations()
     validations() {
       if (this.rowValidations) {
@@ -72,12 +74,18 @@
       return this.$v.newRecord;
     }
 
+    disableSaveBtn() {
+      return !this.saveBtnActive || this.saveStarted;
+    }
+
     checkSubmit() {
+      this.saveStarted = true;
 
       if (this.$v.newRecord) { this.$v.newRecord.$touch(); }
 
       if (this.$v.newRecord && this.$v.newRecord.$anyError){
 
+        this.saveStarted = false;
         this.$emit('show-error-notification', 'Fix Invalid Fields');
         return;
       } else {
@@ -85,6 +93,8 @@
         this.$emit('submit');
         if (this.$v.newRecord) { this.$v.newRecord.$reset(); }
       }
+
+
     }
 
     checkCancel() {
