@@ -258,6 +258,7 @@ export default class TraitTable extends Vue {
   modalDeleteHandler(){
     this.deactivateActive = false;
     this.traitSidePanelState.bus.$emit(this.traitSidePanelState.closePanelEvent);
+    this.paginationController.updatePage(1);
   }
 
   activateEdit(editTrait: Trait) {
