@@ -70,6 +70,16 @@
       <p class="has-text-weight-bold mt-3 mb-0">Description of collection method</p>
       <p>{{data.method.description}}</p>
 
+      <template v-if="!archivable">
+        <p class="has-text-weight-bold mt-3 mb-0">Included in Favorites</p>
+        <b-button
+            type="is-light"
+            style="background: lightgray"
+            v-if="!archivable">
+          Archived
+        </b-button>
+      </template>
+
       <!-- maybe break out controls for reuse eventually -->
       <div class="columns is-mobile is-centered pt-6">
         <div class="column is-narrow">
