@@ -259,6 +259,7 @@ export default class TraitTable extends Vue {
     this.deactivateActive = false;
     this.traitSidePanelState.bus.$emit(this.traitSidePanelState.closePanelEvent);
     this.paginationController.updatePage(1);
+    this.$emit('show-success-notification', 'Trait successfully archived');
   }
 
   activateEdit(editTrait: Trait) {
