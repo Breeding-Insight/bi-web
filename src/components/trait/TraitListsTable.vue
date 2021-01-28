@@ -94,6 +94,13 @@
       -->
       <template v-slot:columns="data">
         <TableColumn name="name" v-bind:label="'Name'">
+          <b-button
+              size="is-small"
+              style="background: lightgray"
+              class="archive-tag"
+              v-if="!data.active">
+            Archived
+          </b-button>
           {{ data.traitName }}
         </TableColumn>
         <TableColumn name="level" v-bind:label="'Level'" v-bind:visible="!traitSidePanelState.collapseColumns">

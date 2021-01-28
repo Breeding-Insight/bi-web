@@ -73,9 +73,10 @@
       <template v-if="!archivable">
         <p class="has-text-weight-bold mt-3 mb-0">Included in Favorites</p>
         <b-button
-            type="is-light"
+            size="is-small"
             style="background: lightgray"
-            v-if="!archivable">
+            class="archive-tag"
+            v-if="!data.active">
           Archived
         </b-button>
       </template>
