@@ -98,7 +98,7 @@
               size="is-small"
               style="background: lightgray"
               class="archive-tag"
-              v-if="!data.active">
+              v-if="!data.active && data.active !== undefined">
             Archived
           </b-button>
           {{ data.traitName }}
@@ -131,7 +131,7 @@
           v-on:deactivate-edit="traitSidePanelState.bus.$emit(traitSidePanelState.closePanelEvent)"
           v-on:trait-change="editTrait = Trait.assign({...$event})"
           v-on:submit="updateTrait"
-          v-on:archive="activateArchive"
+          v-on:archive="activateArchive($event)"
         />
       </template>
 
@@ -215,6 +215,7 @@ export default class TraitTable extends Vue {
   private editValidationHandler: ValidationError = new ValidationError();
 
   // Archive trait
+  private focusTrait: Trait;
   private deactivateWarningTitle = 'Remove trait from this program?';
   private deactivateActive: boolean = false;
 
@@ -258,15 +259,23 @@ export default class TraitTable extends Vue {
     });
   }
 
-  activateArchive(){
+  activateArchive(focusTrait){
+    this.focusTrait = focusTrait;
     this.deactivateActive = true;
   }
 
-  modalDeleteHandler(){
-    this.deactivateActive = false;
-    this.traitSidePanelState.bus.$emit(this.traitSidePanelState.closePanelEvent);
-    this.paginationController.updatePage(1);
-    this.$emit('show-success-notification', 'Trait successfully archived');
+  async modalDeleteHandler(){
+    try {
+      const traitClone = JSON.parse(JSON.stringify(this.focusTrait));
+      traitClone.active = !traitClone.active;
+      await TraitService.updateTraits(this.activeProgram, [ traitClone ]);
+      this.deactivateActive = false;
+      this.traitSidePanelState.bus.$emit(this.traitSidePanelState.closePanelEvent);
+      this.paginationController.updatePage(1);
+      this.$emit('show-success-notification', 'Trait successfully archived');
+    } catch(err) {
+      this.$emit('show-error-notification', 'Trait could not be archived');
+    }
   }
 
   activateEdit(editTrait: Trait) {
