@@ -96,7 +96,7 @@
         <div class="column is-narrow">
           <a
             v-if="archivable"
-            v-on:click="$emit('archive')"
+            v-on:click="$emit('archive', data)"
             v-on:keypress.enter.space="$emit('archive')"
             tabindex="0"
             >
