@@ -65,6 +65,7 @@
       v-if="newProgramActive"
       v-bind:row-validations="programValidations"
       v-bind:new-record.sync="newProgram"
+      v-bind:data-form-state="newLocationFormState"
       v-on:submit="saveProgram"
       v-on:cancel="cancelNewProgram"
       v-on:show-error-notification="$emit('show-error-notification', $event)"
@@ -96,6 +97,7 @@
       v-bind:row-validations="programValidations"
       v-bind:editable="true"
       v-bind:pagination="programsPagination"
+      v-bind:data-form-state="editLocationFormState"
       v-on:submit="updateProgram($event)"
       v-on:remove="displayWarning($event)"
       v-on:show-error-notification="$emit('show-error-notification', $event)"
@@ -164,7 +166,6 @@
   import {required} from 'vuelidate/lib/validators'
 
   import WarningModal from '@/components/modals/WarningModal.vue'
-  import EditDataRowForm from '@/components/forms/EditDataRowForm.vue'
   import {Program} from '@/breeding-insight/model/Program'
   import {Species} from '@/breeding-insight/model/Species'
   import ExpandableRowTable from "@/components/tables/ExpandableRowTable.vue";
@@ -179,12 +180,13 @@
   import {Metadata, Pagination} from "@/breeding-insight/model/BiResponse";
   import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
   import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
+  import { DataFormEventBusHandler } from '@/components/forms/DataFormEventBusHandler';
 
 @Component({
   mixins: [validationMixin],
   components: {
     EmtpyTableMessage,
-    NewDataForm, EditDataRowForm, WarningModal, PlusCircleIcon,
+    NewDataForm, WarningModal, PlusCircleIcon,
     ExpandableRowTable, TableColumn, BasicInputField, BasicSelectField
   }
 })
@@ -203,6 +205,9 @@ export default class AdminProgramsTable extends Vue {
   private deleteProgram: Program | undefined;
 
   private paginationController: PaginationController = new PaginationController();
+
+  private newLocationFormState: DataFormEventBusHandler = new DataFormEventBusHandler();
+  private editLocationFormState: DataFormEventBusHandler = new DataFormEventBusHandler();
 
   private programName: string = "Program Name";
 
@@ -262,6 +267,7 @@ export default class AdminProgramsTable extends Vue {
     }).catch(() => {
       this.$emit('show-error-notification', 'Error updating program');
     }).finally(() => {
+      this.editLocationFormState.bus.$emit(DataFormEventBusHandler.SAVE_COMPLETE_EVENT);
       this.emitProgramChange();
     });
 
@@ -278,6 +284,7 @@ export default class AdminProgramsTable extends Vue {
     }).catch(() => {
       this.$emit('show-error-notification', 'Error while creating program, ' + this.newProgram.name);
     }).finally(() => {
+      this.newLocationFormState.bus.$emit(DataFormEventBusHandler.SAVE_COMPLETE_EVENT);
       this.emitProgramChange();
     });
 

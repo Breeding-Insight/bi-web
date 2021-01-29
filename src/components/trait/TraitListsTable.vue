@@ -59,7 +59,7 @@
     <NewDataForm
         v-if="newTraitActive"
         v-bind:new-record.sync="newTrait"
-        v-bind:save-btn-active="newFormBtnActive"
+        v-bind:data-form-state="newTraitFormState"
         v-on:submit="saveTrait"
         v-on:cancel="cancelNewTrait"
         v-on:show-error-notification="$emit('show-error-notification', $event)"
@@ -115,8 +115,8 @@
           v-bind:data="traitSidePanelState.openedRow"
           v-bind:observation-level-options="observationLevelOptions"
           v-bind:edit-active="traitSidePanelState.editActive"
-          v-bind:edit-btn-active="editFormBtnActive"
           v-bind:editable="true"
+          v-bind:edit-form-state="traitSidePanelState.dataFormState"
           v-on:activate-edit="activateEdit($event)"
           v-on:deactivate-edit="traitSidePanelState.bus.$emit(traitSidePanelState.closePanelEvent)"
           v-on:trait-change="editTrait = Trait.assign({...$event})"
@@ -166,6 +166,7 @@ import {ProgramService} from "@/breeding-insight/service/ProgramService";
 import {MethodClass} from "@/breeding-insight/model/Method";
 import {DataType, Scale} from "@/breeding-insight/model/Scale";
 import {SidePanelTableEventBusHandler} from "@/components/tables/SidePanelTableEventBus";
+import { DataFormEventBusHandler } from '@/components/forms/DataFormEventBusHandler';
 
   @Component({
   mixins: [validationMixin],
@@ -193,14 +194,13 @@ export default class TraitTable extends Vue {
 
   // New trait form
   private newTraitActive: boolean = false;
-  private newFormBtnActive: boolean = true;
   private validationHandler: ValidationError = new ValidationError();
+  private newTraitFormState: DataFormEventBusHandler = new DataFormEventBusHandler();
 
   // Side panel table
   private traitSidePanelState: SidePanelTableEventBusHandler = new SidePanelTableEventBusHandler();
 
   // Edit form
-  private editFormBtnActive: boolean = true;
   private editValidationHandler: ValidationError = new ValidationError();
 
   // Archive trait
@@ -262,7 +262,6 @@ export default class TraitTable extends Vue {
 
   async saveTrait() {
     try {
-      this.newFormBtnActive = false;
       this.validationHandler = new ValidationError();
       await TraitService.createTraits(this.activeProgram!.id!, [this.newTrait]);
       this.$emit('show-success-notification', 'Trait creation successful.');
@@ -271,7 +270,6 @@ export default class TraitTable extends Vue {
       this.newTrait = new Trait();
       this.newTraitActive = false;
     } catch (error) {
-      this.newFormBtnActive = true;
       if (error instanceof ValidationError) {
         this.validationHandler = error;
 
@@ -293,12 +291,13 @@ export default class TraitTable extends Vue {
       } else {
         this.$emit('show-error-notification', 'Error creating trait.');
       }
+    } finally {
+      this.newTraitFormState.bus.$emit(DataFormEventBusHandler.SAVE_COMPLETE_EVENT);
     }
   }
 
   async updateTrait() {
     try {
-      this.editFormBtnActive = false;
       this.editValidationHandler = new ValidationError();
       const [data] = await TraitService.updateTraits(this.activeProgram!.id!, [this.editTrait!]) as [Trait[], Metadata];
 
@@ -324,6 +323,8 @@ export default class TraitTable extends Vue {
       } else {
         this.$emit('show-error-notification', 'Error updating trait.');
       }
+    } finally {
+      this.traitSidePanelState.dataFormState.bus.$emit(DataFormEventBusHandler.SAVE_COMPLETE_EVENT);
     }
   }
 
