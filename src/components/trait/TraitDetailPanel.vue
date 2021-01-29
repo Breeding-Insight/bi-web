@@ -76,7 +76,7 @@
             size="is-small"
             style="background: lightgray"
             class="archive-tag"
-            v-if="!data.active">
+            v-if="!data.active && archivable">
           Archived
         </b-button>
       </template>
