@@ -29,8 +29,18 @@
       </section>
       <div class="columns">
         <div class="column is-whole has-text-centered buttons">
-          <button v-on:click="modalDeleteHandler" class="button is-danger"><strong>Yes, remove</strong></button>
-          <button v-on:click="deactivateActive = false" class="button">Cancel</button>
+          <button
+            class="button is-danger"
+            v-on:click="modalDeleteHandler"
+          >
+            <strong>Yes, {{ focusTrait.active ? 'remove' : 'restore' }}</strong>
+          </button>
+          <button
+            class="button"
+            v-on:click="deactivateActive = false"
+          >
+            Cancel
+          </button>
         </div>
       </div>              
     </WarningModal>
@@ -96,7 +106,6 @@
         <TableColumn name="name" v-bind:label="'Name'">
           <b-button
               size="is-small"
-              style="background: lightgray"
               class="archive-tag"
               v-if="!data.active && data.active !== undefined">
             Archived
@@ -132,6 +141,7 @@
           v-on:trait-change="editTrait = Trait.assign({...$event})"
           v-on:submit="updateTrait"
           v-on:archive="activateArchive($event)"
+          v-on:restore="activateArchive($event)"
         />
       </template>
 
@@ -215,7 +225,7 @@ export default class TraitTable extends Vue {
   private editValidationHandler: ValidationError = new ValidationError();
 
   // Archive trait
-  private focusTrait: Trait;
+  private focusTrait: Trait = new Trait();
   private deactivateWarningTitle = 'Remove trait from this program?';
   private deactivateActive: boolean = false;
 
@@ -224,7 +234,6 @@ export default class TraitTable extends Vue {
   private paginationController: PaginationController = new PaginationController();
 
   mounted() {
-    this.deactivateWarningTitle = `Remove trait from ${this.activeProgram.name}?`;
     this.getTraits();
     this.getObservationLevels();
 
@@ -259,7 +268,12 @@ export default class TraitTable extends Vue {
     });
   }
 
-  activateArchive(focusTrait){
+  activateArchive(focusTrait: Trait){
+    if (focusTrait.active) {
+      this.deactivateWarningTitle = `Remove "${focusTrait.traitName}" from ${this.activeProgram.name}?`;
+    } else {
+      this.deactivateWarningTitle = `Restore "${focusTrait.traitName}" to ${this.activeProgram.name}?`;
+    }
     this.focusTrait = focusTrait;
     this.deactivateActive = true;
   }
@@ -268,13 +282,13 @@ export default class TraitTable extends Vue {
     try {
       const traitClone = JSON.parse(JSON.stringify(this.focusTrait));
       traitClone.active = !traitClone.active;
-      await TraitService.updateTraits(this.activeProgram, [ traitClone ]);
+      await TraitService.updateTraits(this.activeProgram.id, [ traitClone ]);
       this.deactivateActive = false;
       this.traitSidePanelState.bus.$emit(this.traitSidePanelState.closePanelEvent);
       this.paginationController.updatePage(1);
-      this.$emit('show-success-notification', 'Trait successfully archived');
+      this.$emit('show-success-notification', `"${traitClone.traitName}" successfully ${ traitClone.active ? 'restored' : 'archived'}`);
     } catch(err) {
-      this.$emit('show-error-notification', 'Trait could not be archived');
+      this.$emit('show-error-notification', `"${this.focusTrait.traitName}" could not be ${ this.focusTrait.active ? 'restored' : 'archived'}`);
     }
   }
 
