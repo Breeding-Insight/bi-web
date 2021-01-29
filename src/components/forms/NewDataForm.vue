@@ -15,93 +15,19 @@
   - limitations under the License.
   -->
 
-<template>
-  <form
-      class="new-form"
-      novalidate="true"
-  >
-    <slot v-bind="getValidation()"></slot>
-    <div class="columns">
-      <div class="column is-whole has-text-centered buttons">
-        <button data-testid="save" type="button" class="button is-primary" @click="checkSubmit()" v-bind:disabled="disableSaveBtn()" v-bind:class="{'is-loading': saveStarted}">
-          <span class="icon is-small">
-            <CheckCircleIcon size="1.5x" aria-hidden="true"></CheckCircleIcon>
-            <span class="is-sr-only">Confirm Edits</span>
-          </span>
-          <span>
-            Save
-          </span>
-        </button>
-        <button data-testid="cancel" type="button" class="button" @click="checkCancel()">Cancel</button>
-      </div>
-    </div>
-  </form>
-</template>
-
 <script lang="ts">
-  import {Component, Prop, Vue} from 'vue-property-decorator';
-  import { CheckCircleIcon } from 'vue-feather-icons';
-  import {Validations} from "vuelidate-property-decorators";
+import { Component, Prop } from 'vue-property-decorator';
+import DataForm from '@/components/forms/DataForm.vue';
 
-  @Component({
-      components: {CheckCircleIcon}
-    }
-  )
-  export default class NewDataForm extends Vue {
-    @Prop()
-    rowValidations!: Object;
-    @Prop()
-    newRecord!: Object;
-    @Prop({default: true})
-    saveBtnActive!: boolean;
+@Component
+export default class NewDataForm extends DataForm {
+  @Prop()
+  newRecord!:Object;
 
-    saveStarted = false;
-
-    @Validations()
-    validations() {
-      if (this.rowValidations) {
-        return {
-          newRecord: {
-            ...this.rowValidations
-          }
-        }
-      }
-
-      return {}
-    }
-
-    getValidation(){
-      return this.$v.newRecord;
-    }
-
-    disableSaveBtn() {
-      return !this.saveBtnActive || this.saveStarted;
-    }
-
-    checkSubmit() {
-      this.saveStarted = true;
-
-      if (this.$v.newRecord) { this.$v.newRecord.$touch(); }
-
-      if (this.$v.newRecord && this.$v.newRecord.$anyError){
-
-        this.saveStarted = false;
-        this.$emit('show-error-notification', 'Fix Invalid Fields');
-        return;
-      } else {
-
-        this.$emit('submit');
-        if (this.$v.newRecord) { this.$v.newRecord.$reset(); }
-      }
-
-
-    }
-
-    checkCancel() {
-      if (this.$v.newRecord) { this.$v.newRecord.$reset(); }
-      this.$emit('cancel');
-    }
-
+  created () {
+    super.formClass = 'new-form';
+    super.record = this.newRecord;
   }
+}
 
 </script>

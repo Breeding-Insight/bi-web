@@ -1,0 +1,45 @@
+/*
+ * See the NOTICE file distributed with this work for additional information regarding copyright ownership.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import Vue from 'vue';
+import {EventStore} from "@/util/EventStore";
+
+export class DataFormEventBusHandler {
+  bus = new Vue();
+
+  //Events
+  static readonly SAVE_STARTED_EVENT = "save-activity-started"
+  static readonly SAVE_COMPLETE_EVENT = "save-activity-complete"
+
+  public readonly id = Math.random();
+
+  //State variables
+  public saveStarted: boolean = false;
+
+  constructor () {
+    this.saveStarted = false;
+
+    this.bus.$on(DataFormEventBusHandler.SAVE_STARTED_EVENT, () => {
+      console.log("starting save event");
+      this.saveStarted = true;
+    });
+
+    this.bus.$on(DataFormEventBusHandler.SAVE_COMPLETE_EVENT, () => {
+      console.log("ending save event");
+      this.saveStarted = false;
+    });
+  }
+}
