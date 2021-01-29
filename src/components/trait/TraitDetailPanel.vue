@@ -70,7 +70,7 @@
       <p class="has-text-weight-bold mt-3 mb-0">Description of collection method</p>
       <p>{{data.method.description}}</p>
 
-      <template v-if="!archivable">
+      <template v-if="archivable && !data.active">
         <p class="has-text-weight-bold mt-3 mb-0">Included in Favorites</p>
         <b-button
             size="is-small"
@@ -95,18 +95,18 @@
         </div>
         <div class="column is-narrow">
           <a
-            v-if="archivable"
+            v-if="archivable && data.active"
             v-on:click="$emit('archive', data)"
-            v-on:keypress.enter.space="$emit('archive')"
+            v-on:keypress.enter.space="$emit('archive', data)"
             tabindex="0"
             >
             Archive
           </a>
           <a
-              v-else
-              v-on:click="$emit('restore')"
-              v-on:keypress.enter.space="$emit('restore')"
-              tabindex="0"
+            v-if="archivable && !data.active"
+            v-on:click="$emit('restore', data)"
+            v-on:keypress.enter.space="$emit('restore', data)"
+            tabindex="0"
           >
             Restore/Unarchive
           </a>
