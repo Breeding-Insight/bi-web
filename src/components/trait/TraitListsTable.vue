@@ -269,9 +269,9 @@ export default class TraitTable extends Vue {
 
   activateArchive(focusTrait: Trait){
     if (focusTrait.active) {
-      this.deactivateWarningTitle = `Remove "${focusTrait.traitName}" from ${this.activeProgram.name}?`;
+      this.deactivateWarningTitle = `Remove "${focusTrait.traitName}" from ${this.activeProgram!.name!}?`;
     } else {
-      this.deactivateWarningTitle = `Restore "${focusTrait.traitName}" to ${this.activeProgram.name}?`;
+      this.deactivateWarningTitle = `Restore "${focusTrait.traitName}" to ${this.activeProgram!.name!}?`;
     }
     this.focusTrait = focusTrait;
     this.deactivateActive = true;
