@@ -281,7 +281,7 @@ export default class TraitTable extends Vue {
     try {
       const traitClone = JSON.parse(JSON.stringify(this.focusTrait));
       traitClone.active = !traitClone.active;
-      await TraitService.updateTraits(this.activeProgram.id, [ traitClone ]);
+      await TraitService.updateTraits(this.activeProgram!.id!, [ traitClone ]);
       this.deactivateActive = false;
       this.traitSidePanelState.bus.$emit(this.traitSidePanelState.closePanelEvent);
       this.paginationController.updatePage(1);
