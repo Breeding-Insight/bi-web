@@ -52,65 +52,64 @@ import { Validations } from 'vuelidate-property-decorators';
 import { DataFormEventBusHandler } from '@/components/forms/DataFormEventBusHandler';
 
 @Component({
-        components: { CheckCircleIcon }
-      })
-  export default abstract class DataForm extends Vue {
-      @Prop()
-      rowValidations!: Object;
-      @Prop()
-      dataFormState: DataFormEventBusHandler;
+  components: { CheckCircleIcon }
+})
+export default class DataForm extends Vue {
+  @Prop()
+  rowValidations!: Object;
+  @Prop()
+  dataFormState!: DataFormEventBusHandler;
 
-      protected record!: Object;
-      protected formClass: string;
+  protected record!: Object;
+  protected formClass!: string;
 
-      @Validations()
-      validations () {
-        if (this.rowValidations) {
-          return {
-            record: {
-              ...this.rowValidations
-            }
-          };
+  @Validations()
+  validations () {
+    if (this.rowValidations) {
+      return {
+        record: {
+          ...this.rowValidations
         }
+      };
+    }
 
-        return {};
-      }
+    return {};
+  }
 
-      getValidation () {
-        return this.$v.record;
-      }
+  getValidation () {
+    return this.$v.record;
+  }
 
-      checkSubmit () {
-        this.dataFormState.bus.$emit(DataFormEventBusHandler.SAVE_STARTED_EVENT);
+  checkSubmit () {
+    this.dataFormState.bus.$emit(DataFormEventBusHandler.SAVE_STARTED_EVENT);
 
-        if (this.$v.record) {
-          this.$v.record.$touch();
-        }
+    if (this.$v.record) {
+      this.$v.record.$touch();
+    }
 
-        if (this.$v.record && this.$v.record.$anyError) {
-          this.dataFormState.bus.$emit(DataFormEventBusHandler.SAVE_COMPLETE_EVENT);
-          this.$emit('show-error-notification', 'Fix Invalid Fields');
-          return;
-        } else {
-          // debouncing
-          setTimeout(() => {
-            this.$emit('submit');
+    if (this.$v.record && this.$v.record.$anyError) {
+      this.dataFormState.bus.$emit(DataFormEventBusHandler.SAVE_COMPLETE_EVENT);
+      this.$emit('show-error-notification', 'Fix Invalid Fields');
+      return;
+    } else {
+      // debouncing
+      setTimeout(() => {
+        this.$emit('submit');
 
-            if (this.$v.record) {
-              this.$v.record.$reset();
-            }
-          }, 250);
-        }
-      }
-
-      checkCancel () {
-        this.dataFormState.bus.$emit(DataFormEventBusHandler.SAVE_COMPLETE_EVENT);
         if (this.$v.record) {
           this.$v.record.$reset();
         }
-        this.$emit('cancel');
-      }
-
+      }, 250);
+    }
   }
+
+  checkCancel () {
+    this.dataFormState.bus.$emit(DataFormEventBusHandler.SAVE_COMPLETE_EVENT);
+    if (this.$v.record) {
+      this.$v.record.$reset();
+    }
+    this.$emit('cancel');
+  }
+}
 
 </script>
