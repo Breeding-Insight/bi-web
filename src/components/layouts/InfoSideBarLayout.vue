@@ -183,6 +183,7 @@
           <img
               id="orcid-id-icon"
               src="https://orcid.org/sites/default/files/images/orcid_24x24.png"
+              onerror="if (this.src !== '../../assets/img/orcid_24x24.png') this.src = '../../assets/img/orcid_24x24.png';"
               width="24"
               height="24"
               class="is-pulled-right"
@@ -195,6 +196,7 @@
           <img
             id="orcid-id-icon2"
             src="https://orcid.org/sites/default/files/images/orcid_24x24.png"
+            onerror="if (this.src !== '../../assets/img/orcid_24x24.png') this.src = '../../assets/img/orcid_24x24.png';"
             width="16"
             height="16"
             alt="ORCID iD icon"
