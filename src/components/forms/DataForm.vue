@@ -63,6 +63,8 @@ export default class DataForm extends Vue {
   protected record!: Object;
   protected formClass!: string;
 
+  private timeout!: number;
+
   @Validations()
   validations () {
     if (this.rowValidations) {
@@ -92,14 +94,14 @@ export default class DataForm extends Vue {
       this.$emit('show-error-notification', 'Fix Invalid Fields');
       return;
     } else {
-      // debouncing
-      setTimeout(() => {
+      clearTimeout(this.timeout);
+      this.timeout = setTimeout((() => {
         this.$emit('submit');
 
         if (this.$v.record) {
           this.$v.record.$reset();
         }
-      }, 250);
+      }) as TimerHandler, 250);
     }
   }
 
@@ -110,6 +112,7 @@ export default class DataForm extends Vue {
     }
     this.$emit('cancel');
   }
+
 }
 
 </script>

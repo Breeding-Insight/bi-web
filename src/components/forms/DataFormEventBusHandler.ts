@@ -15,7 +15,6 @@
  */
 
 import Vue from 'vue';
-import {EventStore} from "@/util/EventStore";
 
 export class DataFormEventBusHandler {
   bus = new Vue();
@@ -23,8 +22,6 @@ export class DataFormEventBusHandler {
   //Events
   static readonly SAVE_STARTED_EVENT = "save-activity-started"
   static readonly SAVE_COMPLETE_EVENT = "save-activity-complete"
-
-  public readonly id = Math.random();
 
   //State variables
   public saveStarted: boolean = false;
