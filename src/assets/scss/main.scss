@@ -128,8 +128,6 @@ main ul {
   }
 }
 
-
-
 nav.pagination {
   align-items: normal;
   justify-content: flex-start;
@@ -268,6 +266,10 @@ nav.tabs li.is-active {
   a {
     color:$link;
   }
+}
+
+.table.is-striped tbody tr:nth-child(even).is-edited {
+  background-color: $primary-light;
 }
 
 .table tr.is-selected {
