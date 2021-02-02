@@ -126,7 +126,6 @@
   import {ValidationError} from "@/breeding-insight/model/errors/ValidationError";
   import BaseTraitForm from "@/components/trait/forms/BaseTraitForm.vue";
   import EditDataForm from "@/components/forms/EditDataForm.vue";
-  import {TableRow} from "@/breeding-insight/model/view_models/TableRow";
   import { DataFormEventBusHandler } from '@/components/forms/DataFormEventBusHandler';
 
   @Component({
@@ -147,6 +146,8 @@
     private archivable!: boolean;
     @Prop()
     private editFormState!: DataFormEventBusHandler
+    @Prop()
+    private validationHandler!: ValidationError;
 
     private editTrait: Trait | null = null;
     private scalePostfix = new Set<string>().add(DataType.Ordinal).add(DataType.Nominal);
@@ -154,7 +155,6 @@
     // Variables for edit form
     private methodClassOptions: string[] = Object.values(MethodClass);
     private scaleClassOptions: string[] = Object.values(DataType);
-    private validationHandler: ValidationError  = new ValidationError();
 
     @Watch('editActive', {immediate: true})
     watchEdit() {
