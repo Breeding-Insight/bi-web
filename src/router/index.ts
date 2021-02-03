@@ -22,9 +22,9 @@ import Home from '@/views/Home.vue'
 import StyleGuide from '@/views/StyleGuide.vue'
 import NotAuthorized from '@/views/NotAuthorized.vue'
 import BrapiAuthorize from '@/views/BrapiAuthorize.vue'
-import ProgramManagement from '@/views/ProgramManagement.vue'
-import AdminProgramManagement from '@/views/AdminProgramManagement.vue'
-import AdminUserManagement from '@/views/AdminUserManagement.vue'
+import ProgramManagement from '@/views/program/ProgramManagement.vue'
+import AdminProgramManagement from '@/views/admin/AdminProgramManagement.vue'
+import AdminUserManagement from '@/views/admin/AdminUserManagement.vue'
 import store from '@/store/index.ts';
 import {
   LOGIN,
@@ -35,20 +35,20 @@ import {
   FIRST_VISIT,
   RETURN_VISIT
 } from '@/store/mutation-types';
-import ProgramLocationsManagement from "@/views/ProgramLocationsManagement.vue";
-import ProgramUserManagement from "@/views/ProgramUsersManagement.vue";
-import Traits from '@/views/Traits.vue'
-import TraitsList from "@/views/TraitsList.vue";
-import TraitsFavorites from "@/views/TraitsFavorites.vue";
-import TraitsImport from "@/views/TraitsImport.vue";
-import TraitsArchived from "@/views/TraitsArchived.vue";
-import ProgramSelection from "@/views/ProgramSelection.vue";
+import ProgramLocationsManagement from "@/views/program/ProgramLocationsManagement.vue";
+import ProgramUserManagement from "@/views/program/ProgramUsersManagement.vue";
+import Traits from '@/views/trait/Traits.vue'
+import TraitsList from "@/views/trait/TraitsList.vue";
+import TraitsFavorites from "@/views/trait/TraitsFavorites.vue";
+import TraitsImport from "@/views/trait/TraitsImport.vue";
+import TraitsArchived from "@/views/trait/TraitsArchived.vue";
+import ProgramSelection from "@/views/program/ProgramSelection.vue";
 import {UserService} from "@/breeding-insight/service/UserService";
 import {User} from "@/breeding-insight/model/User";
 import {isProgramsPath, processProgramNavigation, signupRequireAccountToken} from "@/router/guards.ts";
-import AccountSignUp from "@/views/AccountSignUp.vue";
-import AccountCreationFailure from "@/views/AccountCreationFailure.vue"
-import AccountCreationSuccess from "@/views/AccountCreationSuccess.vue"
+import AccountSignUp from "@/views/account/AccountSignUp.vue";
+import AccountCreationFailure from "@/views/account/AccountCreationFailure.vue"
+import AccountCreationSuccess from "@/views/account/AccountCreationSuccess.vue"
 import {defineAbilityFor} from "@/config/ability";
 
 

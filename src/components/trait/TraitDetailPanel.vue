@@ -96,9 +96,10 @@
     </template>
     <template v-if="data && editActive">
       <EditDataForm
-        v-bind:save-btn-active="editBtnActive"
         v-on:cancel="$emit('deactivate-edit')"
         v-on:submit="$emit('submit')"
+        v-bind:edit-record.sync="editTrait"
+        v-bind:data-form-state="editFormState"
       >
         <BaseTraitForm
             v-bind:trait.sync="editTrait"
@@ -126,6 +127,7 @@
   import BaseTraitForm from "@/components/trait/forms/BaseTraitForm.vue";
   import EditDataForm from "@/components/forms/EditDataForm.vue";
   import {TableRow} from "@/breeding-insight/model/view_models/TableRow";
+  import { DataFormEventBusHandler } from '@/components/forms/DataFormEventBusHandler';
 
   @Component({
     components: {EditDataForm, SidePanel, BaseTraitForm },
@@ -143,8 +145,9 @@
     private editable!: boolean;
     @Prop({default: false})
     private archivable!: boolean;
+    @Prop()
+    private editFormState!: DataFormEventBusHandler
 
-    private editBtnActive: boolean = true;
     private editTrait: Trait | null = null;
     private scalePostfix = new Set<string>().add(DataType.Ordinal).add(DataType.Nominal);
 

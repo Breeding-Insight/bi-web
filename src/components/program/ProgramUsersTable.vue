@@ -70,6 +70,7 @@
       v-if="newUserActive"
       v-bind:row-validations="newUserValidations"
       v-bind:new-record.sync="newUser"
+      v-bind:data-form-state="newUserFormState"
       v-on:submit="saveUser"
       v-on:cancel="cancelNewUser"
       v-on:show-error-notification="$emit('show-error-notification', $event)"
@@ -110,6 +111,7 @@
       v-bind:editable="$ability.can('update', 'ProgramUser')"
       v-bind:archivable="$ability.can('archive', 'ProgramUser')"
       v-bind:pagination="usersPagination"
+      v-bind:data-form-state="editUserFormState"
       v-on:submit="updateUser($event)"
       v-on:remove="displayWarning($event)"
       v-on:show-error-notification="$emit('show-error-notification', $event)"
@@ -189,6 +191,7 @@
   import {Pagination} from "@/breeding-insight/model/BiResponse";
   import { User } from '@/breeding-insight/model/User';
   import {UserService} from "@/breeding-insight/service/UserService";
+  import { DataFormEventBusHandler } from '@/components/forms/DataFormEventBusHandler';
 
 @Component({
   components: { NewDataForm, BasicInputField, BasicSelectField, TableColumn,
@@ -219,6 +222,9 @@ export default class ProgramUsersTable extends Vue {
   private rolesMap: Map<string, Role> = new Map();
 
   private paginationController: PaginationController = new PaginationController();
+
+  private newUserFormState: DataFormEventBusHandler = new DataFormEventBusHandler();
+  private editUserFormState: DataFormEventBusHandler = new DataFormEventBusHandler();
 
   newUserValidations = {
     name: {required},
@@ -279,7 +285,7 @@ export default class ProgramUsersTable extends Vue {
       this.$emit('show-success-notification', 'Success! ' + updatedUser.name + ' updated.');
     }).catch((error) => {
       this.$emit('show-error-notification', error['errorMessage']);
-    });
+    }).finally(() => this.editUserFormState.bus.$emit(DataFormEventBusHandler.SAVE_COMPLETE_EVENT));
 
   }
 
@@ -291,6 +297,7 @@ export default class ProgramUsersTable extends Vue {
       this.newUser = this.checkExistingUserByEmail(this.newUser, this.systemUsers);
     } catch (err) {
       this.$emit('show-error-notification', err);
+      this.newUserFormState.bus.$emit(DataFormEventBusHandler.SAVE_COMPLETE_EVENT);
       return;
     }
 
@@ -301,7 +308,7 @@ export default class ProgramUsersTable extends Vue {
 
       // See if the user already existed
       //TODO: Reconsider when user search feature is added
-      if (this.getSystemUserById(user, this.systemUsers)){
+      if (this.getSystemUserById(user, this.systemUsers)) {
         this.$emit('show-success-notification', 'Success! Existing user ' + user.name + ' added to program.');
       } else {
         this.$emit('show-success-notification', 'Success! ' + this.newUser.name + ' added.');
@@ -314,7 +321,7 @@ export default class ProgramUsersTable extends Vue {
       this.$emit('show-error-notification', error.errorMessage);
       this.getUsers();
       this.getSystemUsers();
-    })
+    }).finally(() => this.newUserFormState.bus.$emit(DataFormEventBusHandler.SAVE_COMPLETE_EVENT))
 
   }
 

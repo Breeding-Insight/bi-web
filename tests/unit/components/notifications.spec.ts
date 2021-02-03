@@ -17,7 +17,7 @@
 
 import { mount } from '@vue/test-utils'
 import App from '@/App.vue'
-import AdminUserManagement from '@/views/AdminUserManagement.vue'
+import AdminUserManagement from '@/views/admin/AdminUserManagement.vue'
 import VueRouter from 'vue-router'
 import Vuex from 'vuex'
 import localVue from '../index'

@@ -3,14 +3,18 @@
   "version": "v0.3.0+58",
   "private": true,
   "scripts": {
-    "build": "node $npm_package_task_path/build.js --dev-audit-level=critical --prod-audit-level=none",
-    "githooks": "git config core.hooksPath $npm_package_task_path/hooks",
-    "postinstall": "mkdir -p $npm_package_task_path/log",
-    "lint": "node $npm_package_task_path/lint.js",
-    "serve": "node $npm_package_task_path/serve.js",
-    "test:accessibility": "node $npm_package_task_path/testAccessibility.js --port $npm_package_devport --config $npm_package_task_path/.pa11yTargets.json --out $npm_package_task_path/log/pa11yResults.json",
-    "test:e2e": "node $npm_package_task_path/testE2e.js",
+    "build": "node $npm_package_config_task_path/build.js --dev-audit-level=critical --prod-audit-level=none",
+    "githooks": "git config core.hooksPath $npm_package_config_task_path/hooks",
+    "postinstall": "mkdir -p $npm_package_config_task_path/log",
+    "lint": "node $npm_package_config_task_path/lint.js",
+    "serve": "node $npm_package_config_task_path/serve.js",
+    "test:accessibility": "node $npm_package_config_task_path/testAccessibility.js --port $npm_package_config_devport --config $npm_package_config_task_path/.pa11yTargets.json --out $npm_package_config_task_path/log/pa11yResults.json",
+    "test:e2e": "node $npm_package_config_task_path/testE2e.js",
     "test:unit": "vue-cli-service test:unit"
+  },
+  "config": {
+    "devport": "8080",
+    "task_path": "./task"
   },
   "dependencies": {
     "@casl/ability": "~4.0.0",
@@ -73,7 +77,5 @@
     "vue-cli-plugin-axios": "0.0.4",
     "vue-template-compiler": "^2.6.10"
   },
-  "devport": "8080",
-  "task_path": "./task",
   "versionInfo": "https://github.com/Breeding-Insight/bi-web/commit/b06cac8e7d9d8ec468594add7b9e543f9252ff29"
 }

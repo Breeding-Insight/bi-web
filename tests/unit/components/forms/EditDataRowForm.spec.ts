@@ -18,16 +18,20 @@
 import localVue, {defaultStore} from "../../index";
 import {mount} from "@vue/test-utils";
 import EditDataRowForm from "@/components/forms/EditDataRowForm.vue";
+import { DataFormEventBusHandler } from '@/components/forms/DataFormEventBusHandler';
+import Utils from '../../test-utils/TestingUtils';
 
 describe('Events emitted properly.', () => {
 
   const store = defaultStore;
-  const wrapper = mount(EditDataRowForm, {localVue, store});
+  const formState = new DataFormEventBusHandler();
+  const wrapper = mount(EditDataRowForm, {localVue, store, propsData: {dataFormState: formState}});
 
   it('Emits submit event with edited object on editing save', async () => {
     const saveBtn = wrapper.find('button[data-testid="save"]');
     expect(saveBtn.exists()).toBeTruthy();
     await saveBtn.trigger('click');
+    await Utils.pause(500);
     expect(wrapper.emitted('submit')).toHaveLength(1);
   });
 

@@ -11,6 +11,7 @@ import BasicInputField from "@/components/forms/BasicInputField.vue";
 import ExpandableTableRow from "@/components/tables/ExpandableTableRow.vue";
 import EditDataRowForm from "@/components/forms/EditDataRowForm.vue";
 import {UserService} from "@/breeding-insight/service/UserService";
+import Utils from '../../test-utils/TestingUtils';
 
 jest.mock('@/breeding-insight/dao/SystemRoleDao');
 jest.mock('@/breeding-insight/dao/UserDAO');
@@ -67,6 +68,7 @@ describe('new data form works properly', () => {
     let saveBtn = newForm.find('button[data-testid="save"]');
     expect(saveBtn.exists()).toBeTruthy();
     await saveBtn.trigger('click');
+    await Utils.pause(500);
     await wrapper.vm.$nextTick();
     // Wait another DOM update. A little hacky, probably should find better way to do this in the future.
     await wrapper.vm.$nextTick();

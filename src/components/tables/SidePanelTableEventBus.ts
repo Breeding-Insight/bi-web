@@ -18,6 +18,7 @@
 import Vue from 'vue';
 import {TableRow} from "@/breeding-insight/model/view_models/TableRow";
 import {EventStore} from "@/util/EventStore";
+import { DataFormEventBusHandler } from '@/components/forms/DataFormEventBusHandler';
 
 export class SidePanelTableEventBusHandler {
   bus = new Vue();
@@ -43,9 +44,9 @@ export class SidePanelTableEventBusHandler {
   public closeEditModalActive: boolean = false;
   public collapseColumns: boolean = false;
   public openedRow?: any;
+  public dataFormState: DataFormEventBusHandler = new DataFormEventBusHandler();
 
   constructor() {
-    this.reset();
     // Set up events on bus
     this.bus.$on(this.selectRowEvent, (row: any) => {
       this.eventStore.addEvent(() => { this.bus.$emit(this.confirmOpenPanel, row); });
@@ -123,6 +124,7 @@ export class SidePanelTableEventBusHandler {
   private cancelEdit() {
     this.closeEditModalActive = false;
     this.editActive = false;
+    this.dataFormState.bus.$emit(DataFormEventBusHandler.SAVE_COMPLETE_EVENT);
   }
 
   reset() {
@@ -130,5 +132,6 @@ export class SidePanelTableEventBusHandler {
     this.editActive = false;
     this.closeEditModalActive = false;
     this.openedRow = undefined;
+    this.dataFormState.bus.$emit(DataFormEventBusHandler.SAVE_COMPLETE_EVENT);
   }
 }
