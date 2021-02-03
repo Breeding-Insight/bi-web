@@ -29,4 +29,3 @@ module.exports = {
   transformIgnorePatterns: ['/node_modules/(?!vuelidate-property-decorators)'],
   preset: '@vue/cli-plugin-unit-jest/presets/typescript-and-babel'
 };
-

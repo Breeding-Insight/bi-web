@@ -21,11 +21,20 @@ import Index from '@/views/Index.vue'
 import Home from '@/views/Home.vue'
 import StyleGuide from '@/views/StyleGuide.vue'
 import NotAuthorized from '@/views/NotAuthorized.vue'
+import BrapiAuthorize from '@/views/BrapiAuthorize.vue'
 import ProgramManagement from '@/views/ProgramManagement.vue'
 import AdminProgramManagement from '@/views/AdminProgramManagement.vue'
 import AdminUserManagement from '@/views/AdminUserManagement.vue'
 import store from '@/store/index.ts';
-import {LOGIN, LOGOUT, REQUESTED_PATH, ERROR_STATE, SET_ACTIVE_PROGRAM} from '@/store/mutation-types';
+import {
+  LOGIN,
+  LOGOUT,
+  REQUESTED_PATH,
+  ERROR_STATE,
+  SET_ACTIVE_PROGRAM,
+  FIRST_VISIT,
+  RETURN_VISIT
+} from '@/store/mutation-types';
 import ProgramLocationsManagement from "@/views/ProgramLocationsManagement.vue";
 import ProgramUserManagement from "@/views/ProgramUsersManagement.vue";
 import Traits from '@/views/Traits.vue'
@@ -36,7 +45,11 @@ import TraitsArchived from "@/views/TraitsArchived.vue";
 import ProgramSelection from "@/views/ProgramSelection.vue";
 import {UserService} from "@/breeding-insight/service/UserService";
 import {User} from "@/breeding-insight/model/User";
-import {isProgramsPath, processProgramNavigation} from "@/router/guards.ts";
+import {isProgramsPath, processProgramNavigation, signupRequireAccountToken} from "@/router/guards.ts";
+import AccountSignUp from "@/views/AccountSignUp.vue";
+import AccountCreationFailure from "@/views/AccountCreationFailure.vue"
+import AccountCreationSuccess from "@/views/AccountCreationSuccess.vue"
+import {defineAbilityFor} from "@/config/ability";
 
 
 Vue.use(VueRouter);
@@ -45,7 +58,9 @@ const layouts = {
   adminSideBar: 'adminSideBar',
   userSideBar: 'userSideBar',
   simple: 'simple',
-  noSideBar: 'noSideBar'
+  noSideBar: 'noSideBar',
+  infoSideBar: 'infoSideBar',
+  baseSideBar: 'baseSideBar'
 }
 
 const routes = [
@@ -54,12 +69,13 @@ const routes = [
     name: 'home',
     meta: {
       title: 'Welcome',
-      layout: layouts.simple
+      layout: layouts.infoSideBar
     },
     component: Index,
     props: (route: Route) => ({
       loginRedirect: route.params.loginRedirect || false,
-      sessionExpired: route.params.sessionExpired || false
+      sessionExpired: route.params.sessionExpired || false,
+      loginError: route.query.loginError || false
     })
   },
   {
@@ -101,7 +117,7 @@ const routes = [
     meta: {
       title: 'Admin User Management',
       layout: layouts.userSideBar
-    }, 
+    },
     component: AdminUserManagement
   },
   {
@@ -216,6 +232,53 @@ const routes = [
       layout: layouts.simple
     },
     component: NotAuthorized
+  },
+  {
+    path: '/brapi/authorize',
+    name: 'brapi-authorize',
+    meta: {
+      title: 'BrAPI Authorize',
+      layout: layouts.noSideBar
+    },
+    component: BrapiAuthorize,
+    props: (route: Route) => ({
+      applicationName: route.query.display_name,
+      returnUrl: route.query.return_url
+    })
+  },
+  {
+    path: '/signup',
+    name: 'signup',
+    meta: {
+      title: 'Activate Account',
+      layout: layouts.noSideBar
+    },
+    component: AccountSignUp,
+    props: (route: Route) => ({
+      accountToken: route.query['account-token']
+    }),
+    beforeEnter: signupRequireAccountToken
+  },
+  {
+    path: '/account-error',
+    name: 'account-error',
+    meta: {
+      title: 'Account Activation Error',
+      layout: layouts.noSideBar
+    },
+    component: AccountCreationFailure,
+    props: (route: Route) => ({
+      error: route.query.error
+    }),
+  },
+  {
+    path: '/account-success',
+    name: 'account-success',
+    meta: {
+      title: 'Account Activation Success',
+      layout: layouts.noSideBar
+    },
+    component: AccountCreationSuccess
   }
 ]
 
@@ -233,13 +296,23 @@ router.beforeEach((to: Route, from: Route, next: Function) => {
 
   // Remove the redirect url from the cookie
   Vue.$cookies.remove(loginRedirectUrlCookieName);
+  Vue.$cookies.remove(Vue.prototype.$cookieNames.accountToken);
 
   // Check the url for a redirect-login url. Also check if they were redirected because of expired session
-  if (store.state.requestedPath){
+  if (store.state.requestedPath && to.params.loginRedirect) {
     // Expires in 1 hr
     Vue.$cookies.set(loginRedirectUrlCookieName, store.state.requestedPath, 60*60);
     // reset our state
     store.commit(REQUESTED_PATH, {path: undefined});
+  }
+
+  const firstVisitCookie = Vue.prototype.$cookieNames.firstVisit;
+  if (Vue.$cookies.get(firstVisitCookie) === null) {
+    // expires after 1 week
+    Vue.$cookies.set(firstVisitCookie, 'visited', 604800);
+    store.commit(FIRST_VISIT);
+  } else {
+    store.commit(RETURN_VISIT);
   }
 
   // Clear path dependent store data for easier state management
@@ -247,13 +320,19 @@ router.beforeEach((to: Route, from: Route, next: Function) => {
     store.commit(SET_ACTIVE_PROGRAM, undefined);
   }
 
+  const unauthUsersOnly: string[] = ['home', 'signup'];
+  const unprotected: string[] = ['home', 'not-authorized', 'signup', 'account-error', 'account-success'];
+
+  // Pages only for not logged in users
   if (!store.state.loggedIn) {
 
     //Get the user info
     UserService.getUserInfo()
     .then((user: User) => {
       store.commit(LOGIN, user);
-      if (to.name !== 'home') { next(); }
+      const { rules } = defineAbilityFor(store.state.user, store.state.program);
+      Vue.prototype.$ability.update(rules);
+      if (!unauthUsersOnly.includes(to.name!)) { next(); }
       else { next({name: 'program-selection'})}
     })
     .catch((error) => {
@@ -265,7 +344,7 @@ router.beforeEach((to: Route, from: Route, next: Function) => {
       }
       // If logged in fail, send them to the home page
       //TODO: Change this to a route guard if we make our page protections more advanced.
-      if (to.name !== 'home' && to.name !== 'not-authorized') {
+      if (!unprotected.includes(to.name!)) {
         //TODO: Show error to login again.
         const targetUrl = `http://${window.location.host}${to.fullPath}`;
         store.commit(REQUESTED_PATH, {path: targetUrl});
@@ -278,8 +357,5 @@ router.beforeEach((to: Route, from: Route, next: Function) => {
   // Set page title
   document.title = to.meta.title + ' | Breeding Insight Platform' || 'Breeding Insight Platform'
 });
-
-
-
 
 export default router

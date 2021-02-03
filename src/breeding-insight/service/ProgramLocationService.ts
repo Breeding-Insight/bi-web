@@ -23,6 +23,13 @@ import {PaginationController} from "@/breeding-insight/model/view_models/Paginat
 
 export class ProgramLocationService {
 
+  static forbiddenCreateLocation = "You do not have permissions to add a location to this program";
+  static forbiddenUpdateLocation = "You do not have permissions to edit this location";
+  static forbiddenDeleteLocation: String = "You do not have permissions to delete this location";
+  static errorCreatingLocation: String = "Error while creating location";
+  static errorUpdatingLocation: String = "Error while updating location";
+  static errorDeletingLocation: String = "Error while deleting location";
+
   static create(programLocation: ProgramLocation): Promise<ProgramLocation> {
 
     return new Promise<ProgramLocation>((resolve, reject) => {
@@ -33,7 +40,14 @@ export class ProgramLocationService {
           const newProgramLocation  = new ProgramLocation(result.id, result.programId, result.name);
           resolve(newProgramLocation);
 
-        }).catch((error) => reject(error));
+        }).catch((error) => {
+          if (error.response && error.response.status === 403) {
+            error['errorMessage'] = this.forbiddenCreateLocation;
+          } else {
+            error['errorMessage'] = this.errorCreatingLocation;
+          }
+          reject(error);
+        });
       }
       else {
         reject();
@@ -52,7 +66,14 @@ export class ProgramLocationService {
           const updatedProgramLocation = new ProgramLocation(result.id, result.programId, result.name);
           resolve(updatedProgramLocation);
 
-        }).catch((error) => reject(error));
+        }).catch((error) => {
+          if (error.response && error.response.status === 403) {
+            error['errorMessage'] = this.forbiddenUpdateLocation;
+          } else {
+            error['errorMessage'] = this.errorUpdatingLocation;
+          }
+          reject(error);
+        });
       }
       else {
         reject();
@@ -68,7 +89,14 @@ export class ProgramLocationService {
       if (programId && locationId){
         return ProgramLocationDAO.archive(programId, locationId)
           .then(() => resolve())
-          .catch((error) => reject(error));
+          .catch((error) => {
+            if (error.response && error.response.status === 403) {
+              error['errorMessage'] = this.forbiddenDeleteLocation;
+            } else {
+              error['errorMessage'] = this.errorDeletingLocation;
+            }
+            reject(error);
+          });
       } else {
         reject();
       }

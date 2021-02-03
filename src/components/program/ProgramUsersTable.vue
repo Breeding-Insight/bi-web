@@ -50,6 +50,7 @@
 
     <button
       v-show="!newUserActive & users.length > 0"
+      v-if="$ability.can('create', 'ProgramUser')"
       class="button is-primary has-text-weight-bold is-pulled-right"
       v-on:click="newUserActive = true"
       data-testid="newUserBtn"
@@ -91,15 +92,6 @@
               v-bind:field-help="'New users will receive an email at this address to activate their account.'"
             />
           </div>
-          <!--TODO: Remove when registration flow is complete -->
-          <div class="column is-one-fourth">
-            <BasicInputField
-                v-model="newUser.orcid"
-                v-bind:validations="validations.orcid"
-                v-bind:field-name="'ORCID iD'"
-                v-bind:field-help="'ORCID iD to link account to.'"
-            />
-          </div>
           <div class="column is-one-fourth">
             <BasicSelectField
               v-model="newUser.roleId"
@@ -115,7 +107,8 @@
     <ExpandableRowTable
       v-bind:records.sync="users"
       v-bind:row-validations="editUserValidations"
-      v-bind:editable="true"
+      v-bind:editable="$ability.can('update', 'ProgramUser')"
+      v-bind:archivable="$ability.can('archive', 'ProgramUser')"
       v-bind:pagination="usersPagination"
       v-on:submit="updateUser($event)"
       v-on:remove="displayWarning($event)"
@@ -156,6 +149,7 @@
         <EmptyTableMessage
           v-bind:button-view-toggle="!newUserActive"
           v-bind:button-text="'New User'"
+          v-bind:create-enabled="$ability.can('create', 'ProgramUser')"
           v-on:newClick="newUserActive = true"
         >
           <p class="has-text-weight-bold">
@@ -202,13 +196,15 @@
               },
   computed: {
     ...mapGetters([
-      'activeProgram'
+      'activeProgram',
+      'activeUser'
     ])
   }
 })
 export default class ProgramUsersTable extends Vue {
 
   private activeProgram?: Program;
+  private activeUser?: User;
   public users: ProgramUser[] = [];
   public systemUsers: User[] = [];
   private usersPagination?: Pagination = new Pagination();
@@ -217,7 +213,6 @@ export default class ProgramUsersTable extends Vue {
   private newUserActive: boolean = false;
   private deactivateWarningTitle: string = "Remove user's access to Program name?";
   private newUser = new ProgramUser();
-  private newUserOrcid = "";
   private roles: Array<Role> = [];
 
   private deleteUser?: ProgramUser;
@@ -228,8 +223,7 @@ export default class ProgramUsersTable extends Vue {
   newUserValidations = {
     name: {required},
     email: {required, email},
-    roleId: {required},
-    orcid: {required}
+    roleId: {required}
   }
 
   editUserValidations = {
@@ -283,26 +277,24 @@ export default class ProgramUsersTable extends Vue {
     ProgramUserService.update(updatedUser).then(() => {
       this.getUsers();
       this.$emit('show-success-notification', 'Success! ' + updatedUser.name + ' updated.');
-    }).catch(() => {
-      this.$emit('show-error-notification', 'Error updating program');
+    }).catch((error) => {
+      this.$emit('show-error-notification', error['errorMessage']);
     });
 
   }
 
   saveUser() {
 
-    this.newUserOrcid = this.newUser.orcid!;
     this.newUser.program = this.activeProgram;
 
     try {
-      this.newUser = this.checkExistingUserByEmailOrOrcid(this.newUser, this.newUserOrcid, this.systemUsers);
+      this.newUser = this.checkExistingUserByEmail(this.newUser, this.systemUsers);
     } catch (err) {
       this.$emit('show-error-notification', err);
       return;
     }
-    let orcid: string|undefined = this.newUser.id ? undefined : this.newUserOrcid;
 
-    ProgramUserService.create(this.newUser, orcid).then((user: ProgramUser) => {
+    ProgramUserService.create(this.newUser).then((user: ProgramUser) => {
       this.paginationController.updatePage(1);
       this.getUsers();
       this.getSystemUsers();
@@ -317,7 +309,6 @@ export default class ProgramUsersTable extends Vue {
 
       this.getSystemUsers();
       this.newUser = new ProgramUser();
-      this.newUserOrcid = "";
       this.newUserActive = false;
     }).catch((error) => {
       this.$emit('show-error-notification', error.errorMessage);
@@ -341,11 +332,12 @@ export default class ProgramUsersTable extends Vue {
   }
 
   //TODO: Reconsider when user search feature is added
-  checkExistingUserByEmailOrOrcid(user: ProgramUser, userOrcid: string, systemUsers: User[]): ProgramUser {
+  //TODO: Do we still want this since orcid entry is removed?
+  checkExistingUserByEmail(user: ProgramUser, systemUsers: User[]): ProgramUser {
     user.id = undefined;
     let usersFound = 0;
     for (const systemUser of systemUsers){
-      if (user.email === systemUser.email || userOrcid === systemUser.orcid){
+      if (user.email === systemUser.email){
         usersFound += 1;
         if (systemUser.id){
           user.id = systemUser.id;
@@ -354,7 +346,7 @@ export default class ProgramUsersTable extends Vue {
     }
 
     if (usersFound > 1){
-      throw "Email and ORCID iD match two different users.";
+      throw "Email matches two different users.";
     }
 
     return user;
@@ -372,7 +364,6 @@ export default class ProgramUsersTable extends Vue {
 
   cancelNewUser() {
     this.newUser = new ProgramUser();
-    this.newUserOrcid = "";
     this.newUserActive = false;
   }
 
@@ -398,6 +389,9 @@ export default class ProgramUsersTable extends Vue {
           ProgramUserService.delete(this.activeProgram!.id!, deleteId).then(() => {
             this.getUsers();
             this.$emit('show-success-notification', `${deleteName} removed from program`);
+            if (deleteId === this.activeUser!.id) {
+              this.$router.push({name: 'program-selection'});
+            }
           }).catch(() => {
             this.$emit('show-error-notification', `Unable to remove user, ${deleteName}.`);
           })

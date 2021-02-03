@@ -25,7 +25,10 @@ import Buefy from 'buefy';
 import VueLogger from 'vuejs-logger';
 import Vuelidate from 'vuelidate';
 import VueCookies from 'vue-cookies';
+import { abilitiesPlugin } from '@casl/vue';
+import { defineAbilityFor } from './config/ability';
 
+Vue.use(abilitiesPlugin, defineAbilityFor(undefined, undefined));
 Vue.config.productionTip = false;
 Vue.use(Buefy);
 Vue.use(Vuelidate);
@@ -49,9 +52,17 @@ Vue.use(VueLogger, options);
 
 // Vue constants
 const cookieNames = {
-  loginRedirectUrl: 'redirect-login'
+  loginRedirectUrl: 'redirect-login',
+  firstVisit: 'first-visit',
+  accountToken: 'account-token'
 }
 Vue.prototype.$cookieNames = cookieNames;
+
+window.ATL_JQ_PAGE_PROPS =  {
+  "triggerFunction": function(showCollectorDialog: any) {
+    Vue.prototype.$showCollectorDialog = showCollectorDialog
+  }
+};
 
 new Vue({
   router,

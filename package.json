@@ -1,9 +1,9 @@
 {
   "name": "bi-web",
-  "version": "0.1.0",
+  "version": "v0.2.0+38",
   "private": true,
   "scripts": {
-    "build": "node $npm_package_task_path/build.js --dev-audit-level=high --prod-audit-level=moderate",
+    "build": "node $npm_package_task_path/build.js --dev-audit-level=critical --prod-audit-level=none",
     "githooks": "git config core.hooksPath $npm_package_task_path/hooks",
     "postinstall": "mkdir -p $npm_package_task_path/log",
     "lint": "node $npm_package_task_path/lint.js",
@@ -13,12 +13,12 @@
     "test:unit": "vue-cli-service test:unit"
   },
   "dependencies": {
+    "@casl/ability": "~4.0.0",
+    "@casl/vue": "^1.1.1",
     "@types/promise.allsettled": "^1.0.3",
     "@types/vuelidate": "^0.7.10",
     "@xstate/fsm": "^1.4.0",
     "buefy": "^0.8.8",
-    "bulma": "^0.9.0",
-    "bulma-divider": "^0.2.0",
     "core-js": "^3.4.3",
     "focus-trap": "^5.1.0",
     "focus-trap-vue": "0.0.6",
@@ -41,7 +41,7 @@
     "@types/jest": "^24.9.0",
     "@vue/cli-plugin-babel": "^4.1.0",
     "@vue/cli-plugin-e2e-cypress": "^4.1.0",
-    "@vue/cli-plugin-eslint": "^4.1.0",
+    "@vue/cli-plugin-eslint": "^4.5.9",
     "@vue/cli-plugin-router": "^4.1.0",
     "@vue/cli-plugin-typescript": "^4.4.1",
     "@vue/cli-plugin-unit-jest": "^4.5.4",
@@ -54,6 +54,8 @@
     "babel-core": "^7.0.0-bridge.0",
     "babel-jest": "^24.9.0",
     "babel-preset-env": "^1.7.0",
+    "bulma": "^0.9.1",
+    "bulma-divider": "^0.2.0",
     "chai": "^4.1.2",
     "eslint": "^5.16.0",
     "eslint-plugin-vue": "^5.0.0",
@@ -71,5 +73,6 @@
     "vue-template-compiler": "^2.6.10"
   },
   "devport": "8080",
-  "task_path": "./task"
+  "task_path": "./task",
+  "versionInfo": "https://github.com/Breeding-Insight/bi-web/commit/5f8875b2cd697754638a364ae71ed39b2c47ac09"
 }

@@ -28,42 +28,27 @@ export class ProgramUserService {
 
   static errorEmailInUse: String = "Error creating user, a user with this email already exists";
   static errorCreatingUser: String = "Error while creating user";
-  static errorAssignedUserToProgramErrorOrcid = "Successfully assigned user to program, error assigning ORCID iD to user.";
-  static errorOrcidRequired = "ORCID iD required when creating a new user to add to the program";
+  static forbiddenCreateUser = "You do not have permissions to add users to this program";
+  static forbiddenUpdateUser = "You do not have permissions to edit this user";
+  static errorUpdatingUser = "Error while updating user";
 
-  static create(programUser: ProgramUser, orcid: string | undefined): Promise<ProgramUser> {
+  static create(programUser: ProgramUser): Promise<ProgramUser> {
 
     return new Promise<ProgramUser>((resolve, reject) => {
 
       if (programUser.program) {
-        //TODO: Remove once registration flow is implemented
-        if (programUser.id === undefined && orcid === undefined){
-          const error = {'errorMessage': this.errorOrcidRequired}
-          reject(error);
-        }
 
         ProgramUserDAO.create(programUser).then((biResponse) => {
           const result: any = biResponse.result;
           const newProgram = new Program(result.program.id, result.program.name);
-          const newProgramUser  = new ProgramUser(result.user.id, result.user.name, result.user.email, result.roles[0].id, newProgram, result.active);
-
-          // If orcid was passed, update orcid id
-          //TODO: Remove once registration flow is implemented
-          const user = new User(newProgramUser.id, newProgramUser.name, orcid, newProgramUser.email);
-          if (orcid){
-            UserService.updateOrcid(user).then((updatedUser) => {
-              resolve(newProgramUser);
-            }).catch((error) => {
-              error['errorMessage'] = this.errorAssignedUserToProgramErrorOrcid;
-              reject(error);
-            })
-          }
-
+          const newProgramUser  = new ProgramUser(result.user.id, result.user.name, result.user.email,
+            result.roles[0].id, result.roles[0].domain, newProgram, result.active);
           resolve(newProgramUser);
-
         }).catch((error) => {
           if (error.response && error.response.status === 409) {
             error['errorMessage'] = this.errorEmailInUse;
+          } else if (error.response && error.response.status === 403) {
+            error['errorMessage'] = this.forbiddenCreateUser;
           } else {
             error['errorMessage'] = this.errorCreatingUser;
           }
@@ -86,10 +71,18 @@ export class ProgramUserService {
         ProgramUserDAO.update(programUser).then((biResponse) => {
           const result: any = biResponse.result;
           const newProgram = new Program(result.program.id, result.program.name);
-          const newProgramUser = new ProgramUser(result.user.id, result.user.name, result.user.email, result.roles[0].id, newProgram, result.active);
+          const newProgramUser = new ProgramUser(result.user.id, result.user.name, result.user.email,
+            result.roles[0].id, result.roles[0].domain, newProgram, result.active);
           resolve(newProgramUser);
 
-        }).catch((error) => reject(error));
+        }).catch((error) => {
+          if (error.response && error.response.status === 403) {
+            error['errorMessage'] = this.forbiddenUpdateUser;
+          } else {
+            error['errorMessage'] = this.errorUpdatingUser;
+          }
+          reject(error)
+        });
       }
       else {
         reject();
@@ -129,7 +122,8 @@ export class ProgramUserService {
 
           programUsers = biResponse.result.data.map((programUser: any) => {
             const newProgram = new Program(programUser.program.id, programUser.program.name);
-            return new ProgramUser(programUser.user.id, programUser.user.name, programUser.user.email, programUser.roles[0].id, newProgram, programUser.active);
+            return new ProgramUser(programUser.user.id, programUser.user.name, programUser.user.email,
+              programUser.roles[0].id, programUser.roles[0].domain, newProgram, programUser.active);
           });
 
           //TODO: Remove when backend pagination is implemented

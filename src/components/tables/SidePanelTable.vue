@@ -106,7 +106,7 @@
 
     private panelOpen = false;
     private BreakpointEvent = BreakpointEvent;
-    private selectedRow: TableRow<any> = new TableRow(false, {});
+    private selectedRow: TableRow<any> = new TableRow(false, false,{});
     private state = CollapseColumnsState.NORMAL_PANEL_CLOSED;
     private collapseStateMachine = createMachine({
       id: 'collapse',
@@ -185,7 +185,7 @@
 
     closePanel() {
       this.panelOpen = false
-      this.selectedRow = new TableRow(false, {});
+      this.selectedRow = new TableRow(false, false,{});
       this.collapseService.send(PanelEvent.CLOSED);
     }
 

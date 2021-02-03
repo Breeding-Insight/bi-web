@@ -38,7 +38,9 @@
     <div class="columns is-marginless">
       <div class="column">
         <main>
-          <div class="level is-mobile">
+          <div
+            v-if="username"
+            class="level is-mobile">
             <div class="level-left"></div>
             <div class="level-right">
               <div class="level-item">

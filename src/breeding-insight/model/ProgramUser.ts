@@ -23,16 +23,17 @@ export class ProgramUser {
   name?: string;
   email?: string;
   roleId?: string;
+  domain?: string;
   program?: Program;
   active?: boolean;
-  //TODO: Remove when full registration flow is complete
-  orcid?: string;
 
-  constructor(id?: string, name?:string, email?: string, roleId?: string, program?: Program, active?: boolean) {
+  constructor(id?: string, name?:string, email?: string, roleId?: string, domain?: string,
+              program?: Program, active?: boolean) {
     this.id = id;
     this.name = name;
     this.email = email;
     this.roleId = roleId;
+    this.domain = domain;
     this.program = program;
     this.active = active;
   }

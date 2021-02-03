@@ -21,9 +21,11 @@
       <SuccessNotification ref="successNotification" class="is-marginless"></SuccessNotification>
       <ErrorNotification ref="errorNotification" class="is-marginless"></ErrorNotification>
       <InfoNotification ref="infoNotification" class="is-marginless"></InfoNotification>
+      <SandboxPublicNotification v-bind:active.sync="showPublicSandboxNotification" class="is-marginless"></SandboxPublicNotification>
+      <SandboxCoordinatorNotification v-bind:active.sync="showCoordinatorSandboxNotification" class="is-marginless"></SandboxCoordinatorNotification>
       <WarningNotification ref="warningNotification" class="is-marginless"></WarningNotification>
     </div>
-    
+
     <component v-bind:is="layout" v-bind:username="username" @logout="logOut">
         <router-view
             @show-success-notification="showSuccessNotification"
@@ -32,88 +34,41 @@
             @show-warning-notification="showWarningNotification"
         />
     </component>
+    <Footer />
 
-    <footer class="footer">
-      <div class="level">
-        <div class="level-left">
-          <nav class="level-item">
-            <div class="level">
-              <div class="level-item">
-                <a href="/">Terms of Use</a>
-              </div>
-              <div class="level-item">
-                <a href="/">Privacy Policy</a>
-              </div>
-              <div class="level-item">
-                <a href="/">Contact Us</a>
-              </div>
-              <div class="level-item">
-                <a href="/">About</a>
-              </div>
-            </div>
-          </nav>
-        </div>
-
-        <div class="level-right">
-
-          <div class="level-item">
-            <p class="has-text-right is-hidden-touch">
-              <strong>&copy; 2020 Breeding Insight</strong>
-              <br>
-              Funded by the USDA through Cornell University
-            </p>
-            <p class="has-text-centered is-hidden-desktop">
-              <strong>&copy; 2020 Breeding Insight</strong>
-              <br>
-              Funded by the USDA through Cornell University
-            </p>
-          </div>
-          <div class="level-item">
-            <img 
-            src="./assets/img/usda.svg" 
-            alt="USDA Logo" 
-            width="75" 
-            >
-          </div>
-          <div class="level-item">
-            <img 
-            src="./assets/img/cornell_seal.svg" 
-            alt="Cornell University Logo" 
-            width="56" 
-            >
-          </div>
-          
-        </div>
-      </div>
-    </footer>
-      
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator'
+import { Component, Watch, Vue } from 'vue-property-decorator'
 import SuccessNotification from '@/components/notifications/SuccessNotification.vue'
 import InfoNotification from '@/components/notifications/InfoNotification.vue'
 import ErrorNotification from '@/components/notifications/ErrorNotification.vue'
 import SimpleLayout from '@/components/layouts/SimpleLayout.vue'
 import UserSideBarLayout from './components/layouts/UserSideBarLayout.vue'
 import NoSideBarLayout from './components/layouts/NoSideBarLayout.vue'
+import InfoSideBarLayout from './components/layouts/InfoSideBarLayout.vue'
+import BaseSideBarLayout from './components/layouts/BaseSideBarLayout.vue'
+import SandboxPublicNotification from "@/components/notifications/SandboxPublicNotification.vue";
+import SandboxCoordinatorNotification from "@/components/notifications/SandboxCoordinatorNotification.vue";
+import {SandboxMode} from "@/util/config";
 import WarningNotification from "@/components/notifications/WarningNotification.vue";
+import Footer from "@/components/layouts/Footer.vue";
 
 @Component({
   watch: {
-      $route(to, from) {
-          document.title = to.meta.title + ' | Breeding Insight Platform' || 'Breeding Insight Platform'
-      },
-      loggedIn(isLoggedIn) {
-          if(!isLoggedIn) {
-            this.$router.push({name: 'home',
-              params: {
-                sessionExpired: 'true'
-              }
-            });
+    $route(to, from) {
+      document.title = to.meta.title + ' | Breeding Insight Platform' || 'Breeding Insight Platform';
+    },
+    loggedIn(isLoggedIn) {
+      if(!isLoggedIn) {
+        this.$router.push({name: 'home',
+          params: {
+            sessionExpired: 'true'
           }
-      },
+        });
+      }
+    }
   },
   computed: {
     layout() {
@@ -124,25 +79,60 @@ import WarningNotification from "@/components/notifications/WarningNotification.
     }
   },
   components: {
+    SandboxCoordinatorNotification,
+    SandboxPublicNotification,
     WarningNotification,
     SuccessNotification,
     InfoNotification,
     ErrorNotification,
     simpleLayout: SimpleLayout,
     userSideBarLayout: UserSideBarLayout,
-    noSideBarLayout: NoSideBarLayout
+    noSideBarLayout: NoSideBarLayout,
+    infoSideBarLayout: InfoSideBarLayout,
+    baseSideBarLayout: BaseSideBarLayout,
+    Footer
   }
 })
 export default class App extends Vue {
   public loading: boolean = false;
   public t: string = "Title";
 
+  public showPublicSandboxNotification = false;
+  public showCoordinatorSandboxNotification = false;
+
   public $refs!: {
     successNotification: SuccessNotification,
-    infoNotification: InfoNotification, 
+    infoNotification: InfoNotification,
     errorNotification: ErrorNotification
     warningNotification: WarningNotification
   };
+
+  @Watch('firstVisit', {immediate: true})
+  onFirstVisitChanged(newVal: any, oldVal: any) {
+    if(newVal) {
+      if (process.env.VUE_APP_SANDBOX === SandboxMode.Public) {
+        this.showPublicSandboxNotification = true;
+      } else if (process.env.VUE_APP_SANDBOX === SandboxMode.Coordinator) {
+        this.showCoordinatorSandboxNotification = true;
+      }
+    }
+  }
+
+  mounted() {
+    // load the appropriate JIRA issue collector script depending on sandbox type
+    let issueCollectorScript = document.createElement('script');
+    issueCollectorScript.setAttribute('type', 'text/javascript');
+    if (process.env.VUE_APP_SANDBOX === SandboxMode.Public) {
+      issueCollectorScript.setAttribute('src', 'https://breedinginsight.atlassian.net/s/d41d8cd98f00b204e9800998ecf8427e-T/-egccmf/b/24/a44af77267a987a660377e5c46e0fb64/_/download/batch/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector.js?locale=en-US&collectorId=d2cbfe89');
+    } else if (process.env.VUE_APP_SANDBOX === SandboxMode.Coordinator) {
+      issueCollectorScript.setAttribute('src', 'https://breedinginsight.atlassian.net/s/d41d8cd98f00b204e9800998ecf8427e-T/vd1cif/b/24/a44af77267a987a660377e5c46e0fb64/_/download/batch/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector.js?locale=en-US&collectorId=b57acf4a');
+    }
+    document.head.appendChild(issueCollectorScript);
+  }
+
+  get firstVisit() {
+    return this.$store.state.firstVisit;
+  }
 
   get loggedIn () {
     return this.$store.state.loggedIn;

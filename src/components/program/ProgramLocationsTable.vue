@@ -36,6 +36,7 @@
     </WarningModal>
 
     <button
+      v-if="$ability.can('create', 'Location')"
       data-testid="newDataForm"
       v-show="!newLocationActive & locations.length > 0"
       class="button is-primary has-text-weight-bold is-pulled-right"
@@ -78,7 +79,8 @@
     <ExpandableRowTable
       v-bind:records.sync="locations"
       v-bind:row-validations="locationValidations"
-      v-bind:editable="true"
+      v-bind:editable="$ability.can('update', 'Location')"
+      v-bind:archivable="$ability.can('archive', 'Location')"
       v-bind:pagination="locationsPagination"
       v-on:submit="updateLocation($event)"
       v-on:remove="displayWarning($event)"
@@ -111,6 +113,7 @@
         <EmptyTableMessage
           v-bind:button-view-toggle="!newLocationActive"
           v-bind:button-text="'New Location'"
+          v-bind:create-enabled="$ability.can('create', 'Location')"
           v-on:newClick="newLocationActive = true"
         >
           <p class="has-text-weight-bold">
@@ -206,8 +209,8 @@ export default class ProgramLocationsTable extends Vue {
     ProgramLocationService.update(updatedLocation).then(() => {
       this.getLocations();
       this.$emit('show-success-notification', 'Success! ' + updatedLocation.name + ' updated.');
-    }).catch(() => {
-      this.$emit('show-error-notification', 'Error updating location');
+    }).catch((error) => {
+      this.$emit('show-error-notification', error['errorMessage']);
     });
 
   }
@@ -222,8 +225,8 @@ export default class ProgramLocationsTable extends Vue {
       this.$emit('show-success-notification', 'Success! ' + this.newLocation.name + ' added.');
       this.newLocation = new ProgramLocation();
       this.newLocationActive = false;
-    }).catch(() => {
-      this.$emit('show-error-notification', 'Error while creating location, ' + this.newLocation.name);
+    }).catch((error) => {
+      this.$emit('show-error-notification', error['errorMessage']);
     })
 
   }
@@ -255,8 +258,8 @@ export default class ProgramLocationsTable extends Vue {
           ProgramLocationService.delete(this.activeProgram!.id!, deleteId).then(() => {
             this.getLocations();
             this.$emit('show-success-notification', `${deleteName} removed from program`);
-          }).catch(() => {
-            this.$emit('show-error-notification', `Unable to remove location, ${deleteName}.`);
+          }).catch((error) => {
+            this.$emit('show-error-notification', error['errorMessage']);
           })
           return;
         }

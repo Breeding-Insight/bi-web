@@ -17,7 +17,15 @@
 
 import { MutationTree } from 'vuex';
 import { RootState } from '@/store/types';
-import { ERROR_STATE, LOGIN, LOGOUT, REQUESTED_PATH, SET_ACTIVE_PROGRAM } from '@/store/mutation-types';
+import {
+  ERROR_STATE,
+  FIRST_VISIT,
+  LOGIN,
+  LOGOUT,
+  REQUESTED_PATH,
+  RETURN_VISIT,
+  SET_ACTIVE_PROGRAM,
+} from '@/store/mutation-types';
 import {User} from "@/breeding-insight/model/User";
 import {Program} from "@/breeding-insight/model/Program";
 
@@ -44,5 +52,11 @@ export const mutations: MutationTree<RootState> = {
   },
   [SET_ACTIVE_PROGRAM] (state, program: Program) {
     state.program = program;
+  },
+  [FIRST_VISIT] (state) {
+    state.firstVisit = true;
+  },
+  [RETURN_VISIT] (state) {
+    state.firstVisit = false;
   }
 };

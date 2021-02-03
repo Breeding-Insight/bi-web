@@ -23,6 +23,7 @@
       </div>
       <div class="column">
         <button
+          v-if="createEnabled"
           class="button is-primary has-text-weight-bold is-pulled-right"
           v-on:click="$emit('newClick')"
           v-show="buttonViewToggle"
@@ -54,5 +55,7 @@ export default class EmptyTableMessage extends Vue {
   buttonViewToggle!: boolean;
   @Prop()
   buttonText!: string;
+  @Prop({default: true})
+  createEnabled!: boolean;
 }
 </script>
