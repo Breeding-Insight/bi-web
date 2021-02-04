@@ -71,7 +71,7 @@
       v-on:show-error-notification="$emit('show-error-notification', $event)"
     >
       <template v-slot="validations">
-        <div class="columns">
+        <div class="columns mb-0">
           <div class="column is-one-half">
             <BasicInputField
               v-model="newProgram.name"
@@ -87,6 +87,19 @@
               v-bind:options="species"
               v-bind:field-name="'Species'"
             />
+          </div>
+        </div>
+        <div class="columns">
+          <div class="column">
+            <input type="checkbox" id="checkbox" v-model="customBrapi">
+            <label for="checkbox">Specify custom program data storage location</label>
+            <BasicInputField v-if="customBrapi"
+                v-model="newProgram.brapiUrl"
+                v-bind:validations="validations.brapiUrl"
+                v-bind:field-name="'BrAPI URL'"
+                v-bind:field-help="'URL of BrAPI service where data will be stored. If left blank, default will be used.'"
+            />
+
           </div>
         </div>
       </template>
@@ -120,6 +133,9 @@
         </TableColumn>
         <TableColumn name="numUsers" v-bind:label="'# Users'">
           {{ data.numUsers }}
+        </TableColumn>
+        <TableColumn name="brapiUrl" v-bind:label="'BrAPI URL'">
+          {{ data.brapiUrl }}
         </TableColumn>
       </template>
       <template v-slot:edit="{editData, validations}">
@@ -163,7 +179,7 @@
   import {Component, Prop, Vue, Watch} from 'vue-property-decorator'
   import {PlusCircleIcon} from 'vue-feather-icons'
   import {validationMixin} from 'vuelidate'
-  import {required} from 'vuelidate/lib/validators'
+  import {required, url} from 'vuelidate/lib/validators'
 
   import WarningModal from '@/components/modals/WarningModal.vue'
   import {Program} from '@/breeding-insight/model/Program'
@@ -211,9 +227,12 @@ export default class AdminProgramsTable extends Vue {
 
   private programName: string = "Program Name";
 
+  private customBrapi: boolean = false;
+
   programValidations = {
     name: {required},
-    speciesId: {required}
+    speciesId: {required},
+    brapiUrl: {url}
   }
 
   mounted() {
