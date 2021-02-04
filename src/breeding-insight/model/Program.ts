@@ -22,11 +22,13 @@ export class Program {
   name?: string;
   speciesId?: string;
   numUsers?: string;
+  brapiUrl?: string;
 
-  constructor(id?:string, name?:string, speciesId?:string, numUsers?:string) {
+  constructor(id?:string, name?:string, speciesId?:string, numUsers?:string, brapiUrl?:string) {
     this.id = id;
     this.name = name;
     this.speciesId = speciesId;
     this.numUsers = numUsers;
+    this.brapiUrl = brapiUrl;
   }
 }
