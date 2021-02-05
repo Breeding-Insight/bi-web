@@ -24,6 +24,9 @@ import {ProgramObservationLevel} from "@/breeding-insight/model/ProgramObservati
 
 export class ProgramService {
 
+  static unsupportedBrapiUrl : string = 'BrAPI URL specified is not supported';
+  static errorCreatingProgram : string = 'Error creating program';
+
   static create(program: Program): Promise<Program> {
     //TODO: Check everything is good
     return new Promise<Program>((resolve, reject) => {
@@ -34,7 +37,14 @@ export class ProgramService {
           const newProgram = new Program(result.id, result.name);
           resolve(newProgram);
 
-        }).catch((error) => reject(error));
+        }).catch((error) => {
+          if (error.response && error.response.status === 422) {
+            error['errorMessage'] = this.unsupportedBrapiUrl;
+          } else {
+            error['errorMessage'] = this.errorCreatingProgram;
+          }
+          reject(error);
+        });
       }
       else {
         reject();

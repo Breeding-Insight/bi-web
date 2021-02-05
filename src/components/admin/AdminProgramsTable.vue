@@ -99,7 +99,6 @@
                 v-bind:field-name="'BrAPI URL'"
                 v-bind:field-help="'URL of BrAPI service where data will be stored. If left blank, default will be used.'"
             />
-
           </div>
         </div>
       </template>
@@ -179,7 +178,7 @@
   import {Component, Prop, Vue, Watch} from 'vue-property-decorator'
   import {PlusCircleIcon} from 'vue-feather-icons'
   import {validationMixin} from 'vuelidate'
-  import {required, url} from 'vuelidate/lib/validators'
+  import {required} from 'vuelidate/lib/validators'
 
   import WarningModal from '@/components/modals/WarningModal.vue'
   import {Program} from '@/breeding-insight/model/Program'
@@ -197,6 +196,14 @@
   import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
   import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
   import { DataFormEventBusHandler } from '@/components/forms/DataFormEventBusHandler';
+  import { helpers } from 'vuelidate/lib/validators'
+  import { isWebUri } from 'valid-url'
+
+  // create custom validation to handle cases default url validation doesn't
+  const url = helpers.withParams(
+      { type: 'url' },
+      (value: any) => !helpers.req(value) || !!isWebUri(value)
+  )
 
 @Component({
   mixins: [validationMixin],
@@ -228,6 +235,14 @@ export default class AdminProgramsTable extends Vue {
   private programName: string = "Program Name";
 
   private customBrapi: boolean = false;
+
+  // reset brapiUrl if checkbox toggled back off
+  @Watch('customBrapi', {immediate: true})
+  onCustomBrapiChanged(newVal: boolean) {
+    if (newVal == false) {
+      this.newProgram.brapiUrl = undefined;
+    }
+  }
 
   programValidations = {
     name: {required},
@@ -299,9 +314,10 @@ export default class AdminProgramsTable extends Vue {
       this.getPrograms();
       this.$emit('show-success-notification', 'Success! ' + this.newProgram.name + ' added.');
       this.newProgramActive = false;
+      this.customBrapi = false;
       this.newProgram = new Program();
-    }).catch(() => {
-      this.$emit('show-error-notification', 'Error while creating program, ' + this.newProgram.name);
+    }).catch((error) => {
+      this.$emit('show-error-notification', error.errorMessage);
     }).finally(() => {
       this.newLocationFormState.bus.$emit(DataFormEventBusHandler.SAVE_COMPLETE_EVENT);
       this.emitProgramChange();
@@ -312,6 +328,7 @@ export default class AdminProgramsTable extends Vue {
   cancelNewProgram() {
     this.newProgram = new Program();
     this.newProgramActive = false;
+    this.customBrapi = false;
   }
 
   displayWarning(program: Program) {
