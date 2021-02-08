@@ -192,6 +192,9 @@
   import { User } from '@/breeding-insight/model/User';
   import {UserService} from "@/breeding-insight/service/UserService";
   import { DataFormEventBusHandler } from '@/components/forms/DataFormEventBusHandler';
+  import store from "@/store";
+  import {LOGIN} from "@/store/mutation-types";
+  import {defineAbilityFor} from "@/config/ability";
 
 @Component({
   components: { NewDataForm, BasicInputField, BasicSelectField, TableColumn,
@@ -314,6 +317,8 @@ export default class ProgramUsersTable extends Vue {
         this.$emit('show-success-notification', 'Success! ' + this.newUser.name + ' added.');
       }
 
+      if(this.newUser.email === this.activeUser.email) this.updateActiveUser();
+
       this.getSystemUsers();
       this.newUser = new ProgramUser();
       this.newUserActive = false;
@@ -323,6 +328,13 @@ export default class ProgramUsersTable extends Vue {
       this.getSystemUsers();
     }).finally(() => this.newUserFormState.bus.$emit(DataFormEventBusHandler.SAVE_COMPLETE_EVENT))
 
+  }
+
+  async updateActiveUser() {
+    const user = await UserService.getUserInfo();
+    store.commit(LOGIN, user);
+    const { rules } = defineAbilityFor(store.state.user, store.state.program);
+    Vue.prototype.$ability.update(rules);
   }
 
   //TODO: Reconsider when user search feature is added
