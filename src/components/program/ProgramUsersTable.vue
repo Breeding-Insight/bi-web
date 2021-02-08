@@ -317,7 +317,7 @@ export default class ProgramUsersTable extends Vue {
         this.$emit('show-success-notification', 'Success! ' + this.newUser.name + ' added.');
       }
 
-      if(this.newUser.email === this.activeUser.email) this.updateActiveUser();
+      if(this.newUser.email === this.activeUser!.email) this.updateActiveUser();
 
       this.getSystemUsers();
       this.newUser = new ProgramUser();
