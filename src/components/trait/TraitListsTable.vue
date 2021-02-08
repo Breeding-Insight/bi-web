@@ -33,7 +33,7 @@
             class="button is-danger"
             v-on:click="modalDeleteHandler"
           >
-            <strong>Yes, {{ focusTrait.active ? 'remove' : 'restore' }}</strong>
+            <strong>Yes, {{ focusTrait.active ? 'archive' : 'restore' }}</strong>
           </button>
           <button
             class="button"
@@ -225,7 +225,7 @@ export default class TraitTable extends Vue {
 
   // Archive trait
   private focusTrait: Trait = new Trait();
-  private deactivateWarningTitle = 'Remove trait from this program?';
+  private deactivateWarningTitle = 'Archive trait in this program?';
   private deactivateActive: boolean = false;
 
   // TODO: Move these into an event bus in the future
@@ -269,7 +269,7 @@ export default class TraitTable extends Vue {
 
   activateArchive(focusTrait: Trait){
     if (focusTrait.active) {
-      this.deactivateWarningTitle = `Remove "${focusTrait.traitName}" from ${this.activeProgram!.name!}?`;
+      this.deactivateWarningTitle = `Archive "${focusTrait.traitName}" in ${this.activeProgram!.name!}?`;
     } else {
       this.deactivateWarningTitle = `Restore "${focusTrait.traitName}" to ${this.activeProgram!.name!}?`;
     }
