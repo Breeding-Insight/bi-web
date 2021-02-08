@@ -34,7 +34,7 @@ export class ProgramService {
       if (program.id === undefined) {
         ProgramDAO.create(program).then((biResponse) => {
           const result: any = biResponse.result;
-          const newProgram = new Program(result.id, result.name);
+          const newProgram = new Program(result.id, result.name, result.species.id, undefined, result.brapiUrl);
           resolve(newProgram);
 
         }).catch((error) => {
@@ -60,7 +60,7 @@ export class ProgramService {
       if (program.id) {
         ProgramDAO.update(program.id, program).then((biResponse) => {
           const result: any = biResponse.result;
-          const newProgram = new Program(result.id, result.name, result.species.id);
+          const newProgram = new Program(result.id, result.name, result.species.id, undefined, result.brapiUrl);
           resolve(newProgram);
 
         }).catch((error) => reject(error));
@@ -102,7 +102,7 @@ export class ProgramService {
 
         // Parse our programs into the vue programs param
         programs = biResponse.result.data.map((program: any) => {
-          return new Program(program.id, program.name, program.species.id);
+          return new Program(program.id, program.name, program.species.id, undefined, program.brapiUrl);
         });
 
         //TODO: Remove when backend pagination is implemented
@@ -126,7 +126,7 @@ export class ProgramService {
 
       ProgramDAO.getOne(programId).then((biResponse) => {
         const result = biResponse.result;
-        const program = new Program(result.id, result.name, result.species.id);
+        const program = new Program(result.id, result.name, result.species.id, undefined, result.brapiUrl);
         resolve(program);
       }).catch((error) => reject(error));
 
