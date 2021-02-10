@@ -96,6 +96,7 @@
             <BasicInputField v-if="customBrapi"
                 v-model="newProgram.brapiUrl"
                 v-bind:validations="validations.brapiUrl"
+                v-bind:server-validations="serverError"
                 v-bind:field-name="'BrAPI URL'"
                 v-bind:field-help="'URL of BrAPI service where data will be stored. If left blank, default will be used.'"
             />
@@ -198,6 +199,7 @@
   import { DataFormEventBusHandler } from '@/components/forms/DataFormEventBusHandler';
   import { helpers } from 'vuelidate/lib/validators'
   import { isWebUri } from 'valid-url'
+  import { FieldError } from '@/breeding-insight/model/errors/FieldError';
 
   // create custom validation to handle cases default url validation doesn't
   const url = helpers.withParams(
@@ -236,11 +238,14 @@ export default class AdminProgramsTable extends Vue {
 
   private customBrapi: boolean = false;
 
+  private serverError: FieldError[] = [];
+
   // reset brapiUrl if checkbox toggled back off
   @Watch('customBrapi', {immediate: true})
   onCustomBrapiChanged(newVal: boolean) {
     if (newVal == false) {
       this.newProgram.brapiUrl = undefined;
+      this.serverError = [];
     }
   }
 
@@ -317,6 +322,8 @@ export default class AdminProgramsTable extends Vue {
       this.customBrapi = false;
       this.newProgram = new Program();
     }).catch((error) => {
+      this.serverError = [];
+      this.serverError.push(new FieldError("brapiUrl", error.errorMessage, "UNPROCESSABLE", 422));
       this.$emit('show-error-notification', error.errorMessage);
     }).finally(() => {
       this.newLocationFormState.bus.$emit(DataFormEventBusHandler.SAVE_COMPLETE_EVENT);
