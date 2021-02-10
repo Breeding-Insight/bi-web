@@ -110,13 +110,8 @@
     }
 
     get fieldError() {
-      if (this.validations) {
-        return this.validations.$anyError;
-      } else if (this.serverValidations) {
-        return this.serverValidations.length > 0;
-      } else {
-        return false;
-      }
+      return (this.validations && this.validations.$anyError) ||
+             (this.serverValidations && this.serverValidations.length > 0);
     }
 
     validateTypeError(type: string) {
