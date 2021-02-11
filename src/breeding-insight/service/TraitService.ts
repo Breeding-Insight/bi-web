@@ -37,22 +37,40 @@ export class TraitService {
       else throw 'Unable to create trait';
     }
 
-  static async updateTraits(programId: string, traits: Trait[]): Promise<[Trait[], Metadata]> {
-    if (programId && traits) {
-      // Check that they all have a trait id
-      if (traits.filter(trait => trait.id).length !== traits.length) {
-        throw 'Unable to update trait';
-      }
+    static async updateTraits(programId: string, traits: Trait[]): Promise<[Trait[], Metadata]> {
+      if (programId && traits) {
+        // Check that they all have a trait id
+        if (traits.filter(trait => trait.id).length !== traits.length) {
+          throw 'Unable to update trait';
+        }
 
-      try {
-        const { result: { data }, metadata } = await TraitDAO.updateTraits(programId, traits);
-        return [data, metadata];
-      } catch (error) {
-        throw TraitUploadService.parseError(error);
+        try {
+          const { result: { data }, metadata } = await TraitDAO.updateTraits(programId, traits);
+          return [data, metadata];
+        } catch (error) {
+          throw TraitUploadService.parseError(error);
+        }
       }
+      else throw 'Unable to update trait';
     }
-    else throw 'Unable to update trait';
-  }
+
+    static async archiveTrait(programId: string, trait: Trait): Promise<Trait> {
+
+      if (programId && trait) {
+        // Check that they all have a trait id
+        if (!trait.id){
+          throw 'Unable to update trait';
+        }
+
+        try {
+          const { result, metadata } = await TraitDAO.archiveTrait(programId, trait);
+          return Trait.assign(result);
+        } catch (error) {
+          throw TraitUploadService.parseError(error);
+        }
+      }
+      else throw 'Unable to update trait';
+    }
 
     static getAll(programId: string, paginationQuery?: PaginationQuery, full?: boolean): Promise<[Trait[], Metadata]> {
         return new Promise<[Trait[], Metadata]>(((resolve, reject) => {
@@ -64,10 +82,10 @@ export class TraitService {
       if (full === undefined) {
         full = false;
       }
-            
+
       if (programId) {
           TraitDAO.getAll(programId, paginationQuery, full).then((biResponse) => {
-              
+
           let traits: Trait[] = [];
 
           if (biResponse.result.data) {
