@@ -58,7 +58,7 @@ export class Trait {
     }
     this.abbreviations = abbreviations;
     this.synonyms = synonyms;
-    if (active) {
+    if (active !== undefined) {
       this.active = active;
     } else {
       this.active = true;
@@ -67,7 +67,7 @@ export class Trait {
 
   static assign(trait: Trait): Trait {
     return new Trait(trait.id, trait.traitName, trait.programObservationLevel, trait.method,
-      trait.scale, trait.abbreviations, trait.synonyms);
+      trait.scale, trait.abbreviations, trait.synonyms, trait.active);
   }
 
   checkStringListEquals(list: string[] | undefined, otherList: string[] | undefined): boolean {

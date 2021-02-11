@@ -56,4 +56,14 @@ export class TraitDAO {
     let mockData = {result: {data: newTraits}, metadata: {}};
     return new BiResponse(mockData);
   }
+
+  static async archiveTrait(programId: string, trait: Trait): Promise<BiResponse> {
+    const { data } =  await api.call({
+      url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/traits/${trait.id}/archive`,
+      params: {'active': trait.active},
+      method: 'put'
+    }) as Response;
+    return new BiResponse(data);
+  }
+
 }

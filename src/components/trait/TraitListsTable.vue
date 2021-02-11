@@ -134,7 +134,7 @@
           v-bind:edit-active="traitSidePanelState.editActive"
           v-bind:editable="true"
           v-bind:edit-form-state="traitSidePanelState.dataFormState"
-          v-bind:archivable="false"
+          v-bind:archivable="true"
           v-on:activate-edit="activateEdit($event)"
           v-on:deactivate-edit="traitSidePanelState.bus.$emit(traitSidePanelState.closePanelEvent)"
           v-on:trait-change="editTrait = Trait.assign({...$event})"
@@ -281,13 +281,18 @@ export default class TraitTable extends Vue {
     try {
       const traitClone = JSON.parse(JSON.stringify(this.focusTrait));
       traitClone.active = !traitClone.active;
-      await TraitService.updateTraits(this.activeProgram!.id!, [ traitClone ]);
+      const updatedTrait: Trait = await TraitService.archiveTrait(this.activeProgram!.id!, traitClone);
+
+      // Replace traits in queried traits
+      const traitIndex = this.traits.findIndex(trait => trait.id === updatedTrait.id);
+      if (traitIndex !== -1) { this.traits.splice(traitIndex, 1, updatedTrait); }
+
       this.deactivateActive = false;
       this.traitSidePanelState.bus.$emit(this.traitSidePanelState.closePanelEvent);
-      this.paginationController.updatePage(1);
       this.$emit('show-success-notification', `"${traitClone.traitName}" successfully ${ traitClone.active ? 'restored' : 'archived'}`);
     } catch(err) {
-      this.$emit('show-error-notification', `"${this.focusTrait.traitName}" could not be ${ this.focusTrait.active ? 'restored' : 'archived'}`);
+      this.$log.error(err);
+      this.$emit('show-error-notification', `"${this.focusTrait.traitName}" could not be ${ this.focusTrait.active ? 'archived' : 'restored'}`);
     }
   }
 

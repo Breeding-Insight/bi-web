@@ -70,7 +70,7 @@
       <p class="has-text-weight-bold mt-3 mb-0">Description of collection method</p>
       <p>{{data.method.description}}</p>
 
-      <template v-if="archivable && !data.active">
+      <template v-if="!data.active">
         <p class="has-text-weight-bold mt-3 mb-0">Included in Favorites</p>
         <b-button
             size="is-small"
