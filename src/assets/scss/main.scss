@@ -233,11 +233,15 @@ img {
   }
 }
 
-.message.is-info, .message.is-danger, message.is-success {
+// Added to override message background colors for modals only
+.modal-card-body .message.is-info,
+.modal-card-body .message.is-danger,
+.modal-card-body message.is-success {
   background-color: white;
 }
 
-.message.is-success .message-body {
+// Added to support new account creation process
+.newaccount.message .message-body {
   background-color: white;
 }
 
