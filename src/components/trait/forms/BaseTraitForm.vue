@@ -66,7 +66,7 @@
       <template v-if="trait.scale && (Scale.dataTypeEquals(trait.scale.dataType, DataType.Ordinal) || Scale.dataTypeEquals(trait.scale.dataType, DataType.Nominal))">
         <CategoryTraitForm
           v-bind:data="trait.scale.categories"
-          v-on:update="trait.scale.categories = $event"
+          v-on:update="setCategories($event)"
           v-bind:type="trait.scale.dataType"
           v-bind:validation-handler="validationHandler"
           v-bind:validation-index="0"
@@ -155,6 +155,7 @@ import {TraitError} from "@/breeding-insight/model/errors/TraitError";
 import {ValidationError} from "@/breeding-insight/model/errors/ValidationError";
 import AutoCompleteField from "@/components/forms/AutoCompleteField.vue";
 import { StringFormatters } from '@/breeding-insight/utils/StringFormatters';
+import {Category} from "@/breeding-insight/model/Category";
 
 @Component({
   components: {
@@ -271,6 +272,11 @@ export default class BaseTraitForm extends Vue {
       }
     }
 
+  }
+
+  setCategories(categories: Category[]) {
+    this.trait.scale!.categories = categories;
+    this.emitTrait(this.trait);
   }
 
   setObservationLevel(value: string) {

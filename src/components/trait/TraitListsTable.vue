@@ -117,6 +117,7 @@
           v-bind:edit-active="traitSidePanelState.editActive"
           v-bind:editable="true"
           v-bind:edit-form-state="traitSidePanelState.dataFormState"
+          v-bind:validation-handler="editValidationHandler"
           v-on:activate-edit="activateEdit($event)"
           v-on:deactivate-edit="traitSidePanelState.bus.$emit(traitSidePanelState.closePanelEvent)"
           v-on:trait-change="editTrait = Trait.assign({...$event})"
@@ -258,6 +259,7 @@ export default class TraitTable extends Vue {
   clearSelectedRow() {
     this.editTrait = undefined;
     this.originalTrait = undefined;
+    this.editValidationHandler = new ValidationError();
   }
 
   async saveTrait() {
@@ -272,21 +274,7 @@ export default class TraitTable extends Vue {
     } catch (error) {
       if (error instanceof ValidationError) {
         this.validationHandler = error;
-
-        // Set up overrides for error messages
-        let deletions: string[] = [];
-        //TODO: Move this into the class perhaps
-        if (!this.newTrait.scale!.dataType) {
-          // Remove scale name error
-          deletions.push('scale.scaleName');
-        } else if (Scale.dataTypeEquals(this.newTrait.scale!.dataType!, DataType.Numerical)) {
-          // Rename scale name to unit
-          this.validationHandler.overrideMessage(0, 'scale.scaleName', 'Missing unit', 400);
-        } else if (Scale.dataTypeEquals(this.newTrait.scale!.dataType!, DataType.Duration)) {
-          // Rename scale name to unit of time
-          this.validationHandler.overrideMessage(0, 'scale.scaleName', 'Missing unit of time', 400);
-        }
-
+        const deletions: string[] = this.processValidationErrors(this.validationHandler, this.newTrait);
         this.$emit('show-error-notification', `Error creating trait. ${this.validationHandler.condenseErrorsSingleRow(deletions)}`);
       } else {
         this.$emit('show-error-notification', 'Error creating trait.');
@@ -294,6 +282,24 @@ export default class TraitTable extends Vue {
     } finally {
       this.newTraitFormState.bus.$emit(DataFormEventBusHandler.SAVE_COMPLETE_EVENT);
     }
+  }
+
+  processValidationErrors(handler: ValidationError, trait: Trait): string[] {
+
+    // Set up overrides for error messages
+    let deletions: string[] = [];
+    //TODO: Move this into the class perhaps
+    if (!trait.scale!.dataType) {
+      // Remove scale name error
+      deletions.push('scale.scaleName');
+    } else if (Scale.dataTypeEquals(trait.scale!.dataType!, DataType.Numerical)) {
+      // Rename scale name to unit
+      handler.overrideMessage(0, 'scale.scaleName', 'Missing unit', 400);
+    } else if (Scale.dataTypeEquals(trait.scale!.dataType!, DataType.Duration)) {
+      // Rename scale name to unit of time
+      handler.overrideMessage(0, 'scale.scaleName', 'Missing unit of time', 400);
+    }
+    return deletions;
   }
 
   async updateTrait() {
@@ -319,7 +325,8 @@ export default class TraitTable extends Vue {
     } catch (error) {
       if (error instanceof ValidationError) {
         this.editValidationHandler = error;
-        this.$emit('show-error-notification', `Error updating trait. ${this.editValidationHandler.condenseErrorsSingleRow()}`);
+        const deletions: string[] = this.processValidationErrors(this.editValidationHandler, this.editTrait!);
+        this.$emit('show-error-notification', `Error updating trait. ${this.editValidationHandler.condenseErrorsSingleRow(deletions)}`);
       } else {
         this.$emit('show-error-notification', 'Error updating trait.');
       }

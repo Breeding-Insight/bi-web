@@ -48,12 +48,11 @@ export class TraitDAO {
   }
 
   static async updateTraits(programId: string, newTraits: Trait[]): Promise<BiResponse> {
-    /*const { data } =  await api.call({
+    const { data } =  await api.call({
       url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/traits`,
       method: 'put',
       data: newTraits
-    }) as Response;*/
-    let mockData = {result: {data: newTraits}, metadata: {}};
-    return new BiResponse(mockData);
+    }) as Response;
+    return new BiResponse(data);
   }
 }
