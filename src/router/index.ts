@@ -25,6 +25,7 @@ import BrapiAuthorize from '@/views/BrapiAuthorize.vue'
 import ProgramManagement from '@/views/program/ProgramManagement.vue'
 import AdminProgramManagement from '@/views/admin/AdminProgramManagement.vue'
 import AdminUserManagement from '@/views/admin/AdminUserManagement.vue'
+import BrAPIImporter from '@/views/import/BrAPIImporter.vue'
 import store from '@/store/index.ts';
 import {
   LOGIN,
@@ -214,6 +215,16 @@ const routes = [
         component: TraitsArchived
       }
     ]
+  },
+  {
+    path: '/programs/:programId/import',
+    name: 'import',
+    meta: {
+      title: 'File Import',
+      layout: layouts.userSideBar
+    },
+    component: BrAPIImporter,
+    beforeEnter: processProgramNavigation
   },
   {
     path: '/program-selection',
