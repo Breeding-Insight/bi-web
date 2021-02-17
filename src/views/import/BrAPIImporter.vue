@@ -36,7 +36,7 @@
       What type of data are you importing?
       <BasicSelectField
           v-bind:field-name="'Import Data Type'"
-          v-bind:options="['Germplasm', 'Phenotyping']"
+          v-bind:options="importConfigOptions"
       />
       <!-- TODO: Show a description of the import when they select it -->
       <button
@@ -66,6 +66,9 @@
   import {createMachine, interpret} from "@xstate/fsm";
   import {ValidationError} from "@/breeding-insight/model/errors/ValidationError";
   import FileSelectMessageBox from "@/components/file-import/FileSelectMessageBox.vue";
+  import {ImportService} from "@/breeding-insight/service/ImportService";
+  import {ImportTypeConfig} from "@/breeding-insight/model/ImportTypeConfig";
+  import {ImportData} from "@/breeding-insight/model/ImportData";
 
   enum ImportState {
     CHOOSE_IMPORT = "CHOOSE_IMPORT",
@@ -91,7 +94,7 @@
     SHOW_IMPORT = "SHOW_IMPORT",
     UPLOAD_FILE = "UPLOAD_FILE",
     LOADED = "LOADED",
-    MOCK_LOADING = "MOCK_LOADING",
+    GET_UPLOADED_FILE = "GET_UPLOADED_FILE",
     SHOW_IMPORT_TYPE = "SHOW_IMPORT_TYPE",
     MAPPING_STARTED = "MAPPING_STARTED"
   }
@@ -108,6 +111,11 @@
     private dataLoaded: boolean = false;
     private importTypeShow: boolean = false;
     private showMapping: boolean = false;
+
+    private currentImportId: string = '1';
+    private importConfigs: ImportTypeConfig[] = [];
+    private importData = ImportData;
+    private importConfigOptions: string[] = [];
 
     private state = ImportState.CHOOSE_IMPORT;
     private importStateMachine = createMachine({
@@ -133,20 +141,19 @@
               [ImportEvent.IMPORT_ERROR]: ImportState.IMPORT_ERROR,
             }
           },
-          [ImportState.CHOOSE_IMPORT_TYPE]: {
-            entry: ImportAction.SHOW_IMPORT_TYPE,
-            on: {
-              [ImportEvent.IMPORT_TYPE_SELECTED]: ImportState.MAPPING
-            }
-          },
           [ImportState.LOADING]: {
-            // TODO: Remove this
-            entry: ImportAction.MOCK_LOADING,
+            entry: ImportAction.GET_UPLOADED_FILE,
             on: {
               [ImportEvent.LOADING_COMPLETE]: {
                 target: ImportState.CHOOSE_IMPORT_TYPE,
                 actions: ImportAction.LOADED
               },
+            }
+          },
+          [ImportState.CHOOSE_IMPORT_TYPE]: {
+            entry: ImportAction.SHOW_IMPORT_TYPE,
+            on: {
+              [ImportEvent.IMPORT_TYPE_SELECTED]: ImportState.MAPPING
             }
           },
           [ImportState.MAPPING]: {
@@ -170,13 +177,12 @@
           [ImportAction.LOADED]: (context, event) => {
             this.loaded();
           },
-          //TODO: Remove
-          [ImportAction.MOCK_LOADING]: (context, event) => {
-            const self = this;
-            setTimeout( () => self.importService.send(ImportEvent.LOADING_COMPLETE), 10);
+          [ImportAction.GET_UPLOADED_FILE]: (context, event) => {
+            this.getImport();
           },
           [ImportAction.SHOW_IMPORT_TYPE]: (context, event) => {
             this.showImportType();
+            this.getImportConfigs();
           },
           [ImportAction.MAPPING_STARTED]: (context, event) => {
             this.startMapping();
@@ -194,8 +200,9 @@
       this.importService.start();
     }
 
-    upload() {
-      // TODO: Upload to upload service
+    async upload() {
+      // TODO: Upload to upload service and set import id
+      this.currentImportId = this.currentImportId;
       this.importService.send(ImportEvent.IMPORT_SUCCESS);
     }
 
@@ -212,7 +219,31 @@
     }
 
     startMapping() {
+      // Get the import config
       this.showMapping = true;
+    }
+
+    async getImportConfigs() {
+      try {
+        const importConfigs: ImportTypeConfig[] = await ImportService.getAllImportTypeConfigs();
+        this.importConfigs = importConfigs;
+        this.importConfigOptions = importConfigs.map(importConfig => importConfig.name);
+      } catch (e) {
+        this.$log.error(e);
+        this.$emit('show-error-notification', `Unable to load import configs file`);
+      }
+    }
+
+    async getImport() {
+      try {
+        const importData: ImportData = await ImportService.getImport(this.currentImportId);
+        this.importData = importData;
+        this.importService.send(ImportEvent.LOADING_COMPLETE);
+      } catch (e) {
+        this.$log.error(e);
+        this.$emit('show-error-notification', `Unable to load imported file`);
+      }
+
     }
 
   }
@@ -224,6 +255,7 @@
   // - Create fake file upload in service
   // - Implement mapping. Print out results when it is sent to dao layer
   // - Create phenotyping upload config in service
+  // - Define options
 </script>
 
 <style scoped>
