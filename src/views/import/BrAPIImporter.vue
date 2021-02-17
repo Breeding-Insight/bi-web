@@ -37,6 +37,7 @@
       <BasicSelectField
           v-bind:field-name="'Import Data Type'"
           v-bind:options="importConfigOptions"
+          v-on:input="selectImportConfig($event)"
       />
       <!-- TODO: Show a description of the import when they select it -->
       <button
@@ -51,10 +52,74 @@
         v-if="showMapping"
         class="box mt-5"
     >
-      <!-- TODO: Show columns in the file -->
-      I am the mapping box
-    </div>
+      We found the following columns in your file:
+      <div class="tags">
+        <template v-for="header in importData.headers">
+          <span
+            class="tag"
+            v-bind:key="header"
+          >
+            {{header}}
+          </span>
+        </template>
+      </div>
 
+      <!-- Main fields -->
+      <!-- TODO: Check if there is main fields -->
+      <div
+          class="box"
+      >
+        <template v-for="field in selectedImportConfig.fields">
+          <FieldMappingRow
+            v-if="field.type !== ImportDataType.List"
+            v-bind:key="field.id"
+            v-bind:field="field"
+            v-bind:fileFields="importData.headers"
+            v-on:mapping="setMappingField(field.id, $event)"
+          />
+        </template>
+      </div>
+
+      <!-- Repeatable objects -->
+      <template v-for="field in getListFieldTypes(selectedImportConfig)">
+        <div
+          v-bind:key="field.id"
+          class="box"
+        >
+          <h2>{{field.name}}</h2>
+          <p>{{field.description}}</p>
+          <div>
+            <template v-for="(object, index) in getFieldListMappings(field.id)">
+              <!-- Add the field selector component here -->
+              <div
+                v-bind:key="index"
+              >
+                <template v-for="subfield in field.list_object">
+                  <FieldMappingRow
+                      v-bind:key="subfield.id"
+                      v-bind:field="subfield"
+                      v-bind:fileFields="importData.headers"
+                      v-on:mapping="setListMappingField(field.id, index, subfield.id, $event)"
+                      v-on:manualEntry="setListManualField(field.id, index, subfield.id, $event)"
+                  />
+                </template>
+                <hr/>
+              </div>
+            </template>
+          </div>
+          <div class="columns">
+            <div class="column has-text-right">
+              <button
+                class="button is-primary"
+                v-on:click="createNewListMappingEntry(field.id)"
+              >
+                Add Record For {{field.name}}
+              </button>
+            </div>
+          </div>
+        </div>
+      </template>
+    </div>
   </div>
 </template>
 
@@ -67,8 +132,11 @@
   import {ValidationError} from "@/breeding-insight/model/errors/ValidationError";
   import FileSelectMessageBox from "@/components/file-import/FileSelectMessageBox.vue";
   import {ImportService} from "@/breeding-insight/service/ImportService";
-  import {ImportTypeConfig} from "@/breeding-insight/model/ImportTypeConfig";
-  import {ImportData} from "@/breeding-insight/model/ImportData";
+  import {ImportTypeConfig} from "@/breeding-insight/model/import/ImportTypeConfig";
+  import {ImportData} from "@/breeding-insight/model/import/ImportData";
+  import {ImportDataType} from "@/breeding-insight/model/import/ImportField";
+  import {ImportMappingConfig} from "@/breeding-insight/model/import/ImportMapping";
+  import FieldMappingRow from "@/components/import/FieldMappingRow.vue";
 
   enum ImportState {
     CHOOSE_IMPORT = "CHOOSE_IMPORT",
@@ -100,8 +168,8 @@
   }
 
   @Component({
-    components: {BasicSelectField, FileSelectMessageBox},
-    data: () => ({ImportState, ImportEvent, ImportAction})
+    components: {FieldMappingRow, BasicSelectField, FileSelectMessageBox},
+    data: () => ({ImportState, ImportEvent, ImportAction, ImportDataType})
   })
   export default class BrAPIImporter extends Vue {
 
@@ -114,8 +182,10 @@
 
     private currentImportId: string = '1';
     private importConfigs: ImportTypeConfig[] = [];
+    private selectedImportConfig: ImportTypeConfig | null = null
     private importData = ImportData;
-    private importConfigOptions: string[] = [];
+    private importConfigOptions: any[] = [];
+    private mapping: ImportMappingConfig = new ImportMappingConfig(undefined);
 
     private state = ImportState.CHOOSE_IMPORT;
     private importStateMachine = createMachine({
@@ -186,7 +256,7 @@
           },
           [ImportAction.MAPPING_STARTED]: (context, event) => {
             this.startMapping();
-          },
+          }
         }
     });
 
@@ -227,7 +297,7 @@
       try {
         const importConfigs: ImportTypeConfig[] = await ImportService.getAllImportTypeConfigs();
         this.importConfigs = importConfigs;
-        this.importConfigOptions = importConfigs.map(importConfig => importConfig.name);
+        this.importConfigOptions = importConfigs.map(importConfig => { return { 'id': importConfig.id, 'name': importConfig.name}; });
       } catch (e) {
         this.$log.error(e);
         this.$emit('show-error-notification', `Unable to load import configs file`);
@@ -243,19 +313,47 @@
         this.$log.error(e);
         this.$emit('show-error-notification', `Unable to load imported file`);
       }
+    }
 
+    selectImportConfig(importId: string) {
+      this.selectedImportConfig = this.importConfigs.filter(importConfig => importConfig.id === importId)[0];
+    }
+
+    getListFieldTypes(importConfig: ImportTypeConfig) {
+      return importConfig.fields.filter(field => field.type === ImportDataType.List);
+    }
+
+    setMappingField(targetField: string, fileField: string) {
+      this.mapping.setMappingField(targetField, fileField);
+      console.log(this.mapping);
+    }
+
+    createNewListMappingEntry(targetField: string) {
+      this.mapping.createListMappingEntry(targetField);
+      // TODO: Reactivity issue somewhere in here. Need to track it down.
+      this.$forceUpdate();
+    }
+
+    setListMappingField(importField: string, index: number, importSubField: string, fileField: string) {
+      this.mapping.setListEntryMappingField(importField, index, importSubField, fileField);
+    }
+
+    setListManualField(importField: string, index: number, importSubField: string, manualValue: string) {
+      this.mapping.setListEntryManualField(importField, index, importSubField, manualValue);
+    }
+
+    getFieldListMappings(importField: string) {
+      return this.mapping.getListMappingEntries(importField);
     }
 
   }
 
   //TODO:
-  // - Define the endpoints needed
-  // - Create mock services and daos
-  // - Create germplasm upload config in service
-  // - Create fake file upload in service
   // - Implement mapping. Print out results when it is sent to dao layer
-  // - Create phenotyping upload config in service
+  // - Implement relationship searching params
   // - Define options
+  // - Create phenotyping upload config in service
+
 </script>
 
 <style scoped>
