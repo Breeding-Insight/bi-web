@@ -17,6 +17,7 @@
 
 import {User} from "@/breeding-insight/model/User";
 import {Program} from "@/breeding-insight/model/Program";
+import {TraitState} from "@/store/traits/types";
 
 export interface RootState {
   loggedIn: boolean;
@@ -27,4 +28,5 @@ export interface RootState {
   loginServerError: boolean;
   requestedPath?: string;
   firstVisit?: boolean;
+  traits: TraitState;
 }
