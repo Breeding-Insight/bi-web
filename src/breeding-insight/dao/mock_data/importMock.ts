@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import {ImportData} from "@/breeding-insight/model/ImportData";
+import {ImportData} from "@/breeding-insight/model/import/ImportData";
 
 const tblCross: ImportData = new ImportData({
   id: '1',
