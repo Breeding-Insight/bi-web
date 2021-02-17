@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-import {ImportData} from "@/breeding-insight/model/ImportData";
+import {ImportData} from "@/breeding-insight/model/import/ImportData";
 import {ImportDAO} from "@/breeding-insight/dao/ImportDAO";
-import {ImportTypeConfig} from "@/breeding-insight/model/ImportTypeConfig";
+import {ImportTypeConfig} from "@/breeding-insight/model/import/ImportTypeConfig";
 
 export class ImportService {
 

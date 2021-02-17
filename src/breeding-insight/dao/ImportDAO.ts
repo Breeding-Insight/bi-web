@@ -15,8 +15,8 @@
  * limitations under the License.
  */
 
-import {ImportData} from "@/breeding-insight/model/ImportData";
-import {ImportTypeConfig} from "@/breeding-insight/model/ImportTypeConfig";
+import {ImportData} from "@/breeding-insight/model/import/ImportData";
+import {ImportTypeConfig} from "@/breeding-insight/model/import/ImportTypeConfig";
 import {tblCross} from "@/breeding-insight/dao/mock_data/importMock";
 import {germplasmImport} from "@/breeding-insight/dao/mock_data/ImportTypeMock";
 
