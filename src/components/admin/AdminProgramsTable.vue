@@ -323,7 +323,9 @@ export default class AdminProgramsTable extends Vue {
       this.newProgram = new Program();
     }).catch((error) => {
       this.serverError = [];
-      this.serverError.push(new FieldError("brapiUrl", error.errorMessage, "UNPROCESSABLE", 422));
+      if (error.response.status === 422) {
+        this.serverError.push(new FieldError("brapiUrl", error.errorMessage, "UNPROCESSABLE", 422));
+      }
       this.$emit('show-error-notification', error.errorMessage);
     }).finally(() => {
       this.newLocationFormState.bus.$emit(DataFormEventBusHandler.SAVE_COMPLETE_EVENT);
