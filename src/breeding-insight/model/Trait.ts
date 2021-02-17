@@ -28,6 +28,7 @@ export class Trait {
   abbreviations?: Array<string>;
   synonyms?: Array<string>;
   mainAbbreviation?: string;
+  active?: boolean;
 
   constructor(id?: string,
               traitName?: string,
