@@ -16,7 +16,8 @@ export enum ImportDataType {
   Text = "Text",
   Numerical = "Numerical",
   Integer = "Integer",
-  Date = "Date"
+  Date = "Date",
+  List = "List"
 }
 
 export class ImportField {
