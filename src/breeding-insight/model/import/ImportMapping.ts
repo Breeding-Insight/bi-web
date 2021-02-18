@@ -13,51 +13,49 @@
 */
 
 import {Mapping} from "@/breeding-insight/model/import/Mapping";
+import {ObjectMapping} from "@/breeding-insight/model/import/ObjectMapping";
+import {ImportGroup} from "@/breeding-insight/model/import/ImportGroup";
 
 export class ImportMappingConfig {
   id?: string;
   name?: string;
   importTypeId?: string;
-  mapping: {[key:string]:Mapping};
+  objects?: ObjectMapping[];
 
   constructor(config: ImportMappingConfig | undefined) {
     if (config) this.id = config.id;
     if (config) this.name = config.name;
     if (config) this.importTypeId = config.importTypeId;
     if (config) {
-      this.mapping = config.mapping;
+      this.objects = config.objects;
     } else {
-      this.mapping = {};
+      this.objects = [];
     }
   }
 
-  public setMappingField(importField: string, fileField: string) {
-    this.mapping[importField] = new Mapping({fileFieldName: fileField});
+  getAllObjectMappings(): ObjectMapping[] {
+    return this.objects!;
   }
 
-  public createListMappingEntry(importField: string) {
-    if (!this.mapping[importField]) {
-      this.mapping[importField] = new Mapping(undefined);
+  // Get object by id
+  getObjectMapping(id: string): ObjectMapping | undefined {
+    // Search downward recursively for the object
+    for (const object of this.objects!) {
+      const searchObject = object.getObjectById(id);
+      if (searchObject) return searchObject;
     }
-    this.mapping[importField].listMappings!.push({});
+    return undefined;
   }
 
-  public setListEntryMappingField(importField: string, entryIndex: number, subImportField: string, fileField: string) {
-    const mappingObject = this.mapping[importField].listMappings![entryIndex]
-    mappingObject[subImportField] = new Mapping({fileFieldName: fileField, constantValue: undefined});
+  // Add object
+  createObjectMapping(importGroup: ImportGroup): {config: ImportGroup, object: ObjectMapping} {
+    const newObject = new ObjectMapping({object_id: importGroup.id} as ObjectMapping);
+    this.objects!.push(newObject);
+    return { config: importGroup, object: newObject};
   }
 
-  public setListEntryManualField(importField: string, entryIndex: number, subImportField: string, manualValue: string) {
-    const mappingObject = this.mapping[importField].listMappings![entryIndex]
-    mappingObject[subImportField] = new Mapping({fileFieldName: undefined, constantValue: manualValue});
+  createObjectMappings(importGroups: ImportGroup[]): {config: ImportGroup, object: ObjectMapping}[] {
+    console.log(importGroups);
+    return importGroups.map(importGroup => { return this.createObjectMapping(importGroup) });
   }
-
-  getListMappingEntries(importField: string) {
-    console.log(importField);
-    if (this.mapping[importField]){
-      return this.mapping[importField].listMappings;
-    }
-    return [];
-  }
-
 }
