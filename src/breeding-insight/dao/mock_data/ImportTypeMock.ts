@@ -59,6 +59,29 @@ const germplasmImport: ImportTypeConfig =  new ImportTypeConfig({
           required: false
         },
         {
+          name: 'Female Parent',
+          id: 'femaleParent',
+          description: 'The female parent. In the case of a self-cross, the female parent is the only parent.',
+          type: ImportDataType.Relationship,
+          relation_options: [
+            {
+              name: 'Database Lookup',
+              id: 'DB_LOOKUP',
+              description: 'Specify the lookup value from the list of options, and the column in the file to map to. If the object isn\'t found, we will throw an error',
+              importFields: [
+                'germplasmId',
+                'germplasmName',
+                'externalReferenceId'
+              ]
+            },
+            {
+              name: 'File Lookup',
+              id: 'FILE_LOOKUP',
+              description: 'Specify a column with a unique id that references a matching id within this file. If the object isn\'t found we will throw an error.'
+            }
+          ]
+        },
+        {
           name: 'Cross Attributes',
           id: 'crossAttributes',
           description: 'An optional list of attributes to associate with the cross. You can have any number of these',

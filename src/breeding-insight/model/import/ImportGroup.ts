@@ -26,6 +26,6 @@ export class ImportGroup {
     this.name = name;
     this.description = description;
     this.quantity = quantity;
-    this.fields = fields;
+    this.fields = fields ? fields.map(field => new ImportField(field)) : fields;
   }
 }
