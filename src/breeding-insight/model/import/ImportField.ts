@@ -12,6 +12,8 @@
 * limitations under the License.
 */
 
+import {ImportGroup} from "@/breeding-insight/model/import/ImportGroup";
+
 export enum ImportDataType {
   Text = "Text",
   Numerical = "Numerical",
@@ -26,7 +28,7 @@ export class ImportField {
   description: string;
   type: ImportDataType;
   required: boolean;
-  list_object?: ImportField[];
+  list_object?: ImportGroup;
 
   constructor({name, id, description, type, required, list_object}: ImportField) {
     this.name = name;

@@ -12,18 +12,18 @@
 * limitations under the License.
 */
 
-import {ImportField} from "@/breeding-insight/model/import/ImportField";
+import {ImportGroup} from "@/breeding-insight/model/import/ImportGroup";
 
 export class ImportTypeConfig {
   id: string;
   name: string;
   description: string;
-  fields: ImportField[];
+  groups: ImportGroup[];
 
-  constructor({id, name, description, fields}: ImportTypeConfig) {
+  constructor({id, name, description, groups}: ImportTypeConfig) {
     this.id = id;
     this.name = name;
     this.description = description;
-    this.fields = fields;
+    this.groups = groups;
   }
 }
