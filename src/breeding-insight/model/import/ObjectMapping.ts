@@ -15,6 +15,7 @@
 import {Mapping} from "@/breeding-insight/model/import/Mapping";
 import { v4 as uuidv4 } from 'uuid';
 import {ImportGroup} from "@/breeding-insight/model/import/ImportGroup";
+import {ImportRelationType} from "@/breeding-insight/model/import/ImportRelation";
 
 export class ObjectMapping {
   id?: string;
@@ -43,14 +44,23 @@ export class ObjectMapping {
     }
     return undefined;
   }
+
+  getField(field: string){
+    return this.fields![field];
+  }
+
   // Set field mapping
   setFieldMapping(importField: string, fileFieldName: string) {
-    this.fields![importField] = new Mapping({fileFieldName, constantValue: undefined});
+    this.fields![importField] = new Mapping({fileFieldName});
   }
 
   // Set manual mapping
   setManualMapping(importField: string, constantValue: string) {
-    this.fields![importField] = new Mapping({constantValue, fileFieldName: undefined});
+    this.fields![importField] = new Mapping({constantValue});
+  }
+
+  setRelationType(importField: string, relationValue: ImportRelationType) {
+    this.fields![importField] = new Mapping({relationValue});
   }
 
   // Add object to list field

@@ -77,15 +77,17 @@
           <h2 class="h2">{{config.name}}</h2>
           <p>{{config.description}}</p>
           <template v-for="field in config.fields">
+            <!-- Simple fields -->
             <FieldMappingRow
-                v-if="field.type !== ImportDataType.List"
+                v-if="field.type !== ImportDataType.List && field.type !== ImportDataType.Relationship"
                 v-bind:key="field.id"
                 v-bind:field="field"
                 v-bind:fileFields="importData.headers"
                 v-on:mapping="mapping.getObjectMapping(object.id).setFieldMapping(config.id, $event)"
                 v-on:manualEntry="mapping.getObjectMapping(object.id).setManualMapping(config.id, $event)"
             />
-            <!-- TODO: Set up list type objects -->
+
+            <!-- List fields -->
             <template v-else-if="field.type === ImportDataType.List">
               <div v-bind:key="field.id">
                 <h2>{{field.name}}</h2>
@@ -117,49 +119,76 @@
                 </div>
               </div>
             </template>
+
+            <!-- Relationship objects -->
+            <template v-else-if="field.type === ImportDataType.Relationship">
+              <div v-bind:key="field.id">
+                <h2>{{field.name}}</h2>
+                <p>{{field.description}}</p>
+                <template v-if="field.relation_options.length > 1">
+                  <div class="control">
+                    <template v-for="relation_type in field.relation_options">
+                      <label
+                        v-bind:key="relation_type.id"
+                        class="radio"
+                      >
+                        <input
+                          type="radio"
+                          v-bind:name="`${field.id} relation`"
+                          v-bind:value="relation_type.id"
+                          v-on:input="setRelationType(object, field, $event.target.value)"
+                        >
+                        {{relation_type.name}}
+                      </label>
+                    </template>
+                  </div>
+                </template>
+                <!-- Relationship view -->
+                <template v-if="object.getField(field.id) && object.getField(field.id).relationValue === ImportRelationType.DB_LOOKUP">
+                  <div class="columns">
+                    <div class="column">
+                      <BasicSelectField
+                          v-bind:options="field.getRelationObject(ImportRelationType.DB_LOOKUP).importFields"
+                          v-bind:field-name="`Import Field Target`"
+                          v-bind:empty-value-name="`-- Import Field column --`"
+                          v-on:input="object.getField(field.id).setRelationTarget($event)"
+                      />
+                    </div>
+                    <div class="column">
+                      <BasicSelectField
+                          v-bind:options="importData.headers"
+                          v-bind:field-name="`File Field Reference Column`"
+                          v-bind:empty-value-name="`-- File Field column --`"
+                          v-on:input="object.getField(field.id).setRelationReference($event)"
+                      />
+                    </div>
+                  </div>
+                </template>
+                <template v-else-if="object.getField(field.id) && object.getField(field.id).relationValue === ImportRelationType.FILE_LOOKUP">
+                  <div class="columns">
+                    <div class="column">
+                      <BasicSelectField
+                          v-bind:options="importData.headers"
+                          v-bind:field-name="`File Field Column Target`"
+                          v-bind:empty-value-name="`-- File Field column --`"
+                          v-on:input="object.getField(field.id).setRelationTarget($event)"
+                      />
+                    </div>
+                    <div class="column">
+                      <BasicSelectField
+                          v-bind:options="importData.headers"
+                          v-bind:field-name="`Import Field Column Reference`"
+                          v-bind:empty-value-name="`-- File Field column --`"
+                          v-on:input="object.getField(field.id).setRelationReference($event)"
+                      />
+                    </div>
+                  </div>
+                </template>
+              </div>
+            </template>
           </template>
         </div>
       </template>
-
-
-      <!-- Repeatable objects -->
-      <!--<template v-for="field in getListFieldTypes(selectedImportConfig)">
-        <div
-          v-bind:key="field.id"
-          class="box"
-        >
-          <h2>{{field.name}}</h2>
-          <p>{{field.description}}</p>
-          <div>
-            <template v-for="(object, index) in getFieldListMappings(field.id)">
-              <div
-                v-bind:key="index"
-              >
-                <template v-for="subfield in field.list_object">
-                  <FieldMappingRow
-                      v-bind:key="subfield.id"
-                      v-bind:field="subfield"
-                      v-bind:fileFields="importData.headers"
-                      v-on:mapping="setListMappingField(field.id, index, subfield.id, $event)"
-                      v-on:manualEntry="setListManualField(field.id, index, subfield.id, $event)"
-                  />
-                </template>
-                <hr/>
-              </div>
-            </template>
-          </div>
-          <div class="columns">
-            <div class="column has-text-right">
-              <button
-                class="button is-primary"
-                v-on:click="createNewListMappingEntry(field.id)"
-              >
-                Add Record For {{field.name}}
-              </button>
-            </div>
-          </div>
-        </div>
-      </template>-->
     </div>
   </div>
 </template>
@@ -175,11 +204,12 @@
   import {ImportService} from "@/breeding-insight/service/ImportService";
   import {ImportTypeConfig} from "@/breeding-insight/model/import/ImportTypeConfig";
   import {ImportData} from "@/breeding-insight/model/import/ImportData";
-  import {ImportDataType} from "@/breeding-insight/model/import/ImportField";
+  import {ImportDataType, ImportField} from "@/breeding-insight/model/import/ImportField";
   import {ImportMappingConfig} from "@/breeding-insight/model/import/ImportMapping";
   import FieldMappingRow from "@/components/import/FieldMappingRow.vue";
   import {ImportGroup} from "@/breeding-insight/model/import/ImportGroup";
   import {ObjectMapping} from "@/breeding-insight/model/import/ObjectMapping";
+  import {ImportRelationType} from "@/breeding-insight/model/import/ImportRelation";
 
   enum ImportState {
     CHOOSE_IMPORT = "CHOOSE_IMPORT",
@@ -212,7 +242,7 @@
 
   @Component({
     components: {FieldMappingRow, BasicSelectField, FileSelectMessageBox},
-    data: () => ({ImportState, ImportEvent, ImportAction, ImportDataType})
+    data: () => ({ImportState, ImportEvent, ImportAction, ImportDataType, ImportRelationType})
   })
   export default class BrAPIImporter extends Vue {
 
@@ -362,7 +392,6 @@
 
     selectImportConfig(importId: string) {
       this.selectedImportConfig = this.importConfigs.filter(importConfig => importConfig.id === importId)[0];
-      console.log(this.selectedImportConfig);
     }
 
     // Does not actually have possibility for object to be undefined
@@ -376,21 +405,23 @@
 
     getObjectListMappings(importGroup: ImportGroup, targetObject: ObjectMapping, targetField: string): {config: ImportGroup, object?: ObjectMapping}[] {
       const results = targetObject.getObjectsFromListField(targetField).map(object => { return { config: importGroup, object} });
-      if (results.length > 0) {
-        console.log(this.mapping.getObjectMapping(results[0].object.id!));
-      }
       return results;
     }
 
     createNewListMappingEntry(objectId: string, targetField: string, importGroup: ImportGroup) {
       const objectMapping = this.mapping.getObjectMapping(objectId);
-      console.log(objectMapping);
       if (objectMapping) {
         const object = objectMapping.addObjectToListField(targetField, importGroup);
       } else {
         this.$emit('show_error_notification', `Unable to add ${importGroup.name} object`);
       }
 
+      // TODO: Reactivity issue somewhere in here. Need to track it down.
+      this.$forceUpdate();
+    }
+
+    setRelationType(object: ObjectMapping, field: ImportField, value: ImportRelationType) {
+      this.mapping.getObjectMapping(object.id!)!.setRelationType(field.id, value);
       // TODO: Reactivity issue somewhere in here. Need to track it down.
       this.$forceUpdate();
     }

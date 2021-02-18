@@ -13,19 +13,39 @@
 */
 
 import {ObjectMapping} from "@/breeding-insight/model/import/ObjectMapping";
+import {ImportRelationType} from "@/breeding-insight/model/import/ImportRelation";
+import {ImportRelationMap} from "@/breeding-insight/model/import/ImportRelationMap";
 
 export class Mapping {
   fileFieldName?: string;
   constantValue?: string;
+  relationValue?: ImportRelationType;
+  relationMap?: ImportRelationMap;
   objects?: ObjectMapping[];
 
   constructor(mapping: Mapping) {
     this.fileFieldName = mapping.fileFieldName;
     this.constantValue = mapping.constantValue;
+    this.relationValue = mapping.relationValue;
     if (mapping && mapping.objects) {
       this.objects = mapping.objects;
     } else {
       this.objects = [];
     }
   }
+
+  setRelationTarget(target: string) {
+    if (!this.relationMap) {
+      this.relationMap = new ImportRelationMap({});
+    }
+    this.relationMap.target = target;
+  }
+
+  setRelationReference(reference: string) {
+    if (!this.relationMap) {
+      this.relationMap = new ImportRelationMap({});
+    }
+    this.relationMap.reference = reference;
+  }
+
 }
