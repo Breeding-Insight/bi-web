@@ -11,19 +11,26 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
+export enum ImportRelationType {
+  DB_LOOKUP = "DB_LOOKUP",
+  FILE_LOOKUP = "FILE_LOOKUP"
+}
 
-import {ImportGroup} from "@/breeding-insight/model/import/ImportGroup";
-
-export class ImportTypeConfig {
-  id: string;
+export class ImportRelation {
   name: string;
+  id: ImportRelationType;
   description: string;
-  groups: ImportGroup[];
+  // Fields available to select from for db lookup
+  importFields?: string[];
 
-  constructor({id, name, description, groups}: ImportTypeConfig) {
-    this.id = id;
-    this.name = name;
-    this.description = description;
-    this.groups = groups ? groups.map(group => new ImportGroup(group)) : groups;
+  constructor(importRelation: ImportRelation) {
+    this.name = importRelation.name;
+    this.id = importRelation.id;
+    this.description = importRelation.description;
+    this.importFields = importRelation.importFields;
+  }
+
+  getDbLookupFields() {
+    return this.importFields;
   }
 }

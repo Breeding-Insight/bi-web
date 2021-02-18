@@ -55,7 +55,6 @@ export class ImportMappingConfig {
   }
 
   createObjectMappings(importGroups: ImportGroup[]): {config: ImportGroup, object: ObjectMapping}[] {
-    console.log(importGroups);
     return importGroups.map(importGroup => { return this.createObjectMapping(importGroup) });
   }
 }

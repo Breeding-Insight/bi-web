@@ -12,18 +12,12 @@
 * limitations under the License.
 */
 
-import {ImportGroup} from "@/breeding-insight/model/import/ImportGroup";
+export class ImportRelationMap {
+  target?: string;
+  reference?: string;
 
-export class ImportTypeConfig {
-  id: string;
-  name: string;
-  description: string;
-  groups: ImportGroup[];
-
-  constructor({id, name, description, groups}: ImportTypeConfig) {
-    this.id = id;
-    this.name = name;
-    this.description = description;
-    this.groups = groups ? groups.map(group => new ImportGroup(group)) : groups;
+  constructor(importRelationMap: ImportRelationMap) {
+    this.target = importRelationMap.target;
+    this.reference = importRelationMap.reference;
   }
 }
