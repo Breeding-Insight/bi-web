@@ -36,7 +36,8 @@ export class Trait {
               method?: Method,
               scale?: Scale,
               abbreviations?: Array<string>,
-              synonyms?: Array<string>
+              synonyms?: Array<string>,
+              active?: boolean
               ) {
     this.id = id;
     this.traitName = traitName;
@@ -57,6 +58,11 @@ export class Trait {
     }
     this.abbreviations = abbreviations;
     this.synonyms = synonyms;
+    if (active) {
+      this.active = active;
+    } else {
+      this.active = true;
+    }
   }
 
   static assign(trait: Trait): Trait {
