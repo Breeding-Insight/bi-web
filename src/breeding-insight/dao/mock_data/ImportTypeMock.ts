@@ -22,50 +22,70 @@ const germplasmImport: ImportTypeConfig =  new ImportTypeConfig({
   id: '1',
   name: 'Germplasm',
   description: 'This import is used to import germplasm and to create crosses to connect germplasm together in order to construct a pedigree.',
-  fields: [
+  groups: [
     {
-      name: 'Germplasm Name',
-      id: 'germplasmName',
-      description: 'The name of the germplasm',
-      type: ImportDataType.Text,
-      required: true
-    },
-    {
-      name: 'Germplasm PUI',
-      id: 'germplasmPUI',
-      description: 'The personal unique identifier, or "PUI", of the germplasm. Will be set to the germplasm name if not specified.',
-      type: ImportDataType.Text,
-      required: false
-    },
-    {
-      name: 'Cross Date',
-      id: 'pollinationTimeStamp',
-      description: 'The date that the cross occurred',
-      type: ImportDataType.Date,
-      required: false
-    },
-    {
-      name: 'Cross Attributes',
-      id: 'crossAttributes',
-      description: 'An optional list of attributes to associate with the cross. You can have any number of these',
-      type: ImportDataType.List,
-      required: false,
-      list_object: [
+      name: 'Germplasm',
+      id: 'Germplasm',
+      quantity: '1',
+      description: 'A germplasm object is an object that describes a unique population.',
+      fields: [
         {
-          name: 'Cross Attribute Name',
-          id: 'crossAttributeName',
-          description: 'Name to identify the cross attribute',
+          name: 'Germplasm Name',
+          id: 'germplasmName',
+          description: 'The name of the germplasm',
+          type: ImportDataType.Text,
           required: true
         },
         {
-          name: 'Cross Attribute Value',
-          id: 'crossAttributeValue',
-          description: 'Value of the cross attribute',
-          required: true
-        },
+          name: 'Germplasm PUI',
+          id: 'germplasmPUI',
+          description: 'The personal unique identifier, or "PUI", of the germplasm. Will be set to the germplasm name if not specified.',
+          type: ImportDataType.Text,
+          required: false
+        }
       ]
-
-
+    },
+    {
+      name: 'Cross',
+      id: 'Cross',
+      quantity: '1',
+      description: 'A cross connects germplasm together to form a pedigree tree. The germplasm is the result of the cross. The germplasm specified in each year will be the child of the cross.',
+      fields: [
+        {
+          name: 'Cross Date',
+          id: 'pollinationTimeStamp',
+          description: 'The date that the cross occurred',
+          type: ImportDataType.Date,
+          required: false
+        },
+        {
+          name: 'Cross Attributes',
+          id: 'crossAttributes',
+          description: 'An optional list of attributes to associate with the cross. You can have any number of these',
+          type: ImportDataType.List,
+          required: false,
+          list_object: {
+            name: 'Cross Attribute',
+            id: 'CrossAttribute',
+            quantity: 'inf',
+            description: 'An attribute for the cross',
+            fields: [
+              {
+                name: 'Cross Attribute Name',
+                id: 'crossAttributeName',
+                description: 'Name to identify the cross attribute',
+                required: true
+              },
+              {
+                name: 'Cross Attribute Value',
+                id: 'crossAttributeValue',
+                description: 'Value of the cross attribute',
+                required: true
+              }
+            ]
+          }
+        }
+      ]
     }
   ]
 } as ImportTypeConfig);
