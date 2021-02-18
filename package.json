@@ -13,7 +13,7 @@
     "test:unit": "vue-cli-service test:unit"
   },
   "config": {
-    "devport": "8080",
+    "devport": "8082",
     "task_path": "./task"
   },
   "dependencies": {
@@ -75,7 +75,8 @@
     "shelljs": "^0.8.3",
     "typescript": "~3.5.3",
     "vue-cli-plugin-axios": "0.0.4",
-    "vue-template-compiler": "^2.6.10"
+    "vue-template-compiler": "^2.6.10",
+    "vuex-typescript": "^3.0.2"
   },
   "versionInfo": "https://github.com/Breeding-Insight/bi-web/commit/cc6dc4fb292f3b034594f2921af963bbed1f1b03"
 }
