@@ -23,9 +23,9 @@ import {LOAD_PAGINATED_TRAITS, LOAD_PAGINATION, LOAD_TRAITS} from "@/store/trait
 import {SET_CURRENT_CALL} from "@/store/pagination/mutation-types";
 
 export const actions: ActionTree<ArchiveState, RootState> = {
-    async getAllArchivedTraits({commit, dispatch, rootGetters}): Promise<void> {
+    async getAllArchivedTraits({commit, dispatch, rootGetters}, refresh: boolean): Promise<void> {
 
-        if (rootGetters['traits/all'].length === 0) {
+        if (rootGetters['traits/all'].length === 0 || refresh) {
             await dispatch('traits/getAllTraits', null, {root: true});
         }
 
@@ -33,9 +33,9 @@ export const actions: ActionTree<ArchiveState, RootState> = {
         //let traits = rootGetters['traits/all'].filter(trait => trait.method.methodClass === 'Observation');
         commit(LOAD_TRAITS, traits);
     },
-    async getArchivedTraits({dispatch, getters, state, commit}): Promise<void> {
-        if (state.archivedTraits.length === 0) {
-            await dispatch('getAllArchivedTraits');
+    async getArchivedTraits({dispatch, getters, state, commit}, refresh: boolean): Promise<void> {
+        if (state.archivedTraits!.length === 0 || refresh) {
+            await dispatch('getAllArchivedTraits', refresh);
         }
 
         let paginationQuery: PaginationQuery = getters['pagination/getPaginationSelections'](
