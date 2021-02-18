@@ -91,6 +91,11 @@
       -->
       <template #columns="data">
         <TableColumn name="name" :label="'Name'">
+          <b-button
+              size="is-small"
+              class="archive-tag">
+            Archived
+          </b-button>
           {{ data.traitName }}
         </TableColumn>
         <TableColumn name="level" :label="'Level'" :visible="!traitSidePanelState.collapseColumns">
