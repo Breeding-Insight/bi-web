@@ -32,14 +32,18 @@
       v-if="importTypeShow"
       class="box mt-5"
     >
-      <!-- TODO: Show columns in the file -->
+      <!-- TODO: Show how many times each column is used -->
       What type of data are you importing?
       <BasicSelectField
           v-bind:field-name="'Import Data Type'"
           v-bind:options="importConfigOptions"
           v-on:input="selectImportConfig($event)"
       />
-      <!-- TODO: Show a description of the import when they select it -->
+      <template
+        v-if="selectedImportConfig !== null"
+      >
+        <p>{{selectedImportConfig.description}}</p>
+      </template>
       <button
         class="button is-primary"
         v-on:click="importService.send(ImportEvent.IMPORT_TYPE_SELECTED)"
@@ -64,24 +68,62 @@
         </template>
       </div>
 
-      <!-- Main fields -->
-      <!-- TODO: Check if there is main fields -->
-      <div
+      <!-- Groups -->
+      <template v-for="({config, object}) in getMappings()">
+        <div
+          v-bind:key="object.id"
           class="box"
-      >
-        <template v-for="field in selectedImportConfig.fields">
-          <FieldMappingRow
-            v-if="field.type !== ImportDataType.List"
-            v-bind:key="field.id"
-            v-bind:field="field"
-            v-bind:fileFields="importData.headers"
-            v-on:mapping="setMappingField(field.id, $event)"
-          />
-        </template>
-      </div>
+        >
+          <h2 class="h2">{{config.name}}</h2>
+          <p>{{config.description}}</p>
+          <template v-for="field in config.fields">
+            <FieldMappingRow
+                v-if="field.type !== ImportDataType.List"
+                v-bind:key="field.id"
+                v-bind:field="field"
+                v-bind:fileFields="importData.headers"
+                v-on:mapping="mapping.getObjectMapping(object.id).setFieldMapping(config.id, $event)"
+                v-on:manualEntry="mapping.getObjectMapping(object.id).setManualMapping(config.id, $event)"
+            />
+            <!-- TODO: Set up list type objects -->
+            <template v-else-if="field.type === ImportDataType.List">
+              <div v-bind:key="field.id">
+                <h2>{{field.name}}</h2>
+                <p>{{field.description}}</p>
+                <template v-for="({config: subConfig, object: subObject}) in getObjectListMappings(field.list_object, object, field.id)">
+                  <div
+                    v-bind:key="subObject.id"
+                  >
+                    <template v-for="subfield in subConfig.fields">
+                      <FieldMappingRow
+                          v-bind:key="subfield.id"
+                          v-bind:field="subfield"
+                          v-bind:fileFields="importData.headers"
+                          v-on:mapping="mapping.getObjectMapping(subObject.id).setFieldMapping(subfield.id, $event)"
+                          v-on:manualEntry="mapping.getObjectMapping(subObject.id).setManualMapping(subfield.id, $event)"
+                      />
+                    </template>
+                  </div>
+                </template>
+                <div class="columns">
+                  <div class="column has-text-right">
+                    <button
+                        class="button is-primary"
+                        v-on:click="createNewListMappingEntry(object.id, field.id, field.list_object)"
+                    >
+                      Add {{field.list_object.name}}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </template>
+          </template>
+        </div>
+      </template>
+
 
       <!-- Repeatable objects -->
-      <template v-for="field in getListFieldTypes(selectedImportConfig)">
+      <!--<template v-for="field in getListFieldTypes(selectedImportConfig)">
         <div
           v-bind:key="field.id"
           class="box"
@@ -90,7 +132,6 @@
           <p>{{field.description}}</p>
           <div>
             <template v-for="(object, index) in getFieldListMappings(field.id)">
-              <!-- Add the field selector component here -->
               <div
                 v-bind:key="index"
               >
@@ -118,7 +159,7 @@
             </div>
           </div>
         </div>
-      </template>
+      </template>-->
     </div>
   </div>
 </template>
@@ -137,6 +178,8 @@
   import {ImportDataType} from "@/breeding-insight/model/import/ImportField";
   import {ImportMappingConfig} from "@/breeding-insight/model/import/ImportMapping";
   import FieldMappingRow from "@/components/import/FieldMappingRow.vue";
+  import {ImportGroup} from "@/breeding-insight/model/import/ImportGroup";
+  import {ObjectMapping} from "@/breeding-insight/model/import/ObjectMapping";
 
   enum ImportState {
     CHOOSE_IMPORT = "CHOOSE_IMPORT",
@@ -290,6 +333,8 @@
 
     startMapping() {
       // Get the import config
+      this.mapping = new ImportMappingConfig(undefined);
+      this.mapping.createObjectMappings(this.selectedImportConfig!.groups);
       this.showMapping = true;
     }
 
@@ -317,35 +362,38 @@
 
     selectImportConfig(importId: string) {
       this.selectedImportConfig = this.importConfigs.filter(importConfig => importConfig.id === importId)[0];
+      console.log(this.selectedImportConfig);
     }
 
-    getListFieldTypes(importConfig: ImportTypeConfig) {
-      return importConfig.fields.filter(field => field.type === ImportDataType.List);
+    // Does not actually have possibility for object to be undefined
+    getMappings(): {config: ImportGroup, object?: ObjectMapping}[] {
+      const results = this.selectedImportConfig!.groups.map(importGroup => {
+        const object = this.mapping.objects!.find(object => object.object_id === importGroup.id);
+        return { config: importGroup, object };
+      }).filter(result => result.object);
+      return results;
     }
 
-    setMappingField(targetField: string, fileField: string) {
-      this.mapping.setMappingField(targetField, fileField);
-      console.log(this.mapping);
+    getObjectListMappings(importGroup: ImportGroup, targetObject: ObjectMapping, targetField: string): {config: ImportGroup, object?: ObjectMapping}[] {
+      const results = targetObject.getObjectsFromListField(targetField).map(object => { return { config: importGroup, object} });
+      if (results.length > 0) {
+        console.log(this.mapping.getObjectMapping(results[0].object.id!));
+      }
+      return results;
     }
 
-    createNewListMappingEntry(targetField: string) {
-      this.mapping.createListMappingEntry(targetField);
+    createNewListMappingEntry(objectId: string, targetField: string, importGroup: ImportGroup) {
+      const objectMapping = this.mapping.getObjectMapping(objectId);
+      console.log(objectMapping);
+      if (objectMapping) {
+        const object = objectMapping.addObjectToListField(targetField, importGroup);
+      } else {
+        this.$emit('show_error_notification', `Unable to add ${importGroup.name} object`);
+      }
+
       // TODO: Reactivity issue somewhere in here. Need to track it down.
       this.$forceUpdate();
     }
-
-    setListMappingField(importField: string, index: number, importSubField: string, fileField: string) {
-      this.mapping.setListEntryMappingField(importField, index, importSubField, fileField);
-    }
-
-    setListManualField(importField: string, index: number, importSubField: string, manualValue: string) {
-      this.mapping.setListEntryManualField(importField, index, importSubField, manualValue);
-    }
-
-    getFieldListMappings(importField: string) {
-      return this.mapping.getListMappingEntries(importField);
-    }
-
   }
 
   //TODO:

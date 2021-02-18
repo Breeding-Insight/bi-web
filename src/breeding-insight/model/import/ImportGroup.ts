@@ -12,20 +12,20 @@
 * limitations under the License.
 */
 
-import {ObjectMapping} from "@/breeding-insight/model/import/ObjectMapping";
+import {ImportField} from "@/breeding-insight/model/import/ImportField";
 
-export class Mapping {
-  fileFieldName?: string;
-  constantValue?: string;
-  objects?: ObjectMapping[];
+export class ImportGroup {
+  id: string;
+  name: string;
+  description: string;
+  quantity: string;
+  fields: ImportField[];
 
-  constructor(mapping: Mapping) {
-    this.fileFieldName = mapping.fileFieldName;
-    this.constantValue = mapping.constantValue;
-    if (mapping && mapping.objects) {
-      this.objects = mapping.objects;
-    } else {
-      this.objects = [];
-    }
+  constructor({id, name, description, quantity, fields}: ImportGroup) {
+    this.id = id;
+    this.name = name;
+    this.description = description;
+    this.quantity = quantity;
+    this.fields = fields;
   }
 }
