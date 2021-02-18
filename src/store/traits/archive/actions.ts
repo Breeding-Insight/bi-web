@@ -21,21 +21,23 @@ import {ActionTree} from 'vuex';
 import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
 import {LOAD_PAGINATED_TRAITS, LOAD_PAGINATION, LOAD_TRAITS} from "@/store/traits/archive/mutation-types";
 import {SET_CURRENT_CALL} from "@/store/pagination/mutation-types";
+import {GET_ALL_ARCHIVED_TRAITS, GET_ARCHIVED_TRAITS} from "@/store/traits/archive/action-types";
+import {GET_ALL_TRAITS} from "@/store/traits/action-types";
 
 export const actions: ActionTree<ArchiveState, RootState> = {
-    async getAllArchivedTraits({commit, dispatch, rootGetters}, refresh: boolean): Promise<void> {
+    async [GET_ALL_ARCHIVED_TRAITS]({commit, dispatch, rootGetters}, refresh: boolean): Promise<void> {
 
         if (rootGetters['traits/all'].length === 0 || refresh) {
-            await dispatch('traits/getAllTraits', null, {root: true});
+            await dispatch(`traits/${GET_ALL_TRAITS}`, null, {root: true});
         }
 
-        let traits = rootGetters['traits/all'];//.filter(trait => trait.method.methodClass === 'Observation');
-        //let traits = rootGetters['traits/all'].filter(trait => trait.method.methodClass === 'Observation');
+        let traits = rootGetters['traits/all'];
+        //let traits = rootGetters['traits/all'].filter(trait => trait.active === false);
         commit(LOAD_TRAITS, traits);
     },
-    async getArchivedTraits({dispatch, getters, state, commit}, refresh: boolean): Promise<void> {
+    async [GET_ARCHIVED_TRAITS]({dispatch, getters, state, commit}, refresh: boolean): Promise<void> {
         if (state.archivedTraits!.length === 0 || refresh) {
-            await dispatch('getAllArchivedTraits', refresh);
+            await dispatch(GET_ALL_ARCHIVED_TRAITS, refresh);
         }
 
         let paginationQuery: PaginationQuery = getters['pagination/getPaginationSelections'](

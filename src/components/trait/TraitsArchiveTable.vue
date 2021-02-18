@@ -149,7 +149,7 @@ import WarningModal from '@/components/modals/WarningModal.vue'
 import {PlusCircleIcon} from 'vue-feather-icons'
 import {validationMixin} from 'vuelidate';
 import {Trait} from '@/breeding-insight/model/Trait'
-import {mapMutations, mapGetters, mapState, mapActions} from 'vuex'
+import {mapGetters, mapState, mapActions} from 'vuex'
 import {Program} from "@/breeding-insight/model/Program";
 import NewDataForm from '@/components/forms/NewDataForm.vue'
 import BasicInputField from "@/components/forms/BasicInputField.vue";
@@ -158,7 +158,7 @@ import TraitDetailPanel from "@/components/trait/TraitDetailPanel.vue";
 import {TraitService} from "@/breeding-insight/service/TraitService";
 import EmptyTableMessage from "@/components/tables/EmtpyTableMessage.vue";
 import TableColumn from "@/components/tables/TableColumn.vue";
-import {Metadata, Pagination} from "@/breeding-insight/model/BiResponse";
+import {Metadata} from "@/breeding-insight/model/BiResponse";
 import { StringFormatters } from '@/breeding-insight/utils/StringFormatters';
 import { TraitStringFormatters } from '@/breeding-insight/utils/TraitStringFormatters';
 import BaseTraitForm from "@/components/trait/forms/BaseTraitForm.vue";
@@ -168,7 +168,7 @@ import {MethodClass} from "@/breeding-insight/model/Method";
 import {DataType, Scale} from "@/breeding-insight/model/Scale";
 import {SidePanelTableEventBusHandler} from "@/components/tables/SidePanelTableEventBus";
 import { DataFormEventBusHandler } from '@/components/forms/DataFormEventBusHandler';
-import {TOGGLE_SHOW_ALL, UPDATE_PAGE, UPDATE_PAGE_SIZE} from "@/store/pagination/mutation-types";
+import {GET_ALL_ARCHIVED_TRAITS, GET_ARCHIVED_TRAITS} from "@/store/traits/archive/action-types";
 
   @Component({
   mixins: [validationMixin],
@@ -189,14 +189,9 @@ import {TOGGLE_SHOW_ALL, UPDATE_PAGE, UPDATE_PAGE_SIZE} from "@/store/pagination
     })
   },
   methods: {
-    ...mapMutations('traits/archive/pagination',[
-        UPDATE_PAGE,
-        UPDATE_PAGE_SIZE,
-        TOGGLE_SHOW_ALL
-    ]),
     ...mapActions('traits/archive', [
-      'getAllArchivedTraits',
-      'getArchivedTraits'
+      GET_ALL_ARCHIVED_TRAITS,
+      GET_ARCHIVED_TRAITS
     ])
   },
   data: () => ({Trait, StringFormatters, TraitStringFormatters})
@@ -228,7 +223,7 @@ export default class TraitsArchiveTable extends Vue {
   private deactivateActive: boolean = false;
 
   mounted() {
-    this.getArchivedTraits();
+    this[GET_ARCHIVED_TRAITS]();
     this.getObservationLevels();
 
     // Events
@@ -245,15 +240,18 @@ export default class TraitsArchiveTable extends Vue {
   }
   @Watch('paginationController.pageSize')
   onPageSizeChange() {
-    this.getArchivedTraits();
+    let force: boolean = true;
+    this.getArchivedTraits(force);
   }
   @Watch('paginationController.currentPage')
   onPageChange() {
-      this.getArchivedTraits();
+    let force: boolean = false;
+    this.getArchivedTraits(force);
   }
   @Watch('paginationController.showAll')
   onShowAllChange() {
-      this.getArchivedTraits();
+    let force: boolean = false;
+    this.getArchivedTraits(force);
   }
 
   activateEdit(editTrait: Trait) {

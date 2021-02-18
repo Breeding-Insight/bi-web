@@ -23,9 +23,10 @@ import {TraitService} from "@/breeding-insight/service/TraitService";
 import {Trait} from "@/breeding-insight/model/Trait";
 import {Metadata} from "@/breeding-insight/model/BiResponse";
 import {LOAD_TRAITS} from "@/store/traits/mutation-types";
+import {GET_ALL_TRAITS} from "@/store/traits/action-types";
 
 export const actions: ActionTree<TraitState, RootState> = {
-    async getAllTraits({commit, getters, rootGetters}): Promise<void> {
+    async [GET_ALL_TRAITS]({commit, getters, rootGetters}): Promise<void> {
         try {
             let traits: Trait[] = getters.all;
             let metadata: Metadata;
