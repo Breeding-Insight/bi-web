@@ -17,13 +17,33 @@
 
 <template>
   <div>
-    <div class="columns">
+    <div class="columns is-vcentered">
+      <div class="column is-narrow">
+        <h2 class="title is-4">{{field.name}}</h2>
+      </div>
       <div class="column">
-        <span class="mr-2">{{field.name}}</span>
-        <span v-if="field.required" class="has-text-danger">(*required)</span>
+        <span v-if="field.required" class="has-text-danger">
+          <AlertCircleIcon size="1x" class="mr-1 has-vertical-align-middle"></AlertCircleIcon>
+          Required
+        </span>
         <span v-else>(optional)</span>
       </div>
+      <div class="column has-text-right">
+        <button class="button is-info is-small is-rounded" v-on:click="showInfo = !showInfo">
+          <span v-if="!showInfo">Show Info</span>
+          <span v-else>Hide Info</span>
+          <SearchIcon size="1x" class="ml-1"></SearchIcon>
+        </button>
+      </div>
     </div>
+    <article
+        v-if="field.description && showInfo"
+        class="message is-info is-light"
+    >
+      <div class="message-body">
+        {{field.description}}
+      </div>
+    </article>
     <div class="columns">
       <div class="column">
         <BasicSelectField
@@ -32,7 +52,7 @@
           v-bind:options="fileFields"
           v-bind:field-name="`File Column`"
           v-bind:empty-value-name="`-- ${field.name} column --`"
-          v-on:input="$emit('mapping', $event)"
+          v-on:input="setMappingField($event)"
           class="mb-0"
         />
         <BasicInputField
@@ -40,7 +60,7 @@
           v-bind:value="mapping ? mapping.constantValue : undefined"
           v-bind:field-name="`Constant Value`"
           v-bind:placeholder="field.name"
-          v-on:input="$emit('manualEntry', $event)"
+          v-on:input="setManualField($event)"
           class="mb-0"
         />
         <a
@@ -60,21 +80,14 @@
       </div>
       <div class="column">
         <BasicInputField
+            v-bind:value="mapping ? mapping.fieldAlias : undefined"
             v-bind:field-name="`Field Display Name`"
             v-bind:field-help="'The name that will be display during import data review.'"
             v-bind:placeholder="field.name"
-            v-on:input.stop="$emit('displayNameEntry', $event)"
+            v-on:input="setDisplayName($event)"
         />
       </div>
     </div>
-    <article
-        v-if="field.description"
-        class="message is-info is-light"
-    >
-      <div class="message-body">
-        {{field.description}}
-      </div>
-    </article>
   </div>
 </template>
 
@@ -85,9 +98,10 @@
   import BasicSelectField from "@/components/forms/BasicSelectField.vue";
   import BasicInputField from "@/components/forms/BasicInputField.vue";
   import {Mapping} from "@/breeding-insight/model/import/Mapping";
+  import {AlertCircleIcon, SearchIcon} from "vue-feather-icons";
 
   @Component({
-    components: {BasicInputField, BasicSelectField }
+    components: {BasicInputField, BasicSelectField, AlertCircleIcon, SearchIcon }
   })
   export default class FieldMappingRow extends Vue {
     @Prop()
@@ -98,6 +112,9 @@
     fileFields!: string[];
 
     manualInput: boolean = false;
+    showInfo: boolean = false;
+    localMapping!: Mapping;
+    mappingChangeEvent: string = 'mapping-change';
 
     mounted() {
       if (this.mapping && this.mapping.constantValue){
@@ -106,6 +123,29 @@
         this.manualInput = false;
       }
     }
+
+    @Watch('mapping', {immediate: true, deep: true})
+    updateMapping(newVal: Mapping) {
+      this.localMapping = new Mapping(newVal);
+    }
+
+    setManualField(value: string){
+      this.localMapping.constantValue = value;
+      this.$emit(this.mappingChangeEvent, this.localMapping);
+    }
+
+    setMappingField(value: string){
+      this.localMapping.fileFieldName = value;
+      this.$emit(this.mappingChangeEvent, this.localMapping);
+    }
+
+    setDisplayName(value: string) {
+      this.localMapping.fieldAlias = value;
+      this.$emit(this.mappingChangeEvent, this.localMapping);
+    }
   }
 
 </script>
+
+<style scoped>
+</style>

@@ -96,17 +96,7 @@
       >
         <!-- Editing View -->
         <template v-slot:write-display>
-          We found the following columns in your file:
-          <div class="tags">
-            <template v-for="header in importData.headers">
-          <span
-              class="tag"
-              v-bind:key="header"
-          >
-            {{header}}
-          </span>
-            </template>
-          </div>
+          <ColumnSummary v-bind:columns="importData.headers"></ColumnSummary>
 
           <!-- Groups -->
           <template v-for="({config, object}) in getMappings()">
@@ -153,8 +143,18 @@
         <div
           v-bind:key="`objectDescription ${config.id}`"
         >
-          <h2 class="h2">{{config.name}}</h2>
-          <p>{{config.description}}</p>
+          <h1 class="title is-1">{{config.name}}</h1>
+          <div class="subtitle ml-2">
+            <p>{{config.description}}</p>
+          </div>
+        </div>
+
+        <div
+          v-bind:key="`columnSummary${object.id}`"
+          class="box"
+        >
+          <h2 class="title is-4">Reminder</h2>
+          <ColumnSummary v-bind:columns="importData.headers" />
         </div>
 
         <template v-for="field in config.fields">
@@ -169,8 +169,7 @@
                   v-bind:field="field"
                   v-bind:fileFields="importData.headers"
                   v-bind:mapping="object.getField(field.id)"
-                  v-on:mapping="mapping.getObjectMapping(object.id).setFieldMapping(field.id, $event)"
-                  v-on:manualEntry="mapping.getObjectMapping(object.id).setManualMapping(field.id, $event)"
+                  v-on:mapping-change="replaceMapping(object, field, $event)"
               />
             </div>
           </template>
@@ -181,42 +180,20 @@
                 v-bind:key="field.id"
                 class="box"
             >
-              <div v-bind:key="field.id">
-                <h2>{{field.name}}</h2>
-                <p>{{field.description}}</p>
-                <div class="columns">
-                  <div class="column has-text-right">
-                    <button
-                        class="button is-primary"
-                        v-on:click="createNewListMappingEntry(object.id, field.id, field.list_object)"
-                    >
-                      Add {{field.list_object.name}}
-                    </button>
-                  </div>
-                </div>
-              </div>
+              <ListDescriptionRow
+                v-bind:field="field"
+                v-bind:mapping="object.getField(field.id)"
+                v-on:mapping-change="replaceMapping(object, field, $event)"
+              />
             </div>
-            <!-- List items -->
-            <template v-for="({config: subConfig, object: subObject}) in getObjectListMappings(field.list_object, object, field.id)">
-              <div
-                  v-bind:key="subObject.id"
-              >
-                <div
-                    v-bind:key="subConfig.id"
-                    class="box mb-5"
-                >
-                  <template v-for="(subfield) in subConfig.fields">
-                      <FieldMappingRow
-                          v-bind:key="subfield.id"
-                          v-bind:field="subfield"
-                          v-bind:fileFields="importData.headers"
-                          v-on:mapping="mapping.getObjectMapping(subObject.id).setFieldMapping(subfield.id, $event)"
-                          v-on:manualEntry="mapping.getObjectMapping(subObject.id).setManualMapping(subfield.id, $event)"
-                      />
-                  </template>
-                </div>
-              </div>
-            </template>
+            <!-- TODO: Should be lift this up a level? -->
+            <ListMappingRow
+                v-bind:key="`sublist ${field.id}`"
+                v-bind:field="field"
+                v-bind:file-columns="importData.headers"
+                v-bind:mapping="object.getField(field.id)"
+                v-on:mapping-change="replaceMapping(object, field, $event)"
+            />
           </template>
 
           <!-- Relationship objects -->
@@ -225,69 +202,12 @@
                 v-bind:key="field.id"
                 class="box"
             >
-              <div v-bind:key="field.id">
-                <h2>{{field.name}}</h2>
-                <p>{{field.description}}</p>
-                <template v-if="field.relation_options.length > 1">
-                  <div class="control">
-                    <template v-for="relation_type in field.relation_options">
-                      <label
-                          v-bind:key="relation_type.id"
-                          class="radio"
-                      >
-                        <input
-                            type="radio"
-                            v-bind:name="`${field.id} relation`"
-                            v-bind:value="relation_type.id"
-                            v-on:input="setRelationType(object, field, $event.target.value)"
-                        >
-                        {{relation_type.name}}
-                      </label>
-                    </template>
-                  </div>
-                </template>
-                <!-- Relationship view -->
-                <template v-if="object.getField(field.id) && object.getField(field.id).relationValue === ImportRelationType.DB_LOOKUP">
-                  <div class="columns">
-                    <div class="column">
-                      <BasicSelectField
-                          v-bind:options="field.getRelationObject(ImportRelationType.DB_LOOKUP).importFields"
-                          v-bind:field-name="`Import Field Target`"
-                          v-bind:empty-value-name="`-- Import Field column --`"
-                          v-on:input="object.getField(field.id).setRelationTarget($event)"
-                      />
-                    </div>
-                    <div class="column">
-                      <BasicSelectField
-                          v-bind:options="importData.headers"
-                          v-bind:field-name="`File Field Reference Column`"
-                          v-bind:empty-value-name="`-- File Field column --`"
-                          v-on:input="object.getField(field.id).setRelationReference($event)"
-                      />
-                    </div>
-                  </div>
-                </template>
-                <template v-else-if="object.getField(field.id) && object.getField(field.id).relationValue === ImportRelationType.FILE_LOOKUP">
-                  <div class="columns">
-                    <div class="column">
-                      <BasicSelectField
-                          v-bind:options="importData.headers"
-                          v-bind:field-name="`File Field Column Target`"
-                          v-bind:empty-value-name="`-- File Field column --`"
-                          v-on:input="object.getField(field.id).setRelationTarget($event)"
-                      />
-                    </div>
-                    <div class="column">
-                      <BasicSelectField
-                          v-bind:options="importData.headers"
-                          v-bind:field-name="`Import Field Column Reference`"
-                          v-bind:empty-value-name="`-- File Field column --`"
-                          v-on:input="object.getField(field.id).setRelationReference($event)"
-                      />
-                    </div>
-                  </div>
-                </template>
-              </div>
+              <RelationMappingRow
+                  v-bind:field="field"
+                  v-bind:mapping="object.getField(field.id)"
+                  v-bind:file-columns="importData.headers"
+                  v-on:mapping-change="replaceMapping(object, field, $event)"
+              />
             </div>
           </template>
         </template>
@@ -317,6 +237,11 @@
   import {ChevronDownIcon} from "vue-feather-icons";
   import ImportStepCard from "@/components/import/ImportStepCard.vue";
   import ImportGroupSummaryCard from "@/components/import/ImportGroupSummaryCard.vue";
+  import ColumnSummary from "@/components/import/ColumnSummary.vue";
+  import RelationMappingRow from "@/components/import/RelationMappingRow.vue";
+  import {Mapping} from "@/breeding-insight/model/import/Mapping";
+  import ListMappingRow from "@/components/import/ListMappingRow.vue";
+  import ListDescriptionRow from "@/components/import/ListDescriptionRow.vue";
 
   enum ImportState {
     CHOOSE_IMPORT = "CHOOSE_IMPORT",
@@ -350,6 +275,10 @@
 
   @Component({
     components: {
+      ListDescriptionRow,
+      ListMappingRow,
+      RelationMappingRow,
+      ColumnSummary,
       ImportGroupSummaryCard, ImportStepCard, FieldMappingRow, BasicSelectField, FileSelectMessageBox, ChevronDownIcon},
     data: () => ({ImportState, ImportEvent, ImportAction, ImportDataType, ImportRelationType})
   })
@@ -557,7 +486,12 @@
 
     setRelationType(object: ObjectMapping, field: ImportField, value: ImportRelationType) {
       this.mapping.getObjectMapping(object.id!)!.setRelationType(field.id, value);
-      // TODO: Reactivity issue somewhere in here. Need to track it down.
+      // TODO: Reactivity issue somewhere in here. Need to track it down. Maybe can reset the whole object
+      this.$forceUpdate();
+    }
+
+    replaceMapping(object: ObjectMapping, field: ImportField, newMapping: Mapping) {
+      this.mapping.getObjectMapping(object.id!)!.replaceMapping(field.id, newMapping);
       this.$forceUpdate();
     }
 
@@ -574,6 +508,8 @@
   // - Add alias option for field mapping
   // - Connect remaining services, like upload
   // - Fix responsiveness issues
+  //    - Lists
+  //    - Relationships
   // - Define options
   // - Create phenotyping upload config in service. Allow the dev user to switch back and forth
   // - Prototype a real-time lookup relationship
