@@ -26,4 +26,11 @@ export class ImportTypeConfig {
     this.description = description;
     this.groups = groups ? groups.map(group => new ImportGroup(group)) : groups;
   }
+
+  getImportGroup(id: string): ImportGroup | undefined {
+    const groups = this.groups.filter(group => group.id === id);
+    if (groups.length > 0){
+      return groups[0];
+    }
+  }
 }
