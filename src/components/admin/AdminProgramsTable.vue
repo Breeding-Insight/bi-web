@@ -98,7 +98,7 @@
                 v-bind:validations="validations.brapiUrl"
                 v-bind:server-validations="serverError"
                 v-bind:field-name="'BrAPI URL'"
-                v-bind:field-help="'URL of BrAPI service where data will be stored. If left blank, default will be used.'"
+                v-bind:field-help="'URL of BrAPI service where data will be stored. If left blank, system default will be used.'"
             />
           </div>
         </div>
