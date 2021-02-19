@@ -26,7 +26,8 @@ export class ObjectMapping {
     this.object_id = objectMapping.object_id;
     this.id = objectMapping.id ? objectMapping.id : uuidv4();
     if (objectMapping.fields) {
-      this.fields = objectMapping.fields;
+      this.fields = {}
+      Object.keys(objectMapping.fields).forEach(key => this.fields![key] = new Mapping(this.fields![key]));
     } else {
       this.fields = {};
     }
@@ -47,6 +48,10 @@ export class ObjectMapping {
 
   getField(field: string){
     return this.fields![field];
+  }
+
+  replaceMapping(field: string, newMapping: Mapping) {
+    this.fields![field] = newMapping;
   }
 
   // Set field mapping
