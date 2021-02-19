@@ -17,7 +17,7 @@
 
 <template>
   <div class="file-select">
-    <div class="box">
+    <div>
       <article>
 
         <!-- Error messages -->
