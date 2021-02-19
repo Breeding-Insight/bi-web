@@ -57,4 +57,10 @@ export class ImportMappingConfig {
   createObjectMappings(importGroups: ImportGroup[]): {config: ImportGroup, object: ObjectMapping}[] {
     return importGroups.map(importGroup => { return this.createObjectMapping(importGroup) });
   }
+
+  replaceObjectMapping(object_id: string, newObject: ObjectMapping) {
+    let object = this.getObjectMapping(object_id);
+    object = newObject;
+  }
+
 }
