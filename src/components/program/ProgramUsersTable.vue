@@ -283,9 +283,17 @@ export default class ProgramUsersTable extends Vue {
 
   updateUser(updatedUser: ProgramUser) {
 
-    ProgramUserService.update(updatedUser).then(() => {
+    ProgramUserService.update(updatedUser).then((newProgramUser) => {
       this.getUsers();
       this.$emit('show-success-notification', 'Success! ' + updatedUser.name + ' updated.');
+      if(newProgramUser.email === this.activeUser!.email) return UserService.getUserInfo();
+        else return;
+    }).then((user) => {
+      if (user) {
+        store.commit(LOGIN, user);
+        const { rules } = defineAbilityFor(store.state.user, store.state.program);
+        Vue.prototype.$ability.update(rules);
+      }
     }).catch((error) => {
       this.$emit('show-error-notification', error['errorMessage']);
     }).finally(() => this.editUserFormState.bus.$emit(DataFormEventBusHandler.SAVE_COMPLETE_EVENT));
