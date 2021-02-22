@@ -91,14 +91,16 @@
         </div>
         <div class="columns">
           <div class="column">
-            <input type="checkbox" id="checkbox" v-model="customBrapi">
-            <label for="checkbox">Specify custom program data storage location</label>
+            <label class="checkbox">
+              <input type="checkbox" id="checkbox" v-model="customBrapi">
+              Specify custom program data storage location
+            </label>
             <BasicInputField v-if="customBrapi"
                 v-model="newProgram.brapiUrl"
                 v-bind:validations="validations.brapiUrl"
                 v-bind:server-validations="serverError"
                 v-bind:field-name="'BrAPI URL'"
-                v-bind:field-help="'URL of BrAPI service where data will be stored. If left blank, system default will be used.'"
+                v-bind:field-help="'URL of BrAPI service where data will be stored, ex: https://test-server.brapi.org. If left blank, system default will be used.'"
             />
           </div>
         </div>
