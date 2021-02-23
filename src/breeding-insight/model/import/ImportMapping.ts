@@ -38,13 +38,15 @@ export class ImportMappingConfig {
   }
 
   // Get object by id
-  getObjectMapping(id: string): ObjectMapping | undefined {
+  getObjectMapping(id: string): {searchObject?: ObjectMapping, searchPath?: ObjectMapping[]} {
     // Search downward recursively for the object
     for (const object of this.objects!) {
-      const searchObject = object.getObjectById(id);
-      if (searchObject) return searchObject;
+      let path = [];
+      const {searchObject, searchPath} = object.getObjectById(id);
+      if (searchPath) path.push(...searchPath);
+      if (searchObject) return {searchObject, searchPath: path};
     }
-    return undefined;
+    return {};
   }
 
   // Add object
@@ -56,6 +58,10 @@ export class ImportMappingConfig {
 
   createObjectMappings(importGroups: ImportGroup[]): {config: ImportGroup, object: ObjectMapping}[] {
     return importGroups.map(importGroup => { return this.createObjectMapping(importGroup) });
+  }
+
+  getPathToObject(id: string) {
+
   }
 
   replaceObjectMapping(object_id: string, newObject: ObjectMapping) {
