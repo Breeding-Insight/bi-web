@@ -466,7 +466,6 @@
     //TODO: We can make one funtion to combine object and config
     getObjectPathWithConfig(path: ObjectMapping[]): {pathConfig?: ImportGroup, pathObject?: ObjectMapping}[] {
       const result = path.map(pathObject => { return {pathConfig: this.selectedImportConfig!.getImportGroup(pathObject.object_id), pathObject}});
-      console.log(result);
       return result;
     }
 
@@ -499,6 +498,7 @@
   // - Create phenotyping upload config in service. Allow the dev user to switch back and forth
   // - Prototype a real-time lookup relationship
   // - Save to local storage, so if they hit the back button, it doesn't lose all of their data
+  // - Clean up code 
 
 </script>
 

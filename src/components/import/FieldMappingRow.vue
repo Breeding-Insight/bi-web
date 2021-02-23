@@ -130,17 +130,17 @@
     }
 
     setManualField(value: string){
-      this.localMapping.constantValue = value;
+      this.localMapping.setConstantValue(value);
       this.$emit(this.mappingChangeEvent, this.localMapping);
     }
 
     setMappingField(value: string){
-      this.localMapping.fileFieldName = value;
+      this.localMapping.setFileFieldValue(value);
       this.$emit(this.mappingChangeEvent, this.localMapping);
     }
 
     setDisplayName(value: string) {
-      this.localMapping.fieldAlias = value;
+      this.localMapping.setFieldAlias(value);
       this.$emit(this.mappingChangeEvent, this.localMapping);
     }
   }

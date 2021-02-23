@@ -30,6 +30,7 @@ export class Mapping {
     if (mapping) this.constantValue = mapping.constantValue;
     if (mapping) this.fieldAlias = mapping.fieldAlias;
     if (mapping) this.relationValue = mapping.relationValue;
+    if (mapping && mapping.relationMap) this.relationMap = {...mapping.relationMap};
     if (mapping && mapping.objects) {
       this.objects = mapping.objects.map(object => new ObjectMapping(object));
     } else {
@@ -49,6 +50,20 @@ export class Mapping {
       this.relationMap = new ImportRelationMap({});
     }
     this.relationMap.reference = reference;
+  }
+
+  setConstantValue(value: string) {
+    this.fileFieldName = undefined;
+    this.constantValue = value;
+  }
+
+  setFileFieldValue(value: string) {
+    this.constantValue = undefined;
+    this.fileFieldName = value;
+  }
+
+  setFieldAlias(value: string) {
+    this.fieldAlias = value;
   }
 
   addObject(newObject: ObjectMapping) {
