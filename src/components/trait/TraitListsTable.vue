@@ -289,6 +289,7 @@ export default class TraitTable extends Vue {
       if (traitIndex !== -1) { this.traits.splice(traitIndex, 1, updatedTrait); }
 
       this.deactivateActive = false;
+      this.paginationController.updatePage(1);
       this.traitSidePanelState.bus.$emit(this.traitSidePanelState.closePanelEvent);
       this.$emit('show-success-notification', `"${traitClone.traitName}" successfully ${ traitClone.active ? 'restored' : 'archived'}`);
     } catch(err) {
