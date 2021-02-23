@@ -32,6 +32,7 @@
                 type="radio"
                 v-bind:name="`${field.id} relation`"
                 v-bind:value="relation_type.id"
+                v-bind:checked="mapping ? relation_type.id === mapping.relationValue : false"
                 v-on:input="setRelationType($event.target.value)"
             >
             {{relation_type.name}}
@@ -44,6 +45,7 @@
       <div class="columns">
         <div class="column">
           <BasicSelectField
+              v-bind:selected-id="mapping && mapping.relationMap ? mapping.relationMap.target : undefined"
               v-bind:options="field.getRelationObject(ImportRelationType.DB_LOOKUP).importFields"
               v-bind:field-name="`Import Field Target`"
               v-bind:empty-value-name="`-- Import Field column --`"
@@ -52,6 +54,7 @@
         </div>
         <div class="column">
           <BasicSelectField
+              v-bind:selected-id="mapping && mapping.relationMap ? mapping.relationMap.reference : undefined"
               v-bind:options="fileColumns"
               v-bind:field-name="`File Field Reference Column`"
               v-bind:empty-value-name="`-- File Field column --`"
@@ -64,6 +67,7 @@
       <div class="columns">
         <div class="column">
           <BasicSelectField
+              v-bind:selected-id="mapping && mapping.relationMap ? mapping.relationMap.target : undefined"
               v-bind:options="fileColumns"
               v-bind:field-name="`File Field Column Target`"
               v-bind:empty-value-name="`-- File Field column --`"
@@ -72,6 +76,7 @@
         </div>
         <div class="column">
           <BasicSelectField
+              v-bind:selected-id="mapping && mapping.relationMap ? mapping.relationMap.reference : undefined"
               v-bind:options="fileColumns"
               v-bind:field-name="`Import Field Column Reference`"
               v-bind:empty-value-name="`-- File Field column --`"
@@ -112,7 +117,6 @@
 
     @Watch('mapping', {immediate: true, deep: true})
     updateMapping(newVal: Mapping) {
-      console.log(this.mapping);
       this.localMapping = new Mapping(newVal);
     }
 
@@ -122,12 +126,12 @@
     }
 
     setRelationReference(value: string) {
-      this.localMapping.relationMap!.reference = value;
+      this.localMapping.setRelationReference(value);
       this.$emit(this.mappingChangeEvent, this.localMapping);
     }
 
     setRelationTarget(value: string) {
-      this.localMapping.relationMap!.target = value;
+      this.localMapping.setRelationTarget(value);
       this.$emit(this.mappingChangeEvent, this.localMapping);
     }
   }
