@@ -17,30 +17,32 @@
 
 <template>
   <div>
-    <!-- List items -->
-    <template v-for="({config: subConfig, object: subObject}) in getObjectListMappings()">
-      <div
-          v-bind:key="subObject.id"
-      >
-        <div
-            v-bind:key="subConfig.id"
-            class="box mb-5"
-        >
-          <template v-for="(subfield) in subConfig.fields">
-            <FieldMappingRow
-                v-bind:key="subfield.id"
-                v-bind:field="subfield"
-                v-bind:fileFields="fileColumns"
-                v-bind:mapping="subObject.getField(subfield.id)"
-                v-on:mapping-change="setMapping(subObject, $event)"
-            />
-          </template>
+    <div v-bind:key="field.id">
+      <h2>{{field.name}}</h2>
+      <p>{{field.description}}</p>
+      <div class="columns">
+        <div class="column has-text-right">
+          <button
+              class="button is-primary"
+              v-on:click="createNewListMappingEntry()"
+          >
+            Add {{field.list_object.name}}
+          </button>
         </div>
       </div>
-    </template>
+
+      <template v-for="({config, object}) in getObjectListMappings()">
+        <ImportGroupSummaryCard
+            v-bind:key="`test ${object.id}`"
+            v-bind:config="config"
+            v-bind:object="object"
+            v-on:focus-object="$emit('focus-object', $event)"
+        />
+      </template>
+
+    </div>
   </div>
 </template>
-
 
 <script lang="ts">
 
@@ -50,19 +52,17 @@
   import {ImportRelationType} from "@/breeding-insight/model/import/ImportRelation";
   import {ImportField} from "@/breeding-insight/model/import/ImportField";
   import {ObjectMapping} from "@/breeding-insight/model/import/ObjectMapping";
-  import {ImportGroup} from "@/breeding-insight/model/import/ImportGroup";
   import {Mapping} from "@/breeding-insight/model/import/Mapping";
-  import FieldMappingRow from "@/components/import/FieldMappingRow.vue";
+  import {ImportGroup} from "@/breeding-insight/model/import/ImportGroup";
+  import ImportGroupSummaryCard from "@/components/import/ImportGroupSummaryCard.vue";
 
   @Component({
-    components: {BasicInputField, BasicSelectField, FieldMappingRow},
+    components: {BasicInputField, BasicSelectField, ImportGroupSummaryCard},
     data: () => ({ImportRelationType})
   })
   export default class ListMappingRow extends Vue {
     @Prop()
     field!: ImportField;
-    @Prop()
-    fileColumns!: string[];
     @Prop()
     mapping!: Mapping;
 
@@ -71,8 +71,12 @@
 
     @Watch('mapping', {immediate: true, deep: true})
     updateMapping(newVal: Mapping) {
-      console.log(newVal);
       this.localMapping = new Mapping(newVal);
+    }
+
+    createNewListMappingEntry() {
+      this.localMapping.addObject(new ObjectMapping({object_id: this.field.list_object!.id} as ObjectMapping));
+      this.$emit(this.mappingChangeEvent, this.localMapping);
     }
 
     getObjectListMappings(): {config: ImportGroup, object?: ObjectMapping}[] {
@@ -83,13 +87,8 @@
         return [];
       }
     }
-
-    setMapping(object: ObjectMapping, field: ImportField, newMapping: Mapping){
-      //TODO
-      //this.localMapping.getObjectById(object.id!)!.replaceMapping(field.id, newMapping);
-      //this.$emit(this.mappingChangeEvent, this.localObject);
-    }
   }
+
 </script>
 
 <style scoped>

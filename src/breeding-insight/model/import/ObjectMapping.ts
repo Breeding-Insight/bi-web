@@ -35,15 +35,17 @@ export class ObjectMapping {
 
   // Get field mapping
 
-  getObjectById(id: string): ObjectMapping | undefined {
-    if (this.id === id) {return this;}
+  getObjectById(id: string): {searchObject?: ObjectMapping, searchPath?: ObjectMapping[]} {
+    if (this.id === id) { return {searchObject: this, searchPath: [this]}; }
     for (const mapping of Object.values(this.fields!)) {
       for (const object of mapping.objects!){
-        const searchObject = object.getObjectById(id);
-        if (searchObject) return searchObject;
+        let path: ObjectMapping[] = [this];
+        const {searchObject, searchPath} = object.getObjectById(id);
+        if (searchPath) path.push(...searchPath);
+        if (searchObject && searchPath) return {searchObject, searchPath: path};
       }
     }
-    return undefined;
+    return {};
   }
 
   getField(field: string){

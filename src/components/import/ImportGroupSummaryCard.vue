@@ -22,7 +22,7 @@
         <h2 class="card-header-title mb-0">
           {{config.name}}
         </h2>
-        <button class="is-pulled-right" aria-label="edit mapping" v-on:click="$emit('focusObject', object.id)">
+        <button class="is-pulled-right" aria-label="edit mapping" v-on:click="$emit('focus-object', object.id)">
         <span>
           Edit Mapping
           <EditIcon size="1x"></EditIcon>
