@@ -76,7 +76,7 @@
             size="is-small"
             style="background: lightgray"
             class="archive-tag"
-            v-if="!data.active && archivable">
+            v-if="!data.active">
           Archived
         </b-button>
       </template>
@@ -95,7 +95,7 @@
         </div>
         <div class="column is-narrow">
           <a
-            v-if="archivable && data.active"
+            v-if="data.active"
             v-on:click="$emit('archive', data)"
             v-on:keypress.enter.space="$emit('archive', data)"
             tabindex="0"
