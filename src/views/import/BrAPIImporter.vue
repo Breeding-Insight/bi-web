@@ -104,7 +104,7 @@
                 v-bind:key="`test ${object.id}`"
                 v-bind:config="config"
                 v-bind:object="object"
-                v-on:focusObject="focusObjectId = $event"
+                v-on:focus-object="setFocusObject($event)"
             />
           </template>
         </template>
@@ -119,24 +119,29 @@
     <!-- Detailed View -->
     <template v-if="focusObjectId !== null">
       <!-- Actual stuff -->
-      <template v-for="({config, object}) in [getMapping(focusObjectId)]">
+      <template v-for="({config, object, path}) in [getMapping(focusObjectId)]">
 
         <!-- Breadcrumbs -->
         <nav class="breadcrumb" aria-label="breadcrumbs" v-bind:key="`nav${object.id}`">
           <ul>
             <li>
-              <a v-on:click="focusObjectId = null">
+              <a v-on:click="setFocusObject(null)">
                 <span>Mapping - {{selectedImportConfig.name}} Import</span>
               </a>
             </li>
-            <li class="is-active">
-              <a href="#">
+            <template v-for="{pathConfig, pathObject} in getObjectPathWithConfig(path)">
+              <li
+                v-bind:key="`breadcrumb${pathObject.id}`"
+                v-bind:class="{'is-active': pathObject.id === focusObjectId}"
+              >
+                <a href="#" v-on:click="setFocusObject(pathObject.id)">
                 <span class="icon is-small">
                   <i class="fas fa-thumbs-up" aria-hidden="true"></i>
                 </span>
-                <span>{{config.name}}</span>
-              </a>
-            </li>
+                  <span>{{pathConfig.name}}</span>
+                </a>
+              </li>
+            </template>
           </ul>
         </nav>
 
@@ -180,20 +185,13 @@
                 v-bind:key="field.id"
                 class="box"
             >
-              <ListDescriptionRow
+              <ListMappingRow
                 v-bind:field="field"
                 v-bind:mapping="object.getField(field.id)"
                 v-on:mapping-change="replaceMapping(object, field, $event)"
+                v-on:focus-object="focusObjectId = $event"
               />
             </div>
-            <!-- TODO: Should be lift this up a level? -->
-            <ListMappingRow
-                v-bind:key="`sublist ${field.id}`"
-                v-bind:field="field"
-                v-bind:file-columns="importData.headers"
-                v-bind:mapping="object.getField(field.id)"
-                v-on:mapping-change="replaceMapping(object, field, $event)"
-            />
           </template>
 
           <!-- Relationship objects -->
@@ -241,7 +239,6 @@
   import RelationMappingRow from "@/components/import/RelationMappingRow.vue";
   import {Mapping} from "@/breeding-insight/model/import/Mapping";
   import ListMappingRow from "@/components/import/ListMappingRow.vue";
-  import ListDescriptionRow from "@/components/import/ListDescriptionRow.vue";
 
   enum ImportState {
     CHOOSE_IMPORT = "CHOOSE_IMPORT",
@@ -275,7 +272,6 @@
 
   @Component({
     components: {
-      ListDescriptionRow,
       ListMappingRow,
       RelationMappingRow,
       ColumnSummary,
@@ -458,41 +454,30 @@
       return results;
     }
 
-    getMapping(id: string): {config?: ImportGroup, object?: ObjectMapping} | undefined {
-      const object = this.mapping.getObjectMapping(id);
-      if (object){
-        return {config: this.selectedImportConfig!.getImportGroup(object.object_id), object}
+    getMapping(id: string): {config?: ImportGroup, object?: ObjectMapping, path?: ObjectMapping[]} | undefined {
+      const {searchObject, searchPath} = this.mapping.getObjectMapping(id);
+      if (searchObject){
+        return {config: this.selectedImportConfig!.getImportGroup(searchObject.object_id), object: searchObject, path: searchPath}
       } else {
         return undefined;
       }
     }
 
-    getObjectListMappings(importGroup: ImportGroup, targetObject: ObjectMapping, targetField: string): {config: ImportGroup, object?: ObjectMapping}[] {
-      const results = targetObject.getObjectsFromListField(targetField).map(object => { return { config: importGroup, object} });
-      return results;
-    }
-
-    createNewListMappingEntry(objectId: string, targetField: string, importGroup: ImportGroup) {
-      const objectMapping = this.mapping.getObjectMapping(objectId);
-      if (objectMapping) {
-        const object = objectMapping.addObjectToListField(targetField, importGroup);
-      } else {
-        this.$emit('show_error_notification', `Unable to add ${importGroup.name} object`);
-      }
-
-      // TODO: Reactivity issue somewhere in here. Need to track it down.
-      this.$forceUpdate();
-    }
-
-    setRelationType(object: ObjectMapping, field: ImportField, value: ImportRelationType) {
-      this.mapping.getObjectMapping(object.id!)!.setRelationType(field.id, value);
-      // TODO: Reactivity issue somewhere in here. Need to track it down. Maybe can reset the whole object
-      this.$forceUpdate();
+    //TODO: We can make one funtion to combine object and config
+    getObjectPathWithConfig(path: ObjectMapping[]): {pathConfig?: ImportGroup, pathObject?: ObjectMapping}[] {
+      const result = path.map(pathObject => { return {pathConfig: this.selectedImportConfig!.getImportGroup(pathObject.object_id), pathObject}});
+      console.log(result);
+      return result;
     }
 
     replaceMapping(object: ObjectMapping, field: ImportField, newMapping: Mapping) {
-      this.mapping.getObjectMapping(object.id!)!.replaceMapping(field.id, newMapping);
+      const {searchObject} = this.mapping.getObjectMapping(object.id!);
+      searchObject!.replaceMapping(field.id, newMapping);
       this.$forceUpdate();
+    }
+
+    setFocusObject(id: string) {
+      this.focusObjectId = id;
     }
 
   }
@@ -513,6 +498,7 @@
   // - Define options
   // - Create phenotyping upload config in service. Allow the dev user to switch back and forth
   // - Prototype a real-time lookup relationship
+  // - Save to local storage, so if they hit the back button, it doesn't lose all of their data
 
 </script>
 

@@ -28,9 +28,10 @@ export class ImportTypeConfig {
   }
 
   getImportGroup(id: string): ImportGroup | undefined {
-    const groups = this.groups.filter(group => group.id === id);
-    if (groups.length > 0){
-      return groups[0];
+    for (const group of this.groups){
+      const searchGroup = group.getImportGroupById(id);
+      if (searchGroup) return searchGroup;
     }
+    return undefined;
   }
 }

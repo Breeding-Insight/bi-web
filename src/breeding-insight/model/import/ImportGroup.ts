@@ -28,4 +28,17 @@ export class ImportGroup {
     this.quantity = quantity;
     this.fields = fields ? fields.map(field => new ImportField(field)) : fields;
   }
+
+  getImportGroupById(id: string): ImportGroup | undefined {
+    if (this.id === id) {
+      return this;
+    }
+    for (const field of this.fields) {
+      if (field.list_object) {
+        const searchGroup: ImportGroup | undefined = field.list_object.getImportGroupById(id);
+        if (searchGroup) return searchGroup;
+      }
+    }
+    return undefined;
+  }
 }
