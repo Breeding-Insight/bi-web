@@ -70,6 +70,23 @@
       <p class="has-text-weight-bold mt-3 mb-0">Description of collection method</p>
       <p>{{data.method.description}}</p>
 
+      <article v-if="!editable" class="message is-info">
+        <div class="message-body">
+          <div class="media">
+            <figure class="media-left">
+              <p class="image is-24x24">
+                <help-circle-icon size="1.5x"></help-circle-icon>
+              </p>
+            </figure>
+            <div class="media-content">
+              <div class="has-text-dark">
+                Not editable because this trait has associated experiment data.
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
+
       <!-- maybe break out controls for reuse eventually -->
       <div class="columns is-mobile is-centered pt-6">
         <div class="column is-narrow">
@@ -127,9 +144,10 @@
   import BaseTraitForm from "@/components/trait/forms/BaseTraitForm.vue";
   import EditDataForm from "@/components/forms/EditDataForm.vue";
   import { DataFormEventBusHandler } from '@/components/forms/DataFormEventBusHandler';
+  import { HelpCircleIcon } from 'vue-feather-icons'
 
   @Component({
-    components: {EditDataForm, SidePanel, BaseTraitForm },
+    components: {EditDataForm, SidePanel, BaseTraitForm, HelpCircleIcon},
     data: () => ({DataType, MethodClass, Scale, Method})
   })
   export default class TraitDetailPanel extends Vue {
