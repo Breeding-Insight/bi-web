@@ -33,10 +33,6 @@ export class ImportMappingConfig {
     }
   }
 
-  getAllObjectMappings(): ObjectMapping[] {
-    return this.objects!;
-  }
-
   // Get object by id
   getObjectMapping(id: string): {searchObject?: ObjectMapping, searchPath?: ObjectMapping[]} {
     // Search downward recursively for the object
@@ -59,14 +55,4 @@ export class ImportMappingConfig {
   createObjectMappings(importGroups: ImportGroup[]): {config: ImportGroup, object: ObjectMapping}[] {
     return importGroups.map(importGroup => { return this.createObjectMapping(importGroup) });
   }
-
-  getPathToObject(id: string) {
-
-  }
-
-  replaceObjectMapping(object_id: string, newObject: ObjectMapping) {
-    let object = this.getObjectMapping(object_id);
-    object = newObject;
-  }
-
 }

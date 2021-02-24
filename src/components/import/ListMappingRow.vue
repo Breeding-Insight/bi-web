@@ -24,7 +24,7 @@
         <div class="column has-text-right">
           <button
               class="button is-primary"
-              v-on:click="createNewListMappingEntry()"
+              v-on:click="createNewListMappingEntry"
           >
             Add {{field.list_object.name}}
           </button>
@@ -75,7 +75,7 @@
     }
 
     createNewListMappingEntry() {
-      this.localMapping.addObject(new ObjectMapping({object_id: this.field.list_object!.id} as ObjectMapping));
+      this.localMapping.objects = [...this.localMapping.objects!, new ObjectMapping({object_id: this.field.list_object!.id} as ObjectMapping)];
       this.$emit(this.mappingChangeEvent, this.localMapping);
     }
 

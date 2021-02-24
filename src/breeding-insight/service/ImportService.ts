@@ -18,6 +18,7 @@
 import {ImportData} from "@/breeding-insight/model/import/ImportData";
 import {ImportDAO} from "@/breeding-insight/dao/ImportDAO";
 import {ImportTypeConfig} from "@/breeding-insight/model/import/ImportTypeConfig";
+import {ImportMappingConfig} from "@/breeding-insight/model/import/ImportMapping";
 
 export class ImportService {
 
@@ -32,12 +33,18 @@ export class ImportService {
     return ImportDAO.getAllImportTypeConfigs();
   }
 
-  static async getAllMappings(configId: string): Promise<any> {
-    //TODO: Implement once back end is up and running
+  static async getAllMappings(programId: string): Promise<ImportMappingConfig[]> {
+    if (!programId || programId === null){
+      throw 'Program ID not provided';
+    }
+    return ImportDAO.getAllMappings(programId);
   }
 
-  static async postMapping(): Promise<any> {
-    //TODO: Implement once back end is up and running
+  static async createMapping(programId: string, mapping: ImportMappingConfig): Promise<any> {
+    if (!programId || programId === null) {
+      throw 'Program ID not provided';
+    }
+    return ImportDAO.createMapping(programId, mapping);
   }
 
 }

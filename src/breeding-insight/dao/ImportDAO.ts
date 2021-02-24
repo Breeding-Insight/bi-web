@@ -19,6 +19,8 @@ import {ImportData} from "@/breeding-insight/model/import/ImportData";
 import {ImportTypeConfig} from "@/breeding-insight/model/import/ImportTypeConfig";
 import {tblCross} from "@/breeding-insight/dao/mock_data/importMock";
 import {germplasmImport} from "@/breeding-insight/dao/mock_data/ImportTypeMock";
+import {ImportMappingConfig} from "@/breeding-insight/model/import/ImportMapping";
+import { v4 as uuidv4 } from 'uuid';
 
 export class ImportDAO {
 
@@ -35,12 +37,13 @@ export class ImportDAO {
     return fileImports;
   }
 
-  static async getAllMappings(configId: string): Promise<any> {
-    //TODO: Implement once back end is up and running
+  static async getAllMappings(programId: string): Promise<ImportMappingConfig[]> {
+    return [new ImportMappingConfig({name: 'Water Quality', id: uuidv4()} as ImportMappingConfig)];
   }
 
-  static async postMapping(): Promise<any> {
-    //TODO: Implement once back end is up and running
+  static async createMapping(programId: string, mapping: ImportMappingConfig): Promise<any> {
+    console.log(mapping);
+    return true;
   }
 
 }
