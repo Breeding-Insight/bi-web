@@ -12,7 +12,7 @@
             <div class="column is-half">
               <BasicSelectField
                   v-bind:field-name="'Import Type'"
-                  v-bind:options="['Water Quality']"
+                  v-bind:options="importMappingOptions"
               />
             </div>
             <div class="column is-half">
@@ -74,11 +74,18 @@
           >
             <p>{{selectedImportConfig.description}}</p>
           </template>
+          <BasicInputField
+            v-bind:field-name="'Import Mapping Name'"
+            v-bind:field-help="'This is the name of the import mapping users will start when importing a file'"
+            v-bind:value="mapping.name"
+            v-on:input="mapping.name = $event"
+          />
+
           <button
               class="button is-primary"
               v-on:click="importService.send(ImportEvent.IMPORT_TYPE_SELECTED)"
           >
-            Select
+            Confirm
           </button>
         </template>
         <!-- Summary view -->
@@ -107,12 +114,49 @@
                 v-on:focus-object="setFocusObject($event)"
             />
           </template>
+
+          <div class="columns">
+            <div class="column has-text-right">
+              <button
+                class="button"
+                v-on:click="importService.send(ImportEvent.CANCEL_MAPPING)"
+              >
+                Cancel Mapping
+              </button>
+              <button
+                class="button is-primary ml-2"
+                v-on:click="importService.send(ImportEvent.SAVE_MAPPING)"
+              >
+                Save Mapping and Preview Import
+              </button>
+            </div>
+          </div>
         </template>
 
         <!-- Summary View -->
         <template v-slot:summary-display>
           I am a summary
         </template>
+
+      </ImportStepCard>
+
+      <!-- Preview Import -->
+      <ImportStepCard
+          v-if="5 === this.currentStep"
+          title="Step 5: Preview Import"
+          v-bind:completed="5 < this.currentStep"
+          v-bind:readonly="5 < this.currentStep"
+      >
+        <!-- Editing View -->
+        <template v-slot:write-display>
+          I am a preview of the import
+        </template>
+
+        <!-- Summary View -->
+        <template v-slot:summary-display>
+          I am a summary
+        </template>
+
       </ImportStepCard>
     </template>
 
@@ -239,6 +283,11 @@
   import RelationMappingRow from "@/components/import/RelationMappingRow.vue";
   import {Mapping} from "@/breeding-insight/model/import/Mapping";
   import ListMappingRow from "@/components/import/ListMappingRow.vue";
+  import {TraitService} from "@/breeding-insight/service/TraitService";
+  import {mapGetters} from "vuex";
+  import {Program} from "@/breeding-insight/model/Program";
+  import {User} from "@/breeding-insight/model/User";
+  import BasicInputField from "@/components/forms/BasicInputField.vue";
 
   enum ImportState {
     CHOOSE_IMPORT = "CHOOSE_IMPORT",
@@ -247,7 +296,8 @@
     LOADING = "LOADING",
     IMPORT_ERROR = "IMPORT_ERROR",
     CHOOSE_IMPORT_TYPE = "CHOOSE_IMPORT_TYPE",
-    MAPPING = "MAPPING"
+    MAPPING = "MAPPING",
+    PREVIEW_IMPORT = "PREVIEW_IMPORT"
   }
 
   enum ImportEvent {
@@ -256,7 +306,9 @@
     IMPORT_SUCCESS = "IMPORT_SUCCESS",
     IMPORT_ERROR = "IMPORT_ERROR",
     LOADING_COMPLETE = "LOADING_COMPLETE",
-    IMPORT_TYPE_SELECTED = "IMPORT_TYPE_SELECTED"
+    IMPORT_TYPE_SELECTED = "IMPORT_TYPE_SELECTED",
+    SAVE_MAPPING = "SAVE_MAPPING",
+    CANCEL_MAPPING = "CANCEL_MAPPING"
   }
 
   enum ImportAction {
@@ -267,19 +319,30 @@
     GET_UPLOADED_FILE = "GET_UPLOADED_FILE",
     SHOW_IMPORT_TYPE = "SHOW_IMPORT_TYPE",
     MAPPING_STARTED = "MAPPING_STARTED",
+    SAVE_MAPPING = "SAVE_MAPPING",
+    CANCEL_MAPPING = "CANCEL_MAPPING",
     NEXT_STEP = "NEXT_STEP"
   }
 
   @Component({
     components: {
+      BasicInputField,
       ListMappingRow,
       RelationMappingRow,
       ColumnSummary,
       ImportGroupSummaryCard, ImportStepCard, FieldMappingRow, BasicSelectField, FileSelectMessageBox, ChevronDownIcon},
-    data: () => ({ImportState, ImportEvent, ImportAction, ImportDataType, ImportRelationType})
+    data: () => ({ImportState, ImportEvent, ImportAction, ImportDataType, ImportRelationType}),
+    computed: {
+      ...mapGetters([
+        'activeProgram',
+        'activeUser'
+      ])
+    }
   })
   export default class BrAPIImporter extends Vue {
 
+    private activeProgram?: Program;
+    private activeUser?: User;
     private file : File | null = null;
     private import_errors: ValidationError | string | null = null;
     private showImportOption: boolean = false;
@@ -295,6 +358,8 @@
     private importData = ImportData;
     private importConfigOptions: any[] = [];
     private mapping: ImportMappingConfig = new ImportMappingConfig(undefined);
+    private importMappings: ImportMappingConfig[] = [];
+    private importMappingOptions: any[] = [];
 
     private currentStep = 1;
     private state = ImportState.CHOOSE_IMPORT;
@@ -344,6 +409,18 @@
           },
           [ImportState.MAPPING]: {
             entry: ImportAction.MAPPING_STARTED,
+            on: {
+              [ImportEvent.CANCEL_MAPPING]: {
+                target: ImportState.CHOOSE_IMPORT,
+                actions: ImportAction.CANCEL_MAPPING
+              },
+              [ImportEvent.SAVE_MAPPING]: {
+                target: ImportState.PREVIEW_IMPORT,
+                actions: [ImportAction.SAVE_MAPPING, ImportAction.NEXT_STEP]
+              }
+            }
+          },
+          [ImportState.PREVIEW_IMPORT]: {
             on: {}
           }
         }
@@ -376,6 +453,12 @@
           },
           [ImportAction.MAPPING_STARTED]: (context, event) => {
             this.startMapping();
+          },
+          [ImportAction.SAVE_MAPPING]: (context, event) => {
+            this.saveMapping();
+          },
+          [ImportAction.CANCEL_MAPPING]: (context, event) => {
+            this.cancelMapping();
           }
         }
     });
@@ -384,6 +467,7 @@
     private importService = interpret(this.importStateMachine);
 
     created() {
+      this.getImportMappings();
       this.importService.subscribe(state => {
         this.state = ImportState[state.value as keyof typeof ImportState];
       });
@@ -409,14 +493,25 @@
     }
 
     showImportType() {
+      this.mapping = new ImportMappingConfig(undefined);
       this.importTypeShow = true;
     }
 
     startMapping() {
       // Get the import config
-      this.mapping = new ImportMappingConfig(undefined);
       this.mapping.createObjectMappings(this.selectedImportConfig!.groups);
       this.showMapping = true;
+    }
+
+    async getImportMappings() {
+      try {
+        const importMappings: ImportMappingConfig[] = await ImportService.getAllMappings(this.activeProgram!.id!);
+        this.importMappings = importMappings;
+        this.importMappingOptions = importMappings.map(importMapping => { return { 'id': importMapping.id, 'name': importMapping.name}; });
+      } catch (e) {
+        this.$log.error(e);
+        this.$emit('show-error-notification', `Unable to load existing import mappings`);
+      }
     }
 
     async getImportConfigs() {
@@ -439,6 +534,22 @@
         this.$log.error(e);
         this.$emit('show-error-notification', `Unable to load imported file`);
       }
+    }
+
+    saveMapping() {
+      try {
+        // POST mapping
+        ImportService.createMapping(this.activeProgram!.id!, this.mapping);
+        // TODO: GET preview
+      } catch (e) {
+        this.$log.error(e);
+        this.$emit('show-error-notification', `Unable to save import mapping`);
+      }
+    }
+
+    cancelMapping() {
+      // Abort mapping, go back to step 1
+      this.$router.go();
     }
 
     selectImportConfig(importId: string) {
@@ -489,16 +600,9 @@
   //    - Make mapping fields prettier
   //      - Make mapping fields cards
   //    - Complete summary fields
-  // - Add alias option for field mapping
-  // - Connect remaining services, like upload
-  // - Fix responsiveness issues
-  //    - Lists
-  //    - Relationships
-  // - Define options
   // - Create phenotyping upload config in service. Allow the dev user to switch back and forth
   // - Prototype a real-time lookup relationship
   // - Save to local storage, so if they hit the back button, it doesn't lose all of their data
-  // - Clean up code 
 
 </script>
 

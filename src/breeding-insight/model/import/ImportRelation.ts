@@ -29,8 +29,4 @@ export class ImportRelation {
     this.description = importRelation.description;
     this.importFields = importRelation.importFields;
   }
-
-  getDbLookupFields() {
-    return this.importFields;
-  }
 }
