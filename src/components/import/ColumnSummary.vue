@@ -42,7 +42,7 @@
   })
   export default class ImportGroupSummaryCard extends Vue {
     @Prop()
-    columns: string[];
+    columns!: string[];
   }
 </script>
 
