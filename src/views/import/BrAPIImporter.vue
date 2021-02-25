@@ -263,7 +263,6 @@
 
 
   import {Component, Vue} from "vue-property-decorator";
-  import BasicSelectField from "@/components/forms/BasicSelectField";
   import {createMachine, interpret} from "@xstate/fsm";
   import {ValidationError} from "@/breeding-insight/model/errors/ValidationError";
   import FileSelectMessageBox from "@/components/file-import/FileSelectMessageBox.vue";
@@ -283,11 +282,11 @@
   import RelationMappingRow from "@/components/import/RelationMappingRow.vue";
   import {Mapping} from "@/breeding-insight/model/import/Mapping";
   import ListMappingRow from "@/components/import/ListMappingRow.vue";
-  import {TraitService} from "@/breeding-insight/service/TraitService";
   import {mapGetters} from "vuex";
   import {Program} from "@/breeding-insight/model/Program";
   import {User} from "@/breeding-insight/model/User";
   import BasicInputField from "@/components/forms/BasicInputField.vue";
+  import BasicSelectField from "@/components/forms/BasicSelectField.vue";
 
   enum ImportState {
     CHOOSE_IMPORT = "CHOOSE_IMPORT",
@@ -355,7 +354,7 @@
     private currentImportId: string = '1';
     private importConfigs: ImportTypeConfig[] = [];
     private selectedImportConfig: ImportTypeConfig | null = null
-    private importData = ImportData;
+    private importData?: ImportData;
     private importConfigOptions: any[] = [];
     private mapping: ImportMappingConfig = new ImportMappingConfig(undefined);
     private importMappings: ImportMappingConfig[] = [];
@@ -527,8 +526,8 @@
 
     async getImport() {
       try {
-        const importData: ImportData = await ImportService.getImport(this.currentImportId);
-        this.importData = importData;
+        const importDataResult: ImportData = await ImportService.getImport(this.currentImportId);
+        this.importData = importDataResult;
         this.importService.send(ImportEvent.LOADING_COMPLETE);
       } catch (e) {
         this.$log.error(e);
@@ -549,7 +548,7 @@
 
     cancelMapping() {
       // Abort mapping, go back to step 1
-      this.$router.go();
+      this.$router.go(0);
     }
 
     selectImportConfig(importId: string) {
