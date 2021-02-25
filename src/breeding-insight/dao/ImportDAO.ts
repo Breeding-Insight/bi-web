@@ -20,6 +20,7 @@ import {ImportTypeConfig} from "@/breeding-insight/model/import/ImportTypeConfig
 import {tblCross} from "@/breeding-insight/dao/mock_data/importMock";
 import {germplasmImport} from "@/breeding-insight/dao/mock_data/ImportTypeMock";
 import {ImportMappingConfig} from "@/breeding-insight/model/import/ImportMapping";
+import {Vue} from "vue-property-decorator";
 import { v4 as uuidv4 } from 'uuid';
 
 export class ImportDAO {
@@ -42,7 +43,7 @@ export class ImportDAO {
   }
 
   static async createMapping(programId: string, mapping: ImportMappingConfig): Promise<any> {
-    console.log(mapping);
+    Vue.$log.debug(mapping);
     return true;
   }
 
