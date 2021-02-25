@@ -20,6 +20,7 @@ import Vuex, { StoreOptions } from 'vuex';
 import { RootState } from './types';
 import { mutations } from './mutations';
 import {actions} from './actions';
+import {traits} from '@/store/traits/index';
 
 Vue.use(Vuex);
 
@@ -34,6 +35,9 @@ const store: StoreOptions<RootState> = {
     user: undefined,
     program: undefined,
     firstVisit: undefined
+  },
+  modules: {
+    traits
   },
   mutations,
   actions,

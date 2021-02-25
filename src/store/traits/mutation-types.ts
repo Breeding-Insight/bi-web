@@ -15,18 +15,4 @@
  * limitations under the License.
  */
 
-import {User} from "@/breeding-insight/model/User";
-import {Program} from "@/breeding-insight/model/Program";
-import {TraitState} from "@/store/traits/types";
-
-export interface RootState {
-  loggedIn: boolean;
-  user?: User;
-  program?: Program;
-  apiError: boolean;
-  apiUnavailable: boolean;
-  loginServerError: boolean;
-  requestedPath?: string;
-  firstVisit?: boolean;
-  traits: TraitState;
-}
+export const LOAD_TRAITS = 'loadTraits';

@@ -15,18 +15,7 @@
  * limitations under the License.
  */
 
-import {User} from "@/breeding-insight/model/User";
-import {Program} from "@/breeding-insight/model/Program";
-import {TraitState} from "@/store/traits/types";
-
-export interface RootState {
-  loggedIn: boolean;
-  user?: User;
-  program?: Program;
-  apiError: boolean;
-  apiUnavailable: boolean;
-  loginServerError: boolean;
-  requestedPath?: string;
-  firstVisit?: boolean;
-  traits: TraitState;
-}
+export const TOGGLE_SHOW_ALL = 'toggleShowAll';
+export const UPDATE_PAGE_SIZE = 'updatePageSize';
+export const UPDATE_PAGE = 'updatePage';
+export const SET_CURRENT_CALL = 'setCurrentCall';

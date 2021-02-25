@@ -15,18 +15,13 @@
  * limitations under the License.
  */
 
-import {User} from "@/breeding-insight/model/User";
-import {Program} from "@/breeding-insight/model/Program";
+import {GetterTree} from 'vuex';
 import {TraitState} from "@/store/traits/types";
+import {RootState} from "@/store/types";
+import {Trait} from "@/breeding-insight/model/Trait";
 
-export interface RootState {
-  loggedIn: boolean;
-  user?: User;
-  program?: Program;
-  apiError: boolean;
-  apiUnavailable: boolean;
-  loginServerError: boolean;
-  requestedPath?: string;
-  firstVisit?: boolean;
-  traits: TraitState;
-}
+export const getters: GetterTree<TraitState, RootState> = {
+    all(state): Trait[] | undefined {
+      return state.traits;
+    }
+};

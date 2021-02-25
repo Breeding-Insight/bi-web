@@ -15,18 +15,24 @@
  * limitations under the License.
  */
 
-import {User} from "@/breeding-insight/model/User";
-import {Program} from "@/breeding-insight/model/Program";
-import {TraitState} from "@/store/traits/types";
+import {Module} from 'vuex';
+import {getters} from '@/store/pagination/getters';
+import {mutations} from '@/store/pagination/mutations';
+import {PaginationControllerState} from '@/store/pagination/types';
+import {RootState} from '@/store/types';
 
-export interface RootState {
-  loggedIn: boolean;
-  user?: User;
-  program?: Program;
-  apiError: boolean;
-  apiUnavailable: boolean;
-  loginServerError: boolean;
-  requestedPath?: string;
-  firstVisit?: boolean;
-  traits: TraitState;
-}
+export const state: PaginationControllerState = {
+    currentPage: 1,
+    pageSize: 50,
+    showAll: false,
+    currentCall: undefined
+};
+
+const namespaced: boolean = true
+
+export const pagination: Module<PaginationControllerState, RootState> = {
+    namespaced,
+    state,
+    getters,
+    mutations
+};

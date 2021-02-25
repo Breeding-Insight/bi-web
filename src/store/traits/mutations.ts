@@ -15,18 +15,13 @@
  * limitations under the License.
  */
 
-import {User} from "@/breeding-insight/model/User";
-import {Program} from "@/breeding-insight/model/Program";
 import {TraitState} from "@/store/traits/types";
+import { MutationTree } from 'vuex';
+import {LOAD_TRAITS} from "@/store/traits/mutation-types";
+import {Trait} from "@/breeding-insight/model/Trait";
 
-export interface RootState {
-  loggedIn: boolean;
-  user?: User;
-  program?: Program;
-  apiError: boolean;
-  apiUnavailable: boolean;
-  loginServerError: boolean;
-  requestedPath?: string;
-  firstVisit?: boolean;
-  traits: TraitState;
-}
+export const mutations: MutationTree<TraitState> = {
+    [LOAD_TRAITS](state: TraitState, traits: Trait[]) {
+        state.traits = traits;
+    }
+};

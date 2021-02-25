@@ -18,15 +18,22 @@
 <template>
   <div class="traits-archived">
     <h1 class="title">Archived Traits</h1>
+    <TraitsArchiveTable
+        @show-success-notification="$emit('show-success-notification', $event)"
+        @show-error-notification="$emit('show-error-notification', $event)"
+    >
+    </TraitsArchiveTable>
   </div>
 </template>
 
 <script lang="ts">
-  import { Component, Prop, Vue } from 'vue-property-decorator'
+  import { Component } from 'vue-property-decorator'
+  import TraitsArchiveTable from '@/components/trait/TraitsArchiveTable.vue'
   import ProgramsBase from "@/components/program/ProgramsBase.vue";
 
   @Component({
     components: {
+      TraitsArchiveTable
     }
   })
   export default class TraitsArchived extends ProgramsBase {

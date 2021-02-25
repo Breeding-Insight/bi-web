@@ -15,18 +15,20 @@
  * limitations under the License.
  */
 
-import {User} from "@/breeding-insight/model/User";
-import {Program} from "@/breeding-insight/model/Program";
-import {TraitState} from "@/store/traits/types";
+import {GetterTree} from 'vuex';
+import {ArchiveState} from "@/store/traits/archive/types";
+import {RootState} from "@/store/types";
+import {Trait} from "@/breeding-insight/model/Trait";
+import {Pagination} from "@/breeding-insight/model/BiResponse";
 
-export interface RootState {
-  loggedIn: boolean;
-  user?: User;
-  program?: Program;
-  apiError: boolean;
-  apiUnavailable: boolean;
-  loginServerError: boolean;
-  requestedPath?: string;
-  firstVisit?: boolean;
-  traits: TraitState;
-}
+export const getters: GetterTree<ArchiveState, RootState> = {
+    all(state): Trait[] | undefined {
+        return state.archivedTraits;
+    },
+    archivedTraits(state, getters, rootState): Trait[] | undefined {
+        return rootState.traits.traits.filter(trait => trait.method.methodClass === 'Observation');
+    },
+    archivePagination(state): Pagination {
+        return state.archivePagination;
+    }
+};
