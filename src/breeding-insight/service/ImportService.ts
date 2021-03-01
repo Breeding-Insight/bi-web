@@ -19,6 +19,7 @@ import {ImportData} from "@/breeding-insight/model/import/ImportData";
 import {ImportDAO} from "@/breeding-insight/dao/ImportDAO";
 import {ImportTypeConfig} from "@/breeding-insight/model/import/ImportTypeConfig";
 import {ImportMappingConfig} from "@/breeding-insight/model/import/ImportMapping";
+import {BiResponse} from "@/breeding-insight/model/BiResponse";
 
 export class ImportService {
 
@@ -30,7 +31,10 @@ export class ImportService {
   }
 
   static async getAllImportTypeConfigs(): Promise<ImportTypeConfig[]> {
-    return ImportDAO.getAllImportTypeConfigs();
+    const response: BiResponse = await ImportDAO.getAllImportTypeConfigs();
+    const configs: ImportTypeConfig[] = response.result.data.map((config: ImportTypeConfig) => new ImportTypeConfig(config));
+    console.log(configs);
+    return configs;
   }
 
   static async getAllMappings(programId: string): Promise<ImportMappingConfig[]> {

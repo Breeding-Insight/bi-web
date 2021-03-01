@@ -208,7 +208,7 @@
 
         <template v-for="field in config.fields">
           <!-- Simple fields -->
-          <template v-if="field.type !== ImportDataType.List && field.type !== ImportDataType.Relationship">
+          <template v-if="field.type !== ImportDataType.LIST && field.type !== ImportDataType.RELATIONSHIP">
             <div
                 v-bind:key="field.id"
                 class="box mb-5"
@@ -224,7 +224,7 @@
           </template>
 
           <!-- List fields -->
-          <template v-else-if="field.type === ImportDataType.List">
+          <template v-else-if="field.type === ImportDataType.LIST">
             <div
                 v-bind:key="field.id"
                 class="box"
@@ -239,7 +239,7 @@
           </template>
 
           <!-- Relationship objects -->
-          <template v-else-if="field.type === ImportDataType.Relationship">
+          <template v-else-if="field.type === ImportDataType.RELATIONSHIP">
             <div
                 v-bind:key="field.id"
                 class="box"
@@ -498,7 +498,7 @@
 
     startMapping() {
       // Get the import config
-      this.mapping.createObjectMappings(this.selectedImportConfig!.groups);
+      this.mapping.createObjectMappings(this.selectedImportConfig!.objects);
       this.showMapping = true;
     }
 
@@ -557,7 +557,7 @@
 
     // Does not actually have possibility for object to be undefined
     getMappings(): {config: ImportGroup, object?: ObjectMapping}[] {
-      const results = this.selectedImportConfig!.groups.map(importGroup => {
+      const results = this.selectedImportConfig!.objects.map(importGroup => {
         const object = this.mapping.objects!.find(object => object.object_id === importGroup.id);
         return { config: importGroup, object };
       }).filter(result => result.object);

@@ -22,6 +22,8 @@ import {germplasmImport} from "@/breeding-insight/dao/mock_data/ImportTypeMock";
 import {ImportMappingConfig} from "@/breeding-insight/model/import/ImportMapping";
 import {Vue} from "vue-property-decorator";
 import { v4 as uuidv4 } from 'uuid';
+import * as api from "@/util/api";
+import {BiResponse, Response} from "@/breeding-insight/model/BiResponse";
 
 export class ImportDAO {
 
@@ -32,10 +34,12 @@ export class ImportDAO {
     return fileImport[0];
   }
 
-  static async getAllImportTypeConfigs(): Promise<ImportTypeConfig[]> {
-    //TODO: Implement once back end is up and running
-    const fileImports = [germplasmImport];
-    return fileImports;
+  static async getAllImportTypeConfigs(): Promise<BiResponse> {
+    const { data } =  await api.call({
+      url: `${process.env.VUE_APP_BI_API_V1_PATH}/import/types`,
+      method: 'get'
+    }) as Response;
+    return new BiResponse(data);
   }
 
   static async getAllMappings(programId: string): Promise<ImportMappingConfig[]> {
