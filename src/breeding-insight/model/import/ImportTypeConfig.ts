@@ -18,17 +18,17 @@ export class ImportTypeConfig {
   id: string;
   name: string;
   description: string;
-  groups: ImportGroup[];
+  objects: ImportGroup[];
 
-  constructor({id, name, description, groups}: ImportTypeConfig) {
+  constructor({id, name, description, objects}: ImportTypeConfig) {
     this.id = id;
     this.name = name;
     this.description = description;
-    this.groups = groups ? groups.map(group => new ImportGroup(group)) : groups;
+    this.objects = objects ? objects.map(object => new ImportGroup(object)) : objects;
   }
 
   getImportGroup(id: string): ImportGroup | undefined {
-    for (const group of this.groups){
+    for (const group of this.objects){
       const searchGroup = group.getImportGroupById(id);
       if (searchGroup) return searchGroup;
     }
