@@ -21,9 +21,9 @@
     <div class="subtitle ml-2">
       <p>{{field.description}}</p>
     </div>
-    <template v-if="field.relation_options.length > 1">
+    <template v-if="field.relationOptions.length > 1">
       <div class="control">
-        <template v-for="relation_type in field.relation_options">
+        <template v-for="relation_type in field.relationOptions">
           <label
               v-bind:key="relation_type.id"
               class="radio"
