@@ -26,7 +26,7 @@
               class="button is-primary"
               v-on:click="createNewListMappingEntry"
           >
-            Add {{field.list_object.name}}
+            Add {{field.listObject.name}}
           </button>
         </div>
       </div>
@@ -75,13 +75,13 @@
     }
 
     createNewListMappingEntry() {
-      this.localMapping.objects = [...this.localMapping.objects!, new ObjectMapping({object_id: this.field.list_object!.id} as ObjectMapping)];
+      this.localMapping.objects = [...this.localMapping.objects!, new ObjectMapping({object_id: this.field.listObject!.id} as ObjectMapping)];
       this.$emit(this.mappingChangeEvent, this.localMapping);
     }
 
     getObjectListMappings(): {config: ImportGroup, object?: ObjectMapping}[] {
       if (this.mapping){
-        const results = this.mapping.objects!.map(object => { return { config: this.field.list_object!, object}});
+        const results = this.mapping.objects!.map(object => { return { config: this.field.listObject!, object}});
         return results;
       } else {
         return [];

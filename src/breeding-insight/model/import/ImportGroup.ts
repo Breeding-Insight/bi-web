@@ -34,8 +34,8 @@ export class ImportGroup {
       return this;
     }
     for (const field of this.fields) {
-      if (field.list_object) {
-        const searchGroup: ImportGroup | undefined = field.list_object.getImportGroupById(id);
+      if (field.listObject) {
+        const searchGroup: ImportGroup | undefined = field.listObject.getImportGroupById(id);
         if (searchGroup) return searchGroup;
       }
     }
