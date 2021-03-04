@@ -33,7 +33,6 @@ export class ImportService {
   static async getAllImportTypeConfigs(): Promise<ImportTypeConfig[]> {
     const response: BiResponse = await ImportDAO.getAllImportTypeConfigs();
     const configs: ImportTypeConfig[] = response.result.data.map((config: ImportTypeConfig) => new ImportTypeConfig(config));
-    console.log(configs);
     return configs;
   }
 
@@ -44,11 +43,23 @@ export class ImportService {
     return ImportDAO.getAllMappings(programId);
   }
 
-  static async createMapping(programId: string, mapping: ImportMappingConfig): Promise<any> {
+  static async updateMapping(programId: string, mapping: ImportMappingConfig, validate: boolean): Promise<any> {
+    if (!programId || programId === null) throw 'Program ID not provided';
+    if (!mapping || !mapping.id) throw 'Mapping must have an id.' +
+    ''
+    const response: BiResponse = await ImportDAO.updateMapping(programId, mapping, validate);
+    const importMapping: ImportMappingConfig = new ImportMappingConfig(response.result);
+    return importMapping;
+  }
+
+  static async saveMappingFile(programId: string, file: File): Promise<ImportMappingConfig> {
     if (!programId || programId === null) {
       throw 'Program ID not provided';
     }
-    return ImportDAO.createMapping(programId, mapping);
+
+    const response: BiResponse = await ImportDAO.saveMappingFile(programId, file);
+    const importMapping: ImportMappingConfig = new ImportMappingConfig(response.result);
+    return importMapping;
   }
 
 }
