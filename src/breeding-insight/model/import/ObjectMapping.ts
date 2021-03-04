@@ -17,11 +17,11 @@ import { v4 as uuidv4 } from "uuid";
 
 export class ObjectMapping {
   id?: string;
-  object_id: string;
+  objectId: string;
   fields?: {[key:string]:Mapping}
 
   constructor(objectMapping: ObjectMapping) {
-    this.object_id = objectMapping.object_id;
+    this.objectId = objectMapping.objectId;
     this.id = objectMapping.id ? objectMapping.id : uuidv4();
     if (objectMapping.fields) {
       this.fields = {}

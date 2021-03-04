@@ -16,9 +16,7 @@
  */
 
 import {ImportData} from "@/breeding-insight/model/import/ImportData";
-import {ImportTypeConfig} from "@/breeding-insight/model/import/ImportTypeConfig";
 import {tblCross} from "@/breeding-insight/dao/mock_data/importMock";
-import {germplasmImport} from "@/breeding-insight/dao/mock_data/ImportTypeMock";
 import {ImportMappingConfig} from "@/breeding-insight/model/import/ImportMapping";
 import {Vue} from "vue-property-decorator";
 import { v4 as uuidv4 } from 'uuid';
@@ -46,9 +44,32 @@ export class ImportDAO {
     return [new ImportMappingConfig({name: 'Water Quality', id: uuidv4()} as ImportMappingConfig)];
   }
 
-  static async createMapping(programId: string, mapping: ImportMappingConfig): Promise<any> {
-    Vue.$log.debug(mapping);
-    return true;
+  static async updateMapping(programId: string, mapping: ImportMappingConfig, validate: boolean): Promise<any> {
+    const mappingWithoutFile: ImportMappingConfig = new ImportMappingConfig({
+      id: mapping.id,
+      name: mapping.name,
+      importTypeId: mapping.importTypeId,
+      objects: mapping.objects
+    } as ImportMappingConfig);
+    const { data } =  await api.call({
+      url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/import/mapping/${mapping.id}?validate=${validate}`,
+      method: 'put',
+      data: mappingWithoutFile,
+    }) as Response;
+    return new BiResponse(data);
+  }
+
+  static async saveMappingFile(programId: string, file: File): Promise<BiResponse> {
+
+      var formData = new FormData();
+      formData.append("file", file);
+
+      const {data} = await api.call({
+        url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/import/mapping/file`,
+        method: 'post', data: formData}
+        ) as Response;
+
+      return new BiResponse(data);
   }
 
 }

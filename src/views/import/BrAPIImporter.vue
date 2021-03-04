@@ -83,7 +83,7 @@
 
           <button
               class="button is-primary"
-              v-on:click="importService.send(ImportEvent.IMPORT_TYPE_SELECTED)"
+              v-on:click="importService.send(ImportEvent.SAVE_MAPPING)"
           >
             Confirm
           </button>
@@ -103,7 +103,7 @@
       >
         <!-- Editing View -->
         <template v-slot:write-display>
-          <ColumnSummary v-bind:columns="importData.headers"></ColumnSummary>
+          <ColumnSummary v-bind:columns="mapping.getFileHeaders()"></ColumnSummary>
 
           <!-- Groups -->
           <template v-for="({config, object}) in getMappings()">
@@ -203,7 +203,7 @@
           class="box"
         >
           <h2 class="title is-4">Reminder</h2>
-          <ColumnSummary v-bind:columns="importData.headers" />
+          <ColumnSummary v-bind:columns="mapping.getFileHeaders()" />
         </div>
 
         <template v-for="field in config.fields">
@@ -216,7 +216,7 @@
               <FieldMappingRow
                   v-bind:key="field.id"
                   v-bind:field="field"
-                  v-bind:fileFields="importData.headers"
+                  v-bind:fileFields="mapping.getFileHeaders()"
                   v-bind:mapping="object.getField(field.id)"
                   v-on:mapping-change="replaceMapping(object, field, $event)"
               />
@@ -247,7 +247,7 @@
               <RelationMappingRow
                   v-bind:field="field"
                   v-bind:mapping="object.getField(field.id)"
-                  v-bind:file-columns="importData.headers"
+                  v-bind:file-columns="mapping.getFileHeaders()"
                   v-on:mapping-change="replaceMapping(object, field, $event)"
               />
             </div>
@@ -292,9 +292,10 @@
     CHOOSE_IMPORT = "CHOOSE_IMPORT",
     CHOOSE_FILE = "CHOOSE_FILE",
     IMPORTING = "IMPORTING",
-    LOADING = "LOADING",
     IMPORT_ERROR = "IMPORT_ERROR",
     CHOOSE_IMPORT_TYPE = "CHOOSE_IMPORT_TYPE",
+    SAVING_IMPORT_TYPE = "SAVING_IMPORT_TYPE",
+    IMPORT_TYPE_ERROR = "IMPORT_TYPE_ERROR",
     MAPPING = "MAPPING",
     PREVIEW_IMPORT = "PREVIEW_IMPORT"
   }
@@ -305,8 +306,9 @@
     IMPORT_SUCCESS = "IMPORT_SUCCESS",
     IMPORT_ERROR = "IMPORT_ERROR",
     LOADING_COMPLETE = "LOADING_COMPLETE",
-    IMPORT_TYPE_SELECTED = "IMPORT_TYPE_SELECTED",
     SAVE_MAPPING = "SAVE_MAPPING",
+    SAVE_MAPPING_ERROR = "SAVE_MAPPING_ERROR",
+    SAVE_MAPPING_SUCCESS = "SAVE_MAPPING_SUCCESS",
     CANCEL_MAPPING = "CANCEL_MAPPING"
   }
 
@@ -384,26 +386,27 @@
           [ImportState.IMPORTING]: {
             entry: ImportAction.UPLOAD_FILE,
             on: {
-              [ImportEvent.IMPORT_SUCCESS]: ImportState.LOADING,
-              [ImportEvent.IMPORT_ERROR]: ImportState.IMPORT_ERROR,
-            }
-          },
-          [ImportState.LOADING]: {
-            entry: ImportAction.GET_UPLOADED_FILE,
-            on: {
-              [ImportEvent.LOADING_COMPLETE]: {
+              [ImportEvent.IMPORT_SUCCESS]: {
                 target: ImportState.CHOOSE_IMPORT_TYPE,
-                actions: [ImportAction.LOADED, ImportAction.NEXT_STEP]
+                actions: ImportAction.NEXT_STEP
               },
+              [ImportEvent.IMPORT_ERROR]: ImportState.IMPORT_ERROR,
             }
           },
           [ImportState.CHOOSE_IMPORT_TYPE]: {
             entry: ImportAction.SHOW_IMPORT_TYPE,
             on: {
-              [ImportEvent.IMPORT_TYPE_SELECTED]: {
+              [ImportEvent.SAVE_MAPPING]: ImportState.SAVING_IMPORT_TYPE
+            }
+          },
+          [ImportState.SAVING_IMPORT_TYPE]: {
+            entry: ImportAction.SAVE_MAPPING,
+            on: {
+              [ImportEvent.SAVE_MAPPING_SUCCESS]: {
                 target: ImportState.MAPPING,
                 actions: ImportAction.NEXT_STEP
-              }
+              },
+              [ImportEvent.SAVE_MAPPING_ERROR]: ImportState.IMPORT_TYPE_ERROR
             }
           },
           [ImportState.MAPPING]: {
@@ -454,7 +457,7 @@
             this.startMapping();
           },
           [ImportAction.SAVE_MAPPING]: (context, event) => {
-            this.saveMapping();
+            this.updateMapping();
           },
           [ImportAction.CANCEL_MAPPING]: (context, event) => {
             this.cancelMapping();
@@ -478,9 +481,13 @@
     }
 
     async upload() {
-      // TODO: Upload to upload service and set import id
-      this.currentImportId = this.currentImportId;
-      this.importService.send(ImportEvent.IMPORT_SUCCESS);
+      //TODO: Show a loading wheel somewhere while uploading
+      try {
+        this.mapping = await ImportService.saveMappingFile(this.activeProgram!.id!, this.file!);
+        this.importService.send(ImportEvent.IMPORT_SUCCESS);
+      } catch (e) {
+        this.$emit('show-error-notification', `Unable to upload file.`);
+      }
     }
 
     loaded() {
@@ -492,7 +499,6 @@
     }
 
     showImportType() {
-      this.mapping = new ImportMappingConfig(undefined);
       this.importTypeShow = true;
     }
 
@@ -535,11 +541,10 @@
       }
     }
 
-    saveMapping() {
+    async updateMapping() {
       try {
-        // POST mapping
-        ImportService.createMapping(this.activeProgram!.id!, this.mapping);
-        // TODO: GET preview
+        this.mapping = await ImportService.updateMapping(this.activeProgram!.id!, this.mapping, false);
+        this.importService.send(ImportEvent.SAVE_MAPPING_SUCCESS);
       } catch (e) {
         this.$log.error(e);
         this.$emit('show-error-notification', `Unable to save import mapping`);
@@ -553,12 +558,13 @@
 
     selectImportConfig(importId: string) {
       this.selectedImportConfig = this.importConfigs.filter(importConfig => importConfig.id === importId)[0];
+      this.mapping.importTypeId = this.selectedImportConfig.id;
     }
 
     // Does not actually have possibility for object to be undefined
     getMappings(): {config: ImportGroup, object?: ObjectMapping}[] {
       const results = this.selectedImportConfig!.objects.map(importGroup => {
-        const object = this.mapping.objects!.find(object => object.object_id === importGroup.id);
+        const object = this.mapping.objects!.find(object => object.objectId === importGroup.id);
         return { config: importGroup, object };
       }).filter(result => result.object);
       return results;
@@ -567,7 +573,7 @@
     getMapping(id: string): {config?: ImportGroup, object?: ObjectMapping, path?: ObjectMapping[]} | undefined {
       const {searchObject, searchPath} = this.mapping.getObjectMapping(id);
       if (searchObject){
-        return {config: this.selectedImportConfig!.getImportGroup(searchObject.object_id), object: searchObject, path: searchPath}
+        return {config: this.selectedImportConfig!.getImportGroup(searchObject.objectId), object: searchObject, path: searchPath}
       } else {
         return undefined;
       }
@@ -575,7 +581,7 @@
 
     //TODO: We can make one funtion to combine object and config
     getObjectPathWithConfig(path: ObjectMapping[]): {pathConfig?: ImportGroup, pathObject?: ObjectMapping}[] {
-      const result = path.map(pathObject => { return {pathConfig: this.selectedImportConfig!.getImportGroup(pathObject.object_id), pathObject}});
+      const result = path.map(pathObject => { return {pathConfig: this.selectedImportConfig!.getImportGroup(pathObject.objectId), pathObject}});
       return result;
     }
 
