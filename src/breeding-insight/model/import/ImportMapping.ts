@@ -13,59 +13,126 @@
 */
 
 import {Mapping} from "@/breeding-insight/model/import/Mapping";
-import {ObjectMapping} from "@/breeding-insight/model/import/ObjectMapping";
-import {ImportGroup} from "@/breeding-insight/model/import/ImportGroup";
+import {ImportField} from "@/breeding-insight/model/import/ImportField";
+import { v4 as uuidv4 } from 'uuid';
+import {MappingValue} from "@/breeding-insight/model/import/MappingValue";
+import {ImportRelationType} from "@/breeding-insight/model/import/ImportRelation";
+import {ImportRelationMap} from "@/breeding-insight/model/import/ImportRelationMap";
 
 export class ImportMappingConfig {
   id?: string;
   name?: string;
   importTypeId?: string;
   file?: {[key:string]:string}[];
-  objects?: ObjectMapping[];
+  mapping?: Mapping[];
 
   constructor(config: ImportMappingConfig | undefined) {
     if (config) this.id = config.id;
     if (config) this.name = config.name;
     if (config) this.importTypeId = config.importTypeId;
     if (config) this.file = config.file;
-    if (config && config.objects) {
-      this.objects = config.objects;
+    if (config && config.mapping) {
+      this.mapping = config.mapping;
     } else {
-      this.objects = [];
+      this.mapping = [];
     }
   }
 
   // Get object by id
-  getObjectMapping(id: string): {searchObject?: ObjectMapping, searchPath?: ObjectMapping[]} {
+  getMapping(id: string): {searchMapping?: Mapping, searchPath?: Mapping[]} {
     // Search downward recursively for the object
-    for (const object of this.objects!) {
-      let path = [];
-      const {searchObject, searchPath} = object.getObjectById(id);
-      if (searchPath) path.push(...searchPath);
-      if (searchObject) return {searchObject, searchPath: path};
+    for (const mappedField of this.mapping!) {
+      const {searchMapping, searchPath} = mappedField.getObjectById(id, []);
+      if (searchMapping) return {searchMapping, searchPath};
     }
     return {};
   }
 
-  // Add object
-  createObjectMapping(importGroup: ImportGroup): {config: ImportGroup, object: ObjectMapping} {
-    const newObject = new ObjectMapping({objectId: importGroup.id} as ObjectMapping);
-    this.objects!.push(newObject);
-    return { config: importGroup, object: newObject};
-  }
-
-  createObjectMappings(importGroups: ImportGroup[]): {config: ImportGroup, object: ObjectMapping}[] {
-    return importGroups.map(importGroup => { return this.createObjectMapping(importGroup) });
+  addMapping(importField: ImportField, mappingId?: string) {
+    const newMapping = new Mapping({objectId: importField.id, id: uuidv4()} as Mapping);
+    if (mappingId) {
+      const {searchMapping} = this.getMapping(mappingId);
+      if (searchMapping) searchMapping.mapping!.push(newMapping);
+    } else {
+      this.mapping!.push(newMapping);
+    }
   }
 
   getFileHeaders(): string[] {
     let headers: string[] = [];
-    console.log(this.file);
     if (this.file && this.file.length > 0) {
-      console.log('here');
       headers = Object.keys(this.file[0]).map(key => key);
     }
-    console.log(headers);
     return headers;
+  }
+
+  setMappingConstantField(id: string, value: string) {
+    const {searchMapping} = this.getMapping(id);
+
+    if (searchMapping) {
+      if (!searchMapping.value) {
+        searchMapping.value = new MappingValue({});
+      }
+      searchMapping.value!.constantValue = value;
+    }
+  }
+
+  setMappingFileField(id: string, value: string) {
+    const {searchMapping} = this.getMapping(id);
+    if (searchMapping) {
+      if (!searchMapping.value) {
+        searchMapping.value = new MappingValue({});
+      }
+      searchMapping.value!.fileFieldName = value;
+    }
+  }
+
+  setMappingFieldAlias(id: string, value: string) {
+    const {searchMapping} = this.getMapping(id);
+    if (searchMapping) {
+      if (!searchMapping.value) {
+        searchMapping.value = new MappingValue({});
+      }
+      searchMapping.value!.fieldAlias = value;
+    }
+  }
+
+  setMappingRelationType(id: string, value: ImportRelationType) {
+    const {searchMapping} = this.getMapping(id);
+    if (searchMapping) {
+      if (!searchMapping.value) {
+        searchMapping.value = new MappingValue({});
+      }
+
+      searchMapping.value!.relationValue = value;
+    }
+  }
+
+  setMappingRelationReference(id: string, value: string) {
+    const {searchMapping} = this.getMapping(id);
+    if (searchMapping) {
+      if (!searchMapping.value) {
+        searchMapping.value = new MappingValue({});
+      }
+
+      if (!searchMapping.value.relationMap) {
+        searchMapping.value.relationMap = new ImportRelationMap({});
+      }
+      searchMapping.value!.relationMap.reference = value;
+    }
+  }
+
+  setMappingRelationTarget(id: string, value: string) {
+    const {searchMapping} = this.getMapping(id);
+    if (searchMapping) {
+      if (!searchMapping.value) {
+        searchMapping.value = new MappingValue({});
+      }
+
+      if (!searchMapping.value.relationMap) {
+        searchMapping.value.relationMap = new ImportRelationMap({});
+      }
+      searchMapping.value!.relationMap.target = value;
+    }
   }
 }

@@ -12,7 +12,6 @@
 * limitations under the License.
 */
 
-import {ImportGroup} from "@/breeding-insight/model/import/ImportGroup";
 import {ImportRelation, ImportRelationType} from "@/breeding-insight/model/import/ImportRelation";
 
 export enum ImportDataType {
@@ -21,6 +20,7 @@ export enum ImportDataType {
   INTEGER = "INTEGER",
   DATE = "DATE",
   LIST = "LIST",
+  OBJECT = "OBJECT",
   RELATIONSHIP = "RELATIONSHIP"
 }
 
@@ -30,16 +30,16 @@ export class ImportField {
   description: string;
   type: ImportDataType;
   required: boolean;
-  listObject?: ImportGroup;
+  fields?: ImportField[];
   relationOptions?: ImportRelation[];
 
-  constructor({name, id, description, type, required, listObject, relationOptions}: ImportField) {
+  constructor({name, id, description, type, required, fields, relationOptions}: ImportField) {
     this.name = name;
     this.id = id;
     this.description = description;
     this.type = type;
     this.required = required;
-    this.listObject = listObject ? new ImportGroup(listObject) : listObject;
+    this.fields = fields ? fields.map(field => new ImportField(field)) : fields;
     this.relationOptions = relationOptions ? relationOptions.map(relationOption => new ImportRelation(relationOption)) : relationOptions;
   }
 
@@ -47,6 +47,21 @@ export class ImportField {
     if (this.relationOptions){
       return this.relationOptions.find(relationOption => relationOption.id === relationType);
     }
+    return undefined;
+  }
+
+  getImportFieldById(id: string): ImportField | undefined {
+    if (this.id === id) {
+      return this;
+    }
+
+    if (this.fields) {
+      for (const field of this.fields) {
+        const searchField: ImportField | undefined = field.getImportFieldById(id);
+        if (searchField) return searchField;
+      }
+    }
+
     return undefined;
   }
 }

@@ -1,171 +1,253 @@
 <template>
   <div>
     <!-- Select Import Option -->
-    <template v-if="focusObjectId === null">
-      <ImportStepCard
-          title="Step 1: Select Import Option"
-          v-bind:completed="1 < this.currentStep"
-          v-bind:readonly="1 < this.currentStep"
-      >
-        <template v-slot:write-display>
-          <div class="columns">
-            <div class="column is-half">
-              <BasicSelectField
-                  v-bind:field-name="'Import Type'"
-                  v-bind:options="importMappingOptions"
-              />
-            </div>
-            <div class="column is-half">
-              <!-- TODO: Only available for admins -->
-              <a
-                  v-on:click="importService.send(ImportEvent.CREATE_NEW_IMPORT)"
-              >
-                Create New Import
-              </a>
-            </div>
+    <ImportStepCard
+        title="Step 1: Select Import Option"
+        v-bind:completed="1 < this.currentStep"
+        v-bind:readonly="1 < this.currentStep"
+    >
+      <template v-slot:write-display>
+        <div class="columns">
+          <div class="column is-half">
+            <BasicSelectField
+                v-bind:field-name="'Import Type'"
+                v-bind:options="importMappingOptions"
+            />
           </div>
-        </template>
-        <template v-slot:summary-display>
-          I am a summary
-        </template>
-      </ImportStepCard>
+          <div class="column is-half">
+            <!-- TODO: Only available for admins -->
+            <a
+                v-on:click="importService.send(ImportEvent.CREATE_NEW_IMPORT)"
+            >
+              Create New Import
+            </a>
+          </div>
+        </div>
+      </template>
+      <template v-slot:summary-display>
+        I am a summary
+      </template>
+    </ImportStepCard>
 
-      <!-- Choose File -->
-      <ImportStepCard
-          v-if="showImport"
-          title="Step 2: Upload File"
-          v-bind:completed="2 < this.currentStep"
-          v-bind:readonly="2 < this.currentStep"
-      >
-        <!-- Editing view -->
-        <template v-slot:write-display>
-          <FileSelectMessageBox
-              v-model="file"
-              v-bind:fileTypes="'.csv, .xls, .xlsx'"
-              v-bind:errors="import_errors"
-              v-on:import="importService.send(ImportEvent.IMPORT_STARTED)"
-          />
-        </template>
+    <!-- Choose File -->
+    <ImportStepCard
+        v-if="showImport"
+        title="Step 2: Upload File"
+        v-bind:completed="2 < this.currentStep"
+        v-bind:readonly="2 < this.currentStep"
+    >
+      <!-- Editing view -->
+      <template v-slot:write-display>
+        <FileSelectMessageBox
+            v-model="file"
+            v-bind:fileTypes="'.csv, .xls, .xlsx'"
+            v-bind:errors="import_errors"
+            v-on:import="upload()"
+        />
+      </template>
 
-        <!-- Summary View -->
-        <template v-slot:summary-display>
-          I am the summary
-        </template>
-      </ImportStepCard>
+      <!-- Summary View -->
+      <template v-slot:summary-display>
+        I am the summary
+      </template>
+    </ImportStepCard>
 
-      <!-- Specify Mapping Metadata -->
-      <ImportStepCard
-          v-if="importTypeShow"
-          title="Step 3: Mapping Metadata"
-          v-bind:completed="3 < this.currentStep"
-          v-bind:readonly="3 < this.currentStep"
-      >
-        <!-- Editing view -->
-        <template v-slot:write-display>
-          <!-- TODO: Show how many times each column is used -->
-          What type of data are you importing?
-          <BasicSelectField
-              v-bind:field-name="'Import Data Type'"
-              v-bind:options="importConfigOptions"
-              v-on:input="selectImportConfig($event)"
-          />
-          <template
-              v-if="selectedImportConfig !== null"
-          >
-            <p>{{selectedImportConfig.description}}</p>
+    <!-- Specify Mapping Metadata -->
+    <ImportStepCard
+        v-if="importTypeShow"
+        title="Step 3: Mapping Metadata"
+        v-bind:completed="3 < this.currentStep"
+        v-bind:readonly="3 < this.currentStep"
+    >
+      <!-- Editing view -->
+      <template v-slot:write-display>
+        <!-- TODO: Show how many times each column is used -->
+        What type of data are you importing?
+        <BasicSelectField
+            v-bind:field-name="'Import Data Type'"
+            v-bind:options="importConfigOptions"
+            v-on:input="selectImportConfig($event)"
+        />
+        <template
+            v-if="selectedImportConfig !== null"
+        >
+          <p>{{selectedImportConfig.description}}</p>
+        </template>
+        <BasicInputField
+          v-bind:field-name="'Import Mapping Name'"
+          v-bind:field-help="'This is the name of the import mapping users will start when importing a file'"
+          v-bind:value="mapping.name"
+          v-on:input="mapping.name = $event"
+        />
+
+        <button
+            class="button is-primary"
+            v-on:click="importService.send(ImportEvent.SAVE_MAPPING)"
+        >
+          Confirm
+        </button>
+      </template>
+      <!-- Summary view -->
+      <template v-slot:summary-display>
+        I am a summary
+      </template>
+    </ImportStepCard>
+
+    <!-- Create the Mapping -->
+    <ImportStepCard
+        v-if="showMapping"
+        title="Step 4: Create Mapping"
+        v-bind:completed="4 < this.currentStep"
+        v-bind:readonly="4 < this.currentStep"
+    >
+      <!-- Editing View -->
+      <template v-slot:write-display>
+        <ColumnSummary v-bind:columns="getFileHeaders()"></ColumnSummary>
+
+        <template v-if="focusObjectId !== null">
+          <template v-for="({config, mappedField, path}) in [getMapping(focusObjectId)]">
+            <nav class="breadcrumb" aria-label="breadcrumbs" v-bind:key="`nav${mappedField.id}`">
+              <ul>
+                <li>
+                  <a v-on:click="setFocusObject(null)">
+                    <span>Mapping - {{selectedImportConfig.name}} Import</span>
+                  </a>
+                </li>
+                <template v-for="{pathConfig, pathMapping} in getMappingPathWithConfig(path)">
+                  <li
+                      v-bind:key="`breadcrumb${pathMapping.id}`"
+                      v-bind:class="{'is-active': pathMapping.id === focusObjectId}"
+                  >
+                    <a href="#" v-on:click="setFocusObject(pathMapping.id)">
+                  <span class="icon is-small">
+                    <i class="fas fa-thumbs-up" aria-hidden="true"></i>
+                  </span>
+                      <span>{{pathConfig.name}}</span>
+                    </a>
+                  </li>
+                </template>
+              </ul>
+            </nav>
           </template>
-          <BasicInputField
-            v-bind:field-name="'Import Mapping Name'"
-            v-bind:field-help="'This is the name of the import mapping users will start when importing a file'"
-            v-bind:value="mapping.name"
-            v-on:input="mapping.name = $event"
-          />
-
-          <button
-              class="button is-primary"
-              v-on:click="importService.send(ImportEvent.SAVE_MAPPING)"
-          >
-            Confirm
-          </button>
         </template>
-        <!-- Summary view -->
-        <template v-slot:summary-display>
-          I am a summary
-        </template>
-      </ImportStepCard>
+        <!-- TODO: Add description of our focused object -->
+        <!-- Focused Fields -->
+        <template v-for="({config, mappedField}, i) in getFocusedFields()">
 
-      <!-- Create the Mapping -->
-      <ImportStepCard
-          v-if="showMapping"
-          title="Step 4: Create Mapping"
-          v-bind:completed="4 < this.currentStep"
-          v-bind:readonly="4 < this.currentStep"
-      >
-        <!-- Editing View -->
-        <template v-slot:write-display>
-          <ColumnSummary v-bind:columns="mapping.getFileHeaders()"></ColumnSummary>
-
-          <!-- Groups -->
-          <template v-for="({config, object}) in getMappings()">
-            <ImportGroupSummaryCard
-                v-bind:key="`test ${object.id}`"
+          <!-- Object fields -->
+          <template v-if="config.type === ImportDataType.OBJECT">
+            <ObjectMappingRow
+                v-bind:key="`${config.id}${i}`"
                 v-bind:config="config"
-                v-bind:object="object"
+                v-bind:mapping="mappedField"
+                v-bind:import-mapping="mapping"
                 v-on:focus-object="setFocusObject($event)"
             />
           </template>
 
-          <div class="columns">
-            <div class="column has-text-right">
-              <button
-                class="button"
-                v-on:click="importService.send(ImportEvent.CANCEL_MAPPING)"
-              >
-                Cancel Mapping
-              </button>
-              <button
-                class="button is-primary ml-2"
-                v-on:click="importService.send(ImportEvent.SAVE_MAPPING)"
-              >
-                Save Mapping and Preview Import
-              </button>
+          <!-- List fields -->
+          <template v-else-if="config.type === ImportDataType.LIST">
+            <div
+                v-bind:key="config.id"
+                class="box"
+            >
+              <ListMappingRow
+                  v-bind:field="config"
+                  v-bind:mapping="mappedField"
+                  v-bind:import-mapping="mapping"
+                  v-on:mapping-change="replaceMapping(mappedField, config, $event)"
+                  v-on:focus-object="focusObjectId = $event"
+              />
             </div>
+          </template>
+
+          <!-- Relationship objects -->
+          <template v-else-if="config.type === ImportDataType.RELATIONSHIP">
+            <div
+                v-bind:key="config.id"
+                class="box"
+            >
+              <RelationMappingRow
+                  v-bind:field="config"
+                  v-bind:mapping="mappedField"
+                  v-bind:import-mapping="mapping"
+                  v-bind:file-columns="getFileHeaders()"
+                  v-on:mapping-change="$forceUpdate()"
+              />
+            </div>
+          </template>
+
+
+          <!-- Simple fields -->
+          <template v-else>
+            <div
+                v-bind:key="config.id"
+                class="box mb-5"
+            >
+              <FieldMappingRow
+                  v-bind:key="config.id"
+                  v-bind:field="config"
+                  v-bind:mapping="mappedField"
+                  v-bind:import-mapping="mapping"
+                  v-bind:fileFields="getFileHeaders()"
+                  v-on:mapping-change="replaceMapping(mappedField, config, $event)"
+              />
+            </div>
+          </template>
+
+
+        </template>
+
+        <div class="columns">
+          <div class="column has-text-right">
+            <button
+              class="button"
+              v-on:click="importService.send(ImportEvent.CANCEL_MAPPING)"
+            >
+              Cancel Mapping
+            </button>
+            <button
+              class="button is-primary ml-2"
+              v-on:click="importService.send(ImportEvent.SAVE_MAPPING)"
+            >
+              Save Mapping and Preview Import
+            </button>
           </div>
-        </template>
+        </div>
+      </template>
 
-        <!-- Summary View -->
-        <template v-slot:summary-display>
-          I am a summary
-        </template>
+      <!-- Summary View -->
+      <template v-slot:summary-display>
+        I am a summary
+      </template>
 
-      </ImportStepCard>
+    </ImportStepCard>
 
-      <!-- Preview Import -->
-      <ImportStepCard
-          v-if="5 === this.currentStep"
-          title="Step 5: Preview Import"
-          v-bind:completed="5 < this.currentStep"
-          v-bind:readonly="5 < this.currentStep"
-      >
-        <!-- Editing View -->
-        <template v-slot:write-display>
-          I am a preview of the import
-        </template>
+    <!-- Preview Import -->
+    <ImportStepCard
+        v-if="5 === this.currentStep"
+        title="Step 5: Preview Import"
+        v-bind:completed="5 < this.currentStep"
+        v-bind:readonly="5 < this.currentStep"
+    >
+      <!-- Editing View -->
+      <template v-slot:write-display>
+        I am a preview of the import
+      </template>
 
-        <!-- Summary View -->
-        <template v-slot:summary-display>
-          I am a summary
-        </template>
+      <!-- Summary View -->
+      <template v-slot:summary-display>
+        I am a summary
+      </template>
 
-      </ImportStepCard>
-    </template>
+    </ImportStepCard>
 
     <!-- Detailed View -->
+    <!--
     <template v-if="focusObjectId !== null">
-      <!-- Actual stuff -->
       <template v-for="({config, object, path}) in [getMapping(focusObjectId)]">
 
-        <!-- Breadcrumbs -->
+
         <nav class="breadcrumb" aria-label="breadcrumbs" v-bind:key="`nav${object.id}`">
           <ul>
             <li>
@@ -207,7 +289,6 @@
         </div>
 
         <template v-for="field in config.fields">
-          <!-- Simple fields -->
           <template v-if="field.type !== ImportDataType.LIST && field.type !== ImportDataType.RELATIONSHIP">
             <div
                 v-bind:key="field.id"
@@ -223,7 +304,6 @@
             </div>
           </template>
 
-          <!-- List fields -->
           <template v-else-if="field.type === ImportDataType.LIST">
             <div
                 v-bind:key="field.id"
@@ -238,7 +318,6 @@
             </div>
           </template>
 
-          <!-- Relationship objects -->
           <template v-else-if="field.type === ImportDataType.RELATIONSHIP">
             <div
                 v-bind:key="field.id"
@@ -255,7 +334,7 @@
         </template>
       </template>
     </template>
-
+    -->
   </div>
 </template>
 
@@ -272,12 +351,10 @@
   import {ImportDataType, ImportField} from "@/breeding-insight/model/import/ImportField";
   import {ImportMappingConfig} from "@/breeding-insight/model/import/ImportMapping";
   import FieldMappingRow from "@/components/import/FieldMappingRow.vue";
-  import {ImportGroup} from "@/breeding-insight/model/import/ImportGroup";
-  import {ObjectMapping} from "@/breeding-insight/model/import/ObjectMapping";
   import {ImportRelationType} from "@/breeding-insight/model/import/ImportRelation";
   import {ChevronDownIcon} from "vue-feather-icons";
   import ImportStepCard from "@/components/import/ImportStepCard.vue";
-  import ImportGroupSummaryCard from "@/components/import/ImportGroupSummaryCard.vue";
+  import ObjectMappingRow from "@/components/import/ObjectMappingRow.vue";
   import ColumnSummary from "@/components/import/ColumnSummary.vue";
   import RelationMappingRow from "@/components/import/RelationMappingRow.vue";
   import {Mapping} from "@/breeding-insight/model/import/Mapping";
@@ -291,8 +368,6 @@
   enum ImportState {
     CHOOSE_IMPORT = "CHOOSE_IMPORT",
     CHOOSE_FILE = "CHOOSE_FILE",
-    IMPORTING = "IMPORTING",
-    IMPORT_ERROR = "IMPORT_ERROR",
     CHOOSE_IMPORT_TYPE = "CHOOSE_IMPORT_TYPE",
     SAVING_IMPORT_TYPE = "SAVING_IMPORT_TYPE",
     IMPORT_TYPE_ERROR = "IMPORT_TYPE_ERROR",
@@ -302,7 +377,6 @@
 
   enum ImportEvent {
     CREATE_NEW_IMPORT = "CREATE_NEW_IMPORT",
-    IMPORT_STARTED = "IMPORT_STARTED",
     IMPORT_SUCCESS = "IMPORT_SUCCESS",
     IMPORT_ERROR = "IMPORT_ERROR",
     LOADING_COMPLETE = "LOADING_COMPLETE",
@@ -331,7 +405,7 @@
       ListMappingRow,
       RelationMappingRow,
       ColumnSummary,
-      ImportGroupSummaryCard, ImportStepCard, FieldMappingRow, BasicSelectField, FileSelectMessageBox, ChevronDownIcon},
+      ObjectMappingRow, ImportStepCard, FieldMappingRow, BasicSelectField, FileSelectMessageBox, ChevronDownIcon},
     data: () => ({ImportState, ImportEvent, ImportAction, ImportDataType, ImportRelationType}),
     computed: {
       ...mapGetters([
@@ -380,17 +454,10 @@
           [ImportState.CHOOSE_FILE]: {
             entry: ImportAction.SHOW_IMPORT,
             on: {
-              [ImportEvent.IMPORT_STARTED]: ImportState.IMPORTING
-            }
-          },
-          [ImportState.IMPORTING]: {
-            entry: ImportAction.UPLOAD_FILE,
-            on: {
               [ImportEvent.IMPORT_SUCCESS]: {
                 target: ImportState.CHOOSE_IMPORT_TYPE,
                 actions: ImportAction.NEXT_STEP
-              },
-              [ImportEvent.IMPORT_ERROR]: ImportState.IMPORT_ERROR,
+              }
             }
           },
           [ImportState.CHOOSE_IMPORT_TYPE]: {
@@ -504,7 +571,7 @@
 
     startMapping() {
       // Get the import config
-      this.mapping.createObjectMappings(this.selectedImportConfig!.objects);
+      this.selectedImportConfig!.fields.forEach(field => this.mapping.addMapping(field));
       this.showMapping = true;
     }
 
@@ -562,37 +629,61 @@
     }
 
     // Does not actually have possibility for object to be undefined
-    getMappings(): {config: ImportGroup, object?: ObjectMapping}[] {
-      const results = this.selectedImportConfig!.objects.map(importGroup => {
-        const object = this.mapping.objects!.find(object => object.objectId === importGroup.id);
-        return { config: importGroup, object };
-      }).filter(result => result.object);
+    getFocusedFields(): {config: ImportField, mappedField?: Mapping}[] {
+      // Find object we are focused on, if any
+      let focusedMapping: Mapping | undefined = undefined;
+      if (this.focusObjectId) {
+        const {searchMapping, searchPath} = this.mapping.getMapping(this.focusObjectId);
+        if (searchMapping) focusedMapping = searchMapping;
+      }
+
+      // Get the import level that we care about
+      let focusedFields: ImportField[] = this.selectedImportConfig!.fields;
+      if (focusedMapping) {
+        const searchImportField = this.selectedImportConfig!.getImportFieldById(focusedMapping.objectId!);
+        focusedFields = searchImportField!.fields!;
+      }
+
+      const mappings: Mapping[] = focusedMapping ? focusedMapping.mapping! : this.mapping.mapping!;
+      // Pair the config with its mapping
+      const results = focusedFields.map(field => {
+        const mapping = mappings.find(mapping => mapping.objectId == field.id);
+
+        // Create new object if one doesn't exist
+        if (!mapping) {
+          this.mapping.addMapping(field, this.focusObjectId!);
+        }
+        return {config: field, mappedField: mapping}
+      });
+
       return results;
     }
 
-    getMapping(id: string): {config?: ImportGroup, object?: ObjectMapping, path?: ObjectMapping[]} | undefined {
-      const {searchObject, searchPath} = this.mapping.getObjectMapping(id);
-      if (searchObject){
-        return {config: this.selectedImportConfig!.getImportGroup(searchObject.objectId), object: searchObject, path: searchPath}
+    getMapping(id: string): {config?: ImportField, mappedField?: Mapping, path?: Mapping[]} | undefined {
+      const {searchMapping, searchPath} = this.mapping.getMapping(id);
+      if (searchMapping){
+        return {config: this.selectedImportConfig!.getImportFieldById(searchMapping.objectId!), mappedField: searchMapping, path: searchPath}
       } else {
         return undefined;
       }
     }
 
     //TODO: We can make one funtion to combine object and config
-    getObjectPathWithConfig(path: ObjectMapping[]): {pathConfig?: ImportGroup, pathObject?: ObjectMapping}[] {
-      const result = path.map(pathObject => { return {pathConfig: this.selectedImportConfig!.getImportGroup(pathObject.objectId), pathObject}});
+    getMappingPathWithConfig(path: Mapping[]): {pathConfig?: ImportField, pathMapping?: Mapping}[] {
+      const result = path.map(pathMapping => { return {pathConfig: this.selectedImportConfig!.getImportFieldById(pathMapping.objectId!), pathMapping}});
       return result;
-    }
-
-    replaceMapping(object: ObjectMapping, field: ImportField, newMapping: Mapping) {
-      const {searchObject} = this.mapping.getObjectMapping(object.id!);
-      searchObject!.replaceMapping(field.id, newMapping);
-      this.$forceUpdate();
     }
 
     setFocusObject(id: string) {
       this.focusObjectId = id;
+    }
+
+    getFileHeaders(): string[] {
+      let headers: string[] = [];
+      if (this.mapping && this.mapping.file) {
+        headers = this.mapping.getFileHeaders();
+      }
+      return headers;
     }
 
   }
