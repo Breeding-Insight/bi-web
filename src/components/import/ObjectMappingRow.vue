@@ -22,7 +22,8 @@
         <h2 class="card-header-title mb-0">
           {{config.name}}
         </h2>
-        <button class="is-pulled-right" aria-label="edit mapping" v-on:click="$emit('focus-object', object.id)">
+        <!-- TODO: Need to create a mapping for this object if it doesn't exist -->
+        <button class="is-pulled-right" aria-label="edit mapping" v-on:click="$emit('focus-object', mapping.id)">
         <span>
           Edit Mapping
           <EditIcon size="1x"></EditIcon>
@@ -39,17 +40,19 @@
 
   import {Component, Prop, Vue, Watch} from 'vue-property-decorator'
   import {EditIcon} from 'vue-feather-icons';
-  import {ObjectMapping} from "@/breeding-insight/model/import/ObjectMapping";
-  import {ImportGroup} from "@/breeding-insight/model/import/ImportGroup";
+  import {Mapping} from "@/breeding-insight/model/import/Mapping";
+  import {ImportField} from "@/breeding-insight/model/import/ImportField";
 
   @Component({
     components: {EditIcon}
   })
-  export default class ImportGroupSummaryCard extends Vue {
+  export default class ObjectMappingRow extends Vue {
     @Prop()
-    config!: ImportGroup;
+    config!: ImportField;
     @Prop()
-    object!: ObjectMapping;
+    mapping!: Mapping;
+
+
   }
 </script>
 

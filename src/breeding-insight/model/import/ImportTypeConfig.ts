@@ -12,26 +12,26 @@
 * limitations under the License.
 */
 
-import {ImportGroup} from "@/breeding-insight/model/import/ImportGroup";
+import {ImportField} from "@/breeding-insight/model/import/ImportField";
 
 export class ImportTypeConfig {
   id: string;
   name: string;
   description: string;
-  objects: ImportGroup[];
+  fields: ImportField[];
 
-  constructor({id, name, description, objects}: ImportTypeConfig) {
+  constructor({id, name, description, fields}: ImportTypeConfig) {
     this.id = id;
     this.name = name;
     this.description = description;
-    this.objects = objects ? objects.map(object => new ImportGroup(object)) : objects;
+    this.fields = fields ? fields.map(field => new ImportField(field)) : fields;
   }
 
-  getImportGroup(id: string): ImportGroup | undefined {
-    for (const group of this.objects){
-      const searchGroup = group.getImportGroupById(id);
-      if (searchGroup) return searchGroup;
+  // If no id is specified, return top level fields
+  getImportFieldById(id: string): ImportField | undefined {
+    for (const field of this.fields) {
+      const searchField: ImportField | undefined = field.getImportFieldById(id);
+      if (searchField) return searchField;
     }
-    return undefined;
   }
 }

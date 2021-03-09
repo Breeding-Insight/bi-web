@@ -33,6 +33,7 @@ export class ImportService {
   static async getAllImportTypeConfigs(): Promise<ImportTypeConfig[]> {
     const response: BiResponse = await ImportDAO.getAllImportTypeConfigs();
     const configs: ImportTypeConfig[] = response.result.data.map((config: ImportTypeConfig) => new ImportTypeConfig(config));
+    console.log(configs);
     return configs;
   }
 

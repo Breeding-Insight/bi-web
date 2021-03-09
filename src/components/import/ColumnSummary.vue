@@ -40,7 +40,7 @@
   @Component({
     components: {EditIcon}
   })
-  export default class ImportGroupSummaryCard extends Vue {
+  export default class ColumnSummary extends Vue {
     @Prop()
     columns!: string[];
   }

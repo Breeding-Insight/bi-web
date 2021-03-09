@@ -48,7 +48,7 @@
       <div class="column">
         <BasicSelectField
           v-if="!manualInput"
-          v-bind:selected-id="mapping ? mapping.fileFieldName : undefined"
+          v-bind:selected-id="mapping && mapping.value ? mapping.value.fileFieldName : undefined"
           v-bind:options="fileFields"
           v-bind:field-name="`File Column`"
           v-bind:empty-value-name="`-- ${field.name} column --`"
@@ -57,7 +57,7 @@
         />
         <BasicInputField
           v-if="manualInput"
-          v-bind:value="mapping ? mapping.constantValue : undefined"
+          v-bind:value="mapping && mapping.value ? mapping.value.constantValue : undefined"
           v-bind:field-name="`Constant Value`"
           v-bind:placeholder="field.name"
           v-on:input="setManualField($event)"
@@ -80,7 +80,7 @@
       </div>
       <div class="column">
         <BasicInputField
-            v-bind:value="mapping ? mapping.fieldAlias : undefined"
+            v-bind:value="mapping && mapping.value ? mapping.value.fieldAlias : undefined"
             v-bind:field-name="`Field Display Name`"
             v-bind:field-help="'The name that will be display during import data review.'"
             v-bind:placeholder="field.name"
@@ -99,6 +99,7 @@
   import BasicInputField from "@/components/forms/BasicInputField.vue";
   import {Mapping} from "@/breeding-insight/model/import/Mapping";
   import {AlertCircleIcon, SearchIcon} from "vue-feather-icons";
+  import {ImportMappingConfig} from "@/breeding-insight/model/import/ImportMapping";
 
   @Component({
     components: {BasicInputField, BasicSelectField, AlertCircleIcon, SearchIcon }
@@ -109,39 +110,32 @@
     @Prop()
     mapping!: Mapping;
     @Prop()
+    importMapping!: ImportMappingConfig;
+    @Prop()
     fileFields!: string[];
 
     manualInput: boolean = false;
     showInfo: boolean = false;
-    localMapping!: Mapping;
     mappingChangeEvent: string = 'mapping-change';
 
     mounted() {
-      if (this.mapping && this.mapping.constantValue){
+      if (this.mapping && this.mapping.value && this.mapping.value.constantValue){
         this.manualInput = true;
       } else {
         this.manualInput = false;
       }
     }
 
-    @Watch('mapping', {immediate: true, deep: true})
-    updateMapping(newVal: Mapping) {
-      this.localMapping = new Mapping(newVal);
-    }
-
     setManualField(value: string){
-      this.localMapping.setConstantValue(value);
-      this.$emit(this.mappingChangeEvent, this.localMapping);
+      this.importMapping.setMappingConstantField(this.mapping.id!, value);
     }
 
     setMappingField(value: string){
-      this.localMapping.setFileFieldValue(value);
-      this.$emit(this.mappingChangeEvent, this.localMapping);
+      this.importMapping.setMappingFileField(this.mapping.id!, value);
     }
 
     setDisplayName(value: string) {
-      this.localMapping.setFieldAlias(value);
-      this.$emit(this.mappingChangeEvent, this.localMapping);
+      this.importMapping.setMappingFieldAlias(this.mapping.id!, value);
     }
   }
 
