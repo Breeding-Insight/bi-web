@@ -12,62 +12,35 @@
 * limitations under the License.
 */
 
-import {ObjectMapping} from "@/breeding-insight/model/import/ObjectMapping";
-import {ImportRelationType} from "@/breeding-insight/model/import/ImportRelation";
-import {ImportRelationMap} from "@/breeding-insight/model/import/ImportRelationMap";
+import {MappingValue} from "@/breeding-insight/model/import/MappingValue";
 
 export class Mapping {
 
-  fileFieldName?: string;
-  constantValue?: string;
-  fieldAlias?: string;
-  relationValue?: ImportRelationType;
-  relationMap?: ImportRelationMap;
-  objects?: ObjectMapping[];
+  id?: string;
+  objectId?: string;
+  value?: MappingValue;
+  mapping?: Mapping[];
 
   constructor(mapping: Mapping) {
-    if (mapping) this.fileFieldName = mapping.fileFieldName;
-    if (mapping) this.constantValue = mapping.constantValue;
-    if (mapping) this.fieldAlias = mapping.fieldAlias;
-    if (mapping) this.relationValue = mapping.relationValue;
-    if (mapping && mapping.relationMap) this.relationMap = {...mapping.relationMap};
-    if (mapping && mapping.objects) {
-      this.objects = mapping.objects.map(object => new ObjectMapping(object));
+    if (mapping) this.id = mapping.id;
+    if (mapping) this.objectId = mapping.objectId;
+    if (mapping && mapping.value) this.value = new MappingValue(mapping.value);
+    if (mapping && mapping.mapping) {
+      this.mapping = mapping.mapping.map(mappedField => new Mapping(mappedField));
     } else {
-      this.objects = [];
+      this.mapping = [];
     }
   }
 
-  setRelationTarget(target: string) {
-    if (!this.relationMap) {
-      this.relationMap = new ImportRelationMap({});
+  getObjectById(id: string, currentPath: Mapping[]): {searchMapping?: Mapping, searchPath?: Mapping[]} {
+    const path: Mapping[] = [...currentPath, this];
+    if (this.id === id) { return {searchMapping: this, searchPath: path}; }
+    for (const mappedField of this.mapping!) {
+      const {searchMapping, searchPath} = mappedField.getObjectById(id, currentPath);
+      if (searchMapping && searchMapping.objectId === this.objectId) path.pop();
+      if (searchPath) path.push(...searchPath);
+      if (searchMapping && searchPath) return {searchMapping, searchPath: path};
     }
-    this.relationMap.target = target;
+    return {};
   }
-
-  setRelationReference(reference: string) {
-    if (!this.relationMap) {
-      this.relationMap = new ImportRelationMap({});
-    }
-    this.relationMap.reference = reference;
-  }
-
-  setConstantValue(value: string) {
-    this.fileFieldName = undefined;
-    this.constantValue = value;
-  }
-
-  setFileFieldValue(value: string) {
-    this.constantValue = undefined;
-    this.fileFieldName = value;
-  }
-
-  setFieldAlias(value: string) {
-    this.fieldAlias = value;
-  }
-
-  addObject(newObject: ObjectMapping) {
-    this.objects!.push(newObject);
-  }
-
 }

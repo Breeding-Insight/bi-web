@@ -41,11 +41,11 @@
       </div>
     </template>
     <!-- Relationship view -->
-    <template v-if="mapping && mapping.relationValue === ImportRelationType.DB_LOOKUP">
+    <template v-if="getType() === ImportRelationType.DB_LOOKUP">
       <div class="columns">
         <div class="column">
           <BasicSelectField
-              v-bind:selected-id="mapping && mapping.relationMap ? mapping.relationMap.target : undefined"
+              v-bind:selected-id="getTarget()"
               v-bind:options="field.getRelationObject(ImportRelationType.DB_LOOKUP).importFields"
               v-bind:field-name="`Import Field Target`"
               v-bind:empty-value-name="`-- Import Field column --`"
@@ -54,7 +54,7 @@
         </div>
         <div class="column">
           <BasicSelectField
-              v-bind:selected-id="mapping && mapping.relationMap ? mapping.relationMap.reference : undefined"
+              v-bind:selected-id="getReference()"
               v-bind:options="fileColumns"
               v-bind:field-name="`File Field Reference Column`"
               v-bind:empty-value-name="`-- File Field column --`"
@@ -63,11 +63,11 @@
         </div>
       </div>
     </template>
-    <template v-else-if="mapping && mapping.relationValue === ImportRelationType.FILE_LOOKUP">
+    <template v-else-if="getType() === ImportRelationType.FILE_LOOKUP">
       <div class="columns">
         <div class="column">
           <BasicSelectField
-              v-bind:selected-id="mapping && mapping.relationMap ? mapping.relationMap.target : undefined"
+              v-bind:selected-id="getTarget()"
               v-bind:options="fileColumns"
               v-bind:field-name="`File Field Column Target`"
               v-bind:empty-value-name="`-- File Field column --`"
@@ -76,7 +76,7 @@
         </div>
         <div class="column">
           <BasicSelectField
-              v-bind:selected-id="mapping && mapping.relationMap ? mapping.relationMap.reference : undefined"
+              v-bind:selected-id="getReference()"
               v-bind:options="fileColumns"
               v-bind:field-name="`Import Field Column Reference`"
               v-bind:empty-value-name="`-- File Field column --`"
@@ -96,9 +96,9 @@
   import BasicInputField from "@/components/forms/BasicInputField.vue";
   import {AlertCircleIcon, SearchIcon} from "vue-feather-icons";
   import {ImportField} from "@/breeding-insight/model/import/ImportField";
-  import {ObjectMapping} from "@/breeding-insight/model/import/ObjectMapping";
   import {ImportRelationType} from "@/breeding-insight/model/import/ImportRelation";
   import {Mapping} from "@/breeding-insight/model/import/Mapping";
+  import {ImportMappingConfig} from "@/breeding-insight/model/import/ImportMapping";
 
   @Component({
     components: {BasicInputField, BasicSelectField, AlertCircleIcon, SearchIcon },
@@ -110,29 +110,36 @@
     @Prop()
     mapping!: Mapping;
     @Prop()
+    importMapping!: ImportMappingConfig;
+    @Prop()
     fileColumns!: string[];
 
-    localMapping!: Mapping;
     mappingChangeEvent: string = 'mapping-change';
 
-    @Watch('mapping', {immediate: true, deep: true})
-    updateMapping(newVal: Mapping) {
-      this.localMapping = new Mapping(newVal);
+    getType(): ImportRelationType | undefined {
+      console.log(this.mapping);
+      return this.mapping && this.mapping.value ? this.mapping.value.relationValue : undefined;
+    }
+
+    getTarget(): string | undefined {
+      return this.mapping && this.mapping.value && this.mapping.value.relationMap ? this.mapping.value.relationMap.target : undefined;
+    }
+
+    getReference(): string | undefined {
+      return this.mapping && this.mapping.value && this.mapping.value.relationMap ? this.mapping.value.relationMap.reference : undefined;
     }
 
     setRelationType(value: string){
-      this.localMapping.relationValue = ImportRelationType[value as ImportRelationType];
-      this.$emit(this.mappingChangeEvent, this.localMapping);
+      this.importMapping.setMappingRelationType(this.mapping.id!, ImportRelationType[value as ImportRelationType]);
+      this.$forceUpdate();
     }
 
     setRelationReference(value: string) {
-      this.localMapping.setRelationReference(value);
-      this.$emit(this.mappingChangeEvent, this.localMapping);
+      this.importMapping.setMappingRelationReference(this.mapping.id!, value);
     }
 
     setRelationTarget(value: string) {
-      this.localMapping.setRelationTarget(value);
-      this.$emit(this.mappingChangeEvent, this.localMapping);
+      this.importMapping.setMappingRelationTarget(this.mapping.id!, value);
     }
   }
 </script>

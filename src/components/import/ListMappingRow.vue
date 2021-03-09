@@ -24,18 +24,18 @@
         <div class="column has-text-right">
           <button
               class="button is-primary"
-              v-on:click="createNewListMappingEntry"
+              v-on:click="addListMapping"
           >
-            Add {{field.listObject.name}}
+            Add {{field.name}}
           </button>
         </div>
       </div>
 
-      <template v-for="({config, object}) in getObjectListMappings()">
-        <ImportGroupSummaryCard
-            v-bind:key="`test ${object.id}`"
+      <template v-for="({config, listMapping}, i) in getObjectListMappings()">
+        <ObjectMappingRow
+            v-bind:key="`${config.id}${i}`"
             v-bind:config="config"
-            v-bind:object="object"
+            v-bind:mapping="listMapping"
             v-on:focus-object="$emit('focus-object', $event)"
         />
       </template>
@@ -51,13 +51,12 @@
   import BasicInputField from "@/components/forms/BasicInputField.vue";
   import {ImportRelationType} from "@/breeding-insight/model/import/ImportRelation";
   import {ImportField} from "@/breeding-insight/model/import/ImportField";
-  import {ObjectMapping} from "@/breeding-insight/model/import/ObjectMapping";
   import {Mapping} from "@/breeding-insight/model/import/Mapping";
-  import {ImportGroup} from "@/breeding-insight/model/import/ImportGroup";
-  import ImportGroupSummaryCard from "@/components/import/ImportGroupSummaryCard.vue";
+  import ObjectMappingRow from "@/components/import/ObjectMappingRow.vue";
+  import {ImportMappingConfig} from "@/breeding-insight/model/import/ImportMapping";
 
   @Component({
-    components: {BasicInputField, BasicSelectField, ImportGroupSummaryCard},
+    components: {ObjectMappingRow, BasicInputField, BasicSelectField},
     data: () => ({ImportRelationType})
   })
   export default class ListMappingRow extends Vue {
@@ -65,23 +64,18 @@
     field!: ImportField;
     @Prop()
     mapping!: Mapping;
+    @Prop()
+    importMapping!: ImportMappingConfig;
 
-    localMapping!: Mapping;
     mappingChangeEvent: string = 'mapping-change';
 
-    @Watch('mapping', {immediate: true, deep: true})
-    updateMapping(newVal: Mapping) {
-      this.localMapping = new Mapping(newVal);
+    addListMapping() {
+      this.importMapping.addMapping(this.field, this.mapping.id!);
     }
 
-    createNewListMappingEntry() {
-      this.localMapping.objects = [...this.localMapping.objects!, new ObjectMapping({object_id: this.field.listObject!.id} as ObjectMapping)];
-      this.$emit(this.mappingChangeEvent, this.localMapping);
-    }
-
-    getObjectListMappings(): {config: ImportGroup, object?: ObjectMapping}[] {
+    getObjectListMappings(): {config: ImportField, listMapping?: Mapping}[] {
       if (this.mapping){
-        const results = this.mapping.objects!.map(object => { return { config: this.field.listObject!, object}});
+        const results = this.mapping.mapping!.map(mappedField => { return { config: this.field, listMapping: mappedField}});
         return results;
       } else {
         return [];
