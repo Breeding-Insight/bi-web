@@ -118,6 +118,9 @@
 
         <template v-if="focusObjectId !== null">
           <template v-for="({config, mappedField, path}) in [getMapping(focusObjectId)]">
+            <h1 class="h1" v-bind:key="`title${config.id}`">{{config.name}}</h1>
+            <p v-bind:key="`description${config.id}`">{{config.description}}</p>
+
             <nav class="breadcrumb" aria-label="breadcrumbs" v-bind:key="`nav${mappedField.id}`">
               <ul>
                 <li>
@@ -141,6 +144,10 @@
               </ul>
             </nav>
           </template>
+        </template>
+        <template v-else>
+          <h1 class="h1">{{selectedImportConfig.name}}</h1>
+          <p>{{selectedImportConfig.description}}</p>
         </template>
         <!-- TODO: Add description of our focused object -->
         <!-- Focused Fields -->
