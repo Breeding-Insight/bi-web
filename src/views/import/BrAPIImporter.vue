@@ -243,7 +243,7 @@
       <!-- Editing View -->
       <template v-slot:write-display>
         <div>
-          <tree-view :data="previewData" :options="{maxDepth: 0}"></tree-view>
+          <tree-view :data="previewData" :options="{maxDepth: 1}"></tree-view>
         </div>
         <div class="columns">
           <div class="column is-half is-offset-half has-text-right">
@@ -724,6 +724,7 @@
   }
 
   //TODO:
+  // - Organize the state data. Its messy right now. Maybe make it reflect the step cards
   // - Make UI pretty
   //    - Have summary one liner to put in the title
   //    - Add descriptions for each step
