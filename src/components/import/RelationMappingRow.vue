@@ -41,6 +41,8 @@
       </div>
     </template>
     <!-- Relationship view -->
+
+    <!-- DB Lookup -->
     <template v-if="getType() === ImportRelationType.DB_LOOKUP">
       <div class="columns">
         <div class="column">
@@ -63,6 +65,31 @@
         </div>
       </div>
     </template>
+
+    <!-- DB Lookup constant value -->
+    <template v-if="getType() === ImportRelationType.DB_LOOKUP_CONSTANT_VALUE">
+      <div class="columns">
+        <div class="column">
+          <BasicSelectField
+              v-bind:selected-id="getTarget()"
+              v-bind:options="field.getRelationObject(ImportRelationType.DB_LOOKUP_CONSTANT_VALUE).importFields"
+              v-bind:field-name="`Import Field Target`"
+              v-bind:empty-value-name="`-- Import Field column --`"
+              v-on:input="setRelationTarget($event)"
+          />
+        </div>
+        <div class="column">
+          <BasicInputField
+              v-bind:value="getReference()"
+              v-bind:field-name="`Look Up Value`"
+              v-bind:field-help="'This value will be used for the database search.'"
+              v-on:input="setRelationReference($event)"
+          />
+        </div>
+      </div>
+    </template>
+
+    <!-- File Lookup -->
     <template v-else-if="getType() === ImportRelationType.FILE_LOOKUP">
       <div class="columns">
         <div class="column">
