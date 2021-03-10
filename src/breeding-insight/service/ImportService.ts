@@ -41,14 +41,16 @@ export class ImportService {
     if (!programId || programId === null){
       throw 'Program ID not provided';
     }
-    return ImportDAO.getAllMappings(programId);
+    const response: BiResponse = await ImportDAO.getAllMappings(programId);
+    const mappings: ImportMappingConfig[] = response.result.data.map((mapping: ImportMappingConfig) => new ImportMappingConfig(mapping));
+    return mappings;
   }
 
-  static async updateMapping(programId: string, mapping: ImportMappingConfig, validate: boolean): Promise<any> {
+  static async updateMapping(programId: string, mapping: ImportMappingConfig, options: {[key:string]:boolean}): Promise<any> {
     if (!programId || programId === null) throw 'Program ID not provided';
     if (!mapping || !mapping.id) throw 'Mapping must have an id.' +
     ''
-    const response: BiResponse = await ImportDAO.updateMapping(programId, mapping, validate);
+    const response: BiResponse = await ImportDAO.updateMapping(programId, mapping, options);
     const importMapping: ImportMappingConfig = new ImportMappingConfig(response.result);
     return importMapping;
   }
@@ -61,6 +63,16 @@ export class ImportService {
     const response: BiResponse = await ImportDAO.saveMappingFile(programId, file);
     const importMapping: ImportMappingConfig = new ImportMappingConfig(response.result);
     return importMapping;
+  }
+
+  static async uploadData(programId: string, mappingId: string, file: File, commit: boolean): Promise<any> {
+    if (!programId || programId === null) {
+      throw 'Program ID not provided';
+    }
+
+    const response: BiResponse = await ImportDAO.uploadData(programId, mappingId, file, commit);
+    const data: any = response.result;
+    return data;
   }
 
 }

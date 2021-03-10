@@ -25,12 +25,14 @@ export class ImportMappingConfig {
   importTypeId?: string;
   file?: {[key:string]:string}[];
   mapping?: Mapping[];
+  draft?: boolean;
 
   constructor(config: ImportMappingConfig | undefined) {
     if (config) this.id = config.id;
     if (config) this.name = config.name;
     if (config) this.importTypeId = config.importTypeId;
     if (config) this.file = config.file;
+    if (config) this.draft = config.draft;
     if (config && config.mapping) {
       this.mapping = config.mapping;
     } else {

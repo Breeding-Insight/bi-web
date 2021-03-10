@@ -81,6 +81,7 @@
       <div class="column">
         <BasicInputField
             v-bind:value="mapping && mapping.value ? mapping.value.fieldAlias : undefined"
+            v-bind:input-id="`${field.id}DisplayName`"
             v-bind:field-name="`Field Display Name`"
             v-bind:field-help="'The name that will be display during import data review.'"
             v-bind:placeholder="field.name"

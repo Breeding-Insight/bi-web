@@ -21,7 +21,7 @@
     <div class="subtitle ml-2">
       <p>{{field.description}}</p>
     </div>
-    <template v-if="field.relationOptions.length > 1">
+    <template v-if="field.relationOptions.length >= 1">
       <div class="control">
         <template v-for="relation_type in field.relationOptions">
           <label
@@ -32,7 +32,7 @@
                 type="radio"
                 v-bind:name="`${field.id} relation`"
                 v-bind:value="relation_type.id"
-                v-bind:checked="mapping ? relation_type.id === mapping.relationValue : false"
+                v-bind:checked="mapping && mapping.value ? relation_type.id === mapping.value.relationValue : false"
                 v-on:input="setRelationType($event.target.value)"
             >
             {{relation_type.name}}
@@ -117,7 +117,6 @@
     mappingChangeEvent: string = 'mapping-change';
 
     getType(): ImportRelationType | undefined {
-      console.log(this.mapping);
       return this.mapping && this.mapping.value ? this.mapping.value.relationValue : undefined;
     }
 
