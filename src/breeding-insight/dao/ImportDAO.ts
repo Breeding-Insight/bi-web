@@ -18,8 +18,6 @@
 import {ImportData} from "@/breeding-insight/model/import/ImportData";
 import {tblCross} from "@/breeding-insight/dao/mock_data/importMock";
 import {ImportMappingConfig} from "@/breeding-insight/model/import/ImportMapping";
-import {Vue} from "vue-property-decorator";
-import { v4 as uuidv4 } from 'uuid';
 import * as api from "@/util/api";
 import {BiResponse, Response} from "@/breeding-insight/model/BiResponse";
 
@@ -40,19 +38,25 @@ export class ImportDAO {
     return new BiResponse(data);
   }
 
-  static async getAllMappings(programId: string): Promise<ImportMappingConfig[]> {
-    return [new ImportMappingConfig({name: 'Water Quality', id: uuidv4()} as ImportMappingConfig)];
+  static async getAllMappings(programId: string): Promise<BiResponse> {
+    const { data } =  await api.call({
+      url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/import/mapping`,
+      method: 'get'
+    }) as Response;
+    return new BiResponse(data);
   }
 
-  static async updateMapping(programId: string, mapping: ImportMappingConfig, validate: boolean): Promise<any> {
+  static async updateMapping(programId: string, mapping: ImportMappingConfig, options: {[key:string]:boolean}): Promise<any> {
     const mappingWithoutFile: ImportMappingConfig = new ImportMappingConfig({
       id: mapping.id,
       name: mapping.name,
       importTypeId: mapping.importTypeId,
-      objects: mapping.objects
+      mapping: mapping.mapping,
+      draft: options.draft
     } as ImportMappingConfig);
+    console.log(mappingWithoutFile);
     const { data } =  await api.call({
-      url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/import/mapping/${mapping.id}?validate=${validate}`,
+      url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/import/mapping/${mapping.id}?validate=${options.validate}`,
       method: 'put',
       data: mappingWithoutFile,
     }) as Response;
@@ -70,6 +74,19 @@ export class ImportDAO {
         ) as Response;
 
       return new BiResponse(data);
+  }
+
+  static async uploadData(programId: string, mappingId: string, file: File, commit: boolean): Promise<any> {
+
+    var formData = new FormData();
+    formData.append("file", file);
+
+    const {data} = await api.call({
+      url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/import/mapping/${mappingId}/data?commit=${commit}`,
+      method: 'post', data: formData}
+    ) as Response;
+
+    return new BiResponse(data);
   }
 
 }

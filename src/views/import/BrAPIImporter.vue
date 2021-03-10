@@ -10,8 +10,10 @@
         <div class="columns">
           <div class="column is-half">
             <BasicSelectField
+                v-bind:selected-id="selectedMappingId"
                 v-bind:field-name="'Import Type'"
                 v-bind:options="importMappingOptions"
+                v-on:input="selectedMappingId = $event"
             />
           </div>
           <div class="column is-half">
@@ -21,6 +23,16 @@
             >
               Create New Import
             </a>
+          </div>
+        </div>
+        <div class="columns">
+          <div class="column is-half is-offset-half has-text-right">
+            <button
+                v-on:click="selectMapping"
+                class="button is-primary"
+            >
+              Select Import
+            </button>
           </div>
         </div>
       </template>
@@ -42,7 +54,7 @@
             v-model="file"
             v-bind:fileTypes="'.csv, .xls, .xlsx'"
             v-bind:errors="import_errors"
-            v-on:import="upload()"
+            v-on:import="pageState === PageState.CREATE_MAPPING ? upload() : uploadData()"
         />
       </template>
 
@@ -155,7 +167,6 @@
                   v-bind:field="config"
                   v-bind:mapping="mappedField"
                   v-bind:import-mapping="mapping"
-                  v-on:mapping-change="replaceMapping(mappedField, config, $event)"
                   v-on:focus-object="focusObjectId = $event"
               />
             </div>
@@ -190,7 +201,6 @@
                   v-bind:mapping="mappedField"
                   v-bind:import-mapping="mapping"
                   v-bind:fileFields="getFileHeaders()"
-                  v-on:mapping-change="replaceMapping(mappedField, config, $event)"
               />
             </div>
           </template>
@@ -208,7 +218,7 @@
             </button>
             <button
               class="button is-primary ml-2"
-              v-on:click="importService.send(ImportEvent.SAVE_MAPPING)"
+              v-on:click="updateMapping"
             >
               Save Mapping and Preview Import
             </button>
@@ -232,7 +242,19 @@
     >
       <!-- Editing View -->
       <template v-slot:write-display>
-        I am a preview of the import
+        <div>
+          <tree-view :data="previewData" :options="{maxDepth: 0}"></tree-view>
+        </div>
+        <div class="columns">
+          <div class="column is-half is-offset-half has-text-right">
+            <button
+                v-on:click="commitData"
+                class="button is-primary"
+            >
+              Save Data
+            </button>
+          </div>
+        </div>
       </template>
 
       <!-- Summary View -->
@@ -242,99 +264,27 @@
 
     </ImportStepCard>
 
-    <!-- Detailed View -->
-    <!--
-    <template v-if="focusObjectId !== null">
-      <template v-for="({config, object, path}) in [getMapping(focusObjectId)]">
-
-
-        <nav class="breadcrumb" aria-label="breadcrumbs" v-bind:key="`nav${object.id}`">
-          <ul>
-            <li>
-              <a v-on:click="setFocusObject(null)">
-                <span>Mapping - {{selectedImportConfig.name}} Import</span>
-              </a>
-            </li>
-            <template v-for="{pathConfig, pathObject} in getObjectPathWithConfig(path)">
-              <li
-                v-bind:key="`breadcrumb${pathObject.id}`"
-                v-bind:class="{'is-active': pathObject.id === focusObjectId}"
-              >
-                <a href="#" v-on:click="setFocusObject(pathObject.id)">
-                <span class="icon is-small">
-                  <i class="fas fa-thumbs-up" aria-hidden="true"></i>
-                </span>
-                  <span>{{pathConfig.name}}</span>
-                </a>
-              </li>
-            </template>
-          </ul>
-        </nav>
-
-        <div
-          v-bind:key="`objectDescription ${config.id}`"
-        >
-          <h1 class="title is-1">{{config.name}}</h1>
-          <div class="subtitle ml-2">
-            <p>{{config.description}}</p>
-          </div>
-        </div>
-
-        <div
-          v-bind:key="`columnSummary${object.id}`"
-          class="box"
-        >
-          <h2 class="title is-4">Reminder</h2>
-          <ColumnSummary v-bind:columns="mapping.getFileHeaders()" />
-        </div>
-
-        <template v-for="field in config.fields">
-          <template v-if="field.type !== ImportDataType.LIST && field.type !== ImportDataType.RELATIONSHIP">
-            <div
-                v-bind:key="field.id"
-                class="box mb-5"
-            >
-              <FieldMappingRow
-                  v-bind:key="field.id"
-                  v-bind:field="field"
-                  v-bind:fileFields="mapping.getFileHeaders()"
-                  v-bind:mapping="object.getField(field.id)"
-                  v-on:mapping-change="replaceMapping(object, field, $event)"
-              />
-            </div>
-          </template>
-
-          <template v-else-if="field.type === ImportDataType.LIST">
-            <div
-                v-bind:key="field.id"
-                class="box"
-            >
-              <ListMappingRow
-                v-bind:field="field"
-                v-bind:mapping="object.getField(field.id)"
-                v-on:mapping-change="replaceMapping(object, field, $event)"
-                v-on:focus-object="focusObjectId = $event"
-              />
-            </div>
-          </template>
-
-          <template v-else-if="field.type === ImportDataType.RELATIONSHIP">
-            <div
-                v-bind:key="field.id"
-                class="box"
-            >
-              <RelationMappingRow
-                  v-bind:field="field"
-                  v-bind:mapping="object.getField(field.id)"
-                  v-bind:file-columns="mapping.getFileHeaders()"
-                  v-on:mapping-change="replaceMapping(object, field, $event)"
-              />
-            </div>
-          </template>
-        </template>
+    <ImportStepCard
+      v-if="6 === this.currentStep"
+      title="Upload Successful!"
+      v-bind:completed="6 < this.currentStep"
+      v-bind:readonly="6 < this.currentStep"
+    >
+      <template v-slot:write-display>
+        <p>
+          Your data was uploaded successfully.
+        </p>
+        <p>
+          <a href="#">Go see your data</a>
+        </p>
+        <p>
+          <a v-on:click="cancelMapping">Start another import</a>
+        </p>
       </template>
-    </template>
-    -->
+      <template v-slot:summary-display></template>
+    </ImportStepCard>
+
+
   </div>
 </template>
 
@@ -365,9 +315,15 @@
   import BasicInputField from "@/components/forms/BasicInputField.vue";
   import BasicSelectField from "@/components/forms/BasicSelectField.vue";
 
+  enum PageState {
+    CREATE_MAPPING = "CREATE_MAPPING",
+    IMPORT_DATA = "IMPORT_DATA"
+  }
+
   enum ImportState {
     CHOOSE_IMPORT = "CHOOSE_IMPORT",
-    CHOOSE_FILE = "CHOOSE_FILE",
+    CHOOSE_MAPPING_FILE = "CHOOSE_MAPPING_FILE",
+    CHOOSE_DATA_FILE = "CHOOSE_DATA_FILE",
     CHOOSE_IMPORT_TYPE = "CHOOSE_IMPORT_TYPE",
     SAVING_IMPORT_TYPE = "SAVING_IMPORT_TYPE",
     IMPORT_TYPE_ERROR = "IMPORT_TYPE_ERROR",
@@ -383,7 +339,10 @@
     SAVE_MAPPING = "SAVE_MAPPING",
     SAVE_MAPPING_ERROR = "SAVE_MAPPING_ERROR",
     SAVE_MAPPING_SUCCESS = "SAVE_MAPPING_SUCCESS",
-    CANCEL_MAPPING = "CANCEL_MAPPING"
+    SAVE_MAPPING_METADATA_SUCCESS = "SAVE_MAPPING_METADATA_SUCCESS",
+    CANCEL_MAPPING = "CANCEL_MAPPING",
+    SELECTED_MAPPING = "SELECTED_MAPPING",
+    UPLOAD_DATA_SUCCESS = "UPLOAD_DATA_SUCCESS"
   }
 
   enum ImportAction {
@@ -395,8 +354,12 @@
     SHOW_IMPORT_TYPE = "SHOW_IMPORT_TYPE",
     MAPPING_STARTED = "MAPPING_STARTED",
     SAVE_MAPPING = "SAVE_MAPPING",
+    SAVE_MAPPING_METADATA = "SAVE_MAPPING_METADATA",
     CANCEL_MAPPING = "CANCEL_MAPPING",
-    NEXT_STEP = "NEXT_STEP"
+    NEXT_STEP = "NEXT_STEP",
+    UPLOAD_DATA = "UPLOAD_DATA",
+    SELECT_MAPPING = "SELECT_MAPPING",
+    CREATE_NEW_MAPPING = "CREATE_NEW_MAPPING"
   }
 
   @Component({
@@ -406,7 +369,7 @@
       RelationMappingRow,
       ColumnSummary,
       ObjectMappingRow, ImportStepCard, FieldMappingRow, BasicSelectField, FileSelectMessageBox, ChevronDownIcon},
-    data: () => ({ImportState, ImportEvent, ImportAction, ImportDataType, ImportRelationType}),
+    data: () => ({ImportState, ImportEvent, ImportAction, PageState, ImportDataType, ImportRelationType}),
     computed: {
       ...mapGetters([
         'activeProgram',
@@ -428,6 +391,7 @@
     private focusObjectId: string | null = null;
 
     private currentImportId: string = '1';
+    private selectedMappingId: string | null = null;
     private importConfigs: ImportTypeConfig[] = [];
     private selectedImportConfig: ImportTypeConfig | null = null
     private importData?: ImportData;
@@ -435,8 +399,10 @@
     private mapping: ImportMappingConfig = new ImportMappingConfig(undefined);
     private importMappings: ImportMappingConfig[] = [];
     private importMappingOptions: any[] = [];
+    private previewData: any = {};
 
     private currentStep = 1;
+    private pageState = PageState.IMPORT_DATA;
     private state = ImportState.CHOOSE_IMPORT;
     private importStateMachine = createMachine({
         id: 'import',
@@ -446,12 +412,22 @@
             entry: ImportAction.RESET,
             on: {
               [ImportEvent.CREATE_NEW_IMPORT]: {
-                target: ImportState.CHOOSE_FILE,
-                actions: [ImportAction.NEXT_STEP]
+                target: ImportState.CHOOSE_MAPPING_FILE,
+                actions: [ImportAction.CREATE_NEW_MAPPING, ImportAction.NEXT_STEP]
+              },
+              [ImportEvent.SELECTED_MAPPING]: {
+                target: ImportState.CHOOSE_DATA_FILE,
+                actions: [ImportAction.SELECT_MAPPING, ImportAction.NEXT_STEP]
               }
             }
           },
-          [ImportState.CHOOSE_FILE]: {
+          [ImportState.CHOOSE_DATA_FILE]: {
+            entry: ImportAction.SHOW_IMPORT,
+            on: {
+              [ImportEvent.UPLOAD_DATA_SUCCESS]: ImportState.PREVIEW_IMPORT
+            }
+          },
+          [ImportState.CHOOSE_MAPPING_FILE]: {
             entry: ImportAction.SHOW_IMPORT,
             on: {
               [ImportEvent.IMPORT_SUCCESS]: {
@@ -467,13 +443,12 @@
             }
           },
           [ImportState.SAVING_IMPORT_TYPE]: {
-            entry: ImportAction.SAVE_MAPPING,
+            entry: ImportAction.SAVE_MAPPING_METADATA,
             on: {
-              [ImportEvent.SAVE_MAPPING_SUCCESS]: {
+              [ImportEvent.SAVE_MAPPING_METADATA_SUCCESS]: {
                 target: ImportState.MAPPING,
                 actions: ImportAction.NEXT_STEP
-              },
-              [ImportEvent.SAVE_MAPPING_ERROR]: ImportState.IMPORT_TYPE_ERROR
+              }
             }
           },
           [ImportState.MAPPING]: {
@@ -483,9 +458,9 @@
                 target: ImportState.CHOOSE_IMPORT,
                 actions: ImportAction.CANCEL_MAPPING
               },
-              [ImportEvent.SAVE_MAPPING]: {
+              [ImportEvent.SAVE_MAPPING_SUCCESS]: {
                 target: ImportState.PREVIEW_IMPORT,
-                actions: [ImportAction.SAVE_MAPPING, ImportAction.NEXT_STEP]
+                actions: [ImportAction.NEXT_STEP]
               }
             }
           },
@@ -526,8 +501,20 @@
           [ImportAction.SAVE_MAPPING]: (context, event) => {
             this.updateMapping();
           },
+          [ImportAction.SAVE_MAPPING_METADATA]: (context, event) => {
+            this.updateMappingMetadata()
+          },
           [ImportAction.CANCEL_MAPPING]: (context, event) => {
             this.cancelMapping();
+          },
+          [ImportAction.UPLOAD_DATA]: (context, event) => {
+            this.uploadData();
+          },
+          [ImportAction.SELECT_MAPPING]: (context, event) => {
+            this.selectMapping();
+          },
+          [ImportAction.CREATE_NEW_MAPPING]: (context, event) => {
+            this.createNewMapping();
           }
         }
     });
@@ -555,6 +542,21 @@
       } catch (e) {
         this.$emit('show-error-notification', `Unable to upload file.`);
       }
+    }
+
+    selectMapping() {
+      this.pageState = PageState.IMPORT_DATA;
+      const foundMapping: ImportMappingConfig | undefined = this.importMappings.find(importMapping => importMapping.id === this.selectedMappingId);
+      if (foundMapping) {
+        this.mapping = foundMapping;
+        this.importService.send(ImportEvent.SELECTED_MAPPING);
+      } else {
+        this.$emit('show-error-notification', 'Error selecting mapping');
+      }
+    }
+
+    createNewMapping() {
+      this.pageState = PageState.CREATE_MAPPING;
     }
 
     loaded() {
@@ -610,11 +612,44 @@
 
     async updateMapping() {
       try {
-        this.mapping = await ImportService.updateMapping(this.activeProgram!.id!, this.mapping, false);
+        this.mapping = await ImportService.updateMapping(this.activeProgram!.id!, this.mapping, {validate: true, draft: false});
         this.importService.send(ImportEvent.SAVE_MAPPING_SUCCESS);
+        await this.uploadData();
       } catch (e) {
         this.$log.error(e);
         this.$emit('show-error-notification', `Unable to save import mapping`);
+      }
+    }
+
+    async updateMappingMetadata() {
+      try {
+        this.mapping = await ImportService.updateMapping(this.activeProgram!.id!, this.mapping, {validate: false, draft: true});
+        this.importService.send(ImportEvent.SAVE_MAPPING_METADATA_SUCCESS);
+      } catch (e) {
+        this.$log.error(e);
+        this.$emit('show-error-notification', `Unable to save import mapping`);
+      }
+    }
+
+    async uploadData() {
+      try {
+        this.previewData = await ImportService.uploadData(this.activeProgram!.id!, this.mapping.id!, this.file!, false);
+        this.importService.send(ImportEvent.UPLOAD_DATA_SUCCESS);
+        this.currentStep = 5;
+      } catch (e) {
+        this.$log.error(e);
+        this.$emit('show-error-notification', `Unable to upload file`);
+      }
+    }
+
+    async commitData() {
+      try {
+        this.previewData = await ImportService.uploadData(this.activeProgram!.id!, this.mapping.id!, this.file!, true);
+        this.importService.send(ImportEvent.UPLOAD_DATA_SUCCESS);
+        this.currentStep = 6;
+      } catch (e) {
+        this.$log.error(e);
+        this.$emit('show-error-notification', `Unable to upload file`);
       }
     }
 
