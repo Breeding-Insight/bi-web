@@ -13,7 +13,8 @@
 */
 export enum ImportRelationType {
   DB_LOOKUP = "DB_LOOKUP",
-  FILE_LOOKUP = "FILE_LOOKUP"
+  FILE_LOOKUP = "FILE_LOOKUP",
+  DB_LOOKUP_CONSTANT_VALUE = "DB_LOOKUP_CONSTANT_VALUE"
 }
 
 export class ImportRelation {
