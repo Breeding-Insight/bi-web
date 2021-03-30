@@ -99,7 +99,7 @@
 </template>
 
 <script lang="ts">
-  import { Component, Prop, Vue, Watch } from 'vue-property-decorator'
+  import {Component, Mixins, Prop, Vue, Watch} from 'vue-property-decorator'
   import {Pagination} from "@/breeding-insight/model/BiResponse";
   import BaseTable from '@/components/tables/BaseTable.vue'
   import SidePanel from '@/components/tables/SidePanel.vue'
@@ -108,6 +108,7 @@
   import { createMachine, interpret } from '@xstate/fsm';
   import {SidePanelTableEventBusHandler} from "@/components/tables/SidePanelTableEventBus";
   import WarningModal from "@/components/modals/WarningModal.vue";
+  import ValidationMixin from "@/mixins/ValidationMixin";
 
   enum CollapseColumnsState {
     SMALL_PANEL_OPEN = "SMALL_PANEL_OPEN",

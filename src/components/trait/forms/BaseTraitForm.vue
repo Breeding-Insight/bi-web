@@ -159,6 +159,7 @@ import {ValidationError} from "@/breeding-insight/model/errors/ValidationError";
 import AutoCompleteField from "@/components/forms/AutoCompleteField.vue";
 import { StringFormatters } from '@/breeding-insight/utils/StringFormatters';
 import {Category} from "@/breeding-insight/model/Category";
+import {integer} from "vuelidate/lib/validators";
 
 @Component({
   components: {
