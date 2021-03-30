@@ -115,7 +115,7 @@
           v-bind:data="traitSidePanelState.openedRow"
           v-bind:observation-level-options="observationLevelOptions"
           v-bind:edit-active="traitSidePanelState.editActive"
-          v-bind:editable="true"
+          v-bind:editable="currentTraitEditable"
           v-bind:edit-form-state="traitSidePanelState.dataFormState"
           v-bind:validation-handler="editValidationHandler"
           v-on:activate-edit="activateEdit($event)"
@@ -192,6 +192,7 @@ export default class TraitTable extends Vue {
   private editTrait?: Trait;
   private originalTrait?: Trait;
   private newTrait: Trait = new Trait();
+  private currentTraitEditable : boolean | undefined = undefined;
 
   // New trait form
   private newTraitActive: boolean = false;
@@ -226,6 +227,11 @@ export default class TraitTable extends Vue {
     this.traitSidePanelState.bus.$on(this.traitSidePanelState.confirmCloseEditEvent, () => {
       this.clearSelectedRow();
     });
+
+    this.traitSidePanelState.bus.$on(this.traitSidePanelState.selectRowEvent, (row: any) => {
+      console.log(row);
+      this.editable(row);
+    })
   }
 
   @Watch('paginationController', { deep: true})
@@ -244,6 +250,26 @@ export default class TraitTable extends Vue {
       this.$emit('show-error-notification', 'Error while trying to load traits');
       throw error;
     });
+  }
+
+  @Watch('traitSidePanelState.openedRow', {deep:true})
+  newRow() {
+    console.log('chaged');
+    this.editable(this.traitSidePanelState.openedRow);
+  }
+
+  async editable(trait: Trait) {
+    let traitEditable = false;
+    try {
+      const [editable] = await TraitService.getTraitEditable(this.activeProgram!.id!, trait.id!) as [boolean, Metadata]
+      traitEditable = editable;
+      console.log('promise: ' + traitEditable);
+      this.currentTraitEditable = traitEditable;
+    } catch(error) {
+      // Display error that traits cannot be loaded
+      this.$emit('show-error-notification', 'Error while trying to load traits');
+      throw error;
+    }
   }
 
   activateEdit(editTrait: Trait) {

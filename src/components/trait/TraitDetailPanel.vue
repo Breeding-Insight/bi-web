@@ -66,9 +66,12 @@
         <p class="mb-0">{{valueOrNA(data.method.formula)}}</p>
       </template>
 
-
       <p class="has-text-weight-bold mt-3 mb-0">Description of collection method</p>
       <p>{{data.method.description}}</p>
+
+      <ProgressBar v-if="editable === undefined" v-bind:label="'Checking trait editability status'"
+                   v-bind:estimated-time-text="'May take a few seconds'"
+      />
 
       <article v-if="!editable" class="message is-info">
         <div class="message-body">
@@ -145,9 +148,10 @@
   import EditDataForm from "@/components/forms/EditDataForm.vue";
   import { DataFormEventBusHandler } from '@/components/forms/DataFormEventBusHandler';
   import { HelpCircleIcon } from 'vue-feather-icons'
+  import ProgressBar from '@/components/forms/ProgressBar.vue'
 
   @Component({
-    components: {EditDataForm, SidePanel, BaseTraitForm, HelpCircleIcon},
+    components: {EditDataForm, SidePanel, BaseTraitForm, HelpCircleIcon, ProgressBar},
     data: () => ({DataType, MethodClass, Scale, Method})
   })
   export default class TraitDetailPanel extends Vue {
@@ -158,8 +162,8 @@
     private observationLevelOptions!: string[];
     @Prop({default: false})
     private editActive!: boolean;
-    @Prop({default: false})
-    private editable!: boolean;
+    @Prop()
+    private editable!: boolean | undefined;
     @Prop({default: false})
     private archivable!: boolean;
     @Prop()

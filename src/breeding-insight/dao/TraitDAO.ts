@@ -55,4 +55,13 @@ export class TraitDAO {
     }) as Response;
     return new BiResponse(data);
   }
+
+  static async getTraitEditable(programId: string, traitId: string) : Promise<BiResponse> {
+    const { data } =  await api.call({
+      url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/traits/${traitId}/editable`,
+      method: 'get'
+    }) as Response;
+    console.log(data);
+    return new BiResponse(data);
+  }
 }
