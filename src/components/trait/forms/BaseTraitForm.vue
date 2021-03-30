@@ -114,7 +114,7 @@
         v-bind:value="trait.method.description"
         v-bind:field-name="'Description of collection method'"
         v-bind:field-help="'All unicode characters are accepted.'"
-        v-bind:placeholder="'Trait Name'"
+        v-bind:placeholder="'Method Description'"
         v-bind:server-validations="validationHandler.getValidation(0, TraitError.MethodDescription)"
         v-on:input="trait.method.description = $event"
       />
