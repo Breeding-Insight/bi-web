@@ -86,6 +86,7 @@
             v-on:unit-change="trait.scale.scaleName = $event"
             v-on:min-change="trait.scale.validValueMin = $event"
             v-on:max-change="trait.scale.validValueMax = $event"
+            v-bind:client-validations="clientValidations"
             v-bind:validation-handler="validationHandler"
             v-bind:validation-index="0"
         />
@@ -100,6 +101,8 @@
           v-on:decimal-change="trait.scale.decimalPlaces = $event"
           v-on:min-change="trait.scale.validValueMin = $event"
           v-on:max-change="trait.scale.validValueMax = $event"
+          v-on:show-error-notification="$emit('show-error-notification', $event)"
+          v-bind:client-validations="clientValidations"
           v-bind:validation-handler="validationHandler"
           v-bind:validation-index="0"
         />
@@ -172,6 +175,8 @@ export default class BaseTraitForm extends Vue {
   methodOptions?: string[];
   @Prop()
   scaleOptions?: string[];
+  @Prop()
+  clientValidations: any;
   @Prop()
   validationHandler!: ValidationError;
   @Prop({default: () => new Trait()})

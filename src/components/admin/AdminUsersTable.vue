@@ -139,6 +139,7 @@
       v-bind:records.sync="users"
       v-bind:row-validations="userValidations"
       v-bind:editable="true"
+      v-bind:archivable="true"
       v-bind:pagination="usersPagination"
       v-bind:data-form-state="editUserFormState"
       v-on:submit="updateUser($event)"

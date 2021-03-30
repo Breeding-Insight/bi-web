@@ -35,6 +35,8 @@
             v-bind:value="validMin"
             v-on:input="$emit('min-change', $event)"
             v-bind:field-help="'Leave blank to specify no lower limit.'"
+            v-bind:validations="clientValidations && clientValidations.scale.validValueMin ? clientValidations.scale.validValueMin : undefined"
+            v-bind:server-validations="validationHandler.getValidation(validationIndex, TraitError.MaximumValue)"
         />
       </div>
       <div class="column is-half">
@@ -43,6 +45,8 @@
             v-bind:value="validMax"
             v-on:input="$emit('max-change', $event)"
             v-bind:field-help="'Leave blank to specify no upper limit.'"
+            v-bind:validations="clientValidations && clientValidations.scale.validValueMax ? clientValidations.scale.validValueMax : undefined"
+            v-bind:server-validations="validationHandler.getValidation(validationIndex, TraitError.MaximumValue)"
         />
       </div>
     </div>
@@ -68,6 +72,8 @@
     private validMin!: number;
     @Prop()
     private validMax!: number;
+    @Prop()
+    private clientValidations!: any | undefined;
     @Prop()
     private validationHandler!: ValidationError;
     @Prop()
