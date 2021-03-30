@@ -126,6 +126,13 @@
             </li>
             <li>
               <router-link
+                  v-bind:to="{name: 'reports'}"
+              >
+                Reports
+              </router-link>
+            </li>
+            <li>
+              <router-link
                 v-bind:to="{name: 'traits', params: {programId: activeProgram.id}}"
                 v-bind:class="{ 'is-active': traitsActive }"
               >

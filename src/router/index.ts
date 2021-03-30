@@ -26,6 +26,7 @@ import ProgramManagement from '@/views/program/ProgramManagement.vue'
 import AdminProgramManagement from '@/views/admin/AdminProgramManagement.vue'
 import AdminUserManagement from '@/views/admin/AdminUserManagement.vue'
 import BrAPIImporter from '@/views/import/BrAPIImporter.vue'
+import BrAPIReporter from '@/views/reporting/BrAPIReporter.vue';
 import store from '@/store/index.ts';
 import {
   LOGIN,
@@ -224,6 +225,16 @@ const routes = [
       layout: layouts.userSideBar
     },
     component: BrAPIImporter,
+    beforeEnter: processProgramNavigation
+  },
+  {
+    path: '/programs/:programId/reports',
+    name: 'reports',
+    meta: {
+      title: 'Reports',
+      layout: layouts.userSideBar
+    },
+    component: BrAPIReporter,
     beforeEnter: processProgramNavigation
   },
   {

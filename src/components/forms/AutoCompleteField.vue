@@ -25,12 +25,18 @@
       class="is-flex-grow-1"
   >
     <b-autocomplete
-        v-bind:value="value"
-        v-bind:open-on-focus="true"
-        v-bind:data="filteredDataObj(options)"
+        v-bind="$attrs"
         v-on:input="$emit('input', $event)"
-        placeholder="Start typing to see suggestions"
-    />
+        v-on:select="$emit('select', $event)"
+        v-on:focus="$emit('focus', $event)"
+        v-on:blur="$emit('blur', $event)"
+        v-on:typing="$emit('typing', $event)"
+        v-on:infinite-scroll="$emit('infinite-scroll', $event)"
+    >
+      <template slot-scope="props">
+        <slot v-bind="props"></slot>
+      </template>
+    </b-autocomplete>
   </BaseFieldWrapper>
 </template>
 
@@ -42,12 +48,7 @@
   @Component({
     components: {BaseFieldWrapper}
   })
-  export default class BasicInputField extends Vue {
-    @Prop()
-    options!: string[];
-    @Prop()
-    value!: string;
-
+  export default class AutoCompleteField extends Vue {
     @Prop()
     fieldName!: string;
     @Prop()

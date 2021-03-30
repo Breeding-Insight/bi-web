@@ -15,7 +15,8 @@
     "types": [
       "webpack-env",
       "chai",
-      "jest"
+      "jest",
+      "buefy/types"
     ],
     "paths": {
       "@/*": [

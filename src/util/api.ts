@@ -19,10 +19,12 @@ import store from './../store';
 import axios from 'axios';
 import {ERROR_STATE, LOGOUT, REQUESTED_PATH} from './../store/mutation-types';
 
-export function call (config: any) {
-    config.xsrfCookieName = 'phylo-token';
-    //config.xsrfHeaderName = '_xsrf';
-    config.withCredentials = true;
+export function call (config: any, external?: boolean) {
+    if(!external) {
+        config.xsrfCookieName = 'phylo-token';
+        //config.xsrfHeaderName = '_xsrf';
+        config.withCredentials = true;
+    }
 
     return new Promise(((resolve, reject) => {
         axios(config).then((response) => {
