@@ -249,8 +249,13 @@
     >
       <!-- Editing View -->
       <template v-slot:write-display>
+        <p>Total number of rows: {{previewTotalRows}}</p>
+        <template v-for="key of Object.keys(newObjectCounts)">
+          <p v-bind:key="key">New {{key}} count: {{newObjectCounts[key]}}</p>
+        </template>
+        <p>Sample data:</p>
         <div>
-          <tree-view :data="previewData" :options="{maxDepth: 1}"></tree-view>
+          <tree-view :data="previewData" :options="{maxDepth: 0}"></tree-view>
         </div>
         <div class="columns">
           <div class="column is-half is-offset-half has-text-right">
@@ -406,7 +411,9 @@
     private mapping: ImportMappingConfig = new ImportMappingConfig(undefined);
     private importMappings: ImportMappingConfig[] = [];
     private importMappingOptions: any[] = [];
-    private previewData: any = {};
+    private previewData: any[] = [];
+    private previewTotalRows: number = 0;
+    private newObjectCounts: any = [];
 
     private currentStep = 1;
     private pageState = PageState.IMPORT_DATA;
@@ -640,7 +647,23 @@
 
     async uploadData() {
       try {
-        this.previewData = await ImportService.uploadData(this.activeProgram!.id!, this.mapping.id!, this.file!, false);
+        const previewResponse: any = await ImportService.uploadData(this.activeProgram!.id!, this.mapping.id!, this.file!, false);
+        // Calculate some stuff for the preview data display
+        this.previewTotalRows = previewResponse.data.length;
+        let newObjectCounts: any = {};
+        for (const datum of previewResponse.data) {
+          const keys = Object.keys(datum);
+          for (const key of keys) {
+            if (datum[key].state == "NEW") {
+              if (key in newObjectCounts) { newObjectCounts[key] += 1; }
+              else { newObjectCounts[key] = 1; }
+            } else {
+              newObjectCounts[key] = 0;
+            }
+          }
+        }
+        this.newObjectCounts = newObjectCounts;
+        this.previewData = previewResponse.data.slice(0, 100);
         this.importService.send(ImportEvent.UPLOAD_DATA_SUCCESS);
         this.currentStep = 5;
       } catch (e) {
