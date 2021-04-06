@@ -232,7 +232,6 @@ export default class BaseTraitForm extends Vue {
   }
 
   setScaleClass(value: string) {
-
     // Save history of current scale class
     if (this.trait.scale!.dataType) {
       // Nominal and ordinal save histories
@@ -256,10 +255,14 @@ export default class BaseTraitForm extends Vue {
         if (this.trait.scale.categories) {
           this.trait.scale.categories.forEach(category => category.label = undefined);
         }
+        // Set the data type
+        this.trait.scale.dataType = DataType.Nominal;
       } else {
         if (this.trait.scale.categories) {
           this.trait.scale.categories.forEach((category, index) => category.label = index.toString());
         }
+        // Set the data type
+        this.trait.scale.dataType = DataType.Ordinal;
       }
     } else if (this.scaleHistory[value.toLowerCase()]) {
       this.trait.scale = this.scaleHistory[value.toLowerCase()];
@@ -277,7 +280,6 @@ export default class BaseTraitForm extends Vue {
         this.trait!.scale!.scaleName = value;
       }
     }
-
   }
 
   setCategories(categories: Category[]) {
