@@ -111,6 +111,7 @@
       v-bind:records.sync="programs"
       v-bind:row-validations="programValidations"
       v-bind:editable="true"
+      v-bind:archivable="true"
       v-bind:pagination="programsPagination"
       v-bind:data-form-state="editLocationFormState"
       v-on:submit="updateProgram($event)"

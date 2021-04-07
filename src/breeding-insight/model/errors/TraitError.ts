@@ -26,5 +26,6 @@ export enum TraitError {
   ScaleCategories = "scale.categories",
   Abbreviations = "abbreviations",
   CategoryLabel = "scale.categories.label",
-  CategoryValue = "scale.categories.value"
+  CategoryValue = "scale.categories.value",
+  MaximumValue = "scale.validValueMax"
 }
