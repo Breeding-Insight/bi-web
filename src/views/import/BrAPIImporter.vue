@@ -251,7 +251,7 @@
       <template v-slot:write-display>
         <p>Total number of rows: {{previewTotalRows}}</p>
         <template v-for="key of Object.keys(newObjectCounts)">
-          <p v-bind:key="key">New {{key}} count: {{newObjectCounts[key]}}</p>
+          <p v-bind:key="key">New {{key}} count: {{newObjectCounts[key].newObjectCount}}</p>
         </template>
         <p>Sample data:</p>
         <div>
@@ -649,21 +649,10 @@
       try {
         const previewResponse: any = await ImportService.uploadData(this.activeProgram!.id!, this.mapping.id!, this.file!, false);
         // Calculate some stuff for the preview data display
-        this.previewTotalRows = previewResponse.data.length;
-        let newObjectCounts: any = {};
-        for (const datum of previewResponse.data) {
-          const keys = Object.keys(datum);
-          for (const key of keys) {
-            if (datum[key].state == "NEW") {
-              if (key in newObjectCounts) { newObjectCounts[key] += 1; }
-              else { newObjectCounts[key] = 1; }
-            } else {
-              newObjectCounts[key] = 0;
-            }
-          }
-        }
-        this.newObjectCounts = newObjectCounts;
-        this.previewData = previewResponse.data.slice(0, 100);
+        this.previewTotalRows = previewResponse.rows.length;
+        console.log(previewResponse);
+        this.newObjectCounts = previewResponse.statistics;
+        this.previewData = previewResponse.rows.slice(0, 100);
         this.importService.send(ImportEvent.UPLOAD_DATA_SUCCESS);
         this.currentStep = 5;
       } catch (e) {
@@ -765,7 +754,7 @@
   // - Create phenotyping upload config in service. Allow the dev user to switch back and forth
   // - Prototype a real-time lookup relationship
   // - Save to local storage, so if they hit the back button, it doesn't lose all of their data
-
+  //    - Timing out on auth before saving is also a real bummer
 </script>
 
 <style scoped>

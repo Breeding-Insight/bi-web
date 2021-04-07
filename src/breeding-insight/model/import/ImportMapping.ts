@@ -61,11 +61,18 @@ export class ImportMappingConfig {
   }
 
   getFileHeaders(): string[] {
-    let headers: string[] = [];
+    let headers: any = {};
+    //TODO: Have the backend do this
     if (this.file && this.file.length > 0) {
-      headers = Object.keys(this.file[0]).map(key => key);
+      for (const row of this.file) {
+        for (const header of Object.keys(row)) {
+          if (!(header in headers)) {
+            headers[header] = 1;
+          }
+        }
+      }
     }
-    return headers;
+    return Object.keys(headers);
   }
 
   setMappingConstantField(id: string, value: string) {
