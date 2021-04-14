@@ -255,14 +255,16 @@ export default class BaseTraitForm extends Vue {
         if (this.trait.scale.categories) {
           this.trait.scale.categories.forEach(category => category.label = undefined);
         }
-        // Set the data type
+        // Set the data type and scale name
         this.trait.scale.dataType = DataType.Nominal;
+        this.trait.scale.scaleName = DataType.Nominal;
       } else {
         if (this.trait.scale.categories) {
           this.trait.scale.categories.forEach((category, index) => category.label = index.toString());
         }
-        // Set the data type
+        // Set the data type and scale name
         this.trait.scale.dataType = DataType.Ordinal;
+        this.trait.scale.scaleName = DataType.Ordinal;
       }
     } else if (this.scaleHistory[value.toLowerCase()]) {
       this.trait.scale = this.scaleHistory[value.toLowerCase()];
