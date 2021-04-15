@@ -241,7 +241,7 @@ export default class BaseTraitForm extends Vue {
     }
 
     if (Scale.dataTypeEquals(value, DataType.Nominal) && Scale.dataTypeEquals(this.scaleHistory.lastCategoryType, DataType.Ordinal)) {
-      this.trait.scale = this.scaleHistory[DataType.Ordinal.toLowerCase()];
+      this.trait.scale = Scale.assign(this.scaleHistory[DataType.Ordinal.toLowerCase()]);
       // Clear the labels
       if (this.trait.scale.categories) {
         this.trait.scale.categories.forEach(category => category.label = undefined);
@@ -249,13 +249,19 @@ export default class BaseTraitForm extends Vue {
 
       this.trait.scale.dataType = value;
       this.trait!.scale!.scaleName = value;
-
     } else if (Scale.dataTypeEquals(value, DataType.Ordinal) && Scale.dataTypeEquals(this.scaleHistory.lastCategoryType, DataType.Nominal)) {
+      this.trait.scale = Scale.assign(this.scaleHistory[DataType.Nominal.toLowerCase()]);
       // Add 1-based index labels to categories
       if (this.trait.scale.categories) {
-        this.trait.scale.categories.forEach((category, index) => category.label = index + 1 + '');
+        this.trait.scale.categories.forEach((category, index) => {
+          // Use prior labels if they exist
+          if (this.scaleHistory[DataType.Ordinal.toLowerCase()] && this.scaleHistory[DataType.Ordinal.toLowerCase()].categories[index]) {
+            category.label = this.scaleHistory[DataType.Ordinal.toLowerCase()].categories[index].label;
+          } else {
+            category.label = index + 1 + '';
+          }
+        })
       }
-
       this.trait.scale.dataType = value;
       this.trait!.scale!.scaleName = value;
 
