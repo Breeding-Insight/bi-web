@@ -45,7 +45,3 @@
     columns!: string[];
   }
 </script>
-
-<style scoped>
-
-</style>
