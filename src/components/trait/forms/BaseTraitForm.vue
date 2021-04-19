@@ -188,6 +188,7 @@ export default class BaseTraitForm extends Vue {
   name: string = '';
   private methodHistory: {[key: string]: Method} = {};
   private scaleHistory: {[key: string]: Scale} = {};
+  private lastCategoryType: string = '';
 
   created() {
     if (!this.trait.method) {
@@ -235,12 +236,12 @@ export default class BaseTraitForm extends Vue {
     // Save history of current scale class
     if (this.trait.scale!.dataType) {
       this.scaleHistory[this.trait.scale!.dataType.toLowerCase()] = Scale.assign({...this.trait.scale!} as Scale);
-      if (Scale.dataTypeEquals(this.trait.scale.dataType, DataType.Nominal) || Scale.dataTypeEquals(this.trait.scale.dataType, DataType.Ordinal)) {
-        this.scaleHistory.lastCategoryType = this.trait.scale.dataType;
+      if (Scale.dataTypeEquals(this.trait!.scale!.dataType, DataType.Nominal) || Scale.dataTypeEquals(this.trait!.scale!.dataType, DataType.Ordinal)) {
+        this.lastCategoryType = this.trait!.scale!.dataType;
       }
     }
 
-    if (Scale.dataTypeEquals(value, DataType.Nominal) && Scale.dataTypeEquals(this.scaleHistory.lastCategoryType, DataType.Ordinal)) {
+    if (Scale.dataTypeEquals(value, DataType.Nominal) && Scale.dataTypeEquals(this.lastCategoryType, DataType.Ordinal)) {
       this.trait.scale = Scale.assign(this.scaleHistory[DataType.Ordinal.toLowerCase()]);
       // Clear the labels
       if (this.trait.scale.categories) {
@@ -249,14 +250,17 @@ export default class BaseTraitForm extends Vue {
 
       this.trait.scale.dataType = value;
       this.trait!.scale!.scaleName = value;
-    } else if (Scale.dataTypeEquals(value, DataType.Ordinal) && Scale.dataTypeEquals(this.scaleHistory.lastCategoryType, DataType.Nominal)) {
+    } else if (Scale.dataTypeEquals(value, DataType.Ordinal) && Scale.dataTypeEquals(this.lastCategoryType, DataType.Nominal)) {
       this.trait.scale = Scale.assign(this.scaleHistory[DataType.Nominal.toLowerCase()]);
       // Add 1-based index labels to categories
       if (this.trait.scale.categories) {
         this.trait.scale.categories.forEach((category, index, categories) => {
           // Use prior labels if they exist
-          if (this.scaleHistory[DataType.Ordinal.toLowerCase()] && this.scaleHistory[DataType.Ordinal.toLowerCase()].categories[index]) {
-            category.label = this.scaleHistory[DataType.Ordinal.toLowerCase()].categories[index].label;
+          let historicalCats: Category[] = this.scaleHistory[DataType.Ordinal.toLowerCase()].categories || [];
+          if (historicalCats[index] && historicalCats[index].label) {
+            category.label = historicalCats[index].label;
+          // if (this.scaleHistory[DataType.Ordinal.toLowerCase()] && this.scaleHistory[DataType.Ordinal.toLowerCase()].categories[index]) {
+          //   category.label = this.scaleHistory[DataType.Ordinal.toLowerCase()].categories[index].label;
           } else {
             let autoLabel: string = index + 1 + '';
             if(categories.find(anyCategory => anyCategory.label === autoLabel)) {
