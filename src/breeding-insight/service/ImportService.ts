@@ -23,17 +23,9 @@ import {BiResponse} from "@/breeding-insight/model/BiResponse";
 
 export class ImportService {
 
-  static async getImport(importId: string): Promise<ImportData> {
-    if (importId == null) {
-      throw 'Import ID not provided';
-    }
-    return ImportDAO.getImport(importId);
-  }
-
   static async getAllImportTypeConfigs(): Promise<ImportTypeConfig[]> {
     const response: BiResponse = await ImportDAO.getAllImportTypeConfigs();
     const configs: ImportTypeConfig[] = response.result.data.map((config: ImportTypeConfig) => new ImportTypeConfig(config));
-    console.log(configs);
     return configs;
   }
 

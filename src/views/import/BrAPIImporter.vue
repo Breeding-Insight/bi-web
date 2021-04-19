@@ -650,7 +650,6 @@
         const previewResponse: any = await ImportService.uploadData(this.activeProgram!.id!, this.mapping.id!, this.file!, false);
         // Calculate some stuff for the preview data display
         this.previewTotalRows = previewResponse.rows.length;
-        console.log(previewResponse);
         this.newObjectCounts = previewResponse.statistics;
         this.previewData = previewResponse.rows.slice(0, 100);
         this.importService.send(ImportEvent.UPLOAD_DATA_SUCCESS);

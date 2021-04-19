@@ -15,20 +15,11 @@
  * limitations under the License.
  */
 
-import {ImportData} from "@/breeding-insight/model/import/ImportData";
-import {tblCross} from "@/breeding-insight/dao/mock_data/importMock";
 import {ImportMappingConfig} from "@/breeding-insight/model/import/ImportMapping";
 import * as api from "@/util/api";
 import {BiResponse, Response} from "@/breeding-insight/model/BiResponse";
 
 export class ImportDAO {
-
-  static async getImport(importId: string): Promise<ImportData> {
-    //TODO: Implement once back end is up and running
-    const fileImports = [tblCross];
-    const fileImport = fileImports.filter(fileImport => fileImport.id === importId);
-    return fileImport[0];
-  }
 
   static async getAllImportTypeConfigs(): Promise<BiResponse> {
     const { data } =  await api.call({
@@ -40,7 +31,7 @@ export class ImportDAO {
 
   static async getAllMappings(programId: string): Promise<BiResponse> {
     const { data } =  await api.call({
-      url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/import/mapping`,
+      url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/import/mappings`,
       method: 'get'
     }) as Response;
     return new BiResponse(data);
@@ -54,9 +45,8 @@ export class ImportDAO {
       mapping: mapping.mapping,
       draft: options.draft
     } as ImportMappingConfig);
-    console.log(mappingWithoutFile);
     const { data } =  await api.call({
-      url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/import/mapping/${mapping.id}?validate=${options.validate}`,
+      url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/import/mappings/${mapping.id}?validate=${options.validate}`,
       method: 'put',
       data: mappingWithoutFile,
     }) as Response;
@@ -69,7 +59,7 @@ export class ImportDAO {
       formData.append("file", file);
 
       const {data} = await api.call({
-        url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/import/mapping/file`,
+        url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/import/mappings/file`,
         method: 'post', data: formData}
         ) as Response;
 
@@ -82,7 +72,7 @@ export class ImportDAO {
     formData.append("file", file);
 
     const {data} = await api.call({
-      url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/import/mapping/${mappingId}/data?commit=${commit}`,
+      url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/import/mappings/${mappingId}/data?commit=${commit}`,
       method: 'post', data: formData}
     ) as Response;
 
