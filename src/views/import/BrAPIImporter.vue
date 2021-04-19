@@ -615,7 +615,7 @@
 
     async getImport() {
       try {
-        const importDataResult: ImportData = await ImportService.getImport(this.currentImportId);
+        const importDataResult: ImportData = new ImportData({} as ImportData);
         this.importData = importDataResult;
         this.importService.send(ImportEvent.LOADING_COMPLETE);
       } catch (e) {
