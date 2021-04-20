@@ -90,6 +90,17 @@
         </div>
       </article>
 
+      <template v-if="!data.active">
+        <p class="has-text-weight-bold mt-3 mb-0">Included in Favorites</p>
+        <b-button
+            size="is-small"
+            style="background: lightgray"
+            class="archive-tag"
+            v-if="!data.active">
+          Archived
+        </b-button>
+      </template>
+
       <!-- maybe break out controls for reuse eventually -->
       <div class="columns is-mobile is-centered pt-6">
         <div class="column is-narrow">
@@ -104,12 +115,20 @@
         </div>
         <div class="column is-narrow">
           <a
-            v-if="archivable"
-            v-on:click="$emit('archive')"
-            v-on:keypress.enter.space="$emit('archive')"
+            v-if="data.active"
+            v-on:click="$emit('archive', data)"
+            v-on:keypress.enter.space="$emit('archive', data)"
             tabindex="0"
             >
             Archive
+          </a>
+          <a
+            v-if="archivable && !data.active"
+            v-on:click="$emit('restore', data)"
+            v-on:keypress.enter.space="$emit('restore', data)"
+            tabindex="0"
+          >
+            Restore/Unarchive
           </a>
         </div>
       </div>
@@ -118,18 +137,23 @@
       <EditDataForm
         v-on:cancel="$emit('deactivate-edit')"
         v-on:submit="$emit('submit')"
+        v-bind:row-validations="clientValidations"
         v-bind:edit-record.sync="editTrait"
         v-bind:data-form-state="editFormState"
+        v-on:show-error-notification="$emit('show-error-notification', $event)"
       >
-        <BaseTraitForm
-            v-bind:trait.sync="editTrait"
-            v-bind:edit-format="true"
-            v-on:trait-change="traitUpdate($event)"
-            v-bind:scale-options="scaleClassOptions"
-            v-bind:method-options="methodClassOptions"
-            v-bind:program-observation-levels="observationLevelOptions"
-            v-bind:validation-handler="validationHandler"
-        ></BaseTraitForm>
+        <template v-slot="validations">
+          <BaseTraitForm
+              v-bind:trait.sync="editTrait"
+              v-bind:edit-format="true"
+              v-on:trait-change="traitUpdate($event)"
+              v-bind:scale-options="scaleClassOptions"
+              v-bind:method-options="methodClassOptions"
+              v-bind:program-observation-levels="observationLevelOptions"
+              v-bind:client-validations="validations"
+              v-bind:validation-handler="validationHandler"
+          ></BaseTraitForm>
+        </template>
       </EditDataForm>
     </template>
   </div>
@@ -168,6 +192,8 @@
     private archivable!: boolean;
     @Prop()
     private editFormState!: DataFormEventBusHandler
+    @Prop()
+    private clientValidations!: any | undefined;
     @Prop()
     private validationHandler!: ValidationError;
 
