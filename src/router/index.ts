@@ -21,7 +21,8 @@ import Index from '@/views/Index.vue'
 import Home from '@/views/Home.vue'
 import StyleGuide from '@/views/StyleGuide.vue'
 import NotAuthorized from '@/views/NotAuthorized.vue'
-import BrapiAuthorize from '@/views/BrapiAuthorize.vue'
+import BrapiAuthorize from '@/views/BrAPI/BrapiAuthorize.vue'
+import BrAPIInfo from '@/views/BrAPI/BrAPIInfo.vue'
 import ProgramManagement from '@/views/program/ProgramManagement.vue'
 import AdminProgramManagement from '@/views/admin/AdminProgramManagement.vue'
 import AdminUserManagement from '@/views/admin/AdminUserManagement.vue'
@@ -245,7 +246,17 @@ const routes = [
     component: NotAuthorized
   },
   {
-    path: '/brapi/authorize',
+    path: '/programs/:programId/brapi',
+    name: 'brapi-info',
+    meta: {
+      title: 'BrAPI Information',
+      layout: layouts.userSideBar
+    },
+    component: BrAPIInfo,
+    beforeEnter: processProgramNavigation
+  },
+  {
+    path: '/programs/:programId/brapi/authorize',
     name: 'brapi-authorize',
     meta: {
       title: 'BrAPI Authorize',
@@ -255,7 +266,8 @@ const routes = [
     props: (route: Route) => ({
       applicationName: route.query.display_name,
       returnUrl: route.query.return_url
-    })
+    }),
+    beforeEnter: processProgramNavigation
   },
   {
     path: '/signup',
