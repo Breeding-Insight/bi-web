@@ -19,7 +19,7 @@
   <section id="traitTableLabel">
     <WarningModal
       v-bind:active.sync="deactivateActive"
-      v-bind:msg-title="'Remove trait from Program name?'"
+      v-bind:msg-title="deactivateWarningTitle"
       v-on:deactivate="deactivateActive = false"
     >
       <section>
@@ -29,8 +29,18 @@
       </section>
       <div class="columns">
         <div class="column is-whole has-text-centered buttons">
-          <button v-on:click="modalDeleteHandler()" class="button is-danger"><strong>Yes, remove</strong></button>
-          <button v-on:click="deactivateActive = false" class="button">Cancel</button>
+          <button
+            class="button is-danger"
+            v-on:click="modalDeleteHandler"
+          >
+            <strong>Yes, {{ focusTrait.active ? 'archive' : 'restore' }}</strong>
+          </button>
+          <button
+            class="button"
+            v-on:click="deactivateActive = false"
+          >
+            Cancel
+          </button>
         </div>
       </div>              
     </WarningModal>
@@ -77,6 +87,7 @@
     </NewDataForm>
 
     <SidePanelTable
+      ref="sidePanelTable"
       v-bind:records="traits"
       v-bind:pagination="traitsPagination"
       v-bind:auto-handle-close-panel-event="false"
@@ -93,6 +104,12 @@
       -->
       <template v-slot:columns="data">
         <TableColumn name="name" v-bind:label="'Name'">
+          <b-button
+              size="is-small"
+              class="archive-tag"
+              v-if="!data.active && data.active !== undefined">
+            Archived
+          </b-button>
           {{ data.traitName }}
         </TableColumn>
         <TableColumn name="level" v-bind:label="'Level'" v-bind:visible="!traitSidePanelState.collapseColumns">
@@ -116,12 +133,16 @@
           v-bind:observation-level-options="observationLevelOptions"
           v-bind:edit-active="traitSidePanelState.editActive"
           v-bind:editable="currentTraitEditable"
+          v-bind:loading-editable="loadingTraitEditable"
           v-bind:edit-form-state="traitSidePanelState.dataFormState"
           v-bind:validation-handler="editValidationHandler"
+          v-bind:archivable="true"
           v-on:activate-edit="activateEdit($event)"
           v-on:deactivate-edit="traitSidePanelState.bus.$emit(traitSidePanelState.closePanelEvent)"
           v-on:trait-change="editTrait = Trait.assign({...$event})"
           v-on:submit="updateTrait"
+          v-on:archive="activateArchive($event)"
+          v-on:restore="activateArchive($event)"
         />
       </template>
 
@@ -192,7 +213,8 @@ export default class TraitTable extends Vue {
   private editTrait?: Trait;
   private originalTrait?: Trait;
   private newTrait: Trait = new Trait();
-  private currentTraitEditable : boolean | undefined = undefined;
+  private currentTraitEditable = false;
+  private loadingTraitEditable = true;
 
   // New trait form
   private newTraitActive: boolean = false;
@@ -206,6 +228,8 @@ export default class TraitTable extends Vue {
   private editValidationHandler: ValidationError = new ValidationError();
 
   // Archive trait
+  private focusTrait: Trait = new Trait();
+  private deactivateWarningTitle = 'Archive trait in this program?';
   private deactivateActive: boolean = false;
 
   // TODO: Move these into an event bus in the future
@@ -229,6 +253,7 @@ export default class TraitTable extends Vue {
     });
 
     this.traitSidePanelState.bus.$on(this.traitSidePanelState.selectRowEvent, (row: any) => {
+      console.log('erer');
       console.log(row);
       this.editable(row);
     })
@@ -252,23 +277,50 @@ export default class TraitTable extends Vue {
     });
   }
 
-  @Watch('traitSidePanelState.openedRow', {deep:true})
-  newRow() {
-    console.log('chaged');
-    this.editable(this.traitSidePanelState.openedRow);
-  }
-
   async editable(trait: Trait) {
     let traitEditable = false;
+    this.loadingTraitEditable = true;
     try {
       const [editable] = await TraitService.getTraitEditable(this.activeProgram!.id!, trait.id!) as [boolean, Metadata]
       traitEditable = editable;
       console.log('promise: ' + traitEditable);
       this.currentTraitEditable = traitEditable;
-    } catch(error) {
+    } catch (error) {
       // Display error that traits cannot be loaded
       this.$emit('show-error-notification', 'Error while trying to load traits');
       throw error;
+    } finally {
+      this.loadingTraitEditable = false;
+    }
+  }
+
+  activateArchive(focusTrait: Trait){
+    if (focusTrait.active) {
+      this.deactivateWarningTitle = `Archive "${focusTrait.traitName}" in ${this.activeProgram!.name!}?`;
+    } else {
+      this.deactivateWarningTitle = `Restore "${focusTrait.traitName}" to ${this.activeProgram!.name!}?`;
+    }
+    this.focusTrait = focusTrait;
+    this.deactivateActive = true;
+  }
+
+  async modalDeleteHandler(){
+    try {
+      const traitClone = JSON.parse(JSON.stringify(this.focusTrait));
+      traitClone.active = !traitClone.active;
+      const updatedTrait: Trait = await TraitService.archiveTrait(this.activeProgram!.id!, traitClone);
+
+      // Replace traits in queried traits
+      const traitIndex = this.traits.findIndex(trait => trait.id === updatedTrait.id);
+      if (traitIndex !== -1) { this.traits.splice(traitIndex, 1, updatedTrait); }
+
+      this.deactivateActive = false;
+      this.paginationController.updatePage(1);
+      this.traitSidePanelState.bus.$emit(this.traitSidePanelState.closePanelEvent);
+      this.$emit('show-success-notification', `"${traitClone.traitName}" successfully ${ traitClone.active ? 'restored' : 'archived'}`);
+    } catch(err) {
+      this.$log.error(err);
+      this.$emit('show-error-notification', `"${this.focusTrait.traitName}" could not be ${ this.focusTrait.active ? 'archived' : 'restored'}`);
     }
   }
 

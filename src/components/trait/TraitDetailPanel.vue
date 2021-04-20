@@ -69,11 +69,11 @@
       <p class="has-text-weight-bold mt-3 mb-0">Description of collection method</p>
       <p>{{data.method.description}}</p>
 
-      <ProgressBar v-if="editable === undefined" v-bind:label="'Checking trait editability status'"
+      <ProgressBar v-if="loadingEditable" v-bind:label="'Checking trait editability status'"
                    v-bind:estimated-time-text="'May take a few seconds'"
       />
 
-      <article v-if="!editable" class="message is-info">
+      <article v-if="!editable && !loadingEditable" class="message is-info">
         <div class="message-body">
           <div class="media">
             <figure class="media-left">
@@ -90,11 +90,22 @@
         </div>
       </article>
 
+      <template v-if="!data.active">
+        <p class="has-text-weight-bold mt-3 mb-0">Included in Favorites</p>
+        <b-button
+            size="is-small"
+            style="background: lightgray"
+            class="archive-tag"
+            v-if="!data.active">
+          Archived
+        </b-button>
+      </template>
+
       <!-- maybe break out controls for reuse eventually -->
       <div class="columns is-mobile is-centered pt-6">
         <div class="column is-narrow">
           <a
-            v-if="editable"
+            v-if="editable && !loadingEditable"
             v-on:click="$emit('activate-edit', data)"
             v-on:keypress.enter.space="$emit('activate-edit', data)"
             tabindex="0"
@@ -104,12 +115,20 @@
         </div>
         <div class="column is-narrow">
           <a
-            v-if="archivable"
-            v-on:click="$emit('archive')"
-            v-on:keypress.enter.space="$emit('archive')"
+            v-if="data.active"
+            v-on:click="$emit('archive', data)"
+            v-on:keypress.enter.space="$emit('archive', data)"
             tabindex="0"
             >
             Archive
+          </a>
+          <a
+            v-if="archivable && !data.active"
+            v-on:click="$emit('restore', data)"
+            v-on:keypress.enter.space="$emit('restore', data)"
+            tabindex="0"
+          >
+            Restore/Unarchive
           </a>
         </div>
       </div>
@@ -164,6 +183,8 @@
     private editActive!: boolean;
     @Prop()
     private editable!: boolean | undefined;
+    @Prop({default: true})
+    private loadingEditable!: boolean;
     @Prop({default: false})
     private archivable!: boolean;
     @Prop()
