@@ -51,7 +51,7 @@ export default class BrapiInfo extends Vue {
   private activeProgram?: Program;
 
   getBrAPIRootPath() {
-    return `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${this.activeProgram.id}`;
+    return `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${this.activeProgram!.id}`;
   }
 }
 </script>
