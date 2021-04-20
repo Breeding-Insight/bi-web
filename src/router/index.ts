@@ -24,6 +24,8 @@ import NotAuthorized from '@/views/NotAuthorized.vue'
 import BrapiAuthorize from '@/views/BrAPI/BrapiAuthorize.vue'
 import BrAPIInfo from '@/views/BrAPI/BrAPIInfo.vue'
 import ProgramManagement from '@/views/program/ProgramManagement.vue'
+import TrialsAndExperiments from "@/views/trials-and-experiments/TrialsAndExperiments.vue";
+import Trials from "@/views/trials-and-experiments/Trials.vue";
 import AdminProgramManagement from '@/views/admin/AdminProgramManagement.vue'
 import AdminUserManagement from '@/views/admin/AdminUserManagement.vue'
 import BrAPIImporter from '@/views/import/BrAPIImporter.vue'
@@ -136,6 +138,37 @@ const routes = [
     },
     component: Home,
     beforeEnter: processProgramNavigation,
+  },
+  {
+    path: '/programs/:programId/trials-experiments',
+    name: 'trials-experiments',
+    meta: {
+      title: 'Trials and Experiments',
+      layout: layouts.userSideBar
+    },
+    component: TrialsAndExperiments,
+    redirect: {name: 'trials-list'},
+    beforeEnter: processProgramNavigation,
+    children: [
+ /*     {
+        path: 'experiments',
+        name: 'experiments-list',
+        meta: {
+          title: 'Experiments',
+          layout: layouts.userSideBar
+        },
+        component: Experiments
+      },*/
+      {
+        path: 'trials',
+        name: 'trials-list',
+        meta: {
+          title: 'Trials',
+          layout: layouts.userSideBar
+        },
+        component: Trials
+      }
+    ]
   },
   {
     path: '/programs/:programId/program-management',
