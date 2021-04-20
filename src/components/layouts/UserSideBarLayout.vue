@@ -109,14 +109,37 @@
                 Home
               </router-link>
             </li>
-            <!--
             <li>
-              <a>Trials and Experiments</a>
+              <router-link
+                  v-bind:to="{name: 'trials-experiments', params: {programId: activeProgram.id}}"
+                  v-bind:class="{ 'is-active': trialsAndExperimentsActive }"
+              >
+                Trials and Experiments
+                <MoreVerticalIcon
+                    v-if="!trialsAndExperimentsActive"
+                    class="is-pulled-right"
+                />
+                <MoreHorizontalIcon
+                    v-if="trialsAndExperimentsActive"
+                    class="is-pulled-right"
+                />
+              </router-link>
+              <ul v-show="trialsAndExperimentsActive">
+                <li>
+                  <router-link v-bind:to="{name: 'trials', params: {programId: activeProgram.id}}">
+                    Trials
+                  </router-link>
+                </li>
+                <li>
+                  <a>
+                    Experiments
+                  </a>
+                </li>
+              </ul>
             </li>
-            <li>
+<!--            <li>
               <a>Germplasm Inventory</a>
-            </li>
-            -->
+            </li>-->
             <li>
               <router-link
                 v-bind:to="{name: 'import'}"
@@ -244,6 +267,7 @@
     private activeUser?: User;
     programManagementActive: boolean =  true;
     traitsActive: boolean = false;
+    trialsAndExperimentsActive: boolean = false;
     private programs: Program[] = [];
     private programSelectActive: boolean = false;
 
@@ -290,6 +314,7 @@
     setActiveLinkSubmenus() {
       var path: string = this.$route.path;
       this.programManagementActive = path.includes('/program-management/');
+      this.trialsAndExperimentsActive = path.includes('/trials-experiments/');
       this.traitsActive = path.includes('/traits/');
     }
     hideProgramSelect() {
