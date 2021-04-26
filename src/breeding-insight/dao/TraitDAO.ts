@@ -61,7 +61,6 @@ export class TraitDAO {
       url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/traits/${traitId}/editable`,
       method: 'get'
     }) as Response;
-    console.log(data);
     return new BiResponse(data);
   }
 

@@ -50,6 +50,9 @@ export class TraitService {
           const { result: { data }, metadata } = await TraitDAO.updateTraits(programId, traits);
           return [data, metadata];
         } catch (error) {
+          if (error.response && error.response.status === 405) {
+            throw this.notAllowed;
+          }
           throw TraitUploadService.parseError(error);
         }
       }
