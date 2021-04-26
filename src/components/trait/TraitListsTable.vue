@@ -263,7 +263,6 @@ export default class TraitTable extends Vue {
     });
 
     this.traitSidePanelState.bus.$on(this.traitSidePanelState.selectRowEvent, (row: any) => {
-      console.log(row);
       this.editable(row);
     })
   }
@@ -291,7 +290,6 @@ export default class TraitTable extends Vue {
     try {
       const [editable] = await TraitService.getTraitEditable(this.activeProgram!.id!, trait.id!) as [boolean, Metadata]
       traitEditable = editable;
-      console.log('promise: ' + traitEditable);
       this.currentTraitEditable = traitEditable;
     } catch(error) {
       // Display error that traits cannot be loaded
