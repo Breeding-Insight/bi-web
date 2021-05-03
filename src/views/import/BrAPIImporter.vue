@@ -37,7 +37,6 @@
         </div>
       </template>
       <template v-slot:summary-display>
-        I am a summary
       </template>
     </ImportStepCard>
 
@@ -101,7 +100,6 @@
       </template>
       <!-- Summary view -->
       <template v-slot:summary-display>
-        I am a summary
       </template>
     </ImportStepCard>
 
@@ -235,7 +233,6 @@
 
       <!-- Summary View -->
       <template v-slot:summary-display>
-        I am a summary
       </template>
 
     </ImportStepCard>
@@ -271,7 +268,6 @@
 
       <!-- Summary View -->
       <template v-slot:summary-display>
-        I am a summary
       </template>
 
     </ImportStepCard>
