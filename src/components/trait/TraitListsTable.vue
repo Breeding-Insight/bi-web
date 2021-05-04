@@ -403,7 +403,7 @@ export default class TraitTable extends Vue {
         const deletions: string[] = this.processValidationErrors(this.editValidationHandler, this.editTrait!);
         this.$emit('show-error-notification', `Error updating trait. ${this.editValidationHandler.condenseErrorsSingleRow(deletions)}`);
       } else {
-        this.$emit('show-error-notification', 'Error updating trait.');
+        this.$emit('show-error-notification', error);
       }
     } finally {
       this.traitSidePanelState.dataFormState.bus.$emit(DataFormEventBusHandler.SAVE_COMPLETE_EVENT);

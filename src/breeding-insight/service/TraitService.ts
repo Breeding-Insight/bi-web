@@ -26,6 +26,7 @@ import {ValidationError} from "@/breeding-insight/model/errors/ValidationError";
 export class TraitService {
 
   static notAllowed : string = 'Trait has associated observations and cannot be updated';
+  static errorUpdating: string = 'Error updating trait';
 
   static async createTraits(programId: string, newTraits: Trait[]): Promise<[Trait[], Metadata]> {
     if (programId) {
@@ -52,6 +53,8 @@ export class TraitService {
         } catch (error) {
           if (error.response && error.response.status === 405) {
             throw this.notAllowed;
+          } else if (error.response && error.response.status !== 422) {
+            throw this.errorUpdating;
           }
           throw TraitUploadService.parseError(error);
         }
