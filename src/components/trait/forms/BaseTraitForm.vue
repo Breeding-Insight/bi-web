@@ -188,6 +188,7 @@ export default class BaseTraitForm extends Vue {
   name: string = '';
   private methodHistory: {[key: string]: Method} = {};
   private scaleHistory: {[key: string]: Scale} = {};
+  private lastCategoryType: string = '';
 
   created() {
     if (!this.trait.method) {
@@ -234,40 +235,50 @@ export default class BaseTraitForm extends Vue {
   setScaleClass(value: string) {
     // Save history of current scale class
     if (this.trait.scale!.dataType) {
-      // Nominal and ordinal save histories
-      if (Scale.dataTypeEquals(this.trait.scale!.dataType, DataType.Nominal) ||
-        Scale.dataTypeEquals(this.trait.scale!.dataType, DataType.Ordinal))
-      {
-        this.scaleHistory[DataType.Ordinal.toLowerCase()] = Scale.assign({...this.trait.scale!} as Scale);
-      } else {
-        this.scaleHistory[this.trait.scale!.dataType.toLowerCase()] = Scale.assign({...this.trait.scale!} as Scale);
+      this.scaleHistory[this.trait.scale!.dataType.toLowerCase()] = Scale.assign({...this.trait.scale!} as Scale);
+      if (Scale.dataTypeEquals(this.trait!.scale!.dataType, DataType.Nominal) || Scale.dataTypeEquals(this.trait!.scale!.dataType, DataType.Ordinal)) {
+        this.lastCategoryType = this.trait!.scale!.dataType;
       }
     }
 
-    // Look in history for existing scale
-    if ((Scale.dataTypeEquals(value, DataType.Nominal) || Scale.dataTypeEquals(value, DataType.Ordinal)) &&
-      this.scaleHistory[DataType.Ordinal.toLowerCase()])
-    {
-      this.trait.scale = this.scaleHistory[DataType.Ordinal.toLowerCase()];
-
-      if (Scale.dataTypeEquals(value, DataType.Nominal)) {
-        // Clear the labels
-        if (this.trait.scale.categories) {
-          this.trait.scale.categories.forEach(category => category.label = undefined);
-        }
-        // Set the data type
-        this.trait.scale.dataType = DataType.Nominal;
-      } else {
-        if (this.trait.scale.categories) {
-          this.trait.scale.categories.forEach((category, index) => category.label = index.toString());
-        }
-        // Set the data type
-        this.trait.scale.dataType = DataType.Ordinal;
+    if (Scale.dataTypeEquals(value, DataType.Nominal) && Scale.dataTypeEquals(this.lastCategoryType, DataType.Ordinal)) {
+      this.trait.scale = Scale.assign(this.scaleHistory[DataType.Ordinal.toLowerCase()]);
+      // Clear the labels
+      if (this.trait.scale.categories) {
+        this.trait.scale.categories.forEach(category => category.label = undefined);
       }
+
+      this.trait.scale.dataType = value;
+      this.trait!.scale!.scaleName = value;
+    } else if (Scale.dataTypeEquals(value, DataType.Ordinal) && Scale.dataTypeEquals(this.lastCategoryType, DataType.Nominal)) {
+      this.trait.scale = Scale.assign(this.scaleHistory[DataType.Nominal.toLowerCase()]);
+      // Add 1-based index labels to categories
+      if (this.trait.scale.categories) {
+        this.trait.scale.categories.forEach((category, index, categories) => {
+          // Use prior labels if they exist
+          let historicalCats: Category[] = this.scaleHistory[DataType.Ordinal.toLowerCase()].categories || [];
+          if (historicalCats[index] && historicalCats[index].label) {
+            category.label = historicalCats[index].label;
+          // if (this.scaleHistory[DataType.Ordinal.toLowerCase()] && this.scaleHistory[DataType.Ordinal.toLowerCase()].categories[index]) {
+          //   category.label = this.scaleHistory[DataType.Ordinal.toLowerCase()].categories[index].label;
+          } else {
+            let autoLabel: string = index + 1 + '';
+            if(categories.find(anyCategory => anyCategory.label === autoLabel)) {
+              category.label = autoLabel + '_dup';
+            } else {
+              category.label = autoLabel;
+            }
+          }
+        })
+      }
+      this.trait.scale.dataType = value;
+      this.trait!.scale!.scaleName = value;
+
     } else if (this.scaleHistory[value.toLowerCase()]) {
       this.trait.scale = this.scaleHistory[value.toLowerCase()];
       this.trait.scale.dataType = value;
       this.trait!.scale!.scaleName = value;
+
     } else {
       // No history
       this.trait.scale = new Scale();
@@ -276,6 +287,7 @@ export default class BaseTraitForm extends Vue {
       // Allow for units in the numerical and duration traits
       if (Scale.dataTypeEquals(value, DataType.Numerical) || Scale.dataTypeEquals(value, DataType.Duration)) {
         this.trait!.scale!.scaleName = undefined;
+
       } else {
         this.trait!.scale!.scaleName = value;
       }
