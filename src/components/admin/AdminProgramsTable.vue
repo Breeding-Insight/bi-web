@@ -109,7 +109,7 @@
 
     <ExpandableRowTable
       v-bind:records.sync="programs"
-      v-bind:row-validations="programValidations"
+      v-bind:row-validations="programEditValidations"
       v-bind:editable="true"
       v-bind:archivable="true"
       v-bind:pagination="programsPagination"
@@ -256,6 +256,11 @@ export default class AdminProgramsTable extends Vue {
     name: {required},
     speciesId: {required},
     brapiUrl: {url}
+  }
+
+  programEditValidations = {
+    name: {required},
+    speciesId: {required}
   }
 
   mounted() {
