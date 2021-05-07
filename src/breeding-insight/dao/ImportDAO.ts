@@ -79,4 +79,13 @@ export class ImportDAO {
     return new BiResponse(data);
   }
 
+  static async getDataUpload(programId: string, mappingId: string, uploadId: string) {
+    const {data} = await api.call({
+      url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/import/mappings/${mappingId}/data/${uploadId}`,
+      method: 'get'
+    }) as Response;
+
+    return new BiResponse(data);
+  }
+
 }
