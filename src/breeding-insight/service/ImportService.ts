@@ -20,6 +20,7 @@ import {ImportDAO} from "@/breeding-insight/dao/ImportDAO";
 import {ImportTypeConfig} from "@/breeding-insight/model/import/ImportTypeConfig";
 import {ImportMappingConfig} from "@/breeding-insight/model/import/ImportMapping";
 import {BiResponse} from "@/breeding-insight/model/BiResponse";
+import {ImportResponse} from "@/breeding-insight/model/import/ImportResponse";
 
 export class ImportService {
 
@@ -57,14 +58,26 @@ export class ImportService {
     return importMapping;
   }
 
-  static async uploadData(programId: string, mappingId: string, file: File, commit: boolean): Promise<any> {
+  static async uploadData(programId: string, mappingId: string, file: File, commit: boolean): Promise<ImportResponse> {
     if (!programId || programId === null) {
       throw 'Program ID not provided';
     }
 
     const response: BiResponse = await ImportDAO.uploadData(programId, mappingId, file, commit);
     const data: any = response.result;
-    return data;
+    const importResponse = new ImportResponse(data);
+    return importResponse;
+  }
+
+  static async getDataUpload(programId: string, mappingId: string, uploadId: string) {
+    if (!programId || programId === null) {
+      throw 'Program ID not provided';
+    }
+
+    const response: BiResponse = await ImportDAO.getDataUpload(programId, mappingId, uploadId);
+    const data: any = response.result;
+    const importResponse = new ImportResponse(data);
+    return importResponse;
   }
 
 }

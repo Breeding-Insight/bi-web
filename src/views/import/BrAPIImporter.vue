@@ -322,6 +322,9 @@
   import {User} from "@/breeding-insight/model/User";
   import BasicInputField from "@/components/forms/BasicInputField.vue";
   import BasicSelectField from "@/components/forms/BasicSelectField.vue";
+  import {ImportResponse} from "@/breeding-insight/model/import/ImportResponse";
+  import {ImportPreview} from "@/breeding-insight/model/import/ImportPreview";
+  import {ImportProgress} from "@/breeding-insight/model/import/ImportProgress";
 
   enum PageState {
     CREATE_MAPPING = "CREATE_MAPPING",
@@ -643,16 +646,48 @@
 
     async uploadData() {
       try {
-        const previewResponse: any = await ImportService.uploadData(this.activeProgram!.id!, this.mapping.id!, this.file!, false);
+        let previewResponse: ImportResponse = await ImportService.uploadData(this.activeProgram!.id!, this.mapping.id!, this.file!, false);
+        // Get the import id
+        console.log(previewResponse);
+        // Continue checking for upload until it is finished
+        while (previewResponse.importId !== undefined &&
+          (previewResponse.progress === undefined || previewResponse.progress.statuscode === 202))
+        {
+          try {
+            previewResponse = await this.getDataUpload(previewResponse.importId);
+          } catch (e) {
+            throw e;
+          }
+        }
+
+        if (previewResponse.progress && previewResponse.progress.statuscode === 500){
+          this.$log.error(previewResponse.progress.message);
+          // TODO: Shouldn't show this to the user if its a 500
+          this.$emit('show-error-notification', previewResponse.progress.message);
+        }
+
         // Calculate some stuff for the preview data display
-        this.previewTotalRows = previewResponse.rows.length;
-        this.newObjectCounts = previewResponse.statistics;
-        this.previewData = previewResponse.rows.slice(0, 100);
+        if (previewResponse && previewResponse.preview){
+          if (previewResponse.preview.rows) {
+            this.previewTotalRows = previewResponse.preview.rows.length;
+            this.previewData = previewResponse.preview.rows.slice(0, 100);
+          }
+          this.newObjectCounts = previewResponse.preview.statistics;
+        }
         this.importService.send(ImportEvent.UPLOAD_DATA_SUCCESS);
         this.currentStep = 5;
       } catch (e) {
         this.$log.error(e);
         this.$emit('show-error-notification', `Unable to upload file`);
+      }
+    }
+
+    async getDataUpload(uploadId: string): Promise<ImportResponse> {
+      try {
+        const previewResponse: ImportResponse = await ImportService.getDataUpload(this.activeProgram!.id!, this.mapping.id!, uploadId);
+        return previewResponse;
+      } catch (e) {
+        throw e;
       }
     }
 
