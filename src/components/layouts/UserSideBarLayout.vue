@@ -119,6 +119,13 @@
             -->
             <li>
               <router-link
+                v-bind:to="{name: 'import'}"
+              >
+                Import File
+              </router-link>
+            </li>
+            <li>
+              <router-link
                 v-bind:to="{name: 'traits', params: {programId: activeProgram.id}}"
                 v-bind:class="{ 'is-active': traitsActive }"
               >

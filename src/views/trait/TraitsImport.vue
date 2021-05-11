@@ -48,9 +48,11 @@
     <template v-if="state === ImportState.CHOOSE_FILE || state === ImportState.FILE_CHOSEN">
       <h1 class="title">Import Traits</h1>
       <TraitImportTemplateMessageBox class="mb-5"/>
-      <FileSelectMessageBox v-model="file"
-                               v-bind:fileTypes="'.csv, .xls, .xlsx'"
-                               v-on:import="importService.send(ImportEvent.IMPORT_STARTED)"/>        
+      <div class="box">
+        <FileSelectMessageBox v-model="file"
+                                 v-bind:fileTypes="'.csv, .xls, .xlsx'"
+                                 v-on:import="importService.send(ImportEvent.IMPORT_STARTED)"/>
+      </div>
     </template>
     
     <template v-if="state === ImportState.IMPORTING || state === ImportState.LOADING">
@@ -72,10 +74,12 @@
     <template v-if="state === ImportState.IMPORT_ERROR">
         <h1 class="title">Importing...</h1>
       <TraitImportTemplateMessageBox class="mb-5"/>
-        <FileSelectMessageBox v-model="file"
-                                 v-bind:fileTypes="'.csv, .xls, .xlsx'"
-                                 v-bind:errors="import_errors"
-                                 v-on:import="importService.send(ImportEvent.IMPORT_STARTED)"/>
+        <div class="box">
+          <FileSelectMessageBox v-model="file"
+                                v-bind:fileTypes="'.csv, .xls, .xlsx'"
+                                v-bind:errors="import_errors"
+                                v-on:import="importService.send(ImportEvent.IMPORT_STARTED)"/>
+        </div>
     </template>
 
   </div>
