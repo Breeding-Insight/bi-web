@@ -80,3 +80,5 @@ declare module 'constants' {
 declare module 'vue-feather-icons';
 declare module 'vue-click-outside';
 declare module 'vue-breakpoint-component';
+declare module 'uuid';
+declare module 'vue-json-tree-view';
