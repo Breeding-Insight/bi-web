@@ -63,7 +63,7 @@
             v-model="file"
             v-bind:fileTypes="'.csv, .xls, .xlsx'"
             v-bind:errors="import_errors"
-            v-on:import="pageState === PageState.CREATE_MAPPING ? upload() : uploadData()"
+            v-on:import="pageState === PageState.CREATE_MAPPING ? uploadMappingFile() : viewPreview()"
         />
       </template>
 
@@ -262,24 +262,40 @@
     >
       <!-- Editing View -->
       <template v-slot:write-display>
-        <p>Total number of rows: {{previewTotalRows}}</p>
-        <template v-for="key of Object.keys(newObjectCounts)">
-          <p v-bind:key="key">New {{key}} count: {{newObjectCounts[key].newObjectCount}}</p>
+        <!-- Progress -->
+        <template v-if="currentImport.progress.statuscode == 202">
+          <ProgressBar
+              v-bind:max="currentImport.progress.total"
+              v-bind:value="currentImport.progress.finished"
+              v-bind:estimated-time-text="currentImport.progress.message"
+          />
         </template>
-        <p>Sample data:</p>
-        <div>
-          <tree-view :data="previewData" :options="{maxDepth: 0}"></tree-view>
-        </div>
-        <div class="columns">
-          <div class="column is-half is-offset-half has-text-right">
-            <button
-                v-on:click="commitData"
-                class="button is-primary"
-            >
-              Save Data
-            </button>
+
+        <!-- Preview -->
+        <template v-else-if="currentImport.progress.statuscode == 200">
+          <p>Total number of rows: {{previewTotalRows}}</p>
+          <template v-for="key of Object.keys(newObjectCounts)">
+            <p v-bind:key="key">New {{key}} count: {{newObjectCounts[key].newObjectCount}}</p>
+          </template>
+          <p>Sample data:</p>
+          <div>
+            <tree-view :data="previewData" :options="{maxDepth: 0}"></tree-view>
           </div>
-        </div>
+          <div class="columns">
+            <div class="column is-half is-offset-half has-text-right">
+              <button
+                  v-on:click="commitData"
+                  class="button is-primary"
+              >
+                Save Data
+              </button>
+            </div>
+          </div>
+        </template>
+
+        <template v-else>
+          There was an error!
+        </template>
       </template>
 
       <!-- Summary View -->
@@ -289,22 +305,40 @@
     </ImportStepCard>
 
     <ImportStepCard
-      title="Upload Successful!"
+      title="Commit Data"
       v-if="panelIsVisible(PanelState.COMMIT_PANEL)"
       v-bind:completed="panelIsActive(PanelState.COMMIT_PANEL)"
       v-bind:readonly="panelIsActive(PanelState.COMMIT_PANEL)"
     >
       <template v-slot:write-display>
-        <p>
-          Your data was uploaded successfully.
-        </p>
-        <p>
-          <a href="#">Go see your data</a>
-        </p>
-        <p>
-          <a v-on:click="cancelMapping">Start another import</a>
-        </p>
+        <!-- In Progress -->
+        <template v-if="currentImport.progress.statuscode == 202">
+          <ProgressBar
+              v-bind:max="currentImport.progress.total"
+              v-bind:value="currentImport.progress.finished"
+              v-bind:estimated-time-text="currentImport.progress.message"
+          />
+        </template>
+
+        <!-- Finished -->
+        <template v-else-if="currentImport.progress.statuscode == 200">
+          <p>
+            Your data was uploaded successfully.
+          </p>
+          <p>
+            <a href="#">Go see your data</a>
+          </p>
+          <p>
+            <a v-on:click="cancelMapping">Start another import</a>
+          </p>
+        </template>
+
+        <!-- Error -->
+        <template v-else>
+          There was an error!
+        </template>
       </template>
+
       <template v-slot:summary-display></template>
     </ImportStepCard>
 
@@ -341,6 +375,7 @@
   import {ImportResponse} from "@/breeding-insight/model/import/ImportResponse";
   import {ImportPreview} from "@/breeding-insight/model/import/ImportPreview";
   import {ImportProgress} from "@/breeding-insight/model/import/ImportProgress";
+  import ProgressBar from "@/components/forms/ProgressBar.vue";
 
   enum PageState {
     CREATE_MAPPING = "CREATE_MAPPING",
@@ -360,7 +395,7 @@
   enum ImportEvent {
     CREATE_NEW_IMPORT = "CREATE_NEW_IMPORT",
     IMPORT_SUCCESS = "IMPORT_SUCCESS",
-    VIEW_PREVIEW = "VIEW_PREVIEW",
+    PREVIEW_IMPORT = "PREVIEW_IMPORT",
     SAVE_MAPPING_METADATA_SUCCESS = "SAVE_MAPPING_METADATA_SUCCESS",
     CANCEL_MAPPING = "CANCEL_MAPPING",
     SELECTED_MAPPING = "SELECTED_MAPPING",
@@ -427,6 +462,7 @@
 
   @Component({
     components: {
+      ProgressBar,
       BasicInputField,
       ListMappingRow,
       RelationMappingRow,
@@ -449,7 +485,7 @@
     private focusObjectId: string | null = null;
 
     private prevImports: any[] = []
-    private currentImportId: string = '1';
+    private currentImport?: ImportResponse = new ImportResponse({});
     private selectedMappingId: string | null = null;
     private importConfigs: ImportTypeConfig[] = [];
     private selectedImportConfig: ImportTypeConfig | null = null
@@ -475,49 +511,38 @@
                 target: ImportState.CHOOSE_MAPPING_FILE,
                 actions: [ImportAction.MAPPING_START]
               },
-              [ImportEvent.SELECTED_MAPPING]: {
-                target: ImportState.CHOOSE_DATA_FILE,
-                actions: []
-              }
+              [ImportEvent.SELECTED_MAPPING]: ImportState.CHOOSE_DATA_FILE
             }
           },
           [ImportState.CHOOSE_DATA_FILE]: {
             entry: ImportAction.CHOOSE_DATA_FILE_START,
             on: {
-              [ImportEvent.UPLOAD_DATA_SUCCESS]: ImportState.PREVIEW_IMPORT
+              [ImportEvent.PREVIEW_IMPORT]: ImportState.PREVIEW_IMPORT
             }
           },
           [ImportState.CHOOSE_MAPPING_FILE]: {
             entry: ImportAction.CHOOSE_MAPPING_FILE_START,
             on: {
-              [ImportEvent.IMPORT_SUCCESS]: {
-                target: ImportState.CHOOSE_IMPORT_TYPE
-              }
+              [ImportEvent.IMPORT_SUCCESS]: ImportState.CHOOSE_IMPORT_TYPE
             }
           },
           [ImportState.CHOOSE_IMPORT_TYPE]: {
             entry: ImportAction.CHOOSE_IMPORT_TYPE_START,
             on: {
-              [ImportEvent.SAVE_MAPPING_METADATA_SUCCESS]: {
-                target: ImportState.MAPPING
-              }
+              [ImportEvent.SAVE_MAPPING_METADATA_SUCCESS]: ImportState.MAPPING
             }
           },
           [ImportState.MAPPING]: {
             entry: ImportAction.MAPPING_START,
             on: {
-              [ImportEvent.CANCEL_MAPPING]: {
-                target: ImportState.CHOOSE_IMPORT,
-                actions: []
-              }
+              [ImportEvent.PREVIEW_IMPORT]: ImportState.PREVIEW_IMPORT,
+              [ImportEvent.CANCEL_MAPPING]: ImportState.CHOOSE_IMPORT
             }
           },
           [ImportState.PREVIEW_IMPORT]: {
             entry: ImportAction.PREVIEW_IMPORT_START,
             on: {
-              [ImportEvent.COMMIT_IMPORT]: {
-                target: ImportState.COMMIT_IMPORT
-              }
+              [ImportEvent.COMMIT_IMPORT]: ImportState.COMMIT_IMPORT
             }
           },
           [ImportState.COMMIT_IMPORT]: {
@@ -545,7 +570,7 @@
       this.importService.start();
     }
 
-    async upload() {
+    async uploadMappingFile() {
       //TODO: Show a loading wheel somewhere while uploading
       try {
         this.mapping = await ImportService.saveMappingFile(this.activeProgram!.id!, this.file!);
@@ -604,8 +629,7 @@
 
     async updateMappingAndPreview() {
       await this.updateMapping();
-      this.importService.send(ImportEvent.VIEW_PREVIEW);
-      await this.uploadData();
+      await this.viewPreview();
     }
 
     async updateMapping() {
@@ -629,76 +653,76 @@
       }
     }
 
+    async viewPreview() {
+      await this.uploadData();
+      await this.updateDataUpload(this.currentImport!.importId!, false);
+    }
+
     async uploadData() {
       try {
-        // TODO: Start task, PREVIEW_LOAD
         let previewResponse: ImportResponse = await ImportService.uploadData(this.activeProgram!.id!, this.mapping.id!, this.file!, false);
-
+        this.currentImport = previewResponse;
         // Get the import id
-        console.log(previewResponse);
-
-        this.importService.send(ImportEvent.UPLOAD_DATA_SUCCESS);
-
-        // Call for a preview of the data
-        //TODO: Wrap this in a try catch
-        this.updateDataUpload(previewResponse.importId!, false);
-
-        // TODO: Start task, PREVIEW_FINISHED
       } catch (e) {
-        // TODO: Start task, PREVIEW_FINISHED
         this.$log.error(e);
         this.$emit('show-error-notification', `Unable to upload file`);
+        throw e;
       }
     }
 
     async updateDataUpload(uploadId: string, commit: boolean) {
       let previewResponse: ImportResponse = await ImportService.updateDataUpload(this.activeProgram!.id!, this.mapping.id!, uploadId!, commit);
+      this.currentImport = previewResponse;
 
-      // Continue checking for upload until it is finished
-      // TODO: Set a delay on this
-      while (previewResponse.importId !== undefined &&
-      (previewResponse.progress === undefined || previewResponse.progress.statuscode === 202))
-      {
-        try {
-          previewResponse = await this.getDataUpload(previewResponse.importId);
-        } catch (e) {
-          throw e;
-        }
-      }
+      // Start check for our data upload
+      const includeMapping = !commit;
+      this.getDataUpload(includeMapping);
 
-      if (previewResponse.progress && previewResponse.progress.statuscode === 500){
-        this.$log.error(previewResponse.progress.message);
-        // TODO: Shouldn't show this to the user if its a 500
-        this.$emit('show-error-notification', previewResponse.progress.message);
-      }
-
-      // Calculate some stuff for the preview data display
-      if (!commit && previewResponse && previewResponse.preview){
-        if (previewResponse.preview.rows) {
-          this.previewTotalRows = previewResponse.preview.rows.length;
-          this.previewData = previewResponse.preview.rows.slice(0, 100);
-        }
-        this.newObjectCounts = previewResponse.preview.statistics;
+      if (commit) {
+        this.importService.send(ImportEvent.COMMIT_IMPORT);
+      } else {
+        this.importService.send(ImportEvent.PREVIEW_IMPORT);
       }
     }
 
-    async getDataUpload(uploadId: string): Promise<ImportResponse> {
+    async getDataUpload(includeMapping: boolean) {
       try {
-        const previewResponse: ImportResponse = await ImportService.getDataUpload(this.activeProgram!.id!, this.mapping.id!, uploadId);
-        return previewResponse;
+        const previewResponse: ImportResponse = await ImportService.getDataUpload(this.activeProgram!.id!, this.mapping.id!, this.currentImport!.importId!, includeMapping);
+        this.currentImport = previewResponse;
+
+        if (!previewResponse.progress) {
+          this.$log.error('Progress object was not returned with progress response.')
+
+        } else if (previewResponse.progress.statuscode === 202) {
+          // Wait a second, and call GET call again
+          setTimeout(() => this.getDataUpload(includeMapping), 1000);
+
+        } else {
+          // Our call is finished, check the response
+          if (previewResponse.progress && previewResponse.progress.statuscode != 200){
+            this.$log.error(previewResponse.progress.message);
+            // TODO: Shouldn't show this to the user if its a 500
+            this.$emit('show-error-notification', previewResponse.progress.message);
+          }
+
+          // Calculate some stuff for the preview data display
+          // TODO: Add pagination to this
+          if (previewResponse && previewResponse.preview){
+            if (previewResponse.preview && previewResponse.preview.rows) {
+              this.previewTotalRows = previewResponse.preview.rows.length;
+              this.previewData = previewResponse.preview.rows.slice(0, 100);
+              this.newObjectCounts = previewResponse.preview.statistics;
+            }
+          }
+        }
+
       } catch (e) {
         throw e;
       }
     }
 
     async commitData() {
-      try {
-        this.previewData = await ImportService.uploadData(this.activeProgram!.id!, this.mapping.id!, this.file!, true);
-        this.importService.send(ImportEvent.UPLOAD_DATA_SUCCESS);
-      } catch (e) {
-        this.$log.error(e);
-        this.$emit('show-error-notification', `Unable to upload file`);
-      }
+      await this.updateDataUpload(this.currentImport!.importId!, true);
     }
 
     cancelMapping() {
