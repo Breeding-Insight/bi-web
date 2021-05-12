@@ -50,6 +50,7 @@ export class ImportDAO {
       method: 'put',
       data: mappingWithoutFile,
     }) as Response;
+
     return new BiResponse(data);
   }
 
@@ -79,9 +80,9 @@ export class ImportDAO {
     return new BiResponse(data);
   }
 
-  static async getDataUpload(programId: string, mappingId: string, uploadId: string) {
+  static async getDataUpload(programId: string, mappingId: string, uploadId: string, includeMapping: boolean) {
     const {data} = await api.call({
-      url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/import/mappings/${mappingId}/data/${uploadId}`,
+      url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/import/mappings/${mappingId}/data/${uploadId}?mapping=${includeMapping}`,
       method: 'get'
     }) as Response;
 

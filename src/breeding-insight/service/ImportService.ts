@@ -41,8 +41,7 @@ export class ImportService {
 
   static async updateMapping(programId: string, mapping: ImportMappingConfig, options: {[key:string]:boolean}): Promise<any> {
     if (!programId || programId === null) throw 'Program ID not provided';
-    if (!mapping || !mapping.id) throw 'Mapping must have an id.' +
-    ''
+    if (!mapping || !mapping.id) throw 'Mapping must have an id.';
     const response: BiResponse = await ImportDAO.updateMapping(programId, mapping, options);
     const importMapping: ImportMappingConfig = new ImportMappingConfig(response.result);
     return importMapping;
@@ -69,12 +68,12 @@ export class ImportService {
     return importResponse;
   }
 
-  static async getDataUpload(programId: string, mappingId: string, uploadId: string) {
+  static async getDataUpload(programId: string, mappingId: string, uploadId: string, includeMapping: boolean) {
     if (!programId || programId === null) {
       throw 'Program ID not provided';
     }
 
-    const response: BiResponse = await ImportDAO.getDataUpload(programId, mappingId, uploadId);
+    const response: BiResponse = await ImportDAO.getDataUpload(programId, mappingId, uploadId, includeMapping);
     const data: any = response.result;
     const importResponse = new ImportResponse(data);
     return importResponse;
