@@ -66,13 +66,13 @@ export class ImportDAO {
       return new BiResponse(data);
   }
 
-  static async uploadData(programId: string, mappingId: string, file: File, commit: boolean): Promise<any> {
+  static async uploadData(programId: string, mappingId: string, file: File): Promise<any> {
 
     var formData = new FormData();
     formData.append("file", file);
 
     const {data} = await api.call({
-      url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/import/mappings/${mappingId}/data?commit=${commit}`,
+      url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/import/mappings/${mappingId}/data`,
       method: 'post', data: formData}
     ) as Response;
 
@@ -88,4 +88,14 @@ export class ImportDAO {
     return new BiResponse(data);
   }
 
+  static async updateUploadData(programId: string, mappingId: string, uploadId: string, commit: boolean) {
+    let url = `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/import/mappings/${mappingId}/data/${uploadId}`;
+    url += commit ? '/commit' : '/preview';
+    const {data} = await api.call({
+      url: url,
+      method: 'put', data: {}}
+    ) as Response;
+
+    return new BiResponse(data);
+  }
 }
