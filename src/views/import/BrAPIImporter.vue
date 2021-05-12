@@ -638,7 +638,7 @@
         this.$emit('show-success-notification', `Mapping saved successfully`);
       } catch (e) {
         this.$log.error(e);
-        this.$emit('show-error-notification', `Unable to save import mapping`);
+        this.$emit('show-error-notification', e.errorMessage);
         throw e;
       }
     }
@@ -649,7 +649,7 @@
         this.importService.send(ImportEvent.SAVE_MAPPING_METADATA_SUCCESS);
       } catch (e) {
         this.$log.error(e);
-        this.$emit('show-error-notification', `Unable to save import mapping`);
+        this.$emit('show-error-notification', e.errorMessage);
       }
     }
 

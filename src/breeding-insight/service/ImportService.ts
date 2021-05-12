@@ -23,6 +23,7 @@ import {BiResponse} from "@/breeding-insight/model/BiResponse";
 import {ImportResponse} from "@/breeding-insight/model/import/ImportResponse";
 
 export class ImportService {
+  static mappingNameExists : string = 'A mapping with that name already exists';
 
   static async getAllImportTypeConfigs(): Promise<ImportTypeConfig[]> {
     const response: BiResponse = await ImportDAO.getAllImportTypeConfigs();
@@ -42,9 +43,18 @@ export class ImportService {
   static async updateMapping(programId: string, mapping: ImportMappingConfig, options: {[key:string]:boolean}): Promise<any> {
     if (!programId || programId === null) throw 'Program ID not provided';
     if (!mapping || !mapping.id) throw 'Mapping must have an id.';
-    const response: BiResponse = await ImportDAO.updateMapping(programId, mapping, options);
-    const importMapping: ImportMappingConfig = new ImportMappingConfig(response.result);
-    return importMapping;
+    try {
+      const response: BiResponse = await ImportDAO.updateMapping(programId, mapping, options);
+      const importMapping: ImportMappingConfig = new ImportMappingConfig(response.result);
+      return importMapping;
+    } catch (e) {
+      if (e.response && e.response.status === 409) {
+        e.errorMessage = this.mappingNameExists;
+      } else {
+        e.errorMessage = e.response.statusText;
+      }
+      throw e;
+    }
   }
 
   static async saveMappingFile(programId: string, file: File): Promise<ImportMappingConfig> {
