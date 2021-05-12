@@ -132,7 +132,8 @@
           v-bind:data="traitSidePanelState.openedRow"
           v-bind:observation-level-options="observationLevelOptions"
           v-bind:edit-active="traitSidePanelState.editActive"
-          v-bind:editable="true"
+          v-bind:editable="currentTraitEditable"
+          v-bind:loading-editable="loadingTraitEditable"
           v-bind:edit-form-state="traitSidePanelState.dataFormState"
           v-bind:validation-handler="editValidationHandler"
           v-bind:archivable="true"
@@ -212,6 +213,8 @@ export default class TraitTable extends Vue {
   private editTrait?: Trait;
   private originalTrait?: Trait;
   private newTrait: Trait = new Trait();
+  private currentTraitEditable = false;
+  private loadingTraitEditable = true;
 
   // New trait form
   private newTraitActive: boolean = false;
@@ -248,6 +251,10 @@ export default class TraitTable extends Vue {
     this.traitSidePanelState.bus.$on(this.traitSidePanelState.confirmCloseEditEvent, () => {
       this.clearSelectedRow();
     });
+
+    this.traitSidePanelState.bus.$on(this.traitSidePanelState.selectRowEvent, (row: any) => {
+      this.editable(row);
+    })
   }
 
   @Watch('paginationController', { deep: true})
@@ -266,6 +273,22 @@ export default class TraitTable extends Vue {
       this.$emit('show-error-notification', 'Error while trying to load traits');
       throw error;
     });
+  }
+
+  async editable(trait: Trait) {
+    let traitEditable = false;
+    this.loadingTraitEditable = true;
+    try {
+      const [editable] = await TraitService.getTraitEditable(this.activeProgram!.id!, trait.id!) as [boolean, Metadata]
+      traitEditable = editable;
+      this.currentTraitEditable = traitEditable;
+    } catch (error) {
+      // Display error that traits cannot be loaded
+      this.$emit('show-error-notification', 'Error getting editable status');
+      throw error;
+    } finally {
+      this.loadingTraitEditable = false;
+    }
   }
 
   activateArchive(focusTrait: Trait){
@@ -380,7 +403,7 @@ export default class TraitTable extends Vue {
         const deletions: string[] = this.processValidationErrors(this.editValidationHandler, this.editTrait!);
         this.$emit('show-error-notification', `Error updating trait. ${this.editValidationHandler.condenseErrorsSingleRow(deletions)}`);
       } else {
-        this.$emit('show-error-notification', 'Error updating trait.');
+        this.$emit('show-error-notification', error);
       }
     } finally {
       this.traitSidePanelState.dataFormState.bus.$emit(DataFormEventBusHandler.SAVE_COMPLETE_EVENT);

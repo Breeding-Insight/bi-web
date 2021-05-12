@@ -66,9 +66,29 @@
         <p class="mb-0">{{valueOrNA(data.method.formula)}}</p>
       </template>
 
-
       <p class="has-text-weight-bold mt-3 mb-0">Description of collection method</p>
       <p>{{data.method.description}}</p>
+
+      <ProgressBar v-if="loadingEditable" v-bind:label="'Checking trait editability status'"
+                   v-bind:estimated-time-text="'May take a few seconds'"
+      />
+
+      <article v-if="!editable && !loadingEditable" class="message is-info">
+        <div class="message-body">
+          <div class="media">
+            <figure class="media-left">
+              <p class="image is-24x24">
+                <help-circle-icon size="1.5x"></help-circle-icon>
+              </p>
+            </figure>
+            <div class="media-content">
+              <div class="has-text-dark">
+                Not editable because this trait has associated experiment data.
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
 
       <template v-if="!data.active">
         <p class="has-text-weight-bold mt-3 mb-0">Included in Favorites</p>
@@ -85,7 +105,7 @@
       <div class="columns is-mobile is-centered pt-6">
         <div class="column is-narrow">
           <a
-            v-if="editable"
+            v-if="editable && !loadingEditable"
             v-on:click="$emit('activate-edit', data)"
             v-on:keypress.enter.space="$emit('activate-edit', data)"
             tabindex="0"
@@ -146,9 +166,11 @@
   import BaseTraitForm from "@/components/trait/forms/BaseTraitForm.vue";
   import EditDataForm from "@/components/forms/EditDataForm.vue";
   import { DataFormEventBusHandler } from '@/components/forms/DataFormEventBusHandler';
+  import { HelpCircleIcon } from 'vue-feather-icons'
+  import ProgressBar from '@/components/forms/ProgressBar.vue'
 
   @Component({
-    components: {EditDataForm, SidePanel, BaseTraitForm },
+    components: {EditDataForm, SidePanel, BaseTraitForm, HelpCircleIcon, ProgressBar},
     data: () => ({DataType, MethodClass, Scale, Method})
   })
   export default class TraitDetailPanel extends Vue {
@@ -159,8 +181,10 @@
     private observationLevelOptions!: string[];
     @Prop({default: false})
     private editActive!: boolean;
-    @Prop({default: false})
-    private editable!: boolean;
+    @Prop()
+    private editable!: boolean | undefined;
+    @Prop({default: true})
+    private loadingEditable!: boolean;
     @Prop({default: false})
     private archivable!: boolean;
     @Prop()
