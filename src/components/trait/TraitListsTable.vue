@@ -293,7 +293,7 @@ export default class TraitTable extends Vue {
       this.currentTraitEditable = traitEditable;
     } catch(error) {
       // Display error that traits cannot be loaded
-      this.$emit('show-error-notification', 'Error while trying to load traits');
+      this.$emit('show-error-notification', 'Error getting editable status');
       throw error;
 
   activateArchive(focusTrait: Trait){
