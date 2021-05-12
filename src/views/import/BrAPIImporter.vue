@@ -1,10 +1,20 @@
 <template>
   <div>
+    <!-- View all imports -->
+    <ImportStepCard
+        title="Previous Imports"
+        v-if="panelIsVisible(PanelState.ALL_IMPORT_PANEL) && prevImports.length > 0"
+        v-bind:completed="panelIsActive(PanelState.ALL_IMPORT_PANEL)"
+        v-bind:readonly="panelIsActive(PanelState.ALL_IMPORT_PANEL)"
+    >
+    </ImportStepCard>
+
     <!-- Select Import Option -->
     <ImportStepCard
         title="Step 1: Select Import Option"
-        v-bind:completed="1 < this.currentStep"
-        v-bind:readonly="1 < this.currentStep"
+        v-if="panelIsVisible(PanelState.IMPORT_START_PANEL)"
+        v-bind:completed="panelIsActive(PanelState.IMPORT_START_PANEL)"
+        v-bind:readonly="panelIsActive(PanelState.IMPORT_START_PANEL)"
     >
       <template v-slot:write-display>
         <div class="columns">
@@ -19,7 +29,7 @@
           <div class="column is-half">
             <!-- TODO: Only available for admins -->
             <a
-                v-on:click="importService.send(ImportEvent.CREATE_NEW_IMPORT)"
+                v-on:click="createNewMapping"
             >
               Create New Import
             </a>
@@ -42,10 +52,10 @@
 
     <!-- Choose File -->
     <ImportStepCard
-        v-if="showImport"
         title="Step 2: Upload File"
-        v-bind:completed="2 < this.currentStep"
-        v-bind:readonly="2 < this.currentStep"
+        v-if="panelIsVisible(PanelState.CHOOSE_FILE_PANEL)"
+        v-bind:completed="panelIsActive(PanelState.CHOOSE_FILE_PANEL)"
+        v-bind:readonly="panelIsActive(PanelState.CHOOSE_FILE_PANEL)"
     >
       <!-- Editing view -->
       <template v-slot:write-display>
@@ -65,10 +75,10 @@
 
     <!-- Specify Mapping Metadata -->
     <ImportStepCard
-        v-if="importTypeShow"
         title="Step 3: Mapping Metadata"
-        v-bind:completed="3 < this.currentStep"
-        v-bind:readonly="3 < this.currentStep"
+        v-if="panelIsVisible(PanelState.CHOOSE_IMPORT_PANEL)"
+        v-bind:completed="panelIsActive(PanelState.CHOOSE_IMPORT_PANEL)"
+        v-bind:readonly="panelIsActive(PanelState.CHOOSE_IMPORT_PANEL)"
     >
       <!-- Editing view -->
       <template v-slot:write-display>
@@ -93,7 +103,7 @@
 
         <button
             class="button is-primary"
-            v-on:click="importService.send(ImportEvent.SAVE_MAPPING)"
+            v-on:click="updateMappingMetadata"
         >
           Confirm
         </button>
@@ -105,10 +115,10 @@
 
     <!-- Create the Mapping -->
     <ImportStepCard
-        v-if="showMapping"
         title="Step 4: Create Mapping"
-        v-bind:completed="4 < this.currentStep"
-        v-bind:readonly="4 < this.currentStep"
+        v-if="panelIsVisible(PanelState.MAPPING_PANEL)"
+        v-bind:completed="panelIsActive(PanelState.MAPPING_PANEL)"
+        v-bind:readonly="panelIsActive(PanelState.MAPPING_PANEL)"
     >
       <!-- Editing View -->
       <template v-slot:write-display>
@@ -217,13 +227,19 @@
           <div class="column has-text-right">
             <button
               class="button"
-              v-on:click="importService.send(ImportEvent.CANCEL_MAPPING)"
+              v-on:click="cancelMapping"
             >
-              Cancel Mapping
+              Return to Import Start
+            </button>
+            <button
+              class="button"
+              v-on:click="updateMapping"
+            >
+              Save Mapping
             </button>
             <button
               class="button is-primary ml-2"
-              v-on:click="updateMapping"
+              v-on:click="updateMappingAndPreview"
             >
               Save Mapping and Preview Import
             </button>
@@ -239,10 +255,10 @@
 
     <!-- Preview Import -->
     <ImportStepCard
-        v-if="5 === this.currentStep"
         title="Step 5: Preview Import"
-        v-bind:completed="5 < this.currentStep"
-        v-bind:readonly="5 < this.currentStep"
+        v-if="panelIsVisible(PanelState.PREVIEW_PANEL)"
+        v-bind:completed="panelIsActive(PanelState.PREVIEW_PANEL)"
+        v-bind:readonly="panelIsActive(PanelState.PREVIEW_PANEL)"
     >
       <!-- Editing View -->
       <template v-slot:write-display>
@@ -273,10 +289,10 @@
     </ImportStepCard>
 
     <ImportStepCard
-      v-if="6 === this.currentStep"
       title="Upload Successful!"
-      v-bind:completed="6 < this.currentStep"
-      v-bind:readonly="6 < this.currentStep"
+      v-if="panelIsVisible(PanelState.COMMIT_PANEL)"
+      v-bind:completed="panelIsActive(PanelState.COMMIT_PANEL)"
+      v-bind:readonly="panelIsActive(PanelState.COMMIT_PANEL)"
     >
       <template v-slot:write-display>
         <p>
@@ -336,41 +352,77 @@
     CHOOSE_MAPPING_FILE = "CHOOSE_MAPPING_FILE",
     CHOOSE_DATA_FILE = "CHOOSE_DATA_FILE",
     CHOOSE_IMPORT_TYPE = "CHOOSE_IMPORT_TYPE",
-    SAVING_IMPORT_TYPE = "SAVING_IMPORT_TYPE",
-    IMPORT_TYPE_ERROR = "IMPORT_TYPE_ERROR",
     MAPPING = "MAPPING",
-    PREVIEW_IMPORT = "PREVIEW_IMPORT"
+    PREVIEW_IMPORT = "PREVIEW_IMPORT",
+    COMMIT_IMPORT = "COMMIT_IMPORT"
   }
 
   enum ImportEvent {
     CREATE_NEW_IMPORT = "CREATE_NEW_IMPORT",
     IMPORT_SUCCESS = "IMPORT_SUCCESS",
-    IMPORT_ERROR = "IMPORT_ERROR",
-    LOADING_COMPLETE = "LOADING_COMPLETE",
-    SAVE_MAPPING = "SAVE_MAPPING",
-    SAVE_MAPPING_ERROR = "SAVE_MAPPING_ERROR",
-    SAVE_MAPPING_SUCCESS = "SAVE_MAPPING_SUCCESS",
+    VIEW_PREVIEW = "VIEW_PREVIEW",
     SAVE_MAPPING_METADATA_SUCCESS = "SAVE_MAPPING_METADATA_SUCCESS",
     CANCEL_MAPPING = "CANCEL_MAPPING",
     SELECTED_MAPPING = "SELECTED_MAPPING",
-    UPLOAD_DATA_SUCCESS = "UPLOAD_DATA_SUCCESS"
+    UPLOAD_DATA_SUCCESS = "UPLOAD_DATA_SUCCESS",
+    COMMIT_IMPORT = "COMMIT_IMPORT"
   }
 
   enum ImportAction {
-    RESET = "RESET",
-    SHOW_IMPORT = "SHOW_IMPORT",
-    UPLOAD_FILE = "UPLOAD_FILE",
-    LOADED = "LOADED",
-    GET_UPLOADED_FILE = "GET_UPLOADED_FILE",
-    SHOW_IMPORT_TYPE = "SHOW_IMPORT_TYPE",
-    MAPPING_STARTED = "MAPPING_STARTED",
-    SAVE_MAPPING = "SAVE_MAPPING",
-    SAVE_MAPPING_METADATA = "SAVE_MAPPING_METADATA",
-    CANCEL_MAPPING = "CANCEL_MAPPING",
-    NEXT_STEP = "NEXT_STEP",
-    UPLOAD_DATA = "UPLOAD_DATA",
-    SELECT_MAPPING = "SELECT_MAPPING",
-    CREATE_NEW_MAPPING = "CREATE_NEW_MAPPING"
+    CHOOSE_IMPORT_START = "CHOOSE_IMPORT_START",
+    CHOOSE_MAPPING_FILE_START = "CHOOSE_MAPPING_FILE_START",
+    CHOOSE_MAPPING_FILE_CANCEL = "CHOOSE_MAPPING_FILE_CANCEL",
+    CHOOSE_DATA_FILE_START = "CHOOSE_DATA_FILE_START",
+    CHOOSE_DATA_FILE_CANCEL = "CHOOSE_DATA_FILE_CANCEL",
+    CHOOSE_IMPORT_TYPE_START = "CHOOSE_IMPORT_TYPE_START",
+    CHOOSE_IMPORT_TYPE_CANCEL = "CHOOSE_IMPORT_TYPE_CANCEL",
+    MAPPING_START = "MAPPING_START",
+    MAPPING_CANCEL = "MAPPING_CANCEL",
+    PREVIEW_IMPORT_START = "PREVIEW_IMPORT_START",
+    PREVIEW_IMPORT_CANCEL = "PREVIEW_IMPORT_CANCEL",
+    COMMIT_IMPORT_START = "COMMIT_IMPORT_START",
+    COMMIT_IMPORT_CANCEL = "COMMIT_IMPORT_START"
+  }
+
+  // Determines what panels are shown when
+  const PanelState = {
+    ALL_IMPORT_PANEL: {
+      activeState: [ImportState.CHOOSE_IMPORT],
+      visibleState: Object.keys(ImportState),
+      pageState: [PageState.IMPORT_DATA, PageState.CREATE_MAPPING]
+    },
+    IMPORT_START_PANEL: {
+      activeState: [ImportState.CHOOSE_IMPORT],
+      visibleState: Object.keys(ImportState),
+      pageState: [PageState.IMPORT_DATA, PageState.CREATE_MAPPING]
+    },
+    CHOOSE_FILE_PANEL: {
+      activeState: [ImportState.CHOOSE_DATA_FILE, ImportState.CHOOSE_MAPPING_FILE],
+      visibleState: Object.keys(ImportState).filter(state => state != ImportState.CHOOSE_IMPORT),
+      pageState: [PageState.IMPORT_DATA, PageState.CREATE_MAPPING]
+    },
+    CHOOSE_IMPORT_PANEL: {
+      activeState: [ImportState.CHOOSE_IMPORT_TYPE],
+      visibleState: [ImportState.CHOOSE_IMPORT_TYPE, ImportState.MAPPING,
+        ImportState.PREVIEW_IMPORT, ImportState.COMMIT_IMPORT],
+      pageState: [PageState.CREATE_MAPPING]
+    },
+    MAPPING_PANEL: {
+      activeState: [ImportState.MAPPING],
+      visibleState: [ImportState.MAPPING,
+        ImportState.PREVIEW_IMPORT, ImportState.COMMIT_IMPORT],
+      pageState: [PageState.CREATE_MAPPING]
+    },
+    PREVIEW_PANEL: {
+      activeState: [ImportState.PREVIEW_IMPORT],
+      visibleState: [ImportState.PREVIEW_IMPORT, ImportState.COMMIT_IMPORT],
+      pageState: [PageState.IMPORT_DATA, PageState.CREATE_MAPPING]
+    },
+    COMMIT_PANEL: {
+      activeState: [ImportState.COMMIT_IMPORT],
+      visibleState: [ImportState.COMMIT_IMPORT],
+      pageState: [PageState.IMPORT_DATA, PageState.CREATE_MAPPING]
+    }
   }
 
   @Component({
@@ -380,7 +432,7 @@
       RelationMappingRow,
       ColumnSummary,
       ObjectMappingRow, ImportStepCard, FieldMappingRow, BasicSelectField, FileSelectMessageBox, ChevronDownIcon},
-    data: () => ({ImportState, ImportEvent, ImportAction, PageState, ImportDataType, ImportRelationType}),
+    data: () => ({ImportState, ImportEvent, ImportAction, PageState, ImportDataType, ImportRelationType, PanelState}),
     computed: {
       ...mapGetters([
         'activeProgram',
@@ -394,13 +446,9 @@
     private activeUser?: User;
     private file : File | null = null;
     private import_errors: ValidationError | string | null = null;
-    private showImportOption: boolean = false;
-    private showImport: boolean = false;
-    private dataLoaded: boolean = false;
-    private importTypeShow: boolean = false;
-    private showMapping: boolean = false;
     private focusObjectId: string | null = null;
 
+    private prevImports: any[] = []
     private currentImportId: string = '1';
     private selectedMappingId: string | null = null;
     private importConfigs: ImportTypeConfig[] = [];
@@ -414,7 +462,6 @@
     private previewTotalRows: number = 0;
     private newObjectCounts: any = [];
 
-    private currentStep = 1;
     private pageState = PageState.IMPORT_DATA;
     private state = ImportState.CHOOSE_IMPORT;
     private importStateMachine = createMachine({
@@ -422,112 +469,67 @@
         initial: ImportState.CHOOSE_IMPORT,
         states: {
           [ImportState.CHOOSE_IMPORT]: {
-            entry: ImportAction.RESET,
+            entry: ImportAction.CHOOSE_IMPORT_START,
             on: {
               [ImportEvent.CREATE_NEW_IMPORT]: {
                 target: ImportState.CHOOSE_MAPPING_FILE,
-                actions: [ImportAction.CREATE_NEW_MAPPING, ImportAction.NEXT_STEP]
+                actions: [ImportAction.MAPPING_START]
               },
               [ImportEvent.SELECTED_MAPPING]: {
                 target: ImportState.CHOOSE_DATA_FILE,
-                actions: [ImportAction.SELECT_MAPPING, ImportAction.NEXT_STEP]
+                actions: []
               }
             }
           },
           [ImportState.CHOOSE_DATA_FILE]: {
-            entry: ImportAction.SHOW_IMPORT,
+            entry: ImportAction.CHOOSE_DATA_FILE_START,
             on: {
               [ImportEvent.UPLOAD_DATA_SUCCESS]: ImportState.PREVIEW_IMPORT
             }
           },
           [ImportState.CHOOSE_MAPPING_FILE]: {
-            entry: ImportAction.SHOW_IMPORT,
+            entry: ImportAction.CHOOSE_MAPPING_FILE_START,
             on: {
               [ImportEvent.IMPORT_SUCCESS]: {
-                target: ImportState.CHOOSE_IMPORT_TYPE,
-                actions: ImportAction.NEXT_STEP
+                target: ImportState.CHOOSE_IMPORT_TYPE
               }
             }
           },
           [ImportState.CHOOSE_IMPORT_TYPE]: {
-            entry: ImportAction.SHOW_IMPORT_TYPE,
-            on: {
-              [ImportEvent.SAVE_MAPPING]: ImportState.SAVING_IMPORT_TYPE
-            }
-          },
-          [ImportState.SAVING_IMPORT_TYPE]: {
-            entry: ImportAction.SAVE_MAPPING_METADATA,
+            entry: ImportAction.CHOOSE_IMPORT_TYPE_START,
             on: {
               [ImportEvent.SAVE_MAPPING_METADATA_SUCCESS]: {
-                target: ImportState.MAPPING,
-                actions: ImportAction.NEXT_STEP
+                target: ImportState.MAPPING
               }
             }
           },
           [ImportState.MAPPING]: {
-            entry: ImportAction.MAPPING_STARTED,
+            entry: ImportAction.MAPPING_START,
             on: {
               [ImportEvent.CANCEL_MAPPING]: {
                 target: ImportState.CHOOSE_IMPORT,
-                actions: ImportAction.CANCEL_MAPPING
-              },
-              [ImportEvent.SAVE_MAPPING_SUCCESS]: {
-                target: ImportState.PREVIEW_IMPORT,
-                actions: [ImportAction.NEXT_STEP]
+                actions: []
               }
             }
           },
           [ImportState.PREVIEW_IMPORT]: {
+            entry: ImportAction.PREVIEW_IMPORT_START,
+            on: {
+              [ImportEvent.COMMIT_IMPORT]: {
+                target: ImportState.COMMIT_IMPORT
+              }
+            }
+          },
+          [ImportState.COMMIT_IMPORT]: {
+            entry: ImportAction.COMMIT_IMPORT_START,
             on: {}
           }
         }
       },
       {
         actions: {
-          [ImportAction.NEXT_STEP]: (context, event) => {
-            this.incrementStep();
-          },
-          [ImportAction.RESET]: (context, event) => {
-            this.currentStep = 1;
-            this.showImport = false;
-            this.importTypeShow = false;
-          },
-          [ImportAction.SHOW_IMPORT]: (context, event) => {
-            this.importSelected();
-          },
-          [ImportAction.UPLOAD_FILE]: (context, event) => {
-            this.upload();
-          },
-          [ImportAction.LOADED]: (context, event) => {
-            this.loaded();
-          },
-          [ImportAction.GET_UPLOADED_FILE]: (context, event) => {
-            this.getImport();
-          },
-          [ImportAction.SHOW_IMPORT_TYPE]: (context, event) => {
-            this.showImportType();
+          [ImportAction.CHOOSE_IMPORT_TYPE_START]: (context, event) => {
             this.getImportConfigs();
-          },
-          [ImportAction.MAPPING_STARTED]: (context, event) => {
-            this.startMapping();
-          },
-          [ImportAction.SAVE_MAPPING]: (context, event) => {
-            this.updateMapping();
-          },
-          [ImportAction.SAVE_MAPPING_METADATA]: (context, event) => {
-            this.updateMappingMetadata()
-          },
-          [ImportAction.CANCEL_MAPPING]: (context, event) => {
-            this.cancelMapping();
-          },
-          [ImportAction.UPLOAD_DATA]: (context, event) => {
-            this.uploadData();
-          },
-          [ImportAction.SELECT_MAPPING]: (context, event) => {
-            this.selectMapping();
-          },
-          [ImportAction.CREATE_NEW_MAPPING]: (context, event) => {
-            this.createNewMapping();
           }
         }
     });
@@ -541,10 +543,6 @@
         this.state = ImportState[state.value as keyof typeof ImportState];
       });
       this.importService.start();
-    }
-
-    incrementStep() {
-      this.currentStep += 1;
     }
 
     async upload() {
@@ -570,24 +568,16 @@
 
     createNewMapping() {
       this.pageState = PageState.CREATE_MAPPING;
+      this.importService.send(ImportEvent.CREATE_NEW_IMPORT)
     }
 
-    loaded() {
-      this.dataLoaded = true;
+    panelIsVisible(panelState: any) {
+      return panelState.visibleState.includes(this.state) &&
+        panelState.pageState.includes(this.pageState);
     }
 
-    importSelected() {
-      this.showImport = true;
-    }
-
-    showImportType() {
-      this.importTypeShow = true;
-    }
-
-    startMapping() {
-      // Get the import config
-      this.selectedImportConfig!.fields.forEach(field => this.mapping.addMapping(field));
-      this.showMapping = true;
+    panelIsActive(panelState:any) {
+      return !panelState.activeState.includes(this.state);
     }
 
     async getImportMappings() {
@@ -612,25 +602,20 @@
       }
     }
 
-    async getImport() {
-      try {
-        const importDataResult: ImportData = new ImportData({} as ImportData);
-        this.importData = importDataResult;
-        this.importService.send(ImportEvent.LOADING_COMPLETE);
-      } catch (e) {
-        this.$log.error(e);
-        this.$emit('show-error-notification', `Unable to load imported file`);
-      }
+    async updateMappingAndPreview() {
+      await this.updateMapping();
+      this.importService.send(ImportEvent.VIEW_PREVIEW);
+      await this.uploadData();
     }
 
     async updateMapping() {
       try {
         this.mapping = await ImportService.updateMapping(this.activeProgram!.id!, this.mapping, {validate: true, draft: false});
-        this.importService.send(ImportEvent.SAVE_MAPPING_SUCCESS);
-        await this.uploadData();
+        this.$emit('show-success-notification', `Mapping saved successfully`);
       } catch (e) {
         this.$log.error(e);
         this.$emit('show-error-notification', `Unable to save import mapping`);
+        throw e;
       }
     }
 
@@ -646,39 +631,54 @@
 
     async uploadData() {
       try {
+        // TODO: Start task, PREVIEW_LOAD
         let previewResponse: ImportResponse = await ImportService.uploadData(this.activeProgram!.id!, this.mapping.id!, this.file!, false);
+
         // Get the import id
         console.log(previewResponse);
-        // Continue checking for upload until it is finished
-        while (previewResponse.importId !== undefined &&
-          (previewResponse.progress === undefined || previewResponse.progress.statuscode === 202))
-        {
-          try {
-            previewResponse = await this.getDataUpload(previewResponse.importId);
-          } catch (e) {
-            throw e;
-          }
-        }
 
-        if (previewResponse.progress && previewResponse.progress.statuscode === 500){
-          this.$log.error(previewResponse.progress.message);
-          // TODO: Shouldn't show this to the user if its a 500
-          this.$emit('show-error-notification', previewResponse.progress.message);
-        }
-
-        // Calculate some stuff for the preview data display
-        if (previewResponse && previewResponse.preview){
-          if (previewResponse.preview.rows) {
-            this.previewTotalRows = previewResponse.preview.rows.length;
-            this.previewData = previewResponse.preview.rows.slice(0, 100);
-          }
-          this.newObjectCounts = previewResponse.preview.statistics;
-        }
         this.importService.send(ImportEvent.UPLOAD_DATA_SUCCESS);
-        this.currentStep = 5;
+
+        // Call for a preview of the data
+        //TODO: Wrap this in a try catch
+        this.updateDataUpload(previewResponse.importId!, false);
+
+        // TODO: Start task, PREVIEW_FINISHED
       } catch (e) {
+        // TODO: Start task, PREVIEW_FINISHED
         this.$log.error(e);
         this.$emit('show-error-notification', `Unable to upload file`);
+      }
+    }
+
+    async updateDataUpload(uploadId: string, commit: boolean) {
+      let previewResponse: ImportResponse = await ImportService.updateDataUpload(this.activeProgram!.id!, this.mapping.id!, uploadId!, commit);
+
+      // Continue checking for upload until it is finished
+      // TODO: Set a delay on this
+      while (previewResponse.importId !== undefined &&
+      (previewResponse.progress === undefined || previewResponse.progress.statuscode === 202))
+      {
+        try {
+          previewResponse = await this.getDataUpload(previewResponse.importId);
+        } catch (e) {
+          throw e;
+        }
+      }
+
+      if (previewResponse.progress && previewResponse.progress.statuscode === 500){
+        this.$log.error(previewResponse.progress.message);
+        // TODO: Shouldn't show this to the user if its a 500
+        this.$emit('show-error-notification', previewResponse.progress.message);
+      }
+
+      // Calculate some stuff for the preview data display
+      if (!commit && previewResponse && previewResponse.preview){
+        if (previewResponse.preview.rows) {
+          this.previewTotalRows = previewResponse.preview.rows.length;
+          this.previewData = previewResponse.preview.rows.slice(0, 100);
+        }
+        this.newObjectCounts = previewResponse.preview.statistics;
       }
     }
 
@@ -695,7 +695,6 @@
       try {
         this.previewData = await ImportService.uploadData(this.activeProgram!.id!, this.mapping.id!, this.file!, true);
         this.importService.send(ImportEvent.UPLOAD_DATA_SUCCESS);
-        this.currentStep = 6;
       } catch (e) {
         this.$log.error(e);
         this.$emit('show-error-notification', `Unable to upload file`);
@@ -773,7 +772,6 @@
   }
 
   //TODO:
-  // - Organize the state data. Its messy right now. Maybe make it reflect the step cards
   // - Make UI pretty
   //    - Have summary one liner to put in the title
   //    - Add descriptions for each step
@@ -781,7 +779,6 @@
   //    - Make mapping fields prettier
   //      - Make mapping fields cards
   //    - Complete summary fields
-  // - Create phenotyping upload config in service. Allow the dev user to switch back and forth
   // - Prototype a real-time lookup relationship
   // - Save to local storage, so if they hit the back button, it doesn't lose all of their data
   //    - Timing out on auth before saving is also a real bummer

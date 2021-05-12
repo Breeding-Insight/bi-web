@@ -63,7 +63,7 @@ export class ImportService {
       throw 'Program ID not provided';
     }
 
-    const response: BiResponse = await ImportDAO.uploadData(programId, mappingId, file, commit);
+    const response: BiResponse = await ImportDAO.uploadData(programId, mappingId, file);
     const data: any = response.result;
     const importResponse = new ImportResponse(data);
     return importResponse;
@@ -80,4 +80,18 @@ export class ImportService {
     return importResponse;
   }
 
+  static async updateDataUpload(programId: string, mappingId: string, uploadId: string, commit: boolean) {
+    if (!programId || programId === null) {
+      throw 'Program ID not provided';
+    }
+    if (!uploadId || uploadId === null) {
+      throw 'Upload ID not provided';
+    }
+
+    const response: BiResponse = await ImportDAO.updateUploadData(programId, mappingId, uploadId, commit);
+    const data: any = response.result;
+    const importResponse = new ImportResponse(data);
+    return importResponse;
+
+  }
 }
