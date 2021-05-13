@@ -24,6 +24,7 @@ import {ImportResponse} from "@/breeding-insight/model/import/ImportResponse";
 
 export class ImportService {
   static mappingNameExists : string = 'A mapping with that name already exists';
+  static getUploadUnknown: string = 'An unknown error occurred while retrieving your upload status';
 
   static async getAllImportTypeConfigs(): Promise<ImportTypeConfig[]> {
     const response: BiResponse = await ImportDAO.getAllImportTypeConfigs();
@@ -83,10 +84,19 @@ export class ImportService {
       throw 'Program ID not provided';
     }
 
-    const response: BiResponse = await ImportDAO.getDataUpload(programId, mappingId, uploadId, includeMapping);
-    const data: any = response.result;
-    const importResponse = new ImportResponse(data);
-    return importResponse;
+    try {
+      const response: BiResponse = await ImportDAO.getDataUpload(programId, mappingId, uploadId, includeMapping);
+      const data: any = response.result;
+      const importResponse = new ImportResponse(data);
+      return importResponse;
+    } catch (e) {
+      if (e.response && e.response.statusText) {
+        e.errorMessage = e.response.statusText;
+      } else {
+        e.errorMessage = this.getUploadUnknown;
+      }
+    }
+
   }
 
   static async updateDataUpload(programId: string, mappingId: string, uploadId: string, commit: boolean) {
