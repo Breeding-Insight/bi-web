@@ -28,6 +28,7 @@ import VueCookies from 'vue-cookies';
 import { abilitiesPlugin } from '@casl/vue';
 import { defineAbilityFor } from './config/ability';
 import TreeView from "vue-json-tree-view";
+import VueQRCodeComponent from 'vue-qrcode-component'
 
 Vue.use(abilitiesPlugin, defineAbilityFor(undefined, undefined));
 Vue.config.productionTip = false;
@@ -35,6 +36,8 @@ Vue.use(Buefy);
 Vue.use(Vuelidate);
 Vue.use(VueCookies);
 Vue.use(TreeView)
+
+Vue.component('qr-code', VueQRCodeComponent)
 
 // Global components example
 //import LoginFailedDialog from './components/LoginFailedDialog.vue';
