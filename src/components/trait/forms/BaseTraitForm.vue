@@ -256,11 +256,9 @@ export default class BaseTraitForm extends Vue {
       if (this.trait.scale.categories) {
         this.trait.scale.categories.forEach((category, index, categories) => {
           // Use prior labels if they exist
-          let historicalCats: Category[] = this.scaleHistory[DataType.Ordinal.toLowerCase()].categories || [];
+          let historicalCats: Category[] = this.scaleHistory[DataType.Ordinal.toLowerCase()] ? this.scaleHistory[DataType.Ordinal.toLowerCase()].categories : [];
           if (historicalCats[index] && historicalCats[index].label) {
             category.label = historicalCats[index].label;
-          // if (this.scaleHistory[DataType.Ordinal.toLowerCase()] && this.scaleHistory[DataType.Ordinal.toLowerCase()].categories[index]) {
-          //   category.label = this.scaleHistory[DataType.Ordinal.toLowerCase()].categories[index].label;
           } else {
             let autoLabel: string = index + 1 + '';
             if(categories.find(anyCategory => anyCategory.label === autoLabel)) {
