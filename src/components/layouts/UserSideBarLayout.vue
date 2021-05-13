@@ -200,6 +200,11 @@
                 </li>
               </ul>
             </li>
+            <li>
+              <router-link v-bind:to="{name: 'brapi-info', params: {programId: activeProgram.id}}">
+                BrAPI
+              </router-link>
+            </li>
           </ul>
         </template>
       </nav>
