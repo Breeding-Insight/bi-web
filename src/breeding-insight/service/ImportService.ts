@@ -79,7 +79,7 @@ export class ImportService {
     return importResponse;
   }
 
-  static async getDataUpload(programId: string, mappingId: string, uploadId: string, includeMapping: boolean) {
+  static async getDataUpload(programId: string, mappingId: string, uploadId: string, includeMapping: boolean): Promise<ImportResponse> {
     if (!programId || programId === null) {
       throw 'Program ID not provided';
     }
@@ -95,6 +95,7 @@ export class ImportService {
       } else {
         e.errorMessage = this.getUploadUnknown;
       }
+      throw e;
     }
 
   }
