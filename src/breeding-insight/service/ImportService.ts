@@ -20,8 +20,11 @@ import {ImportDAO} from "@/breeding-insight/dao/ImportDAO";
 import {ImportTypeConfig} from "@/breeding-insight/model/import/ImportTypeConfig";
 import {ImportMappingConfig} from "@/breeding-insight/model/import/ImportMapping";
 import {BiResponse} from "@/breeding-insight/model/BiResponse";
+import {ImportResponse} from "@/breeding-insight/model/import/ImportResponse";
 
 export class ImportService {
+  static mappingNameExists : string = 'A mapping with that name already exists';
+  static getUploadUnknown: string = 'An unknown error occurred while retrieving your upload status';
 
   static async getAllImportTypeConfigs(): Promise<ImportTypeConfig[]> {
     const response: BiResponse = await ImportDAO.getAllImportTypeConfigs();
@@ -40,11 +43,19 @@ export class ImportService {
 
   static async updateMapping(programId: string, mapping: ImportMappingConfig, options: {[key:string]:boolean}): Promise<any> {
     if (!programId || programId === null) throw 'Program ID not provided';
-    if (!mapping || !mapping.id) throw 'Mapping must have an id.' +
-    ''
-    const response: BiResponse = await ImportDAO.updateMapping(programId, mapping, options);
-    const importMapping: ImportMappingConfig = new ImportMappingConfig(response.result);
-    return importMapping;
+    if (!mapping || !mapping.id) throw 'Mapping must have an id.';
+    try {
+      const response: BiResponse = await ImportDAO.updateMapping(programId, mapping, options);
+      const importMapping: ImportMappingConfig = new ImportMappingConfig(response.result);
+      return importMapping;
+    } catch (e) {
+      if (e.response && e.response.status === 409) {
+        e.errorMessage = this.mappingNameExists;
+      } else {
+        e.errorMessage = e.response.statusText;
+      }
+      throw e;
+    }
   }
 
   static async saveMappingFile(programId: string, file: File): Promise<ImportMappingConfig> {
@@ -57,14 +68,50 @@ export class ImportService {
     return importMapping;
   }
 
-  static async uploadData(programId: string, mappingId: string, file: File, commit: boolean): Promise<any> {
+  static async uploadData(programId: string, mappingId: string, file: File, commit: boolean): Promise<ImportResponse> {
     if (!programId || programId === null) {
       throw 'Program ID not provided';
     }
 
-    const response: BiResponse = await ImportDAO.uploadData(programId, mappingId, file, commit);
+    const response: BiResponse = await ImportDAO.uploadData(programId, mappingId, file);
     const data: any = response.result;
-    return data;
+    const importResponse = new ImportResponse(data);
+    return importResponse;
   }
 
+  static async getDataUpload(programId: string, mappingId: string, uploadId: string, includeMapping: boolean): Promise<ImportResponse> {
+    if (!programId || programId === null) {
+      throw 'Program ID not provided';
+    }
+
+    try {
+      const response: BiResponse = await ImportDAO.getDataUpload(programId, mappingId, uploadId, includeMapping);
+      const data: any = response.result;
+      const importResponse = new ImportResponse(data);
+      return importResponse;
+    } catch (e) {
+      if (e.response && e.response.statusText) {
+        e.errorMessage = e.response.statusText;
+      } else {
+        e.errorMessage = this.getUploadUnknown;
+      }
+      throw e;
+    }
+
+  }
+
+  static async updateDataUpload(programId: string, mappingId: string, uploadId: string, commit: boolean) {
+    if (!programId || programId === null) {
+      throw 'Program ID not provided';
+    }
+    if (!uploadId || uploadId === null) {
+      throw 'Upload ID not provided';
+    }
+
+    const response: BiResponse = await ImportDAO.updateUploadData(programId, mappingId, uploadId, commit);
+    const data: any = response.result;
+    const importResponse = new ImportResponse(data);
+    return importResponse;
+
+  }
 }
