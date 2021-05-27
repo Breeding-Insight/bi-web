@@ -137,18 +137,23 @@
       <EditDataForm
         v-on:cancel="$emit('deactivate-edit')"
         v-on:submit="$emit('submit')"
+        v-bind:row-validations="clientValidations"
         v-bind:edit-record.sync="editTrait"
         v-bind:data-form-state="editFormState"
+        v-on:show-error-notification="$emit('show-error-notification', $event)"
       >
-        <BaseTraitForm
-            v-bind:trait.sync="editTrait"
-            v-bind:edit-format="true"
-            v-on:trait-change="traitUpdate($event)"
-            v-bind:scale-options="scaleClassOptions"
-            v-bind:method-options="methodClassOptions"
-            v-bind:program-observation-levels="observationLevelOptions"
-            v-bind:validation-handler="validationHandler"
-        ></BaseTraitForm>
+        <template v-slot="validations">
+          <BaseTraitForm
+              v-bind:trait.sync="editTrait"
+              v-bind:edit-format="true"
+              v-on:trait-change="traitUpdate($event)"
+              v-bind:scale-options="scaleClassOptions"
+              v-bind:method-options="methodClassOptions"
+              v-bind:program-observation-levels="observationLevelOptions"
+              v-bind:client-validations="validations"
+              v-bind:validation-handler="validationHandler"
+          ></BaseTraitForm>
+        </template>
       </EditDataForm>
     </template>
   </div>
@@ -189,6 +194,8 @@
     private archivable!: boolean;
     @Prop()
     private editFormState!: DataFormEventBusHandler
+    @Prop()
+    private clientValidations!: any | undefined;
     @Prop()
     private validationHandler!: ValidationError;
 

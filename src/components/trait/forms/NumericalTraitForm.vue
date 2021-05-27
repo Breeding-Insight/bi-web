@@ -33,6 +33,7 @@
             v-bind:value="decimalPlaces"
             v-on:input="$emit('decimal-change', $event)"
             v-bind:field-help="'Leave blank to constrain to integers.'"
+            v-bind:validations="clientValidations && clientValidations.scale.decimalPlaces ? clientValidations.scale.decimalPlaces : undefined"
         />
       </div>
     </div>
@@ -43,6 +44,8 @@
             v-bind:value="validMin"
             v-on:input="$emit('min-change', $event)"
             v-bind:field-help="'Numbers only. Decimals ok.'"
+            v-bind:validations="clientValidations && clientValidations.scale.validValueMin ? clientValidations.scale.validValueMin : undefined"
+            v-bind:server-validations="validationHandler.getValidation(validationIndex, TraitError.MaximumValue)"
         />
       </div>
       <div class="column is-half">
@@ -51,6 +54,8 @@
             v-bind:value="validMax"
             v-on:input="$emit('max-change', $event)"
             v-bind:field-help="'Numbers only. Decimals ok.'"
+            v-bind:validations="clientValidations && clientValidations.scale.validValueMax ? clientValidations.scale.validValueMax : undefined"
+            v-bind:server-validations="validationHandler.getValidation(validationIndex, TraitError.MaximumValue)"
         />
       </div>
     </div>
@@ -64,6 +69,7 @@
   import {ValidationError} from "@/breeding-insight/model/errors/ValidationError";
   import {TraitError} from "@/breeding-insight/model/errors/TraitError";
   import {DataType} from "@/breeding-insight/model/Scale";
+  import {integer} from "vuelidate/lib/validators";
 
 @Component({
   components: {BasicInputField},
@@ -78,6 +84,8 @@ export default class NumericalTraitForm extends Vue {
   private validMin: number | undefined;
   @Prop()
   private validMax: number | undefined;
+  @Prop()
+  private clientValidations: any | undefined;
   @Prop()
   private validationHandler: ValidationError | undefined;
   @Prop()

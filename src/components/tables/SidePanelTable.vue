@@ -77,7 +77,10 @@
               v-if="sidePanelState.panelOpen"
               v-bind:background-color-class="sidePanelState.editActive ? 'has-background-primary-light' : 'has-background-info-light'"
           >
-            <slot v-bind:table-row="sidePanelState.openedRow" name="side-panel"/>
+            <slot
+              v-bind:table-row="sidePanelState.openedRow"
+              name="side-panel"
+            />
           </SidePanel>
         </div>
       </div>
@@ -96,7 +99,7 @@
 </template>
 
 <script lang="ts">
-  import { Component, Prop, Vue, Watch } from 'vue-property-decorator'
+  import {Component, Prop, Vue, Watch} from 'vue-property-decorator'
   import {Pagination} from "@/breeding-insight/model/BiResponse";
   import BaseTable from '@/components/tables/BaseTable.vue'
   import SidePanel from '@/components/tables/SidePanel.vue'
@@ -139,8 +142,6 @@
 
     @Prop()
     records!: Array<any>;
-    @Prop()
-    rowValidations!: Object;
     @Prop()
     pagination!: Pagination;
     @Prop()
