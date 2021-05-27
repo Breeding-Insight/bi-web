@@ -69,6 +69,7 @@
     <NewDataForm
         v-if="newTraitActive"
         v-bind:new-record.sync="newTrait"
+        v-bind:row-validations="traitValidations"
         v-bind:data-form-state="newTraitFormState"
         v-on:submit="saveTrait"
         v-on:cancel="cancelNewTrait"
@@ -81,6 +82,7 @@
             v-bind:scale-options="scaleClassOptions"
             v-bind:method-options="methodClassOptions"
             v-bind:program-observation-levels="observationLevelOptions"
+            v-bind:client-validations="validations"
             v-bind:validation-handler="validationHandler"
         ></BaseTraitForm>
       </template>
@@ -92,7 +94,6 @@
       v-bind:pagination="traitsPagination"
       v-bind:auto-handle-close-panel-event="false"
       v-bind:side-panel-state="traitSidePanelState"
-      v-on:show-error-notification="$emit('show-error-notification', $event)"
       v-on:paginate="paginationController.updatePage($event)"
       v-on:paginate-toggle-all="paginationController.toggleShowAll()"
       v-on:paginate-page-size="paginationController.updatePageSize($event)"
@@ -135,6 +136,7 @@
           v-bind:editable="currentTraitEditable"
           v-bind:loading-editable="loadingTraitEditable"
           v-bind:edit-form-state="traitSidePanelState.dataFormState"
+          v-bind:client-validations="traitValidations"
           v-bind:validation-handler="editValidationHandler"
           v-bind:archivable="true"
           v-on:activate-edit="activateEdit($event)"
@@ -143,6 +145,7 @@
           v-on:submit="updateTrait"
           v-on:archive="activateArchive($event)"
           v-on:restore="activateArchive($event)"
+          v-on:show-error-notification="$emit('show-error-notification', $event)"
         />
       </template>
 
@@ -189,6 +192,7 @@ import {MethodClass} from "@/breeding-insight/model/Method";
 import {DataType, Scale} from "@/breeding-insight/model/Scale";
 import {SidePanelTableEventBusHandler} from "@/components/tables/SidePanelTableEventBus";
 import { DataFormEventBusHandler } from '@/components/forms/DataFormEventBusHandler';
+import {email, required, integer} from "vuelidate/lib/validators";
 
   @Component({
   mixins: [validationMixin],
@@ -235,6 +239,14 @@ export default class TraitTable extends Vue {
   // TODO: Move these into an event bus in the future
   private traitsPagination?: Pagination = new Pagination();
   private paginationController: PaginationController = new PaginationController();
+
+  traitValidations = {
+    scale: {
+      decimalPlaces: {integer},
+      validValueMax: {integer},
+      validValueMin: {integer}
+    }
+  }
 
   mounted() {
     this.getTraits();
