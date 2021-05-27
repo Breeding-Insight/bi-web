@@ -22,6 +22,10 @@ const versionInfo = JSON.parse(packageJson).versionInfo || "https://github.com/B
 
 process.env.VUE_APP_VERSION = version;
 process.env.VUE_APP_VERSION_INFO = versionInfo;
+process.env.VUE_APP_BI_API_ROOT = process.env.VUE_APP_BI_API_ROOT || "http://localhost";
+process.env.VUE_APP_OPENID_LOGOUT_URL = process.env.VUE_APP_OPENID_LOGOUT_URL || "https://sandbox.orcid.org/userStatus.json?logUserOut=true";
+process.env.VUE_APP_BI_API_V1_PATH = process.env.VUE_APP_BI_API_ROOT + "/v1";
+process.env.VUE_APP_LOG_LEVEL = process.env.VUE_APP_LOG_LEVEL || 'error';
 
 module.exports = {
   devServer: {
