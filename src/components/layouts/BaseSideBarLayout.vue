@@ -48,7 +48,7 @@
               >
             </a>
           </div>
-          <div v-if="sandboxConfig !== undefined" class="level-item">
+          <div v-if="sandboxConfig !== ''" class="level-item">
             <div v-bind:class="{'notification is-warning px-5 has-text-centered': sandboxConfig === SandboxMode.Public,
                                 'notification is-info px-5 has-text-centered': sandboxConfig === SandboxMode.Coordinator}">
               <p class="title is-size-4">Sandbox</p>
@@ -122,7 +122,7 @@ import VersionInfo from '@/components/layouts/VersionInfo.vue';
     username!: string;
 
     @Watch('$route')
-    onUrlChange(){
+    onUrlChange() {
       this.sideMenuShownMobile = false;
     }
 

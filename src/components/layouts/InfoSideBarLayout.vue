@@ -30,7 +30,7 @@
         </div>
       </template>
       <template v-slot:menu>
-        <div v-if="sandboxConfig == undefined" class="pl-3">
+        <div v-if="sandboxConfig === ''" class="pl-3">
           <h1
             class="title has-text-warning is-5"
           >
@@ -40,7 +40,7 @@
             For now, this message should only show up if there is no sandbox mode set.
           </p>
         </div>
-        <div v-if="sandboxConfig == SandboxMode.Coordinator" class="pl-3">
+        <div v-if="sandboxConfig === SandboxMode.Coordinator" class="pl-3">
           <h1
             class="title has-text-warning is-5"
           >
@@ -50,7 +50,7 @@
             Use your <span class="has-text-weight-bold">ORCID sandbox</span> login to access this site.
           </p>
         </div>
-        <div v-if="sandboxConfig == SandboxMode.Public" class="pl-3">
+        <div v-if="sandboxConfig === SandboxMode.Public" class="pl-3">
           <h1
             class="title has-text-warning is-5"
           >
