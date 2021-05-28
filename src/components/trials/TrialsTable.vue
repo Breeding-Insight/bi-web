@@ -82,7 +82,7 @@
       v-bind:row-validations="trialValidations"
       v-bind:editable="$ability.can('update', 'Trial')"
       v-bind:archivable="$ability.can('archive', 'Trial')"
-      v-bind:pagination="trialssPagination"
+      v-bind:pagination="trialsPagination"
       v-bind:data-form-state="editTrialFormState"
       v-on:submit="updateTrial($event)"
       v-on:remove="displayWarning($event)"
@@ -149,6 +149,7 @@
   import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
   import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
   import { DataFormEventBusHandler } from '@/components/forms/DataFormEventBusHandler';
+  import {Trial} from '@/breeding-insight/model/Trial'
 
 @Component({
   mixins: [validationMixin],
@@ -167,7 +168,7 @@ export default class ProgramLocationsTable extends Vue {
   private trials: Trial[] = [];
   private trialsPagination?: Pagination = new Pagination();
   private deactivateActive: boolean = false;
-  private newLocationActive: boolean = false;
+  private newTrialActive: boolean = false;
   private deactivateWarningTitle: string = "Remove location from Program name?";
   private newTrial = new Trial();
   private programName: string = "Program Name";
