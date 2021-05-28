@@ -48,6 +48,7 @@
     <div class="columns has-text-right mb-0">
       <div class="column">
         <button
+            v-if="$ability.can('create', 'Trait')"
             data-testid="newDataForm"
             v-show="!newTraitActive & traits.length > 0"
             class="button is-primary has-text-weight-bold"
@@ -133,11 +134,12 @@
           v-bind:data="traitSidePanelState.openedRow"
           v-bind:observation-level-options="observationLevelOptions"
           v-bind:edit-active="traitSidePanelState.editActive"
-          v-bind:editable="currentTraitEditable"
+          v-bind:editable="$ability.can('update', 'Trait') && currentTraitEditable"
+          v-bind:loading-editable="loadingTraitEditable"
           v-bind:edit-form-state="traitSidePanelState.dataFormState"
           v-bind:client-validations="traitValidations"
           v-bind:validation-handler="editValidationHandler"
-          v-bind:archivable="true"
+          v-bind:archivable="$ability.can('archive', 'Trait')"
           v-on:activate-edit="activateEdit($event)"
           v-on:deactivate-edit="traitSidePanelState.bus.$emit(traitSidePanelState.closePanelEvent)"
           v-on:trait-change="editTrait = Trait.assign({...$event})"
@@ -153,11 +155,14 @@
             v-bind:button-view-toggle="!newTraitActive"
             v-bind:button-text="'New Trait'"
             v-on:newClick="activateNewTraitForm"
+            v-bind:create-enabled="$ability.can('create', 'Trait')"
         >
           <p class="has-text-weight-bold">
             No traits are currently defined for this program.
           </p>
-          Create new traits by clicking "New Trait" or navigating to "Import Traits".
+          <p v-if="$ability.can('create', 'Trait')">
+            Create new traits by clicking "New Trait" or navigating to "Import Traits".
+          </p>
         </EmptyTableMessage>
       </template>
     </SidePanelTable>
@@ -263,7 +268,9 @@ export default class TraitTable extends Vue {
     });
 
     this.traitSidePanelState.bus.$on(this.traitSidePanelState.selectRowEvent, (row: any) => {
-      this.editable(row);
+      if(this.$ability.can('update', 'Trait')) {
+        this.editable(row);
+      }
     })
   }
 
