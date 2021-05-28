@@ -126,7 +126,7 @@
               </router-link>
               <ul v-show="trialsAndExperimentsActive">
                 <li>
-                  <router-link v-bind:to="{name: 'trials', params: {programId: activeProgram.id}}">
+                  <router-link v-bind:to="{name: 'trials-list', params: {programId: activeProgram.id}}">
                     Trials
                   </router-link>
                 </li>
