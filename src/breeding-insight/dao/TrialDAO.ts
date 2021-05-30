@@ -20,13 +20,20 @@ import {BiResponse, Response} from "@/breeding-insight/model/BiResponse";
 import * as api from "@/util/api";
 import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
 
-export class TraitDAO {
+export class TrialDAO {
 
   static async getAll(programId: string, paginationQuery: PaginationQuery, full : boolean): Promise<BiResponse> {
-    const { data } = await api.call({
-      url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/brapi/v2/trials`,
-      method: 'get',
-      params: { full }
-    }); 
+    try {
+      const { data } = await api.call({
+        url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/brapi/v2/trials`,
+        method: 'get',
+        params: { full }
+      });
+
+      return new BiResponse(data);
+        
+    } catch (err) {
+      throw err;
+    }  
   }    
 }

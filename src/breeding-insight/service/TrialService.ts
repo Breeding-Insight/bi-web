@@ -35,26 +35,24 @@ export class TrialService {
 
     if (programId) {
       try {    
-        const { result: { data }, metadata } = await TrialDAO.getAll(programId, paginationQuery, full);
-        const trials: Trial[] = [];
-          
+        let { result: { data }, metadata } = await TrialDAO.getAll(programId, paginationQuery, full);
+        let trials: Trial[] = [];
         if (data) {
           data = PaginationController.mockSortRecords(data);
 
-            trials = data.map((trial: any) => {
+          trials = data.map((trial: any) => {
             return trial as Trial;
           });
         }
 
         let newPagination;
-        [traits, newPagination] = PaginationController.mockPagination(trials, paginationQuery!.page, paginationQuery!.pagesize, paginationQuery!.showAll);  
+        [trials, newPagination] = PaginationController.mockPagination(trials, paginationQuery!.page, paginationQuery!.pagesize, paginationQuery!.showAll);  
         metadata.pagination = newPagination;
 
         return [trials, metadata];
           
       } catch(err) {
-
-        else throw 'Unable to get trials';
+        throw 'Unable to get trials';
 
       }        
     }      

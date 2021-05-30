@@ -142,7 +142,7 @@
   import NewDataForm from '@/components/forms/NewDataForm.vue'
   import BasicInputField from "@/components/forms/BasicInputField.vue";
   import ExpandableRowTable from "@/components/tables/ExpandableRowTable.vue";
-  import {ProgramLocationService} from "@/breeding-insight/service/ProgramLocationService";
+  import {TrialService} from "@/breeding-insight/service/TrialService";
   import EmptyTableMessage from "@/components/tables/EmtpyTableMessage.vue";
   import TableColumn from "@/components/tables/TableColumn.vue";
   import {Metadata, Pagination} from "@/breeding-insight/model/BiResponse";
@@ -188,22 +188,25 @@ export default class ProgramLocationsTable extends Vue {
   }
 
   @Watch('paginationController', { deep: true})
-  getTrials() {
+  async getTrials() {
     let paginationQuery: PaginationQuery = PaginationController.getPaginationSelections(
-      this.paginationController.currentPage, this.paginationController.pageSize, this.paginationController.showAll);
+      this.paginationController.currentPage,
+      this.paginationController.pageSize,
+      this.paginationController.showAll);
+
     this.paginationController.setCurrentCall(paginationQuery);
 
-    ProgramLocationService.getAll(this.activeProgram!.id!, paginationQuery).then(([programLocations, metadata]) => {
-      if (this.paginationController.matchesCurrentRequest(metadata.pagination)){
+    try {
+      const [programLocations, metadata] = await TrialService.getAll(this.activeProgram!.id!, paginationQuery);
+
+      if (this.paginationController.matchesCurrentRequest(metadata.pagination)) {
         this.trials = trials;
         this.trialsPagination = metadata.pagination;
       }
-
-    }).catch((error) => {
+    } catch (err) {
       // Display error that trials cannot be loaded
       this.$emit('show-error-notification', 'Error while trying to load trials');
-      throw error;
-    });
+    }
   }
 
   createTrial() {
