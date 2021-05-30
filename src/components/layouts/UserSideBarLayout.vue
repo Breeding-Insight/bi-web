@@ -249,7 +249,7 @@
   import {EventBus} from "@/util/event-bus";
   import ClickOutside from 'vue-click-outside';
 
-@Component( {
+  @Component( {
     components: {BaseSideBarLayout, MoreVerticalIcon, MoreHorizontalIcon, ChevronDownIcon},
     computed: {
       ...mapGetters([
