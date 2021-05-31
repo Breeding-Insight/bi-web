@@ -24,12 +24,35 @@ export class TrialDAO {
 
   static async getAll(programId: string, paginationQuery: PaginationQuery, full : boolean): Promise<BiResponse> {
     try {
-      const { data } = await api.call({
-        url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/brapi/v2/trials`,
-        method: 'get',
-        params: { full }
-      });
+      // const { data } = await api.call({
+      //   url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/brapi/v2/trials`,
+      //   method: 'get',
+      //   params: { full }
+      // });
 
+const data = JSON.parse(`{
+  "@context": null,
+  "metadata": {
+    "datafiles": [],
+    "status": [],
+    "pagination": {
+      "pageSize": 1000,
+      "totalCount": 1,
+      "totalPages": 1,
+      "currentPage": 1
+    }
+  },
+  "result": {
+      "data": [
+          {
+              "id": "sdkjvbsdkbvsdjbvsd",
+              "trialName": "Foo",
+              "active": "true"
+          }
+      ]
+  }
+}`);
+        
       return new BiResponse(data);
         
     } catch (err) {

@@ -93,10 +93,7 @@
     >
       <template v-slot:columns="data">
         <TableColumn name="name" v-bind:label="'Name'">
-          {{ data.name }}
-        </TableColumn>
-        <TableColumn name="numExperiments" v-bind:label="'# Experiments'">
-          {{ data.numExperiments }}
+          {{ data.trialName }}
         </TableColumn>
       </template>
       <template v-slot:edit="{editData, validations}">
@@ -197,7 +194,7 @@ export default class ProgramLocationsTable extends Vue {
     this.paginationController.setCurrentCall(paginationQuery);
 
     try {
-      const [programLocations, metadata] = await TrialService.getAll(this.activeProgram!.id!, paginationQuery);
+      const [trials, metadata] = await TrialService.getAll(this.activeProgram!.id!, paginationQuery);
 
       if (this.paginationController.matchesCurrentRequest(metadata.pagination)) {
         this.trials = trials;
