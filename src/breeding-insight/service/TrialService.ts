@@ -37,16 +37,16 @@ export class TrialService {
       try {    
         let { result: { data }, metadata } = await TrialDAO.getAll(programId, paginationQuery, full);
         let trials: Trial[] = [];
+
         if (data) {
           data = PaginationController.mockSortRecords(data);
-
           trials = data.map((trial: any) => {
             return trial as Trial;
           });
         }
 
         let newPagination;
-        [trials, newPagination] = PaginationController.mockPagination(trials, paginationQuery!.page, paginationQuery!.pagesize, paginationQuery!.showAll);  
+        [trials, newPagination] = PaginationController.mockPagination(trials, paginationQuery!.page, paginationQuery!.pageSize, paginationQuery!.showAll);  
         metadata.pagination = newPagination;
 
         return [trials, metadata];
