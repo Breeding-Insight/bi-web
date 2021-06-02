@@ -66,3 +66,7 @@ class Status {
     this.message = statusMap.message;
   }
 }
+
+export interface Response {
+  data: any
+}

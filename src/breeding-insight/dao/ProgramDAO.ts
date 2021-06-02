@@ -16,9 +16,10 @@
  */
 
 import {Program} from "@/breeding-insight/model/Program";
-import {BiResponse} from "@/breeding-insight/model/BiResponse";
+import {BiResponse, Response} from "@/breeding-insight/model/BiResponse";
 import * as api from "@/util/api";
 import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
+
 
 export class ProgramDAO {
 
@@ -27,7 +28,7 @@ export class ProgramDAO {
     return new Promise<BiResponse>((resolve, reject) => {
 
       // Construct request body
-      const body = {'name': program.name, 'species': { 'id': program.speciesId } };
+      const body = {'name': program.name, 'species': { 'id': program.speciesId }, 'brapiUrl': program.brapiUrl };
 
       // Make api request
       api.call({ url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs`, method: 'post', data: body})
@@ -86,6 +87,15 @@ export class ProgramDAO {
       })
 
     }))
+  }
+
+  static async getObservationLevels(programId: string): Promise<BiResponse> {
+
+    const { data } =  await api.call({
+      url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/observation-levels`,
+      method: 'get'
+    }) as Response;
+    return new BiResponse(data);
   }
 
 }

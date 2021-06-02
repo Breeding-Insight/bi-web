@@ -20,15 +20,56 @@ import {Trait} from "@/breeding-insight/model/Trait";
 import {Metadata} from "@/breeding-insight/model/BiResponse";
 import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
 import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
+import {TraitUploadService} from "@/breeding-insight/service/TraitUploadService";
+import {ValidationError} from "@/breeding-insight/model/errors/ValidationError";
 
 export class TraitService {
 
-    static async createTraits(programId: string, newTraits: Trait[]): Promise<[Trait[], Metadata] | void> {
+    static async createTraits(programId: string, newTraits: Trait[]): Promise<[Trait[], Metadata]> {
       if (programId) {
-           const { result: { data }, metadata } = await TraitDAO.createTraits(programId, newTraits);
-           return [data, metadata];
-       }
-      else return;
+        try {
+          const { result: { data }, metadata } = await TraitDAO.createTraits(programId, newTraits);
+          return [data, metadata];
+        } catch (error) {
+          throw TraitUploadService.parseError(error);
+        }
+      }
+      else throw 'Unable to create trait';
+    }
+
+    static async updateTraits(programId: string, traits: Trait[]): Promise<[Trait[], Metadata]> {
+      if (programId && traits) {
+        // Check that they all have a trait id
+        if (traits.filter(trait => trait.id).length !== traits.length) {
+          throw 'Unable to update trait';
+        }
+
+        try {
+          const { result: { data }, metadata } = await TraitDAO.updateTraits(programId, traits);
+          return [data, metadata];
+        } catch (error) {
+          throw TraitUploadService.parseError(error);
+        }
+      }
+      else throw 'Unable to update trait';
+    }
+
+    static async archiveTrait(programId: string, trait: Trait): Promise<Trait> {
+
+      if (programId && trait) {
+        // Check that they all have a trait id
+        if (!trait.id){
+          throw 'Unable to update trait';
+        }
+
+        try {
+          const { result, metadata } = await TraitDAO.archiveTrait(programId, trait);
+          return Trait.assign(result);
+        } catch (error) {
+          throw TraitUploadService.parseError(error);
+        }
+      }
+      else throw 'Unable to update trait';
     }
 
     static getAll(programId: string, paginationQuery?: PaginationQuery, full?: boolean): Promise<[Trait[], Metadata]> {
@@ -41,13 +82,15 @@ export class TraitService {
       if (full === undefined) {
         full = false;
       }
-            
+
       if (programId) {
           TraitDAO.getAll(programId, paginationQuery, full).then((biResponse) => {
-              
+
           let traits: Trait[] = [];
 
           if (biResponse.result.data) {
+            //TODO: Remove when backend default sorting is implemented
+            biResponse.result.data = PaginationController.mockSortRecords(biResponse.result.data);
             traits = biResponse.result.data.map((trait: any) => {
                 return trait as Trait;
             });
@@ -66,5 +109,6 @@ export class TraitService {
         reject();
       }
     }));
+
   }
 }

@@ -30,6 +30,7 @@ import PaginationControls from "@/components/tables/PaginationControls.vue";
 import BasicInputField from "@/components/forms/BasicInputField.vue";
 import BaseFieldWrapper from "@/components/forms/BaseFieldWrapper.vue";
 import NewDataForm from "@/components/forms/NewDataForm.vue";
+import Utils from '../../test-utils/TestingUtils';
 
 jest.mock('@/breeding-insight/dao/ProgramLocationDAO');
 let locations: ProgramLocation[] = [];
@@ -78,7 +79,7 @@ describe('Edit data form works properly', () => {
 
     const submitBtn = editForm.find('button[data-testid="save"]');
     await submitBtn.trigger('click');
-
+    await Utils.pause(500);
     fieldError = fieldWrapper.element.classList.contains('field--error');
     expect(fieldError).toBeTruthy();
   });
@@ -131,6 +132,7 @@ describe('New data form works properly', () => {
     const saveBtn = newDataForm.find('button[data-testid="save"]');
     expect(saveBtn.exists()).toBeTruthy();
     await saveBtn.trigger('click');
+    await Utils.pause(500);
     expect(newDataForm.emitted('submit')).toHaveLength(1);
   });
 

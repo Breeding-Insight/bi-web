@@ -18,7 +18,7 @@
 const fs = require('fs')
 const packageJson = fs.readFileSync('./package.json')
 const version = JSON.parse(packageJson).version || 0
-const versionInfo = JSON.parse(packageJson).versionTag || 0
+const versionInfo = JSON.parse(packageJson).versionInfo || "https://github.com/Breeding-Insight/bi-web"
 
 process.env.VUE_APP_VERSION = version;
 process.env.VUE_APP_VERSION_INFO = versionInfo;

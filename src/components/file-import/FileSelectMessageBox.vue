@@ -25,8 +25,8 @@
 
           <!-- Multiple errors list -->
           <template v-if="isValidationError">
-            <AlertTriangleIcon size="1x" aria-hidden="true" class="has-vertical-align-middle pb-0"></AlertTriangleIcon>
-            <span class="has-text-weight-bold ml-1 has-vertical-align-middle">File contains data errors</span>
+            <AlertTriangleIcon size="1x" aria-hidden="true" class="has-vertical-align-middle"></AlertTriangleIcon>
+            <span class="has-text-weight-bold ml-1">File contains data errors</span>
             <ul>
               <template v-if="displayAllErrors">
                 <li v-for="(errorMessage, rowIndex) of allErrors" v-bind:key="rowIndex">{{errorMessage}}</li>
@@ -52,8 +52,8 @@
 
           <!-- Single Error -->
           <template v-else>
-            <AlertTriangleIcon size="1x" aria-hidden="true" class="has-vertical-align-middle pb-0"></AlertTriangleIcon>
-            <span class="has-text-weight-bold ml-1 has-vertical-align-middle">{{allErrors[0]}}</span>
+            <AlertTriangleIcon size="1x" aria-hidden="true" class="has-vertical-align-middle"></AlertTriangleIcon>
+            <span class="has-text-weight-bold ml-1">{{allErrors[0]}}</span>
           </template>
 
         </div>
@@ -135,12 +135,15 @@
       let errors = [];
       if (this.isValidationError){
         const validationErrors = this.errors as ValidationError;
-        for (const error of validationErrors.rows){
-          for (const fieldError of error.errors){
-            errors.push(`${fieldError.field}: ${fieldError.errorMessage} in row ${error.rowIndex}`);
+        if (validationErrors.rows) {
+          for (const error of validationErrors.rows){
+            if (error.errors) {
+              for (const fieldError of error.errors){
+                errors.push(`${fieldError.field}: ${fieldError.errorMessage} in row ${error.rowIndex}`);
+              }
+            }
           }
         }
-
         return errors;
       } else if (this.errors != null) {
         return [this.errors!] as string[];

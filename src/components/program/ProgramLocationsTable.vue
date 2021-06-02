@@ -57,6 +57,7 @@
       v-if="newLocationActive"
       v-bind:row-validations="locationValidations"
       v-bind:new-record.sync="newLocation"
+      v-bind:data-form-state="newLocationFormState"
       v-on:submit="saveLocation"
       v-on:cancel="cancelNewLocation"
       v-on:show-error-notification="$emit('show-error-notification', $event)"
@@ -82,6 +83,7 @@
       v-bind:editable="$ability.can('update', 'Location')"
       v-bind:archivable="$ability.can('archive', 'Location')"
       v-bind:pagination="locationsPagination"
+      v-bind:data-form-state="editLocationFormState"
       v-on:submit="updateLocation($event)"
       v-on:remove="displayWarning($event)"
       v-on:show-error-notification="$emit('show-error-notification', $event)"
@@ -147,6 +149,7 @@
   import {Metadata, Pagination} from "@/breeding-insight/model/BiResponse";
   import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
   import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
+  import { DataFormEventBusHandler } from '@/components/forms/DataFormEventBusHandler';
 
 @Component({
   mixins: [validationMixin],
@@ -172,6 +175,9 @@ export default class ProgramLocationsTable extends Vue {
   private deleteLocation?: ProgramLocation;
 
   private paginationController: PaginationController = new PaginationController();
+
+  private newLocationFormState: DataFormEventBusHandler = new DataFormEventBusHandler();
+  private editLocationFormState: DataFormEventBusHandler = new DataFormEventBusHandler();
 
   locationValidations = {
     name: {required}
@@ -211,7 +217,7 @@ export default class ProgramLocationsTable extends Vue {
       this.$emit('show-success-notification', 'Success! ' + updatedLocation.name + ' updated.');
     }).catch((error) => {
       this.$emit('show-error-notification', error['errorMessage']);
-    });
+    }).finally(() => this.editLocationFormState.bus.$emit(DataFormEventBusHandler.SAVE_COMPLETE_EVENT));
 
   }
 
@@ -227,7 +233,7 @@ export default class ProgramLocationsTable extends Vue {
       this.newLocationActive = false;
     }).catch((error) => {
       this.$emit('show-error-notification', error['errorMessage']);
-    })
+    }).finally(() => this.newLocationFormState.bus.$emit(DataFormEventBusHandler.SAVE_COMPLETE_EVENT))
 
   }
 

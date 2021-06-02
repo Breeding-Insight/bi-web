@@ -16,19 +16,25 @@
   -->
 
 <template>
-  <tr v-on:click="$emit('selected')" 
-      v-bind:class="{'is-new': (rowData.new && !rowData.selected), 'is-selected': rowData === selectedRow}" >
+  <tr v-on:click="state.bus.$emit(state.selectRowEvent, rowData.data)"
+      v-bind:class="{'is-new': (rowData.new && !checkIsOpen()), 'is-selected': checkIsOpen(), 'is-edit-selected': state.editActive && checkIsOpen()}" >
     <slot></slot>
     <td class="has-text-right is-narrow">
-      <a v-if="!panelOpen"
-        data-testid="showDetails"
-        v-on:click="$emit('details')"
-        v-on:keypress.enter.space="$emit('details')"
-        tabindex="0"
-      >
-        Show details
-      </a>
-      <ChevronRightIcon v-if="!panelOpen || rowData === selectedRow" class="has-vertical-align-middle has-text-link" size="1x" aria-hidden="true"></ChevronRightIcon>
+        <a
+          v-if="!state.openedRow && !checkIsOpen()"
+          data-testid="showDetails"
+          v-on:click.stop="state.bus.$emit(state.selectRowEvent, rowData.data)"
+          v-on:keypress.enter.space.stop="state.bus.$emit(state.selectRowEvent, rowData.data)"
+          tabindex="0"
+        >
+          Show details
+        </a>
+        <ChevronRightIcon
+          v-if="!state.openedRow || checkIsOpen()"
+          class="has-vertical-align-middle has-text-link"
+          size="1x"
+          aria-hidden="true">
+        </ChevronRightIcon>
     </td>
     
   </tr>
@@ -38,6 +44,7 @@
   import {Component, Prop, Vue} from "vue-property-decorator";
   import { TableRow } from '@/breeding-insight/model/view_models/TableRow';
   import {ChevronRightIcon} from 'vue-feather-icons'
+  import {SidePanelTableEventBusHandler} from "@/components/tables/SidePanelTableEventBus";
 
   @Component({
     components: {
@@ -48,13 +55,21 @@
 
     // Knows its row values and its column objects
     @Prop()
-    rowData!: any;
-
+    rowData!: TableRow<any>;
     @Prop()
-    selectedRow!: TableRow<any>;
+    state!: SidePanelTableEventBusHandler;
 
-    @Prop()
-    panelOpen!: boolean;
+    checkIsOpen(): boolean {
+      // A match is either the exact row for import confirmations
+      // or id match. This will have to be fixed in the future.
+      // TODO: Get this to match on table rows, but still work with the editing
+      if (this.state.openedRow) {
+        return this.rowData.data === this.state.openedRow ||
+          (this.rowData.data.id && this.rowData.data.id === this.state.openedRow.id);
+      } else {
+        return false;
+      }
+    }
 
   }
 </script>

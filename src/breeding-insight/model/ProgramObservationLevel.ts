@@ -21,4 +21,13 @@ export class ProgramObservationLevel {
   constructor(name?:string) {
     this.name = name;
   }
+
+  static assign(level: ProgramObservationLevel) {
+    return new ProgramObservationLevel(level.name);
+  }
+
+  equals(level?: ProgramObservationLevel) {
+    if (!level) {return false;}
+    return this.name === level.name;
+  }
 }

@@ -1,69 +1,113 @@
 <template>
-  <div class="side-panel-table">
-    <div class="columns is-mobile">
-      <div class="column pr-0">
-        <BaseTable
-          v-show="records.length > 0"
-          v-bind:show-expand-controls="true"
-          v-bind="$props"
-          v-on:mobile="collapseService.send(BreakpointEvent.MOBILE)"
-          v-on:tablet="collapseService.send(BreakpointEvent.TABLET)"
-          v-on:desktop="collapseService.send(BreakpointEvent.DESKTOP)"
-          v-on="$listeners"
-        >          
-
-          <!-- 
-            Table row slot customization
-            row:   TableRow<any>
-            index: number
-          -->
-          <template v-slot:row="{row, index}">
-            <SidePanelTableRow
-              v-bind:key="'row' + index"
-              v-bind:row-data="row"
-              v-bind:selectedRow="selectedRow"
-              v-bind:panelOpen="panelOpen"
-              v-on:edit="row.toggleEdit()"
-              v-on:remove="$emit('remove', row.data)"
-              v-on:selected="rowSelected(row)"
-              v-on:details="rowSelected(row)"
-            >
-              <slot
-                v-bind="row.data"
-                name="columns"
-              />
-            </SidePanelTableRow>
-          </template>
-
-        </BaseTable>
+  <div>
+    <WarningModal
+        v-bind:active.sync="sidePanelState.closeEditModalActive"
+        v-bind:msg-title="'Close edit panel?'"
+        v-on:deactivate="sidePanelState.bus.$emit(sidePanelState.cancelCloseEditEvent)"
+    >
+      <section>
+        <p class="has-text-dark">
+          You will lose any edits you have made upon closing.
+        </p>
+      </section>
+      <div class="columns">
+        <div class="column is-whole has-text-centered buttons">
+          <button
+              class="button is-danger"
+              type="button"
+              v-on:click="sidePanelState.bus.$emit(sidePanelState.confirmCloseEditEvent)"
+          >
+            <strong>Yes, close</strong>
+          </button>
+          <button
+              class="button"
+              type="button"
+              v-on:click="sidePanelState.bus.$emit(sidePanelState.cancelCloseEditEvent)"
+          >
+            Cancel
+          </button>
+        </div>
       </div>
-      <div v-bind:class="{'column is-narrow is-gapless pl-0': !panelOpen, 'column is-one-third-desktop is-half-tablet is-half-mobile is-gapless pl-0': panelOpen}" >
-        <SidePanel v-show="records.length > 0" class="side-panel-scroll" v-if="panelOpen" v-on:close-panel="closePanel" v-bind:background-color-class="'has-background-info-light'">
-          <slot v-bind:data="selectedRow.data" name="side-panel"/>
-        </SidePanel>
+    </WarningModal>
+
+    <div class="side-panel-table">
+      <div class="columns is-mobile">
+        <div class="column pr-0">
+          <BaseTable
+              v-show="records.length > 0"
+              v-bind:show-expand-controls="true"
+              v-bind:editable="true"
+              v-bind="$props"
+              v-on:mobile="collapseService.send(BreakpointEvent.MOBILE)"
+              v-on:tablet="collapseService.send(BreakpointEvent.TABLET)"
+              v-on:desktop="collapseService.send(BreakpointEvent.DESKTOP)"
+              v-on="$listeners"
+          >
+
+            <!--
+              Table row slot customization
+              row:   TableRow<any>
+              index: number
+            -->
+            <template v-slot:row="{row, index}">
+              <SidePanelTableRow
+                  v-bind:key="'row' + index"
+                  v-bind:row-data="row"
+                  v-bind:state="sidePanelState"
+              >
+                <slot
+                    v-bind="row.data"
+                    name="columns"
+                />
+              </SidePanelTableRow>
+            </template>
+
+          </BaseTable>
+        </div>
+        <div
+            class="column is-gapless pl-0"
+            v-bind:class="{'is-narrow': !sidePanelState.panelOpen,
+              'is-one-third-desktop is-half-tablet is-half-mobile': (sidePanelState.panelOpen & !sidePanelState.editActive),
+              'is-one-half-desktop is-half-tablet is-half-mobile': (sidePanelState.panelOpen & sidePanelState.editActive)}"
+        >
+          <SidePanel
+              v-bind:state="sidePanelState"
+              v-show="records.length > 0"
+              class="side-panel-scroll"
+              v-if="sidePanelState.panelOpen"
+              v-bind:background-color-class="sidePanelState.editActive ? 'has-background-primary-light' : 'has-background-info-light'"
+          >
+            <slot
+              v-bind:table-row="sidePanelState.openedRow"
+              name="side-panel"
+            />
+          </SidePanel>
+        </div>
       </div>
+      <PaginationControls v-show="records.length > 0"
+                          v-bind="$props"
+                          v-on:paginate="closePanelAndReEmit('paginate', $event)"
+                          v-on:paginate-toggle-all="closePanelAndReEmit('paginate-toggle-all', $event)"
+                          v-on:paginate-page-size="closePanelAndReEmit('paginate-page-size', $event)"/>
+
+      <template v-if="records.length === 0">
+        <slot name="emptyMessage" />
+      </template>
     </div>
-    <PaginationControls v-show="records.length > 0"
-                        v-bind="$props"
-                        v-on:paginate="closePanelAndReEmit('paginate', $event)"
-                        v-on:paginate-toggle-all="closePanelAndReEmit('paginate-toggle-all', $event)"
-                        v-on:paginate-page-size="closePanelAndReEmit('paginate-page-size', $event)"/>
 
-    <template v-if="records.length === 0">
-      <slot name="emptyMessage" />
-    </template>
   </div>
 </template>
 
 <script lang="ts">
-  import { Component, Prop, Vue, Watch } from 'vue-property-decorator'
+  import {Component, Prop, Vue, Watch} from 'vue-property-decorator'
   import {Pagination} from "@/breeding-insight/model/BiResponse";
   import BaseTable from '@/components/tables/BaseTable.vue'
   import SidePanel from '@/components/tables/SidePanel.vue'
   import SidePanelTableRow from '@/components/tables/SidePanelTableRow.vue'
   import PaginationControls from '@/components/tables/PaginationControls.vue'
-  import {TableRow} from "@/breeding-insight/model/view_models/TableRow"
   import { createMachine, interpret } from '@xstate/fsm';
+  import {SidePanelTableEventBusHandler} from "@/components/tables/SidePanelTableEventBus";
+  import WarningModal from "@/components/modals/WarningModal.vue";
 
   enum CollapseColumnsState {
     SMALL_PANEL_OPEN = "SMALL_PANEL_OPEN",
@@ -90,23 +134,22 @@
 
   @Component({
     components: {
-      BaseTable, SidePanel, SidePanelTableRow, PaginationControls
-    }
+      BaseTable, SidePanel, SidePanelTableRow, PaginationControls, WarningModal
+    },
+    data: () => ({})
   })
   export default class SidePanelTable extends Vue {
 
     @Prop()
     records!: Array<any>;
     @Prop()
-    rowValidations!: Object;
-    @Prop()
-    editable!: boolean;
-    @Prop()
     pagination!: Pagination;
+    @Prop()
+    autoHandleClosePanelEvent!: boolean;
+    @Prop()
+    sidePanelState!: SidePanelTableEventBusHandler;
 
-    private panelOpen = false;
     private BreakpointEvent = BreakpointEvent;
-    private selectedRow: TableRow<any> = new TableRow(false, false,{});
     private state = CollapseColumnsState.NORMAL_PANEL_CLOSED;
     private collapseStateMachine = createMachine({
       id: 'collapse',
@@ -160,43 +203,40 @@
     private initialState = this.collapseStateMachine;
     private collapseService = interpret(this.collapseStateMachine);
 
+    @Watch('autoHandleClosePanelEvent', {immediate: true})
+    public setupClosePanelEvent(newVal: boolean) {
+      if (newVal){
+        this.sidePanelState.bus.$on(this.sidePanelState.requestClosePanelEvent, this.confirmClose);
+      } else {
+        this.sidePanelState.bus.$off(this.sidePanelState.requestClosePanelEvent, this.confirmClose);
+      }
+    }
+
+    confirmClose() {
+      this.sidePanelState.bus.$emit(this.sidePanelState.confirmCloseEditEvent);
+    }
+
     created() {
       this.collapseService.subscribe(state => {
         this.state = CollapseColumnsState[state.value as keyof typeof CollapseColumnsState];
       });
       this.collapseService.start();
+
+      this.sidePanelState.bus.$on(this.sidePanelState.confirmOpenPanel, () => { this.collapseService.send(PanelEvent.OPEN); });
+      this.sidePanelState.bus.$on(this.sidePanelState.closePanelEvent, () => { this.collapseService.send(PanelEvent.CLOSED); });
     }
 
     // send events and allow caller to customize what column(s) are shown for collapsed state
     collapse() {
-      this.$emit('collapse-columns');
+      this.sidePanelState.bus.$emit(this.sidePanelState.collapseColumnsEvent);
     }
 
     unCollapse() {
-      this.$emit('uncollapse-columns');
-    }
-
-    rowSelected(row: TableRow<any>) {
-      row.selected = true;
-      this.selectedRow = row;
-      this.panelOpen = true;
-      this.collapseService.send(PanelEvent.OPEN);
-    }
-
-    closePanel() {
-      this.panelOpen = false
-      this.selectedRow = new TableRow(false, false,{});
-      this.collapseService.send(PanelEvent.CLOSED);
+      this.sidePanelState.bus.$emit(this.sidePanelState.uncollapseColumnsEvent);
     }
 
     closePanelAndReEmit(eventType: string, event: any) {
-      this.closePanel();
-      if (event) {
-        this.$emit(eventType, event);
-      }
-      else {
-        this.$emit(eventType);
-      }
+      this.sidePanelState.bus.$emit(this.sidePanelState.closePanelEvent, () => {this.$emit(eventType, event)});
     }
 
   }

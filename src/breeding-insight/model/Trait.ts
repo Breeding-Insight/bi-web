@@ -27,21 +27,78 @@ export class Trait {
   scale?: Scale;
   abbreviations?: Array<string>;
   synonyms?: Array<string>;
+  mainAbbreviation?: string;
+  active?: boolean;
 
-  constructor(id?:string,
-              traitName?:string, 
+  constructor(id?: string,
+              traitName?: string,
               programObservationLevel?: ProgramObservationLevel,
               method?: Method,
               scale?: Scale,
               abbreviations?: Array<string>,
-              synonyms?: Array<string>
+              synonyms?: Array<string>,
+              active?: boolean
               ) {
     this.id = id;
     this.traitName = traitName;
-    this.programObservationLevel = programObservationLevel;
-    this.method = method;
-    this.scale = scale;
+    if (programObservationLevel) {
+      this.programObservationLevel = ProgramObservationLevel.assign({...programObservationLevel} as ProgramObservationLevel);
+    } else {
+      this.programObservationLevel = new ProgramObservationLevel();
+    }
+    if (method){
+      this.method = Method.assign({...method} as Method);
+    } else {
+      this.method = new Method();
+    }
+    if (scale) {
+      this.scale = Scale.assign({...scale} as Scale);
+    } else {
+      this.scale = new Scale();
+    }
     this.abbreviations = abbreviations;
     this.synonyms = synonyms;
+    if (active !== undefined) {
+      this.active = active;
+    } else {
+      this.active = true;
+    }
+  }
+
+  static assign(trait: Trait): Trait {
+    return new Trait(trait.id, trait.traitName, trait.programObservationLevel, trait.method,
+      trait.scale, trait.abbreviations, trait.synonyms, trait.active);
+  }
+
+  checkStringListEquals(list: string[] | undefined, otherList: string[] | undefined): boolean {
+    if (!list && !otherList) { return true; }
+
+    if (list && otherList && list.length === otherList.length) {
+      return list.filter((value,index) => {
+        return value !== otherList[index];
+      }).length === 0;
+    }
+    return false;
+  }
+
+  equals(trait?: Trait): boolean {
+    if (!trait) {return false;}
+    return (this.id === trait.id) &&
+      (this.traitName === trait.traitName) &&
+      (this.checkStringListEquals(this.abbreviations, trait.abbreviations)) &&
+      (this.checkStringListEquals(this.synonyms, trait.synonyms)) &&
+      (this.mainAbbreviation === trait.mainAbbreviation) &&
+      (
+        (this.programObservationLevel && this.programObservationLevel.equals(trait.programObservationLevel)) ||
+        (!this.programObservationLevel && !trait.programObservationLevel)
+      ) &&
+      (
+        (this.scale && this.scale.equals(trait.scale)) ||
+        (!this.scale && !trait.scale)
+      ) &&
+      (
+        (this.method && this.method.equals(trait.method)) ||
+        (!this.method && !trait.method)
+      );
   }
 }

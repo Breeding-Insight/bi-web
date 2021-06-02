@@ -51,8 +51,9 @@
           >
             <td v-bind:colspan="colSpan" class="py-0 px-0">
               <EditDataRowForm class="mb-0"
-                @submit="validateAndSubmit(row)"
-                @cancel="cancelEdit(row)"
+                v-bind:data-form-state="dataFormState"
+                v-on:submit="validateAndSubmit(row)"
+                v-on:cancel="cancelEdit(row)"
               >
                 <slot
                   v-bind:editData="row.editData"
@@ -84,6 +85,7 @@
   import EditDataRowForm from '@/components/forms/EditDataRowForm.vue'
   import ValidationMixin from '@/mixins/ValidationMixin'
   import {TableRow} from "@/breeding-insight/model/view_models/TableRow";
+  import { DataFormEventBusHandler } from '@/components/forms/DataFormEventBusHandler';
 
   @Component({
     components: { BaseTable, ExpandableTableRow, EditDataRowForm, PaginationControls }
@@ -98,6 +100,8 @@
     archivable!: boolean;
     @Prop()
     pagination!: Pagination;
+    @Prop()
+    dataFormState!: DataFormEventBusHandler;
 
     private colSpan = 0;
 

@@ -16,13 +16,9 @@
  */
 
 import {Trait} from "@/breeding-insight/model/Trait";
-import {BiResponse} from "@/breeding-insight/model/BiResponse";
+import {BiResponse, Response} from "@/breeding-insight/model/BiResponse";
 import * as api from "@/util/api";
 import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
-
-interface Response {
-  data: any
-}
 
 export class TraitDAO {
 
@@ -49,6 +45,24 @@ export class TraitDAO {
       }) as Response;
       return new BiResponse(data);
 
+  }
+
+  static async updateTraits(programId: string, newTraits: Trait[]): Promise<BiResponse> {
+    const { data } =  await api.call({
+      url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/traits`,
+      method: 'put',
+      data: newTraits
+    }) as Response;
+    return new BiResponse(data);
+  }
+
+  static async archiveTrait(programId: string, trait: Trait): Promise<BiResponse> {
+    const { data } =  await api.call({
+      url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/traits/${trait.id}/archive`,
+      params: {'active': trait.active},
+      method: 'put'
+    }) as Response;
+    return new BiResponse(data);
   }
 
 }

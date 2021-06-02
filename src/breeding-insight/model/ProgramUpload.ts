@@ -19,7 +19,7 @@ import {Trait} from "@/breeding-insight/model/Trait";
 
 export class ProgramUpload {
   id?: string;
-  data?: Array<Trait>;
+  data?: Trait[];
 
   constructor(id?:string, data?:Array<Trait>) {
     this.id = id;

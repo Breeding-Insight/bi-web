@@ -246,9 +246,7 @@ describe('Column collpase state machine works properly', () => {
     expect(breakpoint.exists()).toBeTruthy();
     await breakpoint.vm.$emit('mobile');
 
-    const emmitted = sidePanelTable.emitted('collapse-columns');
-    expect(emmitted).toHaveLength(1);
-    emmitted!.pop();
+    expect(sidePanelTable.vm.$props.sidePanelState.collapseColumns).toBeTruthy();
   });
 
   it('Uncollapses columns when on mobile and panel closed', async () => {
@@ -257,9 +255,7 @@ describe('Column collpase state machine works properly', () => {
     const closeBtn = sidePanel.find('[aria-label="close"]');
     await closeBtn.trigger('click');
 
-    const emmitted = sidePanelTable.emitted('uncollapse-columns');
-    expect(emmitted).toHaveLength(1);
-    emmitted!.pop();
+    expect(sidePanel.vm.$props.state.collapseColumns).toBeFalsy();
   });
 
   it('Collapses columns when on mobile and panel opened', async () => {
@@ -268,20 +264,20 @@ describe('Column collpase state machine works properly', () => {
     const sidePanel = wrapper.findComponent(SidePanel);
     expect(sidePanel.exists()).toBeTruthy();
 
-    const emmitted = sidePanelTable.emitted('collapse-columns');
-    expect(emmitted).toHaveLength(1);
-    emmitted!.pop();
+    expect(sidePanel.vm.$props.state.collapseColumns).toBeTruthy();
   });
 
   it('Columns stay collapsed when panel is opened and switch to tablet', async () => {
+
+    const sidePanel = wrapper.findComponent(SidePanel);
+    expect(sidePanel.exists()).toBeTruthy();
 
     const breakpoint = wrapper.findAllComponents(VBreakpoint).at(1);
     expect(breakpoint.exists()).toBeTruthy();
     await breakpoint.vm.$emit('tablet');
 
     // Columns stay collapsed
-    const emmitted = sidePanelTable.emitted('collapse-columns');
-    expect(emmitted).toHaveLength(0);
+    expect(sidePanel.vm.$props.state.collapseColumns).toBeTruthy();
   });
 
   it('Uncollapses colums when on tablet and panel closed', async () => {
@@ -290,9 +286,7 @@ describe('Column collpase state machine works properly', () => {
     const closeBtn = sidePanel.find('[aria-label="close"]');
     await closeBtn.trigger('click');
 
-    const emmitted = sidePanelTable.emitted('uncollapse-columns');
-    expect(emmitted).toHaveLength(1);
-    emmitted!.pop();
+    expect(sidePanel.vm.$props.state.collapseColumns).toBeFalsy();
   });
 
   it('Collapses when on tablet and panel is open', async () => {
@@ -301,20 +295,17 @@ describe('Column collpase state machine works properly', () => {
     const sidePanel = wrapper.findComponent(SidePanel);
     expect(sidePanel.exists()).toBeTruthy();
 
-    const emmitted = sidePanelTable.emitted('collapse-columns');
-    expect(emmitted).toHaveLength(1);
-    emmitted!.pop();
+    expect(sidePanel.vm.$props.state.collapseColumns).toBeTruthy();
   });
 
   it('Uncollapses when panel opened and switch to desktop', async () => {
 
+    const sidePanel = wrapper.findComponent(SidePanel);
     const breakpoint = wrapper.findAllComponents(VBreakpoint).at(2);
     expect(breakpoint.exists()).toBeTruthy();
     await breakpoint.vm.$emit('desktop');
 
-    const emmitted = sidePanelTable.emitted('uncollapse-columns');
-    expect(emmitted).toHaveLength(1);
-    emmitted!.pop();
+    expect(sidePanel.vm.$props.state.collapseColumns).toBeFalsy();
   });
 
   it('Stays uncollapsed when panel is closed', async () => {
@@ -324,11 +315,7 @@ describe('Column collpase state machine works properly', () => {
     await closeBtn.trigger('click');
 
     // No events should be called
-    let emmitted = sidePanelTable.emitted('uncollapse-columns');
-    expect(emmitted).toHaveLength(0);
-
-    emmitted = sidePanelTable.emitted('collapse-columns');
-    expect(emmitted).toHaveLength(0);
+    expect(sidePanel.vm.$props.state.collapseColumns).toBeFalsy();
   });
 
 })

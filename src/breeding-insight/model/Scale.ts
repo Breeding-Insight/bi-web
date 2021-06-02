@@ -18,13 +18,12 @@
 import {Category} from "@/breeding-insight/model/Category";
 
 export enum DataType {
-  Code = "CODE",
-  Date = "DATE",
-  Duration = "DURATION",
-  Nominal = "NOMINAL",
-  Numerical = "NUMERICAL",
-  Ordinal = "ORDINAL",
-  Text = "TEXT"
+  Date = "Date",
+  Duration = "Duration",
+  Nominal = "Nominal",
+  Numerical = "Numerical",
+  Ordinal = "Ordinal",
+  Text = "Text"
 }
 
 export class Scale {
@@ -38,13 +37,45 @@ export class Scale {
   constructor(scaleName?:string, dataType?:string, categories?:Array<Category>, decimalPlaces?:number, validValueMin?:number, validValueMax?: number) {
     this.scaleName = scaleName;
     this.dataType = dataType;
-    this.categories = categories;
+    if (categories) {
+      this.categories = categories.map(category => new Category(category.label, category.value));
+    }
     this.decimalPlaces = decimalPlaces;
     this.validValueMin = validValueMin;
     this.validValueMax = validValueMax;
   }
 
+  static assign(scale: Scale) {
+    return new Scale(scale.scaleName, scale.dataType, scale.categories, scale.decimalPlaces,
+      scale.validValueMin, scale.validValueMax);
+  }
+
   static dataTypeEquals(typeString: string, type: DataType): boolean {
-    return typeString.toUpperCase() === type;
+    if (typeString) {
+      return typeString.toUpperCase() === type.toUpperCase();
+    } else {
+      return false;
+    }
+  }
+
+  private categoriesEqual(categories: Category[] | undefined) {
+    if (!this.categories && !categories) { return true; }
+
+    if (this.categories && categories && this.categories.length === categories.length) {
+      return this.categories.filter((value,index) => {
+        return value.value !== categories[index].value || value.label !== categories[index].label;
+      }).length === 0;
+    }
+    return false;
+  }
+
+  equals(scale?: Scale): boolean {
+    if (!scale) {return false;}
+    return (this.scaleName === scale.scaleName) &&
+      (this.dataType === scale.dataType) &&
+      (this.decimalPlaces === scale.decimalPlaces) &&
+      (this.validValueMin === scale.validValueMin) &&
+      (this.validValueMax === scale.validValueMax) &&
+      (this.categoriesEqual(scale.categories));
   }
 }

@@ -79,12 +79,23 @@ $table-striped-row-even-hover-background-color:$link-light;
 
 //$margin-right: 2 rem;
 
+// Import buefy before bulma
+@import "~bulma/sass/utilities/_all";
+
+// Customize buefy if you want to here
+
+
 // Update some of Bulma's component variables
 
 //Enable this import line when Bulma is in a local folder called "bulma"
 //@import 'bulma/bulma';
 // Enable this import line instead when Bulma is in package.json
-@import '../../../node_modules/bulma/bulma.sass';
+@import '~bulma';
+@import "~buefy/src/scss/buefy";
+
+// Bulma extensions
+$divider-margin-inner-size: 0;
+@import "~@creativebulma/bulma-divider";
 
 // Overrides that can't be done with variables go here
 // may be broken out into a separate file later
@@ -116,8 +127,6 @@ main ul {
     margin-top: .5em;
   }
 }
-
-
 
 nav.pagination {
   align-items: normal;
@@ -170,12 +179,18 @@ footer {
 
 .field {
   &.field--error {
-    & span.form-error {
+    & .field span.form-error {
       display: block;
+    }
+    & input {
+      border-color: $danger;
+    }
+    & select {
+      border-color: $danger;
     }
   }
   &:not(.field--error) {
-    & span.form-error {
+    & .field span.form-error {
       display: none;
     }
   }
@@ -218,11 +233,15 @@ img {
   }
 }
 
-.message.is-info, .message.is-danger, message.is-success {
+// Added to override message background colors for modals only
+.modal-card-body .message.is-info,
+.modal-card-body .message.is-danger,
+.modal-card-body message.is-success {
   background-color: white;
 }
 
-.message.is-success .message-body {
+// Added to support new account creation process
+.newaccount.message .message-body {
   background-color: white;
 }
 
@@ -253,8 +272,22 @@ nav.tabs li.is-active {
   }
 }
 
+.table.is-striped tbody tr:nth-child(even).is-edited {
+  background-color: $primary-light;
+}
+
 .table tr.is-selected {
   background-color: $info-light;
+  td {
+    color:$dark;
+  }
+  a {
+    color:$link;
+  }
+}
+
+.table tr.is-edit-selected {
+  background-color: $primary-light;
   td {
     color:$dark;
   }
@@ -430,4 +463,25 @@ a.is-underlined {
   a {
     color: white;
   }
+}
+
+div.sentence-input {
+  display: flex;
+  align-items: flex-start;
+  p.is-input-prepend {
+  }
+  .field {
+    margin-left: 10px;
+  }
+}
+
+// Buefy messes this up
+.icon svg {
+  fill: none;
+  stroke-width: 2;
+}
+
+.archive-tag {
+  background: lightgray;
+
 }

@@ -15,16 +15,22 @@
  * limitations under the License.
  */
 
+import {RowError} from "@/breeding-insight/model/errors/RowError";
+
 export class FieldError {
   field: string;
   errorMessage: string;
   httpStatus: string;
   httpStatusCode: number;
+  rowErrors?: RowError[];
 
-  constructor(field: string, errorMessage: string, httpStatus: string, httpStatusCode: number){
+  constructor(field: string, errorMessage: string, httpStatus: string, httpStatusCode: number, rowErrors?: RowError[]){
     this.field = field;
     this.errorMessage = errorMessage;
     this.httpStatus = httpStatus;
     this.httpStatusCode = httpStatusCode;
+    if (rowErrors) {
+      this.rowErrors = rowErrors.map(row => new RowError(row.rowIndex, row.errors));
+    }
   }
 }

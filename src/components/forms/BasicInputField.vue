@@ -20,14 +20,16 @@
     v-bind:validations="validations"
     v-bind:field-help="fieldHelp"
     v-bind:field-name="fieldName"
+    v-bind:show-label="showLabel"
+    v-bind:server-validations="serverValidations"
   >
     <input
-        v-bind:id="fieldName.replace(' ', '-')"
-        :value="value"
+        v-bind:id="inputId ? inputId : fieldName.replace(' ', '-')"
+        v-bind:value="value"
         @input="$emit('input', $event.target.value)"
         class="input"
-        :type="fieldTypeComputed"
-        v-bind:placeholder="fieldName"
+        v-bind:type="fieldTypeComputed"
+        v-bind:placeholder="placeholder ? placeholder : fieldName"
     />
   </BaseFieldWrapper>
 </template>
@@ -35,6 +37,7 @@
 <script lang="ts">
   import { Component, Prop, Vue } from 'vue-property-decorator';
   import BaseFieldWrapper from "@/components/forms/BaseFieldWrapper.vue";
+  import {FieldError} from "@/breeding-insight/model/errors/FieldError";
 
   @Component({
     components: {BaseFieldWrapper}
@@ -50,6 +53,14 @@
     fieldHelp!: string;
     @Prop()
     validations!: any;
+    @Prop()
+    serverValidations!: FieldError[];
+    @Prop()
+    showLabel!: boolean;
+    @Prop()
+    placeholder: boolean | undefined;
+    @Prop()
+    inputId: string | undefined;
 
     get fieldTypeComputed() {
       return this.fieldType ? this.fieldType : 'text';

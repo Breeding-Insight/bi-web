@@ -19,10 +19,22 @@ import {FieldError} from "@/breeding-insight/model/errors/FieldError";
 
 export class RowError {
   rowIndex: number;
-  errors: FieldError[];
+  errors?: FieldError[];
 
-  constructor(rowIndex: number, errors: FieldError[]){
+  constructor(rowIndex: number, errors?: FieldError[]){
     this.rowIndex = rowIndex;
-    this.errors = errors;
+    if (errors) {
+      this.errors = errors.map(error =>
+        new FieldError(error.field, error.errorMessage, error.httpStatus, error.httpStatusCode, error.rowErrors));
+    }
+  }
+
+  getValidation(errorName: string): FieldError[] {
+    if (this.errors) {
+      return this.errors
+        .filter(error => error.field === errorName);
+    } else {
+      return [];
+    }
   }
 }

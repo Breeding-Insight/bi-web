@@ -65,12 +65,13 @@
       v-if="newProgramActive"
       v-bind:row-validations="programValidations"
       v-bind:new-record.sync="newProgram"
+      v-bind:data-form-state="newLocationFormState"
       v-on:submit="saveProgram"
       v-on:cancel="cancelNewProgram"
       v-on:show-error-notification="$emit('show-error-notification', $event)"
     >
       <template v-slot="validations">
-        <div class="columns">
+        <div class="columns mb-0">
           <div class="column is-one-half">
             <BasicInputField
               v-model="newProgram.name"
@@ -88,14 +89,31 @@
             />
           </div>
         </div>
+        <div class="columns">
+          <div class="column">
+            <label class="checkbox">
+              <input type="checkbox" id="checkbox" v-model="customBrapi">
+              Specify custom program data storage location
+            </label>
+            <BasicInputField v-if="customBrapi"
+                v-model="newProgram.brapiUrl"
+                v-bind:validations="validations.brapiUrl"
+                v-bind:server-validations="serverError"
+                v-bind:field-name="'BrAPI URL'"
+                v-bind:field-help="'URL of BrAPI service where data will be stored, ex: https://test-server.brapi.org. If left blank, system default will be used.'"
+            />
+          </div>
+        </div>
       </template>
     </NewDataForm>
 
     <ExpandableRowTable
       v-bind:records.sync="programs"
-      v-bind:row-validations="programValidations"
+      v-bind:row-validations="programEditValidations"
       v-bind:editable="true"
+      v-bind:archivable="true"
       v-bind:pagination="programsPagination"
+      v-bind:data-form-state="editLocationFormState"
       v-on:submit="updateProgram($event)"
       v-on:remove="displayWarning($event)"
       v-on:show-error-notification="$emit('show-error-notification', $event)"
@@ -118,6 +136,9 @@
         </TableColumn>
         <TableColumn name="numUsers" v-bind:label="'# Users'">
           {{ data.numUsers }}
+        </TableColumn>
+        <TableColumn name="brapiUrl" v-bind:label="'BrAPI URL'">
+          {{ data.brapiUrl }}
         </TableColumn>
       </template>
       <template v-slot:edit="{editData, validations}">
@@ -164,7 +185,6 @@
   import {required} from 'vuelidate/lib/validators'
 
   import WarningModal from '@/components/modals/WarningModal.vue'
-  import EditDataRowForm from '@/components/forms/EditDataRowForm.vue'
   import {Program} from '@/breeding-insight/model/Program'
   import {Species} from '@/breeding-insight/model/Species'
   import ExpandableRowTable from "@/components/tables/ExpandableRowTable.vue";
@@ -179,12 +199,22 @@
   import {Metadata, Pagination} from "@/breeding-insight/model/BiResponse";
   import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
   import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
+  import { DataFormEventBusHandler } from '@/components/forms/DataFormEventBusHandler';
+  import { helpers } from 'vuelidate/lib/validators'
+  import { isWebUri } from 'valid-url'
+  import { FieldError } from '@/breeding-insight/model/errors/FieldError';
+
+  // create custom validation to handle cases default url validation doesn't
+  const url = helpers.withParams(
+      { type: 'url' },
+      (value: any) => !helpers.req(value) || !!isWebUri(value)
+  )
 
 @Component({
   mixins: [validationMixin],
   components: {
     EmtpyTableMessage,
-    NewDataForm, EditDataRowForm, WarningModal, PlusCircleIcon,
+    NewDataForm, WarningModal, PlusCircleIcon,
     ExpandableRowTable, TableColumn, BasicInputField, BasicSelectField
   }
 })
@@ -204,9 +234,31 @@ export default class AdminProgramsTable extends Vue {
 
   private paginationController: PaginationController = new PaginationController();
 
+  private newLocationFormState: DataFormEventBusHandler = new DataFormEventBusHandler();
+  private editLocationFormState: DataFormEventBusHandler = new DataFormEventBusHandler();
+
   private programName: string = "Program Name";
 
+  private customBrapi: boolean = false;
+
+  private serverError: FieldError[] = [];
+
+  // reset brapiUrl if checkbox toggled back off
+  @Watch('customBrapi', {immediate: true})
+  onCustomBrapiChanged(newVal: boolean) {
+    if (newVal == false) {
+      this.newProgram.brapiUrl = undefined;
+      this.serverError = [];
+    }
+  }
+
   programValidations = {
+    name: {required},
+    speciesId: {required},
+    brapiUrl: {url}
+  }
+
+  programEditValidations = {
     name: {required},
     speciesId: {required}
   }
@@ -262,6 +314,7 @@ export default class AdminProgramsTable extends Vue {
     }).catch(() => {
       this.$emit('show-error-notification', 'Error updating program');
     }).finally(() => {
+      this.editLocationFormState.bus.$emit(DataFormEventBusHandler.SAVE_COMPLETE_EVENT);
       this.emitProgramChange();
     });
 
@@ -274,10 +327,16 @@ export default class AdminProgramsTable extends Vue {
       this.getPrograms();
       this.$emit('show-success-notification', 'Success! ' + this.newProgram.name + ' added.');
       this.newProgramActive = false;
+      this.customBrapi = false;
       this.newProgram = new Program();
-    }).catch(() => {
-      this.$emit('show-error-notification', 'Error while creating program, ' + this.newProgram.name);
+    }).catch((error) => {
+      this.serverError = [];
+      if (error.response.status === 422) {
+        this.serverError.push(new FieldError("brapiUrl", error.errorMessage, "UNPROCESSABLE", 422));
+      }
+      this.$emit('show-error-notification', error.errorMessage);
     }).finally(() => {
+      this.newLocationFormState.bus.$emit(DataFormEventBusHandler.SAVE_COMPLETE_EVENT);
       this.emitProgramChange();
     });
 
@@ -286,6 +345,7 @@ export default class AdminProgramsTable extends Vue {
   cancelNewProgram() {
     this.newProgram = new Program();
     this.newProgramActive = false;
+    this.customBrapi = false;
   }
 
   displayWarning(program: Program) {

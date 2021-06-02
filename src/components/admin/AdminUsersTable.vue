@@ -102,6 +102,7 @@
       v-if="newUserActive"
       v-bind:row-validations="userValidations"
       v-bind:new-record.sync="newUser"
+      v-bind:data-form-state="newUserFormState"
       v-on:submit="addUser"
       v-on:cancel="cancelNewUser"
       v-on:show-error-notification="$emit('show-error-notification', $event)"
@@ -138,7 +139,9 @@
       v-bind:records.sync="users"
       v-bind:row-validations="userValidations"
       v-bind:editable="true"
+      v-bind:archivable="true"
       v-bind:pagination="usersPagination"
+      v-bind:data-form-state="editUserFormState"
       v-on:submit="updateUser($event)"
       v-on:remove="displayWarning($event)"
       v-on:show-error-notification="$emit('show-error-notification', $event)"
@@ -249,6 +252,7 @@
   import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
   import {Metadata, Pagination} from "@/breeding-insight/model/BiResponse";
   import {helpers} from "vuelidate/lib/validators";
+  import { DataFormEventBusHandler } from '@/components/forms/DataFormEventBusHandler';
 
 
   @Component({
@@ -272,6 +276,9 @@ export default class AdminUsersTable extends Vue {
   }
 
   private paginationController: PaginationController = new PaginationController();
+
+  private newUserFormState: DataFormEventBusHandler = new DataFormEventBusHandler();
+  private editUserFormState: DataFormEventBusHandler = new DataFormEventBusHandler();
 
   public users: User[] = [];
   private usersPagination?: Pagination = new Pagination();
@@ -362,6 +369,8 @@ export default class AdminUsersTable extends Vue {
     } catch (error) {
       this.$emit('show-error-notification', error.errorMessage);
       return;
+    } finally {
+      this.newUserFormState.bus.$emit(DataFormEventBusHandler.SAVE_COMPLETE_EVENT);
     }
 
     this.newUser = new User();
@@ -394,6 +403,7 @@ export default class AdminUsersTable extends Vue {
           }
         }
       }).finally(() => {
+        this.editUserFormState.bus.$emit(DataFormEventBusHandler.SAVE_COMPLETE_EVENT);
         this.getUsers();
       });
   }

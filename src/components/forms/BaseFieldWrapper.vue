@@ -17,27 +17,44 @@
 
 <template>
   <div class="field" v-bind:class="{ 'field--error': fieldError }">
-    <label class="label" v-bind:for="fieldName">
-      {{ fieldName }}
-    </label>
-    <div class="control">
-      <slot></slot>
-      <template v-for="(validationMap, index) in validationSpec">
-        <span
-            data-testid="formError"
-            v-bind:key="fieldName + validationMap.name + index"
-            class="form-error has-text-danger"
-            :class="{ 'is-hidden': ( validateTypeError(validationMap.name) ) }"
-        >
-          {{ validationMap.message }}
-        </span>
-      </template>
-      <p
-          v-if="fieldHelp !== null"
-          class="help"
-      >
-        {{ fieldHelp }}
-      </p>
+    <div class="field-label is-normal has-text-left">
+      <label class="label is-left" v-bind:for="fieldName" v-bind:class="{'is-sr-only': !showLabel}">
+        {{ fieldName }}
+      </label>
+    </div>
+    <div class="field-body">
+      <div class="field">
+        <div class="control">
+          <slot></slot>
+          <template v-for="(validationMap, index) in validationSpec">
+            <span
+                data-testid="formError"
+                v-bind:key="fieldName + validationMap.name + index"
+                class="form-error has-text-danger"
+                :class="{ 'is-hidden': ( validateTypeError(validationMap.name) ) }"
+            >
+              <AlertTriangleIcon size="1x" aria-hidden="true" class="has-vertical-align-middle mr-1"></AlertTriangleIcon>
+              {{ validationMap.message }}
+            </span>
+          </template>
+          <template v-for="(fieldError, index) in serverValidations">
+              <span
+                  v-bind:key="fieldName + fieldError.field + index"
+                  data-testid="formError"
+                  class="form-error has-text-danger"
+              >
+                <AlertTriangleIcon size="1x" aria-hidden="true" class="has-vertical-align-middle mr-1"></AlertTriangleIcon>
+                {{ fieldError.errorMessage }}
+              </span>
+          </template>
+          <p
+              v-if="fieldHelp !== null"
+              class="help"
+          >
+            {{ fieldHelp }}
+          </p>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -45,8 +62,12 @@
 <script lang="ts">
 
   import {Component, Prop, Vue} from "vue-property-decorator";
+  import {FieldError} from "@/breeding-insight/model/errors/FieldError";
+  import { AlertTriangleIcon } from 'vue-feather-icons';
 
-  @Component
+  @Component({
+    components: {AlertTriangleIcon}
+  })
   export default class BaseFieldWrapper extends Vue {
 
     @Prop()
@@ -55,6 +76,10 @@
     fieldHelp!: string;
     @Prop()
     validations!: any;
+    @Prop()
+    serverValidations!: FieldError[];
+    @Prop({default: true})
+    showLabel!: boolean;
 
     get validationSpec(): Object[] {
 
@@ -66,8 +91,11 @@
 
           const validationMap: any = {}
           validationMap['name'] = validation;
-          if (validation === 'required'){
+          if (validation === 'required') {
             validationMap['message'] = `${this.fieldName} is required`;
+          } else if (validation === 'url') {
+            // TODO: could probably pass optional validation example parameter in future but just hardcode this case for now
+            validationMap['message'] = `${this.fieldName} must be in ${validation} format, ex: https://test-server.brapi.org`;
           } else {
             // For now assume other possibility is a specific format
             validationMap['message'] = `${this.fieldName} must be in ${validation} format`;
@@ -85,11 +113,8 @@
     }
 
     get fieldError() {
-      if (this.validations) {
-        return this.validations.$anyError;
-      } else {
-        return false;
-      }
+      return (this.validations && this.validations.$anyError) ||
+             (this.serverValidations && this.serverValidations.length > 0);
     }
 
     validateTypeError(type: string) {

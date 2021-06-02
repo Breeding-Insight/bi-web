@@ -20,6 +20,8 @@
       v-bind:validations="validations"
       v-bind:field-help="fieldHelp"
       v-bind:field-name="fieldName"
+      v-bind:show-label="showLabel"
+      v-bind:server-validations="serverValidations"
   >
     <div class="select is-fullwidth">
       <select
@@ -35,11 +37,11 @@
         </template>
         <option
             v-for="option in options"
-            v-bind:key="option.id"
-            v-bind:selected="option.id === selectedId"
-            v-bind:value="option.id"
+            v-bind:key="option.id || option"
+            v-bind:selected="option.id ? option.id === selectedId : option === selectedId"
+            v-bind:value="option.id || option"
         >
-          {{ option.name }}
+          {{ option.name || option }}
         </option>
       </select>
     </div>
@@ -50,6 +52,7 @@
 <script lang="ts">
   import { Component, Prop, PropSync, Vue } from 'vue-property-decorator';
   import BaseFieldWrapper from "@/components/forms/BaseFieldWrapper.vue";
+  import {FieldError} from "@/breeding-insight/model/errors/FieldError";
   @Component({
     components: {BaseFieldWrapper}
   })
@@ -65,7 +68,11 @@
     @Prop()
     validations!: any;
     @Prop()
+    serverValidations!: FieldError[];
+    @Prop()
     emptyValueName!: string;
+    @Prop()
+    showLabel!: boolean;
 
 
     displayDefault() {

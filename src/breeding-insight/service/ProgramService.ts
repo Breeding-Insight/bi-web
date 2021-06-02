@@ -20,8 +20,12 @@ import {Program} from "@/breeding-insight/model/Program";
 import {Metadata, Pagination} from "@/breeding-insight/model/BiResponse";
 import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
 import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
+import {ProgramObservationLevel} from "@/breeding-insight/model/ProgramObservationLevel";
 
 export class ProgramService {
+
+  static unsupportedBrapiUrl : string = 'BrAPI URL specified is not supported';
+  static errorCreatingProgram : string = 'Error creating program';
 
   static create(program: Program): Promise<Program> {
     //TODO: Check everything is good
@@ -30,10 +34,17 @@ export class ProgramService {
       if (program.id === undefined) {
         ProgramDAO.create(program).then((biResponse) => {
           const result: any = biResponse.result;
-          const newProgram = new Program(result.id, result.name);
+          const newProgram = new Program(result.id, result.name, result.species.id, result.numUsers, result.brapiUrl);
           resolve(newProgram);
 
-        }).catch((error) => reject(error));
+        }).catch((error) => {
+          if (error.response && error.response.status === 422) {
+            error['errorMessage'] = this.unsupportedBrapiUrl;
+          } else {
+            error['errorMessage'] = this.errorCreatingProgram;
+          }
+          reject(error);
+        });
       }
       else {
         reject();
@@ -49,7 +60,7 @@ export class ProgramService {
       if (program.id) {
         ProgramDAO.update(program.id, program).then((biResponse) => {
           const result: any = biResponse.result;
-          const newProgram = new Program(result.id, result.name, result.species.id);
+          const newProgram = new Program(result.id, result.name, result.species.id, result.numUsers, result.brapiUrl);
           resolve(newProgram);
 
         }).catch((error) => reject(error));
@@ -91,7 +102,7 @@ export class ProgramService {
 
         // Parse our programs into the vue programs param
         programs = biResponse.result.data.map((program: any) => {
-          return new Program(program.id, program.name, program.species.id);
+          return new Program(program.id, program.name, program.species.id, program.numUsers, program.brapiUrl);
         });
 
         //TODO: Remove when backend pagination is implemented
@@ -115,11 +126,19 @@ export class ProgramService {
 
       ProgramDAO.getOne(programId).then((biResponse) => {
         const result = biResponse.result;
-        const program = new Program(result.id, result.name, result.species.id);
+        const program = new Program(result.id, result.name, result.species.id, result.numUsers, result.brapiUrl);
         resolve(program);
       }).catch((error) => reject(error));
 
     }));
+  }
+
+  static async getObservationLevels(programId: string): Promise<[ProgramObservationLevel[], Metadata] | void> {
+    if (programId) {
+      const { result: { data }, metadata } = await ProgramDAO.getObservationLevels(programId);
+      return [data, metadata];
+    }
+    else return;
   }
 
 }

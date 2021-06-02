@@ -182,7 +182,8 @@
           SIGN IN with ORCID
           <img
               id="orcid-id-icon"
-              src="https://orcid.org/sites/default/files/images/orcid_24x24.png"
+              v-bind:src="orcidLogoUrl"
+              v-on:error="setAltImg"
               width="24"
               height="24"
               class="is-pulled-right"
@@ -194,7 +195,8 @@
           the ORCID iD icon
           <img
             id="orcid-id-icon2"
-            src="https://orcid.org/sites/default/files/images/orcid_24x24.png"
+            v-bind:src="orcidLogoUrl"
+            v-on:error="setAltImg"
             width="16"
             height="16"
             alt="ORCID iD icon"
@@ -230,6 +232,7 @@
     public isLoginModalActive: boolean = false;
     public isLoginServerErrorModalActive: boolean = false;
     public loginProcessing: boolean = false;
+    private orcidLogoUrl: string = 'https://orcid.org/sites/default/files/images/orcid_24x24.png';
     @Prop()
     public loginRedirect!: boolean;
     @Prop()
@@ -247,6 +250,9 @@
     }
 
     // Methods
+    setAltImg() {
+      this.orcidLogoUrl = require('@/assets/img/orcid_24x24.png');
+    }
     async orcidLogin() {
       // Check the server can be contacted
       this.loginProcessing = true;

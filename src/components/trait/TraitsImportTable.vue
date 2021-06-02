@@ -22,6 +22,8 @@
       v-bind:records.sync="traits"
       v-bind:editable="false"
       v-bind:pagination="traitsPagination"
+      v-bind:auto-handle-close-panel-event="true"
+      v-bind:side-panel-state="traitSidePanelState"
       v-on:show-error-notification="$emit('show-error-notification', $event)"
       v-on:paginate="paginationController.updatePage($event)"
       v-on:paginate-toggle-all="paginationController.toggleShowAll()"
@@ -29,7 +31,6 @@
       v-on:collapse-columns="collapseColumns = true"
       v-on:uncollapse-columns="collapseColumns = false"
     >
-    
       <!-- 
         Table row column slot specification
         data: T
@@ -53,8 +54,10 @@
         Side panel data slot specification
         data: T
       -->
-      <template v-slot:side-panel="data">
-        <TraitDetailPanel v-bind:data="data"/>
+      <template v-slot:side-panel="{tableRow}">
+        <TraitDetailPanel
+            v-bind:data="tableRow"
+        />
       </template>
 
       <!-- 
@@ -93,6 +96,8 @@
   import { Method } from '../../breeding-insight/model/Method';
   import { StringFormatters } from '@/breeding-insight/utils/StringFormatters';
   import { TraitStringFormatters } from '@/breeding-insight/utils/TraitStringFormatters';
+  import {ProgramUpload} from "@/breeding-insight/model/ProgramUpload";
+  import {SidePanelTableEventBusHandler} from "@/components/tables/SidePanelTableEventBus";
   
 @Component({
   mixins: [validationMixin],
@@ -102,21 +107,20 @@
   computed: {
     ...mapGetters([
       'activeProgram'
-    ])
-  }
+    ]),
+  },
+  data: () => ({StringFormatters, TraitStringFormatters})
 })
 export default class TraitsImportTable extends Vue {
 
-  private traitImportTableHeaders: string[] = ['Name', 'Level', 'Method', 'Scale'];
   private activeProgram?: Program;
   private traitsPagination?: Pagination = new Pagination();
   private paginationController: PaginationController = new PaginationController();
   private traits : Trait[] = [];
+  private upload?: ProgramUpload;
   private loaded = false;
   private collapseColumns = false;
-
-  private StringFormatters = StringFormatters;
-  private TraitStringFormatters = TraitStringFormatters;
+  private traitSidePanelState: SidePanelTableEventBusHandler = new SidePanelTableEventBusHandler();
 
   mounted() {
     this.getTraitUpload();
@@ -129,9 +133,9 @@ export default class TraitsImportTable extends Vue {
       this.paginationController.currentPage, this.paginationController.pageSize, this.paginationController.showAll);
     this.paginationController.setCurrentCall(paginationQuery);
 
-    TraitUploadService.getTraits(this.activeProgram!.id!, paginationQuery).then(([traits, metadata]) => {
+    TraitUploadService.getTraits(this.activeProgram!.id!, paginationQuery).then(([upload, metadata]) => {
       if (this.paginationController.matchesCurrentRequest(metadata.pagination)){
-        this.traits = traits;
+        this.traits = upload.data || [];
         this.traitsPagination = metadata.pagination;
       }
 
