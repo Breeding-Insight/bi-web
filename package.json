@@ -79,5 +79,5 @@
     "vue-cli-plugin-axios": "0.0.4",
     "vue-template-compiler": "^2.6.10"
   },
-  "versionInfo": "https://github.com/Breeding-Insight/test-project/releases/tag/v0.3.1",
+  "versionInfo": "https://github.com/Breeding-Insight/test-project/releases/tag/v0.3.1"
 }
