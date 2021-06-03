@@ -25,11 +25,11 @@ export class Trial {
   active?: boolean;
 
   constructor(id?: string,
-              traitName?: string,
+              trialName?: string,
               active?: boolean
               ) {
     this.id = id;
-    this.traitName = traitName;
+    this.trialName = trialName;
     if (active !== undefined) {
       this.active = active;
     } else {

@@ -29,11 +29,7 @@
               tag="li" active-class="is-active">
             <a>Trials</a>
           </router-link>
-          <router-link
-              v-bind:to="{name: 'experiments-list', params: {programId: activeProgram.id}}"
-              tag="li" active-class="is-active">
-            <a>Experiments</a>
-          </router-link>
+          <a>Experiments</a>
         </ul>
       </nav>
     </section>
