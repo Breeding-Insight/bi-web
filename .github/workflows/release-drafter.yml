@@ -33,7 +33,7 @@ jobs:
         run: 'sed -i -E "s/\"version\": .*,/\"version\": \"${{steps.update_draft.outputs.name}}\",/" package.json'
       - name: Update version info
         if: github.event_name == 'push' && github.actor != 'rob-ouser-bi'
-        run: 'sed -i -E "s~\"versionInfo\": \".*~\"versionInfo\": \"https://github.com/Breeding-Insight/test-project/releases/tag/${{ steps.update_draft.outputs.tag_name }}\",~" package.json'
+        run: 'sed -i -E "s~\"versionInfo\": \".*~\"versionInfo\": \"https://github.com/Breeding-Insight/test-project/releases/tag/${{ steps.update_draft.outputs.tag_name }}\"~" package.json'
       - name: Commit files
         if: github.event_name == 'push' && github.actor != 'rob-ouser-bi'
         run: |
