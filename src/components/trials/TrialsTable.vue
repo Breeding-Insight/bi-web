@@ -93,7 +93,10 @@
     >
       <template v-slot:columns="data">
         <TableColumn name="name" v-bind:label="'Name'">
-          {{ data.trialName }}
+          <router-link
+            :to="{name: 'studies', params: { trialId: data.id, programId: activeProgram.id }}">
+            {{ data.trialName }}
+          </router-link>
         </TableColumn>
       </template>
       <template v-slot:edit="{editData, validations}">
