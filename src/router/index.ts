@@ -26,6 +26,7 @@ import BrAPIInfo from '@/views/BrAPI/BrAPIInfo.vue'
 import ProgramManagement from '@/views/program/ProgramManagement.vue'
 import TrialsAndExperiments from "@/views/trials-and-experiments/TrialsAndExperiments.vue";
 import Trials from "@/views/trials-and-experiments/Trials.vue";
+import StudiesList from "@/views/trials-and-experiments/StudiesList.vue";
 import AdminProgramManagement from '@/views/admin/AdminProgramManagement.vue'
 import AdminUserManagement from '@/views/admin/AdminUserManagement.vue'
 import BrAPIImporter from '@/views/import/BrAPIImporter.vue'
@@ -140,6 +141,15 @@ const routes = [
     beforeEnter: processProgramNavigation,
   },
   {
+    path: '/programs/:programId/trial/:trialId/studies',
+    name: 'studies',
+    meta: {
+      title: 'Studies',
+      layout: layouts.userSideBar
+    },
+    component: StudiesList
+  },
+  {
     path: '/programs/:programId/trials-experiments',
     name: 'trials-experiments',
     meta: {
@@ -169,7 +179,7 @@ const routes = [
         component: Trials
       }
     ]
-  },
+  },    
   {
     path: '/programs/:programId/program-management',
     name: 'program-management',

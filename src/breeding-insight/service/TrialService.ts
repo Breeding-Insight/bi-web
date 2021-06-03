@@ -41,7 +41,7 @@ export class TrialService {
         if (data) {
           data = PaginationController.mockSortRecords(data);
           trials = data.map((trial: any) => {
-            return trial as Trial;
+            return new Trial(trial.trialDbId, trial.trialName, trial.active);
           });
         }
 
