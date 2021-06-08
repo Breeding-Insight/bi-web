@@ -19,10 +19,11 @@ import {Study} from "@/breeding-insight/model/Study";
 import {BiResponse, Response} from "@/breeding-insight/model/BiResponse";
 import * as api from "@/util/api";
 import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
+import { Result, Err, Success, ResultGenerator } from "@/breeding-insight/model/Result";
 
 export class StudyDAO {
 
-  static async getAll(programId: string, trialId: string, paginationQuery: PaginationQuery, full : boolean): Promise<BiResponse> {
+  static async getAll(programId: string, trialId: string, paginationQuery: PaginationQuery, full : boolean): Promise<Result<Error, BiResponse>> {
     try {
       const query = {
         page: 0,
@@ -37,12 +38,12 @@ export class StudyDAO {
         method: 'post',
         data: query,
         params: { full }
-      });
+      }) as Response;
         
-      return new BiResponse(data);
+      return ResultGenerator.success(new BiResponse(data));
         
-    } catch (err) {
-      throw err;
+    } catch (error) {
+      return ResultGenerator.err(error);
     }  
   }    
 }

@@ -19,21 +19,22 @@ import {Trial} from "@/breeding-insight/model/Trial";
 import {BiResponse, Response} from "@/breeding-insight/model/BiResponse";
 import * as api from "@/util/api";
 import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
+import { Result, Err, Success, ResultGenerator } from "@/breeding-insight/model/Result";
 
 export class TrialDAO {
 
-  static async getAll(programId: string, paginationQuery: PaginationQuery, full : boolean): Promise<BiResponse> {
+  static async getAll(programId: string, paginationQuery: PaginationQuery, full : boolean): Promise<Result<Error, BiResponse>> {
     try {
       const { data } = await api.call({
         url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/brapi/v2/trials`,
         method: 'get',
         params: { full }
-      });
+      }) as Response;
         
-      return new BiResponse(data);
+      return ResultGenerator.success(new BiResponse(data));
         
-    } catch (err) {
-      throw err;
+    } catch (error) {
+      return ResultGenerator.err(error);
     }  
   }    
 }

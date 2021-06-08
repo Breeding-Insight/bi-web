@@ -189,6 +189,7 @@ import {DataType, Scale} from "@/breeding-insight/model/Scale";
 import {SidePanelTableEventBusHandler} from "@/components/tables/SidePanelTableEventBus";
 import { DataFormEventBusHandler } from '@/components/forms/DataFormEventBusHandler';
 import { dmyFormat } from '@/breeding-insight/utils/filters';
+import {Result} from '@/breeding-insight/model/Result';
 
 @Component({
   mixins: [validationMixin],
@@ -214,8 +215,8 @@ export default class StudyTable extends Vue {
   private methodClassOptions: string[] = Object.values(MethodClass);
   private observationLevelOptions?: string[];
   private scaleClassOptions: string[] = Object.values(DataType);
-  private editStudy?: Trait;
-  private originalStudy?: Trait;
+  private editStudy?: Study;
+  private originalStudy?: Study;
   private newStudy: Study = new Study();
   private currentStudyEditable = false;
   private loadingStudyEditable = true;
@@ -271,13 +272,15 @@ export default class StudyTable extends Vue {
     this.paginationController.setCurrentCall(paginationQuery);
 
     try {
-      const [studies, metadata] = await StudyService.getAll(this.activeProgram!.id!, this.trialId!, paginationQuery);
+      const response: Result<Error, [Study[], Metadata]> = await StudyService.getAll(this.activeProgram!.id!, this.trialId!, paginationQuery);
+      if(response.isErr()) throw response.value;
+      let [studies, metadata] = response.value;
 
       if (this.paginationController.matchesCurrentRequest(metadata.pagination)) {
         this.studies = studies;
         this.studiesPagination = metadata.pagination;
       }
-    } catch (err) {
+    } catch (error) {
       // Display error that studies cannot be loaded
       this.$emit('show-error-notification', 'Error while trying to load studies');
     }
