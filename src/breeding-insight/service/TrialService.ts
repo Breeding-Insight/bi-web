@@ -20,10 +20,11 @@ import {Trial} from "@/breeding-insight/model/Trial";
 import {BiResponse, Metadata} from "@/breeding-insight/model/BiResponse";
 import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
 import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
+import {Result, Err, Success, ResultGenerator } from "@/breeding-insight/model/Result";
 
 export class TrialService {
 
-  static async getAll(programId: string, paginationQuery?: PaginationQuery, full?: boolean): Promise<[Trial[], Metadata]> {
+  static async getAll(programId: string, paginationQuery?: PaginationQuery, full?: boolean): Promise<Result<Error, [Trial[], Metadata]>> {
 
     if (paginationQuery === undefined){
       paginationQuery = new PaginationQuery(0, 0, true);
@@ -33,28 +34,33 @@ export class TrialService {
       full = false;
     }
 
-    if (programId) {
-      try {    
-        let { result: { data }, metadata } = await TrialDAO.getAll(programId, paginationQuery, full);
-        let trials: Trial[] = [];
+    try {
+      if(!programId) throw new Error('missing or invalid program id');
+      
+      let response = await TrialDAO.getAll(programId, paginationQuery, full) as Result<Error, BiResponse>;      
+      if(response.isErr()) throw response.value;
 
-        if (data) {
-          data = PaginationController.mockSortRecords(data);
-          trials = data.map((trial: any) => {
-            return new Trial(trial.trialDbId, trial.trialName, trial.active);
-          });
-        }
+      const frontendModel = (res: BiResponse): [Trial[], Metadata] => {
+        let trials: Trial[] = [];
+        let { result: { data }, metadata } = res;
+        
+        data = PaginationController.mockSortRecords(data);
+        trials = data.map((trial: any) => {
+          return new Trial(trial.trialDbId, trial.trialName, trial.active);
+        });
 
         let newPagination;
         [trials, newPagination] = PaginationController.mockPagination(trials, paginationQuery!.page, paginationQuery!.pageSize, paginationQuery!.showAll);  
         metadata.pagination = newPagination;
 
         return [trials, metadata];
-          
-      } catch(err) {
-        throw 'Unable to get trials';
+      }
 
-      }        
-    }      
+      return response.applyResult(frontendModel);
+      
+    } catch(error) {
+      return ResultGenerator.err(error);
+    }        
+
   }
 }
