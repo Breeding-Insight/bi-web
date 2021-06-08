@@ -1,10 +1,10 @@
-export function dmyFormat(date) {
+export function dmyFormat(date: Date) {
   let display: string = '';
 
   if(date) {
-    const d: string = date.getDate() as String;
-    const y: string = date.getFullYear() as String;
-    let m: string;
+    const d: string = (date.getDate() as unknown) as string;
+    const y: string = (date.getFullYear() as unknown) as string;
+    let m: string = '';
 
     switch(date.getMonth()) {
     case 0:
