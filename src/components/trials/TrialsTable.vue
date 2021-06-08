@@ -150,6 +150,7 @@
   import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
   import { DataFormEventBusHandler } from '@/components/forms/DataFormEventBusHandler';
   import {Trial} from '@/breeding-insight/model/Trial'
+  import {Result, Err, Success, ResultGenerator } from "@/breeding-insight/model/Result";
 
 @Component({
   mixins: [validationMixin],
@@ -197,7 +198,9 @@ export default class ProgramLocationsTable extends Vue {
     this.paginationController.setCurrentCall(paginationQuery);
 
     try {
-      const [trials, metadata] = await TrialService.getAll(this.activeProgram!.id!, paginationQuery);
+      const response: Result<Error, [Trial[], Metadata]> = await TrialService.getAll(this.activeProgram!.id!, paginationQuery);
+      if(response.isErr()) throw response.value;
+      let [trials, metadata] = response.value;
 
       if (this.paginationController.matchesCurrentRequest(metadata.pagination)) {
         this.trials = trials;
@@ -213,30 +216,30 @@ export default class ProgramLocationsTable extends Vue {
     this.newTrialActive = true;
   }
 
-  updateTrial(updatedTrial: Trial) {
+//   updateTrial(updatedTrial: Trial) {
 
-    TrialService.update(updatedTrial).then(() => {
-      this.getTrials();
-      this.$emit('show-success-notification', 'Success! ' + updatedTrial.name + ' updated.');
-    }).catch((error) => {
-      this.$emit('show-error-notification', error['errorMessage']);
-    }).finally(() => this.editTrialFormState.bus.$emit(DataFormEventBusHandler.SAVE_COMPLETE_EVENT));
+//     TrialService.update(updatedTrial).then(() => {
+//       this.getTrials();
+//       this.$emit('show-success-notification', 'Success! ' + updatedTrial.trialName + ' updated.');
+// }).catch((error: any) => {
+//       this.$emit('show-error-notification', error['errorMessage']);
+//     }).finally(() => this.editTrialFormState.bus.$emit(DataFormEventBusHandler.SAVE_COMPLETE_EVENT));
 
-  }
+//   }
 
   saveTrial() {
 
-    this.newTrial.programId = this.activeProgram!.id;
+    // this.newTrial.id = this.activeProgram!.id;
 
-    TrialService.create(this.newTrial).then((trial: Trial) => {
-      this.paginationController.updatePage(1);
-      this.getTrials();
-      this.$emit('show-success-notification', 'Success! ' + this.newTrial.name + ' added.');
-      this.newTrial = new Trial();
-      this.newTrialActive = false;
-    }).catch((error) => {
-      this.$emit('show-error-notification', error['errorMessage']);
-    }).finally(() => this.newTrialFormState.bus.$emit(DataFormEventBusHandler.SAVE_COMPLETE_EVENT))
+    // TrialService.create(this.newTrial).then((trial: Trial) => {
+    //   this.paginationController.updatePage(1);
+    //   this.getTrials();
+    //   this.$emit('show-success-notification', 'Success! ' + this.newTrial.trialName + ' added.');
+    //   this.newTrial = new Trial();
+    //   this.newTrialActive = false;
+    // }).catch((error) => {
+    //   this.$emit('show-error-notification', error['errorMessage']);
+    // }).finally(() => this.newTrialFormState.bus.$emit(DataFormEventBusHandler.SAVE_COMPLETE_EVENT))
 
   }
 
@@ -249,33 +252,33 @@ export default class ProgramLocationsTable extends Vue {
 
     if (trial){
       this.deleteTrial = trial;
-      this.deactivateWarningTitle = "Remove " + trial.name + " from " + this.activeProgram!.name + "?";
+      this.deactivateWarningTitle = "Remove " + trial.trialName + " from " + this.activeProgram!.name + "?";
       this.deactivateActive = true;
     } else {
       Vue.$log.error('Could not find object to delete')
     }
   }
 
-  modalDeleteHandler() {
-    this.deactivateActive = false;
+  // modalDeleteHandler() {
+  //   this.deactivateActive = false;
 
-    if (this.deleteTrial) {
-      if (this.deleteTrial.id) {
-        if (this.deleteTrial.name) {
-          const deleteId: string = this.deleteTrial.id;
-          const deleteName: string = this.deleteTrial.name;
-          TrialService.delete(this.activeProgram!.id!, deleteId).then(() => {
-            this.getTrials();
-            this.$emit('show-success-notification', `${deleteName} removed from program`);
-          }).catch((error) => {
-            this.$emit('show-error-notification', error['errorMessage']);
-          })
-          return;
-        }
-      }
-    }
-    this.$emit('show-error-notification', `Unable to remove trial`);
-  }
+  //   if (this.deleteTrial) {
+  //     if (this.deleteTrial.id) {
+  //       if (this.deleteTrial.trialName) {
+  //         const deleteId: string = this.deleteTrial.id;
+  //         const deleteName: string = this.deleteTrial.trialName;
+  //         TrialService.delete(this.activeProgram!.id!, deleteId).then(() => {
+  //           this.getTrials();
+  //           this.$emit('show-success-notification', `${deleteName} removed from program`);
+  //         }).catch((error) => {
+  //           this.$emit('show-error-notification', error['errorMessage']);
+  //         })
+  //         return;
+  //       }
+  //     }
+  //   }
+  //   this.$emit('show-error-notification', `Unable to remove trial`);
+  // }
 
 }
 

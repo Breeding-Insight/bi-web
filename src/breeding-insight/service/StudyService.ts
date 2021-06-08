@@ -20,10 +20,11 @@ import {Study} from "@/breeding-insight/model/Study";
 import {BiResponse, Metadata} from "@/breeding-insight/model/BiResponse";
 import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
 import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
+import {Result, Err, Success, ResultGenerator } from "@/breeding-insight/model/Result";
 
 export class StudyService {
-
-  static async getAll(programId: string, trialId: string, paginationQuery?: PaginationQuery, full?: boolean): Promise<[Study[], Metadata]> {
+  
+  static async getAll(programId: string, trialId: string, paginationQuery?: PaginationQuery, full?: boolean): Promise<Result<Error, [Study[], Metadata]>> {
 
     if (paginationQuery === undefined){
       paginationQuery = new PaginationQuery(0, 0, true);
@@ -33,28 +34,32 @@ export class StudyService {
       full = false;
     }
 
-    if (programId) {
-      try {
-        let { result: { data }, metadata } = await StudyDAO.getAll(programId, trialId, paginationQuery, full);
+    try {
+      if(!programId) throw new Error('mnissing or invalid program id');
+      
+      let response = await StudyDAO.getAll(programId, trialId, paginationQuery, full) as Result<Error, BiResponse>;
+      if(response.isErr()) throw response.value;
+      
+      const frontendModel = (res: BiResponse): [Study[], Metadata] => {
         let studies: Study[] = [];
-
-        if (data) {
-          data = PaginationController.mockSortRecords(data);
-          studies = data.map((study: any) => {
-            return new Study(study.studyDbId, study.studyName, study.startDate, study.endDate, study.locationName, study.active);
-          });
-        }
+        let { result: { data },  metadata } = res;
+        
+        data = PaginationController.mockSortRecords(data);
+        studies = data.map((study: any) => {
+          return new Study(study.studyDbId, study.studyName, study.startDate, study.endDate, study.locationName, study.active);
+        });
 
         let newPagination;
         [studies, newPagination] = PaginationController.mockPagination(studies, paginationQuery!.page, paginationQuery!.pageSize, paginationQuery!.showAll);
         metadata.pagination = newPagination;
 
         return [studies, metadata];
-
-      } catch(err) {
-        throw 'Unable to get studies';
-
       }
+
+      return response.applyResult(frontendModel);
+      
+    } catch(error) {
+      return ResultGenerator.err(error);
     }
   }
 }
