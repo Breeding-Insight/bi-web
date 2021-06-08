@@ -22,8 +22,8 @@
 export class Study {
   id?: string;
   name?: string;
-  startDate?: string;
-  endDate?: string;
+  startDate?: Date | null;
+  endDate?: Date | null;
   location?: string;
   active?: boolean;
 
@@ -36,6 +36,8 @@ export class Study {
               ) {
     this.id = id;
     this.name = name;
+    if (!startDate) startDate = '';
+    if (!endDate) endDate = '';    
     const start: Date = new Date(startDate);
     const end: Date = new Date(endDate);
     this.startDate = start.getFullYear() ? start : null;
@@ -49,7 +51,10 @@ export class Study {
   }
 
   static assign(study: Study): Study {
-    return new Study(study.id, study.name, study.startDate, study.endDate, study.location, study.active);
+    const start: string | undefined = study.startDate ? study.startDate.toISOString() : undefined;
+    const end: string | undefined = study.endDate ? study.endDate.toISOString() : undefined;    
+
+    return new Study(study.id, study.name, start, end, study.location, study.active);
   }
 
   equals(study?: Study): boolean {
