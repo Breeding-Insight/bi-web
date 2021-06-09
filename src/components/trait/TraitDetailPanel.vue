@@ -69,11 +69,11 @@
       <p class="has-text-weight-bold mt-3 mb-0">Description of collection method</p>
       <p>{{data.method.description}}</p>
 
-      <ProgressBar v-if="editable === undefined" v-bind:label="'Checking trait editability status'"
+      <ProgressBar v-if="loadingEditable && $ability.can('update', 'Trait')" v-bind:label="'Checking trait editability status'"
                    v-bind:estimated-time-text="'May take a few seconds'"
       />
 
-      <article v-if="!editable" class="message is-info">
+      <article v-if="!editable && !loadingEditable && $ability.can('update', 'Trait')" class="message is-info">
         <div class="message-body">
           <div class="media">
             <figure class="media-left">
@@ -96,7 +96,7 @@
             size="is-small"
             style="background: lightgray"
             class="archive-tag"
-            v-if="!data.active">
+            v-if="archivable && !data.active">
           Archived
         </b-button>
       </template>
@@ -115,7 +115,7 @@
         </div>
         <div class="column is-narrow">
           <a
-            v-if="data.active"
+            v-if="archivable && data.active"
             v-on:click="$emit('archive', data)"
             v-on:keypress.enter.space="$emit('archive', data)"
             tabindex="0"
