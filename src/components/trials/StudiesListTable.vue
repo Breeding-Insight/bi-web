@@ -75,14 +75,14 @@
         v-on:show-error-notification="$emit('show-error-notification', $event)"
     >
       <template v-slot="validations">
-        <BaseTraitForm
+        <BaseStudyForm
             v-on:trait-change="newStudy = $event"
             v-bind:trait="newStudy"
             v-bind:scale-options="scaleClassOptions"
             v-bind:method-options="methodClassOptions"
             v-bind:program-observation-levels="observationLevelOptions"
             v-bind:validation-handler="validationHandler"
-        ></BaseTraitForm>
+        ></BaseStudyForm>
       </template>
     </NewDataForm>
 
@@ -128,7 +128,7 @@
         data: T
       -->
       <template v-slot:side-panel="{tableRow}">
-        <TraitDetailPanel
+        <StudyDetailPanel
           v-bind:data="studySidePanelState.openedRow"
           v-bind:observation-level-options="observationLevelOptions"
           v-bind:edit-active="studySidePanelState.editActive"

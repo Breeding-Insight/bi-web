@@ -47,15 +47,15 @@
 
 <script lang="ts">
   import { Component, Prop, Vue } from 'vue-property-decorator'
-  import ProgramUsersTable from '@/components/program/ProgramUsersTable.vue';
-  import ProgramLocationsTable from '@/components/program/ProgramLocationsTable.vue';
+  import ExperimentsTable from '@/components/trials/ExperimentsTable.vue';
+  import TrialsTable from '@/components/trials/TrialsTable.vue';
   import {mapGetters} from "vuex";
   import {Program} from "@/breeding-insight/model/Program";
-  import ProgramsBase from "@/components/program/ProgramsBase.vue";
+  import TrialsBase from "@/components/trials/TrialsBase.vue";
 
   @Component({
     components: {
-      ProgramUsersTable, ProgramLocationsTable
+      ExperimentsTable, TrialsTable
     },
     computed: {
       ...mapGetters([
@@ -63,7 +63,7 @@
       ])
     }
   })
-  export default class ProgramManagement extends ProgramsBase {
+  export default class TrialsAndExperiments extends TrialsBase {
 
     private activeProgram?: Program;
 

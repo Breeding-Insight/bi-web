@@ -32,7 +32,7 @@
       ProgramUsersTable
     }
   })
-  export default class ProgramUserManagement extends ProgramsBase {
+  export default class Experiments extends ProgramsBase {
 
   }
 </script>
