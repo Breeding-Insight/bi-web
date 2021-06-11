@@ -15,10 +15,6 @@
  * limitations under the License.
  */
 
-// import {ProgramObservationLevel} from "@/breeding-insight/model/ProgramObservationLevel";
-// import {Method} from "@/breeding-insight/model/Method";
-// import {Scale} from "@/breeding-insight/model/Scale";
-
 export class Trial {
   id?: string;
   trialName?: string;

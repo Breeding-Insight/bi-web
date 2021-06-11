@@ -35,7 +35,7 @@ export class StudyService {
     }
 
     try {
-      if(!programId) throw new Error('mnissing or invalid program id');
+      if(!programId) throw new Error('missing or invalid program id');
       
       let response = await StudyDAO.getAll(programId, trialId, paginationQuery, full) as Result<Error, BiResponse>;
       if(response.isErr()) throw response.value;

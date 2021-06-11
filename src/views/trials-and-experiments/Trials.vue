@@ -35,7 +35,7 @@
       TrialsTable
     }
   })
-  export default class ProgramLocationManagement extends TrialsBase {
+  export default class Trials extends TrialsBase {
 
   }
 </script>
