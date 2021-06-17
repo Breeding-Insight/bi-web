@@ -64,7 +64,7 @@ export class TrialService {
 
   }
 
-  static async getById(programId: string, trialId: string): Promise<Result<Error, Trial>> {
+  static async getById(programId?: string, trialId?: string): Promise<Result<Error, Trial>> {
     try {
       if(!programId) throw new Error('missing or invalid program id');
       if(!trialId) throw new Error('missing or invalid trial id');
