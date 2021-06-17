@@ -70,7 +70,7 @@
       ])
     }
   })
-  export default class TrialsAndStudiess extends TrialsAndStudiesBase {
+  export default class TrialsAndStudies extends TrialsAndStudiesBase {
 
     private activeProgram?: Program;
 
