@@ -29,14 +29,14 @@
 <script lang="ts">
   import { Component, Prop, Vue } from 'vue-property-decorator'
   import TrialsTable from "@/components/trials/TrialsTable.vue"
-  import TrialsAndExperimentsBase from "@/components/trials/TrialsAndExperimentsBase.vue";
+  import TrialsAndStudiesBase from "@/components/trials/TrialsAndStudiesBase.vue";
 
   @Component({
     components: {
       TrialsTable
     }
   })
-  export default class Trials extends TrialsAndExperimentsBase {
+  export default class Trials extends TrialsAndStudiesBase {
 
   }
 </script>
