@@ -23,7 +23,7 @@ import { Result, Err, Success, ResultGenerator } from "@/breeding-insight/model/
 
 export class StudyDAO {
 
-  static async getAll(programId: string, trialId: string, paginationQuery: PaginationQuery, full : boolean): Promise<Result<Error, BiResponse>> {
+  static async getAllForTrial(programId: string, trialId: string, paginationQuery: PaginationQuery, full : boolean): Promise<Result<Error, BiResponse>> {
     try {
       const query = {
         page: 0,
@@ -32,18 +32,33 @@ export class StudyDAO {
           trialId
         ]
       };
-      
+
       const { data } = await api.call({
         url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/brapi/v2/search/studies`,
         method: 'post',
         data: query,
         params: { full }
       }) as Response;
-        
+
       return ResultGenerator.success(new BiResponse(data));
         
     } catch (error) {
       return ResultGenerator.err(error);
     }  
-  }    
+  }
+
+  static async getAll(programId: string, paginationQuery: PaginationQuery, full : boolean): Promise<Result<Error, BiResponse>> {
+    try {
+      const { data } = await api.call({
+        url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/brapi/v2/studies`,
+        method: 'get',
+        params: { full }
+      }) as Response;
+
+      return ResultGenerator.success(new BiResponse(data));
+        
+    } catch (error) {
+      return ResultGenerator.err(error);
+    }  
+  }
 }

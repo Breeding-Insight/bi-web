@@ -63,4 +63,32 @@ export class TrialService {
     }        
 
   }
+
+  static async getById(programId: string, trialId: string): Promise<Result<Error, Trial>> {
+    try {
+      if(!programId) throw new Error('missing or invalid program id');
+      if(!trialId) throw new Error('missing or invalid trial id');
+      
+      let response = await TrialDAO.getById(programId, trialId) as Result<Error, BiResponse>;      
+      if(response.isErr()) throw response.value;
+
+      const frontendModel = (res: BiResponse): [Trial[], Metadata] => {
+        let trials: Trial[] = [];
+        let { result: { data }, metadata } = res;
+        
+        trials = data.map((trial: any) => {
+          return new Trial(trial.trialDbId, trial.trialName, trial.active);
+        });
+
+        return trials[0];
+      }
+
+      return response.applyResult(frontendModel);
+      
+    } catch(error) {
+      return ResultGenerator.err(error);
+    }        
+
+  }
+
 }

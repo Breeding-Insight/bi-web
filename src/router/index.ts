@@ -24,9 +24,11 @@ import NotAuthorized from '@/views/NotAuthorized.vue'
 import BrapiAuthorize from '@/views/BrAPI/BrapiAuthorize.vue'
 import BrAPIInfo from '@/views/BrAPI/BrAPIInfo.vue'
 import ProgramManagement from '@/views/program/ProgramManagement.vue'
-import TrialsAndExperiments from "@/views/trials-and-experiments/TrialsAndExperiments.vue";
-import Trials from "@/views/trials-and-experiments/Trials.vue";
-import StudiesList from "@/views/trials-and-experiments/StudiesList.vue";
+//import TrialsAndExperiments from "@/views/trials-and-studies/TrialsAndExperiments.vue";
+import TrialsAndStudies from "@/views/trials-and-studies/TrialsAndStudies.vue";
+//import Experiments from '@/views/trials-and-studies/Experiments.vue';
+import Trials from "@/views/trials-and-studies/Trials.vue";
+import StudiesList from "@/views/trials-and-studies/StudiesList.vue";
 import AdminProgramManagement from '@/views/admin/AdminProgramManagement.vue'
 import AdminUserManagement from '@/views/admin/AdminUserManagement.vue'
 import BrAPIImporter from '@/views/import/BrAPIImporter.vue'
@@ -150,25 +152,25 @@ const routes = [
     component: StudiesList
   },
   {
-    path: '/programs/:programId/trials-experiments',
-    name: 'trials-experiments',
+    path: '/programs/:programId/trials-studies',
+    name: 'trials-studies',
     meta: {
-      title: 'Trials and Experiments',
+      title: 'Trials and Studies',
       layout: layouts.userSideBar
     },
-    component: TrialsAndExperiments,
+    component: TrialsAndStudies,
     redirect: {name: 'trials-list'},
     beforeEnter: processProgramNavigation,
     children: [
- /*     {
-        path: 'experiments',
-        name: 'experiments-list',
+     {
+        path: 'studies',
+        name: 'studies-list',
         meta: {
-          title: 'Experiments',
+          title: 'Studies',
           layout: layouts.userSideBar
         },
-        component: Experiments
-      },*/
+        component: StudiesList
+      },
       {
         path: 'trials',
         name: 'trials-list',

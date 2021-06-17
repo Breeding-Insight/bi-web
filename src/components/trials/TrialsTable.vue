@@ -136,7 +136,6 @@
   import {validationMixin} from 'vuelidate';
   import {Validations} from 'vuelidate-property-decorators'
   import {required} from 'vuelidate/lib/validators'
-  import {ProgramLocation} from '@/breeding-insight/model/ProgramLocation'
   import { mapGetters } from 'vuex'
   import {Program} from "@/breeding-insight/model/Program";
   import NewDataForm from '@/components/forms/NewDataForm.vue'
@@ -163,7 +162,7 @@
     ])
   }
 })
-export default class ProgramLocationsTable extends Vue {
+export default class TrialsTable extends Vue {
 
   private activeProgram?: Program;
   private trials: Trial[] = [];
