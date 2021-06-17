@@ -18,6 +18,8 @@
 export class Study {
   id?: string;
   name?: string;
+  description?: string;
+  type?: string;
   startDate?: Date | null;
   endDate?: Date | null;
   location?: string;
@@ -25,6 +27,8 @@ export class Study {
 
   constructor(id?: string,
               name?: string,
+              description?: string,
+              type?: string,
               startDate?: string,
               endDate?: string,
               location?: string,
@@ -32,6 +36,8 @@ export class Study {
               ) {
     this.id = id;
     this.name = name;
+    this.description = description;
+    this.type = type;
     if (!startDate) startDate = '';
     if (!endDate) endDate = '';    
     const start: Date = new Date(startDate);
@@ -50,13 +56,15 @@ export class Study {
     const start: string | undefined = study.startDate ? study.startDate.toISOString() : undefined;
     const end: string | undefined = study.endDate ? study.endDate.toISOString() : undefined;    
 
-    return new Study(study.id, study.name, start, end, study.location, study.active);
+    return new Study(study.id, study.name, study.description, study.type, start, end, study.location, study.active);
   }
 
   equals(study?: Study): boolean {
     if (!study) {return false;}
     return (this.id === study.id) &&
       (this.name === study.name) &&
+      (this.description === study.description) &&
+      (this.type === study.type) &&
       (this.startDate === study.startDate) &&
       (this.endDate === study.endDate) &&
       (this.location === study.location)
