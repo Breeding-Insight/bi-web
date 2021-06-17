@@ -24,7 +24,7 @@ import {Result, Err, Success, ResultGenerator } from "@/breeding-insight/model/R
 
 export class StudyService {
   
-  static async getAll(programId: string, trialId: string, paginationQuery?: PaginationQuery, full?: boolean): Promise<Result<Error, [Study[], Metadata]>> {
+  static async getAll(programId: string, trialId?: string, paginationQuery?: PaginationQuery, full?: boolean): Promise<Result<Error, [Study[], Metadata]>> {
 
     if (paginationQuery === undefined){
       paginationQuery = new PaginationQuery(0, 0, true);
@@ -37,7 +37,13 @@ export class StudyService {
     try {
       if(!programId) throw new Error('missing or invalid program id');
       
-      let response = await StudyDAO.getAll(programId, trialId, paginationQuery, full) as Result<Error, BiResponse>;
+      let response: Result<Error, BiResponse>;
+      if (trialId) {
+        response = await StudyDAO.getAllForTrial(programId, trialId, paginationQuery, full) as Result<Error, BiResponse>;
+      } else {
+        response = await StudyDAO.getAll(programId, paginationQuery, full) as Result<Error, BiResponse>;
+      }
+      
       if(response.isErr()) throw response.value;
       
       const frontendModel = (res: BiResponse): [Study[], Metadata] => {
