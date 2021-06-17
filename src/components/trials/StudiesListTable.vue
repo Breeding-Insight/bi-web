@@ -202,7 +202,7 @@ import {Result} from '@/breeding-insight/model/Result';
       'activeProgram'
     ])
   },
-  data: () => ({Study, StringFormatters}),
+  data: () => ({StringFormatters}),
   filters: {
     dmyFormat
   }
