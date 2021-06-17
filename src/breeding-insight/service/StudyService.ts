@@ -52,7 +52,7 @@ export class StudyService {
         
         data = PaginationController.mockSortRecords(data);
         studies = data.map((study: any) => {
-          return new Study(study.studyDbId, study.studyName, study.startDate, study.endDate, study.locationName, study.active);
+          return new Study(study.studyDbId, study.studyName, study.studyDescription, study.studyType, study.startDate, study.endDate, study.locationName, study.active);
         });
 
         let newPagination;
