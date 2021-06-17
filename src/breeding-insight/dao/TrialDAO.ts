@@ -38,7 +38,7 @@ export class TrialDAO {
     }  
   }
 
-  static async getById(programId: string, trialId): Promise<Result<Error, BiResponse>> {
+  static async getById(programId: string, trialId: string): Promise<Result<Error, BiResponse>> {
     try {
       const { data } = await api.call({
         url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/brapi/v2/trials`,
