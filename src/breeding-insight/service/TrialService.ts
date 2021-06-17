@@ -72,7 +72,7 @@ export class TrialService {
       let response = await TrialDAO.getById(programId, trialId) as Result<Error, BiResponse>;      
       if(response.isErr()) throw response.value;
 
-      const frontendModel = (res: BiResponse): [Trial[], Metadata] => {
+      const frontendModel = (res: BiResponse): Trial => {
         let trials: Trial[] = [];
         let { result: { data }, metadata } = res;
         
