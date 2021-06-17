@@ -51,7 +51,7 @@
   export default class StudiesList extends ProgramsBase {
     private trial: Trial =  new Trial();
     private activeProgram?: Program;
-    private trialId: string | undefined = this.$route.params.trialId;
+    private trialId?: string = this.$route.params.trialId;
     private title: string = 'All Studies';
 
     mounted() {
@@ -60,7 +60,7 @@
 
     async getTrial() {
       try {
-        const response: Result<Error, Trial> = await TrialService.getById(this.activeProgram.id!, this.trialId!);
+        const response: Result<Error, Trial> = await TrialService.getById(this.activeProgram!.id, this.trialId!);
         if(response.isErr()) throw response.value;
         this.trial = response.value;
         this.title = `Studies in ${this.trial.trialName}`;
