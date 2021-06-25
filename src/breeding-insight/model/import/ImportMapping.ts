@@ -75,6 +75,11 @@ export class ImportMappingConfig {
     return Object.keys(headers);
   }
 
+  resetMappingState(mapping: Mapping) {
+    mapping.value!.fileFieldName = undefined;
+    mapping.value!.constantValue = undefined;
+  }
+
   setMappingConstantField(id: string, value: string) {
     const {searchMapping} = this.getMapping(id);
 
@@ -82,6 +87,7 @@ export class ImportMappingConfig {
       if (!searchMapping.value) {
         searchMapping.value = new MappingValue({});
       }
+      this.resetMappingState(searchMapping);
       searchMapping.value!.constantValue = value;
     }
   }
@@ -92,6 +98,7 @@ export class ImportMappingConfig {
       if (!searchMapping.value) {
         searchMapping.value = new MappingValue({});
       }
+      this.resetMappingState(searchMapping);
       searchMapping.value!.fileFieldName = value;
     }
   }
