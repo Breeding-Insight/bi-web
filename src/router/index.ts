@@ -24,11 +24,10 @@ import NotAuthorized from '@/views/NotAuthorized.vue'
 import BrapiAuthorize from '@/views/BrAPI/BrapiAuthorize.vue'
 import BrAPIInfo from '@/views/BrAPI/BrAPIInfo.vue'
 import ProgramManagement from '@/views/program/ProgramManagement.vue'
-//import TrialsAndExperiments from "@/views/trials-and-studies/TrialsAndExperiments.vue";
 import TrialsAndStudies from "@/views/trials-and-studies/TrialsAndStudies.vue";
-//import Experiments from '@/views/trials-and-studies/Experiments.vue';
 import Trials from "@/views/trials-and-studies/Trials.vue";
 import StudiesList from "@/views/trials-and-studies/StudiesList.vue";
+import ObservationsList from '@/views/observations/ObservationsList.vue';
 import AdminProgramManagement from '@/views/admin/AdminProgramManagement.vue'
 import AdminUserManagement from '@/views/admin/AdminUserManagement.vue'
 import BrAPIImporter from '@/views/import/BrAPIImporter.vue'
@@ -143,6 +142,15 @@ const routes = [
     beforeEnter: processProgramNavigation,
   },
   {
+    path: '/program/:programId/study/:studyId/observations',
+    name: 'observations',
+    component: ObservationsList,
+    meta: {
+      title: 'Observations',
+      layout: layouts.userSideBar
+    }
+  },
+  {
     path: '/programs/:programId/trial/:trialId/studies',
     name: 'studies',
     meta: {
@@ -170,7 +178,7 @@ const routes = [
           layout: layouts.userSideBar
         },
         component: StudiesList
-      },
+     },
       {
         path: 'trials',
         name: 'trials-list',
