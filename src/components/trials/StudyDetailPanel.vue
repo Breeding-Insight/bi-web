@@ -28,7 +28,12 @@
       <p v-if="data.startDate">{{ data.startDate | dmyFormat }}</p>
       <p v-if="data.endDate" class="is-size-5 has-text-weight-bold mb-0">End</p>
       <p v-if="data.endDate">{{ data.endDate | dmyFormat }}</p>
-      
+      <p>
+        <router-link v-bind:to="{name: 'observations', params: {programId: activeProgram.id, studyId: data.id}}">
+          Observations
+        </router-link>
+      </p>
+
       <!-- just shows first abbreviation AKA main abbreviation and first synonym -->
       <!-- <template v-if="abbreviationsSynonymsString"> -->
       <!--   <p class="is-size-7">{{abbreviationsSynonymsString(2)}}</p> -->
@@ -178,10 +183,16 @@
   import { HelpCircleIcon } from 'vue-feather-icons'
   import ProgressBar from '@/components/forms/ProgressBar.vue'
   import { dmyFormat } from '@/breeding-insight/utils/filters';
+  import { mapGetters } from 'vuex';
 
   @Component({
     components: {EditDataForm, SidePanel, BaseTraitForm, HelpCircleIcon, ProgressBar},
 data: () => ({DataType, MethodClass, Scale, Method}),
+    computed: {
+      ...mapGetters([
+        'activeProgram'
+      ])
+    },
     filters: {
       dmyFormat
     }
