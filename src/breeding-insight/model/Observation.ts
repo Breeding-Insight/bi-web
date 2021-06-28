@@ -15,8 +15,6 @@
  * limitations under the License.
  */
 
-import {ObservationLevel} from '@/breedinginsight/model/ObservationLevel';
-
 export class Observation {
   id?: string;
   studyId?: string;
@@ -30,7 +28,7 @@ export class Observation {
   uploadedBy?: string;
   timeStamp?: Date | null;
   season?: Season;
-  level?: ObservationLevel | null;
+  level?: string;
   value?: any;
 
   constructor(id?: string,
@@ -45,7 +43,7 @@ export class Observation {
               uploadedBy?: string,
               timeStamp?: string,
               season?: Season,
-              level?: ObservationLevel,
+              level?: string,
               value?: any
               ) {
     this.id = id;
@@ -65,7 +63,7 @@ export class Observation {
       this.timeStamp = stamp.getFullYear() ? stamp : null;
     }
     this.season = season;
-    this.level = level ? level : null;
+    this.level = level;
     this.value = value;
   }
 
