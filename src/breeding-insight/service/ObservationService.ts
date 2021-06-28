@@ -18,7 +18,7 @@
 import {ObservationDAO} from "@/breeding-insight/dao/ObservationDAO";
 import {ObservationUnitDAO} from "@/breeding-insight/dao/ObservationUnitDAO";
 import {Observation, Season} from "@/breeding-insight/model/Observation";
-import {ObservationUnit, ObservationUnitPosition} from '@/breedinginsight/model/ObservationUnit';
+import {ObservationUnit, ObservationUnitPosition} from '@/breeding-insight/model/ObservationUnit';
 import {BiResponse, Metadata} from "@/breeding-insight/model/BiResponse";
 import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
 import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";

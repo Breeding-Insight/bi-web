@@ -21,14 +21,14 @@ import * as api from "@/util/api";
 import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
 import { Result, Err, Success, ResultGenerator } from "@/breeding-insight/model/Result";
 
-export class ObservationDAO {
+export class ObservationUnitDAO {
 
   static async getOuById(programId: string, ouId: string): Promise<Result<Error, BiResponse>> {
     try {
       const { data } = await api.call({
         url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/brapi/v2/observationunits`,
         method: 'get',
-        params: { full, observationUnitDbId: ouId }
+        params: { observationUnitDbId: ouId }
       }) as Response;
 
       return ResultGenerator.success(new BiResponse(data));
