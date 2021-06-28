@@ -52,5 +52,4 @@ export class TrialDAO {
       return ResultGenerator.err(error);
     }  
   }    
-
 }
