@@ -68,4 +68,30 @@ export class StudyService {
       return ResultGenerator.err(error);
     }
   }
+
+  static async getById(programId?: string, studyId?: string): Promise<Result<Error, Study>> {
+    try {
+      if(!programId) throw new Error('missing or invalid program id');
+      if(!studyId) throw new Error('missing or invalid study id');
+      
+      let response = await StudyDAO.getById(programId, studyId) as Result<Error, BiResponse>;      
+      if(response.isErr()) throw response.value;
+
+      const frontendModel = (res: BiResponse): Study => {
+        let studies: Study[] = [];
+        let { result: { data }, metadata } = res;
+        
+        studies = data.map((study: any) => {
+          return new Study(study.studyDbId, study.studyName, study.studyDescription, study.studyType, study.startDate, study.endDate, study.locationName, study.active);
+        });
+
+        return studies[0];
+      }
+
+      return response.applyResult(frontendModel);
+      
+    } catch(error) {
+      return ResultGenerator.err(error);
+    }        
+  }
 }

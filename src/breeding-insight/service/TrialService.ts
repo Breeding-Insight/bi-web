@@ -90,5 +90,4 @@ export class TrialService {
     }        
 
   }
-
 }
