@@ -33,60 +33,8 @@
           Observations
         </router-link>
       </p>
-
-      <!-- just shows first abbreviation AKA main abbreviation and first synonym -->
-      <!-- <template v-if="abbreviationsSynonymsString"> -->
-      <!--   <p class="is-size-7">{{abbreviationsSynonymsString(2)}}</p> -->
-      <!-- </template> -->
-      <!-- <template v-else> -->
-      <!--   <p class="mb-3"/> -->
-      <!-- </template> -->
-
-      <!-- <p v-if="scaleTypeString" class="has-text-weight-bold mb-0">{{scaleTypeString}}</p> -->
-
-      <!-- scale types hardcoded for now until we can get them from bi-api -->
-      <!-- <template v-if="scaleType && (Scale.dataTypeEquals(scaleType, DataType.Ordinal) || Scale.dataTypeEquals(scaleType, DataType.Nominal))"> -->
-      <!--   <p class="mb-0" v-for="category in data.scale.categories" :key="category.label"> -->
-      <!--     <template v-if="category.label"> -->
-      <!--       {{ category.label }} = -->
-      <!--     </template> -->
-      <!--     {{category.value}} -->
-      <!--   </p> -->
-      <!-- </template> -->
-
-      <!-- <template v-if="scaleType && Scale.dataTypeEquals(scaleType, DataType.Text)"> -->
-      <!--   <\!-- TODO: Not showing anything for this now -\-> -->
-      <!-- </template> -->
-
-      <!-- <template v-if="scaleType && Scale.dataTypeEquals(scaleType, DataType.Numerical)"> -->
-      <!--   <p class="mb-0">Units: {{valueOrNA(data.scale.scaleName)}}</p> -->
-      <!--   <p class="mb-0">Decimal Places: {{valueOrNA(data.scale.decimalPlaces)}}</p> -->
-      <!--   <p class="mb-0">Minimum valid value: {{valueOrNA(data.scale.validValueMin)}}</p> -->
-      <!--   <p class="mb-0">Maximum valid value: {{valueOrNA(data.scale.validValueMax)}}</p> -->
-      <!-- </template> -->
-
-      <!-- <template v-if="Scale.dataTypeEquals(scaleType, DataType.Duration)"> -->
-      <!--   <p class="mb-0">Unit of time: {{valueOrNA(data.scale.scaleName)}}</p> -->
-      <!--   <p class="mb-0">Minimum valid value: {{valueOrNA(data.scale.validValueMin)}}</p> -->
-      <!--   <p class="mb-0">Maximum valid value: {{valueOrNA(data.scale.validValueMax)}}</p> -->
-      <!-- </template> -->
-
-      <!-- <template v-if="scaleType && Scale.dataTypeEquals(scaleType, DataType.Date)"> -->
-      <!-- </template> -->
-
-      <!-- <\!-- if computation method, show formula as well -\-> -->
-      <!-- <template v-if="methodClass && Method.methodClassEquals(methodClass, MethodClass.Computation)"> -->
-      <!--   <p class="has-text-weight-bold mt-3 mb-0">Formula</p> -->
-      <!--   <p class="mb-0">{{valueOrNA(data.method.formula)}}</p> -->
-      <!-- </template> -->
-
-      <!-- <p class="has-text-weight-bold mt-3 mb-0">Description of collection method</p> -->
-      <!-- <p>{{data.method.description}}</p> -->
-
-      <!-- <ProgressBar v-if="loadingEditable" v-bind:label="'Checking trait editability status'" -->
-      <!--              v-bind:estimated-time-text="'May take a few seconds'" -->
-      <!-- /> -->
-
+      <p v-if="!data.active">Status: Archived</p>
+      
       <article v-if="!editable && !loadingEditable" class="message is-info">
         <div class="message-body">
           <div class="media">
@@ -104,17 +52,6 @@
         </div>
       </article>
 
-      <!-- <template v-if="!data.active"> -->
-      <!--   <p class="has-text-weight-bold mt-3 mb-0">Included in Favorites</p> -->
-      <!--   <b-button -->
-      <!--       size="is-small" -->
-      <!--       style="background: lightgray" -->
-      <!--       class="archive-tag" -->
-      <!--       v-if="!data.active"> -->
-      <!--     Archived -->
-      <!--   </b-button> -->
-      <!-- </template> -->
-
       <!-- maybe break out controls for reuse eventually -->
       <div class="columns is-mobile is-centered pt-6">
         <div class="column is-narrow">
@@ -128,22 +65,6 @@
           </a>
         </div>
         <div class="column is-narrow">
-          <!-- <a -->
-          <!--   v-if="data.active" -->
-          <!--   v-on:click="$emit('archive', data)" -->
-          <!--   v-on:keypress.enter.space="$emit('archive', data)" -->
-          <!--   tabindex="0" -->
-          <!--   > -->
-          <!--   Archive -->
-          <!-- </a> -->
-          <!-- <a -->
-          <!--   v-if="archivable && !data.active" -->
-          <!--   v-on:click="$emit('restore', data)" -->
-          <!--   v-on:keypress.enter.space="$emit('restore', data)" -->
-          <!--   tabindex="0" -->
-          <!-- > -->
-          <!--   Restore/Unarchive -->
-          <!-- </a> -->
         </div>
       </div>
     </template>
