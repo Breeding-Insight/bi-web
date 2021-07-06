@@ -17,7 +17,7 @@
 
 <template>
   <label class="file-select">
-    <div v-if="value" class="button is-outlined is-primary">
+    <div v-if="value" :id="chooseDiffFileId" class="button is-outlined is-primary">
       <span class="icon is-small">
         <UploadIcon
           size="1.5x"
@@ -28,7 +28,7 @@
         Choose a different file...
       </span>
     </div>
-    <div v-else class="button is-primary">
+    <div v-else :id="chooseFileId" class="button is-primary">
       <span class="icon is-small">
         <UploadIcon
           size="1.5x"
@@ -57,6 +57,9 @@
     @Prop()
     private value!: File;
 
+    private chooseFileId: string = "choose-file";
+    private chooseDiffFileId: string = "choose-different-file";
+
     @Prop()
     private fileTypes!: string[];
 
@@ -67,6 +70,8 @@
     get fileTypesString(): string {
       return this.fileTypes.toString();
     }
+
+    //
 
   }
 </script>
