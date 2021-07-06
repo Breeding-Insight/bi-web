@@ -109,14 +109,37 @@
                 Home
               </router-link>
             </li>
-            <!--
             <li>
-              <a>Trials and Experiments</a>
+              <router-link
+                  v-bind:to="{name: 'trials-studies', params: {programId: activeProgram.id}}"
+                  v-bind:class="{ 'is-active': trialsAndStudiesActive }"
+              >
+                Trials and Studies
+                <MoreVerticalIcon
+                    v-if="!trialsAndStudiesActive"
+                    class="is-pulled-right"
+                />
+                <MoreHorizontalIcon
+                    v-if="trialsAndStudiesActive"
+                    class="is-pulled-right"
+                />
+              </router-link>
+              <ul v-show="trialsAndStudiesActive">
+                <li>
+                  <router-link v-bind:to="{name: 'trials-list', params: {programId: activeProgram.id}}">
+                    Trials
+                  </router-link>
+                </li>
+                <li>
+                  <router-link v-bind:to="{name: 'studies-list', params: {programId: activeProgram.id}}">
+                    Studies
+                  </router-link>
+                </li>
+              </ul>
             </li>
-            <li>
+<!--            <li>
               <a>Germplasm Inventory</a>
-            </li>
-            -->
+            </li>-->
             <li>
               <router-link
                 v-bind:to="{name: 'import'}"
@@ -226,7 +249,7 @@
   import {EventBus} from "@/util/event-bus";
   import ClickOutside from 'vue-click-outside';
 
-@Component( {
+  @Component( {
     components: {BaseSideBarLayout, MoreVerticalIcon, MoreHorizontalIcon, ChevronDownIcon},
     computed: {
       ...mapGetters([
@@ -244,6 +267,7 @@
     private activeUser?: User;
     programManagementActive: boolean =  true;
     traitsActive: boolean = false;
+    trialsAndStudiesActive: boolean = false;
     private programs: Program[] = [];
     private programSelectActive: boolean = false;
 
@@ -290,6 +314,7 @@
     setActiveLinkSubmenus() {
       var path: string = this.$route.path;
       this.programManagementActive = path.includes('/program-management/');
+      this.trialsAndStudiesActive = path.includes('/trials-studies/');
       this.traitsActive = path.includes('/traits/');
     }
     hideProgramSelect() {
