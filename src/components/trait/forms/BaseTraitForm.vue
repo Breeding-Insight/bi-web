@@ -136,6 +136,18 @@
         v-bind:field-help="'Semicolon separated list.'"
         v-on:input="trait.synonyms = parseSemiColonList($event)"
       />
+
+      <!-- Tags -->
+      <div>
+        <TagField
+            v-bind:options="tags"
+            v-bind:value="trait.tags"
+            v-bind:field-name="'Tags'"
+            v-bind:show-label="true"
+            v-on:add="addTag($event)"
+            v-on:remove="removeTag($event)"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -160,9 +172,11 @@ import AutoCompleteField from "@/components/forms/AutoCompleteField.vue";
 import { StringFormatters } from '@/breeding-insight/utils/StringFormatters';
 import {Category} from "@/breeding-insight/model/Category";
 import {integer} from "vuelidate/lib/validators";
+import TagField from "@/components/forms/TagField.vue";
 
 @Component({
   components: {
+    TagField,
     AutoCompleteField,
     CategoryTraitForm,
     NumericalTraitForm,
@@ -184,8 +198,11 @@ export default class BaseTraitForm extends Vue {
   trait!: Trait;
   @Prop({default: false})
   editFormat!: boolean;
+  @Prop()
+  tags?: string[];
 
   name: string = '';
+  currentTag: string = '';
   private methodHistory: {[key: string]: Method} = {};
   private scaleHistory: {[key: string]: Scale} = {};
   private lastCategoryType: string = '';
@@ -307,6 +324,12 @@ export default class BaseTraitForm extends Vue {
   }
   parseSemiColonList(value: string): string[] {
     return value.split(';');
+  }
+  addTag(tag: string) {
+    this.trait.addTag(tag);
+  }
+  removeTag(tag: string) {
+    this.trait.removeTag(tag);
   }
 }
 
