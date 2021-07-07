@@ -71,8 +71,6 @@
       return this.fileTypes.toString();
     }
 
-    //
-
   }
 </script>
 
