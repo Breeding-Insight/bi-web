@@ -112,7 +112,7 @@
     @Prop()
     private errors!: ValidationError | string | null;
 
-    private importButtonId: string = "import-button";
+    private importButtonId: string = "fileselectmessagebox-import-button";
 
     mounted() {
       this.file = this.value;

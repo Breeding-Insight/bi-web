@@ -57,8 +57,8 @@
     @Prop()
     private value!: File;
 
-    private chooseFileId: string = "choose-file";
-    private chooseDiffFileId: string = "choose-different-file";
+    private chooseFileId: string = "fileselector-choose-file";
+    private chooseDiffFileId: string = "fileselector-choose-different-file";
 
     @Prop()
     private fileTypes!: string[];

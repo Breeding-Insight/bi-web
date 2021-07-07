@@ -160,7 +160,7 @@ export default class TraitsImport extends ProgramsBase {
   private numTraits = 0;
   private showAbortModal = false;
 
-  private yesAbortId: string = "yes-abort";
+  private yesAbortId: string = "traitsimport-yes-abort";
   
   private ImportState = ImportState;
   private ImportEvent = ImportEvent;
