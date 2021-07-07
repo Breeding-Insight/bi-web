@@ -53,7 +53,7 @@
   })
   export default class TraitImportTemplateMessageBox extends Vue {
 
-    private downloadTraitTemplateId: string = "download-trait-template";
+    private downloadTraitTemplateId: string = "traitimporttemplatemessagebox-download-trait-template";
 
   }
 </script>

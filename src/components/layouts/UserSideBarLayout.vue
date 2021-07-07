@@ -76,12 +76,12 @@
           </p>
           <ul class="menu-list">
             <li>
-              <router-link to="/admin/user-management">
+              <router-link to="/admin/user-management" :id="usersMenuId">
                 Users
               </router-link>
             </li>
             <li>
-              <router-link to="/admin/program-management">
+              <router-link to="/admin/program-management" :id="programsMenuId">
                 Programs
               </router-link>
               <ul class="menu-list">
@@ -105,7 +105,7 @@
         <template v-if="activeProgram">
           <ul class="menu-list">
             <li>
-              <router-link v-bind:to="{name: 'program-home', params: {programId: activeProgram.id}}">
+              <router-link v-bind:to="{name: 'program-home', params: {programId: activeProgram.id}}" :id="homeMenuId">
                 Home
               </router-link>
             </li>
@@ -120,6 +120,7 @@
             <li>
               <router-link
                 v-bind:to="{name: 'import'}"
+                :id="importFileMenuId"
               >
                 Import File
               </router-link>
@@ -128,6 +129,7 @@
               <router-link
                 v-bind:to="{name: 'traits', params: {programId: activeProgram.id}}"
                 v-bind:class="{ 'is-active': traitsActive }"
+                :id="traitsMenuId"
               >
                 Traits
                 <MoreVerticalIcon
@@ -176,6 +178,7 @@
               <router-link
                 v-bind:to="{name: 'program-management', params: {programId: activeProgram.id}}"
                 v-bind:class="{ 'is-active': programManagementActive }"
+                :id="programManagementMenuId"
               >
                 Program Management
                 <MoreVerticalIcon
@@ -201,7 +204,7 @@
               </ul>
             </li>
             <li>
-              <router-link v-bind:to="{name: 'brapi-info', params: {programId: activeProgram.id}}">
+              <router-link v-bind:to="{name: 'brapi-info', params: {programId: activeProgram.id}}" :id="brAPIMenuId">
                 BrAPI
               </router-link>
             </li>
@@ -247,7 +250,16 @@
     private programs: Program[] = [];
     private programSelectActive: boolean = false;
 
-    @Prop()
+    private usersMenuId: string = "usersidebarlayout-users-menu";
+    private programsMenuId: string = "usersidebarlayout-programs-menu";
+
+    private homeMenuId: string = "usersidebarlayout-home-menu";
+    private importFileMenuId: string = "usersidebarlayout-import-file-menu";
+    private traitsMenuId: string = "usersidebarlayout-traits-menu";
+    private programManagementMenuId: string = "usersidebarlayout-program-management-menu";
+    private brAPIMenuId: string = "usersidebarlayout-brapi-menu";
+
+  @Prop()
     username!: string;
     created() {
       EventBus.bus.$on(EventBus.programChange, this.getPrograms);
