@@ -29,6 +29,7 @@ export class Trait {
   synonyms?: Array<string>;
   mainAbbreviation?: string;
   active?: boolean;
+  tags?: string[];
 
   constructor(id?: string,
               traitName?: string,
@@ -37,7 +38,8 @@ export class Trait {
               scale?: Scale,
               abbreviations?: Array<string>,
               synonyms?: Array<string>,
-              active?: boolean
+              active?: boolean,
+              tags?: string[]
               ) {
     this.id = id;
     this.traitName = traitName;
@@ -63,6 +65,7 @@ export class Trait {
     } else {
       this.active = true;
     }
+    this.tags = tags;
   }
 
   static assign(trait: Trait): Trait {
@@ -101,4 +104,26 @@ export class Trait {
         (!this.method && !trait.method)
       );
   }
+
+  addTag(tag: string) {
+    if (this.tags) {
+      const index = this.tags.indexOf(tag);
+      if (index === -1) {
+        this.tags.push(tag);
+      }
+    }
+    else {
+      this.tags = [tag];
+    }
+  }
+
+  removeTag(tag: string) {
+    if (this.tags) {
+      const index = this.tags.indexOf(tag);
+      if (index > -1) {
+        this.tags.splice(index, 1);
+      }
+    }
+  }
+
 }
