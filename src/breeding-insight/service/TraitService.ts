@@ -132,7 +132,7 @@ export class TraitService {
     else throw 'Unable to get trait editable info';
   }
 
-  static async getTraitTags(programId: string): Promise<[Trait[], Metadata]> {
+  static async getTraitTags(programId: string): Promise<[string[], Metadata]> {
     if (programId) {
       try {
         const response = await TraitDAO.getTraitTags(programId);
