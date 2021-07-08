@@ -133,6 +133,7 @@
       <template v-slot:side-panel="{tableRow}">
         <TraitDetailPanel
           v-bind:data="traitSidePanelState.openedRow"
+          v-bind:tags="tagOptions"
           v-bind:observation-level-options="observationLevelOptions"
           v-bind:edit-active="traitSidePanelState.editActive"
           v-bind:editable="$ability.can('update', 'Trait') && currentTraitEditable"

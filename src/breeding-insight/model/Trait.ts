@@ -70,7 +70,7 @@ export class Trait {
 
   static assign(trait: Trait): Trait {
     return new Trait(trait.id, trait.traitName, trait.programObservationLevel, trait.method,
-      trait.scale, trait.abbreviations, trait.synonyms, trait.active);
+      trait.scale, trait.abbreviations, trait.synonyms, trait.active, trait.tags);
   }
 
   checkStringListEquals(list: string[] | undefined, otherList: string[] | undefined): boolean {

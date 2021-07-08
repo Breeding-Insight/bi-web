@@ -202,7 +202,6 @@ export default class BaseTraitForm extends Vue {
   tags?: string[];
 
   name: string = '';
-  currentTag: string = '';
   private methodHistory: {[key: string]: Method} = {};
   private scaleHistory: {[key: string]: Scale} = {};
   private lastCategoryType: string = '';
