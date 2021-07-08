@@ -74,15 +74,10 @@ export class TraitDAO {
   }
 
   static async getTraitTags(programId: string): Promise<BiResponse> {
-      /*
     const { data } =  await api.call({
-      url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/traits/${trait.id}/archive`,
-      params: {'active': trait.active},
-      method: 'put'
+      url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/traits/tags`,
+      method: 'get'
     }) as Response;
-    return new BiResponse(data);
-       */
-    const data = {result: {data: ['favorites', 'sea lice']}};
     return new BiResponse(data);
   }
 

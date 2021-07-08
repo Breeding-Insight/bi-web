@@ -47,7 +47,7 @@ import {FieldError} from "@/breeding-insight/model/errors/FieldError";
 @Component({
   components: {BaseFieldWrapper}
 })
-export default class BasicInputField extends Vue {
+export default class TagField extends Vue {
   @Prop()
   options!: string[];
   @Prop()

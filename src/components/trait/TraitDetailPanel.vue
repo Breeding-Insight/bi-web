@@ -69,6 +69,13 @@
       <p class="has-text-weight-bold mt-3 mb-0">Description of collection method</p>
       <p>{{data.method.description}}</p>
 
+      <template v-if="data.tags && data.tags.length > 0">
+        <p class="has-text-weight-bold mt-3 mb-0">Tags</p>
+        <template v-for="tag in data.tags">
+          <span v-bind:key="tag" class="tag is-primary is-normal mr-1">{{ tag }}</span>
+        </template>
+      </template>
+
       <ProgressBar v-if="loadingEditable && $ability.can('update', 'Trait')" v-bind:label="'Checking trait editability status'"
                    v-bind:estimated-time-text="'May take a few seconds'"
       />
@@ -147,6 +154,7 @@
               v-bind:trait.sync="editTrait"
               v-bind:edit-format="true"
               v-on:trait-change="traitUpdate($event)"
+              v-bind:tags="tags"
               v-bind:scale-options="scaleClassOptions"
               v-bind:method-options="methodClassOptions"
               v-bind:program-observation-levels="observationLevelOptions"
@@ -198,6 +206,8 @@
     private clientValidations!: any | undefined;
     @Prop()
     private validationHandler!: ValidationError;
+    @Prop()
+    private tags!: string[];
 
     private editTrait: Trait | null = null;
     private scalePostfix = new Set<string>().add(DataType.Ordinal).add(DataType.Nominal);
