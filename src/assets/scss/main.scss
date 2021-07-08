@@ -252,6 +252,10 @@ nav.tabs li.is-active {
   }
 }
 
+.table.is-narrow {
+  border-collapse: collapse;
+}
+
 .table td {
   vertical-align: middle;
 }
@@ -261,14 +265,21 @@ nav.tabs li.is-active {
 }
 
 // TODO: see if we can get this in bulma variable
-.table tr.is-edited {
+.table tr.is-edited, table tr.is-edited + .detail {
   border-left: 5px solid $primary;
   background-color: $primary-light;
+
   td {
     color:$dark;
   }
   a {
     color:$link;
+  }
+}
+
+table tr.is-edited + .detail {
+  > td, > td > .detail-container {
+    padding: 0!important;
   }
 }
 
