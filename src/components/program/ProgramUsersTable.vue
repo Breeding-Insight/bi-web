@@ -431,15 +431,15 @@ export default class ProgramUsersTable extends Vue {
 
   }
 
-  getRoleName(id: string): string | undefined {
+  getRoleName(id: string): string {
     return this.rolesMap.get(id)!.name;
   }
 
   sortRole(a: any, b: any, isAsc: boolean) {
     if(isAsc) {
-      return this!.getRoleName(a.data.roleId).localeCompare(this!.getRoleName(b.data.roleId));
+      return this.getRoleName(a.data.roleId).localeCompare(this.getRoleName(b.data.roleId));
     } else {
-      return this!.getRoleName(b.data.roleId).localeCompare(this!.getRoleName(a.data.roleId));
+      return this.getRoleName(b.data.roleId).localeCompare(this.getRoleName(a.data.roleId));
     }
   }
 
