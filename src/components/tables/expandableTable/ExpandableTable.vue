@@ -122,7 +122,7 @@ export default class ExpandableTable extends Mixins(ValidationMixin) {
   dataFormState!: DataFormEventBusHandler;
 
   private tableRows: Array<TableRow<any>> = new Array<TableRow<any>>();
-  private openDetail: Array<string> = new Array<string>();
+  private openDetail: Array<TableRow<any>> = new Array<TableRow<any>>();
   private initialUpdate: boolean = false;
 
   private tableRef = "table-"+Math.random()*1000;
@@ -133,7 +133,7 @@ export default class ExpandableTable extends Mixins(ValidationMixin) {
   }
 
   isVisibleDetailRow(row:any) {
-    return this.$refs[this.tableRef].isVisibleDetailRow(row);
+    return (this.$refs[this.tableRef] as Vue & { isVisibleDetailRow: (row:any) => boolean }).isVisibleDetailRow(row);
   }
 
   detailsVisible() {
