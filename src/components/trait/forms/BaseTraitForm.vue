@@ -136,6 +136,19 @@
         v-bind:field-help="'Semicolon separated list.'"
         v-on:input="trait.synonyms = parseSemiColonList($event)"
       />
+
+      <!-- Tags -->
+      <div>
+        <TagField
+            v-bind:options="tags"
+            v-bind:value.sync="trait.tags"
+            v-bind:field-name="'Tags'"
+            v-bind:show-label="true"
+            v-bind:before-adding="checkTag"
+            v-on:add="addTag($event)"
+            v-on:remove="removeTag($event)"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -160,9 +173,11 @@ import AutoCompleteField from "@/components/forms/AutoCompleteField.vue";
 import { StringFormatters } from '@/breeding-insight/utils/StringFormatters';
 import {Category} from "@/breeding-insight/model/Category";
 import {integer} from "vuelidate/lib/validators";
+import TagField from "@/components/forms/TagField.vue";
 
 @Component({
   components: {
+    TagField,
     AutoCompleteField,
     CategoryTraitForm,
     NumericalTraitForm,
@@ -184,6 +199,8 @@ export default class BaseTraitForm extends Vue {
   trait!: Trait;
   @Prop({default: false})
   editFormat!: boolean;
+  @Prop()
+  tags?: string[];
 
   name: string = '';
   private methodHistory: {[key: string]: Method} = {};
@@ -307,6 +324,17 @@ export default class BaseTraitForm extends Vue {
   }
   parseSemiColonList(value: string): string[] {
     return value.split(';');
+  }
+  addTag(tag: string) {
+    // Check that the tag doesn't already exist
+    this.trait.addTag(tag.toLowerCase());
+  }
+  removeTag(tag: string) {
+    this.trait.removeTag(tag);
+  }
+  checkTag(tag: string): boolean {
+    //TODO: Show an error if tag already exists?
+    return !this.trait.hasTag(tag);
   }
 }
 
