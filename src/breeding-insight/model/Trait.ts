@@ -126,4 +126,15 @@ export class Trait {
     }
   }
 
+  hasTag(tag: string): boolean {
+    if (this.tags) {
+      for (const existingTag of this.tags) {
+        if (tag.toLowerCase() === existingTag.toLowerCase()) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
 }

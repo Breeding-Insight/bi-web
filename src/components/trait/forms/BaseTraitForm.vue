@@ -141,9 +141,10 @@
       <div>
         <TagField
             v-bind:options="tags"
-            v-bind:value="trait.tags"
+            v-bind:value.sync="trait.tags"
             v-bind:field-name="'Tags'"
             v-bind:show-label="true"
+            v-bind:before-adding="checkTag"
             v-on:add="addTag($event)"
             v-on:remove="removeTag($event)"
         />
@@ -325,10 +326,15 @@ export default class BaseTraitForm extends Vue {
     return value.split(';');
   }
   addTag(tag: string) {
-    this.trait.addTag(tag);
+    // Check that the tag doesn't already exist
+    this.trait.addTag(tag.toLowerCase());
   }
   removeTag(tag: string) {
     this.trait.removeTag(tag);
+  }
+  checkTag(tag: string): boolean {
+    //TODO: Show an error if tag already exists?
+    return !this.trait.hasTag(tag);
   }
 }
 
