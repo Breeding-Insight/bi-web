@@ -28,6 +28,7 @@
         v-bind:value="value"
         v-bind:open-on-focus="true"
         v-bind:data="filteredTags"
+        v-bind:before-adding="beforeAdding"
         v-on:add="addTag($event)"
         v-on:remove="$emit('remove', $event)"
         v-on:typing="getFilteredTags"
@@ -63,6 +64,8 @@ export default class TagField extends Vue {
   serverValidations!: FieldError[];
   @Prop()
   showLabel!: boolean;
+  @Prop()
+  beforeAdding!: Function;
 
   filteredTags = this.options;
 
