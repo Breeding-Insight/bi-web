@@ -23,7 +23,7 @@
             <div class="level-item">
                 <InfoIcon size="1.5x"></InfoIcon>
             </div>
-            <div class="level-item">
+            <div class="level-item" :class="bannerTextClass">
                 {{msg}}
             </div>
         </div>
@@ -41,6 +41,8 @@ import { InfoIcon } from 'vue-feather-icons'
 export default class InfoNotification extends Vue {
   public active: boolean = false;
   public msg : string = '';
+
+  private bannerTextClass: string = "banner-text";
 }
 
 </script>
