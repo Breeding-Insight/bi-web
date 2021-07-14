@@ -79,7 +79,7 @@
           <div class="level-right">
             <div class="level-item">
               <div>
-                <a v-if="file" class="button is-primary has-text-weight-bold" v-on:click="$emit('import')">Import</a>
+                <a v-if="file" class="button is-primary has-text-weight-bold" :id="importButtonId" v-on:click="$emit('import')">Import</a>
               </div>
             </div>
           </div>
@@ -111,6 +111,8 @@
 
     @Prop()
     private errors!: ValidationError | string | null;
+
+    private importButtonId: string = "fileselectmessagebox-import-button";
 
     mounted() {
       this.file = this.value;
