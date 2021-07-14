@@ -23,7 +23,7 @@
         <div class="level-item">
           <CheckCircleIcon size="1.5x"></CheckCircleIcon>
         </div>
-        <div class="level-item">
+        <div class="level-item" :class="bannerTextClass">
           {{msg}}
         </div>
       </div>
@@ -41,6 +41,8 @@ import { CheckCircleIcon } from 'vue-feather-icons'
 export default class SuccessNotification extends Vue {
   public active: boolean = false;
   public msg : string = '';
+
+  private bannerTextClass: string = "banner-text";
 }
 
 </script>
