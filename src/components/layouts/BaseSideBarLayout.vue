@@ -90,7 +90,7 @@
                 <p class="mb-0">Logged in as <strong>{{username}}</strong></p>
               </div>
               <div class="level-item">
-                <button class="button is-outlined is-primary" @click="$emit('logout')">Log out</button>
+                <button class="button is-outlined is-primary" :id="logoutId" @click="$emit('logout')">Log out</button>
               </div>
             </div>
           </div>
@@ -117,6 +117,8 @@ import VersionInfo from '@/components/layouts/VersionInfo.vue';
   export default class SideBarMaster extends Vue {
     sideMenuShownMobile: boolean = true;
     SandboxMode = SandboxMode;
+
+    private logoutId: string = "basesidebarlayout-logout-button";
 
     @Prop()
     username!: string;
