@@ -43,7 +43,7 @@
             v-bind:field-name="'Minimum Valid Value'"
             v-bind:value="validMin"
             v-on:input="$emit('min-change', $event)"
-            v-bind:field-help="'Numbers only. Decimals ok.'"
+            v-bind:field-help="'Numbers only. Decimals not supported.'"
             v-bind:validations="clientValidations && clientValidations.scale.validValueMin ? clientValidations.scale.validValueMin : undefined"
             v-bind:server-validations="validationHandler.getValidation(validationIndex, TraitError.MaximumValue)"
         />
@@ -53,7 +53,7 @@
             v-bind:field-name="'Maximum Valid Value'"
             v-bind:value="validMax"
             v-on:input="$emit('max-change', $event)"
-            v-bind:field-help="'Numbers only. Decimals ok.'"
+            v-bind:field-help="'Numbers only. Decimals not supported.'"
             v-bind:validations="clientValidations && clientValidations.scale.validValueMax ? clientValidations.scale.validValueMax : undefined"
             v-bind:server-validations="validationHandler.getValidation(validationIndex, TraitError.MaximumValue)"
         />
