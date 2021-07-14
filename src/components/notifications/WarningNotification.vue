@@ -23,7 +23,7 @@
         <div class="level-item">
           <AlertTriangleIcon size="1.5x"></AlertTriangleIcon>
         </div>
-        <div class="level-item">
+        <div class="level-item" :class="bannerTextClass">
           {{msg}}
         </div>
       </div>
@@ -41,6 +41,8 @@
   export default class WarningNotification extends Vue {
     public active: boolean = false;
     public msg : string = '';
+
+    private bannerTextClass: string = "banner-text";
   }
 
 </script>
