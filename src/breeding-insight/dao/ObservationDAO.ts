@@ -15,20 +15,20 @@
  * limitations under the License.
  */
 
-import {Trial} from "@/breeding-insight/model/Trial";
+import {Observation, Season} from "@/breeding-insight/model/Observation";
 import {BiResponse, Response} from "@/breeding-insight/model/BiResponse";
 import * as api from "@/util/api";
 import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
 import { Result, Err, Success, ResultGenerator } from "@/breeding-insight/model/Result";
 
-export class TrialDAO {
+export class ObservationDAO {
 
-  static async getAll(programId: string, paginationQuery: PaginationQuery, full : boolean): Promise<Result<Error, BiResponse>> {
+  static async getAllForStudy(programId: string, studyId: string, paginationQuery: PaginationQuery, full : boolean): Promise<Result<Error, BiResponse>> {
     try {
       const { data } = await api.call({
-        url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/brapi/v2/trials`,
+        url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/brapi/v2/observations`,
         method: 'get',
-        params: { full }
+        params: { full, studyDbId: studyId }
       }) as Response;
 
       return ResultGenerator.success(new BiResponse(data));
@@ -37,19 +37,4 @@ export class TrialDAO {
       return ResultGenerator.err(error);
     }  
   }
-
-  static async getById(programId: string, trialId: string): Promise<Result<Error, BiResponse>> {
-    try {
-      const { data } = await api.call({
-        url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/brapi/v2/trials`,
-        method: 'get',
-        params: { trialDbId: trialId }
-      }) as Response;
-
-      return ResultGenerator.success(new BiResponse(data));
-        
-    } catch (error) {
-      return ResultGenerator.err(error);
-    }  
-  }    
 }

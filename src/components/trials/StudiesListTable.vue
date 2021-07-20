@@ -74,16 +74,16 @@
         v-on:cancel="cancelNewStudy"
         v-on:show-error-notification="$emit('show-error-notification', $event)"
     >
-      <template v-slot="validations">
-        <BaseStudyForm
-            v-on:trait-change="newStudy = $event"
-            v-bind:trait="newStudy"
-            v-bind:scale-options="scaleClassOptions"
-            v-bind:method-options="methodClassOptions"
-            v-bind:program-observation-levels="observationLevelOptions"
-            v-bind:validation-handler="validationHandler"
-        ></BaseStudyForm>
-      </template>
+      <!-- <template v-slot="validations"> -->
+      <!--   <BaseStudyForm -->
+      <!--       v-on:trait-change="newStudy = $event" -->
+      <!--       v-bind:trait="newStudy" -->
+      <!--       v-bind:scale-options="scaleClassOptions" -->
+      <!--       v-bind:method-options="methodClassOptions" -->
+      <!--       v-bind:program-observation-levels="observationLevelOptions" -->
+      <!--       v-bind:validation-handler="validationHandler" -->
+      <!--   ></BaseStudyForm> -->
+      <!-- </template> -->
     </NewDataForm>
 
     <SidePanelTable
@@ -130,7 +130,6 @@
       <template v-slot:side-panel="{tableRow}">
         <StudyDetailPanel
           v-bind:data="studySidePanelState.openedRow"
-          v-bind:observation-level-options="observationLevelOptions"
           v-bind:edit-active="studySidePanelState.editActive"
           v-bind:editable="currentStudyEditable"
           v-bind:loading-editable="loadingStudyEditable"
@@ -139,7 +138,7 @@
           v-bind:archivable="true"
           v-on:activate-edit="activateEdit($event)"
           v-on:deactivate-edit="studySidePanelState.bus.$emit(studySidePanelState.closePanelEvent)"
-          v-on:trait-change="editStudy = Study.assign({...$event})"
+          v-on:study-change="editStudy = Study.assign({...$event})"
           v-on:submit="updateStudy"
           v-on:archive="activateArchive($event)"
           v-on:restore="activateArchive($event)"
@@ -207,6 +206,7 @@ import {Result} from '@/breeding-insight/model/Result';
     dmyFormat
   }
 })
+
 export default class StudyTable extends Vue {
 
   private activeProgram?: Program;
@@ -245,13 +245,13 @@ export default class StudyTable extends Vue {
     this.getStudies();
 
     // Events
-    // this.traitSidePanelState.bus.$on(this.studySidePanelState.requestClosePanelEvent, (showWarningEvent: Function, confirmCloseEvent: Function) => {
-    //   if (this.editStudy && !this.editStudy.equals(this.originalStudy)) {
-    //     showWarningEvent();
-    //   } else {
-    //     confirmCloseEvent();
-    //   }
-    // });
+    this.studySidePanelState.bus.$on(this.studySidePanelState.requestClosePanelEvent, (showWarningEvent: Function, confirmCloseEvent: Function) => {
+      if (this.editStudy && !this.editStudy.equals(this.originalStudy)) {
+        showWarningEvent();
+      } else {
+        confirmCloseEvent();
+      }
+    });
     // this.studySidePanelState.bus.$on(this.studySidePanelState.confirmCloseEditEvent, () => {
     //   this.clearSelectedRow();
     // });
@@ -388,38 +388,38 @@ export default class StudyTable extends Vue {
   //   // return deletions;
   // }
 
-  // async updateTrait() {
-  //   try {
-  //     this.editValidationHandler = new ValidationError();
-  //     const [data] = await StudyService.updateStudies(this.activeProgram!.id!, [this.editStudy!]) as [Study[], Metadata];
+  async updateStudy() {
+    // try {
+    //   this.editValidationHandler = new ValidationError();
+    //   const [data] = await StudyService.updateStudies(this.activeProgram!.id!, [this.editStudy!]) as [Study[], Metadata];
 
-  //     // Temporary: Only update the given study.
-  //     // TODO: Select all studies and find the edited study within results to keep row open
-  //     if (data.length > 0){
-  //       const studyInd = this.studies.findIndex(study => study.id === data[0].id);
-  //       const studyCopy = [...this.studies];
-  //       if (studyInd >= 0) {
-  //         studyCopy[studyInd] = {...data[0]} as Study;
-  //       }
-  //       this.studies = studyCopy;
-  //     }
+    //   // Temporary: Only update the given study.
+    //   // TODO: Select all studies and find the edited study within results to keep row open
+    //   if (data.length > 0){
+    //     const studyInd = this.studies.findIndex(study => study.id === data[0].id);
+    //     const studyCopy = [...this.studies];
+    //     if (studyInd >= 0) {
+    //       studyCopy[studyInd] = {...data[0]} as Study;
+    //     }
+    //     this.studies = studyCopy;
+    //   }
 
-  //     this.studySidePanelState.bus.$emit(this.studySidePanelState.successEditEvent, data[0]);
-  //     this.clearSelectedRow();
-  //     await this.getObservationLevels();
-  //     this.$emit('show-success-notification', 'Study edit successful.');
-  //   } catch (error) {
-  //     if (error instanceof ValidationError) {
-  //       this.editValidationHandler = error;
-  //       const deletions: string[] = this.processValidationErrors(this.editValidationHandler, this.editStudy!);
-  //       this.$emit('show-error-notification', `Error updating study. ${this.editValidationHandler.condenseErrorsSingleRow(deletions)}`);
-  //     } else {
-  //       this.$emit('show-error-notification', error);
-  //     }
-  //   } finally {
-  //     this.studySidePanelState.dataFormState.bus.$emit(DataFormEventBusHandler.SAVE_COMPLETE_EVENT);
-  //   }
-  // }
+    //   this.studySidePanelState.bus.$emit(this.studySidePanelState.successEditEvent, data[0]);
+    //   this.clearSelectedRow();
+    //   await this.getObservationLevels();
+    //   this.$emit('show-success-notification', 'Study edit successful.');
+    // } catch (error) {
+    //   if (error instanceof ValidationError) {
+    //     this.editValidationHandler = error;
+    //     const deletions: string[] = this.processValidationErrors(this.editValidationHandler, this.editStudy!);
+    //     this.$emit('show-error-notification', `Error updating study. ${this.editValidationHandler.condenseErrorsSingleRow(deletions)}`);
+    //   } else {
+    //     this.$emit('show-error-notification', error);
+    //   }
+    // } finally {
+    //   this.studySidePanelState.dataFormState.bus.$emit(DataFormEventBusHandler.SAVE_COMPLETE_EVENT);
+    // }
+  }
 
   // cancelNewStudy() {
   //   this.newStudy = new Study();
