@@ -63,7 +63,7 @@
           <div class="level-left">
             <div v-if="file" class="level-item">
               <div
-                v-bind:class="{'has-text-dark': allErrors.length <= 0, 'has-text-danger': allErrors.length > 0}"
+                v-bind:class="{'has-text-dark': allErrors.length <= 0, 'has-text-danger': allErrors.length > 0}" :id="importFileNameId"
             >
                 {{file.name}}                  
               </div>
@@ -113,6 +113,7 @@
     private errors!: ValidationError | string | null;
 
     private importButtonId: string = "fileselectmessagebox-import-button";
+    private importFileNameId: string = "fileselectmessagebox-import-filename";
 
     mounted() {
       this.file = this.value;
