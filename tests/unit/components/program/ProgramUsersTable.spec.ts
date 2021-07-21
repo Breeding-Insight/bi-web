@@ -1,7 +1,6 @@
 import localVue, {defaultStore} from "../../index";
 import {mount} from "@vue/test-utils";
 import ProgramUsersTable from "@/components/program/ProgramUsersTable.vue";
-import ExpandableTableRow from "@/components/tables/ExpandableTableRow.vue";
 import EditDataRowForm from "@/components/forms/EditDataRowForm.vue";
 import BaseFieldWrapper from "@/components/forms/BaseFieldWrapper.vue";
 import DaoUtils from "../../test-utils/DaoUtils";
@@ -9,9 +8,7 @@ import {mocked} from "ts-jest";
 import {ProgramUserDAO} from "@/breeding-insight/dao/ProgramUserDAO";
 import {RoleDAO} from "@/breeding-insight/dao/RoleDAO";
 import {UserDAO} from "@/breeding-insight/dao/UserDAO";
-import ExpandableRowTable from "@/components/tables/ExpandableRowTable.vue";
-import NewDataForm from "@/components/forms/NewDataForm.vue";
-import BasicSelectField from "@/components/forms/BasicSelectField.vue";
+import ExpandableTable from '@/components/tables/expandableTable/ExpandableTable.vue';
 
 jest.mock('@/breeding-insight/dao/ProgramUserDAO');
 jest.mock('@/breeding-insight/dao/RoleDAO');
@@ -71,7 +68,8 @@ describe('Edit data form works properly', () => {
 
     it('Displays edit form when edit button is clicked', async() => {
 
-        const row = wrapper.findComponent(ExpandableTableRow);
+        const table = wrapper.findComponent(ExpandableTable);
+        const row = table.find('tbody tr');
         expect(row.exists()).toBeTruthy();
         const editBtn = row.find('a[data-testid="edit"]');
         expect(editBtn.exists()).toBeTruthy();
@@ -97,7 +95,7 @@ describe('Edit data form works properly', () => {
         const submitBtn = editForm.find('button[data-testid="save"]');
         await submitBtn.trigger('click');
 
-        const table = wrapper.findComponent(ExpandableRowTable);
+        const table = wrapper.findComponent(ExpandableTable);
         expect(table.emitted('show-error-notification')).toBeUndefined();
     });
 

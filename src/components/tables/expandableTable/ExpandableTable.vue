@@ -41,7 +41,7 @@
     >
 
       <slot></slot>
-      <b-table-column v-if="editable || archivable" v-slot="props" cell-class="has-text-right is-narrow">
+      <b-table-column v-if="editable || archivable" v-slot="props" cell-class="has-text-right is-narrow" :th-attrs="(column) => ({scope:'col'})">
         <a
             v-if="editable"
             data-testid="edit"
