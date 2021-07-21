@@ -2,7 +2,7 @@
   <b-pagination
       v-if="pagination"
       :total="pagination.totalCount"
-      :current="pagination.currentPage"
+      :current.sync="pagination.currentPage"
       range-before="1"
       range-after="1"
       order="is-centered"
@@ -43,7 +43,7 @@
             <select
                 id="paginationSelect"
                 v-model="pagination.pageSize"
-                v-on:change="$emit('paginate-page-size', $event.target.value)"
+                v-on:change="changePageSize($event)"
             >
               <option value="10">
                 10
@@ -91,6 +91,11 @@
 
     @Prop()
     private pagination!: Pagination;
+
+    changePageSize($event:any) {
+      this.pagination.pageSize = $event.target.value;
+      this.$emit('paginate-page-size', $event.target.value)
+    }
 
   }
 </script>
