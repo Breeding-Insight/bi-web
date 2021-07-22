@@ -63,7 +63,7 @@
           <div class="level-left">
             <div v-if="file" class="level-item">
               <div
-                v-bind:class="{'has-text-dark': allErrors.length <= 0, 'has-text-danger': allErrors.length > 0}"
+                v-bind:class="{'has-text-dark': allErrors.length <= 0, 'has-text-danger': allErrors.length > 0}" :id="importFileNameId"
             >
                 {{file.name}}                  
               </div>
@@ -79,7 +79,7 @@
           <div class="level-right">
             <div class="level-item">
               <div>
-                <a v-if="file" class="button is-primary has-text-weight-bold" v-on:click="$emit('import')">Import</a>
+                <a v-if="file" class="button is-primary has-text-weight-bold" :id="importButtonId" v-on:click="$emit('import')">Import</a>
               </div>
             </div>
           </div>
@@ -111,6 +111,9 @@
 
     @Prop()
     private errors!: ValidationError | string | null;
+
+    private importButtonId: string = "fileselectmessagebox-import-button";
+    private importFileNameId: string = "fileselectmessagebox-import-filename";
 
     mounted() {
       this.file = this.value;

@@ -31,7 +31,7 @@
         <div class="column is-whole has-text-centered buttons">
           <button
             class="button is-danger"
-            v-on:click="handleAbortModal()"
+            v-on:click="handleAbortModal()" :id="yesAbortId"
           >
             <strong>Yes, abort</strong>
           </button>
@@ -159,6 +159,8 @@ export default class TraitsImport extends ProgramsBase {
   private tableLoaded = false;
   private numTraits = 0;
   private showAbortModal = false;
+
+  private yesAbortId: string = "traitsimport-yes-abort";
   
   private ImportState = ImportState;
   private ImportEvent = ImportEvent;
