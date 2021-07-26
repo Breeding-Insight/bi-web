@@ -35,53 +35,9 @@
       </div>              
     </WarningModal>
 
-    <button
-      v-if="$ability.can('create', 'Observation')"
-      data-testid="newDataForm"
-      v-show="!newObservationActive & observations.length > 0"
-      class="button is-primary has-text-weight-bold is-pulled-right"
-      v-on:click="newObservationActive = true"
-    >
-      <span class="icon is-small">
-        <PlusCircleIcon
-          size="1.5x"
-          aria-hidden="true"
-        />
-      </span>
-      <span>
-        New Observation
-      </span>
-    </button>
-
-    <NewDataForm
-      v-if="newObservationActive"
-      v-bind:row-validations="observationValidations"
-      v-bind:new-record.sync="newObservation"
-      v-bind:data-form-state="newObservationFormState"
-      v-on:submit="saveObservation"
-      v-on:cancel="cancelObservation"
-      v-on:show-error-notification="$emit('show-error-notification', $event)"
-    >
-      <template v-slot="validations">
-        <div class="columns">
-          <div class="column is-two-fifths">
-            <BasicInputField
-              v-model="newObservation.name"
-              v-bind:validations="validations.name"
-              v-bind:field-name="'Name'"
-              v-bind:field-help="'Observation name as preferred. All Unicode special characters accepted.'"
-              :placeholder="'New Observation Name'"
-            />
-          </div>
-        </div>
-      </template>
-    </NewDataForm>
-
     <ExpandableRowTable
       v-bind:records.sync="observations"
       v-bind:row-validations="observationValidations"
-      v-bind:editable="$ability.can('update', 'Observation')"
-      v-bind:archivable="$ability.can('archive', 'Observation')"
       v-bind:pagination="observationsPagination"
       v-bind:data-form-state="editObservationFormState"
       v-on:submit="updateObservation($event)"
@@ -139,8 +95,6 @@
           <p class="has-text-weight-bold">
             No observations are currently defined for this program.
           </p>
-          Observations are used to create studies.<br>
-          You can add, edit, and delete observations from this panel.
         </EmptyTableMessage>
       </template>
     </ExpandableRowTable>
