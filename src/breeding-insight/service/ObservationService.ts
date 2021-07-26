@@ -50,10 +50,13 @@ export class ObservationService {
         data = PaginationController.mockSortRecords(data);
                 
         observations = data.map((observation: any) => {
-          let season: Season = new Season(observation.season.seasonDbId,
-                                          observation.season.seasonName,
-                                          ~~observation.season.year);
-
+          let season: Season | undefined = undefined;
+          if (observation.season) {
+            season = new Season(observation.season.seasonDbId,
+                                observation.season.seasonName,
+                                ~~observation.season.year);
+          }
+          
           // TODO: add call to backend to get level from observationUnit.observationUnitPosition.observationLevel
           return new Observation(observation.observationDbId,
                                  observation.studyDbId,
