@@ -20,10 +20,10 @@ export class Observation {
   studyId?: string;
   germplasmId?: string;
   observationUnitId?: string;
-  traitId?: string;
+  observationVariableId?: string;
   germplasmName?: string;
   observationUnitName?: string;
-  traitName?: string;
+  observationVariableName?: string;
   collector?: string;
   uploadedBy?: string;
   timeStamp?: Date | null;
@@ -35,10 +35,10 @@ export class Observation {
               studyId?: string,
               germplasmId?: string,
               observationUnitId?: string,
-              traitId?: string,
+              observationVariableId?: string,
               germplasmName?: string,
               observationUnitName?: string,
-              traitName?: string,
+              observationVariableName?: string,
               collector?: string,
               uploadedBy?: string,
               timeStamp?: string,
@@ -50,10 +50,10 @@ export class Observation {
     this.studyId = studyId;
     this.germplasmId = germplasmId;
     this.observationUnitId = observationUnitId;
-    this.traitId = traitId;
+    this.observationVariableId = observationVariableId;
     this.germplasmName = germplasmName;
     this.observationUnitName = observationUnitName;
-    this.traitName = traitName;
+    this.observationVariableName = observationVariableName;
     this.collector = collector;
     this.uploadedBy = uploadedBy;
     if (!timeStamp) {
@@ -74,10 +74,10 @@ export class Observation {
                            observation.studyId,
                            observation.germplasmId,
                            observation.observationUnitId,
-                           observation.traitId,
+                           observation.observationVariableId,
                            observation.germplasmName,
                            observation.observationUnitName,
-                           observation.traitName,
+                           observation.observationVariableName,
                            observation.collector,
                            observation.uploadedBy,
                            stamp,
@@ -92,10 +92,10 @@ export class Observation {
       (this.studyId === observation.studyId) &&
       (this.germplasmId === observation.germplasmId) &&
       (this.observationUnitId === observation.observationUnitId) &&
-      (this.traitId === observation.traitId) &&
+      (this.observationVariableId === observation.observationVariableId) &&
       (this.germplasmName === observation.germplasmName) &&
       (this.observationUnitName === observation.observationUnitName) &&
-      (this.traitName === observation.traitName) &&
+      (this.observationVariableName === observation.observationVariableName) &&
       (this.collector === observation.collector) &&
       (this.uploadedBy === observation.uploadedBy) &&
       (this.timeStamp === observation.timeStamp) &&
