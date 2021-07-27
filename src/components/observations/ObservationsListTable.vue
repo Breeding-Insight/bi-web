@@ -55,22 +55,22 @@
           <p>{{ data.observationUnitName }}</p>
         </TableColumn>
         <TableColumn name="trait" v-bind:label="'Trait'">
-          <p>{{ data.traitName }}</p>
+          <p>{{ data.observationVariableName }}</p>
         </TableColumn>
         <TableColumn name="value" v-bind:label="'Value'">
           <p>{{ data.value }}</p>
         </TableColumn>
-        <TableColumn name="season" v-bind:label="'Season'">
+        <TableColumn name="season" v-if="data.season" v-bind:label="'Season'">
           <p>{{ data.season.name }}</p>
         </TableColumn>
         <TableColumn name="timestamp" v-bind:label="'Timestamp'">
-          <p>{{ data.stamp | dmyFormat}}</p>
+          <p>{{ data.timeStamp | dmyFormat}}</p>
         </TableColumn>
         <TableColumn name="collector" v-bind:label="'Collector'">
           <p>{{ data.collector }}</p>
         </TableColumn>
-        <TableColumn name="updated-by" v-bind:label="'Updated By'">
-          <p>{{ data.updatedBy }}</p>
+        <TableColumn name="uploaded-by" v-bind:label="'Uploaded By'">
+          <p>{{ data.uploadedBy }}</p>
         </TableColumn>
       </template>
       <template v-slot:edit="{editData, validations}">
