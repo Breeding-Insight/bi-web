@@ -23,7 +23,7 @@
       v-on:deactivate="deactivateActive = false"
     >
       <section>
-        <p class="has-text-dark">
+        <p class="has-text-dark" :class="modalTextClass">
           Program-related data referencing this location will not be affected by this change.
         </p>
       </section>
@@ -178,6 +178,8 @@ export default class ProgramLocationsTable extends Vue {
 
   private newLocationFormState: DataFormEventBusHandler = new DataFormEventBusHandler();
   private editLocationFormState: DataFormEventBusHandler = new DataFormEventBusHandler();
+
+  private modalTextClass: string = "modal-text";
 
   locationValidations = {
     name: {required}
