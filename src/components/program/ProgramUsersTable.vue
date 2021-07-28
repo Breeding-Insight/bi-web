@@ -23,10 +23,10 @@
       v-on:deactivate="deactivateActive = false"
     >
       <section>
-        <p class="has-text-dark">
+        <p class="has-text-dark" :class="modalTextClass">
           This will only remove the user's access to your program and will not affect their account.
         </p>
-        <p class="has-text-dark">
+        <p class="has-text-dark" :class="modalTextClass">
           Program-related data collected by this user will not be affected by this change.
         </p>
       </section>
@@ -228,6 +228,8 @@ export default class ProgramUsersTable extends Vue {
 
   private newUserFormState: DataFormEventBusHandler = new DataFormEventBusHandler();
   private editUserFormState: DataFormEventBusHandler = new DataFormEventBusHandler();
+
+  private modalTextClass: string = "modal-text";
 
   newUserValidations = {
     name: {required},
