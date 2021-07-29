@@ -6,7 +6,7 @@
         v-on:deactivate="sidePanelState.bus.$emit(sidePanelState.cancelCloseEditEvent)"
     >
       <section>
-        <p class="has-text-dark">
+        <p class="has-text-dark" :class="modalTextClass">
           You will lose any edits you have made upon closing.
         </p>
       </section>
@@ -148,6 +148,8 @@
     autoHandleClosePanelEvent!: boolean;
     @Prop()
     sidePanelState!: SidePanelTableEventBusHandler;
+
+    private modalTextClass: string = "modal-text";
 
     private BreakpointEvent = BreakpointEvent;
     private state = CollapseColumnsState.NORMAL_PANEL_CLOSED;

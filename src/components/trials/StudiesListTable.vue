@@ -23,7 +23,7 @@
       v-on:deactivate="deactivateActive = false"
     >
       <section>
-        <p class="has-text-dark">
+        <p class="has-text-dark" :class="modalTextClass">
           Program-related data referencing this study will not be affected by this change.
         </p>
       </section>
@@ -240,6 +240,8 @@ export default class StudyTable extends Vue {
   // TODO: Move these into an event bus in the future
   private studiesPagination?: Pagination = new Pagination();
   private paginationController: PaginationController = new PaginationController();
+
+  private modalTextClass: string = "modal-text";
 
   mounted() {
     this.getStudies();

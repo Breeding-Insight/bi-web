@@ -5,10 +5,10 @@
       v-on:deactivate="$emit('deactivate')"
   >
     <section>
-      <p class="has-text-dark">
+      <p class="has-text-dark" :class="modalTextClass">
         This application was unable to establish a connection with our servers. Please try again.
       </p>
-      <p class="has-text-dark">
+      <p class="has-text-dark" :class="modalTextClass">
         If you continue to experience problems, try
         <a href="http://status.orcid.org/">checking the ORCID status page</a>.
         If all else fails,
@@ -28,5 +28,7 @@
   export default class ServerContactErrorModal extends Vue {
     @Prop()
     active!: boolean;
+
+    private modalTextClass: string = "modal-text";
   }
 </script>
