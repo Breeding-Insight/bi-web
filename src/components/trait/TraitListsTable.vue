@@ -23,7 +23,7 @@
       v-on:deactivate="deactivateActive = false"
     >
       <section>
-        <p class="has-text-dark">
+        <p class="has-text-dark" :class="modalTextClass">
           Program-related data referencing this trait will not be affected by this change.
         </p>
       </section>
@@ -242,6 +242,8 @@ export default class TraitTable extends Vue {
   // TODO: Move these into an event bus in the future
   private traitsPagination?: Pagination = new Pagination();
   private paginationController: PaginationController = new PaginationController();
+
+  private modalTextClass: string = "modal-text";
 
   traitValidations = {
     scale: {

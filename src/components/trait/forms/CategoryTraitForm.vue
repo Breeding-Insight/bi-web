@@ -23,7 +23,7 @@
         v-on:deactivate="deleteModalActive = false"
     >
       <section>
-        <p class="has-text-dark">
+        <p class="has-text-dark" :class="modalTextClass">
           Please confirm that you would like to remove this category.
         </p>
       </section>
@@ -124,6 +124,8 @@ export default class CategoryTraitForm extends Vue {
   private deleteWarningTitle: string = "Remove category?"
   private activeRemoveRowIndex?: number;
   private deleteModalActive: boolean = false;
+
+  private modalTextClass: string = "modal-text";
 
   @Watch('data', {immediate: true, deep: true})
   emitData(){
