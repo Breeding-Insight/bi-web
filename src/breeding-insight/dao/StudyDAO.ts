@@ -61,4 +61,19 @@ export class StudyDAO {
       return ResultGenerator.err(error);
     }  
   }
+
+    static async getById(programId: string, studyId: string): Promise<Result<Error, BiResponse>> {
+    try {
+      const { data } = await api.call({
+        url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/brapi/v2/studies`,
+        method: 'get',
+        params: { studyDbId: studyId }
+      }) as Response;
+
+      return ResultGenerator.success(new BiResponse(data));
+        
+    } catch (error) {
+      return ResultGenerator.err(error);
+    }  
+  }    
 }

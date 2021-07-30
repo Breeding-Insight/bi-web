@@ -49,7 +49,7 @@
     </WarningModal>
 
     <button
-      v-show="!newUserActive & users.length > 0"
+      v-show="!newUserActive"
       v-if="$ability.can('create', 'ProgramUser')"
       class="button is-primary has-text-weight-bold is-pulled-right"
       v-on:click="newUserActive = true"
@@ -65,6 +65,8 @@
         New User
       </span>
     </button>
+
+    <div class="is-clearfix"></div>
 
     <NewDataForm
       v-if="newUserActive"
@@ -105,55 +107,47 @@
       </template>
     </NewDataForm>
 
-    <ExpandableRowTable
-      v-bind:records.sync="users"
-      v-bind:row-validations="editUserValidations"
-      v-bind:editable="$ability.can('update', 'ProgramUser')"
-      v-bind:archivable="$ability.can('archive', 'ProgramUser')"
-      v-bind:pagination="usersPagination"
-      v-bind:data-form-state="editUserFormState"
-      v-on:submit="updateUser($event)"
-      v-on:remove="displayWarning($event)"
-      v-on:show-error-notification="$emit('show-error-notification', $event)"
-      v-on:paginate="paginationController.updatePage($event)"
-      v-on:paginate-toggle-all="paginationController.toggleShowAll()"
-      v-on:paginate-page-size="paginationController.updatePageSize($event)"
+    <ExpandableTable
+        v-bind:records.sync="users"
+        v-bind:loading="this.rolesLoading || this.usersLoading"
+        v-bind:row-validations="editUserValidations"
+        v-bind:editable="$ability.can('update', 'ProgramUser')"
+        v-bind:archivable="$ability.can('archive', 'ProgramUser')"
+        v-bind:pagination="usersPagination"
+        v-bind:data-form-state="editUserFormState"
+        v-on:submit="updateUser($event)"
+        v-on:remove="displayWarning($event)"
+        v-on:show-error-notification="$emit('show-error-notification', $event)"
+        v-on:paginate="paginationController.updatePage($event)"
+        v-on:paginate-toggle-all="paginationController.toggleShowAll()"
+        v-on:paginate-page-size="paginationController.updatePageSize($event)"
     >
-
-      <template v-slot:columns="data">
-        <TableColumn name="name" v-bind:label="'Name'">
-          {{ data.name }}
-        </TableColumn>
-        <TableColumn name="email" v-bind:label="'Email'">
-          {{ data.email }}
-        </TableColumn>
-        <TableColumn name="roles" v-bind:label="'Roles'">
-          <template v-if="rolesMap.size > 0">
-            {{ getRoleName(data.roleId) }}
-          </template>
-        </TableColumn>
-      </template>
+      <b-table-column field="data.name" label="Name" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+        {{ props.row.data.name }}
+      </b-table-column>
+      <b-table-column field="data.email" label="Email" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+        {{ props.row.data.email }}
+      </b-table-column>
+      <b-table-column :custom-sort="sortRole" label="Roles" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+        <template v-if="rolesMap.size > 0">
+          {{ getRoleName(props.row.data.roleId) }}
+        </template>
+      </b-table-column>
 
       <template v-slot:edit="{editData, validations}">
         <div class="columns">
           <div class="column is-two-fifths">
             <BasicSelectField
-              v-model="editData.roleId"
-              v-bind:validations="validations.roleId"
-              v-bind:options="roles"
-              v-bind:selected-id="editData.roleId"
-              v-bind:field-name="'Role'"
+                v-model="editData.roleId"
+                v-bind:validations="validations.roleId"
+                v-bind:options="roles"
+                v-bind:selected-id="editData.roleId"
+                v-bind:field-name="'Role'"
             />
           </div>
         </div>
       </template>
       <template v-slot:emptyMessage>
-        <EmptyTableMessage
-          v-bind:button-view-toggle="!newUserActive"
-          v-bind:button-text="'New User'"
-          v-bind:create-enabled="$ability.can('create', 'ProgramUser')"
-          v-on:newClick="newUserActive = true"
-        >
           <p class="has-text-weight-bold">
             No program users are currently defined.
           </p>
@@ -162,9 +156,8 @@
             program, their account and membership in other programs is not affected.
           </p>
           <p>You can add, edit, and delete users from your program from this panel.</p>
-        </EmptyTableMessage>
       </template>
-    </ExpandableRowTable>
+    </ExpandableTable>
   </section>
 </template>
 
@@ -195,10 +188,14 @@
   import store from "@/store";
   import {LOGIN} from "@/store/mutation-types";
   import {defineAbilityFor} from "@/config/ability";
+  import {ChevronRightIcon, ChevronDownIcon} from 'vue-feather-icons'
+  import ExpandableTable from '@/components/tables/expandableTable/ExpandableTable.vue';
 
 @Component({
-  components: { NewDataForm, BasicInputField, BasicSelectField, TableColumn,
-                WarningModal, PlusCircleIcon, EmptyTableMessage, ExpandableRowTable
+  components: {
+    ExpandableTable, NewDataForm, BasicInputField, BasicSelectField, TableColumn,
+                WarningModal, PlusCircleIcon, EmptyTableMessage, ExpandableRowTable,
+                ChevronRightIcon, ChevronDownIcon
               },
   computed: {
     ...mapGetters([
@@ -230,6 +227,9 @@ export default class ProgramUsersTable extends Vue {
   private editUserFormState: DataFormEventBusHandler = new DataFormEventBusHandler();
 
   private modalTextClass: string = "modal-text";
+
+  private rolesLoading = true;
+  private usersLoading = true;
 
   newUserValidations = {
     name: {required},
@@ -264,7 +264,7 @@ export default class ProgramUsersTable extends Vue {
       // Display error that users cannot be loaded
       this.$emit('show-error-notification', 'Error while trying to load program users');
       throw error;
-    });
+    }).finally(() => this.usersLoading = false);
   }
 
   getRoles() {
@@ -279,7 +279,7 @@ export default class ProgramUsersTable extends Vue {
       // Display error that users cannot be loaded
       this.$emit('show-error-notification', 'Error while trying to load roles');
       throw error;
-    });
+    }).finally(() => this.rolesLoading = false);
 
   }
 
@@ -435,6 +435,14 @@ export default class ProgramUsersTable extends Vue {
 
   getRoleName(id: string): string | undefined {
     return this.rolesMap.get(id)!.name;
+  }
+
+  sortRole(a: any, b: any, isAsc: boolean) {
+    if(isAsc) {
+      return this.getRoleName(a.data.roleId)!.localeCompare(this.getRoleName(b.data.roleId)!);
+    } else {
+      return this.getRoleName(b.data.roleId)!.localeCompare(this.getRoleName(a.data.roleId)!);
+    }
   }
 
 }
