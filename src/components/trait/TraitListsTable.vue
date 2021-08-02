@@ -83,6 +83,7 @@
             v-bind:scale-options="scaleClassOptions"
             v-bind:method-options="methodClassOptions"
             v-bind:program-observation-levels="observationLevelOptions"
+            v-bind:tags="tagOptions"
             v-bind:client-validations="validations"
             v-bind:validation-handler="validationHandler"
         ></BaseTraitForm>
@@ -132,6 +133,7 @@
       <template v-slot:side-panel="{tableRow}">
         <TraitDetailPanel
           v-bind:data="traitSidePanelState.openedRow"
+          v-bind:tags="tagOptions"
           v-bind:observation-level-options="observationLevelOptions"
           v-bind:edit-active="traitSidePanelState.editActive"
           v-bind:editable="$ability.can('update', 'Trait') && currentTraitEditable"
@@ -217,6 +219,7 @@ export default class TraitTable extends Vue {
   private traits: Trait[] = [];
   private methodClassOptions: string[] = Object.values(MethodClass);
   private observationLevelOptions?: string[];
+  private tagOptions?: string[];
   private scaleClassOptions: string[] = Object.values(DataType);
   private editTrait?: Trait;
   private originalTrait?: Trait;
@@ -254,6 +257,7 @@ export default class TraitTable extends Vue {
   mounted() {
     this.getTraits();
     this.getObservationLevels();
+    this.getTraitTags();
 
     // Events
     this.traitSidePanelState.bus.$on(this.traitSidePanelState.requestClosePanelEvent, (showWarningEvent: Function, confirmCloseEvent: Function) => {
@@ -355,7 +359,8 @@ export default class TraitTable extends Vue {
       await TraitService.createTraits(this.activeProgram!.id!, [this.newTrait]);
       this.$emit('show-success-notification', 'Trait creation successful.');
       this.getTraits();
-      await this.getObservationLevels();
+      const levelPromise = this.getObservationLevels();
+      const tagPromise = this.getTraitTags();
       this.newTrait = new Trait();
       this.newTraitActive = false;
     } catch (error) {
@@ -440,6 +445,20 @@ export default class TraitTable extends Vue {
       this.$emit('show-error-notification', 'Unable to retrieve observation levels');
     }
     this.$emit('show-error-notification', 'Unable to retrieve observation levels');
+  }
+
+  async getTraitTags() {
+    try {
+      const response = await TraitService.getTraitTags(this.activeProgram!.id!);
+      if (response) {
+        const [tags, metadata] = response;
+        this.tagOptions = tags;
+        return;
+      }
+    } catch (error) {
+      this.$emit('show-error-notification', 'Unable to retrieve existing trait tags');
+    }
+    this.$emit('show-error-notification', 'Unable to retrieve existing trait tags');
   }
 
 }
