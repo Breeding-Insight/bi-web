@@ -23,7 +23,7 @@
       v-on:deactivate="deactivateActive = false"
     >
       <section>
-        <p class="has-text-dark" :class="modalTextClass">
+        <p class="has-text-dark" :class="this.$modalTextClass">
           Program-related data referencing this trial will not be affected by this change.
         </p>
       </section>
@@ -178,8 +178,6 @@ export default class TrialsTable extends Vue {
 
   private newTrialFormState: DataFormEventBusHandler = new DataFormEventBusHandler();
   private editTrialFormState: DataFormEventBusHandler = new DataFormEventBusHandler();
-
-  private modalTextClass: string = "modal-text";
 
   trialValidations = {
     name: {required}

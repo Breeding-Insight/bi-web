@@ -63,6 +63,8 @@ const cookieNames = {
 }
 Vue.prototype.$cookieNames = cookieNames;
 
+Vue.prototype.$modalTextClass = 'modal-text';
+
 window.ATL_JQ_PAGE_PROPS =  {
   "triggerFunction": function(showCollectorDialog: any) {
     Vue.prototype.$showCollectorDialog = showCollectorDialog

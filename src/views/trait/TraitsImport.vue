@@ -23,7 +23,7 @@
       v-on:deactivate="showAbortModal = false"
     >
       <section>
-        <p class="has-text-dark" :class="modalTextClass">
+        <p class="has-text-dark" :class="this.$modalTextClass">
           No traits will be added, and the import in progress will be completely removed.
         </p>
       </section>
@@ -165,8 +165,6 @@ export default class TraitsImport extends ProgramsBase {
   private ImportState = ImportState;
   private ImportEvent = ImportEvent;
   private ImportAction = ImportAction;
-
-  private modalTextClass: string = "modal-text";
 
   private state = ImportState.CHOOSE_FILE;
   private importStateMachine = createMachine({
