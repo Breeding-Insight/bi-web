@@ -23,7 +23,7 @@
       v-on:deactivate="deactivateActive = false"
     >
       <section>
-        <p class="has-text-dark" :class="modalTextClass">
+        <p class="has-text-dark" :class="this.$modalTextClass">
           Program-related data will not be affected by this change.
         </p>
       </section>
@@ -242,8 +242,6 @@ export default class AdminProgramsTable extends Vue {
   private customBrapi: boolean = false;
 
   private serverError: FieldError[] = [];
-
-  private modalTextClass: string = "modal-text";
 
   // reset brapiUrl if checkbox toggled back off
   @Watch('customBrapi', {immediate: true})
