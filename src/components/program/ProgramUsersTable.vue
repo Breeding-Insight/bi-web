@@ -121,18 +121,18 @@
         v-on:paginate="paginationController.updatePage($event)"
         v-on:paginate-toggle-all="paginationController.toggleShowAll()"
         v-on:paginate-page-size="paginationController.updatePageSize($event)"
-      >
-       <b-table-column field="data.name" label="Name" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-         {{ props.row.data.name }}
-       </b-table-column>
-       <b-table-column field="data.email" label="Email" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-         {{ props.row.data.email }}
-       </b-table-column>
-       <b-table-column :custom-sort="sortRole" label="Roles" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-         <template v-if="rolesMap.size > 0">
-           {{ getRoleName(props.row.data.roleId) }}
-         </template>
-       </b-table-column>
+    >
+      <b-table-column field="data.name" label="Name" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+        {{ props.row.data.name }}
+      </b-table-column>
+      <b-table-column field="data.email" label="Email" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+        {{ props.row.data.email }}
+      </b-table-column>
+      <b-table-column :custom-sort="sortRole" label="Roles" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+        <template v-if="rolesMap.size > 0">
+          {{ getRoleName(props.row.data.roleId) }}
+        </template>
+      </b-table-column>
 
       <template v-slot:edit="{editData, validations}">
         <div class="columns">
