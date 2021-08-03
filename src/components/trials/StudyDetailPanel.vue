@@ -18,61 +18,23 @@
 <template>
   <div class="is-full-length">
     <template v-if="data && !editActive">
-      <p v-if="data.name" class="is-size-5 has-text-weight-bold mb-0">{{data.name}}</p>
-
-      <!-- just shows first abbreviation AKA main abbreviation and first synonym -->
-      <template v-if="abbreviationsSynonymsString">
-        <p class="is-size-7">{{abbreviationsSynonymsString(2)}}</p>
-      </template>
-      <template v-else>
-        <p class="mb-3"/>
-      </template>
-
-      <p v-if="scaleTypeString" class="has-text-weight-bold mb-0">{{scaleTypeString}}</p>
-
-      <!-- scale types hardcoded for now until we can get them from bi-api -->
-      <template v-if="scaleType && (Scale.dataTypeEquals(scaleType, DataType.Ordinal) || Scale.dataTypeEquals(scaleType, DataType.Nominal))">
-        <p class="mb-0" v-for="category in data.scale.categories" :key="category.label">
-          <template v-if="category.label">
-            {{ category.label }} =
-          </template>
-          {{category.value}}
-        </p>
-      </template>
-
-      <template v-if="scaleType && Scale.dataTypeEquals(scaleType, DataType.Text)">
-        <!-- TODO: Not showing anything for this now -->
-      </template>
-
-      <template v-if="scaleType && Scale.dataTypeEquals(scaleType, DataType.Numerical)">
-        <p class="mb-0">Units: {{valueOrNA(data.scale.scaleName)}}</p>
-        <p class="mb-0">Decimal Places: {{valueOrNA(data.scale.decimalPlaces)}}</p>
-        <p class="mb-0">Minimum valid value: {{valueOrNA(data.scale.validValueMin)}}</p>
-        <p class="mb-0">Maximum valid value: {{valueOrNA(data.scale.validValueMax)}}</p>
-      </template>
-
-      <template v-if="Scale.dataTypeEquals(scaleType, DataType.Duration)">
-        <p class="mb-0">Unit of time: {{valueOrNA(data.scale.scaleName)}}</p>
-        <p class="mb-0">Minimum valid value: {{valueOrNA(data.scale.validValueMin)}}</p>
-        <p class="mb-0">Maximum valid value: {{valueOrNA(data.scale.validValueMax)}}</p>
-      </template>
-
-      <template v-if="scaleType && Scale.dataTypeEquals(scaleType, DataType.Date)">
-      </template>
-
-      <!-- if computation method, show formula as well -->
-      <template v-if="methodClass && Method.methodClassEquals(methodClass, MethodClass.Computation)">
-        <p class="has-text-weight-bold mt-3 mb-0">Formula</p>
-        <p class="mb-0">{{valueOrNA(data.method.formula)}}</p>
-      </template>
-
-      <p class="has-text-weight-bold mt-3 mb-0">Description of collection method</p>
-      <p>{{data.method.description}}</p>
-
-      <ProgressBar v-if="loadingEditable" v-bind:label="'Checking trait editability status'"
-                   v-bind:estimated-time-text="'May take a few seconds'"
-      />
-
+      <p v-if="data.name" class="is-size-5 has-text-weight-bold mb-0">{{ data.name }}</p>
+      <p v-if="data.description">{{ data.description }}</p>
+      <p v-if="data.type" class="is-size-5 has-text-weight-bold mb-0">Type</p>
+      <p v-if="data.type">{{ data.type }}</p>
+      <p v-if="data.location" class="is-size-5 has-text-weight-bold mb-0">Location</p>
+      <p v-if="data.location">{{ data.location }}</p>
+      <p v-if="data.startDate" class="is-size-5 has-text-weight-bold mb-0">Start</p>
+      <p v-if="data.startDate">{{ data.startDate | dmyFormat }}</p>
+      <p v-if="data.endDate" class="is-size-5 has-text-weight-bold mb-0">End</p>
+      <p v-if="data.endDate">{{ data.endDate | dmyFormat }}</p>
+      <p>
+        <router-link v-bind:to="{name: 'observations', params: {programId: activeProgram.id, studyId: data.id}}">
+          Observations
+        </router-link>
+      </p>
+      <p v-if="!data.active">Status: Archived</p>
+      
       <article v-if="!editable && !loadingEditable" class="message is-info">
         <div class="message-body">
           <div class="media">
@@ -90,17 +52,6 @@
         </div>
       </article>
 
-      <template v-if="!data.active">
-        <p class="has-text-weight-bold mt-3 mb-0">Included in Favorites</p>
-        <b-button
-            size="is-small"
-            style="background: lightgray"
-            class="archive-tag"
-            v-if="!data.active">
-          Archived
-        </b-button>
-      </template>
-
       <!-- maybe break out controls for reuse eventually -->
       <div class="columns is-mobile is-centered pt-6">
         <div class="column is-narrow">
@@ -114,22 +65,6 @@
           </a>
         </div>
         <div class="column is-narrow">
-          <a
-            v-if="data.active"
-            v-on:click="$emit('archive', data)"
-            v-on:keypress.enter.space="$emit('archive', data)"
-            tabindex="0"
-            >
-            Archive
-          </a>
-          <a
-            v-if="archivable && !data.active"
-            v-on:click="$emit('restore', data)"
-            v-on:keypress.enter.space="$emit('restore', data)"
-            tabindex="0"
-          >
-            Restore/Unarchive
-          </a>
         </div>
       </div>
     </template>
@@ -168,10 +103,20 @@
   import { DataFormEventBusHandler } from '@/components/forms/DataFormEventBusHandler';
   import { HelpCircleIcon } from 'vue-feather-icons'
   import ProgressBar from '@/components/forms/ProgressBar.vue'
+  import { dmyFormat } from '@/breeding-insight/utils/filters';
+  import { mapGetters } from 'vuex';
 
   @Component({
     components: {EditDataForm, SidePanel, BaseTraitForm, HelpCircleIcon, ProgressBar},
-    data: () => ({DataType, MethodClass, Scale, Method})
+data: () => ({DataType, MethodClass, Scale, Method}),
+    computed: {
+      ...mapGetters([
+        'activeProgram'
+      ])
+    },
+    filters: {
+      dmyFormat
+    }
   })
   export default class TraitDetailPanel extends Vue {
 
@@ -199,75 +144,75 @@
     private methodClassOptions: string[] = Object.values(MethodClass);
     private scaleClassOptions: string[] = Object.values(DataType);
 
-    @Watch('editActive', {immediate: true})
-    watchEdit() {
-      if (this.editActive){
-        this.editTrait = Trait.assign({...this.data} as Trait);
-      } else {
-        this.editTrait = null;
-      }
+    // @Watch('editActive', {immediate: true})
+    // watchEdit() {
+    //   if (this.editActive){
+    //     this.editTrait = Trait.assign({...this.data} as Trait);
+    //   } else {
+    //     this.editTrait = null;
+    //   }
 
-    }
+    // }
 
-    public traitUpdate(trait: Trait) {
-      this.editTrait = trait;
-      this.$emit('trait-change', this.editTrait);
-    }
+    // public traitUpdate(trait: Trait) {
+    //   this.editTrait = trait;
+    //   this.$emit('trait-change', this.editTrait);
+    // }
 
-    abbreviationsSynonymsString(synonymsMaxLength: number) : string | undefined {
-      let abbSyn = "";
-      if (this.data && this.data.abbreviations && this.data.abbreviations.length > 0) {
-        abbSyn = this.data.abbreviations[0];
-      }
-      if (this.data && this.data.synonyms && this.data.synonyms.length > 0) {
-        // Up to synonymsMaxLength synonyms will be shown before , ... cutoff
-        const synonyms = this.data.synonyms.slice(0, Math.min(this.data.synonyms.length, synonymsMaxLength)).join(", ");
-        abbSyn = (abbSyn === "") ? synonyms : abbSyn + ", " + synonyms;
-        if (this.data.synonyms.length > synonymsMaxLength && this.data.synonyms.length !== 1) {
-          abbSyn = abbSyn + ", ...";
-        }
-      }
+    // abbreviationsSynonymsString(synonymsMaxLength: number) : string | undefined {
+    //   let abbSyn = "";
+    //   if (this.data && this.data.abbreviations && this.data.abbreviations.length > 0) {
+    //     abbSyn = this.data.abbreviations[0];
+    //   }
+    //   if (this.data && this.data.synonyms && this.data.synonyms.length > 0) {
+    //     // Up to synonymsMaxLength synonyms will be shown before , ... cutoff
+    //     const synonyms = this.data.synonyms.slice(0, Math.min(this.data.synonyms.length, synonymsMaxLength)).join(", ");
+    //     abbSyn = (abbSyn === "") ? synonyms : abbSyn + ", " + synonyms;
+    //     if (this.data.synonyms.length > synonymsMaxLength && this.data.synonyms.length !== 1) {
+    //       abbSyn = abbSyn + ", ...";
+    //     }
+    //   }
 
-      return abbSyn === "" ? undefined : abbSyn;
-    }
+    //   return abbSyn === "" ? undefined : abbSyn;
+    // }
 
-    get scaleType() {
-      if (this.data && this.data.scale && this.data.scale.dataType) {
-        return this.data.scale.dataType;
-      }
-      return undefined;
-    }
+    // get scaleType() {
+    //   if (this.data && this.data.scale && this.data.scale.dataType) {
+    //     return this.data.scale.dataType;
+    //   }
+    //   return undefined;
+    // }
 
-    get methodClass() {
-      if (this.data && this.data.method && this.data.method.methodClass) {
-        return this.data.method.methodClass;
-      }
-      return undefined;
-    }
+    // get methodClass() {
+    //   if (this.data && this.data.method && this.data.method.methodClass) {
+    //     return this.data.method.methodClass;
+    //   }
+    //   return undefined;
+    // }
 
-    get scaleTypeString() {
-      if (this.data && this.data.programObservationLevel && this.data.method && this.data.scale) {
-        let str = this.data.programObservationLevel.name + " " +
-                  this.data.method.methodClass + " using " +
-                  StringFormatters.toStartCase(this.data.scale.dataType!);
-        const postfix = this.scalePostFix(this.data.scale.dataType!);
-        if (postfix !== "") {
-          str = str + " " + postfix;
-        }
-        return str;
-      }
-      return undefined;
-    }
+    // get scaleTypeString() {
+    //   if (this.data && this.data.programObservationLevel && this.data.method && this.data.scale) {
+    //     let str = this.data.programObservationLevel.name + " " +
+    //               this.data.method.methodClass + " using " +
+    //               StringFormatters.toStartCase(this.data.scale.dataType!);
+    //     const postfix = this.scalePostFix(this.data.scale.dataType!);
+    //     if (postfix !== "") {
+    //       str = str + " " + postfix;
+    //     }
+    //     return str;
+    //   }
+    //   return undefined;
+    // }
 
-    scalePostFix(dataType: string) : string {
-      if (this.scalePostfix.has(dataType.toUpperCase())) {
-        return "Scale";
-      } else if (Scale.dataTypeEquals(dataType, DataType.Numerical)) {
-        return "Units";
-      } else {
-        return "";
-      }
-    }
+    // scalePostFix(dataType: string) : string {
+    //   if (this.scalePostfix.has(dataType.toUpperCase())) {
+    //     return "Scale";
+    //   } else if (Scale.dataTypeEquals(dataType, DataType.Numerical)) {
+    //     return "Units";
+    //   } else {
+    //     return "";
+    //   }
+    // }
 
     valueOrNA(value: any) {
       return value !== undefined ? value: "NA";

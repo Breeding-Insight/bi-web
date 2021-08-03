@@ -29,13 +29,47 @@ import { abilitiesPlugin } from '@casl/vue';
 import { defineAbilityFor } from './config/ability';
 import TreeView from "vue-json-tree-view";
 import VueQRCodeComponent from 'vue-qrcode-component'
+import VueFeatherIconPack from "./components/VueFeatherIconPack.vue";
+
+Vue.component("vue-feather-icon-pack", VueFeatherIconPack);
 
 Vue.use(abilitiesPlugin, defineAbilityFor(undefined, undefined));
 Vue.config.productionTip = false;
-Vue.use(Buefy);
 Vue.use(Vuelidate);
 Vue.use(VueCookies);
-Vue.use(TreeView)
+Vue.use(TreeView);
+Vue.use(Buefy, {
+  defaultIconComponent: "vue-feather-icon-pack",
+  defaultIconPack: "ft",
+  customIconPacks: {
+    ft: {
+      sizes: {
+        default: "1.5x",
+        "is-small": "1x",
+        "is-medium": "2x",
+        "is-large": "3x"
+      },
+      iconPrefix: "",
+      internalIcons: {
+        check: "checkmark",
+        information: "info",
+        "check-circle": "checkmark-circle",
+        alert: "alert-triangle",
+        "alert-circle": "alert-circle",
+        "arrow-up": "arrow-up",
+        "chevron-right": "chevron-right",
+        "chevron-left": "chevron-left",
+        "chevron-down": "chevron-down",
+        "chevron-up": "chevron-up",
+        "arrow-down": "arrow-down",
+        eye: "eye",
+        "eye-off": "eye-off",
+        "menu-down": "arrow-down",
+        "menu-up": "arrow-up"
+      }
+    }
+  }
+});
 
 Vue.component('qr-code', VueQRCodeComponent)
 
