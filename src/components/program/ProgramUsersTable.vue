@@ -122,27 +122,27 @@
         v-on:paginate-toggle-all="paginationController.toggleShowAll()"
         v-on:paginate-page-size="paginationController.updatePageSize($event)"
       >
-        <b-table-column field="data.name" label="Name" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-          {{ props.row.data.name }}
-        </b-table-column>
-        <b-table-column field="data.email" label="Email" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-          {{ props.row.data.email }}
-        </b-table-column>
-        <b-table-column :custom-sort="sortRole" label="Roles" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-          <template v-if="rolesMap.size > 0">
-            {{ getRoleName(props.row.data.roleId) }}
-          </template>
-        </b-table-column>
+       <b-table-column field="data.name" label="Name" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+         {{ props.row.data.name }}
+       </b-table-column>
+       <b-table-column field="data.email" label="Email" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+         {{ props.row.data.email }}
+       </b-table-column>
+       <b-table-column :custom-sort="sortRole" label="Roles" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+         <template v-if="rolesMap.size > 0">
+           {{ getRoleName(props.row.data.roleId) }}
+         </template>
+       </b-table-column>
 
       <template v-slot:edit="{editData, validations}">
         <div class="columns">
           <div class="column is-two-fifths">
             <BasicSelectField
-              v-model="editData.roleId"
-              v-bind:validations="validations.roleId"
-              v-bind:options="roles"
-              v-bind:selected-id="editData.roleId"
-              v-bind:field-name="'Role'"
+                v-model="editData.roleId"
+                v-bind:validations="validations.roleId"
+                v-bind:options="roles"
+                v-bind:selected-id="editData.roleId"
+                v-bind:field-name="'Role'"
             />
           </div>
         </div>
@@ -225,7 +225,7 @@ export default class ProgramUsersTable extends Vue {
 
   private newUserFormState: DataFormEventBusHandler = new DataFormEventBusHandler();
   private editUserFormState: DataFormEventBusHandler = new DataFormEventBusHandler();
-  
+
   private rolesLoading = true;
   private usersLoading = true;
 
@@ -277,7 +277,7 @@ export default class ProgramUsersTable extends Vue {
       // Display error that users cannot be loaded
       this.$emit('show-error-notification', 'Error while trying to load roles');
       throw error;
-    }).finally(() => this.usersLoading = false);
+    }).finally(() => this.rolesLoading = false);
 
   }
 
@@ -434,7 +434,7 @@ export default class ProgramUsersTable extends Vue {
   getRoleName(id: string): string | undefined {
     return this.rolesMap.get(id)!.name;
   }
-  
+
   sortRole(a: any, b: any, isAsc: boolean) {
     if(isAsc) {
       return this.getRoleName(a.data.roleId)!.localeCompare(this.getRoleName(b.data.roleId)!);
