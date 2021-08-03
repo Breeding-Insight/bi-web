@@ -158,9 +158,9 @@ export default class CategoryTraitForm extends Vue {
   prepopulateCategories() {
     for (const i of Array(5).keys()) {
       if (this.type === DataType.Ordinal) {
-        this.data.push(new Category((i + 1).toString(), ''));
+        this.data.push(new Category('', (i + 1).toString()));
       } else {
-        this.data.push(new Category(undefined, ''));
+        this.data.push(new Category('', undefined));
       }
     }
   }
