@@ -23,7 +23,7 @@
         v-on:deactivate="deleteModalActive = false"
     >
       <section>
-        <p class="has-text-dark">
+        <p class="has-text-dark" :class="this.$modalTextClass">
           Please confirm that you would like to remove this category.
         </p>
       </section>

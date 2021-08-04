@@ -23,7 +23,7 @@
       v-on:deactivate="deactivateActive = false"
     >
       <section>
-        <p class="has-text-dark">
+        <p class="has-text-dark" :class="this.$modalTextClass">
           Program-related data referencing this trait will not be affected by this change.
         </p>
       </section>

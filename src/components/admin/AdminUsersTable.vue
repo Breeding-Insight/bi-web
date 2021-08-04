@@ -25,7 +25,7 @@
       <section>
         <template v-if="deactivateActive">
           <template v-if="getActiveProgramRoles().length > 0">
-            <p class="has-text-dark">
+            <p class="has-text-dark" :class="this.$modalTextClass">
               Access for this user will be removed system wide, including:
             </p>
             <ul>
@@ -43,12 +43,12 @@
             </ul>
           </template>
           <template v-else>
-            <p class="has-text-dark">
+            <p class="has-text-dark" :class="this.$modalTextClass">
               Access for this user will be removed system wide.
             </p>
           </template>
         </template>
-        <p class="has-text-dark">
+        <p class="has-text-dark" :class="this.$modalTextClass">
           Program-related data collected by this user will not be affected by this change.
         </p>
       </section>
