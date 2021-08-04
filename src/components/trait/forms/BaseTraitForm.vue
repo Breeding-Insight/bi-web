@@ -260,7 +260,8 @@ export default class BaseTraitForm extends Vue {
 
     if (Scale.dataTypeEquals(value, DataType.Nominal) && Scale.dataTypeEquals(this.lastCategoryType, DataType.Ordinal)) {
       this.trait.scale = Scale.assign(this.scaleHistory[DataType.Ordinal.toLowerCase()]);
-      // TODO: Clear the scale category validations if there are any, the switch is confusing
+      // Clear the scale category validations if there are any, the switch is confusing
+      this.validationHandler.clearValidation(0, 'scale.categories');
 
       // Clear the values, use labels as the new values if they exist
       if (this.trait.scale.categories) {
@@ -274,7 +275,8 @@ export default class BaseTraitForm extends Vue {
       this.trait!.scale!.scaleName = value;
     } else if (Scale.dataTypeEquals(value, DataType.Ordinal) && Scale.dataTypeEquals(this.lastCategoryType, DataType.Nominal)) {
       this.trait.scale = Scale.assign(this.scaleHistory[DataType.Nominal.toLowerCase()]);
-      // TODO: Clear the scale category validations if there are any, the switch is confusing
+      // Clear the scale category validations if there are any, the switch is confusing
+      this.validationHandler.clearValidation(0, 'scale.categories');
 
       // Add 1-based index values to categories
       if (this.trait.scale.categories) {
