@@ -23,7 +23,7 @@
       v-on:deactivate="deactivateActive = false"
     >
       <section>
-        <p class="has-text-dark">
+        <p class="has-text-dark" :class="this.$modalTextClass">
           Program-related data will not be affected by this change.
         </p>
       </section>
@@ -352,7 +352,7 @@ export default class AdminProgramsTable extends Vue {
 
     if (program){
       this.deleteProgram = program;
-      this.deactivateWarningTitle = "Remove " + program.name + " from the system ?";
+      this.deactivateWarningTitle = "Remove " + program.name + " from the system?";
       this.deactivateActive = true;
     } else {
       Vue.$log.error('Could not find object to delete')

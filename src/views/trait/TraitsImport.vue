@@ -23,7 +23,7 @@
       v-on:deactivate="showAbortModal = false"
     >
       <section>
-        <p class="has-text-dark">
+        <p class="has-text-dark" :class="this.$modalTextClass">
           No traits will be added, and the import in progress will be completely removed.
         </p>
       </section>

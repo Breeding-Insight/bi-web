@@ -30,7 +30,7 @@
             </figure>
             <div class="media-content">
               <div class="content">
-                <h3 class="is-5 title has-text-danger">
+                <h3 class="is-5 title has-text-danger" :class="modalHeaderClass">
                   {{msgTitle}}
                 </h3>
               </div>
@@ -55,6 +55,8 @@ export default class WarningModal extends Vue {
   active!: boolean;
   @Prop()
   msgTitle! : string;
+
+  private modalHeaderClass: string = "modal-header";
 }
 
 </script>

@@ -23,10 +23,10 @@
       v-on:deactivate="deactivateActive = false"
     >
       <section>
-        <p class="has-text-dark">
+        <p class="has-text-dark" :class="this.$modalTextClass">
           This will only remove the user's access to your program and will not affect their account.
         </p>
-        <p class="has-text-dark">
+        <p class="has-text-dark" :class="this.$modalTextClass">
           Program-related data collected by this user will not be affected by this change.
         </p>
       </section>
@@ -433,6 +433,14 @@ export default class ProgramUsersTable extends Vue {
 
   getRoleName(id: string): string | undefined {
     return this.rolesMap.get(id)!.name;
+  }
+
+  sortRole(a: any, b: any, isAsc: boolean) {
+    if(isAsc) {
+      return this.getRoleName(a.data.roleId)!.localeCompare(this.getRoleName(b.data.roleId)!);
+    } else {
+      return this.getRoleName(b.data.roleId)!.localeCompare(this.getRoleName(a.data.roleId)!);
+    }
   }
 
   sortRole(a: any, b: any, isAsc: boolean) {
