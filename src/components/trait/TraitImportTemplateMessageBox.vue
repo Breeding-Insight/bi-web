@@ -33,7 +33,7 @@
               <div class="has-text-dark has-text-centered is-size-7">
                 <!-- temporary link until the backend card is done -->
                 <a href="https://cornell.box.com/shared/static/g6vmpktevwolwkyatwxbdbzpkbwv77ov.xls"
-                  class="button is-outlined is-primary">Download the Trait Import Template</a>
+                  class="button is-outlined is-primary" :id="downloadTraitTemplateId">Download the Trait Import Template</a>
                 <br/>Template version placeholder
               </div>
             </div>
