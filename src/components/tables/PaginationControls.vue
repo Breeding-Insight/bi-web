@@ -67,6 +67,7 @@
 
         <button
             data-testid="showAll"
+            role="button"
             class="pagination-link show-all-button"
             v-bind:class="{ 'has-background-info': pagination.totalPages === 1}"
             v-on:click="$emit('paginate-toggle-all')"
