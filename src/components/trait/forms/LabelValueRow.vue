@@ -20,12 +20,12 @@
     <div class="columns is-mobile is-gapless">
       <div class="column is-2">
         <BasicInputField
-            v-bind:field-name="'Label'"
+            v-bind:field-name="'Value'"
             v-bind:show-label="false"
-            v-bind:value="label"
-            v-on:input="$emit('label-change', $event)"
-            v-bind:input-id="'label' + Math.random()"
-            v-bind:server-validations="serverRowValidation ? serverRowValidation.getValidation(TraitError.CategoryLabel): undefined"
+            v-bind:value="value"
+            v-on:input="$emit('value-change', $event)"
+            v-bind:input-id="'value' + Math.random()"
+            v-bind:server-validations="serverRowValidation ? serverRowValidation.getValidation(TraitError.CategoryValue): undefined"
         />
       </div>
       <div class="column is-1 has-text-centered">
@@ -35,13 +35,13 @@
         <div class="columns is-mobile is-gapless">
           <div class="column is-four-fifths">
             <BasicInputField
-                v-bind:field-name="'Value'"
+                v-bind:field-name="'Label'"
                 v-bind:show-label="false"
                 v-bind:placeholder="valuePlaceholder"
-                v-bind:value="value"
-                v-on:input="$emit('value-change', $event)"
-                v-bind:input-id="'value' + Math.random()"
-                v-bind:server-validations="serverRowValidation ? serverRowValidation.getValidation(TraitError.CategoryValue): undefined"
+                v-bind:value="label"
+                v-on:input="$emit('label-change', $event)"
+                v-bind:input-id="'label' + Math.random()"
+                v-bind:server-validations="serverRowValidation ? serverRowValidation.getValidation(TraitError.CategoryLabel): undefined"
             />
           </div>
           <div class="column is-one-fifth ml-2">
