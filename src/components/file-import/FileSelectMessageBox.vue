@@ -151,15 +151,18 @@
         return errors;
       } else if (this.errors != null) {
         // Parse 400 responses and display the message if its not empty
-        if (this.errors.status && this.errors.status === 400 &&
-            this.errors.data && this.errors.data.message && this.errors.data.message !== '') {
-          return [this.errors.data.message] as string[];
-        }else {
-          return [this.errors!] as string[];
+        const apiResponse = this.errors as AxiosResponse;
+        if (apiResponse.status && apiResponse.status === 400 &&
+            apiResponse.data && apiResponse.data.message && apiResponse.data.message !== '') {
+          return [apiResponse.data.message] as string[];
         }
-      } else {
-        return [];
       }
+
+      // A catch all for anything we haven't explicitly caught
+      if (this.errors) {
+        return ["An unknown error has occurred"] as string[];
+      }
+      return [];
     }
   }
 </script>
