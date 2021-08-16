@@ -94,6 +94,7 @@
   import FileSelector from "@/components/file-import/FileSelector.vue";
   import {ValidationError} from "@/breeding-insight/model/errors/ValidationError";
   import { AlertTriangleIcon } from 'vue-feather-icons';
+  import {AxiosResponse} from "axios";
 
   @Component({
     components: {
@@ -110,7 +111,7 @@
     private displayAllErrors: boolean = false;
 
     @Prop()
-    private errors!: ValidationError | string | null;
+    private errors!: ValidationError | AxiosResponse | null;
 
     private importButtonId: string = "fileselectmessagebox-import-button";
     private importFileNameId: string = "fileselectmessagebox-import-filename";
@@ -149,7 +150,13 @@
         }
         return errors;
       } else if (this.errors != null) {
-        return [this.errors!] as string[];
+        // Parse 400 responses and display the message if its not empty
+        if (this.errors.status && this.errors.status === 400 &&
+            this.errors.data && this.errors.data.message && this.errors.data.message !== '') {
+          return [this.errors.data.message] as string[];
+        }else {
+          return [this.errors!] as string[];
+        }
       } else {
         return [];
       }
