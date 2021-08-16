@@ -20,7 +20,7 @@
         slot="previous"
         slot-scope="props"
         :page="props.page"
-        tag="a"
+        tag="button"
     >
       Previous
     </b-pagination-button>
@@ -31,7 +31,7 @@
     >
       <b-pagination-button
           :page="props.page"
-          tag="a"
+          tag="button"
       >
         Next
       </b-pagination-button>
@@ -65,7 +65,7 @@
           <span>per page</span>
         </div>
 
-        <a
+        <button
             data-testid="showAll"
             role="button"
             class="pagination-link show-all-button"
@@ -73,7 +73,7 @@
             v-on:click="$emit('paginate-toggle-all')"
         >
           Show All
-        </a>
+        </button>
       </div>
     </template>
   </b-pagination>

@@ -191,7 +191,7 @@ describe('Pagination works with expandable table', () => {
     let editForm = wrapper.findComponent(EditDataRowForm);
     expect(editForm.exists()).toBeFalsy();
 
-    const showAllBtn = wrapper.find('a[data-testid="showAll"]');
+    const showAllBtn = wrapper.find('button[data-testid="showAll"]');
     await showAllBtn.trigger('click');
     await wrapper.vm.$nextTick();
 
@@ -206,7 +206,7 @@ describe('Pagination works with expandable table', () => {
   it('Show all selection works when expandable open', async () => {
     await openEditForm(wrapper);
 
-    const showAllBtn = wrapper.find('a[data-testid="showAll"]');
+    const showAllBtn = wrapper.find('button[data-testid="showAll"]');
     await showAllBtn.trigger('click');
     await wrapper.vm.$nextTick();
 
@@ -226,7 +226,7 @@ describe('Pagination works with expandable table', () => {
     await numSelect.find('option[value="50"]').setSelected();
     await wrapper.vm.$nextTick();
 
-    const nextPageBtn = wrapper.find('a[aria-label="Next page"');
+    const nextPageBtn = wrapper.find('button[aria-label="Next page"');
     await nextPageBtn.trigger('click');
     await wrapper.vm.$nextTick();
 
@@ -239,7 +239,7 @@ describe('Pagination works with expandable table', () => {
   it('Next page button works when expandable open', async () => {
     await openEditForm(wrapper);
 
-    const nextPageBtn = wrapper.find('a[aria-label="Next page"');
+    const nextPageBtn = wrapper.find('button[aria-label="Next page"');
     await nextPageBtn.trigger('click');
     await wrapper.vm.$nextTick();
 
@@ -254,7 +254,7 @@ describe('Pagination works with expandable table', () => {
   it('Previous page button works when expandable open', async () => {
     await openEditForm(wrapper);
 
-    const nextPageBtn = wrapper.find('a[aria-label="Previous page"');
+    const nextPageBtn = wrapper.find('button[aria-label="Previous page"');
     await nextPageBtn.trigger('click');
     await wrapper.vm.$nextTick();
 
@@ -270,7 +270,7 @@ describe('Pagination works with expandable table', () => {
     let editForm = wrapper.findComponent(EditDataRowForm);
     expect(editForm.exists()).toBeFalsy();
 
-    const nextPageBtn = wrapper.find('a[aria-label="Previous page"');
+    const nextPageBtn = wrapper.find('button[aria-label="Previous page"');
     await nextPageBtn.trigger('click');
     await wrapper.vm.$nextTick();
 
