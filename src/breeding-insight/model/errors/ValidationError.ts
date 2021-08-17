@@ -75,4 +75,14 @@ export class ValidationError {
     }
     return errorSentence;
   }
+
+  clearValidation(rowIndex: number, errorName: string) {
+    if (this.rows && this.rows[rowIndex]) {
+      for (const [errorIndex, field] of this.rows[rowIndex].errors!.entries()) {
+        if (field.field === errorName) {
+          delete this.rows[rowIndex].errors![errorIndex];
+        }
+      }
+    }
+  }
 }
