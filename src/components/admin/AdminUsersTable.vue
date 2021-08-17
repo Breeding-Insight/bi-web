@@ -224,6 +224,7 @@
               v-bind:selected-id="editData.roleId"
               v-bind:field-name="'Role'"
               v-bind:empty-value-name="'No Role'"
+              :isDisabled="isCurrentUser(editData.id)"
             />
           </div>
         </div>
@@ -253,11 +254,17 @@
   import {Metadata, Pagination} from "@/breeding-insight/model/BiResponse";
   import {helpers} from "vuelidate/lib/validators";
   import { DataFormEventBusHandler } from '@/components/forms/DataFormEventBusHandler';
+  import {mapGetters} from "vuex";
 
 
   @Component({
   components: {
     NewDataForm, PlusCircleIcon, WarningModal, ExpandableRowTable, TableColumn, BasicInputField, BasicSelectField
+  },
+  computed: {
+    ...mapGetters([
+        'activeUser'
+    ])
   }
 })
 export default class AdminUsersTable extends Vue {
@@ -269,6 +276,7 @@ export default class AdminUsersTable extends Vue {
   private roles: Role[] = [];
   private rolesMap: Map<string, Role> = new Map();
   private isMobile = false;
+  private activeUser?: User;
 
   userValidations = {
     name: {required},
@@ -380,18 +388,29 @@ export default class AdminUsersTable extends Vue {
   updateUser(user: User) {
 
     const updateUserPromise = UserService.update(user);
-    const updateRolesPromise = UserService.updateSystemRoles(user);
 
-    const promiseHandler = new PromiseHandler([updateRolesPromise, updateUserPromise]);
+    //if active user is same as modified user, don't update roles
+    let promiseHandler;
+    let noRoles = this.isCurrentUser(user.id);
+    if (noRoles) {
+      promiseHandler = new PromiseHandler([updateUserPromise]);
+    } else {
+      const updateRolesPromise = UserService.updateSystemRoles(user);
+      promiseHandler = new PromiseHandler([updateRolesPromise, updateUserPromise]);
+    }
     promiseHandler.resolvePromises()
       .then((result:User[]) => {
-        this.$emit('show-success-notification', 'User successfully updated');
+        if (noRoles) {
+          this.$emit('show-success-notification', 'User info (name/email/program) successfully updated');
+        } else {
+          this.$emit('show-success-notification', 'User successfully updated');
+        }
       }).catch((errors: any[]) => {
-        // Show success if one of them succeeded
-        if (errors[0].status === PromiseHandler.FULFILLED){
+        // If two promises, show success if one of them succeeded
+        if ((!noRoles) && (errors[0].status === PromiseHandler.FULFILLED)){
           this.$emit('show-success-notification', 'User roles successfully updated');
         }
-        if (errors[1].status === PromiseHandler.FULFILLED){
+        if ((!noRoles) && (errors[1].status === PromiseHandler.FULFILLED)){
           this.$emit('show-success-notification', 'User info (name/email/program) successfully updated');
         }
 
@@ -439,6 +458,14 @@ export default class AdminUsersTable extends Vue {
   getRoleName(id: string): string | undefined {
     if (this.rolesMap.get(id)){
       return this.rolesMap.get(id)!.name;
+    }
+  }
+
+  isCurrentUser(userId: string) {
+    if (this.activeUser!.id == userId){
+      return true;
+    } else {
+      return false;
     }
   }
 
