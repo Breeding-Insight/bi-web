@@ -391,7 +391,7 @@ export default class AdminUsersTable extends Vue {
 
     //if active user is same as modified user, don't update roles
     let promiseHandler;
-    let noRoles = this.isCurrentUser(user.id);
+    let noRoles = this.isCurrentUser(user.id!);
     if (noRoles) {
       promiseHandler = new PromiseHandler([updateUserPromise]);
     } else {
