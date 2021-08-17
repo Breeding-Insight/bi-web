@@ -26,6 +26,7 @@ export class ProgramService {
 
   static unsupportedBrapiUrl : string = 'BrAPI URL specified is not supported';
   static errorCreatingProgram : string = 'Error creating program';
+  static duplicateProgramName: string = 'A program with the same name already exists';
 
   static create(program: Program): Promise<Program> {
     //TODO: Check everything is good
@@ -38,7 +39,9 @@ export class ProgramService {
           resolve(newProgram);
 
         }).catch((error) => {
-          if (error.response && error.response.status === 422) {
+          if (error.response && error.response.status === 409) {
+            error['errorMessage'] = this.duplicateProgramName;
+          } else if (error.response && error.response.status === 422) {
             error['errorMessage'] = this.unsupportedBrapiUrl;
           } else {
             error['errorMessage'] = this.errorCreatingProgram;
