@@ -106,6 +106,7 @@ import {ValidationError} from "@/breeding-insight/model/errors/ValidationError";
 import {Metadata} from "@/breeding-insight/model/BiResponse";
 import {Trait} from "@/breeding-insight/model/Trait";
 import {ProgramUpload} from "@/breeding-insight/model/ProgramUpload";
+import {AxiosResponse} from "axios";
 
 enum ImportState {
   CHOOSE_FILE = "CHOOSE_FILE",
@@ -154,7 +155,7 @@ enum ImportAction {
 export default class TraitsImport extends ProgramsBase {
 
   private file : File | null = null;
-  private import_errors: ValidationError | string | null = null;
+  private import_errors: ValidationError | AxiosResponse | null = null;
   private activeProgram?: Program;
   private tableLoaded = false;
   private numTraits = 0;
@@ -271,7 +272,7 @@ export default class TraitsImport extends ProgramsBase {
     TraitUploadService.uploadFile(this.activeProgram!.id!, this.file!).then((response) => {
       this.numTraits = response.data!.length;
       this.importService.send(ImportEvent.IMPORT_SUCCESS);
-    }).catch((error: ValidationError | string) => {
+    }).catch((error: ValidationError | AxiosResponse) => {
       this.import_errors = error;
       this.importService.send(ImportEvent.IMPORT_ERROR);
     });
