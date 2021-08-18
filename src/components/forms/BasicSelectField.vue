@@ -28,7 +28,7 @@
           v-bind:id="fieldName.replace(' ', '-')"
           v-on:change="$emit('input', $event.target.value)"
           class="select is-fullwidth"
-          :disabled="isDisabled"
+          v-bind:disabled="isDisabled"
       >
         <option disabled v-bind:selected="displayDefault()" value="">Select a {{fieldName.toLowerCase()}}</option>
         <template v-if="emptyValueName">
