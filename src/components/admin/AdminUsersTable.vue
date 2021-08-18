@@ -224,7 +224,7 @@
               v-bind:selected-id="editData.roleId"
               v-bind:field-name="'Role'"
               v-bind:empty-value-name="'No Role'"
-              :isDisabled="isCurrentUser(editData.id)"
+              v-bind:is-disabled="isCurrentUser(editData.id)"
             />
           </div>
         </div>
@@ -462,7 +462,7 @@ export default class AdminUsersTable extends Vue {
   }
 
   isCurrentUser(userId: string) {
-    if (this.activeUser!.id == userId){
+    if (this.activeUser!.id === userId){
       return true;
     } else {
       return false;
