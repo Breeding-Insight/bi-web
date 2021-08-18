@@ -1,38 +1,100 @@
 <template>
   <div class="columns is-multiline">
     <div class="column" v-bind:class="{'is-full': editFormat}">
-      <BasicInputField
-        v-bind:value="trait.traitName"
-        v-bind:field-name="'Trait name'"
-        v-bind:field-help="'All unicode characters are accepted.'"
-        v-bind:placeholder="'Trait Name'"
-        v-bind:server-validations="validationHandler.getValidation(0, TraitError.TraitName)"
-        v-on:input="trait.traitName = $event"
-      />
       <div class="sentence-input">
         <p class="is-input-prepend mt-3">
-          is collected on
+          Name
+        </p>
+        <BasicInputField
+          v-bind:value="trait.traitName"
+          v-bind:field-name="'Name'"
+          v-bind:field-help="'All unicode characters are accepted.'"
+          v-bind:placeholder="'Trait Name'"
+          v-bind:server-validations="validationHandler.getValidation(0, TraitError.TraitName)"
+          v-on:input="trait.traitName = $event"
+        />
+      </div>
+      <BasicInputField
+          v-bind:value="trait.fullName"
+          v-bind:field-name="'Full name'"
+          v-bind:field-help="'All unicode characters are accepted.'"
+          v-bind:placeholder="'Full Name'"
+          v-bind:server-validations="validationHandler.getValidation(0, TraitError.FullName)"
+          v-on:input="trait.fullName = $event"
+      />
+      <BasicInputField
+          v-bind:value="trait.description"
+          v-bind:field-name="'Description'"
+          v-bind:field-help="'All unicode characters are accepted.'"
+          v-bind:placeholder="'Description'"
+          v-bind:server-validations="validationHandler.getValidation(0, TraitError.Description)"
+          v-on:input="trait.description = $event"
+      />
+      <BasicInputField
+          v-bind:value="trait.synonyms ? trait.synonyms.join(';') : undefined"
+          v-bind:field-name="'Synonyms'"
+          v-bind:field-help="'Semicolon separated list.'"
+          v-on:input="trait.synonyms = parseSemiColonList($event)"
+      />
+      Trait = Entity + Attribute
+      <div class="sentence-input">
+        <p class="is-input-prepend mt-3">
+          Entity
         </p>
         <AutoCompleteField
-          v-bind:options="programObservationLevels"
-          v-bind:value="trait.programObservationLevel ? trait.programObservationLevel.name : undefined"
-          v-bind:field-name="'Observation Level'"
-          v-bind:show-label="false"
-          v-bind:server-validations="validationHandler.getValidation(0, TraitError.ObservationLevel)"
-          v-on:input="setObservationLevel($event)"
+            v-bind:options="entities"
+            v-bind:value="trait.entity"
+            v-bind:field-name="'Entity'"
+            v-bind:show-label="false"
+            v-bind:server-validations="validationHandler.getValidation(0, TraitError.Entity)"
+            v-on:input="setEntity($event)"
         />
       </div>
       <div class="sentence-input">
         <p class="is-input-prepend mt-3">
-          by
+          Attribute
+        </p>
+        <AutoCompleteField
+            v-bind:options="attributes"
+            v-bind:value="trait.attribute"
+            v-bind:field-name="'Attribute'"
+            v-bind:show-label="false"
+            v-bind:server-validations="validationHandler.getValidation(0, TraitError.Attribute)"
+            v-on:input="setAttribute($event)"
+        />
+      </div>
+      <div class="sentence-input">
+        <p class="is-input-prepend mt-3">
+          Trait
+        </p>
+      <div>{{trait.traitName}}</div>
+      </div>
+    </div>
+
+    <div class="divider is-vertical" />
+
+    <!-- Right Side -->
+    <div class="column" v-bind:class="{'is-full': editFormat}">
+      <BasicInputField
+          v-bind:value="trait.method.description"
+          v-bind:field-name="'Description of collection method'"
+          v-bind:field-help="'All unicode characters are accepted.'"
+          v-bind:placeholder="'Method Description'"
+          v-bind:server-validations="validationHandler.getValidation(0, TraitError.MethodDescription)"
+          v-on:input="trait.method.description = $event"
+      />
+
+      <div class="sentence-input">
+        <p class="is-input-prepend mt-3">
+          Class
         </p>
         <BasicSelectField
-          v-bind:selected-id="trait.method.methodClass"
-          v-bind:options="methodOptions"
-          v-bind:field-name="'Method'"
-          v-bind:show-label="false"
-          v-bind:server-validations="validationHandler.getValidation(0, TraitError.MethodClass)"
-          v-on:input="setMethodClass($event)"
+            v-bind:selected-id="trait.method.methodClass"
+            v-bind:options="methodOptions"
+            v-bind:field-name="'Method'"
+            v-bind:show-label="false"
+            v-bind:server-validations="validationHandler.getValidation(0, TraitError.MethodClass)"
+            v-on:input="setMethodClass($event)"
         />
       </div>
       <div class="sentence-input">
@@ -40,13 +102,13 @@
           using
         </p>
         <BasicSelectField
-          v-bind:selected-id="StringFormatters.toStartCase(trait.scale.dataType)"
-          v-bind:options="getScaleOptions()"
-          v-bind:field-name="'Scale'"
-          v-bind:show-label="false"
-          v-bind:field-help="'Note: additional options for this field will appear after selection'"
-          v-bind:server-validations="validationHandler.getValidation(0, TraitError.ScaleType)"
-          v-on:input="setScaleClass($event)"
+            v-bind:selected-id="StringFormatters.toStartCase(trait.scale.dataType)"
+            v-bind:options="getScaleOptions()"
+            v-bind:field-name="'Scale'"
+            v-bind:show-label="false"
+            v-bind:field-help="'Note: additional options for this field will appear after selection'"
+            v-bind:server-validations="validationHandler.getValidation(0, TraitError.ScaleType)"
+            v-on:input="setScaleClass($event)"
         />
       </div>
 
@@ -62,14 +124,21 @@
         />
       </template>
 
+      <div class="sentence-input">
+        <p class="is-input-prepend mt-3">
+          Method
+        </p>
+        <div>{{trait.method.description + trait.method.methodClass}}</div>
+      </div>
+
       <!-- Scale options -->
       <template v-if="trait.scale && (Scale.dataTypeEquals(trait.scale.dataType, DataType.Ordinal) || Scale.dataTypeEquals(trait.scale.dataType, DataType.Nominal))">
         <CategoryTraitForm
-          v-bind:data="trait.scale.categories"
-          v-on:update="setCategories($event)"
-          v-bind:type="trait.scale.dataType"
-          v-bind:validation-handler="validationHandler"
-          v-bind:validation-index="0"
+            v-bind:data="trait.scale.categories"
+            v-on:update="setCategories($event)"
+            v-bind:type="trait.scale.dataType"
+            v-bind:validation-handler="validationHandler"
+            v-bind:validation-index="0"
         />
       </template>
       <template v-if="trait.scale && Scale.dataTypeEquals(trait.scale.dataType, DataType.Text)">
@@ -93,49 +162,20 @@
       </template>
       <template v-if="trait.scale && Scale.dataTypeEquals(trait.scale.dataType, DataType.Numerical)">
         <NumericalTraitForm
-          v-bind:unit="trait.scale.scaleName"
-          v-bind:decimal-places="trait.scale.decimalPlaces"
-          v-bind:valid-min="trait.scale.validValueMin"
-          v-bind:valid-max="trait.scale.validValueMax"
-          v-on:unit-change="trait.scale.scaleName = $event"
-          v-on:decimal-change="trait.scale.decimalPlaces = $event"
-          v-on:min-change="trait.scale.validValueMin = $event"
-          v-on:max-change="trait.scale.validValueMax = $event"
-          v-on:show-error-notification="$emit('show-error-notification', $event)"
-          v-bind:client-validations="clientValidations"
-          v-bind:validation-handler="validationHandler"
-          v-bind:validation-index="0"
+            v-bind:unit="trait.scale.scaleName"
+            v-bind:decimal-places="trait.scale.decimalPlaces"
+            v-bind:valid-min="trait.scale.validValueMin"
+            v-bind:valid-max="trait.scale.validValueMax"
+            v-on:unit-change="trait.scale.scaleName = $event"
+            v-on:decimal-change="trait.scale.decimalPlaces = $event"
+            v-on:min-change="trait.scale.validValueMin = $event"
+            v-on:max-change="trait.scale.validValueMax = $event"
+            v-on:show-error-notification="$emit('show-error-notification', $event)"
+            v-bind:client-validations="clientValidations"
+            v-bind:validation-handler="validationHandler"
+            v-bind:validation-index="0"
         />
       </template>
-    </div>
-
-    <div class="divider is-vertical" />
-
-    <!-- Right Side -->
-    <div class="column" v-bind:class="{'is-full': editFormat}">
-      <BasicInputField
-        v-bind:value="trait.method.description"
-        v-bind:field-name="'Description of collection method'"
-        v-bind:field-help="'All unicode characters are accepted.'"
-        v-bind:placeholder="'Method Description'"
-        v-bind:server-validations="validationHandler.getValidation(0, TraitError.MethodDescription)"
-        v-on:input="trait.method.description = $event"
-      />
-
-      <BasicInputField
-        v-bind:value="trait.abbreviations ? trait.abbreviations.join(';') : undefined"
-        v-bind:field-name="'Abbreviation(s)'"
-        v-bind:field-help="'Semicolon separated list, with primary abbreviation as first term.'"
-        v-bind:server-validations="validationHandler.getValidation(0, TraitError.Abbreviations)"
-        v-on:input="setAbbreviations($event)"
-      />
-
-      <BasicInputField
-        v-bind:value="trait.synonyms ? trait.synonyms.join(';') : undefined"
-        v-bind:field-name="'Synonyms'"
-        v-bind:field-help="'Semicolon separated list.'"
-        v-on:input="trait.synonyms = parseSemiColonList($event)"
-      />
 
       <!-- Tags -->
       <div>
