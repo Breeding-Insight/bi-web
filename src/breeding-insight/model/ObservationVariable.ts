@@ -35,10 +35,26 @@ export class ObservationVariable {
               scale?:Scale) {
     this.id = id;
     this.observationVariableName = observationVariableName;
-    this.additionalInfo = additionalInfo;
-    this.trait = trait;
-    this.method = method;
-    this.scale = scale;
+    if (additionalInfo){
+      this.additionalInfo = OVAdditionalInfo.assign({...additionalInfo} as OVAdditionalInfo);
+    } else {
+      this.additionalInfo = new additionalInfo();
+    }
+    if (trait){
+      this.trait = Trait.assign({...trait} as Trait);
+    } else {
+      this.trait = new Trait();
+    }
+    if (method){
+      this.method = Method.assign({...method} as Method);
+    } else {
+      this.method = new Method();
+    }
+    if (scale) {
+      this.scale = Scale.assign({...scale} as Scale);
+    } else {
+      this.scale = new Scale();
+    }
   }
 }
 
@@ -47,5 +63,9 @@ export class OVAdditionalInfo {
 
   constructor(fullName?:string) {
     this.fullName = fullName;
+  }
+
+  static assign(info: OVAdditionalInfo): OVAdditionalInfo {
+    return new OVAdditionalInfo(info.fullName);
   }
 }
