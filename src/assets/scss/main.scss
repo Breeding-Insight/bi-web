@@ -325,6 +325,13 @@ table tr.is-edited + .detail {
   }
 }
 
+header {
+  position: sticky;
+  top: 0;
+  background: white;
+  z-index: 30;
+}
+
 .header-title {
   border-bottom: 1px #363636 solid;
   padding: 0 2.5em 0 2.5em;
