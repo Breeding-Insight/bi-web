@@ -55,37 +55,9 @@
           <div class="level-item">
             <slot name="title"></slot>
           </div>
-          <b-dropdown v-if="username !== undefined"
-              position="is-bottom-left"
-              append-to-body
-              aria-role="menu">
-            <template #trigger>
-              <button
-                  class="button is-small is-primary has-text-weight-bold level-item"
-              >
-                <span class="icon is-small mr-0">
-                  <UserIcon
-                      size="1.5x"
-                      aria-hidden="true"
-                  />
-                </span>
-                    <span class="icon is-small ml-0">
-                  <ChevronDownIcon
-                      size="1.5x"
-                      aria-hidden="true"
-                  />
-                </span>
-              </button>
-            </template>
-            <b-dropdown-item custom aria-role="menuitem">
-              Logged in as <strong>{{username}}</strong>
-            </b-dropdown-item>
-            <hr class="dropdown-divider">
-            <b-dropdown-item value="logout" aria-role="menuitem" :id="logoutId" @click="$emit('logout')">
-              <b-icon icon="log-out"></b-icon>
-              Logout
-            </b-dropdown-item>
-          </b-dropdown>
+          <div class="level-item">
+            <UserStatusMenu v-bind:username="username" v-on:logout="$emit('logout')"/>
+          </div>
         </div>
       </div>
     </header>
@@ -120,16 +92,17 @@
 
 <script lang="ts">
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
-import { MenuIcon, UserIcon, ChevronDownIcon } from 'vue-feather-icons';
+import { MenuIcon } from 'vue-feather-icons';
 import { SandboxMode } from '@/util/config';
 import VersionInfo from '@/components/layouts/VersionInfo.vue';
 import Footer from "@/components/layouts/Footer.vue";
 import store from "@/store";
 import {SHOW_SIDEBAR_MOBILE} from "@/store/mutation-types";
 import {mapGetters} from "vuex";
+import UserStatusMenu from "@/components/layouts/menus/UserStatusMenu.vue";
 
 @Component( {
-    components: { VersionInfo, MenuIcon, UserIcon, ChevronDownIcon, Footer},
+    components: {UserStatusMenu, VersionInfo, MenuIcon, Footer},
     computed: {
       ...mapGetters([
         'showSidebarMobile',
