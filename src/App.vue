@@ -16,7 +16,7 @@
   -->
 
 <template>
-  <div id="app" class="has-navbar-fixed-top-touch">
+  <div id="app">
     <div style="position:fixed;top:1px;z-index:9999;left:1px;right:1px;">
       <SuccessNotification ref="successNotification" class="is-marginless"></SuccessNotification>
       <ErrorNotification ref="errorNotification" class="is-marginless"></ErrorNotification>
