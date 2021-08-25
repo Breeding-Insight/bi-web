@@ -20,16 +20,6 @@
     <header>
       <div class="level header-title is-marginless is-mobile">
         <div class="level-left">
-          <div class="level-item is-hidden-touch">
-            <a href="/">
-              <!-- 232 -->
-              <img
-                  src="../../assets/img/bi-logo.svg"
-                  alt="Breeding Insight home"
-                  width="160"
-              >
-            </a>
-          </div>
           <div class="level-item is-hidden-desktop is-pulled-left">
             <a role="button"
                class="navbar-hamburger has-text-dark"
@@ -40,12 +30,12 @@
               <MenuIcon></MenuIcon>
             </a>
           </div>
-          <div class="level-item is-hidden-desktop">
+          <div class="level-item">
             <a href="/">
               <img
                   src="../../assets/img/bi-logo.svg"
                   alt="Breeding Insight home"
-                  width="175"
+                  width="160"
               >
             </a>
           </div>
