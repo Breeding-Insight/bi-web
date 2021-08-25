@@ -128,7 +128,7 @@
       <b-table-column field="data.email" label="Email" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
         {{ props.row.data.email }}
       </b-table-column>
-      <b-table-column :custom-sort="sortRole" label="Roles" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+      <b-table-column :custom-sort="sortRole" label="Role" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
         <template v-if="rolesMap.size > 0">
           {{ getRoleName(props.row.data.roleId) }}
         </template>

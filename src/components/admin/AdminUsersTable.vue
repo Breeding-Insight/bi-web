@@ -98,6 +98,8 @@
       </span>
     </button>
 
+    <div class="is-clearfix"></div>
+
     <NewDataForm
       v-if="newUserActive"
       v-bind:row-validations="userValidations"
@@ -135,8 +137,9 @@
       </template>
     </NewDataForm>
 
-    <ExpandableRowTable
+    <ExpandableTable
       v-bind:records.sync="users"
+      v-bind:loading="this.rolesLoading || this.usersLoading"
       v-bind:row-validations="userValidations"
       v-bind:editable="true"
       v-bind:archivable="true"
@@ -150,21 +153,20 @@
       v-on:paginate-page-size="paginationController.updatePageSize($event)"
       v-on:is-mobile="isMobile = $event"
     >
-      <template v-slot:columns="data">
-        <TableColumn name="name" v-bind:label="'Name'">
-          {{ data.name }}
-        </TableColumn>
-         <TableColumn name="email" v-bind:label="'Email'" v-bind:visible="!isMobile">
-          {{ data.email }}
-        </TableColumn>
-        <TableColumn name="roles" v-bind:label="'Role'">
+        <b-table-column field="data.name" label="Name"  sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+          {{ props.row.data.name }}
+        </b-table-column>
+         <b-table-column field="data.email" label="Email" v-bind:visible="!isMobile"  sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+          {{ props.row.data.email }}
+        </b-table-column>
+        <b-table-column :custom-sort="sortRole" label="Role"  sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
           <template v-if="rolesMap.size > 0">
-            {{ getRoleName(data.roleId) }}
+            {{ getRoleName(props.row.data.roleId) }}
           </template>
-        </TableColumn>
-        <TableColumn name="programs" v-bind:label="'Programs'">
+        </b-table-column>
+        <b-table-column :custom-sort="sortProgram" label="Programs"  sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
           <template
-            v-if="getRoleName(data.roleId) === 'admin'"
+            v-if="getRoleName(props.row.data.roleId) === 'admin'"
           >
             <span
               class="is-text has-text-weight-bold"
@@ -173,7 +175,7 @@
             </span>
           </template>
           <template
-            v-for="(programRole, index) of data.programRoles"
+            v-for="(programRole, index) of props.row.data.programRoles"
             v-else
           >
             <span v-bind:key="'program' + index">
@@ -185,21 +187,20 @@
               <span v-else class="has-background-grey-lighter">[ {{ programRole.program.name }} ]</span>
               <!-- One line span needed to remove after space. Don't change. -->
               <!-- eslint-disable-next-line -->
-              <span v-if="index !== data.programRoles.length - 1">, </span>
+              <span v-if="index !== props.row.data.programRoles.length - 1">, </span>
             </span>
           </template>
-        </TableColumn>
-        <TableColumn>
+        </b-table-column>
+        <b-table-column v-slot="props" :th-attrs="(column) => ({scope:'col'})">
           <a
-              v-if="!data.orcid"
-              v-on:click="resendEmail(data.id)"
-              v-on:keypress.enter.space="resendEmail(data.id)"
+              v-if="!props.row.data.orcid"
+              v-on:click="resendEmail(props.row.data.id)"
+              v-on:keypress.enter.space="resendEmail(props.row.data.id)"
               tabindex="0"
           >
             Resend Email
           </a>
-        </TableColumn>
-      </template>
+        </b-table-column>
       <template v-slot:edit="{editData, validations}">
         <div class="columns">
           <div class="column is-one-half">
@@ -229,7 +230,7 @@
           </div>
         </div>
       </template>
-    </ExpandableRowTable>
+    </ExpandableTable>
   </div>
 </template>
 
@@ -255,11 +256,13 @@
   import {helpers} from "vuelidate/lib/validators";
   import { DataFormEventBusHandler } from '@/components/forms/DataFormEventBusHandler';
   import {mapGetters} from "vuex";
-
+  import {ChevronRightIcon, ChevronDownIcon} from 'vue-feather-icons'
+  import ExpandableTable from '@/components/tables/expandableTable/ExpandableTable.vue';
 
   @Component({
   components: {
-    NewDataForm, PlusCircleIcon, WarningModal, ExpandableRowTable, TableColumn, BasicInputField, BasicSelectField
+    ExpandableTable, NewDataForm, PlusCircleIcon, WarningModal, ExpandableRowTable, TableColumn, BasicInputField, BasicSelectField,
+    ChevronRightIcon, ChevronDownIcon
   },
   computed: {
     ...mapGetters([
@@ -277,6 +280,9 @@ export default class AdminUsersTable extends Vue {
   private rolesMap: Map<string, Role> = new Map();
   private isMobile = false;
   private activeUser?: User;
+
+  private rolesLoading = true;
+  private usersLoading = true;
 
   userValidations = {
     name: {required},
@@ -327,7 +333,7 @@ export default class AdminUsersTable extends Vue {
       // Display error that users cannot be loaded
       this.$emit('show-error-notification', error.errorMessage);
       throw error;
-    });
+    }).finally(() => this.usersLoading = false);
 
   }
 
@@ -340,10 +346,10 @@ export default class AdminUsersTable extends Vue {
         this.rolesMap = new Map(this.rolesMap.set(role.id!, role));
       }
     }).catch((error) => {
-      // Display error that users cannot be loaded
+      // Display error that roles cannot be loaded
       this.$emit('show-error-notification', error.errorMessage);
       throw error;
-    });
+    }).finally(() => this.rolesLoading = false);
 
   }
 
@@ -467,6 +473,30 @@ export default class AdminUsersTable extends Vue {
     } else {
       return false;
     }
+  }
+
+  sortRole(a: any, b: any, isAsc: boolean) {
+    if(isAsc) {
+      return (this.getRoleName(a.data.roleId) || "")!.localeCompare((this.getRoleName(b.data.roleId) || "")!);
+    } else {
+      return (this.getRoleName(b.data.roleId) || "")!.localeCompare((this.getRoleName(a.data.roleId) || "")!);
+    }
+  }
+
+  sortProgram(a: any, b: any, isAsc: boolean) {
+    if(isAsc) {
+      return this.getProgramList(a)!.localeCompare(this.getProgramList(b)!);
+    } else {
+      return this.getProgramList(b)!.localeCompare(this.getProgramList(a)!);
+
+    }
+  }
+
+  //should mirror what is in the programs column, minus formatting
+  getProgramList(a: any) {
+    if (this.getRoleName(a.data.roleId) === 'admin') return "Admin (all programs)";
+    let programList = a.data.programRoles ? a.data.programRoles.map((x: { program: { name: any; }; }) => x.program.name).join(", ") : "";
+    return programList;
   }
 
 }
