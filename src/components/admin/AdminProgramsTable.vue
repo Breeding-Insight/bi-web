@@ -61,6 +61,8 @@
       </span>
     </button>
 
+    <div class="is-clearfix"></div>
+
     <NewDataForm
       v-if="newProgramActive"
       v-bind:row-validations="programValidations"
@@ -107,8 +109,9 @@
       </template>
     </NewDataForm>
 
-    <ExpandableRowTable
+    <ExpandableTable
       v-bind:records.sync="programs"
+      v-bind:loading="this.speciesLoading || this.programsLoading"
       v-bind:row-validations="programEditValidations"
       v-bind:editable="true"
       v-bind:archivable="true"
@@ -121,26 +124,24 @@
       v-on:paginate-toggle-all="paginationController.toggleShowAll()"
       v-on:paginate-page-size="paginationController.updatePageSize($event)"
     >
-      <template v-slot:columns="data">
-        <TableColumn name="name" v-bind:label="'Name'">
-          <router-link
-            v-bind:to="{name: 'program-home', params: {programId: data.id}}"
-          >
-            {{ data.name }}
-          </router-link>
-        </TableColumn>
-        <TableColumn name="species" v-bind:label="'Species'">
-          <template v-if="speciesMap.size > 0">
-            {{ getSpeciesName(data.speciesId) }}
-          </template>
-        </TableColumn>
-        <TableColumn name="numUsers" v-bind:label="'# Users'">
-          {{ data.numUsers }}
-        </TableColumn>
-        <TableColumn name="brapiUrl" v-bind:label="'BrAPI URL'">
-          {{ data.brapiUrl }}
-        </TableColumn>
-      </template>
+      <b-table-column field="data.name" label="Name" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+        <router-link
+            v-bind:to="{name: 'program-home', params: {programId: props.row.data.id}}"
+        >
+          {{ props.row.data.name }}
+        </router-link>
+      </b-table-column>
+      <b-table-column :custom-sort="sortSpecies" label="Species" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+        <template v-if="speciesMap.size > 0">
+          {{ getSpeciesName(props.row.data.speciesId) }}
+        </template>
+      </b-table-column>
+      <b-table-column field="data.numUsers" label="# Users" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+        {{ props.row.data.numUsers }}
+      </b-table-column>
+      <b-table-column field="data.brapiUrl" label="BrAPI URL" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+        {{ props.row.data.brapiUrl }}
+      </b-table-column>
       <template v-slot:edit="{editData, validations}">
         <div class="columns">
           <div class="column is-one-half">
@@ -163,18 +164,12 @@
         </div>
       </template>
       <template v-slot:emptyMessage>
-        <EmtpyTableMessage
-          v-bind:button-view-toggle="!newProgramActive"
-          v-bind:button-text="'New Program'"
-          v-on:newClick="newProgramActive = true"
-        >
           <p class="has-text-weight-bold">
             No programs are currently defined.
           </p>
           You can add, edit, and delete programs from this panel.
-        </EmtpyTableMessage>
       </template>
-    </ExpandableRowTable>
+    </ExpandableTable>
   </section>
 </template>
 
@@ -203,6 +198,8 @@
   import { helpers } from 'vuelidate/lib/validators'
   import { isWebUri } from 'valid-url'
   import { FieldError } from '@/breeding-insight/model/errors/FieldError';
+  import {ChevronRightIcon, ChevronDownIcon} from 'vue-feather-icons'
+  import ExpandableTable from "@/components/tables/expandableTable/ExpandableTable.vue";
 
   // create custom validation to handle cases default url validation doesn't
   const url = helpers.withParams(
@@ -213,9 +210,10 @@
 @Component({
   mixins: [validationMixin],
   components: {
-    EmtpyTableMessage,
+    ExpandableTable, EmtpyTableMessage,
     NewDataForm, WarningModal, PlusCircleIcon,
-    ExpandableRowTable, TableColumn, BasicInputField, BasicSelectField
+    ExpandableRowTable, TableColumn, BasicInputField, BasicSelectField,
+    ChevronRightIcon, ChevronDownIcon
   }
 })
 export default class AdminProgramsTable extends Vue {
@@ -236,6 +234,9 @@ export default class AdminProgramsTable extends Vue {
 
   private newLocationFormState: DataFormEventBusHandler = new DataFormEventBusHandler();
   private editLocationFormState: DataFormEventBusHandler = new DataFormEventBusHandler();
+
+  private speciesLoading = true;
+  private programsLoading = true;
 
   private programName: string = "Program Name";
 
@@ -283,10 +284,10 @@ export default class AdminProgramsTable extends Vue {
         this.programsPagination = metadata.pagination;
       }
     }).catch((error) => {
-      // Display error that users cannot be loaded
+      // Display error that programs cannot be loaded
       this.$emit('show-error-notification', 'Error while trying to load programs');
       throw error;
-    });
+    }).finally(() => this.programsLoading = false);
 
   }
 
@@ -299,10 +300,10 @@ export default class AdminProgramsTable extends Vue {
         this.speciesMap = new Map(this.speciesMap.set(individual.id, individual));
       }
     }).catch((error) => {
-      // Display error that users cannot be loaded
+      // Display error that species cannot be loaded
       this.$emit('show-error-notification', 'Error while trying to load species');
       throw error;
-    });
+    }).finally(() => this.speciesLoading = false);
 
   }
 
@@ -391,6 +392,14 @@ export default class AdminProgramsTable extends Vue {
 
   emitProgramChange() {
     EventBus.bus.$emit(EventBus.programChange);
+  }
+
+  sortSpecies(a: any, b: any, isAsc: boolean) {
+    if(isAsc) {
+      return this.getSpeciesName(a.data.speciesId)!.localeCompare(this.getSpeciesName(b.data.speciesId)!);
+    } else {
+      return this.getSpeciesName(b.data.speciesId)!.localeCompare(this.getSpeciesName(a.data.speciesId)!);
+    }
   }
 
 
