@@ -81,7 +81,7 @@
               Logged in as <strong>{{username}}</strong>
             </b-dropdown-item>
             <hr class="dropdown-divider">
-            <b-dropdown-item value="logout" aria-role="menuitem">
+            <b-dropdown-item value="logout" aria-role="menuitem" :id="logoutId" @click="$emit('logout')">
               <b-icon icon="log-out"></b-icon>
               Logout
             </b-dropdown-item>
@@ -107,19 +107,6 @@
 
       <div class="column">
         <main>
-        <!--
-          <div v-if="username !== undefined" class="level is-mobile">
-            <div class="level-left"></div>
-            <div class="level-right">
-              <div class="level-item">
-                <p class="mb-0">Logged in as <strong>{{username}}</strong></p>
-              </div>
-              <div class="level-item">
-                <button class="button is-outlined is-primary" :id="logoutId" @click="$emit('logout')">Log out</button>
-              </div>
-            </div>
-          </div>
-          -->
           <section class="section pt-0">
             <slot name="content"></slot>
           </section>
