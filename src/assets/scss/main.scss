@@ -336,14 +336,6 @@ header {
   border-bottom: 1px #363636 solid;
   padding: 0 2.5em 0 2.5em;
   margin-bottom: 0;
-  @include until($desktop) {
-    position: fixed;
-    left: 0;
-    right: 0;
-    top: 0;
-    z-index: 30;
-    background-color: white;
-  }
   & .navbar-hamburger {
     padding-top: .5em;
   }
