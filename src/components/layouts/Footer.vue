@@ -20,7 +20,7 @@
     <div class="columns is-marginless">
       <div
           class="column side-menu is-one-fifth"
-          :class="{ 'is-hidden-mobile': true, 'is-hidden-tablet-only': !showSidebarMobile }"
+          :class="{ 'is-hidden-mobile': true, 'is-hidden-tablet': !showSidebar || !showSidebarMobile}"
       >
       </div>
       <div class="column">
@@ -108,6 +108,11 @@ export default class Footer extends Vue {
 
   get showVersionInfo () {
     return !this.$route.meta.layout || this.$route.meta.layout == 'simple' || this.$route.meta.layout == 'noSideBar';
+  }
+
+  get showSidebar() {
+    return this.$route.meta.layout == 'adminSideBar' || this.$route.meta.layout == 'userSideBar' ||
+           this.$route.meta.layout == 'infoSideBar' || this.$route.meta.layout == 'baseSideBar';
   }
 }
 

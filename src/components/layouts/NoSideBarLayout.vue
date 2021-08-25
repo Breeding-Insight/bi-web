@@ -25,7 +25,7 @@
               <img
                   src="../../assets/img/bi-logo.svg"
                   alt="Breeding Insight home"
-                  width="232"
+                  width="160"
               >
             </a>
           </div>
