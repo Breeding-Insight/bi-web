@@ -337,7 +337,6 @@ header {
   padding: 0 2.5em 0 2.5em;
   margin-bottom: 0;
   @include until($desktop) {
-    padding: .5em 2.5em .5em 1em;
     position: fixed;
     left: 0;
     right: 0;
