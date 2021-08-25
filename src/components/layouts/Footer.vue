@@ -49,12 +49,12 @@
             <div class="level-item">
               <div class="level-item">
                 <p class="has-text-right is-hidden-touch">
-                  <strong>&copy; 2020 Breeding Insight</strong>
+                  <strong>&copy; {{copyrightYear}} Breeding Insight</strong>
                   <br>
                   Funded by the USDA through Cornell University
                 </p>
                 <p class="has-text-centered is-hidden-desktop">
-                  <strong>&copy; 2020 Breeding Insight</strong>
+                  <strong>&copy; {{copyrightYear}} Breeding Insight</strong>
                   <br>
                   Funded by the USDA through Cornell University
                 </p>
@@ -104,6 +104,7 @@ import {mapGetters} from "vuex";
 })
 export default class Footer extends Vue {
   showSidebarMobile?: boolean;
+  copyrightYear = new Date().getFullYear();
 
   get showVersionInfo () {
     return !this.$route.meta.layout || this.$route.meta.layout == 'simple' || this.$route.meta.layout == 'noSideBar';
