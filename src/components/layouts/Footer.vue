@@ -20,7 +20,7 @@
     <div class="columns is-marginless">
       <div
           class="column side-menu is-one-fifth"
-          :class="{ 'is-hidden-mobile': true, 'is-hidden-tablet-only': !showSidebar || !showSidebarMobile, 'is-hidden-desktop': false}"
+          :class="{ 'is-hidden-mobile': true, 'is-hidden-tablet-only': !showSidebar || !showSidebarMobile, 'is-hidden-desktop': !showSidebar}"
       >
       </div>
       <div class="column">
