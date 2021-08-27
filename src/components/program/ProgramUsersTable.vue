@@ -265,8 +265,6 @@ export default class ProgramUsersTable extends Vue {
     const sort: SortField = sortField ? new SortField(sortField, sortOrder) : undefined;
     ProgramUserService.getAll(this.activeProgram!.id!, paginationQuery, sort).then(([programUsers, metadata]) => {
       if (this.paginationController.matchesCurrentRequest(metadata.pagination)){
-        console.log('here!');
-        console.log(programUsers);
         this.users = programUsers;
         this.usersPagination = metadata.pagination;
       }
