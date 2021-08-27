@@ -35,8 +35,9 @@
       </div>              
     </WarningModal>
 
-    <ExpandableRowTable
+    <ExpandableTable
       v-bind:records.sync="observations"
+      v-bind:loading="this.observationsLoading"
       v-bind:row-validations="observationValidations"
       v-bind:pagination="observationsPagination"
       v-bind:data-form-state="editObservationFormState"
@@ -47,32 +48,30 @@
       v-on:paginate-toggle-all="paginationController.toggleShowAll()"
       v-on:paginate-page-size="paginationController.updatePageSize($event)"
     >
-      <template v-slot:columns="data">
-        <TableColumn name="germplasm" v-bind:label="'Germplasm'">
-          <p>{{ data.germplasmName }}</p>
-        </TableColumn>
-        <TableColumn name="observation-unit" v-bind:label="'Observation Unit'">
-          <p>{{ data.observationUnitName }}</p>
-        </TableColumn>
-        <TableColumn name="trait" v-bind:label="'Trait'">
-          <p>{{ data.observationVariableName }}</p>
-        </TableColumn>
-        <TableColumn name="value" v-bind:label="'Value'">
-          <p>{{ data.value }}</p>
-        </TableColumn>
-        <TableColumn name="season" v-if="data.season" v-bind:label="'Season'">
-          <p>{{ data.season.name }}</p>
-        </TableColumn>
-        <TableColumn name="timestamp" v-bind:label="'Timestamp'">
-          <p>{{ data.timeStamp | dmyFormat}}</p>
-        </TableColumn>
-        <TableColumn name="collector" v-bind:label="'Collector'">
-          <p>{{ data.collector }}</p>
-        </TableColumn>
-        <TableColumn name="uploaded-by" v-bind:label="'Uploaded By'">
-          <p>{{ data.uploadedBy }}</p>
-        </TableColumn>
-      </template>
+      <b-table-column field="data.germplasmName" label="Germplasm" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+        <p>{{ props.row.data.germplasmName }}</p>
+      </b-table-column>
+      <b-table-column field="data.observationUnitName" label="Observation Unit" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+        <p>{{ props.row.data.observationUnitName }}</p>
+      </b-table-column>
+      <b-table-column field="data.observationVariableName" label="Trait" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+        <p>{{ props.row.data.observationVariableName }}</p>
+      </b-table-column>
+      <b-table-column field="data.value" label="Value" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+        <p>{{ props.row.data.value }}</p>
+      </b-table-column>
+      <b-table-column field="data.season" label="Season" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+        <p>{{ props.row.data.season}}</p>
+      </b-table-column>
+      <b-table-column :custom-sort="sortTimestamp" label="Timestamp" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+        <p>{{ props.row.data.timeStamp | dmyFormat}}</p>
+      </b-table-column>
+      <b-table-column field="data.collector" label="Collector" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+        <p>{{ props.row.data.collector }}</p>
+      </b-table-column>
+      <b-table-column field="data.uploadedBy" label="Uploaded By" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+        <p>{{ props.row.data.uploadedBy }}</p>
+      </b-table-column>
       <template v-slot:edit="{editData, validations}">
         <div class="columns">
           <div class="column is-two-fifths">
@@ -86,18 +85,11 @@
         </div>
       </template>
       <template v-slot:emptyMessage>
-        <EmptyTableMessage
-          v-bind:button-view-toggle="!newObservationActive"
-          v-bind:button-text="'New Observation'"
-          v-bind:create-enabled="$ability.can('create', 'Observation')"
-          v-on:newClick="newObservationActive = true"
-        >
           <p class="has-text-weight-bold">
             No observations are currently defined for this program.
           </p>
-        </EmptyTableMessage>
       </template>
-    </ExpandableRowTable>
+    </ExpandableTable>
   </section>
 </template>
 
@@ -112,7 +104,6 @@
   import {Program} from "@/breeding-insight/model/Program";
   import NewDataForm from '@/components/forms/NewDataForm.vue'
   import BasicInputField from "@/components/forms/BasicInputField.vue";
-  import ExpandableRowTable from "@/components/tables/ExpandableRowTable.vue";
   import {ObservationService} from "@/breeding-insight/service/ObservationService";
   import EmptyTableMessage from "@/components/tables/EmtpyTableMessage.vue";
   import TableColumn from "@/components/tables/TableColumn.vue";
@@ -123,12 +114,16 @@
   import {Observation} from '@/breeding-insight/model/Observation'
   import {Result, Err, Success, ResultGenerator } from "@/breeding-insight/model/Result";
   import { dmyFormat } from '@/breeding-insight/utils/filters';
+  import {ChevronRightIcon, ChevronDownIcon} from 'vue-feather-icons'
+  import ExpandableTable from '@/components/tables/expandableTable/ExpandableTable.vue';
+  import {DataType, Scale} from "@/breeding-insight/model/Scale";
+  import {Method, MethodClass} from "@/breeding-insight/model/Method";
 
 @Component({
   mixins: [validationMixin],
-  components: { NewDataForm, BasicInputField, ExpandableRowTable, EmptyTableMessage, TableColumn,
+  components: { NewDataForm, BasicInputField, ExpandableTable, EmptyTableMessage, TableColumn,
                 WarningModal, 
-                PlusCircleIcon },
+                PlusCircleIcon, ChevronRightIcon, ChevronDownIcon },
   computed: {
     ...mapGetters([
       'activeProgram'
@@ -151,6 +146,8 @@ export default class ObservationsTable extends Vue {
   private newObservation = new Observation();
   private programName: string = "Program Name";
   private deleteObservation?: Observation;
+
+  private observationsLoading = true;
 
   private paginationController: PaginationController = new PaginationController();
 
@@ -186,6 +183,8 @@ export default class ObservationsTable extends Vue {
     } catch (err) {
       // Display error that observations cannot be loaded
       this.$emit('show-error-notification', 'Error while trying to load observations');
+    } finally {
+      this.observationsLoading = false;
     }
   }
 
@@ -233,6 +232,14 @@ export default class ObservationsTable extends Vue {
       this.deactivateActive = true;
     } else {
       Vue.$log.error('Could not find object to delete')
+    }
+  }
+
+  sortTimestamp(a: any, b: any, isAsc: boolean) {
+    if(isAsc) {
+      return dmyFormat(a.data.timeStamp)!.localeCompare(dmyFormat(b.data.timeStamp)!);
+    } else {
+      return dmyFormat(b.data.timeStamp)!.localeCompare(dmyFormat(a.data.timeStamp)!);
     }
   }
 

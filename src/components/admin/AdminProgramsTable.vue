@@ -182,7 +182,6 @@
   import WarningModal from '@/components/modals/WarningModal.vue'
   import {Program} from '@/breeding-insight/model/Program'
   import {Species} from '@/breeding-insight/model/Species'
-  import ExpandableRowTable from "@/components/tables/ExpandableRowTable.vue";
   import TableColumn from "@/components/tables/TableColumn.vue";
   import BasicInputField from "@/components/forms/BasicInputField.vue";
   import BasicSelectField from "@/components/forms/BasicSelectField.vue";
@@ -212,7 +211,7 @@
   components: {
     ExpandableTable, EmtpyTableMessage,
     NewDataForm, WarningModal, PlusCircleIcon,
-    ExpandableRowTable, TableColumn, BasicInputField, BasicSelectField,
+    TableColumn, BasicInputField, BasicSelectField,
     ChevronRightIcon, ChevronDownIcon
   }
 })

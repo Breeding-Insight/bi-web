@@ -136,7 +136,6 @@
   import {Program} from "@/breeding-insight/model/Program";
   import NewDataForm from '@/components/forms/NewDataForm.vue'
   import BasicInputField from "@/components/forms/BasicInputField.vue";
-  import ExpandableRowTable from "@/components/tables/ExpandableRowTable.vue";
   import {ProgramLocationService} from "@/breeding-insight/service/ProgramLocationService";
   import TableColumn from "@/components/tables/TableColumn.vue";
   import {Metadata, Pagination} from "@/breeding-insight/model/BiResponse";
@@ -148,7 +147,7 @@
 
 @Component({
   mixins: [validationMixin],
-  components: { ExpandableTable, NewDataForm, BasicInputField, ExpandableRowTable, TableColumn,
+  components: { ExpandableTable, NewDataForm, BasicInputField, TableColumn,
                 WarningModal, 
                 PlusCircleIcon, ChevronRightIcon, ChevronDownIcon},
   computed: {

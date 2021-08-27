@@ -170,7 +170,6 @@
   import NewDataForm from '@/components/forms/NewDataForm.vue'
   import BasicInputField from "@/components/forms/BasicInputField.vue";
   import BasicSelectField from "@/components/forms/BasicSelectField.vue";
-  import ExpandableRowTable from "@/components/tables/ExpandableRowTable.vue";
   import {ProgramUser} from '@/breeding-insight/model/ProgramUser'
   import TableColumn from "@/components/tables/TableColumn.vue";
   import {Role} from '@/breeding-insight/model/Role'
@@ -194,7 +193,7 @@
 @Component({
   components: {
     ExpandableTable, NewDataForm, BasicInputField, BasicSelectField, TableColumn,
-                WarningModal, PlusCircleIcon, EmptyTableMessage, ExpandableRowTable,
+                WarningModal, PlusCircleIcon, EmptyTableMessage,
                 ChevronRightIcon, ChevronDownIcon
               },
   computed: {

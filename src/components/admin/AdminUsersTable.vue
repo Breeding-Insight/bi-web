@@ -241,7 +241,6 @@
   import WarningModal from '@/components/modals/WarningModal.vue'
 
   import {required, email} from 'vuelidate/lib/validators'
-  import ExpandableRowTable from "@/components/tables/ExpandableRowTable.vue";
   import TableColumn from "@/components/tables/TableColumn.vue";
   import BasicInputField from "@/components/forms/BasicInputField.vue";
   import {UserService} from "@/breeding-insight/service/UserService";
@@ -261,7 +260,7 @@
 
   @Component({
   components: {
-    ExpandableTable, NewDataForm, PlusCircleIcon, WarningModal, ExpandableRowTable, TableColumn, BasicInputField, BasicSelectField,
+    ExpandableTable, NewDataForm, PlusCircleIcon, WarningModal, TableColumn, BasicInputField, BasicSelectField,
     ChevronRightIcon, ChevronDownIcon
   },
   computed: {
