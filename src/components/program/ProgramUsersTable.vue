@@ -121,6 +121,8 @@
         v-on:paginate="paginationController.updatePage($event)"
         v-on:paginate-toggle-all="paginationController.toggleShowAll()"
         v-on:paginate-page-size="paginationController.updatePageSize($event)"
+        backend-sorting
+        v-on:sort="setSort"
     >
       <b-table-column field="data.name" label="Name" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
         {{ props.row.data.name }}
@@ -190,6 +192,7 @@
   import {defineAbilityFor} from "@/config/ability";
   import {ChevronRightIcon, ChevronDownIcon} from 'vue-feather-icons'
   import ExpandableTable from '@/components/tables/expandableTable/ExpandableTable.vue';
+  import {SortField} from "@/breeding-insight/model/SortField";
 
 @Component({
   components: {
@@ -245,15 +248,25 @@ export default class ProgramUsersTable extends Vue {
     this.getSystemUsers();
   }
 
+  setSort(field: string, order: string) {
+    const fieldMap = {'data.email': 'email', 'data.name': 'name'};
+    if (field in fieldMap) {
+      this.getUsers(fieldMap[field], order);
+    }
+  }
+
   @Watch('paginationController', { deep: true})
-  getUsers() {
+  getUsers(sortField?: string, sortOrder?: string) {
 
     let paginationQuery: PaginationQuery = PaginationController.getPaginationSelections(
       this.paginationController.currentPage, this.paginationController.pageSize, this.paginationController.showAll);
     this.paginationController.setCurrentCall(paginationQuery);
 
-    ProgramUserService.getAll(this.activeProgram!.id!, paginationQuery).then(([programUsers, metadata]) => {
+    const sort: SortField = sortField ? new SortField(sortField, sortOrder) : undefined;
+    ProgramUserService.getAll(this.activeProgram!.id!, paginationQuery, sort).then(([programUsers, metadata]) => {
       if (this.paginationController.matchesCurrentRequest(metadata.pagination)){
+        console.log('here!');
+        console.log(programUsers);
         this.users = programUsers;
         this.usersPagination = metadata.pagination;
       }
