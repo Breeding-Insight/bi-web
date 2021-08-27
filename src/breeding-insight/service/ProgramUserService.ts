@@ -23,6 +23,7 @@ import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
 import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
 import {User} from "@/breeding-insight/model/User";
 import {UserService} from "@/breeding-insight/service/UserService";
+import {SortField} from "@/breeding-insight/model/SortField";
 
 export class ProgramUserService {
 
@@ -106,7 +107,7 @@ export class ProgramUserService {
     }));
   }
 
-  static getAll(programId: string, paginationQuery?: PaginationQuery): Promise<[ProgramUser[], Metadata]> {
+  static getAll(programId: string, paginationQuery?: PaginationQuery, sortField?: SortField): Promise<[ProgramUser[], Metadata]> {
     return new Promise<[ProgramUser[], Metadata]>(((resolve, reject) => {
 
       if (paginationQuery === undefined){
@@ -114,10 +115,8 @@ export class ProgramUserService {
       }
 
       if (programId) {
-        ProgramUserDAO.getAll(programId, paginationQuery).then((biResponse) => {
+        ProgramUserDAO.getAll(programId, paginationQuery, sortField).then((biResponse) => {
 
-          //TODO: Remove when backend sorts the data by default
-          biResponse.result.data = PaginationController.mockSortRecords(biResponse.result.data);
           let programUsers: ProgramUser[] = [];
 
           programUsers = biResponse.result.data.map((programUser: any) => {
