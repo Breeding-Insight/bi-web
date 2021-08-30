@@ -249,7 +249,7 @@ export default class ProgramUsersTable extends Vue {
   }
 
   setSort(field: string, order: string) {
-    const fieldMap = {'data.email': 'email', 'data.name': 'name'};
+    const fieldMap: any = {'data.email': 'email', 'data.name': 'name'};
     if (field in fieldMap) {
       this.getUsers(fieldMap[field], order);
     }
@@ -262,7 +262,7 @@ export default class ProgramUsersTable extends Vue {
       this.paginationController.currentPage, this.paginationController.pageSize, this.paginationController.showAll);
     this.paginationController.setCurrentCall(paginationQuery);
 
-    const sort: SortField = sortField ? new SortField(sortField, sortOrder) : undefined;
+    const sort: SortField | undefined = sortField && sortOrder ? new SortField(sortField, sortOrder) : undefined;
     ProgramUserService.getAll(this.activeProgram!.id!, paginationQuery, sort).then(([programUsers, metadata]) => {
       if (this.paginationController.matchesCurrentRequest(metadata.pagination)){
         this.users = programUsers;
