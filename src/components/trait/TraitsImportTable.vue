@@ -39,14 +39,17 @@
         <TableColumn name="name" v-bind:label="'Name'">
           {{ data.traitName }}
         </TableColumn>
-        <TableColumn name="level" v-bind:label="'Level'" v-bind:visible="!collapseColumns">
-          {{ data.programObservationLevel.name }}
+        <TableColumn name="trait" v-bind:label="'Trait'" v-bind:visible="!collapseColumns">
+          {{ StringFormatters.toStartCase(data.traitName) }}
         </TableColumn>
         <TableColumn name="method" v-bind:label="'Method'" v-bind:visible="!collapseColumns">
-          {{ StringFormatters.toStartCase(data.method.methodClass) }}
+          {{ StringFormatters.toStartCase(data.method) }}
         </TableColumn>
-        <TableColumn name="scale" v-bind:label="'Scale'" v-bind:visible="!collapseColumns">
+        <TableColumn name="scale" v-bind:label="'Scale Class'" v-bind:visible="!collapseColumns">
           {{ TraitStringFormatters.getScaleTypeString(data.scale) }}
+        </TableColumn>
+        <TableColumn name="unit" v-bind:label="'Unit'" v-bind:visible="!traitSidePanelState.collapseColumns">
+          {{ data.unit }}
         </TableColumn>
       </template>
 

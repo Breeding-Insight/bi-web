@@ -24,7 +24,7 @@
             <div class="level-item">
               <div class="has-text-dark">
                 <strong>Before You Import...</strong>
-                <br/>Prepare trait information for import using the provided template.
+                <br/>Prepare ontology information for import using the provided template.
               </div>
             </div>
           </div>
@@ -33,7 +33,7 @@
               <div class="has-text-dark has-text-centered is-size-7">
                 <!-- temporary link until the backend card is done -->
                 <a href="https://cornell.box.com/shared/static/8sp0qvccpjotosiv8576tczeg09nnvao.xls"
-                  class="button is-outlined is-primary" :id="downloadTraitTemplateId">Download the Trait Import Template</a>
+                  class="button is-outlined is-primary" :id="downloadTraitTemplateId">Download the Ontology Import Template</a>
                 <br/>Template version placeholder
               </div>
             </div>

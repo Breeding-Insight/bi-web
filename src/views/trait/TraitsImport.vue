@@ -46,7 +46,7 @@
     </WarningModal>
 
     <template v-if="state === ImportState.CHOOSE_FILE || state === ImportState.FILE_CHOSEN">
-      <h1 class="title">Import Traits</h1>
+      <h1 class="title">Import Ontology</h1>
       <TraitImportTemplateMessageBox class="mb-5"/>
       <div class="box">
         <FileSelectMessageBox v-model="file"
@@ -62,7 +62,7 @@
     
     <template v-if="state === ImportState.LOADING || state === ImportState.CURATE">
       <template v-if="tableLoaded">
-        <h1 class="title">Curate and Confirm New Traits</h1>
+        <h1 class="title">Confirm New Ontology Term</h1>
         <ConfirmImportMessageBox v-bind:num-traits="numTraits"
                                     v-on:abort="showAbortModal = true" 
                                     v-on:confirm="importService.send(ImportEvent.CONFIRMED)"
