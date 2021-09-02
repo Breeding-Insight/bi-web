@@ -48,6 +48,7 @@ export default class UserStatusMenu extends Vue {
   @Prop()
   username!: string;
 
+  private logoutId: string = "basesidebarlayout-logout-button";
 }
 
 </script>

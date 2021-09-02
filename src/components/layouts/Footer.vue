@@ -15,77 +15,81 @@
   -->
 
 <template>
-  <footer class="footer">
-
+  <footer class="footer p-0">
     <div class="columns is-marginless">
       <div
-          class="column side-menu is-one-fifth"
+          class="column side-menu p-0 is-narrow"
           :class="{ 'is-hidden-mobile': true, 'is-hidden-tablet-only': !showSidebar || !showSidebarMobile, 'is-hidden-desktop': !showSidebar}"
       >
+        <div class="is-300px"></div>
       </div>
       <div class="column">
-        <div class="level mb-4">
-          <div class="level-left">
-            <nav class="level-item">
-              <div class="level">
-                <div class="level-item">
-                  <a href="/">Terms of Use</a>
-                </div>
-                <div class="level-item">
-                  <a href="/">Privacy Policy</a>
-                </div>
-                <div class="level-item">
-                  <a href="/">Contact Us</a>
-                </div>
-                <div class="level-item">
-                  <a href="/">About</a>
-                </div>
-              </div>
-            </nav>
-          </div>
-
-          <div class="level-right">
-
-            <div class="level-item">
+      <div>
+      <div class="level mb-4">
+        <div class="level-left">
+          <nav class="level-item">
+            <div class="level">
               <div class="level-item">
-                <p class="has-text-right is-hidden-touch">
-                  <strong>&copy; {{copyrightYear}} Breeding Insight</strong>
-                  <br>
-                  Funded by the USDA through Cornell University
-                </p>
-                <p class="has-text-centered is-hidden-desktop">
-                  <strong>&copy; {{copyrightYear}} Breeding Insight</strong>
-                  <br>
-                  Funded by the USDA through Cornell University
-                </p>
+                <a href="/">Terms of Use</a>
               </div>
               <div class="level-item">
-                <img
-                    src="../../assets/img/usda.svg"
-                    alt="USDA Logo"
-                    width="75"
-                >
+                <a href="/">Privacy Policy</a>
               </div>
               <div class="level-item">
-                <img
-                    src="../../assets/img/cornell_seal.svg"
-                    alt="Cornell University Logo"
-                    width="56"
-                >
+                <a href="/">Contact Us</a>
+              </div>
+              <div class="level-item">
+                <a href="/">About</a>
               </div>
             </div>
-          </div>
+          </nav>
         </div>
-        <div v-if="showVersionInfo" class="level">
-          <div class="level-left">
-            <div class="level-item is-size-7">
-              <VersionInfo/>
+
+        <div class="level-right">
+
+          <div class="level-item">
+            <div class="level-item">
+              <p class="has-text-right is-hidden-touch">
+                <strong>&copy; {{copyrightYear}} Breeding Insight</strong>
+                <br>
+                Funded by the USDA through Cornell University
+              </p>
+              <p class="has-text-centered is-hidden-desktop">
+                <strong>&copy; {{copyrightYear}} Breeding Insight</strong>
+                <br>
+                Funded by the USDA through Cornell University
+              </p>
+            </div>
+            <div class="level-item">
+              <img
+                  src="../../assets/img/usda.svg"
+                  alt="USDA Logo"
+                  width="75"
+              >
+            </div>
+            <div class="level-item">
+              <img
+                  src="../../assets/img/cornell_seal.svg"
+                  alt="Cornell University Logo"
+                  width="56"
+              >
             </div>
           </div>
-          <div class="level-right"></div>
         </div>
       </div>
+      <div v-if="showVersionInfo" class="level">
+        <div class="level-left">
+          <div class="level-item is-size-7">
+            <VersionInfo/>
+          </div>
+        </div>
+        <div class="level-right"></div>
+      </div>
+
+      </div>
+      </div>
     </div>
+
   </footer>
 </template>
 

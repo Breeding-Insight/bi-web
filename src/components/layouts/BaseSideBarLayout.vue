@@ -17,6 +17,7 @@
 
 <template>
   <div class="sidebarlayout">
+
     <header>
       <div class="level header-title is-marginless is-mobile">
         <div class="level-left">
@@ -62,28 +63,41 @@
       </div>
     </header>
 
+
     <div class="columns is-marginless">
+      <!--
+
       <div
           class="column side-menu is-one-fifth menu-test"
           :class="{ 'is-hidden-touch': !showSidebarMobile }"
       >
-        <aside id="sideMenu" class="menu mb-5 menu-test">
-          <slot name="menu"></slot>
-        </aside>
-        <div id="versionInfo" class="is-size-7 is-justify-content-center is-align-content-center is-flex">
-          <span class="is-centered">
-            <VersionInfo />
-          </span>
+      -->
+      <div class="column is-narrow p-0" :class="{ 'is-hidden-touch': !showSidebarMobile }">
+        <div class="is-300px">
+          <div id="sideMenu" class="menu mb-0 menu-test sidebar side-menu"> <!-- menu-scroll -->
+            <slot name="menu"></slot>
+            <p></p>
+            <div id="versionInfo" class="is-size-7 is-justify-content-center is-align-content-center is-flex">
+              <span class="is-centered">
+                <VersionInfo />
+              </span>
+            </div>
+          </div>
         </div>
+
       </div>
+      <!-- </div> -->
 
       <div class="column">
-        <main>
-          <section class="section pt-0">
-            <slot name="content"></slot>
-          </section>
+        <div>
+          <main>
+            <section class="section pt-0">
+              <slot name="content"></slot>
+            </section>
 
-        </main>
+          </main>
+        </div>
+        <!--<Footer />-->
       </div>
 
     </div>
@@ -112,8 +126,6 @@ import UserStatusMenu from "@/components/layouts/menus/UserStatusMenu.vue";
   export default class SideBarMaster extends Vue {
     showSidebarMobile?: boolean;
     SandboxMode = SandboxMode;
-
-    private logoutId: string = "basesidebarlayout-logout-button";
 
     @Prop()
     username!: string;
