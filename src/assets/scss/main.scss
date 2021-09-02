@@ -57,7 +57,7 @@ $menu-item-hover-background-color: $info;
 $menu-item-hover-color: white;
 $menu-nested-list-padding-left: 0;
 
-$footer-padding: 0rem 0rem;
+$footer-padding: 1rem 2.5rem;
 $level-item-spacing: 2rem;
 
 $tabs-boxed-link-radius: 1px;
@@ -174,7 +174,12 @@ main li {
 }
 
 footer {
+  //margin-left: 300px;
   flex-shrink:0;
+}
+
+.main-footer {
+  margin-left: 300px;
 }
 
 .field {
@@ -342,7 +347,8 @@ header {
 }
 
 .side-menu {
-  position: relative;
+  //position: fixed;
+  //height: calc(100vh - 65px);
   background-color: $darkmenu;
   padding: 1em 1em 1em 0;
   p {
@@ -362,6 +368,44 @@ header {
       margin-left:2.5em;
     }
   }
+}
+
+.menu-scroll {
+  //position: sticky;
+  //position: fixed;
+  position: absolute;
+  height: 100%;
+  //display: inline-block;
+  //vertical-align: top;
+  //max-height: calc(100vh - 65px);
+  //height: calc(100vh - 65px);
+  overflow-y: auto;
+  //width: inherit;
+  //top: 65px;
+  //bottom: 0;
+  //padding: 30px;
+}
+
+.sidebar {
+  position: fixed;
+  display: inline-block;
+  vertical-align: top;
+  max-height: calc(100vh - 65px);
+  //height: calc(100vh - 65px);
+  overflow-y: auto;
+  width: inherit;
+  top: 65px;
+  bottom: 0;
+  z-index: 30;
+}
+
+.is-300px {
+  width: 300px;
+}
+
+.page-content {
+  display: inline-block;
+  //margin-left: 300px;
 }
 
 .new-form {
