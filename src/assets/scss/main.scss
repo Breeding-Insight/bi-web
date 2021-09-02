@@ -347,8 +347,6 @@ header {
 }
 
 .side-menu {
-  //position: fixed;
-  //height: calc(100vh - 65px);
   background-color: $darkmenu;
   padding: 1em 1em 1em 0;
   p {
@@ -371,19 +369,9 @@ header {
 }
 
 .menu-scroll {
-  //position: sticky;
-  //position: fixed;
   position: absolute;
   height: 100%;
-  //display: inline-block;
-  //vertical-align: top;
-  //max-height: calc(100vh - 65px);
-  //height: calc(100vh - 65px);
   overflow-y: auto;
-  //width: inherit;
-  //top: 65px;
-  //bottom: 0;
-  //padding: 30px;
 }
 
 .sidebar {
@@ -391,7 +379,6 @@ header {
   display: inline-block;
   vertical-align: top;
   max-height: calc(100vh - 65px);
-  //height: calc(100vh - 65px);
   overflow-y: auto;
   width: inherit;
   top: 65px;
@@ -405,7 +392,6 @@ header {
 
 .page-content {
   display: inline-block;
-  //margin-left: 300px;
 }
 
 .new-form {
@@ -508,7 +494,6 @@ a.is-underlined {
 }
 
 #versionInfo {
-  position: absolute;
   bottom: 10px;
   color: white;
   width: 100%;

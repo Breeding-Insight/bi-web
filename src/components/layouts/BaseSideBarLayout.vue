@@ -76,7 +76,6 @@
         <div class="is-300px">
           <div id="sideMenu" class="menu mb-0 menu-test sidebar side-menu"> <!-- menu-scroll -->
             <slot name="menu"></slot>
-            <p></p>
             <div id="versionInfo" class="is-size-7 is-justify-content-center is-align-content-center is-flex">
               <span class="is-centered">
                 <VersionInfo />
@@ -91,7 +90,7 @@
       <div class="column">
         <div>
           <main>
-            <section class="section pt-0">
+            <section class="section p-5">
               <slot name="content"></slot>
             </section>
 
