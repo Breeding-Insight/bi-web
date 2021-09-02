@@ -62,19 +62,10 @@
         </div>
       </div>
     </header>
-
-
     <div class="columns is-marginless">
-      <!--
-
-      <div
-          class="column side-menu is-one-fifth menu-test"
-          :class="{ 'is-hidden-touch': !showSidebarMobile }"
-      >
-      -->
       <div class="column is-narrow p-0" :class="{ 'is-hidden-touch': !showSidebarMobile }">
         <div class="is-300px">
-          <div id="sideMenu" class="menu mb-0 menu-test sidebar side-menu"> <!-- menu-scroll -->
+          <div id="sideMenu" class="menu mb-0 menu-test sidebar side-menu">
             <slot name="menu"></slot>
             <div id="versionInfo" class="is-size-7 is-justify-content-center is-align-content-center is-flex">
               <span class="is-centered">
@@ -83,22 +74,16 @@
             </div>
           </div>
         </div>
-
       </div>
-      <!-- </div> -->
-
       <div class="column">
         <div>
           <main>
             <section class="section p-5">
               <slot name="content"></slot>
             </section>
-
           </main>
         </div>
-        <!--<Footer />-->
       </div>
-
     </div>
   </div>
 </template>
