@@ -37,19 +37,19 @@
       -->
       <template v-slot:columns="data">
         <TableColumn name="name" v-bind:label="'Name'">
-          {{ data.traitName }}
+          {{ data.abbreviations[0] }}
         </TableColumn>
         <TableColumn name="trait" v-bind:label="'Trait'" v-bind:visible="!collapseColumns">
           {{ StringFormatters.toStartCase(data.traitName) }}
         </TableColumn>
         <TableColumn name="method" v-bind:label="'Method'" v-bind:visible="!collapseColumns">
-          {{ StringFormatters.toStartCase(data.method) }}
+          {{ StringFormatters.toStartCase(data.method.methodClass) }}
         </TableColumn>
         <TableColumn name="scale" v-bind:label="'Scale Class'" v-bind:visible="!collapseColumns">
           {{ TraitStringFormatters.getScaleTypeString(data.scale) }}
         </TableColumn>
         <TableColumn name="unit" v-bind:label="'Unit'" v-bind:visible="!traitSidePanelState.collapseColumns">
-          {{ data.unit }}
+          {{ data.scale.scaleName }}
         </TableColumn>
       </template>
 
