@@ -67,7 +67,7 @@
             v-bind:value="item.value"
             v-on:delete="checkRemoveRow(i)"
             v-on:value-change="item.value = $event"
-            v-bind:value-placeholder="placeholders[i]"
+            v-bind:value-placeholder="nominalPlaceholders[i]"
             v-bind:key="i"
             v-bind:server-row-validation="getCategoryErrors(i)"
         />
@@ -121,6 +121,7 @@ export default class CategoryTraitForm extends Vue {
   private validationIndex!: number;
 
   private placeholders = ['ex. Very thin (< 4mm)', 'ex. Thin (4 - 6mm)', 'ex. Intermediate (7 - 9mm)', 'ex. Thick (10 - 12mm)', 'ex. Very Thick (> 12mm)'];
+  private nominalPlaceholders = ['Type A', 'Type B', 'Type C', 'Type D', 'Type E'];
   private deleteWarningTitle: string = "Remove category?"
   private activeRemoveRowIndex?: number;
   private deleteModalActive: boolean = false;
