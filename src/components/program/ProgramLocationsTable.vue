@@ -38,7 +38,7 @@
     <button
       v-if="$ability.can('create', 'Location')"
       data-testid="newDataForm"
-      v-show="!newLocationActive & locations.length > 0"
+      v-show="!newLocationActive"
       class="button is-primary has-text-weight-bold is-pulled-right"
       v-on:click="newLocationActive = true"
     >
@@ -52,6 +52,8 @@
         New Location
       </span>
     </button>
+
+    <div class="is-clearfix"></div>
 
     <NewDataForm
       v-if="newLocationActive"
@@ -77,8 +79,9 @@
       </template>
     </NewDataForm>
 
-    <ExpandableRowTable
+    <ExpandableTable
       v-bind:records.sync="locations"
+      v-bind:loading="this.locationsLoading"
       v-bind:row-validations="locationValidations"
       v-bind:editable="$ability.can('update', 'Location')"
       v-bind:archivable="$ability.can('archive', 'Location')"
@@ -91,14 +94,12 @@
       v-on:paginate-toggle-all="paginationController.toggleShowAll()"
       v-on:paginate-page-size="paginationController.updatePageSize($event)"
     >
-      <template v-slot:columns="data">
-        <TableColumn name="name" v-bind:label="'Name'">
-          {{ data.name }}
-        </TableColumn>
-        <TableColumn name="numExperiments" v-bind:label="'# Experiments'">
-          {{ data.numExperiments }}
-        </TableColumn>
-      </template>
+      <b-table-column field="data.name" label="Name" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+        {{ props.row.data.name }}
+      </b-table-column>
+      <b-table-column field="data.numExperiments" label="# Experiments" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+        {{ props.row.data.numExperiments }}
+      </b-table-column>
       <template v-slot:edit="{editData, validations}">
         <div class="columns">
           <div class="column is-two-fifths">
@@ -112,21 +113,14 @@
         </div>
       </template>
       <template v-slot:emptyMessage>
-        <EmptyTableMessage
-          v-bind:button-view-toggle="!newLocationActive"
-          v-bind:button-text="'New Location'"
-          v-bind:create-enabled="$ability.can('create', 'Location')"
-          v-on:newClick="newLocationActive = true"
-        >
           <p class="has-text-weight-bold">
             No locations are currently defined for this program.
           </p>
           Locations are used in trials and experiments.<br>
           Any locations created when setting up trials and experiments will appear in this list automatically.<br>
-          You can also add, edit, and delete locations from this panel.  
-        </EmptyTableMessage>
+          You can also add, edit, and delete locations from this panel.
       </template>
-    </ExpandableRowTable>
+    </ExpandableTable>
   </section>
 </template>
 
@@ -142,18 +136,17 @@
   import {Program} from "@/breeding-insight/model/Program";
   import NewDataForm from '@/components/forms/NewDataForm.vue'
   import BasicInputField from "@/components/forms/BasicInputField.vue";
-  import ExpandableRowTable from "@/components/tables/ExpandableRowTable.vue";
   import {ProgramLocationService} from "@/breeding-insight/service/ProgramLocationService";
-  import EmptyTableMessage from "@/components/tables/EmtpyTableMessage.vue";
   import TableColumn from "@/components/tables/TableColumn.vue";
   import {Metadata, Pagination} from "@/breeding-insight/model/BiResponse";
   import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
   import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
   import { DataFormEventBusHandler } from '@/components/forms/DataFormEventBusHandler';
+  import ExpandableTable from '@/components/tables/expandableTable/ExpandableTable.vue';
 
 @Component({
   mixins: [validationMixin],
-  components: { NewDataForm, BasicInputField, ExpandableRowTable, EmptyTableMessage, TableColumn,
+  components: { ExpandableTable, NewDataForm, BasicInputField, TableColumn,
                 WarningModal, 
                 PlusCircleIcon },
   computed: {
@@ -173,6 +166,8 @@ export default class ProgramLocationsTable extends Vue {
   private newLocation = new ProgramLocation();
   private programName: string = "Program Name";
   private deleteLocation?: ProgramLocation;
+
+  private locationsLoading = true;
 
   private paginationController: PaginationController = new PaginationController();
 
@@ -203,7 +198,7 @@ export default class ProgramLocationsTable extends Vue {
       // Display error that locations cannot be loaded
       this.$emit('show-error-notification', 'Error while trying to load locations');
       throw error;
-    });
+    }).finally(() => this.locationsLoading = false);
   }
 
   createLocation() {
