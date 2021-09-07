@@ -53,6 +53,8 @@
       </span>
     </button>
 
+    <div class="is-clearfix"></div>
+
     <NewDataForm
       v-if="newTrialActive"
       v-bind:row-validations="trialValidations"
