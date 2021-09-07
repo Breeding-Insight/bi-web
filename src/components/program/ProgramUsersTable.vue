@@ -130,7 +130,7 @@
       <b-table-column field="data.email" label="Email" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
         {{ props.row.data.email }}
       </b-table-column>
-      <b-table-column :custom-sort="sortRole" label="Roles" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+      <b-table-column :custom-sort="sortRole" label="Role" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
         <template v-if="rolesMap.size > 0">
           {{ getRoleName(props.row.data.roleId) }}
         </template>
@@ -172,7 +172,6 @@
   import NewDataForm from '@/components/forms/NewDataForm.vue'
   import BasicInputField from "@/components/forms/BasicInputField.vue";
   import BasicSelectField from "@/components/forms/BasicSelectField.vue";
-  import ExpandableRowTable from "@/components/tables/ExpandableRowTable.vue";
   import {ProgramUser} from '@/breeding-insight/model/ProgramUser'
   import TableColumn from "@/components/tables/TableColumn.vue";
   import {Role} from '@/breeding-insight/model/Role'
@@ -190,15 +189,12 @@
   import store from "@/store";
   import {LOGIN} from "@/store/mutation-types";
   import {defineAbilityFor} from "@/config/ability";
-  import {ChevronRightIcon, ChevronDownIcon} from 'vue-feather-icons'
   import ExpandableTable from '@/components/tables/expandableTable/ExpandableTable.vue';
   import {SortField} from "@/breeding-insight/model/SortField";
 
 @Component({
-  components: {
-    ExpandableTable, NewDataForm, BasicInputField, BasicSelectField, TableColumn,
-                WarningModal, PlusCircleIcon, EmptyTableMessage, ExpandableRowTable,
-                ChevronRightIcon, ChevronDownIcon
+  components: { ExpandableTable, NewDataForm, BasicInputField, BasicSelectField, TableColumn,
+                WarningModal, PlusCircleIcon, EmptyTableMessage
               },
   computed: {
     ...mapGetters([
