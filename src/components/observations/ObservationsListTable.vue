@@ -114,16 +114,15 @@
   import {Observation} from '@/breeding-insight/model/Observation'
   import {Result, Err, Success, ResultGenerator } from "@/breeding-insight/model/Result";
   import { dmyFormat } from '@/breeding-insight/utils/filters';
-  import {ChevronRightIcon, ChevronDownIcon} from 'vue-feather-icons'
   import ExpandableTable from '@/components/tables/expandableTable/ExpandableTable.vue';
   import {DataType, Scale} from "@/breeding-insight/model/Scale";
   import {Method, MethodClass} from "@/breeding-insight/model/Method";
 
 @Component({
   mixins: [validationMixin],
-  components: { NewDataForm, BasicInputField, ExpandableTable, EmptyTableMessage, TableColumn,
+  components: { ExpandableTable, NewDataForm, BasicInputField, EmptyTableMessage, TableColumn,
                 WarningModal, 
-                PlusCircleIcon, ChevronRightIcon, ChevronDownIcon },
+                PlusCircleIcon },
   computed: {
     ...mapGetters([
       'activeProgram'

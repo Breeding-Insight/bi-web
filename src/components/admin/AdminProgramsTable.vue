@@ -46,7 +46,7 @@
     </WarningModal>
 
     <button
-      v-show="!newProgramActive & programs.length > 0"
+      v-show="!newProgramActive"
       class="button is-primary has-text-weight-bold is-pulled-right"
       v-on:click="newProgramActive = true"
     >
@@ -197,7 +197,6 @@
   import { helpers } from 'vuelidate/lib/validators'
   import { isWebUri } from 'valid-url'
   import { FieldError } from '@/breeding-insight/model/errors/FieldError';
-  import {ChevronRightIcon, ChevronDownIcon} from 'vue-feather-icons'
   import ExpandableTable from "@/components/tables/expandableTable/ExpandableTable.vue";
 
   // create custom validation to handle cases default url validation doesn't
@@ -211,8 +210,7 @@
   components: {
     ExpandableTable, EmtpyTableMessage,
     NewDataForm, WarningModal, PlusCircleIcon,
-    TableColumn, BasicInputField, BasicSelectField,
-    ChevronRightIcon, ChevronDownIcon
+    TableColumn, BasicInputField, BasicSelectField
   }
 })
 export default class AdminProgramsTable extends Vue {
