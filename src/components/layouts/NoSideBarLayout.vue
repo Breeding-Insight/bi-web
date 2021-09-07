@@ -17,7 +17,7 @@
 
 <template>
   <div class="sidebarlayout">
-    <header>
+    <header class="main-header">
       <div class="level header-title is-marginless is-mobile">
         <div class="level-left">
           <div class="level-item">
