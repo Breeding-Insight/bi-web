@@ -17,7 +17,18 @@
 
 <template>
   <div v-bind:key="field.id">
-    <h2 class="title is-4">{{field.name}}</h2>
+    <div class="columns is-vcentered">
+      <div class="column is-narrow">
+        <h2 class="title is-4 mb-0">{{field.name}}</h2>
+      </div>
+      <div class="column">
+        <span v-if="field.required" class="has-text-danger">
+          <AlertCircleIcon size="1x" class="mr-1 has-vertical-align-middle"></AlertCircleIcon>
+          Required
+        </span>
+        <span v-else>(optional)</span>
+      </div>
+    </div>
     <div class="subtitle ml-2">
       <p>{{field.description}}</p>
     </div>

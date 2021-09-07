@@ -19,7 +19,7 @@
   <div>
     <div class="columns is-vcentered">
       <div class="column is-narrow">
-        <h2 class="title is-4">{{field.name}}</h2>
+        <h2 class="title is-4 mb-0">{{field.name}}</h2>
       </div>
       <div class="column">
         <span v-if="field.required" class="has-text-danger">
