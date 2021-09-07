@@ -188,12 +188,10 @@
   import {LOGIN} from "@/store/mutation-types";
   import {defineAbilityFor} from "@/config/ability";
   import ExpandableTable from '@/components/tables/expandableTable/ExpandableTable.vue';
-  import {ChevronRightIcon, ChevronDownIcon} from 'vue-feather-icons'
 
 @Component({
   components: { ExpandableTable, NewDataForm, BasicInputField, BasicSelectField, TableColumn,
-                WarningModal, PlusCircleIcon, EmptyTableMessage,
-                ChevronRightIcon, ChevronDownIcon
+                WarningModal, PlusCircleIcon, EmptyTableMessage
               },
   computed: {
     ...mapGetters([
