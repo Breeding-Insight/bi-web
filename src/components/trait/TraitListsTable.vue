@@ -415,7 +415,7 @@ export default class TraitTable extends Vue {
         }
         this.traits = traitCopy;
       }
-
+      const tagPromise = this.getTraitTags();
       this.traitSidePanelState.bus.$emit(this.traitSidePanelState.successEditEvent, data[0]);
       this.clearSelectedRow();
       await this.getObservationLevels();
