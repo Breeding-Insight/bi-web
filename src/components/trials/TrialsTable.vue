@@ -38,7 +38,7 @@
     <button
       v-if="$ability.can('create', 'Trial')"
       data-testid="newDataForm"
-      v-show="!newTrialActive & trials.length > 0"
+      v-show="!newTrialActive"
       class="button is-primary has-text-weight-bold is-pulled-right"
       v-on:click="newTrialActive = true"
     >
@@ -52,6 +52,8 @@
         New Trial
       </span>
     </button>
+
+    <div class="is-clearfix"></div>
 
     <NewDataForm
       v-if="newTrialActive"
@@ -77,8 +79,9 @@
       </template>
     </NewDataForm>
 
-    <ExpandableRowTable
+    <ExpandableTable
       v-bind:records.sync="trials"
+      v-bind:loading="this.trialsLoading"
       v-bind:row-validations="trialValidations"
       v-bind:editable="$ability.can('update', 'Trial')"
       v-bind:archivable="$ability.can('archive', 'Trial')"
@@ -91,14 +94,12 @@
       v-on:paginate-toggle-all="paginationController.toggleShowAll()"
       v-on:paginate-page-size="paginationController.updatePageSize($event)"
     >
-      <template v-slot:columns="data">
-        <TableColumn name="name" v-bind:label="'Name'">
-          <router-link
-            :to="{name: 'studies', params: { trialId: data.id, programId: activeProgram.id }}">
-            {{ data.trialName }}
-          </router-link>
-        </TableColumn>
-      </template>
+      <b-table-column :custom-sort="sortTrialName" label="Name" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+        <router-link
+          :to="{name: 'studies', params: { trialId: props.row.data.id, programId: activeProgram.id }}">
+          {{ props.row.data.trialName }}
+        </router-link>
+      </b-table-column>
       <template v-slot:edit="{editData, validations}">
         <div class="columns">
           <div class="column is-two-fifths">
@@ -112,20 +113,13 @@
         </div>
       </template>
       <template v-slot:emptyMessage>
-        <EmptyTableMessage
-          v-bind:button-view-toggle="!newTrialActive"
-          v-bind:button-text="'New Trial'"
-          v-bind:create-enabled="$ability.can('create', 'Trial')"
-          v-on:newClick="newTrialActive = true"
-        >
           <p class="has-text-weight-bold">
             No trials are currently defined for this program.
           </p>
           Trials are used to create studies.<br>
           You can add, edit, and delete trials from this panel.
-        </EmptyTableMessage>
       </template>
-    </ExpandableRowTable>
+    </ExpandableTable>
   </section>
 </template>
 
@@ -140,7 +134,6 @@
   import {Program} from "@/breeding-insight/model/Program";
   import NewDataForm from '@/components/forms/NewDataForm.vue'
   import BasicInputField from "@/components/forms/BasicInputField.vue";
-  import ExpandableRowTable from "@/components/tables/ExpandableRowTable.vue";
   import {TrialService} from "@/breeding-insight/service/TrialService";
   import EmptyTableMessage from "@/components/tables/EmtpyTableMessage.vue";
   import TableColumn from "@/components/tables/TableColumn.vue";
@@ -150,10 +143,11 @@
   import { DataFormEventBusHandler } from '@/components/forms/DataFormEventBusHandler';
   import {Trial} from '@/breeding-insight/model/Trial'
   import {Result, Err, Success, ResultGenerator } from "@/breeding-insight/model/Result";
+  import ExpandableTable from '@/components/tables/expandableTable/ExpandableTable.vue';
 
 @Component({
   mixins: [validationMixin],
-  components: { NewDataForm, BasicInputField, ExpandableRowTable, EmptyTableMessage, TableColumn,
+  components: { ExpandableTable, NewDataForm, BasicInputField, EmptyTableMessage, TableColumn,
                 WarningModal, 
                 PlusCircleIcon },
   computed: {
@@ -173,6 +167,8 @@ export default class TrialsTable extends Vue {
   private newTrial = new Trial();
   private programName: string = "Program Name";
   private deleteTrial?: Trial;
+
+  private trialsLoading = true;
 
   private paginationController: PaginationController = new PaginationController();
 
@@ -208,6 +204,8 @@ export default class TrialsTable extends Vue {
     } catch (err) {
       // Display error that trials cannot be loaded
       this.$emit('show-error-notification', 'Error while trying to load trials');
+    } finally {
+      this.trialsLoading=false;
     }
   }
 
@@ -255,6 +253,14 @@ export default class TrialsTable extends Vue {
       this.deactivateActive = true;
     } else {
       Vue.$log.error('Could not find object to delete')
+    }
+  }
+
+  sortTrialName(a: any, b: any, isAsc: boolean) {
+    if(isAsc) {
+      return a.data.trialName!.localeCompare(b.data.trialName!);
+    } else {
+      return b.data.trialName!.localeCompare(a.data.trialName!);
     }
   }
 
