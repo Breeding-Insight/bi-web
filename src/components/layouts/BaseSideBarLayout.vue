@@ -93,14 +93,13 @@ import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 import { MenuIcon } from 'vue-feather-icons';
 import { SandboxMode } from '@/util/config';
 import VersionInfo from '@/components/layouts/VersionInfo.vue';
-import Footer from "@/components/layouts/Footer.vue";
 import store from "@/store";
 import {SHOW_SIDEBAR_MOBILE} from "@/store/mutation-types";
 import {mapGetters} from "vuex";
 import UserStatusMenu from "@/components/layouts/menus/UserStatusMenu.vue";
 
 @Component( {
-    components: {UserStatusMenu, VersionInfo, MenuIcon, Footer},
+    components: {UserStatusMenu, VersionInfo, MenuIcon},
     computed: {
       ...mapGetters([
         'showSidebarMobile',
