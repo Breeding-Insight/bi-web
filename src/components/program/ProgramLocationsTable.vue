@@ -142,14 +142,13 @@
   import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
   import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
   import { DataFormEventBusHandler } from '@/components/forms/DataFormEventBusHandler';
-  import {ChevronRightIcon, ChevronDownIcon} from 'vue-feather-icons'
   import ExpandableTable from '@/components/tables/expandableTable/ExpandableTable.vue';
 
 @Component({
   mixins: [validationMixin],
   components: { ExpandableTable, NewDataForm, BasicInputField, TableColumn,
                 WarningModal, 
-                PlusCircleIcon, ChevronRightIcon, ChevronDownIcon},
+                PlusCircleIcon },
   computed: {
     ...mapGetters([
       'activeProgram'

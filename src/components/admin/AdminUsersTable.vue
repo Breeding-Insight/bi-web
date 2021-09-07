@@ -255,13 +255,11 @@
   import {helpers} from "vuelidate/lib/validators";
   import { DataFormEventBusHandler } from '@/components/forms/DataFormEventBusHandler';
   import {mapGetters} from "vuex";
-  import {ChevronRightIcon, ChevronDownIcon} from 'vue-feather-icons'
   import ExpandableTable from '@/components/tables/expandableTable/ExpandableTable.vue';
 
   @Component({
   components: {
-    ExpandableTable, NewDataForm, PlusCircleIcon, WarningModal, TableColumn, BasicInputField, BasicSelectField,
-    ChevronRightIcon, ChevronDownIcon
+    ExpandableTable, NewDataForm, PlusCircleIcon, WarningModal, TableColumn, BasicInputField, BasicSelectField
   },
   computed: {
     ...mapGetters([

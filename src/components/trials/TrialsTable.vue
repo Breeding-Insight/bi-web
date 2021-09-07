@@ -124,7 +124,7 @@
 <script lang="ts">
   import {Component, Prop, Vue, Watch} from 'vue-property-decorator'
   import WarningModal from '@/components/modals/WarningModal.vue'
-  import {ChevronDownIcon, ChevronRightIcon, PlusCircleIcon} from 'vue-feather-icons'
+  import {PlusCircleIcon} from 'vue-feather-icons'
   import {validationMixin} from 'vuelidate';
   import {Validations} from 'vuelidate-property-decorators'
   import {required} from 'vuelidate/lib/validators'
@@ -145,9 +145,9 @@
 
 @Component({
   mixins: [validationMixin],
-  components: { NewDataForm, BasicInputField, ExpandableTable, EmptyTableMessage, TableColumn,
+  components: { ExpandableTable, NewDataForm, BasicInputField, EmptyTableMessage, TableColumn,
                 WarningModal, 
-                PlusCircleIcon, ChevronRightIcon, ChevronDownIcon },
+                PlusCircleIcon },
   computed: {
     ...mapGetters([
       'activeProgram'
