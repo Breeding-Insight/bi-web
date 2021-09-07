@@ -38,7 +38,7 @@
     <button
       v-if="$ability.can('create', 'Trial')"
       data-testid="newDataForm"
-      v-show="!newTrialActive & trials.length > 0"
+      v-show="!newTrialActive"
       class="button is-primary has-text-weight-bold is-pulled-right"
       v-on:click="newTrialActive = true"
     >
