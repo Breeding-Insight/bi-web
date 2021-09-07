@@ -121,6 +121,8 @@
         v-on:paginate="paginationController.updatePage($event)"
         v-on:paginate-toggle-all="paginationController.toggleShowAll()"
         v-on:paginate-page-size="paginationController.updatePageSize($event)"
+        backend-sorting
+        v-on:sort="setSort"
     >
       <b-table-column field="data.name" label="Name" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
         {{ props.row.data.name }}
@@ -128,7 +130,7 @@
       <b-table-column field="data.email" label="Email" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
         {{ props.row.data.email }}
       </b-table-column>
-      <b-table-column :custom-sort="sortRole" label="Roles" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+      <b-table-column :custom-sort="sortRole" label="Role" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
         <template v-if="rolesMap.size > 0">
           {{ getRoleName(props.row.data.roleId) }}
         </template>
@@ -170,7 +172,6 @@
   import NewDataForm from '@/components/forms/NewDataForm.vue'
   import BasicInputField from "@/components/forms/BasicInputField.vue";
   import BasicSelectField from "@/components/forms/BasicSelectField.vue";
-  import ExpandableRowTable from "@/components/tables/ExpandableRowTable.vue";
   import {ProgramUser} from '@/breeding-insight/model/ProgramUser'
   import TableColumn from "@/components/tables/TableColumn.vue";
   import {Role} from '@/breeding-insight/model/Role'
@@ -188,14 +189,12 @@
   import store from "@/store";
   import {LOGIN} from "@/store/mutation-types";
   import {defineAbilityFor} from "@/config/ability";
-  import {ChevronRightIcon, ChevronDownIcon} from 'vue-feather-icons'
   import ExpandableTable from '@/components/tables/expandableTable/ExpandableTable.vue';
+  import {SortField} from "@/breeding-insight/model/SortField";
 
 @Component({
-  components: {
-    ExpandableTable, NewDataForm, BasicInputField, BasicSelectField, TableColumn,
-                WarningModal, PlusCircleIcon, EmptyTableMessage, ExpandableRowTable,
-                ChevronRightIcon, ChevronDownIcon
+  components: { ExpandableTable, NewDataForm, BasicInputField, BasicSelectField, TableColumn,
+                WarningModal, PlusCircleIcon, EmptyTableMessage
               },
   computed: {
     ...mapGetters([
@@ -245,14 +244,22 @@ export default class ProgramUsersTable extends Vue {
     this.getSystemUsers();
   }
 
+  setSort(field: string, order: string) {
+    const fieldMap: any = {'data.email': 'email', 'data.name': 'name'};
+    if (field in fieldMap) {
+      this.getUsers(fieldMap[field], order);
+    }
+  }
+
   @Watch('paginationController', { deep: true})
-  getUsers() {
+  getUsers(sortField?: string, sortOrder?: string) {
 
     let paginationQuery: PaginationQuery = PaginationController.getPaginationSelections(
       this.paginationController.currentPage, this.paginationController.pageSize, this.paginationController.showAll);
     this.paginationController.setCurrentCall(paginationQuery);
 
-    ProgramUserService.getAll(this.activeProgram!.id!, paginationQuery).then(([programUsers, metadata]) => {
+    const sort: SortField | undefined = sortField && sortOrder ? new SortField(sortField, sortOrder) : undefined;
+    ProgramUserService.getAll(this.activeProgram!.id!, paginationQuery, sort).then(([programUsers, metadata]) => {
       if (this.paginationController.matchesCurrentRequest(metadata.pagination)){
         this.users = programUsers;
         this.usersPagination = metadata.pagination;
