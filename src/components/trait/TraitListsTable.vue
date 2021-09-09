@@ -45,7 +45,7 @@
       </div>              
     </WarningModal>
 
-    <div class="columns has-text-right mb-0">
+    <div class="columns has-text-right mb-0 buttons">
       <div class="column">
         <button
             v-if="$ability.can('create', 'Trait')"
@@ -61,7 +61,23 @@
           />
         </span>
           <span>
-          New Trait
+          New Term
+        </span>
+        </button>
+        <button
+            v-if="$ability.can('create', 'Trait')"
+            v-show="!newTraitActive & traits.length > 0"
+            class="button is-primary has-text-weight-bold"
+            v-on:click="$router.push({name: 'traits-import', params: {programId: activeProgram.id}})"
+        >
+        <span class="icon is-small">
+          <PlusCircleIcon
+              size="1.5x"
+              aria-hidden="true"
+          />
+        </span>
+        <span>
+          Import Ontology
         </span>
         </button>
       </div>
@@ -113,16 +129,21 @@
               v-if="!data.active && data.active !== undefined">
             Archived
           </b-button>
-          {{ data.traitName }}
+          {{ data.abbreviations[0] }}
         </TableColumn>
-        <TableColumn name="level" v-bind:label="'Level'" v-bind:visible="!traitSidePanelState.collapseColumns">
-          {{ data.programObservationLevel.name }}
+        <TableColumn name="trait" v-bind:label="'Trait'" v-bind:visible="!traitSidePanelState.collapseColumns">
+          {{ data.traitName }}
         </TableColumn>
         <TableColumn name="method" v-bind:label="'Method'" v-bind:visible="!traitSidePanelState.collapseColumns">
           {{ StringFormatters.toStartCase(data.method.methodClass) }}
         </TableColumn>
-        <TableColumn name="scale" v-bind:label="'Scale'" v-bind:visible="!traitSidePanelState.collapseColumns">
+        <TableColumn name="scaleunit" v-bind:label="'Scale Unit'" v-bind:visible="!traitSidePanelState.collapseColumns">
           {{ TraitStringFormatters.getScaleTypeString(data.scale) }}
+        </TableColumn>
+        <TableColumn name="unit" v-bind:label="'Unit'" v-bind:visible="!traitSidePanelState.collapseColumns">
+          <template v-if="data.scale.dataType==='NUMERICAL'">
+            {{ data.scale.scaleName }}
+          </template>
         </TableColumn>
       </template>
 
@@ -155,15 +176,15 @@
       <template v-slot:emptyMessage>
         <EmptyTableMessage
             v-bind:button-view-toggle="!newTraitActive"
-            v-bind:button-text="'New Trait'"
+            v-bind:button-text="'New Term'"
             v-on:newClick="activateNewTraitForm"
             v-bind:create-enabled="$ability.can('create', 'Trait')"
         >
           <p class="has-text-weight-bold">
-            No traits are currently defined for this program.
+            No ontology terms are currently defined for this program.
           </p>
           <p v-if="$ability.can('create', 'Trait')">
-            Create new traits by clicking "New Trait" or navigating to "Import Traits".
+            Create new ontology terms by clicking "New Term" or navigating to "Import Ontology".
           </p>
         </EmptyTableMessage>
       </template>
