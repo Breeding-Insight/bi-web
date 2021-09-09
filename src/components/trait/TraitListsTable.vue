@@ -77,7 +77,7 @@
           />
         </span>
         <span>
-          Import Ontology
+          Import Batch File
         </span>
         </button>
       </div>
@@ -138,9 +138,9 @@
           {{ data.traitName }}
         </TableColumn>
         <TableColumn name="method" v-bind:label="'Method'" v-bind:visible="!traitSidePanelState.collapseColumns">
-          {{ StringFormatters.toStartCase(data.method.methodClass) }}
+          {{ data.method.description + " " + StringFormatters.toStartCase(data.method.methodClass) }}
         </TableColumn>
-        <TableColumn name="scaleunit" v-bind:label="'Scale Unit'" v-bind:visible="!traitSidePanelState.collapseColumns">
+        <TableColumn name="scaleClass" v-bind:label="'Scale Class'" v-bind:visible="!traitSidePanelState.collapseColumns">
           {{ TraitStringFormatters.getScaleTypeString(data.scale) }}
         </TableColumn>
         <TableColumn name="unit" v-bind:label="'Unit'" v-bind:visible="!traitSidePanelState.collapseColumns">
