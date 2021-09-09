@@ -17,15 +17,17 @@
 
 <template>
   <div id="import-ontology">
+    <TraitsImport/>
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator'
 import ProgramsBase from "@/components/program/ProgramsBase.vue";
+import TraitsImport from "@/views/trait/TraitsImport.vue";
 
 @Component({
-  components: {
+  components: { TraitsImport
   }
 })
 export default class ImportOntology extends ProgramsBase {

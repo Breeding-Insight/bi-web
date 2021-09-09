@@ -145,6 +145,7 @@
                 v-bind:to="{name: 'import'}"
                 v-bind:class="{ 'is-active': importFileActive }"
                 :id="importFileMenuId"
+                v-if="$ability.can('create', 'Import')"
               >
                 Import File
                 <MoreVerticalIcon
