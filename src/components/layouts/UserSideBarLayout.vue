@@ -143,10 +143,31 @@
             <li>
               <router-link
                 v-bind:to="{name: 'import'}"
+                v-bind:class="{ 'is-active': importFileActive }"
                 :id="importFileMenuId"
               >
                 Import File
+                <MoreVerticalIcon
+                    v-if="!importFileActive"
+                    class="is-pulled-right"
+                />
+                <MoreHorizontalIcon
+                    v-if="importFileActive"
+                    class="is-pulled-right"
+                />
               </router-link>
+              <ul v-show="importFileActive">
+                <li>
+                  <router-link v-bind:to="{name: 'ontology', params: {programId: activeProgram.id}}">
+                    Ontology
+                  </router-link>
+                </li>
+                <li>
+                  <router-link v-bind:to="{name: 'germplasm', params: {programId: activeProgram.id}}">
+                    Germplasm
+                  </router-link>
+                </li>
+              </ul>
             </li>
             <li>
               <router-link
@@ -271,6 +292,7 @@
     programManagementActive: boolean =  true;
     traitsActive: boolean = false;
     trialsAndStudiesActive: boolean = false;
+    importFileActive: boolean = false;
     private programs: Program[] = [];
     private programSelectActive: boolean = false;
 
@@ -328,6 +350,7 @@
       this.programManagementActive = path.includes('/program-management/');
       this.trialsAndStudiesActive = path.includes('/trials-studies/');
       this.traitsActive = path.includes('/traits/');
+      this.importFileActive = path.includes('/import/')
     }
     hideProgramSelect() {
       this.programSelectActive = false;
