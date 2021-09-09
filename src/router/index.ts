@@ -56,6 +56,9 @@ import AccountSignUp from "@/views/account/AccountSignUp.vue";
 import AccountCreationFailure from "@/views/account/AccountCreationFailure.vue"
 import AccountCreationSuccess from "@/views/account/AccountCreationSuccess.vue"
 import {defineAbilityFor} from "@/config/ability";
+import ImportFile from "@/views/import/ImportFile.vue";
+import ImportOntology from "@/views/import/ImportOntology.vue";
+import ImportGermplasm from "@/views/import/ImportGermplasm.vue";
 
 
 Vue.use(VueRouter);
@@ -277,8 +280,29 @@ const routes = [
       title: 'File Import',
       layout: layouts.userSideBar
     },
-    component: BrAPIImporter,
-    beforeEnter: processProgramNavigation
+    component: ImportFile,
+    redirect: {name: 'ontology'},
+    beforeEnter: processProgramNavigation,
+    children: [
+      {
+        path: 'ontology',
+        name: 'ontology',
+        meta: {
+          title: 'Ontology',
+          layout: layouts.userSideBar
+        },
+        component: ImportOntology
+      },
+      {
+        path: 'germplasm',
+        name: 'germplasm',
+        meta: {
+          title: 'Germplasm',
+          layout: layouts.userSideBar
+        },
+        component: ImportGermplasm
+      }
+    ]
   },
   {
     path: '/program-selection',
