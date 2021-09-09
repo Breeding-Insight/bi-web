@@ -17,7 +17,7 @@
 
 <template>
   <div id="import-ontology">
-    <TraitsImport/>
+    <TraitsImport v-bind:show-title="false"/>
   </div>
 </template>
 
