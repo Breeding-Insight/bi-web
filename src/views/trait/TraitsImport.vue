@@ -46,7 +46,7 @@
     </WarningModal>
 
     <template v-if="state === ImportState.CHOOSE_FILE || state === ImportState.FILE_CHOSEN">
-      <h1 class="title">Import Traits</h1>
+      <h1 class="title" v-if="showTitle">Import Traits</h1>
       <TraitImportTemplateMessageBox class="mb-5"/>
       <div class="box">
         <FileSelectMessageBox v-model="file"
@@ -153,6 +153,9 @@ enum ImportAction {
   }
 })
 export default class TraitsImport extends ProgramsBase {
+
+  @Prop({default: true})
+  private showTitle! : boolean;
 
   private file : File | null = null;
   private import_errors: ValidationError | AxiosResponse | null = null;
