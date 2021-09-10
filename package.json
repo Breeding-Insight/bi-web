@@ -26,6 +26,7 @@
     "core-js": "^3.4.3",
     "focus-trap": "^5.1.0",
     "focus-trap-vue": "0.0.6",
+    "title-case": "^3.0.3",
     "uuid": "^8.3.2",
     "valid-url": "^1.0.9",
     "vue": "^2.6.10",

@@ -29,7 +29,7 @@
             <div class="has-text-dark has-text-centered is-size-7">
               <!-- temporary link until the backend card is done -->
               <a v-bind:href="templateUrl"
-                 class="button is-outlined is-primary" :id="downloadTemplateId">Download the {{importTypeName}} Import Template</a>
+                 class="button is-outlined is-primary" :id="downloadTemplateId">Download the {{toTitleCase(importTypeName)}} Import Template</a>
               <br/>Template version placeholder
             </div>
           </div>
@@ -41,6 +41,7 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator'
+import { titleCase } from "title-case";
 
 @Component({
   components: {
@@ -54,6 +55,10 @@ export default class ImportInfoTemplateMessageBox extends Vue {
   importTypeName! : string;
 
   private downloadTemplateId: string = "importtemplatemessagebox-download-template";
+
+  toTitleCase(str: string) {
+    return titleCase(str);
+  }
 
 }
 </script>

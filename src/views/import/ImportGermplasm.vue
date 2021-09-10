@@ -31,7 +31,7 @@
     <div class="box">
       <FileSelectMessageBox v-model="file"
                             v-bind:fileTypes="'.csv, .xls, .xlsx'"
-                            v-on:import="importService.send(ImportEvent.IMPORT_STARTED)"/>
+      />
     </div>
   </div>
 </template>
@@ -47,6 +47,8 @@ import FileSelectMessageBox from "@/components/file-import/FileSelectMessageBox.
   }
 })
 export default class ImportGermplasm extends ProgramsBase {
+
+  private file : File | null = null;
 
 }
 </script>
