@@ -62,11 +62,11 @@
         </p>
         <AutoCompleteField
             v-bind:options="entities"
-            v-bind:value="trait.entity"
+            v-bind:value="trait.programObservationLevel ? trait.programObservationLevel.name : undefined"
             v-bind:field-name="'Trait = Entity + Attribute'"
             v-bind:show-label="false"
             v-bind:server-validations="validationHandler.getValidation(0, TraitError.Entity)"
-            v-on:input="setEntity($event)"
+            v-on:input="setObservationLevel($event)"
         />
       </div>
       <div class="sentence-input">
@@ -79,14 +79,14 @@
             v-bind:field-name="'Attribute'"
             v-bind:show-label="false"
             v-bind:server-validations="validationHandler.getValidation(0, TraitError.Attribute)"
-            v-on:input="setAttribute($event)"
+            v-on:input="trait.attribute = $event"
         />
       </div>
       <div class="sentence-input">
         <p class="is-input-prepend mt-3">
           Trait
         </p>
-      <div>{{trait.traitName}}</div>
+      <div>{{ traitName }}</div>
       </div>
     </div>
 
@@ -121,7 +121,7 @@
             v-on:input="setMethodClass($event)"
         />
       </div>
-      Method<br>
+      Method {{ methodName }}<br>
 
       <div class="sentence-input">
         <p class="is-input-prepend mt-3">
@@ -266,6 +266,18 @@ export default class BaseTraitForm extends Vue {
   private scaleHistory: {[key: string]: Scale} = {};
   private lastCategoryType: string = '';
 
+  get traitName(): string {
+    let entity = this.trait.entity || '';
+    let attribute = this.trait.attribute || '';
+    return `${entity} ${attribute}`;
+  }
+
+  get methodName(): string {
+    let description = this.trait.method.description || '';
+    let methodClass = this.trait.method.methodClass || '';
+    return `${description} ${methodClass}`;
+  }
+
   created() {
     if (!this.trait.method) {
       this.trait.method = new Method();
@@ -382,7 +394,9 @@ export default class BaseTraitForm extends Vue {
 
   setObservationLevel(value: string) {
     this.trait!.programObservationLevel = new ProgramObservationLevel(value);
+    this.trait!.entity = this.trait!.programObservationLevel.name;
   }
+
   setAbbreviations(value: string) {
     const abbreviations = this.parseSemiColonList(value);
     this.trait.abbreviations = abbreviations;
