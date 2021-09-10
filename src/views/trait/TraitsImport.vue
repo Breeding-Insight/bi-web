@@ -47,7 +47,12 @@
 
     <template v-if="state === ImportState.CHOOSE_FILE || state === ImportState.FILE_CHOSEN">
       <h1 class="title" v-if="showTitle">Import Traits</h1>
-      <TraitImportTemplateMessageBox class="mb-5"/>
+      <ImportInfoTemplateMessageBox v-bind:import-type-name="'Trait'"
+                                    v-bind:template-url="'https://cornell.box.com/shared/static/8sp0qvccpjotosiv8576tczeg09nnvao.xls'"
+                                    class="mb-5">
+        <strong>Before You Import...</strong>
+        <br/>Prepare ontology information for import using the provided template.
+      </ImportInfoTemplateMessageBox>
       <div class="box">
         <FileSelectMessageBox v-model="file"
                                  v-bind:fileTypes="'.csv, .xls, .xlsx'"
@@ -93,7 +98,7 @@ import ProgramsBase from "@/components/program/ProgramsBase.vue"
 import TraitsImportTable from "@/components/trait/TraitsImportTable.vue";
 import ImportingMessageBox from "@/components/file-import/ImportingMessageBox.vue";
 import ConfirmImportMessageBox from "@/components/trait/ConfirmImportMessageBox.vue";
-import TraitImportTemplateMessageBox from "@/components/trait/TraitImportTemplateMessageBox.vue";
+import ImportInfoTemplateMessageBox from "@/components/file-import/ImportInfoTemplateMessageBox.vue";
 import FileSelectMessageBox from "@/components/file-import/FileSelectMessageBox.vue"
 import WarningModal from '@/components/modals/WarningModal.vue'
 
@@ -143,7 +148,7 @@ enum ImportAction {
     ImportingMessageBox,
     ConfirmImportMessageBox,
     FileSelectMessageBox,
-    TraitImportTemplateMessageBox,
+    ImportInfoTemplateMessageBox,
     WarningModal
   },
   computed: {
