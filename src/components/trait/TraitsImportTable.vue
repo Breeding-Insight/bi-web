@@ -43,13 +43,15 @@
           {{ StringFormatters.toStartCase(data.traitName) }}
         </TableColumn>
         <TableColumn name="method" v-bind:label="'Method'" v-bind:visible="!collapseColumns">
-          {{ StringFormatters.toStartCase(data.method.methodClass) }}
+          {{ data.method.description + " " + StringFormatters.toStartCase(data.method.methodClass) }}
         </TableColumn>
-        <TableColumn name="scale" v-bind:label="'Scale Class'" v-bind:visible="!collapseColumns">
+        <TableColumn name="scaleClass" v-bind:label="'Scale Class'" v-bind:visible="!collapseColumns">
           {{ TraitStringFormatters.getScaleTypeString(data.scale) }}
         </TableColumn>
         <TableColumn name="unit" v-bind:label="'Unit'" v-bind:visible="!traitSidePanelState.collapseColumns">
-          {{ data.scale.scaleName }}
+          <template v-if="data.scale.dataType==='NUMERICAL'">
+            {{ data.scale.scaleName }}
+          </template>
         </TableColumn>
       </template>
 
