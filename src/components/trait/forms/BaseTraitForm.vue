@@ -12,7 +12,7 @@
           v-bind:placeholder="'Trait Name'"
           v-bind:show-label="false"
           v-bind:server-validations="validationHandler.getValidation(0, TraitError.TraitName)"
-          v-on:input="trait.traitName = $event"
+          v-on:input="setOTName($event)"
         />
       </div>
       <div class="sentence-input">
@@ -20,13 +20,13 @@
           Full Name
         </p>
         <BasicInputField
-            v-bind:value="trait.fullName"
+            v-bind:value="fullName"
             v-bind:field-name="'Full name'"
             v-bind:field-help="'All unicode characters are accepted.'"
             v-bind:placeholder="'Full Name'"
             v-bind:show-label="false"
             v-bind:server-validations="validationHandler.getValidation(0, TraitError.FullName)"
-            v-on:input="trait.fullName = $event"
+            v-on:input="setFullName($event)"
         />
       </div>
       <div class="sentence-input">
@@ -35,26 +35,26 @@
         </p>
 
         <BasicInputField
-            v-bind:value="trait.description"
+            v-bind:value="trait.traitDescription"
             v-bind:field-name="'Description'"
             v-bind:field-help="'All unicode characters are accepted.'"
             v-bind:placeholder="'Description'"
             v-bind:show-label="false"
             v-bind:server-validations="validationHandler.getValidation(0, TraitError.Description)"
-            v-on:input="trait.description = $event"
+            v-on:input="trait.traitDescription = $event"
         />
       </div>
       <div class="sentence-input">
         <p class="is-input-prepend mt-3">
-          Synonyms
+          Synonyms {{ trait.synonyms ? trait.synonyms.join(' ') : '' }}
         </p>
-        <BasicInputField
-            v-bind:value="trait.synonyms ? trait.synonyms.join(';') : undefined"
-            v-bind:field-name="'Synonyms'"
-            v-bind:field-help="'Semicolon separated list.'"
-            v-bind:show-label="false"
-            v-on:input="trait.synonyms = parseSemiColonList($event)"
-        />
+<!--        <BasicInputField-->
+<!--            v-bind:value="trait.synonyms ? trait.synonyms.join(';') : undefined"-->
+<!--            v-bind:field-name="'Synonyms'"-->
+<!--            v-bind:field-help="'Semicolon separated list.'"-->
+<!--            v-bind:show-label="false"-->
+<!--            v-on:input="trait.synonyms = parseSemiColonList($event)"-->
+<!--        />-->
       </div>
       <div class="sentence-input">
         <p class="is-input-prepend mt-3">
@@ -261,7 +261,7 @@ export default class BaseTraitForm extends Vue {
   @Prop()
   tags?: string[];
 
-  name: string = '';
+  fullName: string = '';
   private methodHistory: {[key: string]: Method} = {};
   private scaleHistory: {[key: string]: Scale} = {};
   private lastCategoryType: string = '';
@@ -402,6 +402,19 @@ export default class BaseTraitForm extends Vue {
     this.trait.abbreviations = abbreviations;
     if (abbreviations.length > 0) {this.trait.mainAbbreviation = this.trait.abbreviations[0]}
   }
+
+  setOTName(value: string) {
+    this.trait.traitName = value;
+    this.trait.synonyms = this.trait.synonyms || [];
+    this.trait.synonyms[0] = value;
+  }
+
+  setFullName(value: string) {
+    this.fullName = value;
+    this.trait.synonyms = this.trait.synonyms || [];
+    this.trait.synonyms[1] = value;
+  }
+
   parseSemiColonList(value: string): string[] {
     return value.split(';');
   }
