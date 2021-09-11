@@ -91,11 +91,10 @@
         <p class="is-input-prepend mt-3">
           Description
         </p>
-        <BasicInputField
+        <AutoCompleteField
+            v-bind:options="descriptions"
             v-bind:value="trait.method.description"
             v-bind:field-name="'Method = Description + Class'"
-            v-bind:field-help="'All unicode characters are accepted.'"
-            v-bind:placeholder="'Method Description'"
             v-bind:show-label="false"
             v-bind:server-validations="validationHandler.getValidation(0, TraitError.MethodDescription)"
             v-on:input="setMethodDescription($event)"
@@ -241,6 +240,8 @@ export default class BaseTraitForm extends Vue {
   programObservationLevels?: string[];
   @Prop()
   entities?: string[];
+  @Prop()
+  descriptions?: string[];
   @Prop()
   attributes?: string[];
   @Prop()
