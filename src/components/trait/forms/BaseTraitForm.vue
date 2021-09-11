@@ -11,7 +11,7 @@
           v-bind:field-help="'All unicode characters are accepted.'"
           v-bind:placeholder="'Trait Name'"
           v-bind:show-label="false"
-          v-bind:server-validations="validationHandler.getValidation(0, TraitError.TraitName)"
+          v-bind:server-validations="validationHandler.getValidation(0, TraitError.ObservationVariableName)"
           v-on:input="setOTName($event)"
         />
       </div>
@@ -40,7 +40,7 @@
             v-bind:field-help="'All unicode characters are accepted.'"
             v-bind:placeholder="'Description'"
             v-bind:show-label="false"
-            v-bind:server-validations="validationHandler.getValidation(0, TraitError.Description)"
+            v-bind:server-validations="validationHandler.getValidation(0, TraitError.TraitDescription)"
             v-on:input="trait.traitDescription = $event"
         />
       </div>
@@ -48,13 +48,6 @@
         <p class="is-input-prepend mt-3">
           Synonyms {{ trait.synonyms ? trait.synonyms.join(' ') : '' }}
         </p>
-<!--        <BasicInputField-->
-<!--            v-bind:value="trait.synonyms ? trait.synonyms.join(';') : undefined"-->
-<!--            v-bind:field-name="'Synonyms'"-->
-<!--            v-bind:field-help="'Semicolon separated list.'"-->
-<!--            v-bind:show-label="false"-->
-<!--            v-on:input="trait.synonyms = parseSemiColonList($event)"-->
-<!--        />-->
       </div>
       <div class="sentence-input">
         <p class="is-input-prepend mt-3">
@@ -79,7 +72,7 @@
             v-bind:field-name="'Attribute'"
             v-bind:show-label="false"
             v-bind:server-validations="validationHandler.getValidation(0, TraitError.Attribute)"
-            v-on:input="trait.attribute = $event"
+            v-on:input="setAttribute($event)"
         />
       </div>
       <div class="sentence-input">
@@ -105,7 +98,7 @@
             v-bind:placeholder="'Method Description'"
             v-bind:show-label="false"
             v-bind:server-validations="validationHandler.getValidation(0, TraitError.MethodDescription)"
-            v-on:input="trait.method.description = $event"
+            v-on:input="setMethodDescription($event)"
         />
       </div>
       <div class="sentence-input">
@@ -262,6 +255,8 @@ export default class BaseTraitForm extends Vue {
   tags?: string[];
 
   fullName: string = '';
+  shortCharLimit: number = 12;
+  longCharLimit: number = 30;
   private methodHistory: {[key: string]: Method} = {};
   private scaleHistory: {[key: string]: Scale} = {};
   private lastCategoryType: string = '';
@@ -404,15 +399,29 @@ export default class BaseTraitForm extends Vue {
   }
 
   setOTName(value: string) {
-    this.trait.traitName = value;
+    if (value.length > this.shortCharLimit) this.trait.traitName = value.slice(0, this.shortCharLimit);
+      else this.trait.traitName = value;
     this.trait.synonyms = this.trait.synonyms || [];
     this.trait.synonyms[0] = value;
+    this.$forceUpdate();
   }
 
   setFullName(value: string) {
     this.fullName = value;
     this.trait.synonyms = this.trait.synonyms || [];
     this.trait.synonyms[1] = value;
+  }
+
+  setAttribute(value: string) {
+    if (value.length > this.longCharLimit) this.trait.attribute = value.slice(0, this.longCharLimit);
+      else this.trait.attribute = value;
+    this.$forceUpdate();
+  }
+
+  setMethodDescription(value: string) {
+    if (value.length > this.longCharLimit) this.trait.method.description = value.slice(0, this.longCharLimit);
+      else this.trait.method.description = value;
+    this.$forceUpdate();
   }
 
   parseSemiColonList(value: string): string[] {
