@@ -82,6 +82,7 @@
             v-bind:trait="newTrait"
             v-bind:scale-options="scaleClassOptions"
             v-bind:method-options="methodClassOptions"
+            v-bind:descriptions="descriptionOptions"
             v-bind:program-observation-levels="observationLevelOptions"
             v-bind:entities="entityOptions"
             v-bind:attributes="attributeOptions"
@@ -223,6 +224,7 @@ export default class TraitTable extends Vue {
   private observationLevelOptions?: string[];
   private attributeOptions?: string[];
   private entityOptions?: string[];
+  private descriptionOptions?: string[];
   private tagOptions?: string[];
   private scaleClassOptions: string[] = Object.values(DataType);
   private editTrait?: Trait;
@@ -262,7 +264,7 @@ export default class TraitTable extends Vue {
   mounted() {
     this.getTraits();
     this.getObservationLevels();
-    this.getAttributesAndEntities();
+    this.getAttributesEntitiesDescriptions();
     this.getTraitTags();
 
     // Events
@@ -444,18 +446,18 @@ export default class TraitTable extends Vue {
     this.newTraitActive = false;
   }
 
-  async getAttributesAndEntities() {
+  async getAttributesEntitiesDescriptions() {
     try {
-      const response = await TraitService.getTraitAttributesAndEntities(this.activeProgram!.id!);
+      const response = await TraitService.getAttributesEntitiesDescriptions(this.activeProgram!.id!);
       if (response) {
-        const attributesAndEntities: [string[], string[]] = response;
-        [this.attributeOptions, this.entityOptions] = attributesAndEntities;
+        const attributesEntitiesDescriptions: [string[], string[], string[]] = response;
+        [this.attributeOptions, this.entityOptions, this.descriptionOptions] = attributesEntitiesDescriptions;
         return;
       }
     } catch (error) {
-      this.$emit('show-error-notification', 'Unable to retrieve trait entities and attributes');
+      this.$emit('show-error-notification', 'Unable to retrieve ontology term entities, attributes, and descriptions');
     }
-    this.$emit('show-error-notification', 'Unable to retrieve trait entities and attributes');
+    this.$emit('show-error-notification', 'Unable to retrieve ontology term entities, attributes, and descriptions');
   }
 
   async getObservationLevels() {
