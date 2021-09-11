@@ -144,15 +144,17 @@ export class TraitService {
     else throw 'Unable to get trait editable info';
   }
 
-  static async getTraitAttributes(programId: string): Promise<string[]> {
+  static async getTraitAttributesAndEntities(programId: string): Promise<[string[], string[]]> {
     if (programId) {
       try {
         const [ traits, metadata ] = await TraitService.getAll(programId, new PaginationQuery(1,50,true), true);
         let attributes: Set<string> = new Set();
+        let entities: Set<string> = new Set();
         for (const trait of traits) {
           if(trait.attribute) attributes.add(trait.attribute);
+          if(trait.entity) entities.add(trait.entity);
         }
-        return [...attributes];
+        return [[...attributes], [...entities]];
       } catch (error) {
         throw error;
       }
