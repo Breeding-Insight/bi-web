@@ -83,6 +83,7 @@
             v-bind:scale-options="scaleClassOptions"
             v-bind:method-options="methodClassOptions"
             v-bind:program-observation-levels="observationLevelOptions"
+            v-bind:entities="entityOptions"
             v-bind:attributes="attributeOptions"
             v-bind:tags="tagOptions"
             v-bind:client-validations="validations"
@@ -221,6 +222,7 @@ export default class TraitTable extends Vue {
   private methodClassOptions: string[] = Object.values(MethodClass);
   private observationLevelOptions?: string[];
   private attributeOptions?: string[];
+  private entityOptions?: string[];
   private tagOptions?: string[];
   private scaleClassOptions: string[] = Object.values(DataType);
   private editTrait?: Trait;
@@ -260,7 +262,7 @@ export default class TraitTable extends Vue {
   mounted() {
     this.getTraits();
     this.getObservationLevels();
-    this.getAttributes();
+    this.getAttributesAndEntities();
     this.getTraitTags();
 
     // Events
@@ -442,18 +444,18 @@ export default class TraitTable extends Vue {
     this.newTraitActive = false;
   }
 
-  async getAttributes() {
+  async getAttributesAndEntities() {
     try {
-      const response = await TraitService.getTraitAttributes(this.activeProgram!.id!);
+      const response = await TraitService.getTraitAttributesAndEntities(this.activeProgram!.id!);
       if (response) {
-        const attributes: string[] = response;
-        this.attributeOptions = attributes;
+        const attributesAndEntities: [string[], string[]] = response;
+        [this.attributeOptions, this.entityOptions] = attributesAndEntities;
         return;
       }
     } catch (error) {
-      this.$emit('show-error-notification', 'Unable to retrieve observation levels');
+      this.$emit('show-error-notification', 'Unable to retrieve trait entities and attributes');
     }
-    this.$emit('show-error-notification', 'Unable to retrieve observation levels');
+    this.$emit('show-error-notification', 'Unable to retrieve trait entities and attributes');
   }
 
   async getObservationLevels() {
