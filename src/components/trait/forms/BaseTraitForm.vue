@@ -240,6 +240,8 @@ export default class BaseTraitForm extends Vue {
   @Prop()
   programObservationLevels?: string[];
   @Prop()
+  entities?: string[];
+  @Prop()
   attributes?: string[];
   @Prop()
   methodOptions?: string[];
