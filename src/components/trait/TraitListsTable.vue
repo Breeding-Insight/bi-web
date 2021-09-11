@@ -201,7 +201,7 @@ import {MethodClass} from "@/breeding-insight/model/Method";
 import {DataType, Scale} from "@/breeding-insight/model/Scale";
 import {SidePanelTableEventBusHandler} from "@/components/tables/SidePanelTableEventBus";
 import { DataFormEventBusHandler } from '@/components/forms/DataFormEventBusHandler';
-import {email, required, integer} from "vuelidate/lib/validators";
+import {email, required, integer, maxLength} from "vuelidate/lib/validators";
 
   @Component({
   mixins: [validationMixin],
@@ -253,7 +253,24 @@ export default class TraitTable extends Vue {
   private traitsPagination?: Pagination = new Pagination();
   private paginationController: PaginationController = new PaginationController();
 
+  shortCharLimit = 12;
+  longCharLimit = 30;
+
   traitValidations = {
+    observationVariableName: {
+      maxLength: maxLength(this.shortCharLimit)
+    },
+    entity: {
+      maxLength: maxLength(this.longCharLimit)
+    },
+    attribute: {
+      maxLength: maxLength(this.longCharLimit)
+    },
+    method: {
+      description: {
+        maxLength: maxLength(this.longCharLimit)
+      }
+    },
     scale: {
       decimalPlaces: {integer},
       validValueMax: {integer},

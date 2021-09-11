@@ -91,14 +91,20 @@
 
           const validationMap: any = {}
           validationMap['name'] = validation;
-          if (validation === 'required') {
-            validationMap['message'] = `${this.fieldName} is required`;
-          } else if (validation === 'url') {
-            // TODO: could probably pass optional validation example parameter in future but just hardcode this case for now
-            validationMap['message'] = `${this.fieldName} must be in ${validation} format, ex: https://test-server.brapi.org`;
-          } else {
-            // For now assume other possibility is a specific format
-            validationMap['message'] = `${this.fieldName} must be in ${validation} format`;
+          switch(validation) {
+            case 'required':
+              validationMap['message'] = `${this.fieldName} is required`;
+              break;
+            case 'url':
+              // TODO: could probably pass optional validation example parameter in future but just hardcode this case for now
+              validationMap['message'] = `${this.fieldName} must be in ${validation} format, ex: https://test-server.brapi.org`;
+              break;
+            case 'maxLength':
+              validationMap['message'] = `${this.fieldName} must be less than ${this.validations.$params.maxLength.max} characters.`;
+              break;
+            default:
+              // For now assume other possibility is a specific format
+              validationMap['message'] = `${this.fieldName} must be in ${validation} format`;
           }
 
           validationArray.push(validationMap);
@@ -118,7 +124,6 @@
     }
 
     validateTypeError(type: string) {
-
       if (this.validations) {
         if (this.validations[type]) {
           return this.validations[type];

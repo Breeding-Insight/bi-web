@@ -11,6 +11,7 @@
           v-bind:field-help="'All unicode characters are accepted.'"
           v-bind:placeholder="'Trait Name'"
           v-bind:show-label="false"
+          v-bind:validations="clientValidations.observationVariableName"
           v-bind:server-validations="validationHandler.getValidation(0, TraitError.ObservationVariableName)"
           v-on:input="setOTName($event)"
         />
@@ -56,8 +57,10 @@
         <AutoCompleteField
             v-bind:options="entities"
             v-bind:value="trait.programObservationLevel ? trait.programObservationLevel.name : undefined"
-            v-bind:field-name="'Trait = Entity + Attribute'"
+            v-bind:field-name="'Entity'"
+            v-bind:field-help="'All unicode characters are accepted'"
             v-bind:show-label="false"
+            v-bind:validations="clientValidations.entity"
             v-bind:server-validations="validationHandler.getValidation(0, TraitError.Entity)"
             v-on:input="setObservationLevel($event)"
         />
@@ -70,9 +73,11 @@
             v-bind:options="attributes"
             v-bind:value="trait.attribute"
             v-bind:field-name="'Attribute'"
+            v-bind:field-help="'All unicode characters are accepted.'"
             v-bind:show-label="false"
+            v-bind:validations="clientValidations.attribute"
             v-bind:server-validations="validationHandler.getValidation(0, TraitError.Attribute)"
-            v-on:input="setAttribute($event)"
+            v-on:input="trait.attribute = $event"
         />
       </div>
       <div class="sentence-input">
@@ -94,10 +99,12 @@
         <AutoCompleteField
             v-bind:options="descriptions"
             v-bind:value="trait.method.description"
-            v-bind:field-name="'Method = Description + Class'"
+            v-bind:field-name="'Method Description'"
+            v-bind:field-help="'All unicode characters are accepted.'"
             v-bind:show-label="false"
+            v-bind:validations="clientValidations.method.description"
             v-bind:server-validations="validationHandler.getValidation(0, TraitError.MethodDescription)"
-            v-on:input="setMethodDescription($event)"
+            v-on:input="trait.method.description = $event"
         />
       </div>
       <div class="sentence-input">
@@ -260,8 +267,6 @@ export default class BaseTraitForm extends Vue {
   tags?: string[];
 
   fullName: string = '';
-  shortCharLimit: number = 12;
-  longCharLimit: number = 30;
   private methodHistory: {[key: string]: Method} = {};
   private scaleHistory: {[key: string]: Scale} = {};
   private lastCategoryType: string = '';
@@ -279,6 +284,7 @@ export default class BaseTraitForm extends Vue {
   }
 
   created() {
+    //console.log(this.clientValidations);
     if (!this.trait.method) {
       this.trait.method = new Method();
     }
@@ -404,29 +410,15 @@ export default class BaseTraitForm extends Vue {
   }
 
   setOTName(value: string) {
-    if (value.length > this.shortCharLimit) this.trait.observationVariableName = value.slice(0, this.shortCharLimit);
-      else this.trait.observationVariableName = value;
+    this.trait.observationVariableName = value;
     this.trait.synonyms = this.trait.synonyms || [];
     this.trait.synonyms[0] = value;
-    this.$forceUpdate();
   }
 
   setFullName(value: string) {
     this.fullName = value;
     this.trait.synonyms = this.trait.synonyms || [];
     this.trait.synonyms[1] = value;
-  }
-
-  setAttribute(value: string) {
-    if (value.length > this.longCharLimit) this.trait.attribute = value.slice(0, this.longCharLimit);
-      else this.trait.attribute = value;
-    this.$forceUpdate();
-  }
-
-  setMethodDescription(value: string) {
-    if (value.length > this.longCharLimit) this.trait.method.description = value.slice(0, this.longCharLimit);
-      else this.trait.method.description = value;
-    this.$forceUpdate();
   }
 
   parseSemiColonList(value: string): string[] {
