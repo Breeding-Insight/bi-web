@@ -83,6 +83,7 @@
             v-bind:scale-options="scaleClassOptions"
             v-bind:method-options="methodClassOptions"
             v-bind:program-observation-levels="observationLevelOptions"
+            v-bind:attributes="attributeOptions"
             v-bind:tags="tagOptions"
             v-bind:client-validations="validations"
             v-bind:validation-handler="validationHandler"
@@ -219,6 +220,7 @@ export default class TraitTable extends Vue {
   private traits: Trait[] = [];
   private methodClassOptions: string[] = Object.values(MethodClass);
   private observationLevelOptions?: string[];
+  private attributeOptions?: string[];
   private tagOptions?: string[];
   private scaleClassOptions: string[] = Object.values(DataType);
   private editTrait?: Trait;
@@ -258,6 +260,7 @@ export default class TraitTable extends Vue {
   mounted() {
     this.getTraits();
     this.getObservationLevels();
+    this.getAttributes();
     this.getTraitTags();
 
     // Events
@@ -437,6 +440,20 @@ export default class TraitTable extends Vue {
     this.newTrait = new Trait();
     this.validationHandler = new ValidationError();
     this.newTraitActive = false;
+  }
+
+  async getAttributes() {
+    try {
+      const response = await TraitService.getTraitAttributes(this.activeProgram!.id!);
+      if (response) {
+        const attributes: string[] = response;
+        this.attributeOptions = attributes;
+        return;
+      }
+    } catch (error) {
+      this.$emit('show-error-notification', 'Unable to retrieve observation levels');
+    }
+    this.$emit('show-error-notification', 'Unable to retrieve observation levels');
   }
 
   async getObservationLevels() {

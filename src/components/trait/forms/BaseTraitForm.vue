@@ -6,7 +6,7 @@
           Name
         </p>
         <BasicInputField
-          v-bind:value="trait.traitName"
+          v-bind:value="trait.observationVariableName"
           v-bind:field-name="'Name'"
           v-bind:field-help="'All unicode characters are accepted.'"
           v-bind:placeholder="'Trait Name'"
@@ -240,6 +240,8 @@ export default class BaseTraitForm extends Vue {
   @Prop()
   programObservationLevels?: string[];
   @Prop()
+  attributes?: string[];
+  @Prop()
   methodOptions?: string[];
   @Prop()
   scaleOptions?: string[];
@@ -399,8 +401,8 @@ export default class BaseTraitForm extends Vue {
   }
 
   setOTName(value: string) {
-    if (value.length > this.shortCharLimit) this.trait.traitName = value.slice(0, this.shortCharLimit);
-      else this.trait.traitName = value;
+    if (value.length > this.shortCharLimit) this.trait.observationVariableName = value.slice(0, this.shortCharLimit);
+      else this.trait.observationVariableName = value;
     this.trait.synonyms = this.trait.synonyms || [];
     this.trait.synonyms[0] = value;
     this.$forceUpdate();
