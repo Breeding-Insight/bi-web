@@ -1,175 +1,198 @@
 <template>
-  <div class="columns is-multiline is-gapless" v-bind:class="{'is-full': editFormat}">
-<!--Ontology Term-->
-    <span class="column new-form-value form-heading">Ontology Term</span>
-    <BasicInputField
-        class="column new-form-value"
-        v-bind:value="trait.observationVariableName"
-        v-bind:field-name="'Name'"
-        v-bind:field-help="'All unicode characters are accepted.'"
-        v-bind:placeholder="'Ontology Term Name'"
-        v-bind:show-label="true"
-        v-bind:validations="clientValidations.observationVariableName"
-        v-bind:server-validations="validationHandler.getValidation(0, TraitError.ObservationVariableName)"
-        v-on:input="setOTName($event)"
-    />
-    <BasicInputField
-        class="column new-form-value"
-        v-bind:value="fullName"
-        v-bind:field-name="'Full name'"
-        v-bind:field-help="'All unicode characters are accepted.'"
-        v-bind:placeholder="'Full Name'"
-        v-bind:show-label="true"
-        v-bind:server-validations="validationHandler.getValidation(0, TraitError.FullName)"
-        v-on:input="setFullName($event)"
-    />
-    <BasicInputField
-        class="column new-form-value"
-        v-bind:value="trait.traitDescription"
-        v-bind:field-name="'Description'"
-        v-bind:field-help="'All unicode characters are accepted.'"
-        v-bind:placeholder="'Ontology Term Description'"
-        v-bind:show-label="true"
-        v-bind:server-validations="validationHandler.getValidation(0, TraitError.TraitDescription)"
-        v-on:input="trait.traitDescription = $event"
-    />
-    <span class="column new-form-value">Synonyms</span>
-    <span class="column new-form-value">{{ trait.synonyms ? trait.synonyms.join(' ') : '' }}</span>
+  <div class="columns is-multiline is-gapless">
+    <div class="column" v-bind:class="{'is-full': editFormat}">
 
-<!--    Trait-->
-    <span class="column new-form-value form-heading">Trait = Entity + Attribute</span>
-    <AutoCompleteField
-        class="column new-form-value"
-        v-bind:options="entities"
-        v-bind:value="trait.programObservationLevel ? trait.programObservationLevel.name : undefined"
-        v-bind:field-name="'Entity'"
-        v-bind:field-help="'All unicode characters are accepted'"
-        v-bind:show-label="true"
-        v-bind:validations="clientValidations.entity"
-        v-bind:server-validations="validationHandler.getValidation(0, TraitError.Entity)"
-        v-on:input="setObservationLevel($event)"
-    />
-    <AutoCompleteField
-        class="column new-form-value"
-        v-bind:options="attributes"
-        v-bind:value="trait.attribute"
-        v-bind:field-name="'Attribute'"
-        v-bind:field-help="'All unicode characters are accepted.'"
-        v-bind:show-label="true"
-        v-bind:validations="clientValidations.attribute"
-        v-bind:server-validations="validationHandler.getValidation(0, TraitError.Attribute)"
-        v-on:input="trait.attribute = $event"
-    />
-    <span class="column new-form-value">Trait</span>
-    <span class="column new-form-value">{{ traitName }}</span>
-
-    <!--Method-->
-    <span class="column new-form-value form-heading">Method = Description + Class</span>
-    <AutoCompleteField
-        class="column new-form-value"
-        v-bind:options="descriptions"
-        v-bind:value="trait.method.description"
-        v-bind:field-name="'Description'"
-        v-bind:field-help="'All unicode characters are accepted.'"
-        v-bind:show-label="true"
-        v-bind:validations="clientValidations.method.description"
-        v-bind:server-validations="validationHandler.getValidation(0, TraitError.MethodDescription)"
-        v-on:input="trait.method.description = $event"
-    />
-    <BasicSelectField
-        class="column new-form-value"
-        v-bind:selected-id="trait.method.methodClass"
-        v-bind:options="methodOptions"
-        v-bind:field-name="'Class'"
-        v-bind:show-label="true"
-        v-bind:server-validations="validationHandler.getValidation(0, TraitError.MethodClass)"
-        v-on:input="setMethodClass($event)"
-    />
-    <span class="column new-form-value">Method</span>
-    <span class="column new-form-value">{{ methodName }}</span>
-
-<!--    Scale-->
-    <span class="column new-form-value form-heading">Scale</span>
-    <BasicSelectField
-        class="column new-form-value"
-        v-bind:selected-id="StringFormatters.toStartCase(trait.scale.dataType)"
-        v-bind:options="getScaleOptions()"
-        v-bind:field-name="'Class'"
-        v-bind:show-label="true"
-        v-bind:field-help="'Note: additional options for this field will appear after selection'"
-        v-bind:server-validations="validationHandler.getValidation(0, TraitError.ScaleType)"
-        v-on:input="setScaleClass($event)"
-    />
-    <!-- Formula -->
-    <template v-if="trait.method && trait.method.methodClass === MethodClass.Computation">
+      <!--Ontology Term-->
+      <span class="new-form-value form-heading">Ontology Term</span>
       <BasicInputField
-          v-bind:value="trait.method.formula"
-          v-bind:field-name="'Formula'"
-          v-bind:field-help="'Operations accepted: *^.+/(); calculations will use FOIL order of operations.'"
-          v-bind:placeholder="'Number of flowers on single plant / 100'"
-          v-bind:server-validations="validationHandler.getValidation(0, TraitError.MethodFormula)"
-          v-on:input="trait.method.formula = $event"
+          class="new-form-value"
+          v-bind:value="trait.observationVariableName"
+          v-bind:field-name="'Name'"
+          v-bind:field-help="'All unicode characters are accepted.'"
+          v-bind:placeholder="'Ontology Term Name'"
+          v-bind:show-label="true"
+          v-bind:validations="clientValidations.observationVariableName"
+          v-bind:server-validations="validationHandler.getValidation(0, TraitError.ObservationVariableName)"
+          v-on:input="setOTName($event)"
       />
-    </template>
-    <!-- Scale options -->
-    <template
-        v-if="trait.scale && (Scale.dataTypeEquals(trait.scale.dataType, DataType.Ordinal) || Scale.dataTypeEquals(trait.scale.dataType, DataType.Nominal))">
-      <CategoryTraitForm
-          v-bind:data="trait.scale.categories"
-          v-on:update="setCategories($event)"
-          v-bind:type="trait.scale.dataType"
-          v-bind:validation-handler="validationHandler"
-          v-bind:validation-index="0"
+      <BasicInputField
+          class="new-form-value"
+          v-bind:value="fullName"
+          v-bind:field-name="'Full name'"
+          v-bind:field-help="'All unicode characters are accepted.'"
+          v-bind:placeholder="'Full Name'"
+          v-bind:show-label="true"
+          v-bind:server-validations="validationHandler.getValidation(0, TraitError.FullName)"
+          v-on:input="setFullName($event)"
       />
-    </template>
-    <template v-if="trait.scale && Scale.dataTypeEquals(trait.scale.dataType, DataType.Text)">
-      <TextTraitForm/>
-    </template>
-    <template v-if="trait.scale && Scale.dataTypeEquals(trait.scale.dataType, DataType.Date)">
-      <DateTraitForm/>
-    </template>
-    <template v-if="trait.scale && Scale.dataTypeEquals(trait.scale.dataType, DataType.Duration)">
-      <DurationTraitForm
-          v-bind:unit="trait.scale.scaleName"
-          v-bind:valid-min="trait.scale.validValueMin"
-          v-bind:valid-max="trait.scale.validValueMax"
-          v-on:unit-change="trait.scale.scaleName = $event"
-          v-on:min-change="trait.scale.validValueMin = $event"
-          v-on:max-change="trait.scale.validValueMax = $event"
-          v-bind:client-validations="clientValidations"
-          v-bind:validation-handler="validationHandler"
-          v-bind:validation-index="0"
+      <BasicInputField
+          class="new-form-value"
+          v-bind:value="trait.traitDescription"
+          v-bind:field-name="'Description'"
+          v-bind:field-help="'All unicode characters are accepted.'"
+          v-bind:placeholder="'Ontology Term Description'"
+          v-bind:show-label="true"
+          v-bind:server-validations="validationHandler.getValidation(0, TraitError.TraitDescription)"
+          v-on:input="trait.traitDescription = $event"
       />
-    </template>
-    <template v-if="trait.scale && Scale.dataTypeEquals(trait.scale.dataType, DataType.Numerical)">
-      <NumericalTraitForm
-          v-bind:unit="trait.scale.scaleName"
-          v-bind:decimal-places="trait.scale.decimalPlaces"
-          v-bind:valid-min="trait.scale.validValueMin"
-          v-bind:valid-max="trait.scale.validValueMax"
-          v-on:unit-change="trait.scale.scaleName = $event"
-          v-on:decimal-change="trait.scale.decimalPlaces = $event"
-          v-on:min-change="trait.scale.validValueMin = $event"
-          v-on:max-change="trait.scale.validValueMax = $event"
-          v-on:show-error-notification="$emit('show-error-notification', $event)"
-          v-bind:client-validations="clientValidations"
-          v-bind:validation-handler="validationHandler"
-          v-bind:validation-index="0"
-      />
-    </template>
 
-<!--    Tags-->
-    <span class="column new-form-value form-heading">Tags</span>
-    <TagField
-        class="column new-form-value"
-        v-bind:options="tags"
-        v-bind:value.sync="trait.tags"
-        v-bind:field-name="'Tags'"
-        v-bind:show-label="false"
-        v-bind:before-adding="checkTag"
-        v-on:add="addTag($event)"
-        v-on:remove="removeTag($event)"
-    />
+      <BaseFieldWrapper class="new-form-value" fieldName="Synonyms" show-label="true">
+        {{ trait.synonyms ? trait.synonyms.join(' ') : '' }}
+      </BaseFieldWrapper>
+
+      <div class="new-form-divider"></div>
+
+      <!--    Trait-->
+      <span class="new-form-value form-heading">Trait = Entity + Attribute</span>
+      <AutoCompleteField
+          class="new-form-value"
+          v-bind:options="entities"
+          v-bind:value="trait.programObservationLevel ? trait.programObservationLevel.name : undefined"
+          v-bind:field-name="'Entity'"
+          v-bind:field-help="'All unicode characters are accepted'"
+          v-bind:show-label="true"
+          v-bind:validations="clientValidations.entity"
+          v-bind:server-validations="validationHandler.getValidation(0, TraitError.Entity)"
+          v-on:input="setObservationLevel($event)"
+      />
+      <AutoCompleteField
+          class="new-form-value"
+          v-bind:options="attributes"
+          v-bind:value="trait.attribute"
+          v-bind:field-name="'Attribute'"
+          v-bind:field-help="'All unicode characters are accepted.'"
+          v-bind:show-label="true"
+          v-bind:validations="clientValidations.attribute"
+          v-bind:server-validations="validationHandler.getValidation(0, TraitError.Attribute)"
+          v-on:input="trait.attribute = $event"
+      />
+      <BaseFieldWrapper class="new-form-value" fieldName="Trait" show-label="true">
+        {{ traitName }}
+      </BaseFieldWrapper>
+
+      <div class="new-form-divider"></div>
+
+    </div>
+    <div class="divider is-vertical"/>
+    <div class="column" v-bind:class="{'is-full': editFormat}">
+
+      <!--Method-->
+      <span class="new-form-value form-heading">Method = Description + Class</span>
+      <AutoCompleteField
+          class="new-form-value"
+          v-bind:options="descriptions"
+          v-bind:value="trait.method.description"
+          v-bind:field-name="'Description'"
+          v-bind:field-help="'All unicode characters are accepted.'"
+          v-bind:show-label="true"
+          v-bind:validations="clientValidations.method.description"
+          v-bind:server-validations="validationHandler.getValidation(0, TraitError.MethodDescription)"
+          v-on:input="trait.method.description = $event"
+      />
+      <BasicSelectField
+          class="new-form-value"
+          v-bind:selected-id="trait.method.methodClass"
+          v-bind:options="methodOptions"
+          v-bind:field-name="'Class'"
+          v-bind:show-label="true"
+          v-bind:server-validations="validationHandler.getValidation(0, TraitError.MethodClass)"
+          v-on:input="setMethodClass($event)"
+      />
+      <BaseFieldWrapper class="new-form-value" fieldName="Method" show-label="true">
+        {{ methodName }}
+      </BaseFieldWrapper>
+
+      <div class="new-form-divider"></div>
+
+      <!--    Scale-->
+      <span class="new-form-value form-heading">Scale</span>
+      <BasicSelectField
+          class="new-form-value"
+          v-bind:selected-id="StringFormatters.toStartCase(trait.scale.dataType)"
+          v-bind:options="getScaleOptions()"
+          v-bind:field-name="'Class'"
+          v-bind:show-label="true"
+          v-bind:field-help="'Note: additional options for this field will appear after selection'"
+          v-bind:server-validations="validationHandler.getValidation(0, TraitError.ScaleType)"
+          v-on:input="setScaleClass($event)"
+      />
+      <!-- Formula -->
+      <template v-if="trait.method && trait.method.methodClass === MethodClass.Computation">
+        <BasicInputField
+            class="new-form-value"
+            v-bind:value="trait.method.formula"
+            v-bind:field-name="'Formula'"
+            v-bind:field-help="'Operations accepted: *^.+/(); calculations will use FOIL order of operations.'"
+            v-bind:placeholder="'Number of flowers on single plant / 100'"
+            v-bind:server-validations="validationHandler.getValidation(0, TraitError.MethodFormula)"
+            v-on:input="trait.method.formula = $event"
+        />
+      </template>
+      <!-- Scale options -->
+      <template
+          v-if="trait.scale && (Scale.dataTypeEquals(trait.scale.dataType, DataType.Ordinal) || Scale.dataTypeEquals(trait.scale.dataType, DataType.Nominal))">
+        <CategoryTraitForm
+            class="new-form-value"
+            v-bind:data="trait.scale.categories"
+            v-on:update="setCategories($event)"
+            v-bind:type="trait.scale.dataType"
+            v-bind:validation-handler="validationHandler"
+            v-bind:validation-index="0"
+        />
+      </template>
+      <template v-if="trait.scale && Scale.dataTypeEquals(trait.scale.dataType, DataType.Text)">
+        <TextTraitForm class="new-form-value"/>
+      </template>
+      <template v-if="trait.scale && Scale.dataTypeEquals(trait.scale.dataType, DataType.Date)">
+        <DateTraitForm class="new-form-value"/>
+      </template>
+      <template v-if="trait.scale && Scale.dataTypeEquals(trait.scale.dataType, DataType.Duration)">
+        <DurationTraitForm
+            class="new-form-value"
+            v-bind:unit="trait.scale.scaleName"
+            v-bind:valid-min="trait.scale.validValueMin"
+            v-bind:valid-max="trait.scale.validValueMax"
+            v-on:unit-change="trait.scale.scaleName = $event"
+            v-on:min-change="trait.scale.validValueMin = $event"
+            v-on:max-change="trait.scale.validValueMax = $event"
+            v-bind:client-validations="clientValidations"
+            v-bind:validation-handler="validationHandler"
+            v-bind:validation-index="0"
+        />
+      </template>
+      <template v-if="trait.scale && Scale.dataTypeEquals(trait.scale.dataType, DataType.Numerical)">
+        <NumericalTraitForm
+            class="new-form-value"
+            v-bind:unit="trait.scale.scaleName"
+            v-bind:decimal-places="trait.scale.decimalPlaces"
+            v-bind:valid-min="trait.scale.validValueMin"
+            v-bind:valid-max="trait.scale.validValueMax"
+            v-on:unit-change="trait.scale.scaleName = $event"
+            v-on:decimal-change="trait.scale.decimalPlaces = $event"
+            v-on:min-change="trait.scale.validValueMin = $event"
+            v-on:max-change="trait.scale.validValueMax = $event"
+            v-on:show-error-notification="$emit('show-error-notification', $event)"
+            v-bind:client-validations="clientValidations"
+            v-bind:validation-handler="validationHandler"
+            v-bind:validation-index="0"
+        />
+      </template>
+
+      <div class="new-form-divider"></div>
+
+      <!--    Tags-->
+      <span class="new-form-value form-heading">Tags</span>
+      <TagField
+          class="new-form-value"
+          v-bind:options="tags"
+          v-bind:value.sync="trait.tags"
+          v-bind:field-name="'Tags'"
+          v-bind:show-label="false"
+          v-bind:before-adding="checkTag"
+          v-on:add="addTag($event)"
+          v-on:remove="removeTag($event)"
+      />
+    </div>
   </div>
 </template>
 
@@ -194,6 +217,7 @@ import { StringFormatters } from '@/breeding-insight/utils/StringFormatters';
 import {Category} from "@/breeding-insight/model/Category";
 import {integer} from "vuelidate/lib/validators";
 import TagField from "@/components/forms/TagField.vue";
+import BaseFieldWrapper from "@/components/forms/BaseFieldWrapper.vue";
 
 @Component({
   components: {
@@ -201,6 +225,7 @@ import TagField from "@/components/forms/TagField.vue";
     AutoCompleteField,
     CategoryTraitForm,
     NumericalTraitForm,
+    BaseFieldWrapper,
     DurationTraitForm, DateTraitForm, TextTraitForm, OrdinalTraitForm, BasicSelectField, BasicInputField},
   data: () => ({DataType, MethodClass, TraitError, StringFormatters, Scale})
 })
