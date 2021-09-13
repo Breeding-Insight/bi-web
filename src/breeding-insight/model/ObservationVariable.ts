@@ -38,7 +38,7 @@ export class ObservationVariable {
     if (additionalInfo){
       this.additionalInfo = OVAdditionalInfo.assign({...additionalInfo} as OVAdditionalInfo);
     } else {
-      this.additionalInfo = new additionalInfo();
+      this.additionalInfo = new OVAdditionalInfo();
     }
     if (trait){
       this.trait = Trait.assign({...trait} as Trait);

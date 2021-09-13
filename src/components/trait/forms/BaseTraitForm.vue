@@ -277,13 +277,12 @@ export default class BaseTraitForm extends Vue {
   }
 
   get methodName(): string {
-    let description = this.trait.method.description || '';
-    let methodClass = this.trait.method.methodClass || '';
+    let description = this.trait.method ? this.trait.method.description : '';
+    let methodClass = this.trait.method ? this.trait.method.methodClass : '';
     return `${description} ${methodClass}`;
   }
 
   created() {
-    //console.log(this.clientValidations);
     if (!this.trait.method) {
       this.trait.method = new Method();
     }
