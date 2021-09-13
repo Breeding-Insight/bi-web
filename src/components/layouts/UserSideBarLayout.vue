@@ -168,6 +168,11 @@
                     Germplasm
                   </router-link>
                 </li>
+                <li>
+                  <router-link v-bind:to="{name: 'brapi-import', params: {programId: activeProgram.id}}">
+                    BrAPI Import
+                  </router-link>
+                </li>
               </ul>
             </li>
             <li>
