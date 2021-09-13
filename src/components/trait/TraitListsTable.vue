@@ -391,6 +391,7 @@ export default class TraitTable extends Vue {
       this.getTraits();
       const levelPromise = this.getObservationLevels();
       const tagPromise = this.getTraitTags();
+      await this.getAttributesEntitiesDescriptions();
       this.newTrait = new Trait();
       this.newTraitActive = false;
     } catch (error) {
