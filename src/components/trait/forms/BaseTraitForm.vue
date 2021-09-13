@@ -49,7 +49,7 @@
       />
 
       <BaseFieldWrapper class="new-form-content" fieldName="Synonyms" show-label="true">
-        {{ trait.synonyms ? trait.synonyms.join(' ') : '' }}
+        {{ trait.synonyms ? trait.synonyms.join(', ') : '' }}
       </BaseFieldWrapper>
 
       <div class="new-form-divider"></div>
