@@ -525,10 +525,6 @@ div.sentence-input {
 
 }
 
-.new-form-label {
-  @extend .is-one-fifth;
-}
-
 .new-form-value {
   @extend .is-full;
   @extend .is-pulled-left;
@@ -536,7 +532,6 @@ div.sentence-input {
 }
 
 .form-heading {
-  //@extend .has-text-weight-bold;
   font-weight: 700;
   padding: 1.75em 0em 0em 0em;
 }
@@ -571,11 +566,3 @@ div.field.new-form-value {
   padding-right: 0em;
   padding-left: 0em;
 }
-
-//span.column.new-form-value.form-heading {
-//  padding-bottom: 0.25em;
-//}
-
-//.new-form-value input {
-//  @extends .level-item;
-//}
