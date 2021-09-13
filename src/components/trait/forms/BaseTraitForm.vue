@@ -6,14 +6,14 @@
       <div class="columns">
         <span class="column form-heading-toggle is-half">Ontology Term</span>
         <div class="column is-half">
-          <input id="newTraitActiveToggle"
+          <input id="newTermActiveToggle"
                  type="checkbox"
-                 name="switchRtlExample"
-                 class="switch is-rtl"
+                 name="newTermActiveToggle"
+                 class="switch is-rtl is-rounded"
                  v-bind:value="trait.active"
                  v-on:input="trait.active = !trait.active"
                  checked="checked">
-          <label for="newTraitActiveToggle">{{trait.active ? 'Active' : 'Archived'}}</label>
+          <label for="newTermActiveToggle">{{trait.active ? 'Active' : 'Archived'}}</label>
         </div>
       </div>
       <BasicInputField
