@@ -553,12 +553,13 @@ div.field.column.new-form-content {
   padding-bottom: 0em;
 }
 
-div.field.new-form-content p.help {
-  font-weight: 100;
-}
-
 div.field.new-form-content label.label.is-left {
   font-weight: 400;
+}
+
+div.field.new-form-content.required label.label.is-left::after {
+  content: "*";
+  color: $danger;
 }
 
 div.field.new-form-content {
