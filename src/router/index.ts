@@ -301,6 +301,15 @@ const routes = [
           layout: layouts.userSideBar
         },
         component: ImportGermplasm
+      },
+      {
+        path: 'brapi-import',
+        name: 'brapi-import',
+        meta: {
+          title: 'BrAPI Import',
+          layout: layouts.userSideBar
+        },
+        component: BrAPIImporter
       }
     ]
   },

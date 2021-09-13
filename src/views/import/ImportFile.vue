@@ -34,6 +34,11 @@
               tag="li" active-class="is-active">
             <a>Germplasm</a>
           </router-link>
+          <router-link
+              v-bind:to="{name: 'brapi-import', params: {programId: activeProgram.id}}"
+              tag="li" active-class="is-active">
+            <a>BrAPI Import</a>
+          </router-link>
         </ul>
       </nav>
     </section>
