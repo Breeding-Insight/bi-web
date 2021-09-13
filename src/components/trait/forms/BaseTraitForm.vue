@@ -17,7 +17,7 @@
         </div>
       </div>
       <BasicInputField
-          class="new-form-content"
+          class="new-form-content required"
           v-bind:value="trait.observationVariableName"
           v-bind:field-name="'Name'"
           v-bind:field-help="'All unicode characters are accepted.'"
@@ -38,7 +38,7 @@
           v-on:input="setFullName($event)"
       />
       <BasicInputField
-          class="new-form-content"
+          class="new-form-content required"
           v-bind:value="trait.traitDescription"
           v-bind:field-name="'Description'"
           v-bind:field-help="'All unicode characters are accepted.'"
@@ -57,7 +57,7 @@
       <!--    Trait-->
       <span class="new-form-content form-heading">Trait = Entity + Attribute</span>
       <AutoCompleteField
-          class="new-form-content"
+          class="new-form-content required"
           v-bind:options="entities"
           v-bind:value="trait.programObservationLevel ? trait.programObservationLevel.name : undefined"
           v-bind:field-name="'Entity'"
@@ -68,7 +68,7 @@
           v-on:input="setObservationLevel($event)"
       />
       <AutoCompleteField
-          class="new-form-content"
+          class="new-form-content required"
           v-bind:options="attributes"
           v-bind:value="trait.attribute"
           v-bind:field-name="'Attribute'"
@@ -91,7 +91,7 @@
       <!--Method-->
       <span class="new-form-content form-heading">Method = Description + Class</span>
       <AutoCompleteField
-          class="new-form-content"
+          class="new-form-content required"
           v-bind:options="descriptions"
           v-bind:value="trait.method.description"
           v-bind:field-name="'Description'"
@@ -102,7 +102,7 @@
           v-on:input="trait.method.description = $event"
       />
       <BasicSelectField
-          class="new-form-content"
+          class="new-form-content required"
           v-bind:selected-id="trait.method.methodClass"
           v-bind:options="methodOptions"
           v-bind:field-name="'Class'"
@@ -119,7 +119,7 @@
       <!--    Scale-->
       <span class="new-form-content form-heading">Scale</span>
       <BasicSelectField
-          class="new-form-content"
+          class="new-form-content required"
           v-bind:selected-id="StringFormatters.toStartCase(trait.scale.dataType)"
           v-bind:options="getScaleOptions()"
           v-bind:field-name="'Class'"
@@ -277,8 +277,14 @@ export default class BaseTraitForm extends Vue {
   }
 
   get methodName(): string {
-    let description = this.trait.method ? this.trait.method.description : '';
-    let methodClass = this.trait.method ? this.trait.method.methodClass : '';
+    let description = '';
+    let methodClass = '';
+    if (this.trait.method && this.trait.method.description) {
+      description = this.trait.method.description;
+    }
+    if (this.trait.method && this.trait.method.methodClass) {
+      methodClass = this.trait.method.methodClass;
+    }
     return `${description} ${methodClass}`;
   }
 
