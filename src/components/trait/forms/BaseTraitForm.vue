@@ -16,9 +16,8 @@
           <label for="newTraitActiveToggle">{{trait.active ? 'Active' : 'Archived'}}</label>
         </div>
       </div>
-      <!--      <span class="new-form-value form-heading">Ontology Term</span>-->
       <BasicInputField
-          class="new-form-value"
+          class="new-form-content"
           v-bind:value="trait.observationVariableName"
           v-bind:field-name="'Name'"
           v-bind:field-help="'All unicode characters are accepted.'"
@@ -29,7 +28,7 @@
           v-on:input="setOTName($event)"
       />
       <BasicInputField
-          class="new-form-value"
+          class="new-form-content"
           v-bind:value="fullName"
           v-bind:field-name="'Full name'"
           v-bind:field-help="'All unicode characters are accepted.'"
@@ -39,7 +38,7 @@
           v-on:input="setFullName($event)"
       />
       <BasicInputField
-          class="new-form-value"
+          class="new-form-content"
           v-bind:value="trait.traitDescription"
           v-bind:field-name="'Description'"
           v-bind:field-help="'All unicode characters are accepted.'"
@@ -49,16 +48,16 @@
           v-on:input="trait.traitDescription = $event"
       />
 
-      <BaseFieldWrapper class="new-form-value" fieldName="Synonyms" show-label="true">
+      <BaseFieldWrapper class="new-form-content" fieldName="Synonyms" show-label="true">
         {{ trait.synonyms ? trait.synonyms.join(' ') : '' }}
       </BaseFieldWrapper>
 
       <div class="new-form-divider"></div>
 
       <!--    Trait-->
-      <span class="new-form-value form-heading">Trait = Entity + Attribute</span>
+      <span class="new-form-content form-heading">Trait = Entity + Attribute</span>
       <AutoCompleteField
-          class="new-form-value"
+          class="new-form-content"
           v-bind:options="entities"
           v-bind:value="trait.programObservationLevel ? trait.programObservationLevel.name : undefined"
           v-bind:field-name="'Entity'"
@@ -69,7 +68,7 @@
           v-on:input="setObservationLevel($event)"
       />
       <AutoCompleteField
-          class="new-form-value"
+          class="new-form-content"
           v-bind:options="attributes"
           v-bind:value="trait.attribute"
           v-bind:field-name="'Attribute'"
@@ -79,7 +78,7 @@
           v-bind:server-validations="validationHandler.getValidation(0, TraitError.Attribute)"
           v-on:input="trait.attribute = $event"
       />
-      <BaseFieldWrapper class="new-form-value" fieldName="Trait" show-label="true">
+      <BaseFieldWrapper class="new-form-content" fieldName="Trait" show-label="true">
         {{ traitName }}
       </BaseFieldWrapper>
 
@@ -90,9 +89,9 @@
     <div class="column" v-bind:class="{'is-full': editFormat}">
 
       <!--Method-->
-      <span class="new-form-value form-heading">Method = Description + Class</span>
+      <span class="new-form-content form-heading">Method = Description + Class</span>
       <AutoCompleteField
-          class="new-form-value"
+          class="new-form-content"
           v-bind:options="descriptions"
           v-bind:value="trait.method.description"
           v-bind:field-name="'Description'"
@@ -103,7 +102,7 @@
           v-on:input="trait.method.description = $event"
       />
       <BasicSelectField
-          class="new-form-value"
+          class="new-form-content"
           v-bind:selected-id="trait.method.methodClass"
           v-bind:options="methodOptions"
           v-bind:field-name="'Class'"
@@ -111,16 +110,16 @@
           v-bind:server-validations="validationHandler.getValidation(0, TraitError.MethodClass)"
           v-on:input="setMethodClass($event)"
       />
-      <BaseFieldWrapper class="new-form-value" fieldName="Method" show-label="true">
+      <BaseFieldWrapper class="new-form-content" fieldName="Method" show-label="true">
         {{ methodName }}
       </BaseFieldWrapper>
 
       <div class="new-form-divider"></div>
 
       <!--    Scale-->
-      <span class="new-form-value form-heading">Scale</span>
+      <span class="new-form-content form-heading">Scale</span>
       <BasicSelectField
-          class="new-form-value"
+          class="new-form-content"
           v-bind:selected-id="StringFormatters.toStartCase(trait.scale.dataType)"
           v-bind:options="getScaleOptions()"
           v-bind:field-name="'Class'"
@@ -132,7 +131,7 @@
       <!-- Formula -->
       <template v-if="trait.method && trait.method.methodClass === MethodClass.Computation">
         <BasicInputField
-            class="new-form-value"
+            class="new-form-content"
             v-bind:value="trait.method.formula"
             v-bind:field-name="'Formula'"
             v-bind:field-help="'Operations accepted: *^.+/(); calculations will use FOIL order of operations.'"
@@ -145,7 +144,7 @@
       <template
           v-if="trait.scale && (Scale.dataTypeEquals(trait.scale.dataType, DataType.Ordinal) || Scale.dataTypeEquals(trait.scale.dataType, DataType.Nominal))">
         <CategoryTraitForm
-            class="new-form-value"
+            class="new-form-content"
             v-bind:data="trait.scale.categories"
             v-on:update="setCategories($event)"
             v-bind:type="trait.scale.dataType"
@@ -154,14 +153,14 @@
         />
       </template>
       <template v-if="trait.scale && Scale.dataTypeEquals(trait.scale.dataType, DataType.Text)">
-        <TextTraitForm class="new-form-value"/>
+        <TextTraitForm class="new-form-content"/>
       </template>
       <template v-if="trait.scale && Scale.dataTypeEquals(trait.scale.dataType, DataType.Date)">
-        <DateTraitForm class="new-form-value"/>
+        <DateTraitForm class="new-form-content"/>
       </template>
       <template v-if="trait.scale && Scale.dataTypeEquals(trait.scale.dataType, DataType.Duration)">
         <DurationTraitForm
-            class="new-form-value"
+            class="new-form-content"
             v-bind:unit="trait.scale.scaleName"
             v-bind:valid-min="trait.scale.validValueMin"
             v-bind:valid-max="trait.scale.validValueMax"
@@ -175,7 +174,7 @@
       </template>
       <template v-if="trait.scale && Scale.dataTypeEquals(trait.scale.dataType, DataType.Numerical)">
         <NumericalTraitForm
-            class="new-form-value"
+            class="new-form-content"
             v-bind:unit="trait.scale.scaleName"
             v-bind:decimal-places="trait.scale.decimalPlaces"
             v-bind:valid-min="trait.scale.validValueMin"
@@ -194,9 +193,9 @@
       <div class="new-form-divider"></div>
 
       <!--    Tags-->
-      <span class="new-form-value form-heading">Tags</span>
+      <span class="new-form-content form-heading">Tags</span>
       <TagField
-          class="new-form-value"
+          class="new-form-content"
           v-bind:options="tags"
           v-bind:value.sync="trait.tags"
           v-bind:field-name="'Tags'"
