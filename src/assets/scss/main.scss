@@ -96,6 +96,7 @@ $table-striped-row-even-hover-background-color:$link-light;
 // Bulma extensions
 $divider-margin-inner-size: 0;
 @import "~@creativebulma/bulma-divider";
+@import "~bulma-switch/src/sass/index.sass";
 
 // Overrides that can't be done with variables go here
 // may be broken out into a separate file later
@@ -537,7 +538,11 @@ div.sentence-input {
 .form-heading {
   //@extend .has-text-weight-bold;
   font-weight: 700;
-  padding: 1.75em 0.75em 0em 0.75em;
+  padding: 1.75em 0em 0em 0em;
+}
+
+.form-heading-toggle {
+  font-weight: 700;
 }
 
 .computed-display {
@@ -563,6 +568,8 @@ div.field.new-form-value label.label.is-left {
 
 div.field.new-form-value {
   min-height: 4.25em;
+  padding-right: 0em;
+  padding-left: 0em;
 }
 
 //span.column.new-form-value.form-heading {
