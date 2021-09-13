@@ -3,7 +3,20 @@
     <div class="column" v-bind:class="{'is-full': editFormat}">
 
       <!--Ontology Term-->
-      <span class="new-form-value form-heading">Ontology Term</span>
+      <div class="columns">
+        <span class="column form-heading-toggle is-half">Ontology Term</span>
+        <div class="column is-half">
+          <input id="newTraitActiveToggle"
+                 type="checkbox"
+                 name="switchRtlExample"
+                 class="switch is-rtl"
+                 v-bind:value="trait.active"
+                 v-on:input="trait.active = !trait.active"
+                 checked="checked">
+          <label for="newTraitActiveToggle">{{trait.active ? 'Active' : 'Archived'}}</label>
+        </div>
+      </div>
+      <!--      <span class="new-form-value form-heading">Ontology Term</span>-->
       <BasicInputField
           class="new-form-value"
           v-bind:value="trait.observationVariableName"
