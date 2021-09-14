@@ -523,3 +523,17 @@ div.sentence-input {
   background: lightgray;
 
 }
+
+.skip-link {
+  background: $purple;
+  color: #fff;
+  font-weight: 700;
+  left: 50%;
+  padding: 4px;
+  position: absolute;
+  transform: translateY(-150%);
+  transition: transform 0.3s;
+}
+.skip-link:focus {
+  transform: translateY(0%);
+}

@@ -42,7 +42,7 @@
     </header>
     <div class="columns is-marginless">
       <div class="column">
-        <main>
+        <main id="main">
           <section class="section">
             <slot></slot>
           </section>

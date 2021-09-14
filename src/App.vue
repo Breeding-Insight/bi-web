@@ -18,6 +18,9 @@
 <template>
   <div id="app">
     <div style="position:fixed;top:1px;z-index:9999;left:1px;right:1px;">
+      <header>
+        <a class="skip-link" href="#main">Skip to main content</a>
+      </header>
       <SuccessNotification ref="successNotification" class="is-marginless"></SuccessNotification>
       <ErrorNotification ref="errorNotification" class="is-marginless"></ErrorNotification>
       <InfoNotification ref="infoNotification" class="is-marginless"></InfoNotification>
