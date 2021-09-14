@@ -19,6 +19,7 @@ import {Trait} from "@/breeding-insight/model/Trait";
 import {Method} from "@/breeding-insight/model/Method";
 import {Scale} from "@/breeding-insight/model/Scale";
 
+// TODO: eventually refactor Trait into Observation Variable to be consistent with the BrAPI model
 export class ObservationVariable {
   id?: string;
   observationVariableName?: string;
