@@ -65,7 +65,9 @@ Vue.use(Buefy, {
         eye: "eye",
         "eye-off": "eye-off",
         "menu-down": "arrow-down",
-        "menu-up": "arrow-up"
+        "menu-up": "arrow-up",
+        "log-out": "log-out",
+        "user": "user"
       }
     }
   }

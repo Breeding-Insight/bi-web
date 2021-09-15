@@ -22,6 +22,7 @@ import {Scale} from "@/breeding-insight/model/Scale";
 export class Trait {
   id?: string;
   traitName?: string;
+  observationVariableName?: string;
   programObservationLevel?: ProgramObservationLevel;
   entity?: string;
   attribute?: string;
@@ -36,6 +37,7 @@ export class Trait {
 
   constructor(id?: string,
               traitName?: string,
+              observationVariableName?: string,
               programObservationLevel?: ProgramObservationLevel,
               entity?: string,
               attribute?: string,
@@ -49,6 +51,7 @@ export class Trait {
               ) {
     this.id = id;
     this.traitName = traitName;
+    this.observationVariableName = observationVariableName;
     if (programObservationLevel) {
       this.programObservationLevel = ProgramObservationLevel.assign({...programObservationLevel} as ProgramObservationLevel);
     } else {
@@ -78,7 +81,7 @@ export class Trait {
   }
 
   static assign(trait: Trait): Trait {
-    return new Trait(trait.id, trait.traitName, trait.programObservationLevel, trait.entity, trait.attribute,
+    return new Trait(trait.id, trait.traitName, trait.observationVariableName, trait.programObservationLevel, trait.entity, trait.attribute,
         trait.traitDescription, trait.method, trait.scale, trait.abbreviations, trait.synonyms, trait.active, trait.tags);
   }
 
@@ -97,6 +100,7 @@ export class Trait {
     if (!trait) {return false;}
     return (this.id === trait.id) &&
       (this.traitName === trait.traitName) &&
+      (this.observationVariableName === trait.observationVariableName) &&
       (this.checkStringListEquals(this.abbreviations, trait.abbreviations)) &&
       (this.checkStringListEquals(this.synonyms, trait.synonyms)) &&
       (this.mainAbbreviation === trait.mainAbbreviation) &&

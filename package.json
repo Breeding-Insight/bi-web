@@ -1,6 +1,6 @@
 {
   "name": "bi-web",
-  "version": "v0.4.0+142",
+  "version": "v0.4.0+150",
   "private": true,
   "scripts": {
     "build": "node $npm_package_config_task_path/build.js --dev-audit-level=critical --prod-audit-level=none",
@@ -26,6 +26,7 @@
     "core-js": "^3.4.3",
     "focus-trap": "^5.1.0",
     "focus-trap-vue": "0.0.6",
+    "title-case": "^3.0.3",
     "uuid": "^8.3.2",
     "valid-url": "^1.0.9",
     "vue": "^2.6.10",
@@ -33,7 +34,7 @@
     "vue-class-component": "^7.0.2",
     "vue-click-outside": "^1.1.0",
     "vue-cookies": "^1.7.0",
-    "vue-feather-icons": "^5.0.0",
+    "vue-feather-icons": "^5.1.0",
     "vue-json-tree-view": "^2.1.6",
     "vue-property-decorator": "^8.3.0",
     "vue-qrcode-component": "^2.1.1",
@@ -67,6 +68,7 @@
     "buefy": "^0.9.8",
     "bulma": "^0.9.1",
     "bulma-divider": "^0.2.0",
+    "bulma-switch": "^2.0.0",
     "chai": "^4.1.2",
     "eslint": "^5.16.0",
     "eslint-plugin-vue": "^5.0.0",
@@ -83,5 +85,5 @@
     "vue-cli-plugin-axios": "0.0.4",
     "vue-template-compiler": "^2.6.10"
   },
-  "versionInfo": "https://github.com/Breeding-Insight/bi-web/commit/bd52bb5a48b30cd51027aa1506693d60a2edbcfe"
+  "versionInfo": "https://github.com/Breeding-Insight/bi-web/commit/df5d79f07fa717c123ca895aa9877bc6aee4eca8"
 }

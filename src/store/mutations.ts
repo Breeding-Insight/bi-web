@@ -25,6 +25,7 @@ import {
   REQUESTED_PATH,
   RETURN_VISIT,
   SET_ACTIVE_PROGRAM,
+  SHOW_SIDEBAR_MOBILE,
 } from '@/store/mutation-types';
 import {User} from "@/breeding-insight/model/User";
 import {Program} from "@/breeding-insight/model/Program";
@@ -58,5 +59,8 @@ export const mutations: MutationTree<RootState> = {
   },
   [RETURN_VISIT] (state) {
     state.firstVisit = false;
+  },
+  [SHOW_SIDEBAR_MOBILE] (state, value: boolean) {
+    state.showSidebarMobile = value;
   }
 };

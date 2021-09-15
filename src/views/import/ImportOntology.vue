@@ -16,40 +16,21 @@
   -->
 
 <template>
-  <component :is="iconComponent"/>
+  <div id="import-ontology">
+    <TraitsImport v-bind:show-title="false"/>
+  </div>
 </template>
 
-<script>
-// all icon that you need
-import { ArrowDownIcon,
-  ArrowUpIcon,
-  ChevronDownIcon,
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  ChevronUpIcon,
-  LogOutIcon,
-  UserIcon} from "vue-feather-icons";
+<script lang="ts">
+import { Component, Prop, Vue } from 'vue-property-decorator'
+import ProgramsBase from "@/components/program/ProgramsBase.vue";
+import TraitsImport from "@/views/trait/TraitsImport.vue";
 
-export default {
-  components: {
-    ChevronLeftIcon,
-    ChevronRightIcon,
-    ChevronUpIcon,
-    ChevronDownIcon,
-    ArrowUpIcon,
-    ArrowDownIcon,
-    LogOutIcon,
-    UserIcon
-  },
-  props: {
-    icon: [String, Array],
-    size: String,
-    customClass: String
-  },
-  computed: {
-    iconComponent() {
-      return this.icon[1] + "-icon";
-    }
+@Component({
+  components: { TraitsImport
   }
-};
+})
+export default class ImportOntology extends ProgramsBase {
+
+}
 </script>

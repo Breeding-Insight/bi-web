@@ -17,34 +17,26 @@
 
 <template>
   <div class="sidebarlayout">
-    <header>
+
+    <header class="main-header">
       <div class="level header-title is-marginless is-mobile">
         <div class="level-left">
-          <div class="level-item is-hidden-touch">
-            <a href="/">
-              <img
-                  src="../../assets/img/bi-logo.svg"
-                  alt="Breeding Insight home"
-                  width="232"
-              >
-            </a>
-          </div>
           <div class="level-item is-hidden-desktop is-pulled-left">
             <a role="button"
                class="navbar-hamburger has-text-dark"
                aria-label="Open Navigation Menu"
                aria-expanded="false"
-               @click="sideMenuShownMobile = !sideMenuShownMobile"
+               @click="toggleSidebar()"
             >
               <MenuIcon></MenuIcon>
             </a>
           </div>
-          <div class="level-item is-hidden-desktop">
+          <div class="level-item">
             <a href="/">
               <img
                   src="../../assets/img/bi-logo.svg"
                   alt="Breeding Insight home"
-                  width="175"
+                  width="160"
               >
             </a>
           </div>
@@ -61,45 +53,37 @@
           </div>
         </div>
         <div class="level-right program-selection-level">
-          <slot name="title"></slot>
+          <div class="level-item">
+            <slot name="title"></slot>
+          </div>
+          <div class="level-item">
+            <UserStatusMenu v-bind:username="username" v-on:logout="$emit('logout')"/>
+          </div>
         </div>
       </div>
     </header>
-
     <div class="columns is-marginless">
-      <div
-          class="column side-menu is-one-fifth"
-          :class="{ 'is-hidden-touch': !sideMenuShownMobile }"
-      >
-        <aside id="sideMenu" class="menu mb-5">
-          <slot name="menu"></slot>
-        </aside>
-        <div id="versionInfo" class="is-size-7 is-justify-content-center is-align-content-center is-flex">
-          <span class="is-centered">
-            <VersionInfo />
-          </span>
-        </div>
-      </div>
-
-      <div class="column">
-        <main>
-          <div v-if="username !== undefined" class="level is-mobile">
-            <div class="level-left"></div>
-            <div class="level-right">
-              <div class="level-item">
-                <p class="mb-0">Logged in as <strong>{{username}}</strong></p>
-              </div>
-              <div class="level-item">
-                <button class="button is-outlined is-primary" :id="logoutId" @click="$emit('logout')">Log out</button>
-              </div>
+      <div class="column is-narrow p-0" :class="{ 'is-hidden-touch': !showSidebarMobile }">
+        <div class="is-300px">
+          <div id="sideMenu" class="menu mb-0 menu-test sidebar side-menu">
+            <slot name="menu"></slot>
+            <div id="versionInfo" class="is-size-7 is-justify-content-center is-align-content-center is-flex">
+              <span class="is-centered">
+                <VersionInfo />
+              </span>
             </div>
           </div>
-          <section class="section pt-0">
-            <slot name="content"></slot>
-          </section>
-        </main>
+        </div>
       </div>
-
+      <div class="column">
+        <div>
+          <main>
+            <section class="section p-5">
+              <slot name="content"></slot>
+            </section>
+          </main>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -109,23 +93,33 @@ import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 import { MenuIcon } from 'vue-feather-icons';
 import { SandboxMode } from '@/util/config';
 import VersionInfo from '@/components/layouts/VersionInfo.vue';
-
+import store from "@/store";
+import {SHOW_SIDEBAR_MOBILE} from "@/store/mutation-types";
+import {mapGetters} from "vuex";
+import UserStatusMenu from "@/components/layouts/menus/UserStatusMenu.vue";
 
 @Component( {
-    components: { VersionInfo, MenuIcon}
+    components: {UserStatusMenu, VersionInfo, MenuIcon},
+    computed: {
+      ...mapGetters([
+        'showSidebarMobile',
+      ])
+    }
   })
   export default class SideBarMaster extends Vue {
-    sideMenuShownMobile: boolean = true;
+    showSidebarMobile?: boolean;
     SandboxMode = SandboxMode;
-
-    private logoutId: string = "basesidebarlayout-logout-button";
 
     @Prop()
     username!: string;
 
     @Watch('$route')
     onUrlChange() {
-      this.sideMenuShownMobile = false;
+      store.commit(SHOW_SIDEBAR_MOBILE, false);
+    }
+
+    toggleSidebar() {
+      store.commit(SHOW_SIDEBAR_MOBILE, !this.showSidebarMobile);
     }
 
     get sandboxConfig() {

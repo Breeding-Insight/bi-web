@@ -82,7 +82,10 @@
             v-bind:trait="newTrait"
             v-bind:scale-options="scaleClassOptions"
             v-bind:method-options="methodClassOptions"
+            v-bind:descriptions="descriptionOptions"
             v-bind:program-observation-levels="observationLevelOptions"
+            v-bind:entities="entityOptions"
+            v-bind:attributes="attributeOptions"
             v-bind:tags="tagOptions"
             v-bind:client-validations="validations"
             v-bind:validation-handler="validationHandler"
@@ -198,7 +201,7 @@ import {MethodClass} from "@/breeding-insight/model/Method";
 import {DataType, Scale} from "@/breeding-insight/model/Scale";
 import {SidePanelTableEventBusHandler} from "@/components/tables/SidePanelTableEventBus";
 import { DataFormEventBusHandler } from '@/components/forms/DataFormEventBusHandler';
-import {email, required, integer} from "vuelidate/lib/validators";
+import {email, required, integer, maxLength} from "vuelidate/lib/validators";
 
   @Component({
   mixins: [validationMixin],
@@ -219,6 +222,9 @@ export default class TraitTable extends Vue {
   private traits: Trait[] = [];
   private methodClassOptions: string[] = Object.values(MethodClass);
   private observationLevelOptions?: string[];
+  private attributeOptions?: string[];
+  private entityOptions?: string[];
+  private descriptionOptions?: string[];
   private tagOptions?: string[];
   private scaleClassOptions: string[] = Object.values(DataType);
   private editTrait?: Trait;
@@ -247,7 +253,24 @@ export default class TraitTable extends Vue {
   private traitsPagination?: Pagination = new Pagination();
   private paginationController: PaginationController = new PaginationController();
 
+  shortCharLimit = 12;
+  longCharLimit = 30;
+
   traitValidations = {
+    observationVariableName: {
+      maxLength: maxLength(this.shortCharLimit)
+    },
+    entity: {
+      maxLength: maxLength(this.longCharLimit)
+    },
+    attribute: {
+      maxLength: maxLength(this.longCharLimit)
+    },
+    method: {
+      description: {
+        maxLength: maxLength(this.longCharLimit)
+      }
+    },
     scale: {
       decimalPlaces: {integer},
       validValueMax: {integer},
@@ -258,6 +281,7 @@ export default class TraitTable extends Vue {
   mounted() {
     this.getTraits();
     this.getObservationLevels();
+    this.getAttributesEntitiesDescriptions();
     this.getTraitTags();
 
     // Events
@@ -367,6 +391,7 @@ export default class TraitTable extends Vue {
       this.getTraits();
       const levelPromise = this.getObservationLevels();
       const tagPromise = this.getTraitTags();
+      await this.getAttributesEntitiesDescriptions();
       this.newTrait = new Trait();
       this.newTraitActive = false;
     } catch (error) {
@@ -437,6 +462,20 @@ export default class TraitTable extends Vue {
     this.newTrait = new Trait();
     this.validationHandler = new ValidationError();
     this.newTraitActive = false;
+  }
+
+  async getAttributesEntitiesDescriptions() {
+    try {
+      const response = await TraitService.getAttributesEntitiesDescriptions(this.activeProgram!.id!);
+      if (response) {
+        const attributesEntitiesDescriptions: [string[], string[], string[]] = response;
+        [this.attributeOptions, this.entityOptions, this.descriptionOptions] = attributesEntitiesDescriptions;
+        return;
+      }
+    } catch (error) {
+      this.$emit('show-error-notification', 'Unable to retrieve ontology term entities, attributes, and descriptions');
+    }
+    this.$emit('show-error-notification', 'Unable to retrieve ontology term entities, attributes, and descriptions');
   }
 
   async getObservationLevels() {
