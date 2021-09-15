@@ -12,7 +12,7 @@
     "sourceMap": true,
     "baseUrl": ".",
     "skipLibCheck": true,
-    "types": [
+      "types": [
       "webpack-env",
       "chai",
       "jest"
@@ -40,6 +40,10 @@
     "tests/**/*.tsx"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "./node_modules",
+    "./node_modules/*",
+    "node_modules/@types/node",
+    "node_modules/@types/node/assert.d.ts",
   ]
 }
