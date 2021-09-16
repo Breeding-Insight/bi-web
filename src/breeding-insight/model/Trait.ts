@@ -22,7 +22,11 @@ import {Scale} from "@/breeding-insight/model/Scale";
 export class Trait {
   id?: string;
   traitName?: string;
+  observationVariableName?: string;
   programObservationLevel?: ProgramObservationLevel;
+  entity?: string;
+  attribute?: string;
+  traitDescription?: string;
   method?: Method;
   scale?: Scale;
   abbreviations?: Array<string>;
@@ -33,7 +37,11 @@ export class Trait {
 
   constructor(id?: string,
               traitName?: string,
+              observationVariableName?: string,
               programObservationLevel?: ProgramObservationLevel,
+              entity?: string,
+              attribute?: string,
+              traitDescription?: string,
               method?: Method,
               scale?: Scale,
               abbreviations?: Array<string>,
@@ -43,11 +51,15 @@ export class Trait {
               ) {
     this.id = id;
     this.traitName = traitName;
+    this.observationVariableName = observationVariableName;
     if (programObservationLevel) {
       this.programObservationLevel = ProgramObservationLevel.assign({...programObservationLevel} as ProgramObservationLevel);
     } else {
       this.programObservationLevel = new ProgramObservationLevel();
     }
+    this.entity = entity;
+    this.attribute = attribute;
+    this.traitDescription = traitDescription;
     if (method){
       this.method = Method.assign({...method} as Method);
     } else {
@@ -69,8 +81,8 @@ export class Trait {
   }
 
   static assign(trait: Trait): Trait {
-    return new Trait(trait.id, trait.traitName, trait.programObservationLevel, trait.method,
-      trait.scale, trait.abbreviations, trait.synonyms, trait.active, trait.tags);
+    return new Trait(trait.id, trait.traitName, trait.observationVariableName, trait.programObservationLevel, trait.entity, trait.attribute,
+        trait.traitDescription, trait.method, trait.scale, trait.abbreviations, trait.synonyms, trait.active, trait.tags);
   }
 
   checkStringListEquals(list: string[] | undefined, otherList: string[] | undefined): boolean {
@@ -88,9 +100,13 @@ export class Trait {
     if (!trait) {return false;}
     return (this.id === trait.id) &&
       (this.traitName === trait.traitName) &&
+      (this.observationVariableName === trait.observationVariableName) &&
       (this.checkStringListEquals(this.abbreviations, trait.abbreviations)) &&
       (this.checkStringListEquals(this.synonyms, trait.synonyms)) &&
       (this.mainAbbreviation === trait.mainAbbreviation) &&
+        (this.entity === trait.entity) &&
+        (this.attribute === trait.attribute) &&
+        (this.traitDescription === trait.traitDescription) &&
       (
         (this.programObservationLevel && this.programObservationLevel.equals(trait.programObservationLevel)) ||
         (!this.programObservationLevel && !trait.programObservationLevel)

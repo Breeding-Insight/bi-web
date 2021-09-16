@@ -42,7 +42,7 @@ function setup() {
   const scale = new Scale('Test Scale', 'Number', undefined, 3, 0, 999);
   const level = new ProgramObservationLevel('Plant');
   const range = [...Array(200).keys()];
-  traits = range.map((i:number) => new Trait(i.toString(), `Trait${i}`, level, method, scale));
+  traits = range.map((i:number) => new Trait(i.toString(), `Trait${i}`, undefined, level, undefined, undefined, undefined, method, scale));
 
   const response = DaoUtils.formatBiResponse(traits);
 

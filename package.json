@@ -1,6 +1,6 @@
 {
   "name": "bi-web",
-  "version": "v0.4.0+148",
+  "version": "v0.4.0+150",
   "private": true,
   "scripts": {
     "build": "node $npm_package_config_task_path/build.js --dev-audit-level=critical --prod-audit-level=none",
@@ -68,6 +68,7 @@
     "buefy": "^0.9.8",
     "bulma": "^0.9.1",
     "bulma-divider": "^0.2.0",
+    "bulma-switch": "^2.0.0",
     "chai": "^4.1.2",
     "eslint": "^5.16.0",
     "eslint-plugin-vue": "^5.0.0",
@@ -84,5 +85,5 @@
     "vue-cli-plugin-axios": "0.0.4",
     "vue-template-compiler": "^2.6.10"
   },
-  "versionInfo": "https://github.com/Breeding-Insight/bi-web/commit/9ff2c4552e00260234e42099f9ce7df1ff3b50c9"
+  "versionInfo": "https://github.com/Breeding-Insight/bi-web/commit/df5d79f07fa717c123ca895aa9877bc6aee4eca8"
 }

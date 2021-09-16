@@ -96,6 +96,7 @@ $table-striped-row-even-hover-background-color:$link-light;
 // Bulma extensions
 $divider-margin-inner-size: 0;
 @import "~@creativebulma/bulma-divider";
+@import "~bulma-switch/src/sass/index.sass";
 
 // Overrides that can't be done with variables go here
 // may be broken out into a separate file later
@@ -534,6 +535,50 @@ div.sentence-input {
   transform: translateY(-150%);
   transition: transform 0.3s;
 }
+
 .skip-link:focus {
   transform: translateY(0%);
+}
+
+.new-form-content {
+  @extend .is-full;
+  @extend .is-pulled-left;
+  @extend .column;
+}
+
+.form-heading {
+  font-weight: 700;
+  padding: 1.75em 0em 0em 0em;
+}
+
+.form-heading-toggle {
+  font-weight: 700;
+}
+
+.computed-display {
+  min-height: 1.5em;
+}
+
+.new-form-divider {
+  height: 5em;
+}
+
+div.field.column.new-form-content {
+  padding-top: 0em;
+  padding-bottom: 0em;
+}
+
+div.field.new-form-content label.label.is-left {
+  font-weight: 400;
+}
+
+div.field.new-form-content.required label.label.is-left::after {
+  content: "*";
+  color: $danger;
+}
+
+div.field.new-form-content {
+  min-height: 4.25em;
+  padding-right: 0em;
+  padding-left: 0em;
 }
