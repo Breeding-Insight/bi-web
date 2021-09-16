@@ -37,10 +37,10 @@
       -->
       <template v-slot:columns="data">
         <TableColumn name="name" v-bind:label="'Name'">
-          {{ data.abbreviations[0] }}
+          {{ data.observationVariableName }}
         </TableColumn>
         <TableColumn name="trait" v-bind:label="'Trait'" v-bind:visible="!collapseColumns">
-          {{ StringFormatters.toStartCase(data.traitName) }}
+          {{ StringFormatters.toStartCase(data.traitDescription) }}
         </TableColumn>
         <TableColumn name="method" v-bind:label="'Method'" v-bind:visible="!collapseColumns">
           {{ data.method.description + " " + StringFormatters.toStartCase(data.method.methodClass) }}
