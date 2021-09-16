@@ -22,12 +22,13 @@
     <template #trigger>
       <button
           class="button is-small is-primary has-text-weight-bold"
+          v-bind:id="dropDownId"
       >
         <b-icon icon="user" class="mr-0"></b-icon>
         <b-icon icon="chevron-down" class="ml-0"></b-icon>
       </button>
     </template>
-    <b-dropdown-item custom aria-role="menuitem">
+    <b-dropdown-item custom aria-role="menuitem" v-bind:id="userNameId">
       Logged in as <strong>{{username}}</strong>
     </b-dropdown-item>
     <hr class="dropdown-divider">
@@ -48,7 +49,9 @@ export default class UserStatusMenu extends Vue {
   @Prop()
   username!: string;
 
-  private logoutId: string = "basesidebarlayout-logout-button";
+  private logoutId: string = "userstatusmenu-logout-button";
+  private dropDownId: string = "userstatusmenu-dropdown-button";
+  private userNameId: string = "userstatusmenu-username";
 }
 
 </script>
