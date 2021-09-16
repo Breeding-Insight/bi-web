@@ -48,7 +48,7 @@
     <template v-if="state === ImportState.CHOOSE_FILE || state === ImportState.FILE_CHOSEN">
       <h1 class="title" v-if="showTitle">Import Traits</h1>
       <ImportInfoTemplateMessageBox v-bind:import-type-name="'Trait'"
-                                    v-bind:template-url="'https://cornell.box.com/shared/static/8sp0qvccpjotosiv8576tczeg09nnvao.xls'"
+                                    v-bind:template-url="'https://cornell.box.com/shared/static/u9vuob3vvu2cgwyoe26b2722u41b8f6o.xls'"
                                     class="mb-5">
         <strong>Before You Import...</strong>
         <br/>Prepare ontology information for import using the provided template.
