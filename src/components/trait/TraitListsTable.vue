@@ -126,7 +126,7 @@
         </TableColumn>
         <TableColumn name="scale" v-bind:label="'Scale'" v-bind:visible="!traitSidePanelState.collapseColumns">
           {{ TraitStringFormatters.getScaleTypeString(data.scale) }}
-        </TableColumn>  
+        </TableColumn>
       </template>
 
       <!-- 
