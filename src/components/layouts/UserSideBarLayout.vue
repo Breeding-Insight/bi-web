@@ -181,7 +181,7 @@
                 v-bind:class="{ 'is-active': traitsActive }"
                 :id="traitsMenuId"
               >
-                Traits
+                Ontology
                 <MoreVerticalIcon
                   v-if="!traitsActive"
                   class="is-pulled-right"
@@ -194,7 +194,7 @@
               <ul v-show="traitsActive">
                 <li>
                   <router-link v-bind:to="{name: 'traits-list', params: {programId: activeProgram.id}}">
-                    Trait List
+                    Ontology List
                   </router-link>
                 </li>
                 <li>
@@ -206,12 +206,12 @@
                   v-if="$ability.can('create', 'Trait')"
                 >
                   <router-link v-bind:to="{name: 'traits-import', params: {programId: activeProgram.id}}">
-                    Import Traits
+                    Import Ontology
                   </router-link>
                 </li>
                 <li>
                   <router-link v-bind:to="{name: 'traits-archived', params: {programId: activeProgram.id}}">
-                    Archived Traits
+                    Archived Ontology
                   </router-link>
                 </li>
               </ul>
