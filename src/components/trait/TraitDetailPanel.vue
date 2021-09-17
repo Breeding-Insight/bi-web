@@ -36,24 +36,70 @@
       </template>
 
       <template v-if="data.entity && data.attribute">
-        <p class="mt-5 mb-0">
-          <span class="has-text-weight-bold mt-5 mb-0">Trait</span><span class="is-size-7 mb-0 ml-2">{{traitName}}</span>
-        </p>
+        <div class="columns is-multiline is-0 mt-5 my-0">
+          <div class="column is-one-fifth p-0">
+            <span class="is-pulled-right has-text-weight-bold mr-5">Trait</span>
+          </div>
+          <div class="column is-four-fifths py-0 pl-0">
+            <span class="is-size-7">{{traitName}}</span>
+          </div>
+          <div class="column is-one-fifth p-0">
+            <span class="is-pulled-right has-text-weight-bold mr-5">Method</span>
+          </div>
+          <div class="column is-four-fifths p-0">
+            <span class="is-size-7">{{methodName}}</span>
+          </div>
+          <div class="column is-one-fifth p-0">
+            <span class="is-pulled-right has-text-weight-bold mr-5">Scale</span>
+          </div>
+          <div class="column is-four-fifths p-0">
+            <span v-if="scaleTypeString" class="is-size-7">{{scaleTypeString}}</span>
+          </div>
+        </div>
       </template>
 
-      <template v-if="data.method && data.method.description && data.method.methodClass">
-        <p class="mb-0">
-          <span class="has-text-weight-bold mb-0">Method</span>
-          <span class="is-size-7 mb-0 ml-2">{{methodName}}</span>
-<!--          <span class="is-size-7 mb-0 ml-2">{{`${StringFormatters.toStartCase(data.method.description)} ${data.method.methodClass}`}}</span>-->
-        </p>
-      </template>
+<!--      <template v-if="data.method && data.method.description && data.method.methodClass">-->
+<!--        <div class="columns m-0">-->
+<!--          <div class="column is-one-fifth p-0">-->
+<!--            <span class="is-pulled-right has-text-weight-bold">Method</span>-->
+<!--          </div>-->
+<!--          <div class="column p-0">-->
+<!--            <span class="is-size-7 mb-0">{{methodName}}</span>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--      </template>-->
 
-      <template>
-        <p class="mb-0">
-          <span class="has-text-weight-bold mb-0">Scale</span><span v-if="scaleTypeString" class="is-size-7 mb-0 ml-2">{{scaleTypeString}}</span>
-        </p>
-      </template>
+<!--      <template>-->
+<!--        <div class="columns m-0">-->
+<!--          <div class="column is-one-fifth p-0">-->
+<!--            <span class="is-pulled-right has-text-weight-bold">Scale</span>-->
+<!--          </div>-->
+<!--          <div class="column p-0">-->
+<!--            <span v-if="scaleTypeString" class="is-size-7 mb-0">{{scaleTypeString}}</span>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--      </template>-->
+
+<!--      <template v-if="data.entity && data.attribute">-->
+<!--        <p class="mt-5 mb-0">-->
+<!--          <span class="has-text-weight-bold mt-5 mb-0">Trait</span>-->
+<!--          <span class="is-size-7 mb-0 ml-2">{{traitName}}</span>-->
+<!--        </p>-->
+<!--      </template>-->
+
+<!--      <template v-if="data.method && data.method.description && data.method.methodClass">-->
+<!--        <p class="mb-0">-->
+<!--          <span class="has-text-weight-bold mb-0">Method</span>-->
+<!--          <span class="is-size-7 mb-0 ml-2">{{methodName}}</span>-->
+<!--        </p>-->
+<!--      </template>-->
+
+<!--      <template>-->
+<!--        <p class="mb-0">-->
+<!--          <span class="has-text-weight-bold mb-0">Scale</span>-->
+<!--          <span v-if="scaleTypeString" class="is-size-7 mb-0 ml-2">{{scaleTypeString}}</span>-->
+<!--        </p>-->
+<!--      </template>-->
 
       <!-- scale types hardcoded for now until we can get them from bi-api -->
       <template v-if="scaleType && (Scale.dataTypeEquals(scaleType, DataType.Ordinal) || Scale.dataTypeEquals(scaleType, DataType.Nominal))">
