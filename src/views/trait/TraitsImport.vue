@@ -24,7 +24,7 @@
     >
       <section>
         <p class="has-text-dark" :class="this.$modalTextClass">
-          No traits will be added, and the import in progress will be completely removed.
+          No ontology terms will be added, and the import in progress will be completely removed.
         </p>
       </section>
       <div class="columns">
@@ -46,9 +46,9 @@
     </WarningModal>
 
     <template v-if="state === ImportState.CHOOSE_FILE || state === ImportState.FILE_CHOSEN">
-      <h1 class="title" v-if="showTitle">Import Traits</h1>
-      <ImportInfoTemplateMessageBox v-bind:import-type-name="'Trait'"
-                                    v-bind:template-url="'https://cornell.box.com/shared/static/8sp0qvccpjotosiv8576tczeg09nnvao.xls'"
+      <h1 class="title" v-if="showTitle">Import Ontology</h1>
+      <ImportInfoTemplateMessageBox v-bind:import-type-name="'Ontology'"
+                                    v-bind:template-url="'https://cornell.box.com/shared/static/u9vuob3vvu2cgwyoe26b2722u41b8f6o.xls'"
                                     class="mb-5">
         <strong>Before You Import...</strong>
         <br/>Prepare ontology information for import using the provided template.
@@ -67,7 +67,7 @@
     
     <template v-if="state === ImportState.LOADING || state === ImportState.CURATE">
       <template v-if="tableLoaded">
-        <h1 class="title">Curate and Confirm New Traits</h1>
+        <h1 class="title">Confirm New Ontology Term</h1>
         <ConfirmImportMessageBox v-bind:num-traits="numTraits"
                                     v-on:abort="showAbortModal = true" 
                                     v-on:confirm="importService.send(ImportEvent.CONFIRMED)"
@@ -322,7 +322,7 @@ export default class TraitsImport extends ProgramsBase {
       await TraitUploadService.confirmUpload(this.activeProgram!.id!, upload!.id!);
 
       // show all program traits
-      this.$emit('show-success-notification', `Imported traits have been added to ${name}.`);
+      this.$emit('show-success-notification', `Imported ontology terms have been added to ${name}.`);
       this.$router.push({
         name: 'traits-list',
         params: {
@@ -330,7 +330,7 @@ export default class TraitsImport extends ProgramsBase {
         },
       });
     } catch(err) {
-      const note = err.message ? err.message : `Error: Imported traits were not added to ${name}.`;
+      const note = err.message ? err.message : `Error: Imported ontology terms were not added to ${name}.`;
       this.$emit('show-error-notification', `${note}`);
       Vue.$log.error(err);
     }

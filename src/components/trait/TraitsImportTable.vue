@@ -37,16 +37,21 @@
       -->
       <template v-slot:columns="data">
         <TableColumn name="name" v-bind:label="'Name'">
-          {{ data.traitName }}
+          {{ data.observationVariableName }}
         </TableColumn>
-        <TableColumn name="level" v-bind:label="'Level'" v-bind:visible="!collapseColumns">
-          {{ data.programObservationLevel.name }}
+        <TableColumn name="trait" v-bind:label="'Trait'" v-bind:visible="!collapseColumns">
+          {{ StringFormatters.toStartCase(data.traitDescription) }}
         </TableColumn>
         <TableColumn name="method" v-bind:label="'Method'" v-bind:visible="!collapseColumns">
-          {{ StringFormatters.toStartCase(data.method.methodClass) }}
+          {{ data.method.description + " " + StringFormatters.toStartCase(data.method.methodClass) }}
         </TableColumn>
-        <TableColumn name="scale" v-bind:label="'Scale'" v-bind:visible="!collapseColumns">
+        <TableColumn name="scaleClass" v-bind:label="'Scale Class'" v-bind:visible="!collapseColumns">
           {{ TraitStringFormatters.getScaleTypeString(data.scale) }}
+        </TableColumn>
+        <TableColumn name="unit" v-bind:label="'Unit'" v-bind:visible="!traitSidePanelState.collapseColumns">
+          <template v-if="data.scale.dataType==='NUMERICAL'">
+            {{ data.scale.scaleName }}
+          </template>
         </TableColumn>
       </template>
 

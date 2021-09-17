@@ -17,7 +17,7 @@
 
 <template>
   <div class="is-full-length">
-    <main>
+    <main id="main">
       <section class="section">
         <slot></slot>
       </section>
