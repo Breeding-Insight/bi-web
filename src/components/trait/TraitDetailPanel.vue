@@ -39,8 +39,6 @@
         <p class="mt-5 mb-0">
           <span class="has-text-weight-bold mt-5 mb-0">Trait</span><span class="is-size-7 mb-0 ml-2">{{`${data.entity} ${data.attribute}`}}</span>
         </p>
-
-<!--        <p class="is-size-7 mb-0">{{`= ${data.entity} ${data.attribute}`}}</p>-->
       </template>
 
       <template v-if="data.method && data.method.description && data.method.methodClass">
@@ -54,7 +52,6 @@
           <span class="has-text-weight-bold mb-0">Scale</span><span v-if="scaleTypeString" class="is-size-7 mb-0 ml-2">{{scaleTypeString}}</span>
         </p>
       </template>
-
 
       <!-- scale types hardcoded for now until we can get them from bi-api -->
       <template v-if="scaleType && (Scale.dataTypeEquals(scaleType, DataType.Ordinal) || Scale.dataTypeEquals(scaleType, DataType.Nominal))">
@@ -71,16 +68,16 @@
       </template>
 
       <template v-if="scaleType && Scale.dataTypeEquals(scaleType, DataType.Numerical)">
-        <p class="mb-0">Units: {{valueOrNA(data.scale.scaleName)}}</p>
-        <p class="mb-0">Decimal Places: {{valueOrNA(data.scale.decimalPlaces)}}</p>
-        <p class="mb-0">Minimum valid value: {{valueOrNA(data.scale.validValueMin)}}</p>
-        <p class="mb-0">Maximum valid value: {{valueOrNA(data.scale.validValueMax)}}</p>
+        <p class="is-size-7 mb-0">Units: {{valueOrNA(data.scale.scaleName)}}</p>
+        <p class="is-size-7 mb-0">Decimal Places: {{valueOrNA(data.scale.decimalPlaces)}}</p>
+        <p class="is-size-7 mb-0">Minimum valid value: {{valueOrNA(data.scale.validValueMin)}}</p>
+        <p class="is-size-7 mb-0">Maximum valid value: {{valueOrNA(data.scale.validValueMax)}}</p>
       </template>
 
       <template v-if="Scale.dataTypeEquals(scaleType, DataType.Duration)">
-        <p class="mb-0">Unit of time: {{valueOrNA(data.scale.scaleName)}}</p>
-        <p class="mb-0">Minimum valid value: {{valueOrNA(data.scale.validValueMin)}}</p>
-        <p class="mb-0">Maximum valid value: {{valueOrNA(data.scale.validValueMax)}}</p>
+        <p class="is-size-7 mb-0">Unit of time: {{valueOrNA(data.scale.scaleName)}}</p>
+        <p class="is-size-7 mb-0">Minimum valid value: {{valueOrNA(data.scale.validValueMin)}}</p>
+        <p class="is-size-7 mb-0">Maximum valid value: {{valueOrNA(data.scale.validValueMax)}}</p>
       </template>
 
       <template v-if="scaleType && Scale.dataTypeEquals(scaleType, DataType.Date)">
@@ -89,7 +86,7 @@
       <!-- if computation method, show formula as well -->
       <template v-if="methodClass && Method.methodClassEquals(methodClass, MethodClass.Computation)">
         <p class="has-text-weight-bold mt-3 mb-0">Formula</p>
-        <p class="mb-0">{{valueOrNA(data.method.formula)}}</p>
+        <p class="is-size-7 mb-0">{{valueOrNA(data.method.formula)}}</p>
       </template>
 
       <ProgressBar v-if="loadingEditable && $ability.can('update', 'Trait')" v-bind:label="'Checking trait editability status'"
