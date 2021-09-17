@@ -35,55 +35,59 @@
         </template>
       </template>
 
-      <template v-if="data.entity && data.attribute">
-        <div class="columns is-variable is-multiline is-0 mt-5 my-0">
-          <div class="column is-one-quarter p-0">
-            <span class="is-pulled-right has-text-weight-bold mr-0">Trait</span>
+      <div class="columns is-centered is-mobile is-variable is-multiline is-0 mt-5 my-0">
+        <template v-if="data.entity && data.attribute">
+          <div class="column is-half p-0">
+            <span class="is-pulled-right has-text-weight-bold mr-2">Trait</span>
           </div>
-          <div class="column is-three-quarters p-0">
-            <span class="is-size-7 ml-4">{{data.entity}} {{data.attribute | capitalize}}</span>
+          <div class="column is-half p-0">
+            <span class="is-size-7 ml-2">{{data.entity}} {{data.attribute | capitalize}}</span>
           </div>
-          <div class="column is-one-quarter p-0">
-            <span class="is-pulled-right has-text-weight-bold mr-0">Method</span>
+        </template>
+        <template v-if="data.method && data.method.description && data.method.methodClass">
+          <div class="column is-half p-0">
+            <span class="is-pulled-right has-text-weight-bold mr-2">Method</span>
           </div>
-          <div class="column is-three-quarters p-0">
-            <span class="is-size-7 ml-4">{{ data.method.description | capitalize }} {{data.method.methodClass}}</span>
+          <div class="column is-half p-0">
+            <span class="is-size-7 ml-2">{{ data.method.description | capitalize }} {{data.method.methodClass}}</span>
           </div>
-          <div class="column is-one-quarter p-0">
-            <span class="is-pulled-right has-text-weight-bold mr-0">Scale</span>
+        </template>
+        <template v-if="data.scale && data.scale.dataType">
+          <div class="column is-half p-0">
+            <span class="is-pulled-right has-text-weight-bold mr-2">Scale</span>
           </div>
-          <div class="column is-three-quarters p-0 mb-4">
-            <span v-if="scaleTypeString" class="is-size-7 ml-4">{{scaleTypeString}}</span>
+          <div class="column is-half p-0">
+            <span class="is-size-7 ml-2">{{ scaleTypeString }}</span>
           </div>
-          <template v-if="scaleType && Scale.dataTypeEquals(scaleType, DataType.Numerical)">
-            <div class="column is-one-quarter p-0">
-              <span class="is-pulled-right is-size-6">Units</span>
-            </div>
-            <div class="column is-three-quarters p-0">
-              <span class="is-size-7 ml-4">{{valueOrNA(data.scale.scaleName) | capitalize}}</span>
-            </div>
-            <div class="column is-one-quarter p-0">
-              <span class="is-pulled-right is-size-6">Decimal Places</span>
-            </div>
-            <div class="column is-three-quarters p-0">
-              <span class="is-size-7 ml-4">{{valueOrNA(data.scale.decimalPlaces)}}</span>
-            </div>
-            <div class="column is-one-quarter p-0">
-              <span class="is-pulled-right is-size-6">Minimum Value</span>
-            </div>
-            <div class="column is-three-quarters p-0">
-              <span class="is-size-7 ml-4">{{valueOrNA(data.scale.validValueMin)}}</span>
-            </div>
-            <div class="column is-one-quarter p-0">
-              <span class="is-pulled-right is-size-6">Maximum Value</span>
-            </div>
-            <div class="column is-three-quarters p-0">
-              <span class="is-size-7 ml-4">{{valueOrNA(data.scale.validValueMax)}}</span>
-            </div>
-          </template>
-        </div>
-      </template>
-
+        </template>
+        <template v-if="scaleType && Scale.dataTypeEquals(scaleType, DataType.Numerical)">
+          <div class="column is-half p-0 mt-5">
+            <span class="is-pulled-right mr-2">Units</span>
+          </div>
+          <div class="column is-half p-0 mt-5">
+            <span class="is-size-7 ml-2">{{ valueOrNA(data.scale.scaleName) | capitalize }}</span>
+          </div>
+          <div class="column is-half p-0">
+            <span class="is-pulled-right mr-2">Decimal Places</span>
+          </div>
+          <div class="column is-half p-0">
+            <span class="is-size-7 ml-2">{{ valueOrNA(data.scale.decimalPlaces) }}</span>
+          </div>
+          <div class="column is-half p-0">
+            <span class="is-pulled-right mr-2">Minimum Value</span>
+          </div>
+          <div class="column is-half p-0">
+            <span class="is-size-7 ml-2">{{ valueOrNA(data.scale.validValueMin) }}</span>
+          </div>
+          <div class="column is-half p-0">
+            <span class="is-pulled-right mr-2">Maximum Value</span>
+          </div>
+          <div class="column is-half p-0">
+            <span class="is-size-7 ml-2">{{ valueOrNA(data.scale.validValueMax) }}</span>
+          </div>
+        </template>
+      </div>
+      
       <!-- scale types hardcoded for now until we can get them from bi-api -->
       <template v-if="scaleType && (Scale.dataTypeEquals(scaleType, DataType.Ordinal) || Scale.dataTypeEquals(scaleType, DataType.Nominal))">
         <p class="mb-0" v-for="category in data.scale.categories" :key="category.label">
@@ -97,13 +101,6 @@
       <template v-if="scaleType && Scale.dataTypeEquals(scaleType, DataType.Text)">
         <!-- TODO: Not showing anything for this now -->
       </template>
-
-<!--      <template v-if="scaleType && Scale.dataTypeEquals(scaleType, DataTypae.Numerical)">-->
-<!--        <p class="is-size-7 mb-0">Units: {{valueOrNA(data.scale.scaleName)}}</p>-->
-<!--        <p class="is-size-7 mb-0">Decimal Places: {{valueOrNA(data.scale.decimalPlaces)}}</p>-->
-<!--        <p class="is-size-7 mb-0">Minimum valid value: {{valueOrNA(data.scale.validValueMin)}}</p>-->
-<!--        <p class="is-size-7 mb-0">Maximum valid value: {{valueOrNA(data.scale.validValueMax)}}</p>-->
-<!--      </template>-->
 
       <template v-if="Scale.dataTypeEquals(scaleType, DataType.Duration)">
         <p class="is-size-7 mb-0">Unit of time: {{valueOrNA(data.scale.scaleName)}}</p>
@@ -323,7 +320,7 @@
     }
 
     get scaleTypeString() {
-      if (this.data && this.data.programObservationLevel && this.data.method && this.data.scale) {
+      if (this.data && this.data.scale) {
         let str = StringFormatters.toStartCase(this.data.scale.dataType!);
         const postfix = this.scalePostFix(this.data.scale.dataType!);
         if (postfix !== "") {
