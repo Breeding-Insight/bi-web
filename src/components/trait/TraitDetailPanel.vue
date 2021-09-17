@@ -18,17 +18,39 @@
 <template>
   <div class="is-full-length">
     <template v-if="data && !editActive">
-      <p v-if="data.traitName" class="is-size-5 has-text-weight-bold mb-0">{{data.traitName}}</p>
-
+      <p v-if="data.observationVariableName" class="is-size-5 has-text-weight-bold mb-0">{{data.observationVariableName}}</p>
+      <p v-if="data.traitDescription" class="is-size-7 mb-0">{{data.traitDescription}}</p>
       <!-- just shows first abbreviation AKA main abbreviation and first synonym -->
       <template v-if="abbreviationsSynonymsString">
-        <p class="is-size-7">{{abbreviationsSynonymsString(2)}}</p>
+        <p class="is-size-7 mb-0">{{ abbreviationsSynonymsString(2)}}</p>
       </template>
       <template v-else>
-        <p class="mb-3"/>
+        <p class="mb-0"/>
       </template>
 
-      <p v-if="scaleTypeString" class="has-text-weight-bold mb-0">{{scaleTypeString}}</p>
+      <template v-if="data.tags && data.tags.length > 0">
+        <p class="has-text-weight-bold mt-5 mb-0">Tags</p>
+        <template v-for="tag in data.tags">
+          <span v-bind:key="tag" class="tag is-primary is-normal mr-1">{{ tag }}</span>
+        </template>
+      </template>
+
+      <template v-if="data.entity && data.attribute">
+        <p class="has-text-weight-bold mt-5 mb-0">Trait</p>
+        <p class="is-size-7 mb-0">{{`${data.entity} ${data.attribute}`}}</p>
+      </template>
+
+      <template v-if="data.method && data.method.description && data.method.methodClass">
+        <p class="has-text-weight-bold mb-0">Method</p>
+        <p  class="is-size-7 mb-0">{{`${data.method.description} ${data.method.methodClass}`}}</p>
+      </template>
+
+      <template>
+        <p class="has-text-weight-bold mb-0">Scale</p>
+        <p v-if="scaleTypeString" class="is-size-7 mb-0">{{scaleTypeString}}</p>
+<!--        <p v-if="data.entity && data.attribute" class="is-size-7">{{`${data.entity} ${data.attribute}`}}</p>-->
+      </template>
+
 
       <!-- scale types hardcoded for now until we can get them from bi-api -->
       <template v-if="scaleType && (Scale.dataTypeEquals(scaleType, DataType.Ordinal) || Scale.dataTypeEquals(scaleType, DataType.Nominal))">
@@ -66,15 +88,8 @@
         <p class="mb-0">{{valueOrNA(data.method.formula)}}</p>
       </template>
 
-      <p class="has-text-weight-bold mt-3 mb-0">Description of collection method</p>
-      <p>{{data.method.description}}</p>
-
-      <template v-if="data.tags && data.tags.length > 0">
-        <p class="has-text-weight-bold mt-3 mb-0">Tags</p>
-        <template v-for="tag in data.tags">
-          <span v-bind:key="tag" class="tag is-primary is-normal mr-1">{{ tag }}</span>
-        </template>
-      </template>
+<!--      <p class="has-text-weight-bold mt-3 mb-0">Description of collection method</p>-->
+<!--      <p>{{data.method.description}}</p>-->
 
       <ProgressBar v-if="loadingEditable && $ability.can('update', 'Trait')" v-bind:label="'Checking trait editability status'"
                    v-bind:estimated-time-text="'May take a few seconds'"
@@ -157,7 +172,10 @@
               v-bind:tags="tags"
               v-bind:scale-options="scaleClassOptions"
               v-bind:method-options="methodClassOptions"
+              v-bind:descriptions="descriptionOptions"
               v-bind:program-observation-levels="observationLevelOptions"
+              v-bind:entities="entityOptions"
+              v-bind:attributes="attributeOptions"
               v-bind:client-validations="validations"
               v-bind:validation-handler="validationHandler"
           ></BaseTraitForm>
@@ -208,6 +226,13 @@
     private validationHandler!: ValidationError;
     @Prop()
     private tags!: string[];
+    @Prop()
+    private descriptionOptions?: string[];
+    @Prop()
+    private entityOptions?: string[];
+    @Prop()
+    private attributeOptions?: string[];
+
 
     private editTrait: Trait | null = null;
     private scalePostfix = new Set<string>().add(DataType.Ordinal).add(DataType.Nominal);
@@ -264,9 +289,7 @@
 
     get scaleTypeString() {
       if (this.data && this.data.programObservationLevel && this.data.method && this.data.scale) {
-        let str = this.data.programObservationLevel.name + " " +
-                  this.data.method.methodClass + " using " +
-                  StringFormatters.toStartCase(this.data.scale.dataType!);
+        let str = StringFormatters.toStartCase(this.data.scale.dataType!);
         const postfix = this.scalePostFix(this.data.scale.dataType!);
         if (postfix !== "") {
           str = str + " " + postfix;
