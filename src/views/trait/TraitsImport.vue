@@ -46,8 +46,8 @@
     </WarningModal>
 
     <template v-if="state === ImportState.CHOOSE_FILE || state === ImportState.FILE_CHOSEN">
-      <h1 class="title" v-if="showTitle">Import Traits</h1>
-      <ImportInfoTemplateMessageBox v-bind:import-type-name="'Trait'"
+      <h1 class="title" v-if="showTitle">Import Ontology</h1>
+      <ImportInfoTemplateMessageBox v-bind:import-type-name="'Ontology'"
                                     v-bind:template-url="'https://cornell.box.com/shared/static/8sp0qvccpjotosiv8576tczeg09nnvao.xls'"
                                     class="mb-5">
         <strong>Before You Import...</strong>
@@ -67,7 +67,7 @@
     
     <template v-if="state === ImportState.LOADING || state === ImportState.CURATE">
       <template v-if="tableLoaded">
-        <h1 class="title">Curate and Confirm New Traits</h1>
+        <h1 class="title">Confirm New Ontology Term</h1>
         <ConfirmImportMessageBox v-bind:num-traits="numTraits"
                                     v-on:abort="showAbortModal = true" 
                                     v-on:confirm="importService.send(ImportEvent.CONFIRMED)"
