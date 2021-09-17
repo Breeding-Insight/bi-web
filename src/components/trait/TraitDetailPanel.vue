@@ -92,53 +92,80 @@
             <span class="is-size-7 ml-2">{{ valueOrNA(data.scale.validValueMax) }}</span>
           </div>
         </template>
+        <template v-if="scaleType && Scale.dataTypeEquals(scaleType, DataType.Text)">
+          <!-- TODO: Not showing anything for this now -->
+        </template>
 
-        <!-- maybe break out controls for reuse eventually -->
-<!--        <div class="columns is-mobile is-centered pt-6">-->
-          <div class="column is-half p-0 mt-5">
-            <a
-                v-if="editable && !loadingEditable"
-                v-on:click="$emit('activate-edit', data)"
-                v-on:keypress.enter.space="$emit('activate-edit', data)"
-                tabindex="0"
-                class="is-pulled-right mr-2"
-            >
-              Edit
-            </a>
+        <!-- if computation method, show formula as well -->
+        <template v-if="methodClass && Method.methodClassEquals(methodClass, MethodClass.Computation)">
+          <div class="column is-half p-0">
+            <span class="is-pulled-right mr-2">Formula</span>
           </div>
-        <div class="column is-half p-0"></div>
-<!--        </div>-->
+          <div class="column is-half p-0">
+            <span class="is-size-7 ml-2">{{valueOrNA(data.method.formula)}}</span>
+          </div>
+        </template>
+
+<!--        If duration scale class then show units and range-->
+        <template v-if="Scale.dataTypeEquals(scaleType, DataType.Duration)">
+          <div class="column is-half p-0">
+            <span class="is-pulled-right mr-2">Unit of Time</span>
+          </div>
+          <div class="column is-half p-0">
+            <span class="is-size-7 ml-2">{{valueOrNA(data.scale.scaleName)}}</span>
+          </div>
+          <div class="column is-half p-0">
+            <span class="is-pulled-right mr-2">Minimum valid value</span>
+          </div>
+          <div class="column is-half p-0">
+            <span class="is-size-7 ml-2">{{valueOrNA(data.scale.validValueMin)}}</span>
+          </div>
+          <div class="column is-half p-0">
+            <span class="is-pulled-right mr-2">Maximum valid value</span>
+          </div>
+          <div class="column is-half p-0">
+            <span class="is-size-7 ml-2">{{valueOrNA(data.scale.validValueMax)}}</span>
+          </div>
+        </template>
+
+<!--        nothing to show for date class now-->
+        <template v-if="scaleType && Scale.dataTypeEquals(scaleType, DataType.Date)">
+        </template>
 
       </div>
 
       <!-- scale types hardcoded for now until we can get them from bi-api -->
-      <template v-if="scaleType && (Scale.dataTypeEquals(scaleType, DataType.Ordinal) || Scale.dataTypeEquals(scaleType, DataType.Nominal))">
-        <p class="mb-0" v-for="category in data.scale.categories" :key="category.label">
-          <template v-if="category.label">
-            {{ category.label }} =
-          </template>
-          {{category.value}}
-        </p>
+      <template
+          v-if="scaleType && (Scale.dataTypeEquals(scaleType, DataType.Ordinal) || Scale.dataTypeEquals(scaleType, DataType.Nominal))">
+        <div v-for="category in data.scale.categories"
+             :key="category.label"
+             class="columns is-centered is-mobile is-variable is-multiline is-0 my-0">
+          <div class="column is-half p-0">
+            <span v-if="category.label" class="is-pulled-right mr-2">{{ category.label }}</span>
+            <span v-else class="is-pulled-right mr-2">{{ category.value }}</span>
+          </div>
+          <div class="column is-half p-0">
+            <span v-if="category.label" class="is-size-7 ml-2">{{ category.value }}</span>
+          </div>
+        </div>
       </template>
 
-      <template v-if="scaleType && Scale.dataTypeEquals(scaleType, DataType.Text)">
-        <!-- TODO: Not showing anything for this now -->
-      </template>
+      <!-- maybe break out controls for reuse eventually -->
+      <div class="columns is-centered is-mobile is-variable is-multiline is-0 my-0">
+        <div class="column is-half p-0 mt-5">
+          <a
+              v-if="editable && !loadingEditable"
+              v-on:click="$emit('activate-edit', data)"
+              v-on:keypress.enter.space="$emit('activate-edit', data)"
+              tabindex="0"
+              class="is-pulled-right mr-2"
+          >
+            Edit
+          </a>
+        </div>
+        <div class="column is-half p-0"></div>
+      </div>
 
-      <template v-if="Scale.dataTypeEquals(scaleType, DataType.Duration)">
-        <p class="is-size-7 mb-0">Unit of time: {{valueOrNA(data.scale.scaleName)}}</p>
-        <p class="is-size-7 mb-0">Minimum valid value: {{valueOrNA(data.scale.validValueMin)}}</p>
-        <p class="is-size-7 mb-0">Maximum valid value: {{valueOrNA(data.scale.validValueMax)}}</p>
-      </template>
-
-      <template v-if="scaleType && Scale.dataTypeEquals(scaleType, DataType.Date)">
-      </template>
-
-      <!-- if computation method, show formula as well -->
-      <template v-if="methodClass && Method.methodClassEquals(methodClass, MethodClass.Computation)">
-        <p class="has-text-weight-bold mt-3 mb-0">Formula</p>
-        <p class="is-size-7 mb-0">{{valueOrNA(data.method.formula)}}</p>
-      </template>
 
       <ProgressBar v-if="loadingEditable && $ability.can('update', 'Trait')" v-bind:label="'Checking trait editability status'"
                    v-bind:estimated-time-text="'May take a few seconds'"
