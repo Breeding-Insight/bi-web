@@ -20,7 +20,6 @@
           class="new-form-content required"
           v-bind:value="trait.observationVariableName"
           v-bind:field-name="'Name'"
-          v-bind:field-help="'All unicode characters are accepted.'"
           v-bind:placeholder="'Ontology Term Name'"
           v-bind:show-label="true"
           v-bind:validations="clientValidations.observationVariableName"
@@ -31,7 +30,6 @@
           class="new-form-content"
           v-bind:value="fullName"
           v-bind:field-name="'Full name'"
-          v-bind:field-help="'All unicode characters are accepted.'"
           v-bind:placeholder="'Full Name'"
           v-bind:show-label="true"
           v-bind:server-validations="validationHandler.getValidation(0, TraitError.FullName)"
@@ -41,7 +39,6 @@
           class="new-form-content required"
           v-bind:value="trait.traitDescription"
           v-bind:field-name="'Description'"
-          v-bind:field-help="'All unicode characters are accepted.'"
           v-bind:placeholder="'Ontology Term Description'"
           v-bind:show-label="true"
           v-bind:server-validations="validationHandler.getValidation(0, TraitError.TraitDescription)"
@@ -52,16 +49,29 @@
         {{ trait.synonyms ? trait.synonyms.join(', ') : '' }}
       </BaseFieldWrapper>
 
-      <div class="new-form-divider"></div>
+      <!--    Tags-->
+      <span class="new-form-content form-heading">Tags</span>
+      <TagField
+          class="new-form-content"
+          v-bind:options="tags"
+          v-bind:value.sync="trait.tags"
+          v-bind:field-name="'Tags'"
+          v-bind:show-label="false"
+          v-bind:before-adding="checkTag"
+          v-on:add="addTag($event)"
+          v-on:remove="removeTag($event)"
+      />
+    </div>
+    <div class="divider is-vertical"/>
 
+    <div class="column" v-bind:class="{'is-full': editFormat}">
       <!--    Trait-->
-      <span class="new-form-content form-heading">Trait = Entity + Attribute</span>
+      <span class="new-form-content form-heading">Trait = Entity + Attribute = {{ traitName }}</span>
       <AutoCompleteField
           class="new-form-content required"
           v-bind:options="entities"
           v-bind:value="trait.programObservationLevel ? trait.programObservationLevel.name : undefined"
           v-bind:field-name="'Entity'"
-          v-bind:field-help="'All unicode characters are accepted'"
           v-bind:show-label="true"
           v-bind:validations="clientValidations.entity"
           v-bind:server-validations="validationHandler.getValidation(0, TraitError.Entity)"
@@ -72,30 +82,20 @@
           v-bind:options="attributes"
           v-bind:value="trait.attribute"
           v-bind:field-name="'Attribute'"
-          v-bind:field-help="'All unicode characters are accepted.'"
           v-bind:show-label="true"
           v-bind:validations="clientValidations.attribute"
           v-bind:server-validations="validationHandler.getValidation(0, TraitError.Attribute)"
           v-on:input="trait.attribute = $event"
       />
-      <BaseFieldWrapper class="new-form-content" fieldName="Trait" show-label="true">
-        {{ traitName }}
-      </BaseFieldWrapper>
 
-      <div class="new-form-divider"></div>
-
-    </div>
-    <div class="divider is-vertical"/>
-    <div class="column" v-bind:class="{'is-full': editFormat}">
 
       <!--Method-->
-      <span class="new-form-content form-heading">Method = Description + Class</span>
+      <span class="new-form-content form-heading">Method = Description + Class = {{ methodName }}</span>
       <AutoCompleteField
           class="new-form-content required"
           v-bind:options="descriptions"
           v-bind:value="trait.method.description"
           v-bind:field-name="'Description'"
-          v-bind:field-help="'All unicode characters are accepted.'"
           v-bind:show-label="true"
           v-bind:validations="clientValidations.method.description"
           v-bind:server-validations="validationHandler.getValidation(0, TraitError.MethodDescription)"
@@ -110,9 +110,6 @@
           v-bind:server-validations="validationHandler.getValidation(0, TraitError.MethodClass)"
           v-on:input="setMethodClass($event)"
       />
-      <BaseFieldWrapper class="new-form-content" fieldName="Method" show-label="true">
-        {{ methodName }}
-      </BaseFieldWrapper>
 
       <div class="new-form-divider"></div>
 
@@ -192,18 +189,6 @@
 
       <div class="new-form-divider"></div>
 
-      <!--    Tags-->
-      <span class="new-form-content form-heading">Tags</span>
-      <TagField
-          class="new-form-content"
-          v-bind:options="tags"
-          v-bind:value.sync="trait.tags"
-          v-bind:field-name="'Tags'"
-          v-bind:show-label="false"
-          v-bind:before-adding="checkTag"
-          v-on:add="addTag($event)"
-          v-on:remove="removeTag($event)"
-      />
     </div>
   </div>
 </template>
