@@ -28,7 +28,7 @@ export class TraitUploadService {
 
   static errorContactingServer: string = "Unknown error when contacting server. Please try again.";
   static errorUnknown: string = "Unable to determine reason for failure upload. Please check file and try again.";
-  static forbiddenUploadingFile: string = "You do not have permission to upload traits";
+  static forbiddenUploadingFile: string = "You do not have permission to upload ontology terms";
 
   static async deleteTraits(programId: string): Promise<void|Error> {
     try {
@@ -114,7 +114,7 @@ export class TraitUploadService {
       await TraitUploadDAO.confirmUpload(programId, traitUploadId);
       return;
     } catch (error) {
-      throw 'Error saving traits';
+      throw 'Error saving ontology terms';
     }
   }
 
