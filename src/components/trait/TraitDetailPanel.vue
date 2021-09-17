@@ -37,13 +37,15 @@
 
       <template v-if="data.entity && data.attribute">
         <p class="mt-5 mb-0">
-          <span class="has-text-weight-bold mt-5 mb-0">Trait</span><span class="is-size-7 mb-0 ml-2">{{`${data.entity} ${data.attribute}`}}</span>
+          <span class="has-text-weight-bold mt-5 mb-0">Trait</span><span class="is-size-7 mb-0 ml-2">{{traitName}}</span>
         </p>
       </template>
 
       <template v-if="data.method && data.method.description && data.method.methodClass">
         <p class="mb-0">
-          <span class="has-text-weight-bold mb-0">Method</span><span class="is-size-7 mb-0 ml-2">{{`${data.method.description} ${data.method.methodClass}`}}</span>
+          <span class="has-text-weight-bold mb-0">Method</span>
+          <span class="is-size-7 mb-0 ml-2">{{methodName}}</span>
+<!--          <span class="is-size-7 mb-0 ml-2">{{`${StringFormatters.toStartCase(data.method.description)} ${data.method.methodClass}`}}</span>-->
         </p>
       </template>
 
@@ -283,6 +285,14 @@
         return this.data.method.methodClass;
       }
       return undefined;
+    }
+
+    get traitName() {
+      return `${this.data.entity} ${StringFormatters.toStartCase(this.data.attribute)}`
+    }
+
+    get methodName() {
+      return `${StringFormatters.toStartCase(this.data.method.description)} ${this.data.method.methodClass}`;
     }
 
     get scaleTypeString() {
