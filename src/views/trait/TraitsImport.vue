@@ -24,7 +24,7 @@
     >
       <section>
         <p class="has-text-dark" :class="this.$modalTextClass">
-          No traits will be added, and the import in progress will be completely removed.
+          No ontology terms will be added, and the import in progress will be completely removed.
         </p>
       </section>
       <div class="columns">
@@ -322,7 +322,7 @@ export default class TraitsImport extends ProgramsBase {
       await TraitUploadService.confirmUpload(this.activeProgram!.id!, upload!.id!);
 
       // show all program traits
-      this.$emit('show-success-notification', `Imported traits have been added to ${name}.`);
+      this.$emit('show-success-notification', `Imported ontology terms have been added to ${name}.`);
       this.$router.push({
         name: 'traits-list',
         params: {
@@ -330,7 +330,7 @@ export default class TraitsImport extends ProgramsBase {
         },
       });
     } catch(err) {
-      const note = err.message ? err.message : `Error: Imported traits were not added to ${name}.`;
+      const note = err.message ? err.message : `Error: Imported ontology terms were not added to ${name}.`;
       this.$emit('show-error-notification', `${note}`);
       Vue.$log.error(err);
     }
