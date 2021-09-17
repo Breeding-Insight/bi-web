@@ -179,7 +179,7 @@
               <router-link
                 v-bind:to="{name: 'traits', params: {programId: activeProgram.id}}"
                 v-bind:class="{ 'is-active': traitsActive }"
-                :id="traitsMenuId"
+                :id="ontologyMenuId"
               >
                 Ontology
                 <MoreVerticalIcon
@@ -307,7 +307,7 @@
 
     private homeMenuId: string = "usersidebarlayout-home-menu";
     private importFileMenuId: string = "usersidebarlayout-import-file-menu";
-    private traitsMenuId: string = "usersidebarlayout-traits-menu";
+    private ontologyMenuId: string = "usersidebarlayout-ontology-menu";
     private programManagementMenuId: string = "usersidebarlayout-program-management-menu";
     private brAPIMenuId: string = "usersidebarlayout-brapi-menu";
 
