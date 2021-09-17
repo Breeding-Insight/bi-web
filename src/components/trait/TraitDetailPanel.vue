@@ -29,10 +29,16 @@
       </template>
 
       <template v-if="data.tags && data.tags.length > 0">
-        <p class="has-text-weight-bold mt-5 mb-0">Tags</p>
-        <template v-for="tag in data.tags">
-          <span v-bind:key="tag" class="tag is-primary is-normal mr-1">{{ tag }}</span>
-        </template>
+        <div class="columns is-multiline is-mobile pt-4 pl-3">
+          <div class="column is-1 p-0">
+            <span class="is-pulled-left has-text-weight-bold mr-0">Tags</span>
+          </div>
+          <template v-for="tag in data.tags">
+            <div v-bind:key="tag" class="column is-narrow p-0">
+              <span class="tag is-primary is-normal mr-1">{{ tag }}</span>
+            </div>
+          </template>
+        </div>
       </template>
 
       <div class="columns is-centered is-mobile is-variable is-multiline is-0 mt-5 my-0">
@@ -87,7 +93,7 @@
           </div>
         </template>
       </div>
-      
+
       <!-- scale types hardcoded for now until we can get them from bi-api -->
       <template v-if="scaleType && (Scale.dataTypeEquals(scaleType, DataType.Ordinal) || Scale.dataTypeEquals(scaleType, DataType.Nominal))">
         <p class="mb-0" v-for="category in data.scale.categories" :key="category.label">
