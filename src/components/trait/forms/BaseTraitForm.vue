@@ -1,58 +1,78 @@
 <template>
-  <div class="columns is-multiline is-gapless">
-    <div class="column" v-bind:class="{'is-full': editFormat}">
+  <div class="columns is-multiline is-mobile is-vcentered">
+    <div class="column is-2"></div>
+    <div class="column is-5">
+      <span class="is-pulled-left has-text-weight-bold is-size-4">Ontology Term</span>
+    </div>
+    <div class="column is-5">
+      <input id="newTermActiveToggle"
+             type="checkbox"
+             name="newTermActiveToggle"
+             class="is-pulled-right switch is-rtl is-rounded"
+             v-bind:value="trait.active"
+             v-on:input="trait.active = !trait.active"
+             checked="checked">
+      <label for="newTermActiveToggle" class="is-pulled-right">{{trait.active ? 'Active' : 'Archived'}}</label>
+    </div>
 
-      <!--Ontology Term-->
-      <div class="columns">
-        <span class="column form-heading-toggle is-half">Ontology Term</span>
-        <div class="column is-half">
-          <input id="newTermActiveToggle"
-                 type="checkbox"
-                 name="newTermActiveToggle"
-                 class="switch is-rtl is-rounded"
-                 v-bind:value="trait.active"
-                 v-on:input="trait.active = !trait.active"
-                 checked="checked">
-          <label for="newTermActiveToggle">{{trait.active ? 'Active' : 'Archived'}}</label>
-        </div>
-      </div>
+<!--    term name-->
+    <div class="column is-2">
+      <span class="is-pulled-right">Name</span>
+    </div>
+    <div class="column is-10 py-0">
       <BasicInputField
-          class="new-form-content required"
+          class="required p-0"
           v-bind:value="trait.observationVariableName"
           v-bind:field-name="'Name'"
           v-bind:placeholder="'Ontology Term Name'"
-          v-bind:show-label="true"
+          v-bind:show-label="false"
           v-bind:validations="clientValidations.observationVariableName"
           v-bind:server-validations="validationHandler.getValidation(0, TraitError.ObservationVariableName)"
           v-on:input="setOTName($event)"
       />
+    </div>
+    <div class="column is-2">
+      <span class="is-pulled-right">Full Name</span>
+    </div>
+    <div class="column is-10 py-0">
       <BasicInputField
-          class="new-form-content"
+          class="p-0"
           v-bind:value="fullName"
           v-bind:field-name="'Full name'"
           v-bind:placeholder="'Full Name'"
-          v-bind:show-label="true"
+          v-bind:show-label="false"
           v-bind:server-validations="validationHandler.getValidation(0, TraitError.FullName)"
           v-on:input="setFullName($event)"
       />
+    </div>
+    <div class="column is-2">
+      <span class="is-pulled-right">Description</span>
+    </div>
+    <div class="column is-10 py-0">
       <BasicInputField
-          class="new-form-content required"
+          class="required p-0"
           v-bind:value="trait.traitDescription"
           v-bind:field-name="'Description'"
           v-bind:placeholder="'Ontology Term Description'"
-          v-bind:show-label="true"
+          v-bind:show-label="false"
           v-bind:server-validations="validationHandler.getValidation(0, TraitError.TraitDescription)"
           v-on:input="trait.traitDescription = $event"
       />
-
-      <BaseFieldWrapper class="new-form-content" fieldName="Synonyms" show-label="true">
+    </div>
+    <div class="column is-2">
+      <span class="is-pulled-right">Synonyms</span>
+    </div>
+    <div class="column is-10 py-0">
+      <BaseFieldWrapper class="p-0" fieldName="Synonyms" show-label="false">
         {{ trait.synonyms ? trait.synonyms.join(', ') : '' }}
       </BaseFieldWrapper>
-
-      <!--    Tags-->
-      <span class="new-form-content form-heading">Tags</span>
+    </div>
+    <div class="column is-2">
+      <span class="is-pulled-right">Tags</span>
+    </div>
+    <div class="column is-10 py-0">
       <TagField
-          class="new-form-content"
+          class="p-0"
           v-bind:options="tags"
           v-bind:value.sync="trait.tags"
           v-bind:field-name="'Tags'"
@@ -62,102 +82,165 @@
           v-on:remove="removeTag($event)"
       />
     </div>
-    <div class="divider is-vertical"/>
 
-    <div class="column" v-bind:class="{'is-full': editFormat}">
-      <!--    Trait-->
-      <span class="new-form-content form-heading">Trait = Entity + Attribute = {{ traitName }}</span>
+    <!--    trait-->
+    <div class="column is-2">
+    </div>
+    <div class="column is-10 py-0">
+      <span class="has-text-weight-bold">Trait = Entity + Attribute = {{ traitName }}</span>
+    </div>
+    <div class="column is-2">
+      <span class="is-pulled-right">Entity</span>
+    </div>
+    <div class="column is-10 py-0">
       <AutoCompleteField
-          class="new-form-content required"
+          class="required p-0"
           v-bind:options="entities"
           v-bind:value="trait.programObservationLevel ? trait.programObservationLevel.name : undefined"
           v-bind:field-name="'Entity'"
-          v-bind:show-label="true"
+          v-bind:show-label="false"
           v-bind:validations="clientValidations.entity"
           v-bind:server-validations="validationHandler.getValidation(0, TraitError.Entity)"
           v-on:input="setObservationLevel($event)"
       />
+    </div>
+    <div class="column is-2">
+      <span class="is-pulled-right">Attribute</span>
+    </div>
+    <div class="column is-10 py-0">
       <AutoCompleteField
-          class="new-form-content required"
+          class="required p-0"
           v-bind:options="attributes"
           v-bind:value="trait.attribute"
           v-bind:field-name="'Attribute'"
-          v-bind:show-label="true"
+          v-bind:show-label="false"
           v-bind:validations="clientValidations.attribute"
           v-bind:server-validations="validationHandler.getValidation(0, TraitError.Attribute)"
           v-on:input="trait.attribute = $event"
       />
+    </div>
 
-
-      <!--Method-->
-      <span class="new-form-content form-heading">Method = Description + Class = {{ methodName }}</span>
+    <!--    method-->
+    <div class="column is-2">
+    </div>
+    <div class="column is-10 py-0">
+      <span class="has-text-weight-bold">Method = Description + Class = {{ methodName }}</span>
+    </div>
+    <div class="column is-2">
+      <span class="is-pulled-right">Description</span>
+    </div>
+    <div class="column is-10 py-0">
       <AutoCompleteField
-          class="new-form-content required"
+          class="required p-0"
           v-bind:options="descriptions"
           v-bind:value="trait.method.description"
           v-bind:field-name="'Description'"
-          v-bind:show-label="true"
+          v-bind:show-label="false"
           v-bind:validations="clientValidations.method.description"
           v-bind:server-validations="validationHandler.getValidation(0, TraitError.MethodDescription)"
           v-on:input="trait.method.description = $event"
       />
+    </div>
+    <div class="column is-2">
+      <span class="is-pulled-right">Class</span>
+    </div>
+    <div class="column is-10 py-0">
       <BasicSelectField
-          class="new-form-content required"
+          class="required p-0"
           v-bind:selected-id="trait.method.methodClass"
           v-bind:options="methodOptions"
           v-bind:field-name="'Class'"
-          v-bind:show-label="true"
+          v-bind:show-label="false"
           v-bind:server-validations="validationHandler.getValidation(0, TraitError.MethodClass)"
           v-on:input="setMethodClass($event)"
       />
+    </div>
 
-      <div class="new-form-divider"></div>
-
-      <!--    Scale-->
-      <span class="new-form-content form-heading">Scale</span>
+    <!--    scale-->
+    <div class="column is-2">
+    </div>
+    <div class="column is-10 py-0">
+      <span class="has-text-weight-bold">Scale</span>
+    </div>
+    <div class="column is-2">
+      <span class="is-pulled-right">Class</span>
+    </div>
+    <div class="column is-10 py-0">
       <BasicSelectField
-          class="new-form-content required"
+          class="required p-0"
           v-bind:selected-id="StringFormatters.toStartCase(trait.scale.dataType)"
           v-bind:options="getScaleOptions()"
           v-bind:field-name="'Class'"
-          v-bind:show-label="true"
+          v-bind:show-label="false"
           v-bind:field-help="'Note: additional options for this field will appear after selection'"
           v-bind:server-validations="validationHandler.getValidation(0, TraitError.ScaleType)"
           v-on:input="setScaleClass($event)"
       />
+    </div>
+
       <!-- Formula -->
-      <template v-if="trait.method && trait.method.methodClass === MethodClass.Computation">
+    <template v-if="trait.method && trait.method.methodClass === MethodClass.Computation">
+      <div class="column is-2">
+        <span class="is-pulled-right">Formula</span>
+      </div>
+      <div class="column is-10 py-0">
         <BasicInputField
-            class="new-form-content"
+            class="p-0"
             v-bind:value="trait.method.formula"
             v-bind:field-name="'Formula'"
+            v-bind:show-label="false"
             v-bind:field-help="'Operations accepted: *^.+/(); calculations will use FOIL order of operations.'"
             v-bind:placeholder="'Number of flowers on single plant / 100'"
             v-bind:server-validations="validationHandler.getValidation(0, TraitError.MethodFormula)"
             v-on:input="trait.method.formula = $event"
         />
-      </template>
-      <!-- Scale options -->
-      <template
-          v-if="trait.scale && (Scale.dataTypeEquals(trait.scale.dataType, DataType.Ordinal) || Scale.dataTypeEquals(trait.scale.dataType, DataType.Nominal))">
+      </div>
+    </template>
+
+    <!-- Scale options -->
+    <template
+        v-if="trait.scale && (Scale.dataTypeEquals(trait.scale.dataType, DataType.Ordinal) || Scale.dataTypeEquals(trait.scale.dataType, DataType.Nominal))">
+      <div class="column is-2">
+        <span class="is-pulled-right">Categories</span>
+      </div>
+      <div class="column is-10 py-0">
         <CategoryTraitForm
-            class="new-form-content"
+            class="p-0"
             v-bind:data="trait.scale.categories"
             v-on:update="setCategories($event)"
             v-bind:type="trait.scale.dataType"
             v-bind:validation-handler="validationHandler"
             v-bind:validation-index="0"
         />
-      </template>
-      <template v-if="trait.scale && Scale.dataTypeEquals(trait.scale.dataType, DataType.Text)">
-        <TextTraitForm class="new-form-content"/>
-      </template>
-      <template v-if="trait.scale && Scale.dataTypeEquals(trait.scale.dataType, DataType.Date)">
-        <DateTraitForm class="new-form-content"/>
-      </template>
-      <template v-if="trait.scale && Scale.dataTypeEquals(trait.scale.dataType, DataType.Duration)">
+      </div>
+    </template>
+
+<!--    text options-->
+    <template v-if="trait.scale && Scale.dataTypeEquals(trait.scale.dataType, DataType.Text)">
+      <div class="column is-2">
+      </div>
+      <div class="column is-10 py-0">
+        <TextTraitForm class="p-0"/>
+      </div>
+    </template>
+
+<!--    date options-->
+    <template v-if="trait.scale && Scale.dataTypeEquals(trait.scale.dataType, DataType.Date)">
+      <div class="column is-2">
+      </div>
+      <div class="column is-10 py-0">
+        <DateTraitForm class="p-0"/>
+      </div>
+    </template>
+
+<!--    duration options-->
+    <template v-if="trait.scale && Scale.dataTypeEquals(trait.scale.dataType, DataType.Duration)">
+      <div class="column is-2">
+        <span class="is-pulled-right">Unit of Time</span>
+      </div>
+      <div class="column is-10 py-0">
         <DurationTraitForm
-            class="new-form-content"
+            class="p-0"
             v-bind:unit="trait.scale.scaleName"
             v-bind:valid-min="trait.scale.validValueMin"
             v-bind:valid-max="trait.scale.validValueMax"
@@ -168,10 +251,17 @@
             v-bind:validation-handler="validationHandler"
             v-bind:validation-index="0"
         />
-      </template>
-      <template v-if="trait.scale && Scale.dataTypeEquals(trait.scale.dataType, DataType.Numerical)">
+      </div>
+    </template>
+
+<!--    numerical options-->
+    <template v-if="trait.scale && Scale.dataTypeEquals(trait.scale.dataType, DataType.Numerical)">
+      <div class="column is-2">
+        <span class="is-pulled-right"></span>
+      </div>
+      <div class="column is-10 py-0">
         <NumericalTraitForm
-            class="new-form-content"
+            class="p-0"
             v-bind:unit="trait.scale.scaleName"
             v-bind:decimal-places="trait.scale.decimalPlaces"
             v-bind:valid-min="trait.scale.validValueMin"
@@ -185,12 +275,202 @@
             v-bind:validation-handler="validationHandler"
             v-bind:validation-index="0"
         />
-      </template>
+      </div>
+    </template>
 
-      <div class="new-form-divider"></div>
-
-    </div>
   </div>
+
+<!--  <div class="columns is-multiline is-gapless">-->
+<!--    <div class="column" v-bind:class="{'is-full': editFormat}">-->
+
+<!--      &lt;!&ndash;Ontology Term&ndash;&gt;-->
+<!--      <div class="columns">-->
+<!--        <span class="column form-heading-toggle is-half">Ontology Term</span>-->
+<!--        <div class="column is-half">-->
+<!--          <input id="newTermActiveToggle"-->
+<!--                 type="checkbox"-->
+<!--                 name="newTermActiveToggle"-->
+<!--                 class="switch is-rtl is-rounded"-->
+<!--                 v-bind:value="trait.active"-->
+<!--                 v-on:input="trait.active = !trait.active"-->
+<!--                 checked="checked">-->
+<!--          <label for="newTermActiveToggle">{{trait.active ? 'Active' : 'Archived'}}</label>-->
+<!--        </div>-->
+<!--      </div>-->
+<!--      <BasicInputField-->
+<!--          class="new-form-content required"-->
+<!--          v-bind:value="trait.observationVariableName"-->
+<!--          v-bind:field-name="'Name'"-->
+<!--          v-bind:placeholder="'Ontology Term Name'"-->
+<!--          v-bind:show-label="true"-->
+<!--          v-bind:validations="clientValidations.observationVariableName"-->
+<!--          v-bind:server-validations="validationHandler.getValidation(0, TraitError.ObservationVariableName)"-->
+<!--          v-on:input="setOTName($event)"-->
+<!--      />-->
+<!--      <BasicInputField-->
+<!--          class="new-form-content"-->
+<!--          v-bind:value="fullName"-->
+<!--          v-bind:field-name="'Full name'"-->
+<!--          v-bind:placeholder="'Full Name'"-->
+<!--          v-bind:show-label="true"-->
+<!--          v-bind:server-validations="validationHandler.getValidation(0, TraitError.FullName)"-->
+<!--          v-on:input="setFullName($event)"-->
+<!--      />-->
+<!--      <BasicInputField-->
+<!--          class="new-form-content required"-->
+<!--          v-bind:value="trait.traitDescription"-->
+<!--          v-bind:field-name="'Description'"-->
+<!--          v-bind:placeholder="'Ontology Term Description'"-->
+<!--          v-bind:show-label="true"-->
+<!--          v-bind:server-validations="validationHandler.getValidation(0, TraitError.TraitDescription)"-->
+<!--          v-on:input="trait.traitDescription = $event"-->
+<!--      />-->
+
+<!--      <BaseFieldWrapper class="new-form-content" fieldName="Synonyms" show-label="true">-->
+<!--        {{ trait.synonyms ? trait.synonyms.join(', ') : '' }}-->
+<!--      </BaseFieldWrapper>-->
+
+<!--      &lt;!&ndash;    Tags&ndash;&gt;-->
+<!--      <span class="new-form-content form-heading">Tags</span>-->
+<!--      <TagField-->
+<!--          class="new-form-content"-->
+<!--          v-bind:options="tags"-->
+<!--          v-bind:value.sync="trait.tags"-->
+<!--          v-bind:field-name="'Tags'"-->
+<!--          v-bind:show-label="false"-->
+<!--          v-bind:before-adding="checkTag"-->
+<!--          v-on:add="addTag($event)"-->
+<!--          v-on:remove="removeTag($event)"-->
+<!--      />-->
+<!--    </div>-->
+<!--    <div class="divider is-vertical"/>-->
+<!--    <div class="column" v-bind:class="{'is-full': editFormat}">-->
+<!--      &lt;!&ndash;    Trait&ndash;&gt;-->
+<!--      <span class="new-form-content form-heading">Trait = Entity + Attribute = {{ traitName }}</span>-->
+<!--      <AutoCompleteField-->
+<!--          class="new-form-content required"-->
+<!--          v-bind:options="entities"-->
+<!--          v-bind:value="trait.programObservationLevel ? trait.programObservationLevel.name : undefined"-->
+<!--          v-bind:field-name="'Entity'"-->
+<!--          v-bind:show-label="true"-->
+<!--          v-bind:validations="clientValidations.entity"-->
+<!--          v-bind:server-validations="validationHandler.getValidation(0, TraitError.Entity)"-->
+<!--          v-on:input="setObservationLevel($event)"-->
+<!--      />-->
+<!--      <AutoCompleteField-->
+<!--          class="new-form-content required"-->
+<!--          v-bind:options="attributes"-->
+<!--          v-bind:value="trait.attribute"-->
+<!--          v-bind:field-name="'Attribute'"-->
+<!--          v-bind:show-label="true"-->
+<!--          v-bind:validations="clientValidations.attribute"-->
+<!--          v-bind:server-validations="validationHandler.getValidation(0, TraitError.Attribute)"-->
+<!--          v-on:input="trait.attribute = $event"-->
+<!--      />-->
+
+
+<!--      &lt;!&ndash;Method&ndash;&gt;-->
+<!--      <span class="new-form-content form-heading">Method = Description + Class = {{ methodName }}</span>-->
+<!--      <AutoCompleteField-->
+<!--          class="new-form-content required"-->
+<!--          v-bind:options="descriptions"-->
+<!--          v-bind:value="trait.method.description"-->
+<!--          v-bind:field-name="'Description'"-->
+<!--          v-bind:show-label="true"-->
+<!--          v-bind:validations="clientValidations.method.description"-->
+<!--          v-bind:server-validations="validationHandler.getValidation(0, TraitError.MethodDescription)"-->
+<!--          v-on:input="trait.method.description = $event"-->
+<!--      />-->
+<!--      <BasicSelectField-->
+<!--          class="new-form-content required"-->
+<!--          v-bind:selected-id="trait.method.methodClass"-->
+<!--          v-bind:options="methodOptions"-->
+<!--          v-bind:field-name="'Class'"-->
+<!--          v-bind:show-label="true"-->
+<!--          v-bind:server-validations="validationHandler.getValidation(0, TraitError.MethodClass)"-->
+<!--          v-on:input="setMethodClass($event)"-->
+<!--      />-->
+
+<!--      <div class="new-form-divider"></div>-->
+
+<!--      &lt;!&ndash;    Scale&ndash;&gt;-->
+<!--      <span class="new-form-content form-heading">Scale</span>-->
+<!--      <BasicSelectField-->
+<!--          class="new-form-content required"-->
+<!--          v-bind:selected-id="StringFormatters.toStartCase(trait.scale.dataType)"-->
+<!--          v-bind:options="getScaleOptions()"-->
+<!--          v-bind:field-name="'Class'"-->
+<!--          v-bind:show-label="true"-->
+<!--          v-bind:field-help="'Note: additional options for this field will appear after selection'"-->
+<!--          v-bind:server-validations="validationHandler.getValidation(0, TraitError.ScaleType)"-->
+<!--          v-on:input="setScaleClass($event)"-->
+<!--      />-->
+<!--      &lt;!&ndash; Formula &ndash;&gt;-->
+<!--      <template v-if="trait.method && trait.method.methodClass === MethodClass.Computation">-->
+<!--        <BasicInputField-->
+<!--            class="new-form-content"-->
+<!--            v-bind:value="trait.method.formula"-->
+<!--            v-bind:field-name="'Formula'"-->
+<!--            v-bind:field-help="'Operations accepted: *^.+/(); calculations will use FOIL order of operations.'"-->
+<!--            v-bind:placeholder="'Number of flowers on single plant / 100'"-->
+<!--            v-bind:server-validations="validationHandler.getValidation(0, TraitError.MethodFormula)"-->
+<!--            v-on:input="trait.method.formula = $event"-->
+<!--        />-->
+<!--      </template>-->
+<!--      &lt;!&ndash; Scale options &ndash;&gt;-->
+<!--      <template-->
+<!--          v-if="trait.scale && (Scale.dataTypeEquals(trait.scale.dataType, DataType.Ordinal) || Scale.dataTypeEquals(trait.scale.dataType, DataType.Nominal))">-->
+<!--        <CategoryTraitForm-->
+<!--            class="new-form-content"-->
+<!--            v-bind:data="trait.scale.categories"-->
+<!--            v-on:update="setCategories($event)"-->
+<!--            v-bind:type="trait.scale.dataType"-->
+<!--            v-bind:validation-handler="validationHandler"-->
+<!--            v-bind:validation-index="0"-->
+<!--        />-->
+<!--      </template>-->
+<!--      <template v-if="trait.scale && Scale.dataTypeEquals(trait.scale.dataType, DataType.Text)">-->
+<!--        <TextTraitForm class="new-form-content"/>-->
+<!--      </template>-->
+<!--      <template v-if="trait.scale && Scale.dataTypeEquals(trait.scale.dataType, DataType.Date)">-->
+<!--        <DateTraitForm class="new-form-content"/>-->
+<!--      </template>-->
+<!--      <template v-if="trait.scale && Scale.dataTypeEquals(trait.scale.dataType, DataType.Duration)">-->
+<!--        <DurationTraitForm-->
+<!--            class="new-form-content"-->
+<!--            v-bind:unit="trait.scale.scaleName"-->
+<!--            v-bind:valid-min="trait.scale.validValueMin"-->
+<!--            v-bind:valid-max="trait.scale.validValueMax"-->
+<!--            v-on:unit-change="trait.scale.scaleName = $event"-->
+<!--            v-on:min-change="trait.scale.validValueMin = $event"-->
+<!--            v-on:max-change="trait.scale.validValueMax = $event"-->
+<!--            v-bind:client-validations="clientValidations"-->
+<!--            v-bind:validation-handler="validationHandler"-->
+<!--            v-bind:validation-index="0"-->
+<!--        />-->
+<!--      </template>-->
+<!--      <template v-if="trait.scale && Scale.dataTypeEquals(trait.scale.dataType, DataType.Numerical)">-->
+<!--        <NumericalTraitForm-->
+<!--            class="new-form-content"-->
+<!--            v-bind:unit="trait.scale.scaleName"-->
+<!--            v-bind:decimal-places="trait.scale.decimalPlaces"-->
+<!--            v-bind:valid-min="trait.scale.validValueMin"-->
+<!--            v-bind:valid-max="trait.scale.validValueMax"-->
+<!--            v-on:unit-change="trait.scale.scaleName = $event"-->
+<!--            v-on:decimal-change="trait.scale.decimalPlaces = $event"-->
+<!--            v-on:min-change="trait.scale.validValueMin = $event"-->
+<!--            v-on:max-change="trait.scale.validValueMax = $event"-->
+<!--            v-on:show-error-notification="$emit('show-error-notification', $event)"-->
+<!--            v-bind:client-validations="clientValidations"-->
+<!--            v-bind:validation-handler="validationHandler"-->
+<!--            v-bind:validation-index="0"-->
+<!--        />-->
+<!--      </template>-->
+
+<!--      <div class="new-form-divider"></div>-->
+
+<!--    </div>-->
+<!--  </div>-->
 </template>
 
 <script lang="ts">
