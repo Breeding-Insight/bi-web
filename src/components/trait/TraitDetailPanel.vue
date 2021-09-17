@@ -166,7 +166,6 @@
         <div class="column is-half p-0"></div>
       </div>
 
-
       <ProgressBar v-if="loadingEditable && $ability.can('update', 'Trait')" v-bind:label="'Checking trait editability status'"
                    v-bind:estimated-time-text="'May take a few seconds'"
       />
@@ -187,19 +186,8 @@
           </div>
         </div>
       </article>
-
-      <template v-if="!data.active">
-        <p class="has-text-weight-bold mt-3 mb-0">Included in Favorites</p>
-        <b-button
-            size="is-small"
-            style="background: lightgray"
-            class="archive-tag"
-            v-if="archivable && !data.active">
-          Archived
-        </b-button>
-      </template>
-
     </template>
+
     <template v-if="data && editActive">
       <EditDataForm
         v-on:cancel="$emit('deactivate-edit')"
