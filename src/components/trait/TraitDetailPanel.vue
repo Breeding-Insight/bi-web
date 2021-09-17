@@ -41,13 +41,13 @@
             <span class="is-pulled-right has-text-weight-bold mr-0">Trait</span>
           </div>
           <div class="column is-three-quarters p-0">
-            <span class="is-size-7 ml-4">{{traitName}}</span>
+            <span class="is-size-7 ml-4">{{data.entity}} {{data.attribute | capitalize}}</span>
           </div>
           <div class="column is-one-quarter p-0">
             <span class="is-pulled-right has-text-weight-bold mr-0">Method</span>
           </div>
           <div class="column is-three-quarters p-0">
-            <span class="is-size-7 ml-4">{{methodName}}</span>
+            <span class="is-size-7 ml-4">{{ data.method.description | capitalize }} {{data.method.methodClass}}</span>
           </div>
           <div class="column is-one-quarter p-0">
             <span class="is-pulled-right has-text-weight-bold mr-0">Scale</span>
@@ -60,7 +60,7 @@
               <span class="is-pulled-right is-size-6">Units</span>
             </div>
             <div class="column is-three-quarters p-0">
-              <span class="is-size-7 ml-4">{{valueOrNA(data.scale.scaleName)}}</span>
+              <span class="is-size-7 ml-4">{{valueOrNA(data.scale.scaleName) | capitalize}}</span>
             </div>
             <div class="column is-one-quarter p-0">
               <span class="is-pulled-right is-size-6">Decimal Places</span>
@@ -231,7 +231,13 @@
 
   @Component({
     components: {EditDataForm, SidePanel, BaseTraitForm, HelpCircleIcon, ProgressBar},
-    data: () => ({DataType, MethodClass, Scale, Method})
+    data: () => ({DataType, MethodClass, Scale, Method}),
+    filters: {
+      capitalize: function(value: string | undefined) : string {
+        if (!value) return '';
+        return StringFormatters.toStartCase(value);
+      }
+    }
   })
   export default class TraitDetailPanel extends Vue {
 
@@ -314,14 +320,6 @@
         return this.data.method.methodClass;
       }
       return undefined;
-    }
-
-    get traitName() {
-      return `${this.data.entity} ${StringFormatters.toStartCase(this.data.attribute)}`
-    }
-
-    get methodName() {
-      return `${StringFormatters.toStartCase(this.data.method.description)} ${this.data.method.methodClass}`;
     }
 
     get scaleTypeString() {
