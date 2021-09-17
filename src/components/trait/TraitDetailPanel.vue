@@ -92,6 +92,23 @@
             <span class="is-size-7 ml-2">{{ valueOrNA(data.scale.validValueMax) }}</span>
           </div>
         </template>
+
+        <!-- maybe break out controls for reuse eventually -->
+<!--        <div class="columns is-mobile is-centered pt-6">-->
+          <div class="column is-half p-0 mt-5">
+            <a
+                v-if="editable && !loadingEditable"
+                v-on:click="$emit('activate-edit', data)"
+                v-on:keypress.enter.space="$emit('activate-edit', data)"
+                tabindex="0"
+                class="is-pulled-right mr-2"
+            >
+              Edit
+            </a>
+          </div>
+        <div class="column is-half p-0"></div>
+<!--        </div>-->
+
       </div>
 
       <!-- scale types hardcoded for now until we can get them from bi-api -->
@@ -155,37 +172,6 @@
         </b-button>
       </template>
 
-      <!-- maybe break out controls for reuse eventually -->
-      <div class="columns is-mobile is-centered pt-6">
-        <div class="column is-narrow">
-          <a
-            v-if="editable && !loadingEditable"
-            v-on:click="$emit('activate-edit', data)"
-            v-on:keypress.enter.space="$emit('activate-edit', data)"
-            tabindex="0"
-          >
-            Edit
-          </a>
-        </div>
-<!--        <div class="column is-narrow">-->
-<!--          <a-->
-<!--            v-if="archivable && data.active"-->
-<!--            v-on:click="$emit('archive', data)"-->
-<!--            v-on:keypress.enter.space="$emit('archive', data)"-->
-<!--            tabindex="0"-->
-<!--            >-->
-<!--            Archive-->
-<!--          </a>-->
-<!--          <a-->
-<!--            v-if="archivable && !data.active"-->
-<!--            v-on:click="$emit('restore', data)"-->
-<!--            v-on:keypress.enter.space="$emit('restore', data)"-->
-<!--            tabindex="0"-->
-<!--          >-->
-<!--            Restore/Unarchive-->
-<!--          </a>-->
-<!--        </div>-->
-      </div>
     </template>
     <template v-if="data && editActive">
       <EditDataForm
