@@ -77,7 +77,7 @@
       </div>
       <div class="column">
         <div>
-          <main>
+          <main id="main">
             <section class="section p-5">
               <slot name="content"></slot>
             </section>
