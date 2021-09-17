@@ -36,19 +36,23 @@
       </template>
 
       <template v-if="data.entity && data.attribute">
-        <p class="has-text-weight-bold mt-5 mb-0">Trait</p>
-        <p class="is-size-7 mb-0">{{`${data.entity} ${data.attribute}`}}</p>
+        <p class="mt-5 mb-0">
+          <span class="has-text-weight-bold mt-5 mb-0">Trait</span><span class="is-size-7 mb-0 ml-2">{{`${data.entity} ${data.attribute}`}}</span>
+        </p>
+
+<!--        <p class="is-size-7 mb-0">{{`= ${data.entity} ${data.attribute}`}}</p>-->
       </template>
 
       <template v-if="data.method && data.method.description && data.method.methodClass">
-        <p class="has-text-weight-bold mb-0">Method</p>
-        <p  class="is-size-7 mb-0">{{`${data.method.description} ${data.method.methodClass}`}}</p>
+        <p class="mb-0">
+          <span class="has-text-weight-bold mb-0">Method</span><span class="is-size-7 mb-0 ml-2">{{`${data.method.description} ${data.method.methodClass}`}}</span>
+        </p>
       </template>
 
       <template>
-        <p class="has-text-weight-bold mb-0">Scale</p>
-        <p v-if="scaleTypeString" class="is-size-7 mb-0">{{scaleTypeString}}</p>
-<!--        <p v-if="data.entity && data.attribute" class="is-size-7">{{`${data.entity} ${data.attribute}`}}</p>-->
+        <p class="mb-0">
+          <span class="has-text-weight-bold mb-0">Scale</span><span v-if="scaleTypeString" class="is-size-7 mb-0 ml-2">{{scaleTypeString}}</span>
+        </p>
       </template>
 
 
@@ -87,9 +91,6 @@
         <p class="has-text-weight-bold mt-3 mb-0">Formula</p>
         <p class="mb-0">{{valueOrNA(data.method.formula)}}</p>
       </template>
-
-<!--      <p class="has-text-weight-bold mt-3 mb-0">Description of collection method</p>-->
-<!--      <p>{{data.method.description}}</p>-->
 
       <ProgressBar v-if="loadingEditable && $ability.can('update', 'Trait')" v-bind:label="'Checking trait editability status'"
                    v-bind:estimated-time-text="'May take a few seconds'"
@@ -135,24 +136,24 @@
             Edit
           </a>
         </div>
-        <div class="column is-narrow">
-          <a
-            v-if="archivable && data.active"
-            v-on:click="$emit('archive', data)"
-            v-on:keypress.enter.space="$emit('archive', data)"
-            tabindex="0"
-            >
-            Archive
-          </a>
-          <a
-            v-if="archivable && !data.active"
-            v-on:click="$emit('restore', data)"
-            v-on:keypress.enter.space="$emit('restore', data)"
-            tabindex="0"
-          >
-            Restore/Unarchive
-          </a>
-        </div>
+<!--        <div class="column is-narrow">-->
+<!--          <a-->
+<!--            v-if="archivable && data.active"-->
+<!--            v-on:click="$emit('archive', data)"-->
+<!--            v-on:keypress.enter.space="$emit('archive', data)"-->
+<!--            tabindex="0"-->
+<!--            >-->
+<!--            Archive-->
+<!--          </a>-->
+<!--          <a-->
+<!--            v-if="archivable && !data.active"-->
+<!--            v-on:click="$emit('restore', data)"-->
+<!--            v-on:keypress.enter.space="$emit('restore', data)"-->
+<!--            tabindex="0"-->
+<!--          >-->
+<!--            Restore/Unarchive-->
+<!--          </a>-->
+<!--        </div>-->
       </div>
     </template>
     <template v-if="data && editActive">
