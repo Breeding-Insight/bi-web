@@ -75,7 +75,7 @@
               v-show="records.length > 0"
               class="side-panel-scroll"
               v-if="sidePanelState.panelOpen"
-              v-bind:background-color-class="sidePanelState.editActive ? 'has-background-primary-light' : 'has-background-info-light'"
+              v-bind:background-color-class="sidePanelState.editActive ? 'has-background-primary-light' : 'has-background-light'"
           >
             <slot
               v-bind:table-row="sidePanelState.openedRow"

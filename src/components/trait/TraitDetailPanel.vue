@@ -35,7 +35,7 @@
           </div>
           <template v-for="tag in data.tags">
             <div v-bind:key="tag" class="column is-narrow p-0">
-              <span class="tag is-primary is-light is-normal mr-1">{{ tag }}</span>
+              <span class="tag is-link is-light is-normal mr-1">{{ tag }}</span>
             </div>
           </template>
         </div>
