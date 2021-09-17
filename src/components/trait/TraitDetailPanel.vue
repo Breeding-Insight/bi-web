@@ -30,12 +30,12 @@
 
       <template v-if="data.tags && data.tags.length > 0">
         <div class="columns is-multiline is-mobile pt-4 pl-3">
-          <div class="column is-1 p-0">
-            <span class="is-pulled-left has-text-weight-bold mr-0">Tags</span>
+          <div class="column is-narrow p-0">
+            <span class="is-pulled-left has-text-weight-bold mr-2">Tags</span>
           </div>
           <template v-for="tag in data.tags">
             <div v-bind:key="tag" class="column is-narrow p-0">
-              <span class="tag is-primary is-normal mr-1">{{ tag }}</span>
+              <span class="tag is-primary is-light is-normal mr-1">{{ tag }}</span>
             </div>
           </template>
         </div>
