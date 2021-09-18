@@ -563,22 +563,37 @@ div.sentence-input {
   height: 5em;
 }
 
-div.field.column.new-form-content {
-  padding-top: 0em;
-  padding-bottom: 0em;
-}
-
-div.field.new-form-content label.label.is-left {
-  font-weight: 400;
-}
-
-div.field.new-form-content.required label.label.is-left::after {
+span.required::after {
   content: "*";
   color: $danger;
 }
 
-div.field.new-form-content {
-  min-height: 4.25em;
-  padding-right: 0em;
-  padding-left: 0em;
+div.new-term div.field-label.is-normal.has-text-left {
+  padding: 0;
+  margin: 0;
 }
+
+div.new-term div.taginput-container.is-focusable {
+  padding: 0;
+  margin: 0;
+}
+
+//div.field.column.new-form-content {
+//  padding-top: 0em;
+//  padding-bottom: 0em;
+//}
+//
+//div.field.new-form-content label.label.is-left {
+//  font-weight: 400;
+//}
+//
+//div.field.new-form-content.required label.label.is-left::after {
+//  content: "*";
+//  color: $danger;
+//}
+//
+//div.field.new-form-content {
+//  min-height: 4.25em;
+//  padding-right: 0em;
+//  padding-left: 0em;
+//}

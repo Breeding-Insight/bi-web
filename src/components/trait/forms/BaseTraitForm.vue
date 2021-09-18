@@ -17,11 +17,11 @@
 
 <!--    term name-->
     <div class="column is-2">
-      <span class="is-pulled-right">Name</span>
+      <span class="is-pulled-right required">Name</span>
     </div>
-    <div class="column is-10 py-0">
+    <div class="column new-term is-10 py-0">
       <BasicInputField
-          class="required p-0"
+          class="required p-0 m-0"
           v-bind:value="trait.observationVariableName"
           v-bind:field-name="'Name'"
           v-bind:placeholder="'Ontology Term Name'"
@@ -34,7 +34,7 @@
     <div class="column is-2">
       <span class="is-pulled-right">Full Name</span>
     </div>
-    <div class="column is-10 py-0">
+    <div class="column new-term is-10 py-0">
       <BasicInputField
           class="p-0"
           v-bind:value="fullName"
@@ -46,9 +46,9 @@
       />
     </div>
     <div class="column is-2">
-      <span class="is-pulled-right">Description</span>
+      <span class="is-pulled-right required">Description</span>
     </div>
-    <div class="column is-10 py-0">
+    <div class="column new-term is-10 py-0">
       <BasicInputField
           class="required p-0"
           v-bind:value="trait.traitDescription"
@@ -59,10 +59,10 @@
           v-on:input="trait.traitDescription = $event"
       />
     </div>
-    <div class="column is-2">
+    <div class="column is-2 py-2">
       <span class="is-pulled-right">Synonyms</span>
     </div>
-    <div class="column is-10 py-0">
+    <div class="column new-term is-10 py-0">
       <BaseFieldWrapper class="p-0" fieldName="Synonyms" v-bind:show-label="false">
         {{ (trait.synonyms && trait.synonyms.length > 0) ? trait.synonyms.join(', ') : '' }}
       </BaseFieldWrapper>
@@ -70,7 +70,7 @@
     <div class="column is-2">
       <span class="is-pulled-right">Tags</span>
     </div>
-    <div class="column is-10 py-0">
+    <div class="column new-term is-10 py-0">
       <TagField
           class="p-0"
           v-bind:options="tags"
@@ -90,9 +90,9 @@
       <span class="has-text-weight-bold">Trait = Entity + Attribute = {{ traitName }}</span>
     </div>
     <div class="column is-2">
-      <span class="is-pulled-right">Entity</span>
+      <span class="is-pulled-right required">Entity</span>
     </div>
-    <div class="column is-10 py-0">
+    <div class="column new-term is-10 py-0">
       <AutoCompleteField
           class="required p-0"
           v-bind:options="entities"
@@ -105,9 +105,9 @@
       />
     </div>
     <div class="column is-2">
-      <span class="is-pulled-right">Attribute</span>
+      <span class="is-pulled-right required">Attribute</span>
     </div>
-    <div class="column is-10 py-0">
+    <div class="column new-term is-10 py-0">
       <AutoCompleteField
           class="required p-0"
           v-bind:options="attributes"
@@ -127,9 +127,9 @@
       <span class="has-text-weight-bold">Method = Description + Class = {{ methodName }}</span>
     </div>
     <div class="column is-2">
-      <span class="is-pulled-right">Description</span>
+      <span class="is-pulled-right required">Description</span>
     </div>
-    <div class="column is-10 py-0">
+    <div class="column new-term is-10 py-0">
       <AutoCompleteField
           class="required p-0"
           v-bind:options="descriptions"
@@ -142,9 +142,9 @@
       />
     </div>
     <div class="column is-2">
-      <span class="is-pulled-right">Class</span>
+      <span class="is-pulled-right required">Class</span>
     </div>
-    <div class="column is-10 py-0">
+    <div class="column new-term is-10 py-0">
       <BasicSelectField
           class="required p-0"
           v-bind:selected-id="trait.method.methodClass"
@@ -163,9 +163,9 @@
       <span class="has-text-weight-bold">Scale</span>
     </div>
     <div class="column is-2">
-      <span class="is-pulled-right">Class</span>
+      <span class="is-pulled-right required">Class</span>
     </div>
-    <div class="column is-10 py-0">
+    <div class="column new-term is-10 py-0">
       <BasicSelectField
           class="required p-0"
           v-bind:selected-id="StringFormatters.toStartCase(trait.scale.dataType)"
