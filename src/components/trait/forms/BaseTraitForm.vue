@@ -1,5 +1,5 @@
 <template>
-  <div class="columns is-multiline is-mobile is-vcentered">
+  <div class="columns is-multiline is-mobile is-gapless is-vcentered">
     <div class="column is-2"></div>
     <div class="column is-5">
       <span class="is-pulled-left has-text-weight-bold is-size-4">Ontology Term</span>
@@ -16,8 +16,8 @@
     </div>
 
 <!--    term name-->
-    <div class="column is-2 pt-0 pb-4">
-      <span class="is-pulled-right required new-term">Name</span>
+    <div class="column is-2">
+      <span class="is-pulled-right required new-term pb-3 pr-3">Name</span>
     </div>
     <div class="column new-term is-10 py-0">
       <BasicInputField
@@ -31,8 +31,8 @@
           v-on:input="setOTName($event)"
       />
     </div>
-    <div class="column is-2 pt-0 pb-4">
-      <span class="is-pulled-right new-term">Full Name</span>
+    <div class="column is-2">
+      <span class="is-pulled-right new-term pb-3 pr-3">Full Name</span>
     </div>
     <div class="column new-term is-10 py-0">
       <BasicInputField
@@ -45,8 +45,8 @@
           v-on:input="setFullName($event)"
       />
     </div>
-    <div class="column is-2 pt-0 pb-4">
-      <span class="is-pulled-right required new-term">Description</span>
+    <div class="column is-2">
+      <span class="is-pulled-right required new-term pb-3 pr-3">Description</span>
     </div>
     <div class="column new-term is-10 py-0">
       <BasicInputField
@@ -59,18 +59,18 @@
           v-on:input="trait.traitDescription = $event"
       />
     </div>
-    <div class="column is-2 pt-0 pb-4">
-      <span class="is-pulled-right new-term">Synonyms</span>
+    <div class="column is-2">
+      <span class="is-pulled-right new-term pb-3 pr-3">Synonyms</span>
     </div>
-    <div class="column new-term is-10 py-0">
+    <div class="column new-term is-10">
       <BaseFieldWrapper class="p-0" fieldName="Synonyms" v-bind:show-label="false">
         {{ (trait.synonyms && trait.synonyms.length > 0) ? trait.synonyms.join(', ') : '' }}
       </BaseFieldWrapper>
     </div>
-    <div class="column is-2 pt-0 pb-4">
-      <span class="is-pulled-right new-term">Tags</span>
+    <div class="column is-2">
+      <span class="is-pulled-right new-term pb-3 pr-3">Tags</span>
     </div>
-    <div class="column new-term is-10 py-0">
+    <div class="column new-term is-10">
       <TagField
           class="p-0"
           v-bind:options="tags"
@@ -84,17 +84,16 @@
     </div>
 
     <!--    trait-->
-    <div class="column is-2 mt-0 pb-0 pt-4">
+    <div class="column is-2 mt-4">
     </div>
-    <div class="column is-10 mt-0 pb-0 pt-4 py-0">
+    <div class="column is-10 mt-4">
       <span class="has-text-weight-bold">Trait = Entity + Attribute = {{ traitName }}</span>
     </div>
-    <div class="column is-2 pt-0 pb-4">
-      <span class="is-pulled-right required new-term">Entity</span>
+    <div class="column is-2">
+      <span class="is-pulled-right required new-term pb-3 pr-3">Entity</span>
     </div>
-    <div class="column new-term is-10 py-0">
+    <div class="column new-term is-10">
       <AutoCompleteField
-          class="required p-0"
           v-bind:options="entities"
           v-bind:value="trait.programObservationLevel ? trait.programObservationLevel.name : undefined"
           v-bind:field-name="'Entity'"
@@ -104,12 +103,11 @@
           v-on:input="setObservationLevel($event)"
       />
     </div>
-    <div class="column is-2 pt-0 pb-4">
-      <span class="is-pulled-right required new-term">Attribute</span>
+    <div class="column is-2">
+      <span class="is-pulled-right required new-term pb-3 pr-3">Attribute</span>
     </div>
-    <div class="column new-term is-10 py-0">
+    <div class="column new-term is-10">
       <AutoCompleteField
-          class="required p-0"
           v-bind:options="attributes"
           v-bind:value="trait.attribute"
           v-bind:field-name="'Attribute'"
@@ -121,15 +119,15 @@
     </div>
 
     <!--    method-->
-    <div class="column is-2 mt-0 pb-0 pt-4">
+    <div class="column is-2 mt-4">
     </div>
-    <div class="column is-10 mt-0 pb-0 pt-4 py-0">
+    <div class="column is-10 mt-4">
       <span class="has-text-weight-bold">Method = Description + Class = {{ methodName }}</span>
     </div>
-    <div class="column is-2 pt-0 pb-4">
-      <span class="is-pulled-right required new-term">Description</span>
+    <div class="column is-2">
+      <span class="is-pulled-right required new-term pb-3 pr-3">Description</span>
     </div>
-    <div class="column new-term is-10 py-0">
+    <div class="column new-term is-10">
       <AutoCompleteField
           class="required p-0"
           v-bind:options="descriptions"
@@ -141,10 +139,10 @@
           v-on:input="trait.method.description = $event"
       />
     </div>
-    <div class="column is-2 pt-0 pb-4">
-      <span class="is-pulled-right required new-term">Class</span>
+    <div class="column is-2">
+      <span class="is-pulled-right required new-term pb-3 pr-3">Class</span>
     </div>
-    <div class="column new-term is-10 py-0">
+    <div class="column new-term is-10">
       <BasicSelectField
           class="required p-0"
           v-bind:selected-id="trait.method.methodClass"
@@ -157,15 +155,15 @@
     </div>
 
     <!--    scale-->
-    <div class="column is-2 mt-0 pb-0 pt-4">
+    <div class="column is-2 mt-4">
     </div>
-    <div class="column is-10 mt-0 pb-0 pt-4 py-0">
+    <div class="column is-10 mt-4">
       <span class="has-text-weight-bold">Scale</span>
     </div>
-    <div class="column is-2 mt-0 pb-6 pt-2">
-      <span class="is-pulled-right required new-term with-note">Class</span>
+    <div class="column is-2">
+      <span class="is-pulled-right required new-term pb-5 mb-3 pr-3">Class</span>
     </div>
-    <div class="column new-term is-10 py-0">
+    <div class="column new-term is-10">
       <BasicSelectField
           class="required p-0"
           v-bind:selected-id="StringFormatters.toStartCase(trait.scale.dataType)"
@@ -180,20 +178,26 @@
 
       <!-- Formula -->
     <template v-if="trait.method && trait.method.methodClass === MethodClass.Computation">
-      <div class="column is-2 mt-0 pb-6 pt-2">
-        <span class="is-pulled-right required new-term with-note">Formula</span>
-      </div>
-      <div class="column new-term is-10 py-0">
-        <BasicInputField
-            class="p-0"
-            v-bind:value="trait.method.formula"
-            v-bind:field-name="'Formula'"
-            v-bind:show-label="false"
-            v-bind:field-help="'Operations accepted: *^.+/(); calculations will use FOIL order of operations.'"
-            v-bind:placeholder="'Number of flowers on single plant / 100'"
-            v-bind:server-validations="validationHandler.getValidation(0, TraitError.MethodFormula)"
-            v-on:input="trait.method.formula = $event"
-        />
+<!--      wrapping the formula columns in their own columns div and column div set to is-full closes the vertical gap -->
+<!--      between this input and the one above it-->
+      <div class="column is-full">
+        <div class="columns is-multiline is-mobile is-vcentered">
+          <div class="column is-2 mt-0 pb-6 pt-2">
+            <span class="is-pulled-right required new-term">Formula</span>
+          </div>
+          <div class="column new-term is-10">
+            <BasicInputField
+                class="p-0"
+                v-bind:value="trait.method.formula"
+                v-bind:field-name="'Formula'"
+                v-bind:show-label="false"
+                v-bind:field-help="'Operations accepted: *^.+/(); calculations will use FOIL order of operations.'"
+                v-bind:placeholder="'Number of flowers on single plant / 100'"
+                v-bind:server-validations="validationHandler.getValidation(0, TraitError.MethodFormula)"
+                v-on:input="trait.method.formula = $event"
+            />
+          </div>
+        </div>
       </div>
     </template>
 
@@ -203,7 +207,7 @@
       <div class="column is-2">
         <span class="is-pulled-right">Categories</span>
       </div>
-      <div class="column is-10 py-0">
+      <div class="column is-10">
         <CategoryTraitForm
             class="p-0"
             v-bind:data="trait.scale.categories"
@@ -219,7 +223,7 @@
     <template v-if="trait.scale && Scale.dataTypeEquals(trait.scale.dataType, DataType.Text)">
       <div class="column is-2">
       </div>
-      <div class="column is-10 py-0">
+      <div class="column is-10">
         <TextTraitForm class="p-0"/>
       </div>
     </template>
@@ -228,17 +232,14 @@
     <template v-if="trait.scale && Scale.dataTypeEquals(trait.scale.dataType, DataType.Date)">
       <div class="column is-2">
       </div>
-      <div class="column is-10 py-0">
+      <div class="column is-10">
         <DateTraitForm class="p-0"/>
       </div>
     </template>
 
 <!--    duration options-->
     <template v-if="trait.scale && Scale.dataTypeEquals(trait.scale.dataType, DataType.Duration)">
-<!--      <div class="column is-2">-->
-<!--        <span class="is-pulled-right">Unit of Time</span>-->
-<!--      </div>-->
-      <div class="column is-full py-0">
+      <div class="column is-full">
         <DurationTraitForm
             class="p-0"
             v-bind:unit="trait.scale.scaleName"
@@ -256,10 +257,7 @@
 
 <!--    numerical options-->
     <template v-if="trait.scale && Scale.dataTypeEquals(trait.scale.dataType, DataType.Numerical)">
-      <div class="column is-2">
-        <span class="is-pulled-right"></span>
-      </div>
-      <div class="column is-10 py-0">
+      <div class="column is-full">
         <NumericalTraitForm
             class="p-0"
             v-bind:unit="trait.scale.scaleName"
