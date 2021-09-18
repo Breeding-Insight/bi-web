@@ -235,10 +235,10 @@
 
 <!--    duration options-->
     <template v-if="trait.scale && Scale.dataTypeEquals(trait.scale.dataType, DataType.Duration)">
-      <div class="column is-2">
-        <span class="is-pulled-right">Unit of Time</span>
-      </div>
-      <div class="column is-10 py-0">
+<!--      <div class="column is-2">-->
+<!--        <span class="is-pulled-right">Unit of Time</span>-->
+<!--      </div>-->
+      <div class="column is-full py-0">
         <DurationTraitForm
             class="p-0"
             v-bind:unit="trait.scale.scaleName"
