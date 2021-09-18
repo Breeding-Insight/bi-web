@@ -568,6 +568,16 @@ span.required::after {
   color: $danger;
 }
 
+span.new-term {
+  position: relative;
+  //bottom: 0.5em;
+}
+
+span.new-term.with-note {
+  position: relative;
+  //bottom: 1em;
+}
+
 div.new-term div.field-label.is-normal.has-text-left {
   padding: 0;
   margin: 0;

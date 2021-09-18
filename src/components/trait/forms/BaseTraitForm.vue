@@ -16,8 +16,8 @@
     </div>
 
 <!--    term name-->
-    <div class="column is-2">
-      <span class="is-pulled-right required">Name</span>
+    <div class="column is-2 pt-0 pb-4">
+      <span class="is-pulled-right required new-term">Name</span>
     </div>
     <div class="column new-term is-10 py-0">
       <BasicInputField
@@ -31,8 +31,8 @@
           v-on:input="setOTName($event)"
       />
     </div>
-    <div class="column is-2">
-      <span class="is-pulled-right">Full Name</span>
+    <div class="column is-2 pt-0 pb-4">
+      <span class="is-pulled-right new-term">Full Name</span>
     </div>
     <div class="column new-term is-10 py-0">
       <BasicInputField
@@ -45,8 +45,8 @@
           v-on:input="setFullName($event)"
       />
     </div>
-    <div class="column is-2">
-      <span class="is-pulled-right required">Description</span>
+    <div class="column is-2 pt-0 pb-4">
+      <span class="is-pulled-right required new-term">Description</span>
     </div>
     <div class="column new-term is-10 py-0">
       <BasicInputField
@@ -59,16 +59,16 @@
           v-on:input="trait.traitDescription = $event"
       />
     </div>
-    <div class="column is-2 py-2">
-      <span class="is-pulled-right">Synonyms</span>
+    <div class="column is-2 pt-0 pb-4">
+      <span class="is-pulled-right new-term">Synonyms</span>
     </div>
     <div class="column new-term is-10 py-0">
       <BaseFieldWrapper class="p-0" fieldName="Synonyms" v-bind:show-label="false">
         {{ (trait.synonyms && trait.synonyms.length > 0) ? trait.synonyms.join(', ') : '' }}
       </BaseFieldWrapper>
     </div>
-    <div class="column is-2">
-      <span class="is-pulled-right">Tags</span>
+    <div class="column is-2 pt-0 pb-4">
+      <span class="is-pulled-right new-term">Tags</span>
     </div>
     <div class="column new-term is-10 py-0">
       <TagField
@@ -84,13 +84,13 @@
     </div>
 
     <!--    trait-->
-    <div class="column is-2 mt-4 pt-6">
+    <div class="column is-2 mt-0 pb-0 pt-4">
     </div>
-    <div class="column is-10 mt-4 pt-6 py-0">
+    <div class="column is-10 mt-0 pb-0 pt-4 py-0">
       <span class="has-text-weight-bold">Trait = Entity + Attribute = {{ traitName }}</span>
     </div>
-    <div class="column is-2">
-      <span class="is-pulled-right required">Entity</span>
+    <div class="column is-2 pt-0 pb-4">
+      <span class="is-pulled-right required new-term">Entity</span>
     </div>
     <div class="column new-term is-10 py-0">
       <AutoCompleteField
@@ -104,8 +104,8 @@
           v-on:input="setObservationLevel($event)"
       />
     </div>
-    <div class="column is-2">
-      <span class="is-pulled-right required">Attribute</span>
+    <div class="column is-2 pt-0 pb-4">
+      <span class="is-pulled-right required new-term">Attribute</span>
     </div>
     <div class="column new-term is-10 py-0">
       <AutoCompleteField
@@ -121,13 +121,13 @@
     </div>
 
     <!--    method-->
-    <div class="column is-2 mt-4 pt-6">
+    <div class="column is-2 mt-0 pb-0 pt-4">
     </div>
-    <div class="column is-10 mt-4 pt-6 py-0">
+    <div class="column is-10 mt-0 pb-0 pt-4 py-0">
       <span class="has-text-weight-bold">Method = Description + Class = {{ methodName }}</span>
     </div>
-    <div class="column is-2">
-      <span class="is-pulled-right required">Description</span>
+    <div class="column is-2 pt-0 pb-4">
+      <span class="is-pulled-right required new-term">Description</span>
     </div>
     <div class="column new-term is-10 py-0">
       <AutoCompleteField
@@ -141,8 +141,8 @@
           v-on:input="trait.method.description = $event"
       />
     </div>
-    <div class="column is-2">
-      <span class="is-pulled-right required">Class</span>
+    <div class="column is-2 pt-0 pb-4">
+      <span class="is-pulled-right required new-term">Class</span>
     </div>
     <div class="column new-term is-10 py-0">
       <BasicSelectField
@@ -157,13 +157,13 @@
     </div>
 
     <!--    scale-->
-    <div class="column is-2 mt-4 pt-6">
+    <div class="column is-2 mt-0 pb-0 pt-4">
     </div>
-    <div class="column is-10 mt-4 pt-6 py-0">
+    <div class="column is-10 mt-0 pb-0 pt-4 py-0">
       <span class="has-text-weight-bold">Scale</span>
     </div>
-    <div class="column is-2">
-      <span class="is-pulled-right required">Class</span>
+    <div class="column is-2 mt-0 pb-6 pt-2">
+      <span class="is-pulled-right required new-term with-note">Class</span>
     </div>
     <div class="column new-term is-10 py-0">
       <BasicSelectField
@@ -180,10 +180,10 @@
 
       <!-- Formula -->
     <template v-if="trait.method && trait.method.methodClass === MethodClass.Computation">
-      <div class="column is-2">
-        <span class="is-pulled-right">Formula</span>
+      <div class="column is-2 mt-0 pb-6 pt-2">
+        <span class="is-pulled-right required new-term with-note">Formula</span>
       </div>
-      <div class="column is-10 py-0">
+      <div class="column new-term is-10 py-0">
         <BasicInputField
             class="p-0"
             v-bind:value="trait.method.formula"
