@@ -63,8 +63,8 @@
       <span class="is-pulled-right">Synonyms</span>
     </div>
     <div class="column is-10 py-0">
-      <BaseFieldWrapper class="p-0" fieldName="Synonyms" show-label="false">
-        {{ trait.synonyms ? trait.synonyms.join(', ') : '' }}
+      <BaseFieldWrapper class="p-0" fieldName="Synonyms" v-bind:show-label="false">
+        {{ (trait.synonyms && trait.synonyms.length > 0) ? trait.synonyms.join(', ') : '' }}
       </BaseFieldWrapper>
     </div>
     <div class="column is-2">
@@ -84,9 +84,9 @@
     </div>
 
     <!--    trait-->
-    <div class="column is-2">
+    <div class="column is-2 mt-4 pt-6">
     </div>
-    <div class="column is-10 py-0">
+    <div class="column is-10 mt-4 pt-6 py-0">
       <span class="has-text-weight-bold">Trait = Entity + Attribute = {{ traitName }}</span>
     </div>
     <div class="column is-2">
@@ -121,9 +121,9 @@
     </div>
 
     <!--    method-->
-    <div class="column is-2">
+    <div class="column is-2 mt-4 pt-6">
     </div>
-    <div class="column is-10 py-0">
+    <div class="column is-10 mt-4 pt-6 py-0">
       <span class="has-text-weight-bold">Method = Description + Class = {{ methodName }}</span>
     </div>
     <div class="column is-2">
@@ -157,9 +157,9 @@
     </div>
 
     <!--    scale-->
-    <div class="column is-2">
+    <div class="column is-2 mt-4 pt-6">
     </div>
-    <div class="column is-10 py-0">
+    <div class="column is-10 mt-4 pt-6 py-0">
       <span class="has-text-weight-bold">Scale</span>
     </div>
     <div class="column is-2">
