@@ -1,5 +1,5 @@
 <template>
-  <div class="columns is-multiline is-mobile is-gapless is-vcentered">
+  <div class="columns is-multiline is-gapless is-vcentered">
     <div class="column is-2"></div>
     <div class="column is-5">
       <span class="is-pulled-left has-text-weight-bold is-size-4">Ontology Term</span>
@@ -65,7 +65,7 @@
     </div>
     <div class="column new-term is-10">
       <BaseFieldWrapper class="pb-2" fieldName="Synonyms" v-bind:show-label="false">
-        {{ (trait.synonyms && trait.synonyms.length > 0) ? trait.synonyms.join(', ') : '' }}
+        {{ trait.synonyms | toCSV }}
       </BaseFieldWrapper>
     </div>
     <div class="column is-2">
@@ -305,7 +305,14 @@ import BaseFieldWrapper from "@/components/forms/BaseFieldWrapper.vue";
     NumericalTraitForm,
     BaseFieldWrapper,
     DurationTraitForm, DateTraitForm, TextTraitForm, OrdinalTraitForm, BasicSelectField, BasicInputField},
-  data: () => ({DataType, MethodClass, TraitError, StringFormatters, Scale})
+  data: () => ({DataType, MethodClass, TraitError, StringFormatters, Scale}),
+  filters: {
+    toCSV: function (value: string[] | undefined): string {
+      let list = '';
+      if (value) list = value.join(', ');
+      return list;
+    }
+  }
 })
 export default class BaseTraitForm extends Vue {
   @Prop()
@@ -478,22 +485,30 @@ export default class BaseTraitForm extends Vue {
     this.trait!.entity = this.trait!.programObservationLevel.name;
   }
 
-  setAbbreviations(value: string) {
-    const abbreviations = this.parseSemiColonList(value);
-    this.trait.abbreviations = abbreviations;
-    if (abbreviations.length > 0) {this.trait.mainAbbreviation = this.trait.abbreviations[0]}
-  }
-
   setOTName(value: string) {
     this.trait.observationVariableName = value;
     this.trait.synonyms = this.trait.synonyms || [];
-    this.trait.synonyms[0] = value;
+    if (this.fullName && this.trait.synonyms && this.trait.synonyms.length === 1)
+      this.trait.synonyms[1] = this.fullName;
+    if (this.fullName && value === '') {
+      this.trait.synonyms = [ this.fullName ];
+    } else if (!this.fullName && value === '') {
+      this.trait.synonyms = [];
+    } else {
+      this.trait.synonyms[0] = value;
+    }
   }
 
   setFullName(value: string) {
     this.fullName = value;
     this.trait.synonyms = this.trait.synonyms || [];
-    this.trait.synonyms[1] = value;
+    let index = this.trait.observationVariableName ? 1 : 0;
+    this.trait.synonyms[index] = value === '' ? null : value;
+    if (this.trait && this.trait.observationVariableName && value === '') {
+      this.trait.synonyms = [ this.trait.observationVariableName ];
+    } else if (this.trait && !this.trait.observationVariableName && value === '') {
+      this.trait.synonyms = [];
+    }
   }
 
   parseSemiColonList(value: string): string[] {
