@@ -16,7 +16,7 @@
   -->
 
 <template>
-  <div class="columns is-multiline is-mobile is-gapless is-vcentered">
+  <div class="columns is-multiline is-gapless is-vcentered">
     <div class="column is-2">
       <span class="is-pulled-right required new-term pb-2 pr-3">Unit of Time</span>
     </div>
