@@ -17,10 +17,10 @@
 
 <template>
   <div class="columns is-multiline is-mobile is-vcentered is-gapless">
-    <div class="column is-2 pt-0 pb-4">
-      <span class="is-pulled-right required new-term">Unit of Time</span>
+    <div class="column is-2">
+      <span class="is-pulled-right required new-term pb-4 mb-1 pr-3">Unit of Time</span>
     </div>
-    <div class="column new-term is-10 py-0">
+    <div class="column new-term is-10">
       <BasicInputField
           v-bind:field-name="'Unit'"
           v-bind:value="unit"
@@ -31,9 +31,9 @@
       />
     </div>
     <div class="column is-2 mt-0 pb-6 pt-2">
-      <span class="is-pulled-right new-term">Min</span>
+      <span class="is-pulled-right new-term pb-4 mb-1 pr-3">Min</span>
     </div>
-    <div class="column new-term is-2 py-0">
+    <div class="column new-term is-2">
       <BasicInputField
           v-bind:field-name="'Minimum Valid Value'"
           v-bind:value="validMin"
@@ -45,9 +45,9 @@
       />
     </div>
     <div class="column is-2 mt-0 pb-6 pt-2">
-      <span class="is-pulled-right new-term">Max</span>
+      <span class="is-pulled-right new-term pb-4 mb-1 pr-3">Max</span>
     </div>
-    <div class="column new-term is-2 py-0">
+    <div class="column new-term is-2">
       <BasicInputField
           v-bind:field-name="'Maximum Valid Value'"
           v-bind:value="validMax"
@@ -59,9 +59,9 @@
       />
     </div>
     <div class="column is-2 mt-0 pb-6 pt-2">
-      <span class="is-pulled-right new-term">Decimals</span>
+      <span class="is-pulled-right new-term pb-4 mb-1 pr-3">Decimals</span>
     </div>
-    <div class="column new-term is-2 py-0">
+    <div class="column new-term is-2">
       <BasicInputField
           v-bind:field-name="'Decimal Places'"
           v-bind:value="decimalPlaces"
