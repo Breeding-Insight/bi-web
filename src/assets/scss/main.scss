@@ -568,16 +568,6 @@ span.required::after {
   color: $danger;
 }
 
-span.new-term {
-  position: relative;
-  //bottom: 0.5em;
-}
-
-span.new-term.with-note {
-  position: relative;
-  //bottom: 1em;
-}
-
 div.new-term div.field-label.is-normal.has-text-left {
   padding: 0;
   margin: 0;
@@ -588,22 +578,7 @@ div.new-term div.taginput-container.is-focusable {
   margin: 0;
 }
 
-//div.field.column.new-form-content {
-//  padding-top: 0em;
-//  padding-bottom: 0em;
-//}
-//
-//div.field.new-form-content label.label.is-left {
-//  font-weight: 400;
-//}
-//
-//div.field.new-form-content.required label.label.is-left::after {
-//  content: "*";
-//  color: $danger;
-//}
-//
-//div.field.new-form-content {
-//  min-height: 4.25em;
-//  padding-right: 0em;
-//  padding-left: 0em;
-//}
+div.new-term p.help {
+  padding: 0;
+  margin: 0;
+}

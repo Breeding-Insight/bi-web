@@ -16,12 +16,13 @@
   -->
 
 <template>
-  <div class="columns is-multiline is-mobile is-vcentered">
-    <div class="column is-2 pt-0 pb-4">
-      <span class="is-pulled-right required new-term">Unit of Time</span>
+  <div class="columns is-multiline is-mobile is-gapless is-vcentered">
+    <div class="column is-2">
+      <span class="is-pulled-right required new-term pb-2 pr-3">Unit of Time</span>
     </div>
-    <div class="column new-term is-10 py-0">
+    <div class="column new-term is-10">
       <AutoCompleteField
+          class="pb-2"
           v-bind:options="unitOptions"
           v-bind:value="unit"
           v-bind:show-label="false"
@@ -31,9 +32,9 @@
       />
     </div>
     <div class="column is-2 mt-0 pb-6 pt-2">
-      <span class="is-pulled-right new-term">Min</span>
+      <span class="is-pulled-right new-term pb-4 mb-1 pr-3">Min</span>
     </div>
-    <div class="column new-term is-4 py-0">
+    <div class="column new-term is-4">
       <BasicInputField
           v-bind:field-name="'Minimum Valid Value'"
           v-bind:value="validMin"
@@ -45,9 +46,9 @@
       />
     </div>
     <div class="column is-1 mt-0 pb-6 pt-2">
-      <span class="is-pulled-right new-term">Max</span>
+      <span class="is-pulled-right new-term pb-4 mb-1 pr-3">Max</span>
     </div>
-    <div class="column new-term is-5 py-0">
+    <div class="column new-term is-5">
       <BasicInputField
           v-bind:field-name="'Maximum Valid Value'"
           v-bind:value="validMax"
