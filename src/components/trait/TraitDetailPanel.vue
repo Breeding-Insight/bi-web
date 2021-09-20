@@ -67,10 +67,10 @@
           </div>
         </template>
         <template v-if="scaleType && Scale.dataTypeEquals(scaleType, DataType.Numerical)">
-          <div class="column is-half p-0 mt-5">
+          <div class="column is-half p-0">
             <span class="is-pulled-right mr-2">Units</span>
           </div>
-          <div class="column is-half p-0 mt-5">
+          <div class="column is-half p-0">
             <span class="is-size-7 ml-2">{{ valueOrNA(data.scale.scaleName) | capitalize }}</span>
           </div>
           <div class="column is-half p-0">
