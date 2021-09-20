@@ -238,6 +238,7 @@
     data: () => ({DataType, MethodClass, Scale, Method}),
     filters: {
       capitalize: function(value: string | undefined) : string | undefined {
+        if (value === undefined) value = '';
         return StringFormatters.toStartCase(value);
       }
     }
