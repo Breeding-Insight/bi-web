@@ -237,8 +237,7 @@
     components: {EditDataForm, SidePanel, BaseTraitForm, HelpCircleIcon, ProgressBar},
     data: () => ({DataType, MethodClass, Scale, Method}),
     filters: {
-      capitalize: function(value: string | undefined) : string {
-        if (value === undefined) value = '';
+      capitalize: function(value: string | undefined) : string | undefined {
         return StringFormatters.toStartCase(value);
       }
     }
