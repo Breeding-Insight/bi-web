@@ -503,7 +503,7 @@ export default class BaseTraitForm extends Vue {
     this.fullName = value;
     this.trait.synonyms = this.trait.synonyms || [];
     let index = this.trait.observationVariableName ? 1 : 0;
-    this.trait.synonyms[index] = value === '' ? null : value;
+    this.trait.synonyms[index] = value;
     if (this.trait && this.trait.observationVariableName && value === '') {
       this.trait.synonyms = [ this.trait.observationVariableName ];
     } else if (this.trait && !this.trait.observationVariableName && value === '') {
