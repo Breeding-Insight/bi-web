@@ -113,7 +113,7 @@
     <ExpandableTable
       v-bind:records.sync="traits"
       v-bind:editable="$ability.can('update', 'Trait')"
-      v-bind:archivable="$ability.can('archive', 'Trait')"
+      v-bind:archivable="false"
       v-bind:pagination="traitsPagination"
       v-bind:data-form-state="editTermFormState"
       v-bind:row-validations="traitValidations"
