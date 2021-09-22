@@ -18,7 +18,7 @@
 <template>
   <div class="columns is-multiline is-vcentered is-gapless">
     <div class="column is-2">
-      <span class="is-pulled-right required new-term pb-4 mb-1 pr-3">Unit of Time</span>
+      <span class="is-pulled-right required new-term pb-4 mb-1 pr-3">Unit</span>
     </div>
     <div class="column new-term is-10">
       <BasicInputField

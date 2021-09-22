@@ -200,7 +200,7 @@
     <template
         v-if="trait.scale && (Scale.dataTypeEquals(trait.scale.dataType, DataType.Ordinal) || Scale.dataTypeEquals(trait.scale.dataType, DataType.Nominal))">
       <div class="column is-2">
-        <span class="is-pulled-right">Categories</span>
+        <span class="is-pulled-right new-term pb-2 pr-3">Categories</span>
       </div>
       <div class="column is-10">
         <CategoryTraitForm
