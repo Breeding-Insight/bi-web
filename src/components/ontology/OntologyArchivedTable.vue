@@ -225,7 +225,7 @@ import {Result} from '@/breeding-insight/model/Result';
   }
 })
 
-export default class StudyTable extends Vue {
+export default class OntologyArchivedTable extends Vue {
 
   private activeProgram?: Program;
   private studies: Study[] = [];
