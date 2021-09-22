@@ -60,6 +60,10 @@ import {defineAbilityFor} from "@/config/ability";
 import ImportFile from "@/views/import/ImportFile.vue";
 import ImportOntology from "@/views/import/ImportOntology.vue";
 import ImportGermplasm from "@/views/import/ImportGermplasm.vue";
+import Ontology from "@/views/ontology/Ontology.vue";
+import OntologyBase from "@/components/ontology/OntologyBase";
+import OntologyActiveTable from "@/components/ontology/OntologyActiveTable.vue";
+import OntologyArchivedTable from "@/components/ontology/OntologyArchivedTable.vue";
 
 
 Vue.use(VueRouter);
@@ -222,6 +226,37 @@ const routes = [
           layout: layouts.userSideBar
         },
         component: ProgramUserManagement
+      }
+    ]
+  },
+  {
+    path: '/programs/:programId/ontology',
+    name: 'ontology',
+    meta: {
+      title: 'Ontology',
+      layout: layouts.userSideBar
+    },
+    component: Ontology,
+    redirect: {name: 'active-terms'},
+    beforeEnter: processProgramNavigation,
+    children: [
+      {
+        path: 'archived-terms',
+        name: 'archived-terms',
+        meta: {
+          title: 'Archived Terms',
+          layout: layouts.userSideBar
+        },
+        component: OntologyArchivedTable
+      },
+      {
+        path: 'active-terms',
+        name: 'active-terms',
+        meta: {
+          title: 'Active Terms',
+          layout: layouts.userSideBar
+        },
+        component: OntologyActiveTable
       }
     ]
   },
