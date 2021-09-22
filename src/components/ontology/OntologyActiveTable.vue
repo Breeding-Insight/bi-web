@@ -23,11 +23,8 @@
       v-on:deactivate="deactivateActive = false"
     >
       <section>
-        <p
-          class="has-text-dark"
-          :class="this.$modalTextClass"
-        >
-          Program-related data referencing this ontology term will not be affected by this change.
+        <p class="has-text-dark" :class="this.$modalTextClass">
+          Program-related data referencing this trait will not be affected by this change.
         </p>
       </section>
       <div class="columns">
@@ -48,141 +45,156 @@
       </div>              
     </WarningModal>
 
-    <button
-        v-if="$ability.can('create', 'Trait')"
-        v-show="!newTraitActive & traits.length > 0"
-        class="button is-primary is-pulled-right has-text-weight-bold"
-        v-on:click="$router.push({name: 'traits-import', params: {programId: activeProgram.id}})"
-    >
+    <div class="columns has-text-right mb-0 buttons">
+      <div class="column">
+        <button
+            v-if="$ability.can('create', 'Trait')"
+            v-show="!newTraitActive & traits.length > 0"
+            class="button is-primary is-pulled-right has-text-weight-bold"
+            v-on:click="$router.push({name: 'traits-import', params: {programId: activeProgram.id}})"
+        >
         <span class="icon is-small">
           <PlusCircleIcon
               size="1.5x"
               aria-hidden="true"
           />
         </span>
-      <span>
+        <span>
           Import Batch File
         </span>
-    </button>
-    <button
-        v-if="$ability.can('create', 'Trait')"
-        v-show="!newTraitActive & traits.length > 0"
-        data-testid="newDataForm"
-        class="button is-primary is-light mx-2 has-text-weight-bold is-pulled-right"
-        v-on:click="activateNewTraitForm"
-    >
-      <span class="icon is-small">
-        <PlusCircleIcon
-            size="1.5x"
-            aria-hidden="true"
-        />
-      </span>
-      <span>
-        New Ontology Term
-      </span>
-    </button>
-
-    <div class="is-clearfix" />
+        </button>
+        <button
+            v-if="$ability.can('create', 'Trait')"
+            data-testid="newDataForm"
+            v-show="!newTraitActive & traits.length > 0"
+            class="button mx-2 is-primary is-pulled-right is-light has-text-weight-bold"
+            v-on:click="activateNewTraitForm"
+        >
+        <span class="icon is-small">
+          <PlusCircleIcon
+              size="1.5x"
+              aria-hidden="true"
+          />
+        </span>
+          <span>
+          New Term
+        </span>
+        </button>
+      </div>
+    </div>
 
     <NewDataForm
-      v-if="newTraitActive"
-      v-bind:row-validations="traitValidations"
-      v-bind:new-record.sync="newTrait"
-      v-bind:data-form-state="newTraitFormState"
-      v-on:submit="saveTrait"
-      v-on:cancel="cancelNewTrait"
-      v-on:show-error-notification="$emit('show-error-notification', $event)"
+        v-if="newTraitActive"
+        v-bind:new-record.sync="newTrait"
+        v-bind:row-validations="traitValidations"
+        v-bind:data-form-state="newTraitFormState"
+        v-on:submit="saveTrait"
+        v-on:cancel="cancelNewTrait"
+        v-on:show-error-notification="$emit('show-error-notification', $event)"
     >
       <template v-slot="validations">
         <BaseTraitForm
-          v-bind:trait="newTrait"
-          v-bind:scale-options="scaleClassOptions"
-          v-bind:method-options="methodClassOptions"
-          v-bind:program-observation-levels="observationLevelOptions"
-          v-bind:descriptions="descriptionOptions"
-          v-bind:entities="entityOptions"
-          v-bind:attributes="attributeOptions"
-          v-bind:tags="tagOptions"
-          v-bind:client-validations="validations"
-          v-bind:validation-handler="validationHandler"
-          v-on:trait-change="newTrait = $event"
-        />
+            v-on:trait-change="newTrait = $event"
+            v-bind:trait="newTrait"
+            v-bind:scale-options="scaleClassOptions"
+            v-bind:method-options="methodClassOptions"
+            v-bind:descriptions="descriptionOptions"
+            v-bind:program-observation-levels="observationLevelOptions"
+            v-bind:entities="entityOptions"
+            v-bind:attributes="attributeOptions"
+            v-bind:tags="tagOptions"
+            v-bind:client-validations="validations"
+            v-bind:validation-handler="validationHandler"
+        ></BaseTraitForm>
       </template>
     </NewDataForm>
 
-    <ExpandableTable
-      v-bind:records.sync="traits"
-      v-bind:editable="$ability.can('update', 'Trait')"
-      v-bind:archivable="false"
+    <SidePanelTable
+      ref="sidePanelTable"
+      v-bind:records="traits"
       v-bind:pagination="traitsPagination"
-      v-bind:data-form-state="editTermFormState"
-      v-bind:row-validations="traitValidations"
-      v-on:show-error-notification="$emit('show-error-notification', $event)"
+      v-bind:auto-handle-close-panel-event="false"
+      v-bind:side-panel-state="traitSidePanelState"
       v-on:paginate="paginationController.updatePage($event)"
       v-on:paginate-toggle-all="paginationController.toggleShowAll()"
       v-on:paginate-page-size="paginationController.updatePageSize($event)"
     >
-      <b-table-column
-          v-slot="{ row: { data: term } }"
-          :custom-sort="sortTermName"
-          label="Name"
-          sortable
-          :th-attrs="(column) => ({scope:'col'})"
-      >
-        {{ term.observationVariableName }}
-      </b-table-column>
-      <b-table-column
-          v-slot="{ row: { data: term } }"
-          label="Trait"
-          sortable
-          :th-attrs="(column) => ({scope:'col'})"
-      >
-        {{ term.entity }} {{ term.attribute }}
-      </b-table-column>
-      <b-table-column
-          v-slot="{ row: { data: term } }"
-          label="Method"
-          sortable
-          :th-attrs="(column) => ({scope:'col'})"
-      >
-        {{ term.method.description }} {{ term.method.methodClass }}
-      </b-table-column>
-      <b-table-column
-          v-slot="{ row: { data: term } }"
-          label="Scale Class"
-          sortable
-          :th-attrs="(column) => ({scope:'col'})"
-      >
-        {{ term.scale.dataType }}
-      </b-table-column>
-      <b-table-column
-          v-slot="{ row: { data: term } }"
-          label="Unit"
-          sortable
-          :th-attrs="(column) => ({scope:'col'})"
-      >
-        {{ term.scale.scaleName }}
-      </b-table-column>
-      <template v-slot:edit="{editData, validations}">
-        <div class="columns">
-          <div class="column is-two-fifths">
-            <BasicInputField
-              v-model="editData.name"
-              v-bind:validations="validations.name"
-              v-bind:field-name="'Name'"
-              v-bind:field-help="'Ontology term name as preferred. All Unicode special characters accepted.'"
-            />
-          </div>
-        </div>
+
+      <!-- 
+        Table row column slot specification
+        data: T
+      -->
+      <template v-slot:columns="data">
+        <TableColumn name="name" v-bind:label="'Name'">
+          <b-button
+              size="is-small"
+              class="archive-tag"
+              v-if="!data.active && data.active !== undefined">
+            Archived
+          </b-button>
+          {{ data.observationVariableName }}
+        </TableColumn>
+        <TableColumn name="trait" v-bind:label="'Trait'" v-bind:visible="!collapseColumns">
+          {{ StringFormatters.toStartCase(data.traitDescription) }}
+        </TableColumn>
+        <TableColumn name="method" v-bind:label="'Method'" v-bind:visible="!traitSidePanelState.collapseColumns">
+          {{ data.method.description + " " + StringFormatters.toStartCase(data.method.methodClass) }}
+        </TableColumn>
+        <TableColumn name="scaleClass" v-bind:label="'Scale Class'" v-bind:visible="!traitSidePanelState.collapseColumns">
+          {{ TraitStringFormatters.getScaleTypeString(data.scale) }}
+        </TableColumn>
+        <TableColumn name="unit" v-bind:label="'Unit'" v-bind:visible="!traitSidePanelState.collapseColumns">
+          <template v-if="data.scale.dataType==='NUMERICAL'">
+            {{ data.scale.scaleName }}
+          </template>
+        </TableColumn>
       </template>
+
+      <!-- 
+        Side panel data slot specification
+        data: T
+      -->
+      <template v-slot:side-panel="{tableRow}">
+        <TraitDetailPanel
+          v-bind:data="traitSidePanelState.openedRow"
+          v-bind:tags="tagOptions"
+          v-bind:observation-level-options="observationLevelOptions"
+          v-bind:description-options="descriptionOptions"
+          v-bind:entity-options="entityOptions"
+          v-bind:attribute-options="attributeOptions"
+          v-bind:edit-active="traitSidePanelState.editActive"
+          v-bind:editable="$ability.can('update', 'Trait') && currentTraitEditable"
+          v-bind:loading-editable="loadingTraitEditable"
+          v-bind:edit-form-state="traitSidePanelState.dataFormState"
+          v-bind:client-validations="traitValidations"
+          v-bind:validation-handler="editValidationHandler"
+          v-bind:archivable="$ability.can('archive', 'Trait')"
+          v-on:activate-edit="activateEdit($event)"
+          v-on:deactivate-edit="traitSidePanelState.bus.$emit(traitSidePanelState.closePanelEvent)"
+          v-on:trait-change="editTrait = Trait.assign({...$event})"
+          v-on:submit="updateTrait"
+          v-on:archive="activateArchive($event)"
+          v-on:restore="activateArchive($event)"
+          v-on:show-error-notification="$emit('show-error-notification', $event)"
+        />
+      </template>
+
       <template v-slot:emptyMessage>
-        <p class="has-text-weight-bold">
-          No ontology is currently defined for this program.
-        </p>
-        Ontology terms are used to create an ontology.<br>
-        You can add, edit, and archive ontology terms from this panel.
+        <EmptyTableMessage
+            v-bind:button-view-toggle="!newTraitActive"
+            v-bind:button-text="'New Term'"
+            v-on:newClick="activateNewTraitForm"
+            v-bind:create-enabled="$ability.can('create', 'Trait')"
+        >
+          <p class="has-text-weight-bold">
+            No ontology terms are currently defined for this program.
+          </p>
+          <p v-if="$ability.can('create', 'Trait')">
+            Create new ontology terms by clicking "New Term" or navigating to "Import Ontology".
+          </p>
+        </EmptyTableMessage>
       </template>
-    </ExpandableTable>
+    </SidePanelTable>
   </section>
 </template>
 
@@ -214,12 +226,13 @@ import {DataType, Scale} from "@/breeding-insight/model/Scale";
 import {SidePanelTableEventBusHandler} from "@/components/tables/SidePanelTableEventBus";
 import { DataFormEventBusHandler } from '@/components/forms/DataFormEventBusHandler';
 import {email, required, integer, maxLength} from "vuelidate/lib/validators";
-import ExpandableTable from "@/components/tables/expandableTable/ExpandableTable.vue";
 
-@Component({
+  @Component({
   mixins: [validationMixin],
-  components: { BaseTraitForm, SidePanelTable, TraitDetailPanel, ExpandableTable, NewDataForm, BasicInputField,
-    EmptyTableMessage, TableColumn, WarningModal, PlusCircleIcon },
+  components: {
+    BaseTraitForm, NewDataForm, BasicInputField, SidePanelTable, EmptyTableMessage, TableColumn,
+                WarningModal, TraitDetailPanel,
+                PlusCircleIcon },
   computed: {
     ...mapGetters([
       'activeProgram'
@@ -227,11 +240,7 @@ import ExpandableTable from "@/components/tables/expandableTable/ExpandableTable
   },
   data: () => ({Trait, StringFormatters, TraitStringFormatters})
 })
-export default class OntologyActiveTable extends Vue {
-
-  // copied from TrialsTable
-  private editTermFormState: DataFormEventBusHandler = new DataFormEventBusHandler();
-
+export default class TraitTable extends Vue {
 
   private activeProgram?: Program;
   private traits: Trait[] = [];
@@ -321,7 +330,7 @@ export default class OntologyActiveTable extends Vue {
   @Watch('paginationController', { deep: true})
   getTraits() {
     let paginationQuery: PaginationQuery = PaginationController.getPaginationSelections(
-        this.paginationController.currentPage, this.paginationController.pageSize, this.paginationController.showAll);
+      this.paginationController.currentPage, this.paginationController.pageSize, this.paginationController.showAll);
     this.paginationController.setCurrentCall(paginationQuery);
 
     TraitService.getAll(this.activeProgram!.id!, paginationQuery, true).then(([traits, metadata]) => {
@@ -334,14 +343,6 @@ export default class OntologyActiveTable extends Vue {
       this.$emit('show-error-notification', 'Error while trying to load traits');
       throw error;
     });
-  }
-
-  sortTermName(a: any, b: any, isAsc: boolean) {
-    if(isAsc) {
-      return a.data.observationVariableName!.localeCompare(b.data.observationVariableName!);
-    } else {
-      return b.data.observationVariableName!.localeCompare(a.data.observationVariableName!);
-    }
   }
 
   async editable(trait: Trait) {
