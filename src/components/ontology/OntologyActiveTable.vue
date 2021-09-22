@@ -131,6 +131,38 @@
       >
         {{ term.observationVariableName }}
       </b-table-column>
+      <b-table-column
+          v-slot="{ row: { data: term } }"
+          label="Trait"
+          sortable
+          :th-attrs="(column) => ({scope:'col'})"
+      >
+        {{ term.entity }} {{ term.attribute }}
+      </b-table-column>
+      <b-table-column
+          v-slot="{ row: { data: term } }"
+          label="Method"
+          sortable
+          :th-attrs="(column) => ({scope:'col'})"
+      >
+        {{ term.method.description }} {{ term.method.methodClass }}
+      </b-table-column>
+      <b-table-column
+          v-slot="{ row: { data: term } }"
+          label="Scale Class"
+          sortable
+          :th-attrs="(column) => ({scope:'col'})"
+      >
+        {{ term.scale.dataType }}
+      </b-table-column>
+      <b-table-column
+          v-slot="{ row: { data: term } }"
+          label="Unit"
+          sortable
+          :th-attrs="(column) => ({scope:'col'})"
+      >
+        {{ term.scale.scaleName }}
+      </b-table-column>
       <template v-slot:edit="{editData, validations}">
         <div class="columns">
           <div class="column is-two-fifths">
