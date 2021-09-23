@@ -34,6 +34,14 @@ const store: StoreOptions<RootState> = {
     user: undefined,
     program: undefined,
     firstVisit: undefined,
+    errorNotificationActive: false,
+    errorNotificationMsg: '',
+    successNotificationActive: false,
+    successNotificationMsg: '',
+    infoNotificationActive: false,
+    infoNotificationMsg: '',
+    warningNotificationActive: false,
+    warningNotificationMsg: '',
     showSidebarMobile: true
   },
   mutations,
@@ -44,6 +52,31 @@ const store: StoreOptions<RootState> = {
     },
     activeUser: state => {
       return state.user;
+    },
+    isErrorNotificationActive: state => {
+      return state.errorNotificationActive;
+    },
+    errorNotificationMsg: state => {
+      return state.errorNotificationMsg;
+    },
+    isSuccessNotificationActive: state => {
+      return state.successNotificationActive;
+    },
+    successNotificationMsg: state => {
+      return state.successNotificationMsg;
+    },
+
+    isInfoNotificationActive: state => {
+      return state.infoNotificationActive;
+    },
+    infoNotificationMsg: state => {
+      return state.infoNotificationMsg;
+    },
+    isWarningNotificationActive: state => {
+      return state.successNotificationActive;
+    },
+    warningNotificationMsg: state => {
+      return state.warningNotificationMsg;
     },
     showSidebarMobile: state => {
       return state.showSidebarMobile;
