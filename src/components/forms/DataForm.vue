@@ -51,10 +51,8 @@ import { CheckCircleIcon } from 'vue-feather-icons';
 import { Validations } from 'vuelidate-property-decorators';
 import { DataFormEventBusHandler } from '@/components/forms/DataFormEventBusHandler';
 import {
-  DEACTIVATE_ERROR_NOTIFICATION,
-  DEACTIVATE_SUCCESS_NOTIFICATION,
-  DEACTIVATE_INFO_NOTIFICATION,
-  DEACTIVATE_WARNING_NOTIFICATION } from "@/store/mutation-types";
+  DEACTIVATE_ALL_NOTIFICATIONS
+} from "@/store/mutation-types";
 
 @Component({
   components: { CheckCircleIcon }
@@ -121,10 +119,7 @@ export default class DataForm extends Vue {
   }
 
   closeNotifications() {
-    this.$store.commit(DEACTIVATE_ERROR_NOTIFICATION);
-    this.$store.commit(DEACTIVATE_SUCCESS_NOTIFICATION);
-    this.$store.commit(DEACTIVATE_INFO_NOTIFICATION);
-    this.$store.commit(DEACTIVATE_WARNING_NOTIFICATION);
+    this.$store.commit(DEACTIVATE_ALL_NOTIFICATIONS);
   }
 
 }

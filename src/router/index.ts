@@ -40,10 +40,7 @@ import {
   SET_ACTIVE_PROGRAM,
   FIRST_VISIT,
   RETURN_VISIT,
-  DEACTIVATE_ERROR_NOTIFICATION,
-  DEACTIVATE_SUCCESS_NOTIFICATION,
-  DEACTIVATE_INFO_NOTIFICATION,
-  DEACTIVATE_WARNING_NOTIFICATION,
+  DEACTIVATE_ALL_NOTIFICATIONS,
 } from '@/store/mutation-types';
 import ProgramLocationsManagement from "@/views/program/ProgramLocationsManagement.vue";
 import ProgramUserManagement from "@/views/program/ProgramUsersManagement.vue";
@@ -402,10 +399,7 @@ const router = new VueRouter({
 })
 
 router.beforeEach((to: Route, from: Route, next: Function) => {
-  store.commit(DEACTIVATE_ERROR_NOTIFICATION);
-  store.commit(DEACTIVATE_SUCCESS_NOTIFICATION);
-  store.commit(DEACTIVATE_INFO_NOTIFICATION);
-  store.commit(DEACTIVATE_WARNING_NOTIFICATION);
+  store.commit(DEACTIVATE_ALL_NOTIFICATIONS);
 
   // TODO: Check if the page is a protected resource, if not, let them through
   // If page is protected, check if they are logged in.
