@@ -226,6 +226,12 @@ import {DataType, Scale} from "@/breeding-insight/model/Scale";
 import {SidePanelTableEventBusHandler} from "@/components/tables/SidePanelTableEventBus";
 import { DataFormEventBusHandler } from '@/components/forms/DataFormEventBusHandler';
 import {email, required, integer, maxLength} from "vuelidate/lib/validators";
+import {
+  DEACTIVATE_ERROR_NOTIFICATION,
+  DEACTIVATE_INFO_NOTIFICATION,
+  DEACTIVATE_SUCCESS_NOTIFICATION,
+  DEACTIVATE_WARNING_NOTIFICATION
+} from "@/store/mutation-types";
 
   @Component({
   mixins: [validationMixin],
@@ -398,7 +404,7 @@ export default class TraitTable extends Vue {
   }
 
   activateNewTraitForm() {
-    this.traitSidePanelState.bus.$emit(this.traitSidePanelState.closePanelEvent, () => { this.newTraitActive = true; });
+    this.traitSidePanelState.bus.$emit(this.traitSidePanelState.closePanelEvent, () => { this.showNewTrait(); });
   }
 
   clearSelectedRow() {
@@ -488,6 +494,7 @@ export default class TraitTable extends Vue {
     this.newTraitActive = false;
   }
 
+<<<<<<< HEAD
   async getAttributesEntitiesDescriptions() {
     try {
       const response = await TraitService.getAttributesEntitiesDescriptions(this.activeProgram!.id!);
@@ -503,6 +510,17 @@ export default class TraitTable extends Vue {
   }
 
   async getObservationLevels() {
+=======
+  showNewTrait() {
+    this.newTraitActive = true;
+    this.$store.commit(DEACTIVATE_ERROR_NOTIFICATION);
+    this.$store.commit(DEACTIVATE_SUCCESS_NOTIFICATION);
+    this.$store.commit(DEACTIVATE_INFO_NOTIFICATION);
+    this.$store.commit(DEACTIVATE_WARNING_NOTIFICATION);
+  }
+
+    async getObservationLevels() {
+>>>>>>> 22f9663 (BI-760 (Notification handling improvements))
     try {
       const response = await ProgramService.getObservationLevels(this.activeProgram!.id!);
       if (response) {
