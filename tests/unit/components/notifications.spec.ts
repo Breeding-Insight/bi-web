@@ -21,6 +21,7 @@ import AdminUserManagement from '@/views/admin/AdminUserManagement.vue'
 import VueRouter from 'vue-router'
 import Vuex from 'vuex'
 import localVue from '../index'
+import {RootState} from "@/store/types";
 
  // Test the notifications are show when custom event is emitted
 describe('notifications display', () => {
