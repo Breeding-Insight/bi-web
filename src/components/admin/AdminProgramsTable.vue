@@ -199,9 +199,7 @@
   import { FieldError } from '@/breeding-insight/model/errors/FieldError';
   import ExpandableTable from "@/components/tables/expandableTable/ExpandableTable.vue";
   import {
-    DEACTIVATE_ERROR_NOTIFICATION,
-    DEACTIVATE_INFO_NOTIFICATION,
-    DEACTIVATE_SUCCESS_NOTIFICATION, DEACTIVATE_WARNING_NOTIFICATION
+    DEACTIVATE_ALL_NOTIFICATIONS,
   } from "@/store/mutation-types";
 
   // create custom validation to handle cases default url validation doesn't
@@ -267,13 +265,10 @@ export default class AdminProgramsTable extends Vue {
   }
 
   showNewProgram() {
-    console.log("In showNewProgram");
     this.newProgramActive = true;
-    this.$store.commit(DEACTIVATE_ERROR_NOTIFICATION);
-    this.$store.commit(DEACTIVATE_SUCCESS_NOTIFICATION);
-    this.$store.commit(DEACTIVATE_INFO_NOTIFICATION);
-    this.$store.commit(DEACTIVATE_WARNING_NOTIFICATION);
+    this.$store.commit(DEACTIVATE_ALL_NOTIFICATIONS);
   }
+
   mounted() {
     this.getPrograms();
     this.getSpecies();
