@@ -22,6 +22,7 @@ import {
   DEACTIVATE_SUCCESS_NOTIFICATION,
   DEACTIVATE_INFO_NOTIFICATION,
   DEACTIVATE_WARNING_NOTIFICATION,
+  DEACTIVATE_ALL_NOTIFICATIONS,
   SHOW_ERROR_NOTIFICATION,
   SHOW_SUCCESS_NOTIFICATION,
   SHOW_INFO_NOTIFICATION,
@@ -68,6 +69,14 @@ export const mutations: MutationTree<RootState> = {
   [RETURN_VISIT] (state) {
     state.firstVisit = false;
   },
+  // Closes the All Notification boxes.
+  [DEACTIVATE_ALL_NOTIFICATIONS] (state) {
+    state.errorNotificationActive = false;
+    state.successNotificationActive = false;
+    state.infoNotificationActive = false;
+    state.warningNotificationActive = false;
+  },
+
   // Closes the Error Notification box.
   [DEACTIVATE_ERROR_NOTIFICATION] (state) {
     state.errorNotificationActive = false;

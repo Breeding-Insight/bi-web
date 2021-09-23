@@ -31,3 +31,4 @@ export const DEACTIVATE_INFO_NOTIFICATION = 'deactivateInfoNotification';
 export const SHOW_INFO_NOTIFICATION = 'showInfoNotification';
 export const DEACTIVATE_WARNING_NOTIFICATION = 'deactivateWarningNotification';
 export const SHOW_WARNING_NOTIFICATION = 'showWarningNotification';
+export const DEACTIVATE_ALL_NOTIFICATIONS = 'deactivateAllNotifications';

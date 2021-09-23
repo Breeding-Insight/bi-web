@@ -144,10 +144,8 @@
   import { DataFormEventBusHandler } from '@/components/forms/DataFormEventBusHandler';
   import ExpandableTable from '@/components/tables/expandableTable/ExpandableTable.vue';
   import {
-    DEACTIVATE_ERROR_NOTIFICATION,
-    DEACTIVATE_SUCCESS_NOTIFICATION,
-    DEACTIVATE_INFO_NOTIFICATION,
-    DEACTIVATE_WARNING_NOTIFICATION } from "@/store/mutation-types";
+    DEACTIVATE_ALL_NOTIFICATIONS
+  } from "@/store/mutation-types";
 
 @Component({
   mixins: [validationMixin],
@@ -244,10 +242,7 @@ export default class ProgramLocationsTable extends Vue {
 
   showNewLocation() {
     this.newLocationActive = true;
-    this.$store.commit(DEACTIVATE_ERROR_NOTIFICATION);
-    this.$store.commit(DEACTIVATE_SUCCESS_NOTIFICATION);
-    this.$store.commit(DEACTIVATE_INFO_NOTIFICATION);
-    this.$store.commit(DEACTIVATE_WARNING_NOTIFICATION);
+    this.$store.commit(DEACTIVATE_ALL_NOTIFICATIONS);
   }
 
   displayWarning(location: ProgramLocation) {

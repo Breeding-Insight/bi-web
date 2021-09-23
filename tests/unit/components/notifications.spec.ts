@@ -21,6 +21,7 @@ import AdminUserManagement from '@/views/admin/AdminUserManagement.vue'
 import VueRouter from 'vue-router'
 import Vuex from 'vuex'
 import localVue from '../index'
+import {RootState} from "@/store/types";
 
  // Test the notifications are show when custom event is emitted
 describe('notifications display', () => {
@@ -33,7 +34,31 @@ describe('notifications display', () => {
     }]
   });
     
-  const store = new Vuex.Store({'state': {'loggedIn': true}});
+  const store = new Vuex.Store({
+    state: {
+      loggedIn: true,
+      successNotificationMsg: '',
+      successNotificationActive: false,
+      errorNotificationActive: false,
+      errorNotificationMsg: '',
+      infoNotificationActive: false,
+      infoNotificationMsg: '',
+    },
+    mutations: {
+      showSuccessNotification(state, msg: string) {
+        state.successNotificationMsg = msg;
+        state.successNotificationActive = true;
+      },
+      showErrorNotification(state, msg: string) {
+        state.errorNotificationMsg = msg;
+        state.errorNotificationActive = true;
+      },
+      showInfoNotification(state, msg: string) {
+        state.infoNotificationMsg = msg;
+        state.infoNotificationActive = true;
+      }
+    }
+  });
 
   // Set the route to get our child component
   router.push('usermanagement');
