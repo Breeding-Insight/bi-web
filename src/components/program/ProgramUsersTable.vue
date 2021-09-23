@@ -52,7 +52,7 @@
       v-show="!newUserActive"
       v-if="$ability.can('create', 'ProgramUser')"
       class="button is-primary has-text-weight-bold is-pulled-right"
-      v-on:click="newUserActive = true"
+      v-on:click="showNewUser"
       data-testid="newUserBtn"
     >
       <span class="icon is-small">
@@ -190,6 +190,11 @@
   import {LOGIN} from "@/store/mutation-types";
   import {defineAbilityFor} from "@/config/ability";
   import ExpandableTable from '@/components/tables/expandableTable/ExpandableTable.vue';
+  import {
+    DEACTIVATE_ERROR_NOTIFICATION,
+    DEACTIVATE_SUCCESS_NOTIFICATION,
+    DEACTIVATE_INFO_NOTIFICATION,
+    DEACTIVATE_WARNING_NOTIFICATION } from "@/store/mutation-types";
   import {SortField} from "@/breeding-insight/model/SortField";
 
 @Component({
@@ -400,6 +405,14 @@ export default class ProgramUsersTable extends Vue {
     this.newUser = new ProgramUser();
     this.newUserActive = false;
   }
+  showNewUser() {
+    this.newUserActive = true;
+    this.$store.commit(DEACTIVATE_ERROR_NOTIFICATION);
+    this.$store.commit(DEACTIVATE_SUCCESS_NOTIFICATION);
+    this.$store.commit(DEACTIVATE_INFO_NOTIFICATION);
+    this.$store.commit(DEACTIVATE_WARNING_NOTIFICATION);
+  }
+
 
   displayWarning(user: ProgramUser) {
 

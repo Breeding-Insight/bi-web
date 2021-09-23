@@ -17,7 +17,7 @@
 
 <template>
   <b-notification type="is-success" v-bind:active.sync="active" aria-close-label="Close Notification" 
-    role="alert">
+    role="alert" v-on:close="onClose">
     <div class="level">
       <div class="level-left">
         <div class="level-item">
@@ -32,17 +32,33 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue, Inject } from 'vue-property-decorator';
-import { CheckCircleIcon } from 'vue-feather-icons'
+import {Component, Prop, Vue, Inject, Watch} from 'vue-property-decorator';
+import { CheckCircleIcon } from 'vue-feather-icons';
+import { DEACTIVATE_SUCCESS_NOTIFICATION } from "@/store/mutation-types";
 
 @Component({
   components: {CheckCircleIcon}
 })
 export default class SuccessNotification extends Vue {
-  public active: boolean = false;
-  public msg : string = '';
+  // 'active' and 'msg' should stay private.
+  // (use the getters and mutators in the vuex store
+  //  to modify these values)
+  private active: boolean = false;
+  private msg : string = '';
 
   private bannerTextClass: string = "banner-text";
+
+  @Watch('$store.state.successNotificationActive', {immediate: true})
+  onActiveChanged(newVal: boolean, oldVal: any) {
+    this.active = newVal;
+  }
+  @Watch('$store.state.successNotificationMsg', {immediate: true})
+  onMsgChanged(newVal: string, oldVal: any) {
+    this.msg = newVal;
+  }
+  onClose(){
+    this.$store.commit(DEACTIVATE_SUCCESS_NOTIFICATION);
+  }
 }
 
 </script>
