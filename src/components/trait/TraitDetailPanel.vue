@@ -23,6 +23,7 @@
       <!-- just shows first abbreviation AKA main abbreviation and first synonym -->
       <template v-if="abbreviationsSynonymsString">
         <p class="is-size-7 mb-0">{{ abbreviationsSynonymsString(2)}}</p>
+        <span v-if="!data.active" class="tag is-link is-light is-normal ml-1">Archived</span>
       </template>
       <template v-else>
         <p class="mb-0"/>
