@@ -200,7 +200,6 @@
   import ExpandableTable from "@/components/tables/expandableTable/ExpandableTable.vue";
   import {
     DEACTIVATE_ALL_NOTIFICATIONS,
-  } from "@/store/mutation-types";
 
   // create custom validation to handle cases default url validation doesn't
   const url = helpers.withParams(
