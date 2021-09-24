@@ -18,12 +18,15 @@
 <template>
   <div class="is-full-length">
     <template v-if="data && !editActive">
-      <p v-if="data.observationVariableName" class="is-size-5 has-text-weight-bold mb-0">{{data.observationVariableName}}</p>
+      <p v-if="data.observationVariableName" class="is-size-5 has-text-weight-bold mb-0">
+        {{data.observationVariableName}}
+        <span v-if="!data.active" class="tag is-link is-normal ml-1">Archived</span>
+      </p>
+
       <p v-if="data.traitDescription" class="is-size-7 mb-0">{{data.traitDescription}}</p>
       <!-- just shows first abbreviation AKA main abbreviation and first synonym -->
       <template v-if="abbreviationsSynonymsString">
         <p class="is-size-7 mb-0">{{ abbreviationsSynonymsString(2)}}</p>
-        <span v-if="!data.active" class="tag is-link is-light is-normal ml-1">Archived</span>
       </template>
       <template v-else>
         <p class="mb-0"/>
@@ -203,6 +206,8 @@
               v-bind:trait.sync="editTrait"
               v-bind:edit-format="true"
               v-on:trait-change="traitUpdate($event)"
+              v-on:archive="$emit('archive', $event)"
+              v-on:restore="$emit('restore', $event)"
               v-bind:tags="tags"
               v-bind:scale-options="scaleClassOptions"
               v-bind:method-options="methodClassOptions"
