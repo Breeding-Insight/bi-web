@@ -33,11 +33,11 @@
             class="button is-danger"
             v-on:click="modalDeleteHandler"
           >
-            <strong>Yes, {{ focusTrait.active ? 'archive' : 'restore' }}</strong>
+            <strong>Yes, {{ editTrait && editTrait.active ? 'restore' : 'archive' }}</strong>
           </button>
           <button
             class="button"
-            v-on:click="deactivateActive = false"
+            v-on:click="cancelTermUpdate"
           >
             Cancel
           </button>
@@ -126,15 +126,9 @@
       -->
       <template v-slot:columns="data">
         <TableColumn name="name" v-bind:label="'Name'">
-          <b-button
-              size="is-small"
-              class="archive-tag"
-              v-if="!data.active && data.active !== undefined">
-            Archived
-          </b-button>
           {{ data.observationVariableName }}
         </TableColumn>
-        <TableColumn name="trait" v-bind:label="'Trait'" v-bind:visible="!collapseColumns">
+        <TableColumn name="trait" v-bind:label="'Trait'" v-bind:visible="!traitSidePanelState.collapseColumns">
           {{ StringFormatters.toStartCase(data.traitDescription) }}
         </TableColumn>
         <TableColumn name="method" v-bind:label="'Method'" v-bind:visible="!traitSidePanelState.collapseColumns">
@@ -171,8 +165,8 @@
           v-bind:archivable="$ability.can('archive', 'Trait')"
           v-on:activate-edit="activateEdit($event)"
           v-on:deactivate-edit="traitSidePanelState.bus.$emit(traitSidePanelState.closePanelEvent)"
-          v-on:trait-change="editTrait = Trait.assign({...$event})"
-          v-on:submit="updateTrait"
+          v-on:trait-change="changeTerm($event)"
+          v-on:submit="updateTerm"
           v-on:archive="activateArchive($event)"
           v-on:restore="activateArchive($event)"
           v-on:show-error-notification="$emit('show-error-notification', $event)"
@@ -361,20 +355,37 @@ export default class TraitTable extends Vue {
     }
   }
 
+  changeTerm(editedTerm: Trait) {
+  //editTrait = Trait.assign({...$event})
+    //console.log(editedTerm)
+  this.editTrait = Trait.assign(editedTerm);
+  }
+
   activateArchive(focusTrait: Trait){
-    if (focusTrait.active) {
-      this.deactivateWarningTitle = `Archive "${focusTrait.traitName}" in ${this.activeProgram!.name!}?`;
+    if (this.editTrait && !this.editTrait.active) {
+      this.deactivateWarningTitle = `Archive "${focusTrait.observationVariableName}" in program ${this.activeProgram!.name!}?`;
     } else {
-      this.deactivateWarningTitle = `Restore "${focusTrait.traitName}" to ${this.activeProgram!.name!}?`;
+      this.deactivateWarningTitle = `Restore "${focusTrait.observationVariableName}" to program ${this.activeProgram!.name!}?`;
     }
-    this.focusTrait = focusTrait;
+    //this.focusTrait = focusTrait;
     this.deactivateActive = true;
+  }
+
+  async updateTerm() {
+    if (this.originalTrait && this.editTrait) {
+      try {
+        if (this.originalTrait.active === !this.editTrait.active) this.activateArchive(this.editTrait);
+        else await this.updateTrait();
+      } catch (error) {
+        this.$log.error(error);
+        this.$emit('show-error-notification', `"${this.editTrait.observationVariableName}" could not be updated`);
+      }
+    }
   }
 
   async modalDeleteHandler(){
     try {
-      const traitClone = JSON.parse(JSON.stringify(this.focusTrait));
-      traitClone.active = !traitClone.active;
+      const traitClone = JSON.parse(JSON.stringify(this.editTrait));
       const updatedTrait: Trait = await TraitService.archiveTrait(this.activeProgram!.id!, traitClone);
 
       // Replace traits in queried traits
@@ -383,11 +394,15 @@ export default class TraitTable extends Vue {
 
       this.deactivateActive = false;
       this.paginationController.updatePage(1);
-      this.traitSidePanelState.bus.$emit(this.traitSidePanelState.closePanelEvent);
-      this.$emit('show-success-notification', `"${traitClone.traitName}" successfully ${ traitClone.active ? 'restored' : 'archived'}`);
+      //this.$emit('show-success-notification', `"${traitClone.observationVariableName}" successfully ${ traitClone.active ? 'archived' : 'restored'}`);
+      await this.updateTrait();
     } catch(err) {
       this.$log.error(err);
-      this.$emit('show-error-notification', `"${this.focusTrait.traitName}" could not be ${ this.focusTrait.active ? 'archived' : 'restored'}`);
+      if (this.editTrait)
+        this.$emit('show-error-notification', `"${this.editTrait.observationVariableName}" could not be ${ this.editTrait.active ? 'restored' : 'archived'}`);
+    } finally {
+      this.deactivateActive = false;
+      this.traitSidePanelState.dataFormState.bus.$emit(DataFormEventBusHandler.SAVE_COMPLETE_EVENT);
     }
   }
 
@@ -449,6 +464,11 @@ export default class TraitTable extends Vue {
     return deletions;
   }
 
+  cancelTermUpdate() {
+    this.deactivateActive = false;
+    this.traitSidePanelState.dataFormState.bus.$emit(DataFormEventBusHandler.SAVE_COMPLETE_EVENT);
+  }
+
   async updateTrait() {
     try {
       this.editValidationHandler = new ValidationError();
@@ -468,12 +488,12 @@ export default class TraitTable extends Vue {
       this.traitSidePanelState.bus.$emit(this.traitSidePanelState.successEditEvent, data[0]);
       this.clearSelectedRow();
       await this.getObservationLevels();
-      this.$emit('show-success-notification', 'Trait edit successful.');
+      this.$emit('show-success-notification', 'Ontology term edit successful.');
     } catch (error) {
       if (error instanceof ValidationError) {
         this.editValidationHandler = error;
         const deletions: string[] = this.processValidationErrors(this.editValidationHandler, this.editTrait!);
-        this.$emit('show-error-notification', `Error updating trait. ${this.editValidationHandler.condenseErrorsSingleRow(deletions)}`);
+        this.$emit('show-error-notification', `Error updating ontology term. ${this.editValidationHandler.condenseErrorsSingleRow(deletions)}`);
       } else {
         this.$emit('show-error-notification', error);
       }
