@@ -22,6 +22,7 @@ import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
 import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
 import {TraitUploadService} from "@/breeding-insight/service/TraitUploadService";
 import {ValidationError} from "@/breeding-insight/model/errors/ValidationError";
+import {Filter} from "@/breeding-insight/model/TraitSelector";
 
 export class TraitService {
 
@@ -80,7 +81,7 @@ export class TraitService {
       else throw 'Unable to update trait';
     }
 
-    static getAll(programId: string, paginationQuery?: PaginationQuery, full?: boolean): Promise<[Trait[], Metadata]> {
+    static getAll(programId: string, paginationQuery?: PaginationQuery, full?: boolean, filters?: Filter[]): Promise<[Trait[], Metadata]> {
         return new Promise<[Trait[], Metadata]>(((resolve, reject) => {
 
       if (paginationQuery === undefined){
@@ -92,7 +93,7 @@ export class TraitService {
       }
 
       if (programId) {
-          TraitDAO.getAll(programId, paginationQuery, full).then((biResponse) => {
+          TraitDAO.getAll(programId, paginationQuery, full, filters).then((biResponse) => {
 
           let traits: Trait[] = [];
 
