@@ -467,6 +467,7 @@ export default class TraitTable extends Vue {
   cancelTermUpdate() {
     this.deactivateActive = false;
     this.traitSidePanelState.dataFormState.bus.$emit(DataFormEventBusHandler.SAVE_COMPLETE_EVENT);
+    this.$emit('show-info-notification', 'Ontology term update aborted.');
   }
 
   async updateTrait() {
