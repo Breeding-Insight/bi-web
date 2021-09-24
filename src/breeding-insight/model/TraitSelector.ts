@@ -1,4 +1,4 @@
-enum TraitField {
+export enum TraitField {
   NAME = 'name',
   ABBREVIATIONS = 'abbreviations',
   MAIN_ABBREVIATION = 'mainAbbreviation',
@@ -24,7 +24,7 @@ enum TraitField {
 
 export class Filter {
   field?: TraitField;
-  value?: string | number;
+  value?: string | number | boolean;
 }
 
 export class TraitSelector {

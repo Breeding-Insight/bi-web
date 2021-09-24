@@ -19,22 +19,35 @@ import {Trait} from "@/breeding-insight/model/Trait";
 import {BiResponse, Response} from "@/breeding-insight/model/BiResponse";
 import * as api from "@/util/api";
 import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
+import {Filter, TraitSelector} from "@/breeding-insight/model/TraitSelector";
 
 export class TraitDAO {
 
-    static getAll(programId: string, paginationQuery: PaginationQuery, full : boolean): Promise<BiResponse> {
+    static getAll(programId: string, paginationQuery: PaginationQuery, full : boolean, filters?: Filter[]): Promise<BiResponse> {
+        const config: any = {};
+        config.params = {full};
 
-    return new Promise<BiResponse>(((resolve, reject) => {
+        if (filters) {
+            // get filtered list of traits
+            config.url = `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/traits/search`;
+            config.method = 'post';
+            config.data = new TraitSelector(filters);
+        } else {
+            // get all traits
+            config.url = `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/traits`;
+            config.method = 'get';
+        }
 
-        api.call({ url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/traits`, method: 'get', params: {full} })
-        .then((response: any) => {
-          const biResponse = new BiResponse(response.data);
-          resolve(biResponse);
-        }).catch((error) => {
-          reject(error);
-        })
+        return new Promise<BiResponse>(((resolve, reject) => {
+            api.call(config)
+                .then((response: any) => {
+                    const biResponse = new BiResponse(response.data);
+                    resolve(biResponse);
+                }).catch((error) => {
+                reject(error);
+            })
 
-    }))
+        }))
   }
 
   static async createTraits(programId: string, newTraits: Trait[]): Promise<BiResponse> {
