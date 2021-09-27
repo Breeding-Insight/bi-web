@@ -177,23 +177,23 @@
             </li>
             <li>
               <router-link
-                v-bind:to="{name: 'traits', params: {programId: activeProgram.id}}"
-                v-bind:class="{ 'is-active': traitsActive }"
+                v-bind:to="{name: 'ontology', params: {programId: activeProgram.id}}"
+                v-bind:class="{ 'is-active': ontologyActive }"
                 :id="ontologyMenuId"
               >
                 Ontology
                 <MoreVerticalIcon
-                  v-if="!traitsActive"
+                  v-if="!ontologyActive"
                   class="is-pulled-right"
                 />
                 <MoreHorizontalIcon
-                  v-if="traitsActive"
+                  v-if="ontologyActive"
                   class="is-pulled-right"
                 />
               </router-link>
-              <ul v-show="traitsActive">
+              <ul v-show="ontologyActive">
                 <li>
-                  <router-link v-bind:to="{name: 'traits-list', params: {programId: activeProgram.id}}">
+                  <router-link v-bind:to="{name: 'active-terms', params: {programId: activeProgram.id}}">
                     Ontology List
                   </router-link>
                 </li>
@@ -210,7 +210,7 @@
                   </router-link>
                 </li>
                 <li>
-                  <router-link v-bind:to="{name: 'traits-archived', params: {programId: activeProgram.id}}">
+                  <router-link v-bind:to="{name: 'archived-terms', params: {programId: activeProgram.id}}">
                     Archived Ontology
                   </router-link>
                 </li>
@@ -296,6 +296,7 @@
     private activeProgram?: Program;
     private activeUser?: User;
     programManagementActive: boolean =  true;
+    ontologyActive: boolean = false;
     traitsActive: boolean = false;
     trialsAndStudiesActive: boolean = false;
     importFileActive: boolean = false;
@@ -355,6 +356,7 @@
       var path: string = this.$route.path;
       this.programManagementActive = path.includes('/program-management/');
       this.trialsAndStudiesActive = path.includes('/trials-studies/');
+      this.ontologyActive = path.includes('/ontology/');
       this.traitsActive = path.includes('/traits/');
       this.importFileActive = path.includes('/import/')
     }

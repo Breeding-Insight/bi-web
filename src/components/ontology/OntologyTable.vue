@@ -33,7 +33,7 @@
             class="button is-danger"
             v-on:click="modalDeleteHandler"
           >
-            <strong>Yes, {{ editTrait && editTrait.active ? 'restore' : 'archive' }}</strong>
+            <strong>Yes, {{ archiveWarning() }}</strong>
           </button>
           <button
             class="button"
@@ -326,6 +326,10 @@ export default class OntologyTable extends Vue {
         this.editable(row);
       }
     })
+  }
+
+  archiveWarning() {
+    return this.editTrait && this.editTrait.active ? 'restore' : 'archive';
   }
 
   @Watch('paginationController', { deep: true})
