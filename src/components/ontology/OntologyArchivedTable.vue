@@ -16,7 +16,13 @@
   -->
 
 <template>
-  <ontology-table v-bind:active="false"></ontology-table>
+  <ontology-table
+      v-bind:active="false"
+      @show-success-notification="$emit('show-success-notification', $event)"
+      @show-info-notification="$emit('show-info-notification', $event)"
+      @show-error-notification="$emit('show-error-notification', $event)"
+  >
+  </ontology-table>
 </template>
 
 <script lang="ts">
