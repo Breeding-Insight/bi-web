@@ -370,9 +370,7 @@ export default class OntologyTable extends Vue {
   }
 
   changeTerm(editedTerm: Trait) {
-  //editTrait = Trait.assign({...$event})
-    //console.log(editedTerm)
-  this.editTrait = Trait.assign(editedTerm);
+    this.editTrait = Trait.assign(editedTerm);
   }
 
   activateArchive(focusTrait: Trait){
@@ -381,7 +379,6 @@ export default class OntologyTable extends Vue {
     } else {
       this.deactivateWarningTitle = `Restore "${focusTrait.observationVariableName}" to program ${this.activeProgram!.name!}?`;
     }
-    //this.focusTrait = focusTrait;
     this.deactivateActive = true;
   }
 
@@ -408,7 +405,6 @@ export default class OntologyTable extends Vue {
 
       this.deactivateActive = false;
       this.paginationController.updatePage(1);
-      //this.$emit('show-success-notification', `"${traitClone.observationVariableName}" successfully ${ traitClone.active ? 'archived' : 'restored'}`);
       await this.updateTrait(true);
     } catch(err) {
       this.$log.error(err);
