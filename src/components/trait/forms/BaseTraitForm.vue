@@ -10,7 +10,7 @@
              name="newTermActiveToggle"
              class="is-pulled-right switch is-rtl is-rounded is-info"
              v-bind:checked="trait.active"
-             v-on:input="toggleActiveState($event)">
+             v-on:input="toggleActiveState">
       <label for="newTermActiveToggle" class="is-pulled-right">{{trait.active ? 'Active' : 'Archived'}}</label>
     </div>
 
@@ -378,11 +378,7 @@ export default class BaseTraitForm extends Vue {
     this.$emit('trait-change', val);
   }
 
-  toggleActiveState(event) {
-    // event.preventDefault();
-    // event.originalTarget.checked = this.trait.active;
-    // if (this.trait.active) this.$emit('archive', this.trait);
-    //   else this.$emit('restore', this.trait);
+  toggleActiveState() {
     this.trait.active = !this.trait.active
   }
 

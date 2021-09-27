@@ -498,10 +498,12 @@ export default class OntologyTable extends Vue {
       const tagPromise = this.getTraitTags();
       this.traitSidePanelState.bus.$emit(this.traitSidePanelState.successEditEvent, data[0]);
       let editNote;
-      if (archiveStateChanged) {
-        editNote = `"${this.editTrait.observationVariableName}" successfully edited and ${ this.editTrait.active ? 'restored' : 'archived'}.`;
-      } else {
-        editNote = `"${this.editTrait.observationVariableName}" successfully edited.`;
+      if (this.editTrait) {
+        if (archiveStateChanged) {
+          editNote = `"${this.editTrait.observationVariableName}" successfully edited and ${ this.editTrait.active ? 'restored' : 'archived'}.`;
+        } else {
+          editNote = `"${this.editTrait.observationVariableName}" successfully edited.`;
+        }
       }
       this.getTraits();
       this.clearSelectedRow();
