@@ -497,8 +497,10 @@ export default class OntologyTable extends Vue {
       }
       const tagPromise = this.getTraitTags();
       this.traitSidePanelState.bus.$emit(this.traitSidePanelState.successEditEvent, data[0]);
+      this.getTraits();
       this.clearSelectedRow();
       await this.getObservationLevels();
+      //this.traitSidePanelState.bus.$emit(this.traitSidePanelState.closePanelEvent);
       this.$emit('show-success-notification', 'Ontology term edit successful.');
     } catch (error) {
       if (error instanceof ValidationError) {
