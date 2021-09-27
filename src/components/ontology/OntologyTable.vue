@@ -45,7 +45,7 @@
       </div>              
     </WarningModal>
 
-    <div class="columns has-text-right mb-0 buttons">
+    <div v-if="active" class="columns has-text-right mb-0 buttons">
       <div class="column">
         <button
             v-if="$ability.can('create', 'Trait')"
@@ -175,16 +175,20 @@
 
       <template v-slot:emptyMessage>
         <EmptyTableMessage
-            v-bind:button-view-toggle="!newTraitActive"
+            v-bind:button-view-toggle="!newTraitActive && active"
             v-bind:button-text="'New Term'"
             v-on:newClick="activateNewTraitForm"
             v-bind:create-enabled="$ability.can('create', 'Trait')"
         >
           <p class="has-text-weight-bold">
-            No ontology terms are currently defined for this program.
+            No ontology terms are currently {{ active ? 'defined' : 'archived' }} for this program.
           </p>
-          <p v-if="$ability.can('create', 'Trait')">
-            Create new ontology terms by clicking "New Term" or navigating to "Import Ontology".
+          <p v-if="active && $ability.can('create', 'Trait')">
+            Create new ontology terms by clicking "New Term" or "Import Batch File" or navigating to "Import Ontology".
+          </p>
+          <p v-if="!active && $ability.can('archive', 'Trait') && $ability.can('update', 'Trait')">
+            Archive an existing ontology term by clicking "Show details" > "Edit" > "Archive". <br>
+            Create new archived ontology terms by clicking "New Term" or "Import Batch File" or by navigating to "Import Ontology".
           </p>
         </EmptyTableMessage>
       </template>
