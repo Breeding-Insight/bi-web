@@ -405,11 +405,11 @@ export default class OntologyTable extends Vue {
       this.deactivateActive = false;
       this.paginationController.updatePage(1);
       //this.$emit('show-success-notification', `"${traitClone.observationVariableName}" successfully ${ traitClone.active ? 'archived' : 'restored'}`);
-      await this.updateTrait();
+      await this.updateTrait(true);
     } catch(err) {
       this.$log.error(err);
       if (this.editTrait)
-        this.$emit('show-error-notification', `"${this.editTrait.observationVariableName}" could not be ${ this.editTrait.active ? 'restored' : 'archived'}`);
+        this.$emit('show-error-notification', `"${this.editTrait.observationVariableName}" could not be ${ this.editTrait.active ? 'restored' : 'archived'}.`);
     } finally {
       this.deactivateActive = false;
       this.traitSidePanelState.dataFormState.bus.$emit(DataFormEventBusHandler.SAVE_COMPLETE_EVENT);
@@ -480,7 +480,7 @@ export default class OntologyTable extends Vue {
     this.$emit('show-info-notification', 'Ontology term update aborted.');
   }
 
-  async updateTrait() {
+  async updateTrait(archiveStateChanged?: boolean) {
     try {
       this.editValidationHandler = new ValidationError();
       const [data] = await TraitService.updateTraits(this.activeProgram!.id!, [this.editTrait!]) as [Trait[], Metadata];
@@ -497,11 +497,17 @@ export default class OntologyTable extends Vue {
       }
       const tagPromise = this.getTraitTags();
       this.traitSidePanelState.bus.$emit(this.traitSidePanelState.successEditEvent, data[0]);
+      let editNote;
+      if (archiveStateChanged) {
+        editNote = `"${this.editTrait.observationVariableName}" successfully edited and ${ this.editTrait.active ? 'restored' : 'archived'}.`;
+      } else {
+        editNote = `"${this.editTrait.observationVariableName}" successfully edited.`;
+      }
       this.getTraits();
       this.clearSelectedRow();
       await this.getObservationLevels();
-      //this.traitSidePanelState.bus.$emit(this.traitSidePanelState.closePanelEvent);
-      this.$emit('show-success-notification', 'Ontology term edit successful.');
+      this.traitSidePanelState.bus.$emit(this.traitSidePanelState.closePanelEvent);
+      this.$emit('show-success-notification', editNote);
     } catch (error) {
       if (error instanceof ValidationError) {
         this.editValidationHandler = error;
