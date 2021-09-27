@@ -61,7 +61,6 @@ import ImportFile from "@/views/import/ImportFile.vue";
 import ImportOntology from "@/views/import/ImportOntology.vue";
 import ImportGermplasm from "@/views/import/ImportGermplasm.vue";
 import Ontology from "@/views/ontology/Ontology.vue";
-import OntologyBase from "@/components/ontology/OntologyBase";
 import OntologyActiveTable from "@/components/ontology/OntologyActiveTable.vue";
 import OntologyArchivedTable from "@/components/ontology/OntologyArchivedTable.vue";
 
