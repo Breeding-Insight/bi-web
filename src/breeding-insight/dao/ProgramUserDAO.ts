@@ -75,7 +75,14 @@ export class ProgramUserDAO {
 
     return new Promise<BiResponse>(((resolve, reject) => {
 
-      api.call({ url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/users`, method: 'get', params: sortField })
+      let params = {
+        sortField: sortField ? sortField.sortField : undefined,
+        sortOrder: sortField ? sortField.sortOrder : undefined,
+        page: paginationQuery.showAll ? undefined : paginationQuery.page,
+        pageSize: paginationQuery.showAll ? undefined : paginationQuery.pageSize
+      };
+
+      api.call({ url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/users`, method: 'get', params: params })
         .then((response: any) => {
           const biResponse = new BiResponse(response.data);
           resolve(biResponse);
