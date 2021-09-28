@@ -125,11 +125,6 @@ export class ProgramUserService {
               programUser.roles[0].id, programUser.roles[0].domain, newProgram, programUser.active);
           });
 
-          //TODO: Remove when backend pagination is implemented
-          let newPagination;
-          [programUsers, newPagination] = PaginationController.mockPagination(programUsers, paginationQuery!.page, paginationQuery!.pageSize, paginationQuery!.showAll);
-          biResponse.metadata.pagination = newPagination;
-
           resolve([programUsers, biResponse.metadata]);
       
         }).catch((error) => reject(error));

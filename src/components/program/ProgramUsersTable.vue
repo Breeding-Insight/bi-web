@@ -210,6 +210,7 @@ export default class ProgramUsersTable extends Vue {
   public users: ProgramUser[] = [];
   public systemUsers: User[] = [];
   private usersPagination?: Pagination = new Pagination();
+  private lastSortState?: SortField = undefined;
 
   private deactivateActive: boolean = false;
   private newUserActive: boolean = false;
@@ -239,6 +240,7 @@ export default class ProgramUsersTable extends Vue {
   }
 
   mounted() {
+    this.updatePagination();
     this.getRoles();
     this.getUsers();
     this.getSystemUsers();
@@ -252,19 +254,25 @@ export default class ProgramUsersTable extends Vue {
   }
 
   @Watch('paginationController', { deep: true})
+  paginationChanged() {
+    this.updatePagination();
+    this.getUsers();
+  }
+
+  updatePagination() {
+    let paginationQuery: PaginationQuery = PaginationController.getPaginationSelections(
+        this.paginationController.currentPage, this.paginationController.pageSize, this.paginationController.showAll);
+    this.paginationController.setCurrentCall(paginationQuery);
+  }
+
   getUsers(sortField?: string, sortOrder?: string) {
 
-    let paginationQuery: PaginationQuery = PaginationController.getPaginationSelections(
-      this.paginationController.currentPage, this.paginationController.pageSize, this.paginationController.showAll);
-    this.paginationController.setCurrentCall(paginationQuery);
+    const sort: SortField | undefined = sortField && sortOrder ? new SortField(sortField, sortOrder) : this.lastSortState;
+    this.lastSortState = sort;
 
-    const sort: SortField | undefined = sortField && sortOrder ? new SortField(sortField, sortOrder) : undefined;
-    ProgramUserService.getAll(this.activeProgram!.id!, paginationQuery, sort).then(([programUsers, metadata]) => {
-      if (this.paginationController.matchesCurrentRequest(metadata.pagination)){
-        this.users = programUsers;
-        this.usersPagination = metadata.pagination;
-      }
-
+    ProgramUserService.getAll(this.activeProgram!.id!, this.paginationController.currentCall, sort).then(([programUsers, metadata]) => {
+      this.users = programUsers;
+      this.usersPagination = metadata.pagination;
     }).catch((error) => {
       // Display error that users cannot be loaded
       this.$emit('show-error-notification', 'Error while trying to load program users');
