@@ -41,9 +41,23 @@ Vue.use(Vuelidate);
 
 const fakeProgram = new Program('1', 'Test Program');
 export const defaultStore = new Vuex.Store({
+  state:{
+    successNotificationActive: false,
+    errorNotificationActive: false,
+    infoNotificationActive: false,
+  },
   getters: {
     activeProgram: () => fakeProgram
+  },
+  mutations:{
+    deactivateAllNotifications(state) {
+      state.successNotificationActive = false;
+      state.errorNotificationActive = false;
+      state.infoNotificationActive = false;
+    },
   }
+
+
 });
 
 const fakeUser: User = new User('1', 'Test User','1', 'email@email.com',
