@@ -164,7 +164,7 @@ export default class App extends Vue {
   }
 
   showInfoNotification(msg: string) {
-    this.$store.commit(SHOW_INFO_NOTIFICATION);
+    this.$store.commit(SHOW_INFO_NOTIFICATION, msg);
   }
 
   showErrorNotification(msg: string) {
