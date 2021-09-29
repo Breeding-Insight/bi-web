@@ -13,7 +13,7 @@
     "test:unit": "vue-cli-service test:unit"
   },
   "config": {
-    "devport": "8082",
+    "devport": "8080",
     "task_path": "./task"
   },
   "dependencies": {

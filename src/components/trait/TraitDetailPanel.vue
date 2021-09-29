@@ -112,7 +112,7 @@
       <div class="columns is-mobile is-centered pt-6">
         <div class="column is-narrow">
           <a
-            v-if="editable"
+            v-if="editable && !loadingEditable"
             v-on:click="$emit('activate-edit', data)"
             v-on:keypress.enter.space="$emit('activate-edit', data)"
             tabindex="0"
@@ -196,6 +196,8 @@
     private editActive!: boolean;
     @Prop()
     private editable!: boolean | undefined;
+    @Prop({default: true})
+    private loadingEditable!: boolean;
     @Prop({default: false})
     private archivable!: boolean;
     @Prop()

@@ -224,7 +224,8 @@ export default class TraitTable extends Vue {
   private editTrait?: Trait;
   private originalTrait?: Trait;
   private newTrait: Trait = new Trait();
-  private currentTraitEditable : boolean | undefined = undefined;
+  private currentTraitEditable = false;
+  private loadingTraitEditable = true;
 
   // New trait form
   private newTraitActive: boolean = false;
@@ -298,14 +299,19 @@ export default class TraitTable extends Vue {
 
   async editable(trait: Trait) {
     let traitEditable = false;
+    this.loadingTraitEditable = true;
     try {
       const [editable] = await TraitService.getTraitEditable(this.activeProgram!.id!, trait.id!) as [boolean, Metadata]
       traitEditable = editable;
       this.currentTraitEditable = traitEditable;
-    } catch(error) {
+    } catch (error) {
       // Display error that traits cannot be loaded
       this.$emit('show-error-notification', 'Error getting editable status');
       throw error;
+    } finally {
+      this.loadingTraitEditable = false;
+    }
+  }
 
   activateArchive(focusTrait: Trait){
     if (focusTrait.active) {
