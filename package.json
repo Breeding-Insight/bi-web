@@ -22,6 +22,7 @@
     "@types/promise.allsettled": "^1.0.3",
     "@types/valid-url": "^1.0.3",
     "@types/vuelidate": "^0.7.10",
+    "@vue/cli": "^4.5.13",
     "@xstate/fsm": "^1.4.0",
     "core-js": "^3.4.3",
     "focus-trap": "^5.1.0",

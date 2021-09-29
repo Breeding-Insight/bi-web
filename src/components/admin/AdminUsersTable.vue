@@ -84,7 +84,7 @@
     <button
       v-show="!newUserActive"
       class="button is-primary has-text-weight-bold is-pulled-right"
-      v-on:click="newUserActive = true"
+      v-on:click="showNewUser"
       data-testid="newFormBtn"
     >
       <span class="icon is-small">
@@ -256,6 +256,9 @@
   import { DataFormEventBusHandler } from '@/components/forms/DataFormEventBusHandler';
   import {mapGetters} from "vuex";
   import ExpandableTable from '@/components/tables/expandableTable/ExpandableTable.vue';
+  import {
+    DEACTIVATE_ALL_NOTIFICATIONS
+  } from "@/store/mutation-types";
 
   @Component({
   components: {
@@ -494,6 +497,11 @@ export default class AdminUsersTable extends Vue {
     if (this.getRoleName(a.data.roleId) === 'admin') return "Admin (all programs)";
     let programList = a.data.programRoles ? a.data.programRoles.map((x: { program: { name: any; }; }) => x.program.name).join(", ") : "";
     return programList;
+  }
+
+  showNewUser() {
+    this.newUserActive = true;
+    this.$store.commit(DEACTIVATE_ALL_NOTIFICATIONS);
   }
 
 }
