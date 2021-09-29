@@ -1,16 +1,11 @@
 import DaoUtils from "../../test-utils/DaoUtils";
-import {mocked} from "ts-jest";
+import { mocked } from 'ts-jest/utils'
 import {SystemRoleDao} from "@/breeding-insight/dao/SystemRoleDao";
 import {UserDAO} from "@/breeding-insight/dao/UserDAO";
 import localVue, {defaultStore} from "../../index";
 import {mount} from "@vue/test-utils";
 import AdminUsersTable from "@/components/admin/AdminUsersTable.vue";
 import NewDataForm from "@/components/forms/NewDataForm.vue";
-import BaseFieldWrapper from "@/components/forms/BaseFieldWrapper.vue";
-import BasicInputField from "@/components/forms/BasicInputField.vue";
-import ExpandableTableRow from "@/components/tables/ExpandableTableRow.vue";
-import EditDataRowForm from "@/components/forms/EditDataRowForm.vue";
-import {UserService} from "@/breeding-insight/service/UserService";
 import Utils from '../../test-utils/TestingUtils';
 
 jest.mock('@/breeding-insight/dao/SystemRoleDao');
@@ -52,7 +47,7 @@ describe('new data form works properly', () => {
     expect(newFormBtn.exists()).toBeTruthy();
     await newFormBtn.trigger('click');
 
-    let newForm = wrapper.find(NewDataForm);
+    let newForm = wrapper.findComponent(NewDataForm);
     expect(newForm.exists()).toBeTruthy();
 
     let nameInput = newForm.find('input#Name');
