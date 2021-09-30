@@ -78,9 +78,12 @@ describe('new data form works properly', () => {
     console.log("..save button clicked..");
 
     await Utils.pause(500);
+    console.log("..after pause ..");
     await wrapper.vm.$nextTick();
+    console.log("..after first tick ..");
     // Wait another DOM update. A little hacky, probably should find better way to do this in the future.
     await wrapper.vm.$nextTick();
+    console.log("..after 2nd tick ..");
     console.log("..'saved'..");
 
     newForm = wrapper.findComponent(NewDataForm);
