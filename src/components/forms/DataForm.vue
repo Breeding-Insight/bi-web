@@ -86,7 +86,9 @@ export default class DataForm extends Vue {
   }
 
   checkSubmit () {
+    console.log(".....in DataForm checkSubmit. 1......");
     this.dataFormState.bus.$emit(DataFormEventBusHandler.SAVE_STARTED_EVENT);
+    console.log(".....in DataForm checkSubmit. 2......");
 
     if (this.$v.record) {
       this.$v.record.$touch();
