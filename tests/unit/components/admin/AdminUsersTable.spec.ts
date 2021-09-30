@@ -1,3 +1,4 @@
+console.log("..before import..");
 import DaoUtils from "../../test-utils/DaoUtils";
 import { mocked } from 'ts-jest/utils'
 import {SystemRoleDao} from "@/breeding-insight/dao/SystemRoleDao";
@@ -7,27 +8,35 @@ import {mount} from "@vue/test-utils";
 import AdminUsersTable from "@/components/admin/AdminUsersTable.vue";
 import NewDataForm from "@/components/forms/NewDataForm.vue";
 import Utils from '../../test-utils/TestingUtils';
+console.log("..before mocks..");
 
 jest.mock('@/breeding-insight/dao/SystemRoleDao');
 jest.mock('@/breeding-insight/dao/UserDAO');
 let roles: any[] = [];
 let systemUsers: any[] = [];
-
+console.log("..in test..");
 function setup() {
+  console.log("..in setup..");
 
   const systemUser = {'id':'1', 'name':'Test user', 'email':'testuser@test.com', 'active':'true', 'orcid':'1111-1111-1111-1111',
     'systemRoles': [{'id':'1', 'domain':'admin'}],
     'programRoles': [{'active':'true', 'program':{'id':'1', 'name':'Test Program'}, 'roles':{'id':'1','domain':'member'}}]};
+  console.log("..in setup 1..");
   systemUsers.push(systemUser);
+  console.log("..in setup 2..");
   const systemUsersResponse = DaoUtils.formatBiResponse(systemUsers);
   const userDAO = mocked(UserDAO, true);
+  console.log("..in setup 3..");
   userDAO.getAll.mockResolvedValue(systemUsersResponse);
+  console.log("..in setup 4..");
 
   roles.push({'id':'1', 'domain':'test role'});
   const rolesResponse = DaoUtils.formatBiResponse(roles);
+  console.log("..in setup 4..");
 
   const roleDAO = mocked(SystemRoleDao, true);
   roleDAO.getAll.mockResolvedValue(rolesResponse);
+  console.log("..in setup 5..");
 
 }
 
