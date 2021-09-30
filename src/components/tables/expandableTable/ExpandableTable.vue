@@ -157,6 +157,10 @@ export default class ExpandableTable extends Mixins(ValidationMixin) {
   @Watch('records', {immediate: true, deep:true})
   updateTableRows(newRecords: any, oldRecords: any) {
     let difference: Array<string> = [];
+    let difference_direction: number | undefined = undefined;
+    if (oldRecords !== undefined) {
+      difference_direction = newRecords.length - oldRecords.length;
+    }
     if (oldRecords !== null && this.initialUpdate) {
       const newSet: Set<string> = new Set(newRecords
           .filter( (record: any) => record.id !== undefined)
@@ -174,7 +178,13 @@ export default class ExpandableTable extends Mixins(ValidationMixin) {
       const newTableRow = new TableRow<any>(this.editable, this.archivable, record);
 
       // See if it is our new row
-      if (difference.length === 1) {
+      const paginationCases = this.pagination.totalCount.valueOf() % this.pagination.pageSize.valueOf() === 1 &&
+                             this.pagination.currentPage === this.pagination.totalPages ||
+                             this.pagination.totalCount.valueOf() % this.pagination.pageSize.valueOf() === this.pagination.totalCount.valueOf() &&
+                             this.pagination.currentPage === this.pagination.totalPages &&
+                             this.pagination.currentPage === 1;
+
+      if (difference.length === 1 && difference_direction !== undefined && difference_direction > 0 && !paginationCases ) {
         if (record.id === difference[0]) {
           newTableRow.toggleNew();
         }
