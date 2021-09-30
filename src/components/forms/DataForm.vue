@@ -119,6 +119,7 @@ export default class DataForm extends Vue {
   }
 
   closeNotifications() {
+    console.log(".....in DataForm closeNotifications.......");
     this.$store.commit(DEACTIVATE_ALL_NOTIFICATIONS);
   }
 
