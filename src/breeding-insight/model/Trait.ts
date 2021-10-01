@@ -34,6 +34,7 @@ export class Trait {
   mainAbbreviation?: string;
   active?: boolean;
   tags?: string[];
+  fullName?: string;
 
   constructor(id?: string,
               traitName?: string,
@@ -47,7 +48,8 @@ export class Trait {
               abbreviations?: Array<string>,
               synonyms?: Array<string>,
               active?: boolean,
-              tags?: string[]
+              tags?: string[],
+              fullName?: string
               ) {
     this.id = id;
     this.traitName = traitName;
@@ -78,11 +80,12 @@ export class Trait {
       this.active = true;
     }
     this.tags = tags;
+    this.fullName = fullName;
   }
 
   static assign(trait: Trait): Trait {
     return new Trait(trait.id, trait.traitName, trait.observationVariableName, trait.programObservationLevel, trait.entity, trait.attribute,
-        trait.traitDescription, trait.method, trait.scale, trait.abbreviations, trait.synonyms, trait.active, trait.tags);
+        trait.traitDescription, trait.method, trait.scale, trait.abbreviations, trait.synonyms, trait.active, trait.tags, trait.fullName);
   }
 
   checkStringListEquals(list: string[] | undefined, otherList: string[] | undefined): boolean {
@@ -101,6 +104,7 @@ export class Trait {
     return (this.id === trait.id) &&
       (this.traitName === trait.traitName) &&
       (this.observationVariableName === trait.observationVariableName) &&
+      (this.fullName === trait.fullName) &&
       (this.checkStringListEquals(this.abbreviations, trait.abbreviations)) &&
       (this.checkStringListEquals(this.synonyms, trait.synonyms)) &&
       (this.mainAbbreviation === trait.mainAbbreviation) &&
