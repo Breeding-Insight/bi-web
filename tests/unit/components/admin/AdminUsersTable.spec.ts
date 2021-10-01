@@ -69,31 +69,26 @@ describe('new data form works properly', () => {
 
       await nameInput.setValue('new test user');
       await emailInput.setValue('newtestuser@tester.com');
-      console.log("..name email values set..");
 
       const userDAO = mocked(UserDAO, true);
       userDAO.create.mockResolvedValue(DaoUtils.formatBiResponseSingle(systemUsers[0]));
       let saveBtn = newForm.find('button[data-testid="save"]');
       expect(saveBtn.exists()).toBeTruthy();
       await saveBtn.trigger('click');
-      console.log("..save button clicked..");
 
       await Utils.pause(500);
-      console.log("..after pause ..");
       await wrapper.vm.$nextTick();
-      console.log("..after first tick ..");
       // Wait another DOM update. A little hacky, probably should find better way to do this in the future.
       await wrapper.vm.$nextTick();
-      console.log("..after 2nd tick ..");
       console.log("..'saved'..");
 
       newForm = wrapper.findComponent(NewDataForm);
       expect(newForm.exists()).toBeFalsy();
     }
     catch (err){
+      console.log("Error caught");
       console.log(err);
     }
-    console.log("..newDataFrom not found..");
 
   });
 });
