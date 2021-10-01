@@ -55,7 +55,7 @@ describe('new data form works properly', () => {
       console.log("..in it..");
       let newFormBtn = wrapper.find('button[data-testid="newFormBtn"]');
       expect(newFormBtn.exists()).toBeTruthy();
-      await newFormBtn.trigger('click');
+//      await newFormBtn.trigger('click');
       console.log("..clicked new btn..");
 
       let newForm = wrapper.findComponent(NewDataForm);
