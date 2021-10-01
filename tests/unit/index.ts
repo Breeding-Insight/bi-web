@@ -42,18 +42,59 @@ Vue.use(Vuelidate);
 const fakeProgram = new Program('1', 'Test Program');
 export const defaultStore = new Vuex.Store({
   state:{
+    successNotificationMsg: '',
     successNotificationActive: false,
     errorNotificationActive: false,
+    errorNotificationMsg: '',
     infoNotificationActive: false,
+    infoNotificationMsg: '',
+    warningNotificationActive: false,
+    warningNotificationMsg: '',
   },
   getters: {
-    activeProgram: () => fakeProgram
+    activeProgram: () => fakeProgram,
+    isErrorNotificationActive: state => {
+      return state.errorNotificationActive;
+    },
+    errorNotificationMsg: state => {
+      return state.errorNotificationMsg;
+    },
+    isSuccessNotificationActive: state => {
+      return state.successNotificationActive;
+    },
+    successNotificationMsg: state => {
+      return state.successNotificationMsg;
+    },
+    isInfoNotificationActive: state => {
+      return state.infoNotificationActive;
+    },
+    infoNotificationMsg: state => {
+      return state.infoNotificationMsg;
+    },
+    isWarningNotificationActive: state => {
+      return state.warningNotificationActive;
+    },
+    warningNotificationMsg: state => {
+      return state.warningNotificationMsg;
+    },
   },
   mutations:{
     deactivateAllNotifications(state) {
       state.successNotificationActive = false;
       state.errorNotificationActive = false;
       state.infoNotificationActive = false;
+    },
+    showSuccessNotification(state, msg: string) {
+      state.successNotificationMsg = msg;
+      state.successNotificationActive = true;
+    },
+    showErrorNotification(state, msg: string) {
+      state.errorNotificationMsg = msg;
+      state.errorNotificationActive = true;
+    },
+    showInfoNotification(state, msg: string) {
+      state.infoNotificationMsg = msg;
+      state.infoNotificationActive = true;
     },
   }
 
