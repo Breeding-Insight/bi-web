@@ -43,6 +43,27 @@ describe('notifications display', () => {
       infoNotificationActive: false,
       infoNotificationMsg: '',
     },
+    getters: {
+      isErrorNotificationActive: state => {
+        return state.errorNotificationActive;
+      },
+      errorNotificationMsg: state => {
+        return state.errorNotificationMsg;
+      },
+      isSuccessNotificationActive: state => {
+        return state.successNotificationActive;
+      },
+      successNotificationMsg: state => {
+        return state.successNotificationMsg;
+      },
+
+      isInfoNotificationActive: state => {
+        return state.infoNotificationActive;
+      },
+      infoNotificationMsg: state => {
+        return state.infoNotificationMsg;
+      },
+    },
     mutations: {
       showSuccessNotification(state, msg: string) {
         state.successNotificationMsg = msg;
