@@ -51,16 +51,13 @@ describe('new data form works properly', () => {
   const wrapper = mount(AdminUsersTable, {localVue, store});
 
   it('closes new data form when user successfully created', async () => {
-    try {
-      console.log("..in it..");
+    // try {
       let newFormBtn = wrapper.find('button[data-testid="newFormBtn"]');
       expect(newFormBtn.exists()).toBeTruthy();
       await newFormBtn.trigger('click');
-      console.log("..clicked new btn..");
 
       let newForm = wrapper.findComponent(NewDataForm);
       expect(newForm.exists()).toBeTruthy();
-      console.log("..new form exist..");
 
       let nameInput = newForm.find('input#Name');
       let emailInput = newForm.find('input#Email');
@@ -80,15 +77,14 @@ describe('new data form works properly', () => {
       await wrapper.vm.$nextTick();
       // Wait another DOM update. A little hacky, probably should find better way to do this in the future.
       await wrapper.vm.$nextTick();
-      console.log("..'saved'..");
 
       newForm = wrapper.findComponent(NewDataForm);
       expect(newForm.exists()).toBeFalsy();
-    }
-    catch (err){
-      console.log("Error caught");
-      console.log(err);
-    }
+    // }
+    // catch (err){
+    //   console.log("Error caught");
+    //   console.log(err);
+    // }
 
   });
 });
