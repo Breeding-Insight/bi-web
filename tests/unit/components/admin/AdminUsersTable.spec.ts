@@ -14,19 +14,19 @@ let roles: any[] = [];
 let systemUsers: any[] = [];
 function setup() {
 
-  const systemUser = {'id':'1', 'name':'Test user', 'email':'testuser@test.com', 'active':'true', 'orcid':'1111-1111-1111-1111',
-    'systemRoles': [{'id':'1', 'domain':'admin'}],
-    'programRoles': [{'active':'true', 'program':{'id':'1', 'name':'Test Program'}, 'roles':{'id':'1','domain':'member'}}]};
-  systemUsers.push(systemUser);
-  const systemUsersResponse = DaoUtils.formatBiResponse(systemUsers);
-  const userDAO = mocked(UserDAO, true);
-  userDAO.getAll.mockResolvedValue(systemUsersResponse);
-
-  roles.push({'id':'1', 'domain':'test role'});
-  const rolesResponse = DaoUtils.formatBiResponse(roles);
-
-  const roleDAO = mocked(SystemRoleDao, true);
-  roleDAO.getAll.mockResolvedValue(rolesResponse);
+  // const systemUser = {'id':'1', 'name':'Test user', 'email':'testuser@test.com', 'active':'true', 'orcid':'1111-1111-1111-1111',
+  //   'systemRoles': [{'id':'1', 'domain':'admin'}],
+  //   'programRoles': [{'active':'true', 'program':{'id':'1', 'name':'Test Program'}, 'roles':{'id':'1','domain':'member'}}]};
+  // systemUsers.push(systemUser);
+  // const systemUsersResponse = DaoUtils.formatBiResponse(systemUsers);
+  // const userDAO = mocked(UserDAO, true);
+  // userDAO.getAll.mockResolvedValue(systemUsersResponse);
+  //
+  // roles.push({'id':'1', 'domain':'test role'});
+  // const rolesResponse = DaoUtils.formatBiResponse(roles);
+  //
+  // const roleDAO = mocked(SystemRoleDao, true);
+  // roleDAO.getAll.mockResolvedValue(rolesResponse);
 
 }
 
