@@ -38,7 +38,7 @@ afterEach(() => {
 
 describe('new data form works properly', () => {
   const store = defaultStore;
-  const wrapper = mount(AdminUsersTable, {localVue, store});
+ // const wrapper = mount(AdminUsersTable, {localVue, store});
 
   it('closes new data form when user successfully created', async () => {
       // let newFormBtn = wrapper.find('button[data-testid="newFormBtn"]');
