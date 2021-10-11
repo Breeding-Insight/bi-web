@@ -33,11 +33,11 @@ function setup() {
 setup();
 
 afterEach(() => {
-  jest.clearAllMocks();
+  //jest.clearAllMocks();
 });
 
 describe('new data form works properly', () => {
-  const store = defaultStore;
+  //const store = defaultStore;
  // const wrapper = mount(AdminUsersTable, {localVue, store});
 
   it('closes new data form when user successfully created', async () => {
