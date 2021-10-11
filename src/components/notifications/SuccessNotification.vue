@@ -16,7 +16,7 @@
   -->
 
 <template>
-  <b-notification type="is-success" v-bind:active.sync="active" aria-close-label="Close Notification" 
+  <b-notification type="is-success" v-bind:active.sync="isSuccessNotificationActive" aria-close-label="Close Notification"
     role="alert" v-on:close="onClose">
     <div class="level">
       <div class="level-left">
@@ -24,7 +24,7 @@
           <CheckCircleIcon size="1.5x"></CheckCircleIcon>
         </div>
         <div class="level-item" :class="bannerTextClass">
-          {{msg}}
+          {{successNotificationMsg}}
         </div>
       </div>
     </div>
@@ -35,27 +35,19 @@
 import {Component, Prop, Vue, Inject, Watch} from 'vue-property-decorator';
 import { CheckCircleIcon } from 'vue-feather-icons';
 import { DEACTIVATE_SUCCESS_NOTIFICATION } from "@/store/mutation-types";
+import {mapGetters} from "vuex";
 
 @Component({
-  components: {CheckCircleIcon}
+  components: {CheckCircleIcon},
+  computed: {
+    ...mapGetters([
+      'isSuccessNotificationActive',
+      'successNotificationMsg'
+    ])
+  }
 })
 export default class SuccessNotification extends Vue {
-  // 'active' and 'msg' should stay private.
-  // (use the getters and mutators in the vuex store
-  //  to modify these values)
-  private active: boolean = false;
-  private msg : string = '';
-
   private bannerTextClass: string = "banner-text";
-
-  @Watch('$store.state.successNotificationActive', {immediate: true})
-  onActiveChanged(newVal: boolean, oldVal: any) {
-    this.active = newVal;
-  }
-  @Watch('$store.state.successNotificationMsg', {immediate: true})
-  onMsgChanged(newVal: string, oldVal: any) {
-    this.msg = newVal;
-  }
   onClose(){
     this.$store.commit(DEACTIVATE_SUCCESS_NOTIFICATION);
   }

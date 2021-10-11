@@ -16,14 +16,14 @@
   -->
 
 <template>
-  <b-notification type="is-danger" v-bind:active.sync="active" aria-close-label="Close Notification"
+  <b-notification type="is-danger" v-bind:active.sync="isErrorNotificationActive" aria-close-label="Close Notification"
     role="alert" v-on:close="onClose">
     <div class="columns has-vertical-align-middle">
       <div class="column is-flex-grow-0">
           <AlertCircleIcon size="1.5x"></AlertCircleIcon>
       </div>
       <div class="column" :class="bannerTextClass">
-        {{msg}}
+        {{errorNotificationMsg}}
       </div>
     </div>
   </b-notification>
@@ -33,27 +33,20 @@
 import {Component, Prop, Vue, Watch} from 'vue-property-decorator';
 import { AlertCircleIcon } from 'vue-feather-icons';
 import {DEACTIVATE_ERROR_NOTIFICATION} from "@/store/mutation-types";
+import {mapGetters} from "vuex";
 
 @Component({
-  components: {AlertCircleIcon}
+  components: {AlertCircleIcon},
+  computed: {
+    ...mapGetters([
+        'isErrorNotificationActive',
+        'errorNotificationMsg'
+    ])
+  }
 })
 export default class ErrorNotification extends Vue {
-  // 'active' and 'msg' should stay private.
-  // (use the getters and mutators in the vuex store
-  //  to modify these values)
-  private active: boolean = false;
-  private msg: string = '';
 
   private bannerTextClass: string = "banner-text";
-
-  @Watch('$store.state.errorNotificationActive', {immediate: true})
-  onActiveChanged(newVal: boolean, oldVal: any) {
-    this.active = newVal;
-  }
-  @Watch('$store.state.errorNotificationMsg', {immediate: true})
-  onMsgChanged(newVal: string, oldVal: any) {
-    this.msg = newVal;
-  }
   onClose(){
     this.$store.commit(DEACTIVATE_ERROR_NOTIFICATION);
   }

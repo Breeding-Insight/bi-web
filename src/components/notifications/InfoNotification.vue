@@ -16,7 +16,7 @@
   -->
 
 <template>
-  <b-notification type="is-info" v-bind:active.sync="active" aria-close-label="Close Notification" 
+  <b-notification type="is-info" v-bind:active.sync="isInfoNotificationActive" aria-close-label="Close Notification"
     role="alert" v-on:close="onClose">
     <div class="level">
         <div class="level-left">
@@ -24,7 +24,7 @@
                 <InfoIcon size="1.5x"></InfoIcon>
             </div>
             <div class="level-item" :class="bannerTextClass">
-                {{msg}}
+                {{infoNotificationMsg}}
             </div>
         </div>
     </div>
@@ -35,27 +35,21 @@
 import {Component, Prop, Vue, Watch} from 'vue-property-decorator';
 import { InfoIcon } from 'vue-feather-icons';
 import {DEACTIVATE_INFO_NOTIFICATION} from "@/store/mutation-types";
+import {mapGetters} from "vuex";
+
 
 @Component({
-  components: {InfoIcon}
+  components: {InfoIcon},
+  computed: {
+    ...mapGetters([
+      'isInfoNotificationActive',
+      'infoNotificationMsg'
+    ])
+  }
 })
 export default class InfoNotification extends Vue {
-  // 'active' and 'msg' should stay private.
-  // (use the getters and mutators in the vuex store
-  //  to modify these values)
-  private active: boolean = false;
-  private msg : string = '';
-
   private bannerTextClass: string = "banner-text";
 
-  @Watch('$store.state.infoNotificationActive', {immediate: true})
-  onActiveChanged(newVal: boolean, oldVal: any) {
-    this.active = newVal;
-  }
-  @Watch('$store.state.infoNotificationMsg', {immediate: true})
-  onMsgChanged(newVal: string, oldVal: any) {
-    this.msg = newVal;
-  }
   onClose(){
     this.$store.commit(DEACTIVATE_INFO_NOTIFICATION);
   }

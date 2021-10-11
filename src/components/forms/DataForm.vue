@@ -50,6 +50,9 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 import { CheckCircleIcon } from 'vue-feather-icons';
 import { Validations } from 'vuelidate-property-decorators';
 import { DataFormEventBusHandler } from '@/components/forms/DataFormEventBusHandler';
+import {
+  DEACTIVATE_ALL_NOTIFICATIONS
+} from "@/store/mutation-types";
 
 @Component({
   components: { CheckCircleIcon }
@@ -88,6 +91,7 @@ export default class DataForm extends Vue {
     if (this.$v.record) {
       this.$v.record.$touch();
     }
+    this.closeNotifications();
 
     if (this.$v.record && this.$v.record.$anyError) {
       this.dataFormState.bus.$emit(DataFormEventBusHandler.SAVE_COMPLETE_EVENT);
@@ -110,7 +114,12 @@ export default class DataForm extends Vue {
     if (this.$v.record) {
       this.$v.record.$reset();
     }
+    this.closeNotifications();
     this.$emit('cancel');
+  }
+
+  closeNotifications() {
+    this.$store.commit(DEACTIVATE_ALL_NOTIFICATIONS);
   }
 
 }
