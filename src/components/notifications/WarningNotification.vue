@@ -16,7 +16,7 @@
   -->
 
 <template>
-  <b-notification type="is-warning" v-bind:active.sync="active" aria-close-label="Close Notification"
+  <b-notification type="is-warning" v-bind:active.sync="isWarningNotificationActive" aria-close-label="Close Notification"
                   role="alert" v-on:close="onClose">
     <div class="level">
       <div class="level-left">
@@ -24,7 +24,7 @@
           <AlertTriangleIcon size="1.5x"></AlertTriangleIcon>
         </div>
         <div class="level-item" :class="bannerTextClass">
-          {{msg}}
+          {{warningNotificationMsg}}
         </div>
       </div>
     </div>
@@ -35,26 +35,19 @@
 import {Component, Vue, Watch} from 'vue-property-decorator';
 import { AlertTriangleIcon } from 'vue-feather-icons';
 import {DEACTIVATE_WARNING_NOTIFICATION} from "@/store/mutation-types";
+import {mapGetters} from "vuex";
 
   @Component({
-    components: {AlertTriangleIcon}
+    components: {AlertTriangleIcon},
+    computed: {
+      ...mapGetters([
+        'isWarningNotificationActive',
+        'warningNotificationMsg'
+      ])
+    }
   })
   export default class WarningNotification extends Vue {
-    // 'active' and 'msg' should stay private.
-    // (use the getters and mutators in the vuex store
-    //  to modify these values)
-    private active: boolean = false;
-    private msg : string = '';
-
     private bannerTextClass: string = "banner-text";
-    @Watch('$store.state.warningNotificationActive', {immediate: true})
-    onActiveChanged(newVal: boolean, oldVal: any) {
-      this.active = newVal;
-    }
-    @Watch('$store.state.warningNotificationMsg', {immediate: true})
-    onMsgChanged(newVal: string, oldVal: any) {
-      this.msg = newVal;
-    }
     onClose(){
       this.$store.commit(DEACTIVATE_WARNING_NOTIFICATION);
     }
