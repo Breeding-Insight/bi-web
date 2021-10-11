@@ -34,7 +34,6 @@
             @show-success-notification="showSuccessNotification"
             @show-info-notification="showInfoNotification"
             @show-error-notification="showErrorNotification"
-            @show-warning-notification="showWarningNotification"
         />
     </component>
     <Footer />
@@ -171,8 +170,5 @@ export default class App extends Vue {
     this.$store.commit(SHOW_ERROR_NOTIFICATION, msg);
   }
 
-  showWarningNotification(msg: string) {
-    this.$store.commit(SHOW_WARNING_NOTIFICATION);
-  }
 }
 </script>
