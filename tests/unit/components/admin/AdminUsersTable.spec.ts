@@ -8,10 +8,10 @@ import AdminUsersTable from "@/components/admin/AdminUsersTable.vue";
 import NewDataForm from "@/components/forms/NewDataForm.vue";
 import Utils from '../../test-utils/TestingUtils';
 
-jest.mock('@/breeding-insight/dao/SystemRoleDao');
-jest.mock('@/breeding-insight/dao/UserDAO');
-let roles: any[] = [];
-let systemUsers: any[] = [];
+// jest.mock('@/breeding-insight/dao/SystemRoleDao');
+// jest.mock('@/breeding-insight/dao/UserDAO');
+// let roles: any[] = [];
+// let systemUsers: any[] = [];
 function setup() {
 
   // const systemUser = {'id':'1', 'name':'Test user', 'email':'testuser@test.com', 'active':'true', 'orcid':'1111-1111-1111-1111',
