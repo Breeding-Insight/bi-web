@@ -76,10 +76,10 @@ describe('new data form works properly', () => {
       expect(saveBtn.exists()).toBeTruthy();
       await saveBtn.trigger('click');
       //
-      await Utils.pause(500);
+  //    await Utils.pause(500);
       await wrapper.vm.$nextTick();
       // Wait another DOM update. A little hacky, probably should find better way to do this in the future.
-      await wrapper.vm.$nextTick();
+//      await wrapper.vm.$nextTick();
       // console.log("..'saved'..");
       //
       // newForm = wrapper.findComponent(NewDataForm);
