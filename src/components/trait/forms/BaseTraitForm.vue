@@ -38,7 +38,7 @@
     <div class="column new-term is-10">
       <BasicInputField
           class="pb-2"
-          v-bind:value="fullName"
+          v-bind:value="trait.fullName"
           v-bind:field-name="'Full name'"
           v-bind:placeholder="'Full Name'"
           v-bind:show-label="false"
@@ -338,7 +338,7 @@ export default class BaseTraitForm extends Vue {
   @Prop()
   tags?: string[];
 
-  fullName: string = '';
+  //fullName: string = ''; //TODO might want to parallel tags instead
   private methodHistory: {[key: string]: Method} = {};
   private scaleHistory: {[key: string]: Scale} = {};
   private lastCategoryType: string = '';
@@ -488,11 +488,11 @@ export default class BaseTraitForm extends Vue {
   setOTName(value: string) {
     this.trait.observationVariableName = value;
     this.trait.synonyms = this.trait.synonyms || [];
-    if (this.fullName && this.trait.synonyms && this.trait.synonyms.length === 1)
-      this.trait.synonyms[1] = this.fullName;
+    if (this.trait.fullName && this.trait.synonyms && this.trait.synonyms.length === 1)
+      this.trait.synonyms[1] = this.trait.fullName;
     if (this.fullName && value === '') {
-      this.trait.synonyms = [ this.fullName ];
-    } else if (!this.fullName && value === '') {
+      this.trait.synonyms = [ this.trait.fullName ];
+    } else if (!this.trait.fullName && value === '') {
       this.trait.synonyms = [];
     } else {
       this.trait.synonyms[0] = value;
@@ -500,7 +500,7 @@ export default class BaseTraitForm extends Vue {
   }
 
   setFullName(value: string) {
-    this.fullName = value;
+    this.trait.fullName = value;
     this.trait.synonyms = this.trait.synonyms || [];
     let index = this.trait.observationVariableName ? 1 : 0;
     this.trait.synonyms[index] = value;
