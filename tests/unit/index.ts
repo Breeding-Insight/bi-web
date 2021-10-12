@@ -54,7 +54,31 @@ export const defaultStore = new Vuex.Store({
     showSidebarMobile: true
   },
   getters: {
-    activeProgram: () => fakeProgram
+    activeProgram: () => fakeProgram,
+    isErrorNotificationActive: state => {
+      return state.errorNotificationActive;
+    },
+    errorNotificationMsg: state => {
+      return state.errorNotificationMsg;
+    },
+    isSuccessNotificationActive: state => {
+      return state.successNotificationActive;
+    },
+    successNotificationMsg: state => {
+      return state.successNotificationMsg;
+    },
+    isInfoNotificationActive: state => {
+      return state.infoNotificationActive;
+    },
+    infoNotificationMsg: state => {
+      return state.infoNotificationMsg;
+    },
+    isWarningNotificationActive: state => {
+      return state.warningNotificationActive;
+    },
+    warningNotificationMsg: state => {
+      return state.warningNotificationMsg;
+    },
   },
   mutations:{
     deactivateAllNotifications(state) {
