@@ -42,6 +42,8 @@ describe('notifications display', () => {
       errorNotificationMsg: '',
       infoNotificationActive: false,
       infoNotificationMsg: '',
+      warningNotificationActive: false,
+      warningNotificationMsg: '',
     },
     getters: {
       isErrorNotificationActive: state => {
@@ -56,12 +58,17 @@ describe('notifications display', () => {
       successNotificationMsg: state => {
         return state.successNotificationMsg;
       },
-
       isInfoNotificationActive: state => {
         return state.infoNotificationActive;
       },
       infoNotificationMsg: state => {
         return state.infoNotificationMsg;
+      },
+      isWarningNotificationActive: state => {
+        return state.warningNotificationActive;
+      },
+      warningNotificationMsg: state => {
+        return state.warningNotificationMsg;
       },
     },
     mutations: {
