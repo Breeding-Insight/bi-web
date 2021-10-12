@@ -68,7 +68,7 @@ describe('new data form works properly', () => {
     let saveBtn = newForm.find('button[data-testid="save"]');
     expect(saveBtn.exists()).toBeTruthy();
     await saveBtn.trigger('click');
-    await Utils.pause(500);
+    await Utils.pause(120000);
     await wrapper.vm.$nextTick();
     // Wait another DOM update. A little hacky, probably should find better way to do this in the future.
     await wrapper.vm.$nextTick();
