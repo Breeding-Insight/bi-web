@@ -34,6 +34,7 @@
             @show-success-notification="showSuccessNotification"
             @show-info-notification="showInfoNotification"
             @show-error-notification="showErrorNotification"
+            @show-warning-notification="showWarningNotification"
         />
     </component>
     <Footer />
@@ -43,12 +44,6 @@
 
 <script lang="ts">
 import { Component, Watch, Vue } from 'vue-property-decorator'
-import {
-  SHOW_ERROR_NOTIFICATION,
-  SHOW_SUCCESS_NOTIFICATION,
-  SHOW_WARNING_NOTIFICATION,
-  SHOW_INFO_NOTIFICATION,
-} from '@/store/mutation-types'
 import SuccessNotification from '@/components/notifications/SuccessNotification.vue'
 import InfoNotification from '@/components/notifications/InfoNotification.vue'
 import ErrorNotification from '@/components/notifications/ErrorNotification.vue'
@@ -159,16 +154,23 @@ export default class App extends Vue {
   }
 
   showSuccessNotification(msg: string) {
-    this.$store.commit(SHOW_SUCCESS_NOTIFICATION, msg);
+    this.$refs.successNotification.active = true;
+    this.$refs.successNotification.msg = msg;
   }
 
   showInfoNotification(msg: string) {
-    this.$store.commit(SHOW_INFO_NOTIFICATION, msg);
+    this.$refs.infoNotification.active = true;
+    this.$refs.infoNotification.msg = msg;
   }
 
   showErrorNotification(msg: string) {
-    this.$store.commit(SHOW_ERROR_NOTIFICATION, msg);
+    this.$refs.errorNotification.active = true;
+    this.$refs.errorNotification.msg = msg;
   }
 
+  showWarningNotification(msg: string) {
+    this.$refs.warningNotification.active = true;
+    this.$refs.warningNotification.msg = msg;
+  }
 }
 </script>
