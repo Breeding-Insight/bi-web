@@ -9,6 +9,7 @@ import NewDataForm from "@/components/forms/NewDataForm.vue";
 import Utils from '../../test-utils/TestingUtils';
 import { User } from '@/breeding-insight/model/User';
 import { Role } from '@/breeding-insight/model/Role';
+import { UserService } from '@/breeding-insight/service/UserService';
 
 jest.mock('@/breeding-insight/dao/SystemRoleDao');
 jest.mock('@/breeding-insight/dao/UserDAO');
@@ -60,8 +61,8 @@ describe('new data form works properly', () => {
     await nameInput.setValue('new test user');
     await emailInput.setValue('newtestuser@tester.com');
 
-    const userDAO = mocked(UserDAO, true);
-    userDAO.create.mockResolvedValue(DaoUtils.formatBiResponseSingle(systemUsers[0]));
+    const userDAO = mocked(UserService, true);
+    userDAO.create.mockResolvedValue(systemUsers[0]);
     try {
       console.log("attempting to call userDAO.create...")
       // @ts-ignore
@@ -76,12 +77,18 @@ describe('new data form works properly', () => {
     expect(saveBtn.exists()).toBeTruthy();
     console.log("clicking save button");
     await saveBtn.trigger('click');
-    console.log("waiting 500ms");
-    await Utils.pause(500);
+    // console.log("waiting 500ms");
+    // await Utils.pause(500);
     console.log("next tick (1)")
     await wrapper.vm.$nextTick();
     // Wait another DOM update. A little hacky, probably should find better way to do this in the future.
     console.log("next tick (2)")
+    await wrapper.vm.$nextTick();
+    console.log("next tick (3)")
+    await wrapper.vm.$nextTick();
+    console.log("next tick (4)")
+    await wrapper.vm.$nextTick();
+    console.log("next tick (5)")
     await wrapper.vm.$nextTick();
 
     console.log("search for NewDataForm after save")
