@@ -70,18 +70,23 @@ describe('new data form works properly', () => {
     } catch (e) {
       console.error("error creating user via mock", e);
     }
-
-
-
+    console.log("searching for save button");
     let saveBtn = newForm.find('button[data-testid="save"]');
+    console.log("verifying save button exists");
     expect(saveBtn.exists()).toBeTruthy();
+    console.log("clicking save button");
     await saveBtn.trigger('click');
+    console.log("waiting 500ms");
     await Utils.pause(500);
+    console.log("next tick (1)")
     await wrapper.vm.$nextTick();
     // Wait another DOM update. A little hacky, probably should find better way to do this in the future.
+    console.log("next tick (2)")
     await wrapper.vm.$nextTick();
 
+    console.log("search for NewDataForm after save")
     newForm = wrapper.findComponent(NewDataForm);
+    console.log("verify it's no longer there")
     expect(newForm.exists()).toBeFalsy();
   });
 });
