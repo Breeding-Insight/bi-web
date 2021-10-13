@@ -69,7 +69,7 @@ describe('new data form works properly', () => {
     expect(saveBtn.exists()).toBeTruthy();
     await saveBtn.trigger('click');
     console.log("---before pause---");
-    await Utils.pause(500);
+    await Utils.pause(50);
     console.log("---after pause---");
     await wrapper.vm.$nextTick();
     // Wait another DOM update. A little hacky, probably should find better way to do this in the future.
