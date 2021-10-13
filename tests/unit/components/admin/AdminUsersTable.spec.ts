@@ -1,5 +1,5 @@
 import DaoUtils from "../../test-utils/DaoUtils";
-import { mocked } from 'ts-jest/utils'
+import { mocked } from 'ts-jest';
 import {SystemRoleDao} from "@/breeding-insight/dao/SystemRoleDao";
 import {UserDAO} from "@/breeding-insight/dao/UserDAO";
 import localVue, {defaultStore} from "../../index";
@@ -47,7 +47,7 @@ describe('new data form works properly', () => {
     expect(newFormBtn.exists()).toBeTruthy();
     await newFormBtn.trigger('click');
 
-    let newForm = wrapper.findComponent(NewDataForm);
+    let newForm = wrapper.find(NewDataForm);
     expect(newForm.exists()).toBeTruthy();
 
     let nameInput = newForm.find('input#Name');
