@@ -9,7 +9,6 @@ import NewDataForm from "@/components/forms/NewDataForm.vue";
 import Utils from '../../test-utils/TestingUtils';
 import { User } from '@/breeding-insight/model/User';
 import { Role } from '@/breeding-insight/model/Role';
-import { UserService } from '@/breeding-insight/service/UserService';
 
 jest.mock('@/breeding-insight/dao/SystemRoleDao');
 jest.mock('@/breeding-insight/dao/UserDAO');
@@ -61,16 +60,8 @@ describe('new data form works properly', () => {
     await nameInput.setValue('new test user');
     await emailInput.setValue('newtestuser@tester.com');
 
-    const userDAO = mocked(UserService, true);
-    userDAO.create.mockResolvedValue(systemUsers[0]);
-    try {
-      console.log("attempting to call userDAO.create...")
-      // @ts-ignore
-      let mockedResponse = userDAO.create(new User(undefined, undefined, undefined, undefined, undefined, undefined), Role[0]);
-      console.log(JSON.stringify(mockedResponse));
-    } catch (e) {
-      console.error("error creating user via mock", e);
-    }
+    const userDAO = mocked(UserDAO, true);
+    userDAO.create.mockResolvedValue(DaoUtils.formatBiResponseSingle(systemUsers[0]));
     console.log("searching for save button");
     let saveBtn = newForm.find('button[data-testid="save"]');
     console.log("verifying save button exists");
