@@ -78,7 +78,7 @@ describe('new data form works properly', () => {
     newForm = wrapper.findComponent(NewDataForm);
     console.log("---before final test---");
     expect(newForm.exists()).toBeFalsy();
-    console.log("---after final test---");
+    console.log("---after final test--- ");
 
   });
 });
