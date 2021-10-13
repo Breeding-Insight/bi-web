@@ -65,7 +65,8 @@ describe('new data form works properly', () => {
     try {
       console.log("attempting to call userDAO.create...")
       // @ts-ignore
-      userDAO.create(new User(undefined, undefined, undefined, undefined, undefined, undefined), Role[0]);
+      let mockedResponse = userDAO.create(new User(undefined, undefined, undefined, undefined, undefined, undefined), Role[0]);
+      console.log(JSON.stringify(mockedResponse));
     } catch (e) {
       console.error("error creating user via mock", e);
     }
