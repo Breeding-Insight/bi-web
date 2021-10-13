@@ -9,6 +9,7 @@ import NewDataForm from "@/components/forms/NewDataForm.vue";
 import Utils from '../../test-utils/TestingUtils';
 import { User } from '@/breeding-insight/model/User';
 import { Role } from '@/breeding-insight/model/Role';
+import axios from 'axios';
 
 jest.mock('@/breeding-insight/dao/SystemRoleDao');
 jest.mock('@/breeding-insight/dao/UserDAO');
@@ -32,6 +33,12 @@ function setup() {
   const roleDAO = mocked(SystemRoleDao, true);
   roleDAO.getAll.mockResolvedValue(rolesResponse);
 
+  axios.interceptors.response.use(
+    response => response,
+    error => {
+      console.error("axios error: " + error)
+      throw error;
+    });
 }
 
 setup();
