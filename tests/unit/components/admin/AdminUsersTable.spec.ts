@@ -24,6 +24,7 @@ function setup() {
   const systemUsersResponse = DaoUtils.formatBiResponse(systemUsers);
   const userDAO = mocked(UserDAO, true);
   userDAO.getAll.mockResolvedValue(systemUsersResponse);
+  userDAO.create.mockResolvedValue(DaoUtils.formatBiResponseSingle(systemUser));
 
   roles.push({'id':'1', 'domain':'test role'});
   const rolesResponse = DaoUtils.formatBiResponse(roles);
@@ -60,8 +61,6 @@ describe('new data form works properly', () => {
     await nameInput.setValue('new test user');
     await emailInput.setValue('newtestuser@tester.com');
 
-    const userDAO = mocked(UserDAO, true);
-    userDAO.create.mockResolvedValue(DaoUtils.formatBiResponseSingle(systemUsers[0]));
     console.log("searching for save button");
     let saveBtn = newForm.find('button[data-testid="save"]');
     console.log("verifying save button exists");
