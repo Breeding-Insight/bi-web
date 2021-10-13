@@ -376,14 +376,10 @@ export default class AdminUsersTable extends Vue {
 
     let user: User | undefined = undefined;
     try {
-      console.log("..before await");
       user = await UserService.create(this.newUser);
-      console.log("..after await");
       this.paginationController.updatePage(1);
       this.newUserActive = false;
-      console.log("..before emit");
       this.$emit('show-success-notification', this.newUser.name + ' successful created');
-      console.log("..after emit");
     } catch (error) {
       this.$emit('show-error-notification', error.errorMessage);
       return;
