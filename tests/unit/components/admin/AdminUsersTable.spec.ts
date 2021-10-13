@@ -1,5 +1,5 @@
 import DaoUtils from "../../test-utils/DaoUtils";
-import { mocked } from 'ts-jest';
+import {mocked} from "ts-jest";
 import {SystemRoleDao} from "@/breeding-insight/dao/SystemRoleDao";
 import {UserDAO} from "@/breeding-insight/dao/UserDAO";
 import localVue, {defaultStore} from "../../index";
