@@ -48,7 +48,7 @@
     <template v-if="state === ImportState.CHOOSE_FILE || state === ImportState.FILE_CHOSEN">
       <h1 class="title" v-if="showTitle">Import Ontology</h1>
       <ImportInfoTemplateMessageBox v-bind:import-type-name="'Ontology'"
-                                    v-bind:template-url="'https://cornell.box.com/shared/static/pdphm5nr8vd6wc60n2cg6bvtndmkg4vr'"
+                                    v-bind:template-url="'https://cornell.box.com/shared/static/pdphm5nr8vd6wc60n2cg6bvtndmkg4vr.xls'"
                                     class="mb-5">
         <strong>Before You Import...</strong>
         <br/>Prepare ontology information for import using the provided template.

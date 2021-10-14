@@ -338,7 +338,6 @@ export default class BaseTraitForm extends Vue {
   @Prop()
   tags?: string[];
 
-  //fullName: string = ''; //TODO might want to parallel tags instead
   private methodHistory: {[key: string]: Method} = {};
   private scaleHistory: {[key: string]: Scale} = {};
   private lastCategoryType: string = '';
