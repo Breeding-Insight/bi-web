@@ -490,7 +490,7 @@ export default class BaseTraitForm extends Vue {
     this.trait.synonyms = this.trait.synonyms || [];
     if (this.trait.fullName && this.trait.synonyms && this.trait.synonyms.length === 1)
       this.trait.synonyms[1] = this.trait.fullName;
-    if (this.fullName && value === '') {
+    if (this.trait.fullName && value === '') {
       this.trait.synonyms = [ this.trait.fullName ];
     } else if (!this.trait.fullName && value === '') {
       this.trait.synonyms = [];
