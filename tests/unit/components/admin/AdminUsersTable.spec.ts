@@ -97,7 +97,9 @@ describe('new data form works properly', () => {
       console.log("verify it's no longer there")
       expect(newForm.exists()).toBeFalsy();
     } catch (e) {
-      console.error("")
+      console.error("Error after clicking 'save'");
+      console.error(e);
+      throw e;
     }
   });
 });
