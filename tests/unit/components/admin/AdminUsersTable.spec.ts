@@ -79,7 +79,7 @@ describe('new data form works properly', () => {
     //});
     // Wait another DOM update. A little hacky, probably should find better way to do this in the future.
     //wrapper.vm.$nextTick();
-    
+
     console.log("---before final test---");
     expect(newForm.exists()).toBeFalsy();
     console.log("---after final test--- ");

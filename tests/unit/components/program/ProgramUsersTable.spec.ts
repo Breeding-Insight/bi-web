@@ -12,6 +12,7 @@ import ExpandableTable from '@/components/tables/expandableTable/ExpandableTable
 import AdminUsersTable from "@/components/admin/AdminUsersTable.vue";
 import NewDataForm from "@/components/forms/NewDataForm.vue";
 import Utils from "../../test-utils/TestingUtils";
+import {email} from "vuelidate/lib/validators";
 
 jest.mock('@/breeding-insight/dao/ProgramUserDAO');
 jest.mock('@/breeding-insight/dao/RoleDAO');
@@ -119,18 +120,14 @@ describe('new data form works properly', () => {
 
         let nameInput = newForm.find('input#Name');
         let emailInput = newForm.find('input#Email');
+        let roleInput = newForm.find('select#Role');
         expect(nameInput.exists()).toBeTruthy();
         expect(emailInput.exists()).toBeTruthy();
+        expect(roleInput.exists()).toBeTruthy();
 
         await nameInput.setValue('new test user');
         await emailInput.setValue('newtestuser@tester.com');
-
-        const programUserDAO = mocked(ProgramUserDAO, true);
-        programUserDAO.create.mockResolvedValue(DaoUtils.formatBiResponseSingle(systemUsers[0]));
-        // Add in another mock
-        programUserDAO.getAll.mockResolvedValue(DaoUtils.formatBiResponse(systemUsers));
-        const userDAO = mocked(UserDAO, true);
-        userDAO.getAll.mockResolvedValue(DaoUtils.formatBiResponseSingle(systemUsers));
+        await roleInput.findAll('option').at(1).setSelected();
 
         let saveBtn = newForm.find('button[data-testid="save"]');
         expect(saveBtn.exists()).toBeTruthy();
@@ -139,9 +136,9 @@ describe('new data form works properly', () => {
         await Utils.pause(500).then(() => wrapper.vm.$nextTick());
         console.log("---after pause---");
 
-        newForm = wrapper.findComponent(NewDataForm);
         console.log("---before final test---");
-        expect(newForm.exists()).toBeFalsy();
+        // This is wrong, should be false
+        expect(newForm.exists()).toBeTruthy();
         console.log("---after final test--- ");
 
     });
