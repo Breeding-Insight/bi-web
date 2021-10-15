@@ -48,6 +48,9 @@ describe('new data form works properly', () => {
 
   it('closes new data form when user successfully created', async () => {
 
+    console.log("--doing a test pause--")
+    await Utils.pause(2000);
+    console.log("--after the test pause--")
     let newFormBtn = wrapper.find('button[data-testid="newFormBtn"]');
     expect(newFormBtn.exists()).toBeTruthy();
     await newFormBtn.trigger('click');
@@ -79,8 +82,7 @@ describe('new data form works properly', () => {
 
     newForm = wrapper.findComponent(NewDataForm);
     console.log("---before final test---");
-    //UNCOMMENT
-    //expect(newForm.exists()).toBeFalsy();
+    expect(newForm.exists()).toBeFalsy();
     console.log("---after final test--- ");
 
   });
