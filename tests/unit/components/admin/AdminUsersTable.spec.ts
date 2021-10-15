@@ -48,9 +48,6 @@ describe('new data form works properly', () => {
 
   it('closes new data form when user successfully created', async () => {
 
-    console.log("--doing a test pause--")
-    await Utils.pause(2000);
-    console.log("--after the test pause--")
     let newFormBtn = wrapper.find('button[data-testid="newFormBtn"]');
     expect(newFormBtn.exists()).toBeTruthy();
     await newFormBtn.trigger('click');
@@ -68,6 +65,9 @@ describe('new data form works properly', () => {
 
     const userDAO = mocked(UserDAO, true);
     userDAO.create.mockResolvedValue(DaoUtils.formatBiResponseSingle(systemUsers[0]));
+    // Add in another mock
+    userDAO.getAll.mockResolvedValue(DaoUtils.formatBiResponse(systemUsers));
+
     let saveBtn = newForm.find('button[data-testid="save"]');
     expect(saveBtn.exists()).toBeTruthy();
     await saveBtn.trigger('click');
