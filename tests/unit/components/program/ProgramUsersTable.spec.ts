@@ -9,6 +9,9 @@ import {ProgramUserDAO} from "@/breeding-insight/dao/ProgramUserDAO";
 import {RoleDAO} from "@/breeding-insight/dao/RoleDAO";
 import {UserDAO} from "@/breeding-insight/dao/UserDAO";
 import ExpandableTable from '@/components/tables/expandableTable/ExpandableTable.vue';
+import AdminUsersTable from "@/components/admin/AdminUsersTable.vue";
+import NewDataForm from "@/components/forms/NewDataForm.vue";
+import Utils from "../../test-utils/TestingUtils";
 
 jest.mock('@/breeding-insight/dao/ProgramUserDAO');
 jest.mock('@/breeding-insight/dao/RoleDAO');
@@ -99,4 +102,47 @@ describe('Edit data form works properly', () => {
         expect(table.emitted('show-error-notification')).toBeUndefined();
     });
 
+});
+
+describe('new data form works properly', () => {
+    const store = defaultStore;
+    const wrapper = mount(ProgramUsersTable, {localVue, store});
+
+    it('closes new data form when user successfully created', async () => {
+
+        let newFormBtn = wrapper.find('button[data-testid="newUserBtn"]');
+        expect(newFormBtn.exists()).toBeTruthy();
+        await newFormBtn.trigger('click');
+
+        let newForm = wrapper.find(NewDataForm);
+        expect(newForm.exists()).toBeTruthy();
+
+        let nameInput = newForm.find('input#Name');
+        let emailInput = newForm.find('input#Email');
+        expect(nameInput.exists()).toBeTruthy();
+        expect(emailInput.exists()).toBeTruthy();
+
+        await nameInput.setValue('new test user');
+        await emailInput.setValue('newtestuser@tester.com');
+
+        const programUserDAO = mocked(ProgramUserDAO, true);
+        programUserDAO.create.mockResolvedValue(DaoUtils.formatBiResponseSingle(systemUsers[0]));
+        // Add in another mock
+        programUserDAO.getAll.mockResolvedValue(DaoUtils.formatBiResponse(systemUsers));
+        const userDAO = mocked(UserDAO, true);
+        userDAO.getAll.mockResolvedValue(DaoUtils.formatBiResponseSingle(systemUsers));
+
+        let saveBtn = newForm.find('button[data-testid="save"]');
+        expect(saveBtn.exists()).toBeTruthy();
+        await saveBtn.trigger('click');
+        console.log("---before pause---");
+        await Utils.pause(500).then(() => wrapper.vm.$nextTick());
+        console.log("---after pause---");
+
+        newForm = wrapper.findComponent(NewDataForm);
+        console.log("---before final test---");
+        expect(newForm.exists()).toBeFalsy();
+        console.log("---after final test--- ");
+
+    });
 });
