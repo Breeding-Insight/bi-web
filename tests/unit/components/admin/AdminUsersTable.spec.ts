@@ -69,8 +69,7 @@ describe('new data form works properly', () => {
     expect(saveBtn.exists()).toBeTruthy();
     await saveBtn.trigger('click');
     console.log("---before pause---");
-    // UNCOMMENT
-    //await Utils.pause(500).then(() => wrapper.vm.$nextTick());
+    await Utils.pause(500).then(() => wrapper.vm.$nextTick());
     console.log("---after pause---");
     // wrapper.vm.$nextTick(function() {
     //   console.log("....in tick....");
