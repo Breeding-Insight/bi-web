@@ -356,6 +356,19 @@ table tr.is-edited + .detail {
   }
 }
 
+#sandbox-feedback {
+  padding: 0;
+  height: 55px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  & p.title {
+    letter-spacing: 0.05rem;
+  }
+}
+
 .side-menu {
   background-color: $darkmenu;
   padding: 1em 1em 1em 0;
