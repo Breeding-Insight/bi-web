@@ -46,7 +46,6 @@ import { Component, Watch, Vue } from 'vue-property-decorator'
 import {
   SHOW_ERROR_NOTIFICATION,
   SHOW_SUCCESS_NOTIFICATION,
-  SHOW_WARNING_NOTIFICATION,
   SHOW_INFO_NOTIFICATION,
 } from '@/store/mutation-types'
 import SuccessNotification from '@/components/notifications/SuccessNotification.vue'
