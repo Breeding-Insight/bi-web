@@ -48,6 +48,7 @@ import {mapGetters} from "vuex";
   })
   export default class WarningNotification extends Vue {
     private bannerTextClass: string = "banner-text";
+
     onClose(){
       this.$store.commit(DEACTIVATE_WARNING_NOTIFICATION);
     }

@@ -44,9 +44,11 @@ import {mapGetters} from "vuex";
     ])
   }
 })
+
 export default class ErrorNotification extends Vue {
 
   private bannerTextClass: string = "banner-text";
+
   onClose(){
     this.$store.commit(DEACTIVATE_ERROR_NOTIFICATION);
   }

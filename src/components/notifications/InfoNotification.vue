@@ -37,7 +37,6 @@ import { InfoIcon } from 'vue-feather-icons';
 import {DEACTIVATE_INFO_NOTIFICATION} from "@/store/mutation-types";
 import {mapGetters} from "vuex";
 
-
 @Component({
   components: {InfoIcon},
   computed: {

@@ -190,6 +190,11 @@
   import {DEACTIVATE_ALL_NOTIFICATIONS, LOGIN} from "@/store/mutation-types";
   import {defineAbilityFor} from "@/config/ability";
   import ExpandableTable from '@/components/tables/expandableTable/ExpandableTable.vue';
+  import {
+    DEACTIVATE_ERROR_NOTIFICATION,
+    DEACTIVATE_SUCCESS_NOTIFICATION,
+    DEACTIVATE_INFO_NOTIFICATION,
+    DEACTIVATE_WARNING_NOTIFICATION } from "@/store/mutation-types";
   import {SortField} from "@/breeding-insight/model/SortField";
 
 @Component({
