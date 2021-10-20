@@ -19,11 +19,11 @@ import {Trait} from "@/breeding-insight/model/Trait";
 import {BiResponse, Response} from "@/breeding-insight/model/BiResponse";
 import * as api from "@/util/api";
 import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
-import {Filter, TraitSelector} from "@/breeding-insight/model/TraitSelector";
+import {TraitFilter, TraitSelector} from "@/breeding-insight/model/TraitSelector";
 
 export class TraitDAO {
 
-    static getAll(programId: string, paginationQuery: PaginationQuery, full : boolean, filters?: Filter[]): Promise<BiResponse> {
+    static getAll(programId: string, paginationQuery: PaginationQuery, full : boolean, filters?: TraitFilter[]): Promise<BiResponse> {
         const config: any = {};
         config.params = {full};
 

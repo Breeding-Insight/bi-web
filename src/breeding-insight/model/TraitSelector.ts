@@ -22,19 +22,19 @@ export enum TraitField {
   UPDATED_BY_USER_NAME = 'updatedByUserName'
 }
 
-export class Filter {
+export class TraitFilter {
   field?: TraitField;
   value?: string | number | boolean;
 }
 
 export class TraitSelector {
-  filters: Filter[]
+  filters: TraitFilter[]
 
-  constructor(filters: Filter[] = []) {
+  constructor(filters: TraitFilter[] = []) {
     this.filters = filters;
   }
 
-  addFilter(filter: Filter) {
+  addFilter(filter: TraitFilter) {
     this.filters.push(filter);
   }
 

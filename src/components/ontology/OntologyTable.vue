@@ -224,7 +224,7 @@ import {DataType, Scale} from "@/breeding-insight/model/Scale";
 import {SidePanelTableEventBusHandler} from "@/components/tables/SidePanelTableEventBus";
 import { DataFormEventBusHandler } from '@/components/forms/DataFormEventBusHandler';
 import {email, required, integer, maxLength} from "vuelidate/lib/validators";
-import {Filter, TraitField} from "@/breeding-insight/model/TraitSelector";
+import {TraitFilter, TraitField} from "@/breeding-insight/model/TraitSelector";
 
   @Component({
   mixins: [validationMixin],
@@ -339,7 +339,7 @@ export default class OntologyTable extends Vue {
     this.paginationController.setCurrentCall(paginationQuery);
 
     // filter the terms pulled from the back-end
-    let filters: Filter[] = [{ field: TraitField.STATUS, value: this.active}];
+    let filters: TraitFilter[] = [{ field: TraitField.STATUS, value: this.active}];
 
     TraitService.getAll(this.activeProgram!.id!, paginationQuery, true, filters).then(([traits, metadata]) => {
       if (this.paginationController.matchesCurrentRequest(metadata.pagination)){
