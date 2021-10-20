@@ -181,7 +181,7 @@ export default class ExpandableTable extends Mixins(ValidationMixin) {
       }
       rowArray.push(newTableRow);
     }
-    this. tableRows = rowArray;
+    this.tableRows = rowArray;
   }
 
   cancelEditClicked(row:any) {
