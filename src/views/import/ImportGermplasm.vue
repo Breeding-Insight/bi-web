@@ -17,7 +17,6 @@
 
 <template>
   <div id="import-germplasm">
-    <!-- TODO: add template url when ready -->
     <ImportInfoTemplateMessageBox v-bind:import-type-name="'Germplasm'"
                                   v-bind:template-url="'https://cornell.box.com/shared/static/kv3l900otsea9zm3iowp7e9umpcjvsck.xls'"
                                   class="mb-5">
