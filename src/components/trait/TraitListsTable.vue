@@ -226,6 +226,9 @@ import {DataType, Scale} from "@/breeding-insight/model/Scale";
 import {SidePanelTableEventBusHandler} from "@/components/tables/SidePanelTableEventBus";
 import { DataFormEventBusHandler } from '@/components/forms/DataFormEventBusHandler';
 import {email, required, integer, maxLength} from "vuelidate/lib/validators";
+import {
+  DEACTIVATE_ALL_NOTIFICATIONS,
+} from "@/store/mutation-types";
 
   @Component({
   mixins: [validationMixin],
@@ -398,7 +401,7 @@ export default class TraitTable extends Vue {
   }
 
   activateNewTraitForm() {
-    this.traitSidePanelState.bus.$emit(this.traitSidePanelState.closePanelEvent, () => { this.newTraitActive = true; });
+    this.traitSidePanelState.bus.$emit(this.traitSidePanelState.closePanelEvent, () => { this.showNewTrait(); });
   }
 
   clearSelectedRow() {
@@ -514,6 +517,11 @@ export default class TraitTable extends Vue {
       this.$emit('show-error-notification', 'Unable to retrieve observation levels');
     }
     this.$emit('show-error-notification', 'Unable to retrieve observation levels');
+  }
+
+  showNewTrait() {
+    this.newTraitActive = true;
+    this.$store.commit(DEACTIVATE_ALL_NOTIFICATIONS);
   }
 
   async getTraitTags() {

@@ -33,7 +33,52 @@ describe('notifications display', () => {
     }]
   });
     
-  const store = new Vuex.Store({'state': {'loggedIn': true}});
+  const store = new Vuex.Store({
+    state: {
+      loggedIn: true,
+      successNotificationMsg: '',
+      successNotificationActive: false,
+      errorNotificationActive: false,
+      errorNotificationMsg: '',
+      infoNotificationActive: false,
+      infoNotificationMsg: '',
+    },
+    getters: {
+      isErrorNotificationActive: state => {
+        return state.errorNotificationActive;
+      },
+      errorNotificationMsg: state => {
+        return state.errorNotificationMsg;
+      },
+      isSuccessNotificationActive: state => {
+        return state.successNotificationActive;
+      },
+      successNotificationMsg: state => {
+        return state.successNotificationMsg;
+      },
+
+      isInfoNotificationActive: state => {
+        return state.infoNotificationActive;
+      },
+      infoNotificationMsg: state => {
+        return state.infoNotificationMsg;
+      },
+    },
+    mutations: {
+      showSuccessNotification(state, msg: string) {
+        state.successNotificationMsg = msg;
+        state.successNotificationActive = true;
+      },
+      showErrorNotification(state, msg: string) {
+        state.errorNotificationMsg = msg;
+        state.errorNotificationActive = true;
+      },
+      showInfoNotification(state, msg: string) {
+        state.infoNotificationMsg = msg;
+        state.infoNotificationActive = true;
+      }
+    }
+  });
 
   // Set the route to get our child component
   router.push('usermanagement');
