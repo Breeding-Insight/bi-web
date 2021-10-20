@@ -69,8 +69,8 @@
             data-testid="showAll"
             role="button"
             class="pagination-link show-all-button"
-            v-bind:class="{ 'has-background-info': pagination.totalPages === 1}"
-            v-on:click="$emit('paginate-toggle-all')"
+            v-bind:class="{ 'has-background-info': showAllState}"
+            v-on:click="toggleShowAll()"
         >
           Show All
         </button>
@@ -92,9 +92,17 @@
     @Prop()
     private pagination!: Pagination;
 
+    private showAllState = false;
+
+    toggleShowAll() {
+      this.showAllState = !this.showAllState;
+      this.$emit('paginate-toggle-all');
+    }
+
     changePageSize($event:any) {
       this.pagination.pageSize = $event.target.value;
       this.$emit('paginate-page-size', $event.target.value)
+      this.showAllState = false;
     }
 
   }
