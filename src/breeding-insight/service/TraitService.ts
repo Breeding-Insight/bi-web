@@ -81,10 +81,10 @@ export class TraitService {
       else throw 'Unable to update trait';
     }
 
-    static getAll(programId: string, paginationQuery?: PaginationQuery, full?: boolean, filters?: TraitFilter[]): Promise<[Trait[], Metadata]> {
-        return new Promise<[Trait[], Metadata]>(((resolve, reject) => {
+  static getAll(programId: string, paginationQuery?: PaginationQuery, full?: boolean): Promise<[Trait[], Metadata]> {
+    return new Promise<[Trait[], Metadata]>(((resolve, reject) => {
 
-      if (paginationQuery === undefined){
+      if (paginationQuery === undefined) {
         paginationQuery = new PaginationQuery(0, 0, true);
       }
 
@@ -93,7 +93,7 @@ export class TraitService {
       }
 
       if (programId) {
-          TraitDAO.getAll(programId, paginationQuery, full, filters).then((biResponse) => {
+        TraitDAO.getAll(programId, paginationQuery, full).then((biResponse) => {
 
           let traits: Trait[] = [];
 
@@ -101,7 +101,7 @@ export class TraitService {
             //TODO: Remove when backend default sorting is implemented
             biResponse.result.data = PaginationController.mockSortRecords(biResponse.result.data);
             traits = biResponse.result.data.map((trait: any) => {
-                return trait as Trait;
+              return trait as Trait;
             });
           }
 
@@ -110,7 +110,7 @@ export class TraitService {
           [traits, newPagination] = PaginationController.mockPagination(traits, paginationQuery!.page, paginationQuery!.pageSize, paginationQuery!.showAll);
           biResponse.metadata.pagination = newPagination;
 
-              resolve([traits, biResponse.metadata]);
+          resolve([traits, biResponse.metadata]);
 
         }).catch((error) => reject(error));
 
@@ -118,7 +118,45 @@ export class TraitService {
         reject();
       }
     }));
+  }
 
+  static getFilteredTraits(programId: string, paginationQuery?: PaginationQuery, full?: boolean, filters?: TraitFilter[]): Promise<[Trait[], Metadata]> {
+    return new Promise<[Trait[], Metadata]>(((resolve, reject) => {
+
+      if (paginationQuery === undefined) {
+        paginationQuery = new PaginationQuery(0, 0, true);
+      }
+
+      if (full === undefined) {
+        full = false;
+      }
+
+      if (programId) {
+        TraitDAO.getFilteredTraits(programId, paginationQuery, full, filters).then((biResponse) => {
+
+          let traits: Trait[] = [];
+
+          if (biResponse.result.data) {
+            //TODO: Remove when backend default sorting is implemented
+            biResponse.result.data = PaginationController.mockSortRecords(biResponse.result.data);
+            traits = biResponse.result.data.map((trait: any) => {
+              return trait as Trait;
+            });
+          }
+
+          //TODO: Remove when backend pagination is implemented
+          let newPagination;
+          [traits, newPagination] = PaginationController.mockPagination(traits, paginationQuery!.page, paginationQuery!.pageSize, paginationQuery!.showAll);
+          biResponse.metadata.pagination = newPagination;
+
+          resolve([traits, biResponse.metadata]);
+
+        }).catch((error) => reject(error));
+
+      } else {
+        reject();
+      }
+    }));
   }
 
   static async getTraitEditable(programId: string, traitId: string): Promise<[boolean, Metadata]> {
