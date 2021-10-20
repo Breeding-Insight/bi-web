@@ -46,6 +46,7 @@ export class TraitDAO {
         config.params = {full};
 
         if (filters) {
+            //
             // get filtered list of traits
             config.url = `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/traits/search`;
             config.method = 'post';
