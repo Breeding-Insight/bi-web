@@ -356,7 +356,7 @@
       var path: string = this.$route.path;
       this.programManagementActive = path.includes('/program-management/');
       this.trialsAndStudiesActive = path.includes('/trials-studies/');
-      this.ontologyActive = path.includes('/ontology/');
+      this.ontologyActive = path.includes('/ontology/') || path.includes('traits/import') || path.includes('traits/favorites');
       this.traitsActive = path.includes('/traits/');
       this.importFileActive = path.includes('/import/')
     }
