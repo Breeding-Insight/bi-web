@@ -177,18 +177,20 @@ export default class ExpandableTable extends Mixins(ValidationMixin) {
     for (const record of this.records){
       const newTableRow = new TableRow<any>(this.editable, this.archivable, record);
 
-      // See if it is our new row
+      // TODO: this is a hack to try and deal with pagination edge cases
+      // Should probably implement this in a different way or get rid of new row highlighting
       const paginationCases = this.pagination.totalCount.valueOf() % this.pagination.pageSize.valueOf() === 1 &&
-                             this.pagination.currentPage === this.pagination.totalPages ||
-                             this.pagination.totalCount.valueOf() % this.pagination.pageSize.valueOf() === this.pagination.totalCount.valueOf() &&
-                             this.pagination.currentPage === this.pagination.totalPages &&
-                             this.pagination.currentPage === 1;
+                              this.pagination.currentPage === this.pagination.totalPages ||
+                              this.pagination.totalCount.valueOf() % this.pagination.pageSize.valueOf() === this.pagination.totalCount.valueOf() &&
+                              this.pagination.currentPage === this.pagination.totalPages &&
+                              this.pagination.currentPage === 1;
 
-      if (difference.length === 1 && difference_direction !== undefined && difference_direction > 0 && !paginationCases ) {
+      if (difference.length === 1 && difference_direction !== undefined && difference_direction > 0 && !paginationCases) {
         if (record.id === difference[0]) {
           newTableRow.toggleNew();
         }
       }
+
       rowArray.push(newTableRow);
     }
     this.tableRows = rowArray;
