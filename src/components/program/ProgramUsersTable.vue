@@ -119,8 +119,8 @@
         v-on:remove="displayWarning($event)"
         v-on:show-error-notification="$emit('show-error-notification', $event)"
         v-on:paginate="paginationController.updatePage($event)"
-        v-on:paginate-toggle-all="paginationController.toggleShowAll()"
-        v-on:paginate-page-size="paginationController.updatePageSize($event)"
+        v-on:paginate-toggle-all="toggleShowAll()"
+        v-on:paginate-page-size="updatePageSize($event)"
         backend-sorting
         v-on:sort="setSort"
     >
@@ -211,6 +211,7 @@ export default class ProgramUsersTable extends Vue {
   public systemUsers: User[] = [];
   private usersPagination?: Pagination = new Pagination();
   private lastSortState?: SortField = undefined;
+  private lastPageSize?: number;
 
   private deactivateActive: boolean = false;
   private newUserActive: boolean = false;
@@ -294,6 +295,21 @@ export default class ProgramUsersTable extends Vue {
       throw error;
     }).finally(() => this.rolesLoading = false);
 
+  }
+
+  // TODO: Refactor paginationController maybe to do this
+  toggleShowAll() {
+    if (this.paginationController.showAll) {
+      this.paginationController.updatePageSizeNoShowAllReset(this.lastPageSize!);
+    } else {
+      this.paginationController.updatePageSizeNoShowAllReset(this.usersPagination!.totalCount.valueOf());
+    }
+    this.paginationController.toggleShowAll();
+  }
+
+  updatePageSize(pageSize: number) {
+    this.lastPageSize = pageSize;
+    this.paginationController.updatePageSize(pageSize);
   }
 
   updateUser(updatedUser: ProgramUser) {

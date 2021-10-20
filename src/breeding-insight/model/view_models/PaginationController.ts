@@ -39,6 +39,10 @@ export class PaginationController {
     this.showAll = false;
   }
 
+  updatePageSizeNoShowAllReset(pageSize: number) {
+    this.pageSize = pageSize;
+  }
+
   updatePage(page: number) {
     this.currentPage = page;
     this.showAll = false;
@@ -93,7 +97,7 @@ export class PaginationController {
       const newPagination: Pagination = new Pagination({
         totalCount: records.length,
         pageSize: pageSize,
-        totalPages: records.length / pageSize,
+        totalPages: Math.ceil(records.length / pageSize),
         currentPage: page
       });
       return [records.slice((page * pageSize - pageSize), (page * pageSize > records.length ? records.length : page * pageSize)), newPagination];
