@@ -49,7 +49,7 @@
       <div class="column">
         <button
             v-if="$ability.can('create', 'Trait')"
-            v-show="!newTraitActive & traits.length > 0"
+            v-show="!newTraitActive && traits.length > 0"
             class="button is-primary is-pulled-right has-text-weight-bold"
             v-on:click="$router.push({name: 'traits-import', params: {programId: activeProgram.id}})"
         >
@@ -66,7 +66,7 @@
         <button
             v-if="$ability.can('create', 'Trait')"
             data-testid="newDataForm"
-            v-show="!newTraitActive & traits.length > 0"
+            v-show="!newTraitActive && traits.length > 0"
             class="button mx-2 is-primary is-pulled-right is-light has-text-weight-bold"
             v-on:click="activateNewTraitForm"
         >
@@ -184,11 +184,11 @@
             No ontology terms are currently {{ active ? 'defined' : 'archived' }} for this program.
           </p>
           <p v-if="active && $ability.can('create', 'Trait')">
-            Create new ontology terms by clicking "New Term" or "Import Batch File" or navigating to "Import Ontology".
+            Create new ontology terms by clicking "New Term" or by navigating to "Import Ontology".
           </p>
           <p v-if="!active && $ability.can('archive', 'Trait') && $ability.can('update', 'Trait')">
             Archive an existing ontology term by clicking "Show details" > "Edit" > "Archive". <br>
-            Create new archived ontology terms by clicking "New Term" or "Import Batch File" or by navigating to "Import Ontology".
+            Create new archived ontology terms by clicking "New Term" or by navigating to "Import Ontology".
           </p>
         </EmptyTableMessage>
       </template>
@@ -435,7 +435,11 @@ export default class OntologyTable extends Vue {
   async saveTrait() {
     try {
       this.validationHandler = new ValidationError();
-      await TraitService.createTraits(this.activeProgram!.id!, [this.newTrait]);
+      const [ [savedTrait], metadata ] = await TraitService.createTraits(this.activeProgram!.id!, [this.newTrait]);
+      if (this.newTrait.active === false) {
+        savedTrait.active = false;
+        await TraitService.archiveTrait(this.activeProgram!.id!, savedTrait);
+      }
       this.$emit('show-success-notification', 'Trait creation successful.');
       this.getTraits();
       const levelPromise = this.getObservationLevels();
