@@ -23,6 +23,7 @@
             v-bind:field-name="'Value'"
             v-bind:show-label="false"
             v-bind:value="value"
+            v-bind:placeholder="valuePlaceholder"
             v-on:input="$emit('value-change', $event)"
             v-bind:input-id="'value' + Math.random()"
             v-bind:server-validations="serverRowValidation ? serverRowValidation.getValidation(TraitError.CategoryValue): undefined"
@@ -37,7 +38,7 @@
             <BasicInputField
                 v-bind:field-name="'Label'"
                 v-bind:show-label="false"
-                v-bind:placeholder="valuePlaceholder"
+                v-bind:placeholder="categoryPlaceholder"
                 v-bind:value="label"
                 v-on:input="$emit('label-change', $event)"
                 v-bind:input-id="'label' + Math.random()"
@@ -75,6 +76,8 @@ export default class LabelValueRow extends Vue {
   value!: string;
   @Prop()
   valuePlaceholder: string | undefined;
+  @Prop()
+  categoryPlaceholder: string | undefined;
   @Prop()
   serverRowValidation!: RowError;
 }
