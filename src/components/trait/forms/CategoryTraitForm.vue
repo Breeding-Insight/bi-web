@@ -135,6 +135,11 @@ export default class CategoryTraitForm extends Vue {
 
   @Watch('type', {immediate: true})
   updateCategories() {
+    if (this.data.filter((value,index) => {
+      return (value.value !== undefined || value.label !== undefined);
+    }).length !== 0) {
+      this.data.splice(0, this.data.length)
+    }
     if (this.data.length === 0) {
       this.prepopulateCategories();
     }
@@ -159,12 +164,9 @@ export default class CategoryTraitForm extends Vue {
   }
 
   prepopulateCategories() {
-    for (const i of Array(5).keys()) {
-      if (this.type === DataType.Ordinal) {
-        this.data.push(new Category('', (i + 1).toString()));
-      } else {
-        this.data.push(new Category('', undefined));
-      }
+    let minCategories = this.type === DataType.Ordinal ? 2 : 1;
+    for (const i of Array(minCategories).keys()) {
+      this.data.push(new Category(undefined, undefined));
     }
   }
 
@@ -188,7 +190,14 @@ export default class CategoryTraitForm extends Vue {
   }
 
   removeRow() {
-    this.data.splice(this.activeRemoveRowIndex!,1);
+    if ((this.type === DataType.Ordinal && this.data.length > 2) ||
+        (this.type === DataType.Nominal && this.data.length > 1) ||
+        (this.type !== DataType.Ordinal && this.type !== DataType.Nominal)) {
+      this.data.splice(this.activeRemoveRowIndex!,1);
+      this.activeRemoveRowIndex = undefined;
+      this.deleteModalActive = false;
+      return;
+    }
     this.activeRemoveRowIndex = undefined;
     this.deleteModalActive = false;
     return;

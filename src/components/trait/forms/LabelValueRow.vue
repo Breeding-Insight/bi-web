@@ -36,7 +36,7 @@
         <div class="columns is-mobile is-gapless">
           <div class="column is-four-fifths">
             <BasicInputField
-                v-bind:field-name="'Label'"
+                v-bind:field-name="'Category'"
                 v-bind:show-label="false"
                 v-bind:placeholder="categoryPlaceholder"
                 v-bind:value="label"
