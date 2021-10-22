@@ -20,7 +20,7 @@
     <div class="columns is-vcentered is-mobile is-gapless">
       <div class="column is-four-fifths">
         <BasicInputField
-            v-bind:field-name="'Value'"
+            v-bind:field-name="'Category'"
             v-bind:show-label="false"
             v-bind:placeholder="valuePlaceholder"
             v-bind:value="value"
