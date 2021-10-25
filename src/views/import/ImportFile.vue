@@ -25,7 +25,7 @@
       <nav class="tabs is-boxed">
         <ul>
           <router-link
-              v-bind:to="{name: 'ontology', params: {programId: activeProgram.id}}"
+              v-bind:to="{name: 'import-ontology', params: {programId: activeProgram.id}}"
               tag="li" active-class="is-active">
             <a>Ontology</a>
           </router-link>

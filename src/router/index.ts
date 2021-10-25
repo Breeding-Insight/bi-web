@@ -316,12 +316,12 @@ const routes = [
       layout: layouts.userSideBar
     },
     component: ImportFile,
-    redirect: {name: 'ontology'},
+    redirect: {name: 'import-ontology'},
     beforeEnter: processProgramNavigation,
     children: [
       {
         path: 'ontology',
-        name: 'ontology',
+        name: 'import-ontology',
         meta: {
           title: 'Ontology',
           layout: layouts.userSideBar
