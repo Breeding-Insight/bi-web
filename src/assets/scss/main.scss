@@ -337,12 +337,35 @@ table tr.is-edited + .detail {
   z-index: 30;
 }
 
+.notification {
+  height: 10px;
+}
+
+.notification > span, .notification > a{
+  position: relative;
+  bottom: 13px;
+}
+
 .header-title {
   border-bottom: 1px #363636 solid;
   padding: 0 2.5em 0 2.5em;
   margin-bottom: 0;
+  height: 65px;
   & .navbar-hamburger {
     padding-top: .5em;
+  }
+}
+
+#sandbox-feedback {
+  padding: 0;
+  height: 55px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  & p.title {
+    letter-spacing: 0.05rem;
   }
 }
 

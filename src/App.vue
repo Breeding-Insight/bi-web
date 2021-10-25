@@ -26,7 +26,6 @@
       <InfoNotification ref="infoNotification" class="is-marginless"></InfoNotification>
       <SandboxPublicNotification v-bind:active.sync="showPublicSandboxNotification" class="is-marginless"></SandboxPublicNotification>
       <SandboxCoordinatorNotification v-bind:active.sync="showCoordinatorSandboxNotification" class="is-marginless"></SandboxCoordinatorNotification>
-      <WarningNotification ref="warningNotification" class="is-marginless"></WarningNotification>
     </div>
 
     <component v-bind:is="layout" v-bind:username="username" @logout="logOut">
@@ -34,7 +33,6 @@
             @show-success-notification="showSuccessNotification"
             @show-info-notification="showInfoNotification"
             @show-error-notification="showErrorNotification"
-            @show-warning-notification="showWarningNotification"
         />
     </component>
     <Footer />
@@ -44,6 +42,11 @@
 
 <script lang="ts">
 import { Component, Watch, Vue } from 'vue-property-decorator'
+import {
+  SHOW_ERROR_NOTIFICATION,
+  SHOW_SUCCESS_NOTIFICATION,
+  SHOW_INFO_NOTIFICATION,
+} from '@/store/mutation-types'
 import SuccessNotification from '@/components/notifications/SuccessNotification.vue'
 import InfoNotification from '@/components/notifications/InfoNotification.vue'
 import ErrorNotification from '@/components/notifications/ErrorNotification.vue'
@@ -55,7 +58,6 @@ import BaseSideBarLayout from './components/layouts/BaseSideBarLayout.vue'
 import SandboxPublicNotification from "@/components/notifications/SandboxPublicNotification.vue";
 import SandboxCoordinatorNotification from "@/components/notifications/SandboxCoordinatorNotification.vue";
 import {SandboxMode} from "@/util/config";
-import WarningNotification from "@/components/notifications/WarningNotification.vue";
 import Footer from "@/components/layouts/Footer.vue";
 
 @Component({
@@ -84,7 +86,6 @@ import Footer from "@/components/layouts/Footer.vue";
   components: {
     SandboxCoordinatorNotification,
     SandboxPublicNotification,
-    WarningNotification,
     SuccessNotification,
     InfoNotification,
     ErrorNotification,
@@ -107,7 +108,6 @@ export default class App extends Vue {
     successNotification: SuccessNotification,
     infoNotification: InfoNotification,
     errorNotification: ErrorNotification
-    warningNotification: WarningNotification
   };
 
   @Watch('firstVisit', {immediate: true})
@@ -154,23 +154,16 @@ export default class App extends Vue {
   }
 
   showSuccessNotification(msg: string) {
-    this.$refs.successNotification.active = true;
-    this.$refs.successNotification.msg = msg;
+    this.$store.commit(SHOW_SUCCESS_NOTIFICATION, msg);
   }
 
   showInfoNotification(msg: string) {
-    this.$refs.infoNotification.active = true;
-    this.$refs.infoNotification.msg = msg;
+    this.$store.commit(SHOW_INFO_NOTIFICATION, msg);
   }
 
   showErrorNotification(msg: string) {
-    this.$refs.errorNotification.active = true;
-    this.$refs.errorNotification.msg = msg;
+    this.$store.commit(SHOW_ERROR_NOTIFICATION, msg);
   }
 
-  showWarningNotification(msg: string) {
-    this.$refs.warningNotification.active = true;
-    this.$refs.warningNotification.msg = msg;
-  }
 }
 </script>

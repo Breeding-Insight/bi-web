@@ -41,13 +41,13 @@
             </a>
           </div>
           <div v-if="sandboxConfig !== ''" class="level-item">
-            <div v-bind:class="{'notification is-warning px-5 has-text-centered': sandboxConfig === SandboxMode.Public,
+            <div id="sandbox-feedback" v-bind:class="{'notification is-warning px-5 has-text-centered': sandboxConfig === SandboxMode.Public,
                                 'notification is-info px-5 has-text-centered': sandboxConfig === SandboxMode.Coordinator}">
-              <p class="title is-size-4">Sandbox</p>
+              <p class="title is-size-5">Sandbox </p>
               <p>
-                <a href="#" v-on:click="$showCollectorDialog()" v-bind:class="{'has-text-link': sandboxConfig === SandboxMode.Public,
+              <a href="#" v-on:click="$showCollectorDialog()" v-bind:class="{'has-text-link': sandboxConfig === SandboxMode.Public,
                                                                                'has-text-white': sandboxConfig === SandboxMode.Coordinator}">Feedback
-                </a>
+              </a>
               </p>
             </div>
           </div>

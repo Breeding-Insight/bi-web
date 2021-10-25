@@ -39,7 +39,8 @@ import {
   ERROR_STATE,
   SET_ACTIVE_PROGRAM,
   FIRST_VISIT,
-  RETURN_VISIT
+  RETURN_VISIT,
+  DEACTIVATE_ALL_NOTIFICATIONS,
 } from '@/store/mutation-types';
 import ProgramLocationsManagement from "@/views/program/ProgramLocationsManagement.vue";
 import ProgramUserManagement from "@/views/program/ProgramUsersManagement.vue";
@@ -181,7 +182,7 @@ const routes = [
           layout: layouts.userSideBar
         },
         component: StudiesList
-     },
+      },
       {
         path: 'trials',
         name: 'trials-list',
@@ -398,6 +399,7 @@ const router = new VueRouter({
 })
 
 router.beforeEach((to: Route, from: Route, next: Function) => {
+  store.commit(DEACTIVATE_ALL_NOTIFICATIONS);
 
   // TODO: Check if the page is a protected resource, if not, let them through
   // If page is protected, check if they are logged in.

@@ -48,7 +48,7 @@
     <button
       v-show="!newProgramActive"
       class="button is-primary has-text-weight-bold is-pulled-right"
-      v-on:click="newProgramActive = true"
+      v-on:click="showNewProgram"
     >
       <span class="icon is-small">
         <PlusCircleIcon
@@ -198,6 +198,9 @@
   import { isWebUri } from 'valid-url'
   import { FieldError } from '@/breeding-insight/model/errors/FieldError';
   import ExpandableTable from "@/components/tables/expandableTable/ExpandableTable.vue";
+  import {
+    DEACTIVATE_ALL_NOTIFICATIONS,
+  } from "@/store/mutation-types";
 
   // create custom validation to handle cases default url validation doesn't
   const url = helpers.withParams(
@@ -259,6 +262,11 @@ export default class AdminProgramsTable extends Vue {
   programEditValidations = {
     name: {required},
     speciesId: {required}
+  }
+
+  showNewProgram() {
+    this.newProgramActive = true;
+    this.$store.commit(DEACTIVATE_ALL_NOTIFICATIONS);
   }
 
   mounted() {

@@ -16,15 +16,15 @@
   -->
 
 <template>
-  <b-notification type="is-warning" v-bind:active.sync="active" aria-close-label="Close Notification"
-                  role="alert">
+  <b-notification type="is-warning" v-bind:active.sync="isWarningNotificationActive" aria-close-label="Close Notification"
+                  role="alert" v-on:close="onClose">
     <div class="level">
       <div class="level-left">
         <div class="level-item">
           <AlertTriangleIcon size="1.5x"></AlertTriangleIcon>
         </div>
         <div class="level-item" :class="bannerTextClass">
-          {{msg}}
+          {{warningNotificationMsg}}
         </div>
       </div>
     </div>
@@ -32,17 +32,26 @@
 </template>
 
 <script lang="ts">
-  import { Component, Vue } from 'vue-property-decorator';
-  import { AlertTriangleIcon } from 'vue-feather-icons'
+import {Component, Vue, Watch} from 'vue-property-decorator';
+import { AlertTriangleIcon } from 'vue-feather-icons';
+import {DEACTIVATE_WARNING_NOTIFICATION} from "@/store/mutation-types";
+import {mapGetters} from "vuex";
 
   @Component({
-    components: {AlertTriangleIcon}
+    components: {AlertTriangleIcon},
+    computed: {
+      ...mapGetters([
+        'isWarningNotificationActive',
+        'warningNotificationMsg'
+      ])
+    }
   })
   export default class WarningNotification extends Vue {
-    public active: boolean = false;
-    public msg : string = '';
-
     private bannerTextClass: string = "banner-text";
+
+    onClose(){
+      this.$store.commit(DEACTIVATE_WARNING_NOTIFICATION);
+    }
   }
 
 </script>
