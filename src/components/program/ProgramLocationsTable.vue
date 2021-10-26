@@ -40,7 +40,7 @@
       data-testid="newDataForm"
       v-show="!newLocationActive"
       class="button is-primary has-text-weight-bold is-pulled-right"
-      v-on:click="newLocationActive = true"
+      v-on:click="showNewLocation"
     >
       <span class="icon is-small">
         <PlusCircleIcon
@@ -143,6 +143,9 @@
   import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
   import { DataFormEventBusHandler } from '@/components/forms/DataFormEventBusHandler';
   import ExpandableTable from '@/components/tables/expandableTable/ExpandableTable.vue';
+  import {
+    DEACTIVATE_ALL_NOTIFICATIONS
+  } from "@/store/mutation-types";
 
 @Component({
   mixins: [validationMixin],
@@ -235,6 +238,11 @@ export default class ProgramLocationsTable extends Vue {
   cancelNewLocation() {
     this.newLocation = new ProgramLocation();
     this.newLocationActive = false;
+  }
+
+  showNewLocation() {
+    this.newLocationActive = true;
+    this.$store.commit(DEACTIVATE_ALL_NOTIFICATIONS);
   }
 
   displayWarning(location: ProgramLocation) {
