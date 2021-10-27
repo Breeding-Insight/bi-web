@@ -67,7 +67,7 @@ export class PaginationController {
 
   static getPaginationSelections(currentPage: number, pageSize: number, showAll: boolean): PaginationQuery {
     if (showAll) {
-      return new PaginationQuery(0, 0, true);
+      return new PaginationQuery(0, pageSize, true);
     } else {
       return new PaginationQuery(
         currentPage, pageSize, false);
