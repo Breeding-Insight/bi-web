@@ -38,6 +38,7 @@
             <BasicInputField
                 v-bind:field-name="'Category'"
                 v-bind:show-label="false"
+                v-bind:field-help="canBeRemoved ? undefined : 'Ordinal scales require at least two categories'"
                 v-bind:placeholder="categoryPlaceholder"
                 v-bind:value="label"
                 v-on:input="$emit('label-change', $event)"

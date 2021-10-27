@@ -22,6 +22,7 @@
         <BasicInputField
             v-bind:field-name="'Category'"
             v-bind:show-label="false"
+            v-bind:field-help="canBeRemoved ? undefined : 'Nominal scales require at least one category'"
             v-bind:placeholder="valuePlaceholder"
             v-bind:value="value"
             v-on:input="$emit('value-change', $event)"
