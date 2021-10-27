@@ -30,7 +30,7 @@
         />
       </div>
       <div class="column is-one-fifth ml-2">
-        <button type="button" class="delete" v-on:click="$emit('delete')"></button>
+        <button v-show="canBeRemoved" type="button" class="delete" v-on:click="$emit('delete')"></button>
       </div>
     </div>
   </div>
@@ -55,6 +55,8 @@
     valuePlaceholder: string | undefined;
     @Prop()
     serverRowValidation!: RowError;
+    @Prop()
+    canBeRemoved!: boolean;
   }
 
 </script>

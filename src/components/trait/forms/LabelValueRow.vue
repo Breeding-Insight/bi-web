@@ -46,7 +46,7 @@
             />
           </div>
           <div class="column is-one-fifth ml-2">
-            <button type="button" class="delete mt-4" v-on:click="$emit('delete')"></button>
+            <button v-show="canBeRemoved" type="button" class="delete mt-4" v-on:click="$emit('delete')"></button>
           </div>
 
         </div>
@@ -80,6 +80,8 @@ export default class LabelValueRow extends Vue {
   categoryPlaceholder: string | undefined;
   @Prop()
   serverRowValidation!: RowError;
+  @Prop()
+  canBeRemoved!: boolean;
 }
 
 </script>
