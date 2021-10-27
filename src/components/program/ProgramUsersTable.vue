@@ -119,7 +119,7 @@
         v-on:remove="displayWarning($event)"
         v-on:show-error-notification="$emit('show-error-notification', $event)"
         v-on:paginate="paginationController.updatePage($event)"
-        v-on:paginate-toggle-all="toggleShowAll()"
+        v-on:paginate-toggle-all="paginationController.toggleShowAll(usersPagination.totalCount.valueOf())"
         v-on:paginate-page-size="updatePageSize($event)"
         backend-sorting
         v-on:sort="setSort"
@@ -180,7 +180,7 @@
   import { mapGetters } from 'vuex'
   import {Program} from "@/breeding-insight/model/Program";
   import EmptyTableMessage from "@/components/tables/EmtpyTableMessage.vue";
-  import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
+  import {BackendPaginationController} from "@/breeding-insight/model/view_models/BackendPaginationController";
   import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
   import {Pagination} from "@/breeding-insight/model/BiResponse";
   import { User } from '@/breeding-insight/model/User';
@@ -211,7 +211,6 @@ export default class ProgramUsersTable extends Vue {
   public systemUsers: User[] = [];
   private usersPagination?: Pagination = new Pagination();
   private lastSortState?: SortField = undefined;
-  private lastPageSize?: number;
 
   private deactivateActive: boolean = false;
   private newUserActive: boolean = false;
@@ -222,7 +221,7 @@ export default class ProgramUsersTable extends Vue {
   private deleteUser?: ProgramUser;
   private rolesMap: Map<string, Role> = new Map();
 
-  private paginationController: PaginationController = new PaginationController();
+  private paginationController: BackendPaginationController = new BackendPaginationController();
 
   private newUserFormState: DataFormEventBusHandler = new DataFormEventBusHandler();
   private editUserFormState: DataFormEventBusHandler = new DataFormEventBusHandler();
@@ -261,8 +260,8 @@ export default class ProgramUsersTable extends Vue {
   }
 
   updatePagination() {
-    let paginationQuery: PaginationQuery = PaginationController.getPaginationSelections(
-        this.paginationController.currentPage, this.paginationController.pageSize, this.paginationController.showAll);
+    let paginationQuery: PaginationQuery = BackendPaginationController.getPaginationSelections(
+        this.paginationController.currentPage, this.paginationController.pageSize);
     this.paginationController.setCurrentCall(paginationQuery);
   }
 
@@ -272,8 +271,10 @@ export default class ProgramUsersTable extends Vue {
     this.lastSortState = sort;
 
     ProgramUserService.getAll(this.activeProgram!.id!, this.paginationController.currentCall, sort).then(([programUsers, metadata]) => {
-      this.users = programUsers;
-      this.usersPagination = metadata.pagination;
+      if (this.paginationController.matchesCurrentRequest(metadata.pagination)) {
+        this.users = programUsers;
+        this.usersPagination = metadata.pagination;
+      }
     }).catch((error) => {
       // Display error that users cannot be loaded
       this.$emit('show-error-notification', 'Error while trying to load program users');
@@ -297,19 +298,8 @@ export default class ProgramUsersTable extends Vue {
 
   }
 
-  // TODO: Refactor paginationController maybe to do this
-  toggleShowAll() {
-    if (this.paginationController.showAll) {
-      this.paginationController.updatePageSizeNoShowAllReset(this.lastPageSize!);
-    } else {
-      this.paginationController.updatePageSizeNoShowAllReset(this.usersPagination!.totalCount.valueOf());
-    }
-    this.paginationController.toggleShowAll();
-  }
-
   updatePageSize(pageSize: number) {
-    this.lastPageSize = pageSize;
-    this.paginationController.updatePageSize(pageSize);
+    this.paginationController.updatePageSize(Number(pageSize).valueOf());
   }
 
   updateUser(updatedUser: ProgramUser) {
