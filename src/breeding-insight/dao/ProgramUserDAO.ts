@@ -78,8 +78,8 @@ export class ProgramUserDAO {
       let params = {
         sortField: sortField ? sortField.sortField : undefined,
         sortOrder: sortField ? sortField.sortOrder : undefined,
-        page: paginationQuery.showAll ? undefined : paginationQuery.page,
-        pageSize: paginationQuery.showAll ? undefined : paginationQuery.pageSize
+        page: paginationQuery.page,
+        pageSize: paginationQuery.pageSize
       };
 
       api.call({ url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/users`, method: 'get', params: params })
