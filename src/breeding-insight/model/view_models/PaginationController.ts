@@ -38,11 +38,7 @@ export class PaginationController {
     this.pageSize = pageSize;
     this.showAll = false;
   }
-
-  updatePageSizeNoShowAllReset(pageSize: number) {
-    this.pageSize = pageSize;
-  }
-
+  
   updatePage(page: number) {
     this.currentPage = page;
     this.showAll = false;
