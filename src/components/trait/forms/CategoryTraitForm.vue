@@ -56,6 +56,7 @@
           v-on:value-change="item.value = $event"
           v-on:label-change="item.label = $event"
           v-bind:key="i"
+          v-bind:can-be-removed="i > 1"
           v-bind:server-row-validation="getCategoryErrors(i)"
         />
       </template>
@@ -68,6 +69,7 @@
             v-on:value-change="item.value = $event"
             v-bind:value-placeholder="nominalPlaceholders[i]"
             v-bind:key="i"
+            v-bind:can-be-removed="i > 0"
             v-bind:server-row-validation="getCategoryErrors(i)"
         />
       </template>
