@@ -51,7 +51,7 @@ function setup() {
     };
     users.push(user);
   });
-  const response = DaoUtils.formatBiResponse(users);
+  const response = DaoUtils.formatBiResponseWithPaging(users, 4, 1, 200, 50);
   const singleResponse = DaoUtils.formatBiResponseSingle({
     'user': { 'id': '1-1', 'name': 'Test user', 'email': 'testuser_new@test.com', 'active': 'true' },
     'roles': [{ 'id': '1', 'domain': 'test role' }],
@@ -202,6 +202,11 @@ describe('Pagination works with expandable table', () => {
   });
 
   it('Page size selection works when expandable closed', async () => {
+
+    const response = DaoUtils.formatBiResponseWithPaging(users, 2, 1, 200, 100);
+    const programUserDAO = mocked(ProgramUserDAO, false);
+    programUserDAO.getAll.mockResolvedValue(response);
+
     const editForm = wrapper.findComponent(EditDataRowForm);
     expect(editForm.exists()).toBeFalsy();
 
@@ -215,6 +220,11 @@ describe('Pagination works with expandable table', () => {
   });
 
   it('Page selection button works when expandable open', async () => {
+
+    const response = DaoUtils.formatBiResponseWithPaging(users, 4, 1, 200, 50);
+    const programUserDAO = mocked(ProgramUserDAO, false);
+    programUserDAO.getAll.mockResolvedValue(response);
+
     await openEditForm(wrapper);
 
     const numSelect = pagination.find('select#paginationSelect');
@@ -231,9 +241,12 @@ describe('Pagination works with expandable table', () => {
 
   it('Show all selection works when expandable closed', async () => {
 
+    const response = DaoUtils.formatBiResponseWithPaging(users, 1, 1, 200, 200);
+    const programUserDAO = mocked(ProgramUserDAO, false);
+    programUserDAO.getAll.mockResolvedValue(response);
+
     let editForm = wrapper.findComponent(EditDataRowForm);
     expect(editForm.exists()).toBeFalsy();
-
     const showAllBtn = wrapper.find('button[data-testid="showAll"]');
     await showAllBtn.trigger('click');
     await wrapper.vm.$nextTick();
@@ -264,6 +277,10 @@ describe('Pagination works with expandable table', () => {
 
   it('Next page button works when expandable closed', async () => {
 
+    const response = DaoUtils.formatBiResponseWithPaging(users, 4, 2, 200, 50);
+    const programUserDAO = mocked(ProgramUserDAO, false);
+    programUserDAO.getAll.mockResolvedValue(response);
+
     let editForm = wrapper.findComponent(EditDataRowForm);
     expect(editForm.exists()).toBeFalsy();
 
@@ -283,6 +300,11 @@ describe('Pagination works with expandable table', () => {
   });
 
   it('Next page button works when expandable open', async () => {
+
+    const response = DaoUtils.formatBiResponseWithPaging(users, 4, 3, 200, 50);
+    const programUserDAO = mocked(ProgramUserDAO, false);
+    programUserDAO.getAll.mockResolvedValue(response);
+
     await openEditForm(wrapper);
 
     const nextPageBtn = wrapper.find('button[aria-label="Next page"');
@@ -299,6 +321,11 @@ describe('Pagination works with expandable table', () => {
   });
 
   it('Previous page button works when expandable open', async () => {
+
+    const response = DaoUtils.formatBiResponseWithPaging(users, 4, 2, 200, 50);
+    const programUserDAO = mocked(ProgramUserDAO, false);
+    programUserDAO.getAll.mockResolvedValue(response);
+
     await openEditForm(wrapper);
 
     const nextPageBtn = wrapper.find('button[aria-label="Previous page"');
@@ -315,6 +342,11 @@ describe('Pagination works with expandable table', () => {
   });
 
   it('Previous page button works when expandable closed', async () => {
+
+    const response = DaoUtils.formatBiResponseWithPaging(users, 4, 1, 200, 50);
+    const programUserDAO = mocked(ProgramUserDAO, false);
+    programUserDAO.getAll.mockResolvedValue(response);
+
     let editForm = wrapper.findComponent(EditDataRowForm);
     expect(editForm.exists()).toBeFalsy();
 
