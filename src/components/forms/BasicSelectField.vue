@@ -25,7 +25,7 @@
   >
     <div class="select is-fullwidth">
       <select
-          v-bind:id="fieldName.replaceAll(' ', '-')"
+          v-bind:id="fieldName.split(' ').join('-')"
           v-on:change="$emit('input', $event.target.value)"
           class="select is-fullwidth"
           v-bind:disabled="isDisabled"
