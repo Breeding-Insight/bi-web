@@ -284,7 +284,13 @@ export default class TraitsImport extends ProgramsBase {
 
   upload() {
     TraitUploadService.uploadFile(this.activeProgram!.id!, this.file!).then((response) => {
-      this.numTraits = response.data!.length;
+      let count = 0;
+      for(let trait of response.data){
+        if(!trait.isDup){
+          count += 1;
+        }
+      }
+      this.numTraits = count;
       this.importService.send(ImportEvent.IMPORT_SUCCESS);
     }).catch((error: ValidationError | AxiosResponse) => {
       this.import_errors = error;

@@ -17,11 +17,13 @@
 
 <template>
   <tr v-on:click="state.bus.$emit(state.selectRowEvent, rowData.data)"
-      v-bind:class="{'is-new': (rowData.new && !checkIsOpen()), 'is-selected': checkIsOpen(), 'is-edit-selected': state.editActive && checkIsOpen()}" >
+      v-bind:class="{'is-new': (rowData.new && !checkIsOpen()), 'is-selected': checkIsOpen(), 'is-edit-selected': state.editActive && checkIsOpen()}"
+      v-bind:style=" checkIsWarning() ? 'background-color: yellow;' : '' ">
     <slot></slot>
+
     <td class="has-text-right is-narrow">
         <a
-          v-if="!state.openedRow && !checkIsOpen()"
+          v-if="!state.openedRow && !checkIsOpen() && !checkIsWarning()"
           data-testid="showDetails"
           v-on:click.stop="state.bus.$emit(state.selectRowEvent, rowData.data)"
           v-on:keypress.enter.space.stop="state.bus.$emit(state.selectRowEvent, rowData.data)"
@@ -30,7 +32,7 @@
           Show details
         </a>
         <ChevronRightIcon
-          v-if="!state.openedRow || checkIsOpen()"
+          v-if="(!state.openedRow || checkIsOpen()) && !checkIsWarning()"
           class="has-vertical-align-middle has-text-link"
           size="1x"
           aria-hidden="true">
@@ -45,10 +47,12 @@
   import { TableRow } from '@/breeding-insight/model/view_models/TableRow';
   import {ChevronRightIcon} from 'vue-feather-icons'
   import {SidePanelTableEventBusHandler} from "@/components/tables/SidePanelTableEventBus";
+//  import { AlertTriangleIcon } from 'vue-feather-icons';
 
   @Component({
     components: {
-      ChevronRightIcon
+      ChevronRightIcon,
+//      AlertTriangleIcon,
     }
   })
   export default class SidePanelTableRow extends Vue {
@@ -63,12 +67,16 @@
       // A match is either the exact row for import confirmations
       // or id match. This will have to be fixed in the future.
       // TODO: Get this to match on table rows, but still work with the editing
-      if (this.state.openedRow) {
+        if (this.state.openedRow) {
         return this.rowData.data === this.state.openedRow ||
           (this.rowData.data.id && this.rowData.data.id === this.state.openedRow.id);
       } else {
         return false;
       }
+    }
+
+    checkIsWarning(): boolean {
+        return this.rowData.data.isDup;
     }
 
   }

@@ -23,9 +23,8 @@
           <div class="level-left">
             <div class="level-item">
               <div class="has-text-dark">
-                <strong>{{numRecords}} new {{importTypeName.toLowerCase()}} records and duplicates not checked yet</strong>
-                <br/>Duplicate {{importTypeName.toLowerCase()}} records, highlighted in yellow and a <alert-triangle-icon size="1.2x" class="icon-align"/> icon, will not be imported.
-                <br/>{{toStartCase(importTypeName)}} records in this list can be directly edited using the "Show details" link.
+                {{numTraits}} unique term(s) have been detected. Terms, highlighted in yellow and a with an icon,
+                match existing terms in the database and will not be imported.
               </div>
             </div>
           </div>
