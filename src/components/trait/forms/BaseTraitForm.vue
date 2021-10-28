@@ -72,6 +72,7 @@
     </div>
     <div class="column new-term is-10">
       <TagField
+          id="tags"
           class="pt-1 pb-1"
           v-bind:options="tags"
           v-bind:value.sync="trait.tags"
@@ -94,6 +95,7 @@
     </div>
     <div class="column new-term is-10">
       <AutoCompleteField
+          id="entity"
           class="pb-2"
           v-bind:options="entities"
           v-bind:value="trait.programObservationLevel ? trait.programObservationLevel.name : undefined"
@@ -109,6 +111,7 @@
     </div>
     <div class="column new-term is-10">
       <AutoCompleteField
+          id="attribute"
           class="pb-2"
           v-bind:options="attributes"
           v-bind:value="trait.attribute"
@@ -131,6 +134,7 @@
     </div>
     <div class="column new-term is-10">
       <AutoCompleteField
+          id="methodDescription"
           class="pb-2"
           v-bind:options="descriptions"
           v-bind:value="trait.method.description"
@@ -169,7 +173,7 @@
       <BasicSelectField
           v-bind:selected-id="StringFormatters.toStartCase(trait.scale.dataType)"
           v-bind:options="getScaleOptions()"
-          v-bind:field-name="'Class'"
+          v-bind:field-name="'Scale Class'"
           v-bind:show-label="false"
           v-bind:field-help="'Note: additional options for this field will appear after selection'"
           v-bind:server-validations="validationHandler.getValidation(0, TraitError.ScaleType)"
