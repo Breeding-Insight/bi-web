@@ -37,6 +37,13 @@
       -->
       <template v-slot:columns="data">
         <TableColumn name="name" v-bind:label="'Name'">
+            <AlertTriangleIcon
+                size="1x"
+                aria-hidden="true"
+                class="has-vertical-align-middle"
+                v-if="data.isDup"
+            >
+            </AlertTriangleIcon>
           {{ data.observationVariableName }}
         </TableColumn>
         <TableColumn name="trait" v-bind:label="'Trait'" v-bind:visible="!collapseColumns">
@@ -103,11 +110,12 @@
   import { TraitStringFormatters } from '@/breeding-insight/utils/TraitStringFormatters';
   import {ProgramUpload} from "@/breeding-insight/model/ProgramUpload";
   import {SidePanelTableEventBusHandler} from "@/components/tables/SidePanelTableEventBus";
+  import { AlertTriangleIcon } from 'vue-feather-icons';
   
 @Component({
   mixins: [validationMixin],
   components: { TableColumn, SidePanelTable, TraitDetailPanel,
-                PlusCircleIcon, EmptyTableMessage
+                PlusCircleIcon, EmptyTableMessage, AlertTriangleIcon
               },
   computed: {
     ...mapGetters([

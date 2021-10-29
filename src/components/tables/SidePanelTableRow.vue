@@ -23,7 +23,7 @@
 
     <td class="has-text-right is-narrow">
         <a
-          v-if="!state.openedRow && !checkIsOpen() && !checkIsWarning()"
+          v-if="!state.openedRow && !checkIsOpen()"
           data-testid="showDetails"
           v-on:click.stop="state.bus.$emit(state.selectRowEvent, rowData.data)"
           v-on:keypress.enter.space.stop="state.bus.$emit(state.selectRowEvent, rowData.data)"
@@ -32,7 +32,7 @@
           Show details
         </a>
         <ChevronRightIcon
-          v-if="(!state.openedRow || checkIsOpen()) && !checkIsWarning()"
+          v-if="!state.openedRow || checkIsOpen()"
           class="has-vertical-align-middle has-text-link"
           size="1x"
           aria-hidden="true">
