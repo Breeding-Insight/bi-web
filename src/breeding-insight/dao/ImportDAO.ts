@@ -37,6 +37,16 @@ export class ImportDAO {
     return new BiResponse(data);
   }
 
+  static async getSystemMappings(importName: string | undefined) : Promise<BiResponse> {
+    const params = importName ? {'importName': importName} : undefined;
+    const { data } =  await api.call({
+      url: `${process.env.VUE_APP_BI_API_V1_PATH}/import/mappings`,
+      params: params,
+      method: 'get'
+    }) as Response;
+    return new BiResponse(data);
+  }
+
   static async updateMapping(programId: string, mapping: ImportMappingConfig, options: {[key:string]:boolean}): Promise<any> {
     const mappingWithoutFile: ImportMappingConfig = new ImportMappingConfig({
       id: mapping.id,

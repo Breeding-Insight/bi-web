@@ -18,7 +18,7 @@
 <template>
   <div id="import-germplasm">
     <ImportTemplate v-bind:abort-msg="'No germplasm records will be added, and the import in progress will be completely removed.'"
-                    v-on:upload-file="upload($event)"
+                    v-bind:system-import-template-name="germplasmImportTemplateName"
                     v-on="$listeners">
       <template v-slot:importInfoTemplateMessageBox>
         <ImportInfoTemplateMessageBox v-bind:import-type-name="'Germplasm'"
@@ -49,9 +49,7 @@ import ImportTemplate from "@/views/import/ImportTemplate.vue";
 })
 export default class ImportGermplasm extends ProgramsBase {
 
-  upload() {
-    console.log('upload');
-  }
+  private germplasmImportTemplateName = 'GermplasmTest';
 
 }
 </script>

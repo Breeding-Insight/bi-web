@@ -96,17 +96,13 @@ import ConfirmImportMessageBox from "@/components/trait/ConfirmImportMessageBox.
 import ImportInfoTemplateMessageBox from "@/components/file-import/ImportInfoTemplateMessageBox.vue";
 import FileSelectMessageBox from "@/components/file-import/FileSelectMessageBox.vue"
 import WarningModal from '@/components/modals/WarningModal.vue'
-
 import {Program} from '@/breeding-insight/model/Program'
-import {TraitUploadService} from "@/breeding-insight/service/TraitUploadService";
-import {TraitService} from "@/breeding-insight/service/TraitService";
-
 import { createMachine, interpret } from '@xstate/fsm';
 import {ValidationError} from "@/breeding-insight/model/errors/ValidationError";
-import {Metadata} from "@/breeding-insight/model/BiResponse";
-import {Trait} from "@/breeding-insight/model/Trait";
-import {ProgramUpload} from "@/breeding-insight/model/ProgramUpload";
 import {AxiosResponse} from "axios";
+import {ImportMappingConfig} from "@/breeding-insight/model/import/ImportMapping";
+import {ImportService} from "@/breeding-insight/service/ImportService";
+import {ImportResponse} from "@/breeding-insight/model/import/ImportResponse";
 
 enum ImportState {
   CHOOSE_FILE = "CHOOSE_FILE",
@@ -161,13 +157,12 @@ export default class ImportTemplate extends ProgramsBase {
   private showTitle! : boolean;
 
   @Prop()
-  private abortMsg!: string;
+  private abortMsg: string;
 
   @Prop()
-  private records!: Array<any>;
+  private systemImportTemplateName: string;
 
-  @Prop()
-  private errors!: ValidationError | AxiosResponse | null;
+  private systemImportTemplateId: string;
 
   private file : File | null = null;
   private import_errors: ValidationError | AxiosResponse | null = null;
@@ -284,8 +279,9 @@ export default class ImportTemplate extends ProgramsBase {
   }
 
   upload() {
-    this.$emit('upload-file', this.file!);
-    //this.$emit()
+
+    this.getSystemImportTemplateMapping();
+
     /*
     TraitUploadService.uploadFile(this.activeProgram!.id!, this.file!).then((response) => {
       this.numTraits = response.data!.length;
@@ -354,6 +350,51 @@ export default class ImportTemplate extends ProgramsBase {
     this.file = null;
     this.tableLoaded = false;
   }
+
+  async getSystemImportTemplateMapping() {
+    try {
+      const importMappings: ImportMappingConfig[] = await ImportService.getSystemMappings(this.systemImportTemplateName);
+      if (importMappings.length !== 1) {
+        this.$emit('show-error-notification', `Expected 1 system import mapping`);
+      } else {
+        this.systemImportTemplateId = importMappings[0].id;
+        console.log(this.systemImportTemplateId);
+      }
+    } catch (e) {
+      this.$log.error(e);
+      this.$emit('show-error-notification', `Unable to load system import mappings`);
+    }
+  }
+
+  /*
+  async uploadData() {
+    try {
+      let previewResponse: ImportResponse = await ImportService.uploadData(this.activeProgram!.id!, this.mapping.id!, this.file!, false);
+      this.currentImport = previewResponse;
+      // Get the import id
+    } catch (e) {
+      this.$log.error(e);
+      this.$emit('show-error-notification', `Unable to upload file`);
+      throw e;
+    }
+  }
+
+  async updateDataUpload(uploadId: string, commit: boolean) {
+    let previewResponse: ImportResponse = await ImportService.updateDataUpload(this.activeProgram!.id!, this.mapping.id!, uploadId!, commit);
+    this.currentImport = previewResponse;
+
+    // Start check for our data upload
+    const includeMapping = !commit;
+    this.getDataUpload(includeMapping);
+
+    if (commit) {
+      this.importService.send(ImportEvent.COMMIT_IMPORT);
+    } else {
+      this.importService.send(ImportEvent.PREVIEW_IMPORT);
+    }
+  }
+
+   */
 
 }
 </script>

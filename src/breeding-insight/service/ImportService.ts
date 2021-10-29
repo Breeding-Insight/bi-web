@@ -41,6 +41,12 @@ export class ImportService {
     return mappings;
   }
 
+  static async getSystemMappings(importName: string | undefined): Promise<ImportMappingConfig[]> {
+    const response: BiResponse = await ImportDAO.getSystemMappings(importName);
+    const mappings: ImportMappingConfig[] = response.result.data.map((mapping: ImportMappingConfig) => new ImportMappingConfig(mapping));
+    return mappings;
+  }
+
   static async updateMapping(programId: string, mapping: ImportMappingConfig, options: {[key:string]:boolean}): Promise<any> {
     if (!programId || programId === null) throw 'Program ID not provided';
     if (!mapping || !mapping.id) throw 'Mapping must have an id.';
