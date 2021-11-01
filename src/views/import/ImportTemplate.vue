@@ -77,7 +77,7 @@
 
     <template v-if="state === ImportState.IMPORT_ERROR">
       <h1 class="title">Importing...</h1>
-      <TraitImportTemplateMessageBox class="mb-5"/>
+      <slot name="importInfoTemplateMessageBox" />
       <div class="box">
         <FileSelectMessageBox v-model="file"
                               v-bind:fileTypes="'.csv, .xls, .xlsx'"
@@ -125,7 +125,8 @@ enum ImportEvent {
   IMPORT_SUCCESS = "IMPORT_SUCCESS",
   CONFIRMED = "CONFIRMED",
   IMPORT_ERROR = "IMPORT_ERROR",
-  TABLE_LOADED = "TABLE_LOADED"
+  TABLE_LOADED = "TABLE_LOADED",
+  DONE = "DONE"
 }
 
 enum ImportAction {
@@ -159,18 +160,21 @@ export default class ImportTemplate extends ProgramsBase {
   private title!: string;
 
   @Prop({default: true})
-  private showTitle! : boolean;
+  private showTitle!: boolean;
 
   @Prop()
-  private abortMsg: string;
+  private abortMsg!: string;
 
   @Prop()
-  private confirmMsg: string;
+  private confirmMsg!: string;
 
   @Prop()
-  private systemImportTemplateName: string;
+  private systemImportTemplateName!: string;
 
-  private systemImportTemplateId: string;
+  @Prop()
+  importTypeName!: string;
+
+  private systemImportTemplateId!: string;
   private currentImport?: ImportResponse = new ImportResponse({});
   private previewData: any[] = [];
   private previewTotalRows: number = 0;
@@ -183,7 +187,7 @@ export default class ImportTemplate extends ProgramsBase {
   private numTraits = 0;
   private showAbortModal = false;
 
-  private yesAbortId: string = "traitsimport-yes-abort";
+  private yesAbortId: string = "import-yes-abort";
 
   private ImportState = ImportState;
   private ImportEvent = ImportEvent;
@@ -236,6 +240,9 @@ export default class ImportTemplate extends ProgramsBase {
               },
               [ImportEvent.CONFIRMED]: {
                 actions: ImportAction.CONFIRM
+              },
+              [ImportEvent.DONE]: {
+                target: ImportState.CHOOSE_FILE,
               },
             }
           },
@@ -296,19 +303,20 @@ export default class ImportTemplate extends ProgramsBase {
 
   async upload() {
 
-    await this.getSystemImportTemplateMapping();
-    await this.uploadData();
-    await this.updateDataUpload(this.currentImport!.importId!, false);
-
-    /*
-    TraitUploadService.uploadFile(this.activeProgram!.id!, this.file!).then((response) => {
-      this.numTraits = response.data!.length;
+    try {
+      await this.getSystemImportTemplateMapping();
+      await this.uploadData();
+      await this.updateDataUpload(this.currentImport!.importId!, false);
       this.importService.send(ImportEvent.IMPORT_SUCCESS);
-    }).catch((error: ValidationError | AxiosResponse) => {
-      this.import_errors = error;
+    } catch(e) {
+      if (typeof e === "string") {
+        this.$emit('show-error-notification', e);
+      } else {
+        // TODO: proper error handling when added to importer
+        this.import_errors = e;
+      }
       this.importService.send(ImportEvent.IMPORT_ERROR);
-    });
-     */
+    }
   }
 
   abort() {
@@ -340,28 +348,20 @@ export default class ImportTemplate extends ProgramsBase {
   }
 
   async confirm() {
-    /*
+
     const name = this.activeProgram && this.activeProgram.name ? this.activeProgram.name : 'the program';
     try {
-      // fetch uploaded traits
-      const [ upload ] = await TraitUploadService.getTraits(this.activeProgram!.id!) as [ProgramUpload, Metadata];
-      await TraitUploadService.confirmUpload(this.activeProgram!.id!, upload!.id!);
+      await this.updateDataUpload(this.currentImport!.importId!, true);
+      this.$emit('show-success-notification', `Imported ${this.importTypeName.toLowerCase()} records have been added to ${name}.`);
+      // TODO: navigate to appropriate record list page when we have it
+      this.importService.send(ImportEvent.DONE);
 
-      // show all program traits
-      this.$emit('show-success-notification', `Imported ontology terms have been added to ${name}.`);
-      this.$router.push({
-        name: 'traits-list',
-        params: {
-          programId: this.activeProgram!.id!
-        },
-      });
-    } catch(err) {
-      const note = err.message ? err.message : `Error: Imported ontology terms were not added to ${name}.`;
+    } catch (e) {
+      const note = e.message ? e.message : `Error: Imported ${this.importTypeName.toLowerCase()} records were not added to ${name}.`;
       this.$emit('show-error-notification', `${note}`);
-      Vue.$log.error(err);
+      this.$log.error(e);
     }
 
-     */
   }
 
   reset() {
@@ -370,32 +370,29 @@ export default class ImportTemplate extends ProgramsBase {
   }
 
   async getSystemImportTemplateMapping() {
+    let importMappings: ImportMappingConfig[];
     try {
-      const importMappings: ImportMappingConfig[] = await ImportService.getSystemMappings(this.systemImportTemplateName);
-      if (importMappings.length !== 1) {
-        this.$emit('show-error-notification', `Expected 1 system import mapping`);
-        this.importService.send(ImportEvent.IMPORT_ERROR);
-      } else {
-        this.systemImportTemplateId = importMappings[0].id;
-        console.log(this.systemImportTemplateId);
-      }
+      importMappings = await ImportService.getSystemMappings(this.systemImportTemplateName);
     } catch (e) {
       this.$log.error(e);
-      this.$emit('show-error-notification', `Unable to load system import mappings`);
-      this.importService.send(ImportEvent.IMPORT_ERROR);
+      throw 'Unable to load system import mappings';
+    }
+
+    if (importMappings.length === 1) {
+      this.systemImportTemplateId = importMappings[0].id!;
+    } else {
+      throw 'Expected system import mapping named ' + this.systemImportTemplateName;
     }
   }
 
   async uploadData() {
     try {
       let previewResponse: ImportResponse = await ImportService.uploadData(this.activeProgram!.id!, this.systemImportTemplateId, this.file!, false);
-      console.log(previewResponse);
       this.currentImport = previewResponse;
       // Get the import id
     } catch (e) {
       this.$log.error(e);
-      this.$emit('show-error-notification', `Unable to upload file`);
-      throw e;
+      throw 'Unable to upload file';
     }
   }
 
@@ -406,12 +403,6 @@ export default class ImportTemplate extends ProgramsBase {
     // Start check for our data upload
     const includeMapping = !commit;
     this.getDataUpload(includeMapping);
-    console.log(previewResponse);
-    if (commit) {
-      //this.importService.send(ImportEvent.COMMIT_IMPORT);
-    } else {
-      this.importService.send(ImportEvent.IMPORT_SUCCESS);
-    }
   }
 
   async getDataUpload(includeMapping: boolean) {
@@ -431,7 +422,7 @@ export default class ImportTemplate extends ProgramsBase {
         if (previewResponse.progress && previewResponse.progress.statuscode != 200){
           this.$log.error(previewResponse.progress.message);
           // TODO: Shouldn't show this to the user if its a 500
-          this.$emit('show-error-notification', previewResponse.progress.message);
+          throw previewResponse.progress.message;
         }
 
         // Calculate some stuff for the preview data display

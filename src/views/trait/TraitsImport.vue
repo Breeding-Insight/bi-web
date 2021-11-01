@@ -78,8 +78,13 @@
     </template>
 
     <template v-if="state === ImportState.IMPORT_ERROR">
-        <h1 class="title">Importing...</h1>
-      <TraitImportTemplateMessageBox class="mb-5"/>
+      <h1 class="title">Importing...</h1>
+      <ImportInfoTemplateMessageBox v-bind:import-type-name="'Ontology'"
+                                    v-bind:template-url="'https://cornell.box.com/shared/static/pdphm5nr8vd6wc60n2cg6bvtndmkg4vr.xls'"
+                                    class="mb-5">
+        <strong>Before You Import...</strong>
+        <br/>Prepare ontology information for import using the provided template.
+      </ImportInfoTemplateMessageBox>
         <div class="box">
           <FileSelectMessageBox v-model="file"
                                 v-bind:fileTypes="'.csv, .xls, .xlsx'"
