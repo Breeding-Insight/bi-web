@@ -61,15 +61,12 @@
     </template>
 
     <template v-if="state === ImportState.LOADING || state === ImportState.CURATE">
-      <template v-if="tableLoaded">
-        <h1 class="title">{{toTitleCase(confirmMsg)}}</h1>
-        <ConfirmImportMessageBox v-bind:num-records="numTraits"
-                                 v-bind:import-type-name="'Germplasm'"
-                                 v-on:abort="showAbortModal = true"
-                                 v-on:confirm="importService.send(ImportEvent.CONFIRMED)"
-                                 class="mb-4"/>
-      </template>
-      <TraitsImportTable v-on:loaded="importService.send(ImportEvent.TABLE_LOADED)"/>
+      <h1 class="title">{{toTitleCase(confirmMsg)}}</h1>
+      <ConfirmImportMessageBox v-bind:num-records="numTraits"
+                               v-bind:import-type-name="'Germplasm'"
+                               v-on:abort="showAbortModal = true"
+                               v-on:confirm="importService.send(ImportEvent.CONFIRMED)"
+                               class="mb-4"/>
       <div>
         <tree-view :data="previewData" :options="{maxDepth: 0}"></tree-view>
       </div>
@@ -94,7 +91,6 @@ import { Component, Prop, Watch, Vue } from 'vue-property-decorator'
 import { mapGetters } from 'vuex'
 
 import ProgramsBase from "@/components/program/ProgramsBase.vue"
-import TraitsImportTable from "@/components/trait/TraitsImportTable.vue";
 import ImportingMessageBox from "@/components/file-import/ImportingMessageBox.vue";
 import ConfirmImportMessageBox from "@/components/trait/ConfirmImportMessageBox.vue";
 import ImportInfoTemplateMessageBox from "@/components/file-import/ImportInfoTemplateMessageBox.vue";
@@ -141,7 +137,6 @@ enum ImportAction {
 
 @Component({
   components: {
-    TraitsImportTable,
     ImportingMessageBox,
     ConfirmImportMessageBox,
     FileSelectMessageBox,
@@ -216,10 +211,11 @@ export default class ImportTemplate extends ProgramsBase {
                 target: ImportState.CHOOSE_FILE,
                 actions: ImportAction.ABORT
               },
-              [ImportEvent.IMPORT_SUCCESS]: ImportState.LOADING,
+              [ImportEvent.IMPORT_SUCCESS]: ImportState.CURATE,
               [ImportEvent.IMPORT_ERROR]: ImportState.IMPORT_ERROR,
             }
           },
+          //TODO: This is skipped for now
           [ImportState.LOADING]: {
             on: {
               [ImportEvent.ABORT_IMPORT]: {
@@ -432,6 +428,7 @@ export default class ImportTemplate extends ProgramsBase {
             this.previewTotalRows = previewResponse.preview.rows.length;
             this.previewData = previewResponse.preview.rows.slice(0, 100);
             this.newObjectCounts = previewResponse.preview.statistics;
+            console.log(previewResponse.preview);
           }
         }
       }
