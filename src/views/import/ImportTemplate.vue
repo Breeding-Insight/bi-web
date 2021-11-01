@@ -62,13 +62,17 @@
 
     <template v-if="state === ImportState.LOADING || state === ImportState.CURATE">
       <template v-if="tableLoaded">
-        <h1 class="title">Confirm New Ontology Term</h1>
-        <ConfirmImportMessageBox v-bind:num-traits="numTraits"
+        <h1 class="title">{{toTitleCase(confirmMsg)}}</h1>
+        <ConfirmImportMessageBox v-bind:num-records="numTraits"
+                                 v-bind:import-type-name="'Germplasm'"
                                  v-on:abort="showAbortModal = true"
                                  v-on:confirm="importService.send(ImportEvent.CONFIRMED)"
                                  class="mb-4"/>
       </template>
       <TraitsImportTable v-on:loaded="importService.send(ImportEvent.TABLE_LOADED)"/>
+      <div>
+        <tree-view :data="previewData" :options="{maxDepth: 0}"></tree-view>
+      </div>
     </template>
 
     <template v-if="state === ImportState.IMPORT_ERROR">
@@ -103,6 +107,7 @@ import {AxiosResponse} from "axios";
 import {ImportMappingConfig} from "@/breeding-insight/model/import/ImportMapping";
 import {ImportService} from "@/breeding-insight/service/ImportService";
 import {ImportResponse} from "@/breeding-insight/model/import/ImportResponse";
+import { titleCase } from "title-case";
 
 enum ImportState {
   CHOOSE_FILE = "CHOOSE_FILE",
@@ -160,9 +165,16 @@ export default class ImportTemplate extends ProgramsBase {
   private abortMsg: string;
 
   @Prop()
+  private confirmMsg: string;
+
+  @Prop()
   private systemImportTemplateName: string;
 
   private systemImportTemplateId: string;
+  private currentImport?: ImportResponse = new ImportResponse({});
+  private previewData: any[] = [];
+  private previewTotalRows: number = 0;
+  private newObjectCounts: any = [];
 
   private file : File | null = null;
   private import_errors: ValidationError | AxiosResponse | null = null;
@@ -278,9 +290,15 @@ export default class ImportTemplate extends ProgramsBase {
     }
   }
 
-  upload() {
+  toTitleCase(str: string) {
+    return titleCase(str);
+  }
 
-    this.getSystemImportTemplateMapping();
+  async upload() {
+
+    await this.getSystemImportTemplateMapping();
+    await this.uploadData();
+    await this.updateDataUpload(this.currentImport!.importId!, false);
 
     /*
     TraitUploadService.uploadFile(this.activeProgram!.id!, this.file!).then((response) => {
@@ -356,6 +374,7 @@ export default class ImportTemplate extends ProgramsBase {
       const importMappings: ImportMappingConfig[] = await ImportService.getSystemMappings(this.systemImportTemplateName);
       if (importMappings.length !== 1) {
         this.$emit('show-error-notification', `Expected 1 system import mapping`);
+        this.importService.send(ImportEvent.IMPORT_ERROR);
       } else {
         this.systemImportTemplateId = importMappings[0].id;
         console.log(this.systemImportTemplateId);
@@ -363,13 +382,14 @@ export default class ImportTemplate extends ProgramsBase {
     } catch (e) {
       this.$log.error(e);
       this.$emit('show-error-notification', `Unable to load system import mappings`);
+      this.importService.send(ImportEvent.IMPORT_ERROR);
     }
   }
 
-  /*
   async uploadData() {
     try {
-      let previewResponse: ImportResponse = await ImportService.uploadData(this.activeProgram!.id!, this.mapping.id!, this.file!, false);
+      let previewResponse: ImportResponse = await ImportService.uploadData(this.activeProgram!.id!, this.systemImportTemplateId, this.file!, false);
+      console.log(previewResponse);
       this.currentImport = previewResponse;
       // Get the import id
     } catch (e) {
@@ -380,21 +400,55 @@ export default class ImportTemplate extends ProgramsBase {
   }
 
   async updateDataUpload(uploadId: string, commit: boolean) {
-    let previewResponse: ImportResponse = await ImportService.updateDataUpload(this.activeProgram!.id!, this.mapping.id!, uploadId!, commit);
+    let previewResponse: ImportResponse = await ImportService.updateDataUpload(this.activeProgram!.id!, this.systemImportTemplateId, uploadId!, commit);
     this.currentImport = previewResponse;
 
     // Start check for our data upload
     const includeMapping = !commit;
     this.getDataUpload(includeMapping);
-
+    console.log(previewResponse);
     if (commit) {
-      this.importService.send(ImportEvent.COMMIT_IMPORT);
+      //this.importService.send(ImportEvent.COMMIT_IMPORT);
     } else {
-      this.importService.send(ImportEvent.PREVIEW_IMPORT);
+      this.importService.send(ImportEvent.IMPORT_SUCCESS);
     }
   }
 
-   */
+  async getDataUpload(includeMapping: boolean) {
+    try {
+      const previewResponse: ImportResponse = await ImportService.getDataUpload(this.activeProgram!.id!, this.systemImportTemplateId, this.currentImport!.importId!, includeMapping);
+      this.currentImport = previewResponse;
+
+      if (!previewResponse.progress) {
+        this.$log.error('Progress object was not returned with progress response.')
+
+      } else if (previewResponse.progress.statuscode === 202) {
+        // Wait a second, and call GET call again
+        setTimeout(() => this.getDataUpload(includeMapping), 1000);
+
+      } else {
+        // Our call is finished, check the response
+        if (previewResponse.progress && previewResponse.progress.statuscode != 200){
+          this.$log.error(previewResponse.progress.message);
+          // TODO: Shouldn't show this to the user if its a 500
+          this.$emit('show-error-notification', previewResponse.progress.message);
+        }
+
+        // Calculate some stuff for the preview data display
+        // TODO: Add pagination to this
+        if (previewResponse && previewResponse.preview){
+          if (previewResponse.preview && previewResponse.preview.rows) {
+            this.previewTotalRows = previewResponse.preview.rows.length;
+            this.previewData = previewResponse.preview.rows.slice(0, 100);
+            this.newObjectCounts = previewResponse.preview.statistics;
+          }
+        }
+      }
+
+    } catch (e) {
+      throw e;
+    }
+  }
 
 }
 </script>

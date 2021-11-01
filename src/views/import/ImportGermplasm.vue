@@ -19,6 +19,7 @@
   <div id="import-germplasm">
     <ImportTemplate v-bind:abort-msg="'No germplasm records will be added, and the import in progress will be completely removed.'"
                     v-bind:system-import-template-name="germplasmImportTemplateName"
+                    v-bind:confirm-msg="'Confirm New Germplasm Records'"
                     v-on="$listeners">
       <template v-slot:importInfoTemplateMessageBox>
         <ImportInfoTemplateMessageBox v-bind:import-type-name="'Germplasm'"

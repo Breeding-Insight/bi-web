@@ -42,7 +42,7 @@
             Cancel
           </button>
         </div>
-      </div>              
+      </div>
     </WarningModal>
 
     <template v-if="state === ImportState.CHOOSE_FILE || state === ImportState.FILE_CHOSEN">
@@ -59,19 +59,20 @@
                                  v-on:import="importService.send(ImportEvent.IMPORT_STARTED)"/>
       </div>
     </template>
-    
+
     <template v-if="state === ImportState.IMPORTING || state === ImportState.LOADING">
       <h1 class="title">Importing...</h1>
       <ImportingMessageBox v-bind:file="file" v-on:abort="importService.send(ImportEvent.ABORT_IMPORT)"/>
     </template>
-    
+
     <template v-if="state === ImportState.LOADING || state === ImportState.CURATE">
       <template v-if="tableLoaded">
         <h1 class="title">Confirm New Ontology Term</h1>
-        <ConfirmImportMessageBox v-bind:num-traits="numTraits"
-                                    v-on:abort="showAbortModal = true" 
-                                    v-on:confirm="importService.send(ImportEvent.CONFIRMED)"
-                                    class="mb-4"/>
+        <ConfirmImportMessageBox v-bind:num-records="numTraits"
+                                 v-bind:import-type-name="'Trait'"
+                                 v-on:abort="showAbortModal = true"
+                                 v-on:confirm="importService.send(ImportEvent.CONFIRMED)"
+                                 class="mb-4"/>
       </template>
       <TraitsImportTable v-on:loaded="importService.send(ImportEvent.TABLE_LOADED)"/>
     </template>
@@ -170,7 +171,7 @@ export default class TraitsImport extends ProgramsBase {
   private showAbortModal = false;
 
   private yesAbortId: string = "traitsimport-yes-abort";
-  
+
   private ImportState = ImportState;
   private ImportEvent = ImportEvent;
   private ImportAction = ImportAction;
@@ -182,18 +183,18 @@ export default class TraitsImport extends ProgramsBase {
     states: {
       [ImportState.CHOOSE_FILE]: {
         entry: ImportAction.RESET,
-        on: { 
-          [ImportEvent.FILE_SELECTED]: ImportState.FILE_CHOSEN 
-        } 
+        on: {
+          [ImportEvent.FILE_SELECTED]: ImportState.FILE_CHOSEN
+        }
       },
-      [ImportState.FILE_CHOSEN]: { 
-        on: { 
-          [ImportEvent.IMPORT_STARTED]: ImportState.IMPORTING 
+      [ImportState.FILE_CHOSEN]: {
+        on: {
+          [ImportEvent.IMPORT_STARTED]: ImportState.IMPORTING
         }
       },
       [ImportState.IMPORTING]: {
         entry: ImportAction.START,
-        on: { 
+        on: {
           [ImportEvent.ABORT_IMPORT]: {
             target: ImportState.CHOOSE_FILE,
             actions: ImportAction.ABORT
@@ -315,7 +316,7 @@ export default class TraitsImport extends ProgramsBase {
   }
 
   async confirm() {
-    const name = this.activeProgram && this.activeProgram.name ? this.activeProgram.name : 'the program';  
+    const name = this.activeProgram && this.activeProgram.name ? this.activeProgram.name : 'the program';
     try {
       // fetch uploaded traits
       const [ upload ] = await TraitUploadService.getTraits(this.activeProgram!.id!) as [ProgramUpload, Metadata];

@@ -23,9 +23,9 @@
           <div class="level-left">
             <div class="level-item">
               <div class="has-text-dark">
-                <strong>{{numTraits}} new traits and duplicates not checked yet</strong>
-                <br/>Duplicate traits, highlighted in yellow and a <alert-triangle-icon size="1.2x" class="icon-align"/> icon, will not be imported.
-                <br/>Traits in this list can be directly edited using the "Show details" link.
+                <strong>{{numRecords}} new {{importTypeName.toLowerCase()}} records and duplicates not checked yet</strong>
+                <br/>Duplicate {{importTypeName.toLowerCase()}} records, highlighted in yellow and a <alert-triangle-icon size="1.2x" class="icon-align"/> icon, will not be imported.
+                <br/>{{toStartCase(importTypeName)}} records in this list can be directly edited using the "Show details" link.
               </div>
             </div>
           </div>
@@ -50,6 +50,7 @@
 <script lang="ts">
   import { Component, Prop, Vue } from 'vue-property-decorator'
   import {AlertTriangleIcon} from 'vue-feather-icons'
+  import {StringFormatters} from '@/breeding-insight/utils/StringFormatters'
 
   @Component({
     components: {
@@ -59,7 +60,10 @@
   export default class ConfirmImportMessageBox extends Vue {
 
     @Prop()
-    private numTraits!: number;
+    private numRecords!: number;
+
+    @Prop()
+    importTypeName! : string;
 
     confirm() {
       this.$emit('confirm');
@@ -67,6 +71,10 @@
 
     abort() {
       this.$emit('abort');
+    }
+
+    toStartCase(str : string) {
+      return StringFormatters.toStartCase(str);
     }
 
   }
