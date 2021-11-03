@@ -39,7 +39,6 @@
         <TableColumn name="name" v-bind:label="'Name'">
             <AlertTriangleIcon
                 size="1x"
-                aria-hidden="true"
                 class="has-vertical-align-middle"
                 v-if="data.isDup"
             >

@@ -23,8 +23,8 @@
           <div class="level-left">
             <div class="level-item">
               <div class="has-text-dark">
-                {{numTraits}} unique term(s) have been detected. Terms, highlighted in yellow and a with
-                a <alert-triangle-icon size="1x" aria-hidden="true" class="has-vertical-align-middle"></alert-triangle-icon> icon,
+                {{numTraits}} unique term(s) have been detected. Terms, highlighted and with
+                a <alert-triangle-icon size="1x" class="has-vertical-align-middle"></alert-triangle-icon> icon,
                 match existing terms in the database and will not be imported.
               </div>
             </div>
