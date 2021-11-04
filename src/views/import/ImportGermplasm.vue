@@ -44,7 +44,7 @@
                                  v-on:confirm="confirm"
                                  class="mb-4"/>
       </template>
-      
+
       <template v-slot:importPreviewTable="previewData">
         <!-- TODO: Replace tree-view when table is ready -->
         <tree-view v-bind:data="previewData.previewData" v-bind:options="{maxDepth: 0}"></tree-view>

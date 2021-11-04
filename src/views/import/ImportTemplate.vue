@@ -435,11 +435,7 @@ export default class ImportTemplate extends ProgramsBase {
             this.previewData = previewResponse.preview.rows.slice(0, 100);
             this.newObjectCounts = previewResponse.preview.statistics;
             this.importService.send(ImportEvent.IMPORT_SUCCESS);
-          } else {
-            throw 'No import rows found';
           }
-        } else {
-          throw 'No preview response returned';
         }
       }
 
