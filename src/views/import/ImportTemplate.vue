@@ -60,16 +60,16 @@
       <ImportingMessageBox v-bind:file="file" v-on:abort="importService.send(ImportEvent.ABORT_IMPORT)"/>
     </template>
 
-    <template v-if="state === ImportState.LOADING || state === ImportState.CURATE">
+    <template v-if="state === ImportState.CURATE"> <!-- state === ImportState.LOADING ||-->
       <h1 class="title">{{toTitleCase(confirmMsg)}}</h1>
-      <ConfirmImportMessageBox v-bind:num-records="numTraits"
-                               v-bind:import-type-name="'Germplasm'"
-                               v-on:abort="showAbortModal = true"
-                               v-on:confirm="importService.send(ImportEvent.CONFIRMED)"
-                               class="mb-4"/>
-      <div>
-        <tree-view :data="previewData" :options="{maxDepth: 0}"></tree-view>
-      </div>
+
+      <slot name="confirmImportMessageBox"
+            v-bind:statistics="newObjectCounts"
+            v-bind:abort="handleAbortEvent"
+            v-bind:confirm="handleConfirmEvent"
+      />
+
+      <slot name="importPreviewTable" v-bind:previewData="previewData" />
     </template>
 
     <template v-if="state === ImportState.IMPORT_ERROR">
@@ -179,7 +179,6 @@ export default class ImportTemplate extends ProgramsBase {
   private import_errors: ValidationError | AxiosResponse | null = null;
   private activeProgram?: Program;
   private tableLoaded = false;
-  private numTraits = 0;
   private showAbortModal = false;
 
   private yesAbortId: string = "import-yes-abort";
@@ -303,7 +302,7 @@ export default class ImportTemplate extends ProgramsBase {
       await this.getSystemImportTemplateMapping();
       await this.uploadData();
       await this.updateDataUpload(this.currentImport!.importId!, false);
-      this.importService.send(ImportEvent.IMPORT_SUCCESS);
+      // this.importService.send(ImportEvent.IMPORT_SUCCESS) is in getDataUpload()
     } catch(e) {
       if (typeof e === "string") {
         this.$emit('show-error-notification', e);
@@ -313,6 +312,14 @@ export default class ImportTemplate extends ProgramsBase {
       }
       this.importService.send(ImportEvent.IMPORT_ERROR);
     }
+  }
+
+  handleAbortEvent() {
+    this.showAbortModal = true
+  }
+
+  handleConfirmEvent() {
+    this.importService.send(ImportEvent.CONFIRMED);
   }
 
   abort() {
@@ -326,7 +333,6 @@ export default class ImportTemplate extends ProgramsBase {
   }
 
   delete() {
-    // TODO: call DELETE /trait-upload
     this.showCancelledNotification();
   }
 
@@ -428,8 +434,12 @@ export default class ImportTemplate extends ProgramsBase {
             this.previewTotalRows = previewResponse.preview.rows.length;
             this.previewData = previewResponse.preview.rows.slice(0, 100);
             this.newObjectCounts = previewResponse.preview.statistics;
-            console.log(previewResponse.preview);
+            this.importService.send(ImportEvent.IMPORT_SUCCESS);
+          } else {
+            throw 'No import rows found';
           }
+        } else {
+          throw 'No preview response returned';
         }
       }
 

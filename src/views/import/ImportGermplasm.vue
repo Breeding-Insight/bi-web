@@ -22,6 +22,7 @@
                     v-bind:confirm-msg="'Confirm New Germplasm Records'"
                     v-bind:import-type-name="'Germplasm'"
                     v-on="$listeners">
+
       <template v-slot:importInfoTemplateMessageBox>
         <ImportInfoTemplateMessageBox v-bind:import-type-name="'Germplasm'"
                                       v-bind:template-url="'https://cornell.box.com/shared/static/kv3l900otsea9zm3iowp7e9umpcjvsck.xls'"
@@ -35,6 +36,20 @@
           database via customized matching in the upcoming step.
         </ImportInfoTemplateMessageBox>
       </template>
+
+      <template v-slot:confirmImportMessageBox="{ statistics, abort, confirm }">
+        <ConfirmImportMessageBox v-bind:num-records="getNumNewGermplasmRecords(statistics)"
+                                 v-bind:import-type-name="'Germplasm'"
+                                 v-on:abort="abort"
+                                 v-on:confirm="confirm"
+                                 class="mb-4"/>
+      </template>
+      
+      <template v-slot:importPreviewTable="previewData">
+        <!-- TODO: Replace tree-view when table is ready -->
+        <tree-view v-bind:data="previewData.previewData" v-bind:options="{maxDepth: 0}"></tree-view>
+      </template>
+
     </ImportTemplate>
   </div>
 </template>
@@ -43,15 +58,26 @@
 import { Component, Prop, Vue } from 'vue-property-decorator'
 import ProgramsBase from "@/components/program/ProgramsBase.vue";
 import ImportInfoTemplateMessageBox from "@/components/file-import/ImportInfoTemplateMessageBox.vue";
+import ConfirmImportMessageBox from "@/components/trait/ConfirmImportMessageBox.vue";
 import ImportTemplate from "@/views/import/ImportTemplate.vue";
 
 @Component({
-  components: {ImportInfoTemplateMessageBox, ImportTemplate
+  components: {ImportInfoTemplateMessageBox, ConfirmImportMessageBox, ImportTemplate
   }
 })
 export default class ImportGermplasm extends ProgramsBase {
 
+  // TODO: maybe move to config instead of hardcode?
   private germplasmImportTemplateName = 'GermplasmTest';
+
+  getNumNewGermplasmRecords(statistics: any): number | undefined {
+    if (statistics.Germplasm) {
+      if (statistics.Germplasm.newObjectCount !== undefined) {
+        return statistics.Germplasm.newObjectCount;
+      }
+    }
+    return undefined;
+  }
 
 }
 </script>
