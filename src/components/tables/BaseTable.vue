@@ -34,8 +34,17 @@
                 width: column.width === undefined ? null :
                 (isNaN(column.width) ? column.width : column.width + 'px')
               }"
+              v-bind:class="{activesort: column.isSortable && column.currentSortField === column.sortLabel,
+                             sortcolumn: column.isSortable}"
+              v-on:click="column.changeSortColumn(column.sortLabel)"
           >
             {{ column.label }}
+            <span
+                class="icon sort-control"
+                v-bind:style="{visibility: column.isSortable && column.currentSortField === column.sortLabel ? 'visible' : 'hidden' }"
+                v-on:click="column.toggleSortOrder()"
+                v-bind:class="{ascending: column.order, descending: !column.order}"
+            ><i class="fas fa-chevron-circle-up"></i></span>
           </th>
           <!-- Add a header column to match spacing for row controls if specified -->
           <template v-if="showExpandControls">
@@ -59,6 +68,7 @@
   import {TableRow} from "@/breeding-insight/model/view_models/TableRow"
   import TableColumn from "@/components/tables/TableColumn.vue";
   import { VBreakpoint } from '@/components/VBreakpoint';
+  import {SortOrder} from "@/breeding-insight/model/Sort";
 
   @Component({
     components: { VBreakpoint
@@ -85,6 +95,7 @@
     private tableRows: Array<TableRow<any>> = new Array<TableRow<any>>();
     private updatedColumns: Array<TableColumn> = [...this.columns];
     private isMobile = false;
+    private orderOptions = SortOrder;
 
     /**
      * Used by TableColumn component to find it's parent BaseTable
