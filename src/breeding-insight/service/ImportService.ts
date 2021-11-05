@@ -56,7 +56,7 @@ export class ImportService {
       return importMapping;
     } catch (e) {
       if (e.response && e.response.status === 409) {
-        e.errorMessage = this.mappingNameExists;
+        e.errorMessage = e.response.statusText;
       } else {
         e.errorMessage = e.response.statusText;
       }

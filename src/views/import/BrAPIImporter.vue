@@ -96,7 +96,7 @@
         </template>
         <BasicInputField
           v-bind:field-name="'Import Mapping Name'"
-          v-bind:field-help="'This is the name of the import mapping users will start when importing a file'"
+          v-bind:field-help="'This is the name of the import mapping users will start when importing a file. Reserved import names: Germplasm.'"
           v-bind:value="mapping.name"
           v-on:input="mapping.name = $event"
         />
