@@ -17,12 +17,12 @@
 
 import {TraitDAO} from "@/breeding-insight/dao/TraitDAO";
 import {Trait} from "@/breeding-insight/model/Trait";
-import {BiResponse, Metadata} from "@/breeding-insight/model/BiResponse";
+import {Metadata} from "@/breeding-insight/model/BiResponse";
 import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
 import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
 import {TraitUploadService} from "@/breeding-insight/service/TraitUploadService";
-import {ValidationError} from "@/breeding-insight/model/errors/ValidationError";
 import {TraitFilter} from "@/breeding-insight/model/TraitSelector";
+import {SortOrder, TraitSortField} from "@/breeding-insight/model/Sort";
 
 export class TraitService {
 
@@ -93,7 +93,7 @@ export class TraitService {
       }
 
       if (programId) {
-        TraitDAO.getAll(programId, paginationQuery, full).then((biResponse) => {
+        TraitDAO.getAll(programId, paginationQuery, full).then(biResponse => {
 
           let traits: Trait[] = [];
 
@@ -120,19 +120,21 @@ export class TraitService {
     }));
   }
 
-  static getFilteredTraits(programId: string, paginationQuery?: PaginationQuery, full?: boolean, filters?: TraitFilter[]): Promise<[Trait[], Metadata]> {
+  static getFilteredTraits(programId: string, paginationQuery?: PaginationQuery, full?: boolean, filters?: TraitFilter[], sortField?: TraitSortField, sortOrder?: SortOrder): Promise<[Trait[], Metadata]> {
     return new Promise<[Trait[], Metadata]>(((resolve, reject) => {
 
       if (paginationQuery === undefined) {
         paginationQuery = new PaginationQuery(0, 0, true);
       }
 
+      if (sortField === undefined) sortField = TraitSortField.Name;
+      if (sortOrder === undefined) sortOrder = SortOrder.Ascending;
       if (full === undefined) {
         full = false;
       }
 
       if (programId) {
-        TraitDAO.getFilteredTraits(programId, paginationQuery, full, filters).then((biResponse) => {
+        TraitDAO.getFilteredTraits(programId, paginationQuery, full, filters, sortField, sortOrder).then((biResponse) => {
 
           let traits: Trait[] = [];
 

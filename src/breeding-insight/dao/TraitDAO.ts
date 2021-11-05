@@ -20,6 +20,7 @@ import {BiResponse, Response} from "@/breeding-insight/model/BiResponse";
 import * as api from "@/util/api";
 import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
 import {TraitFilter, TraitSelector} from "@/breeding-insight/model/TraitSelector";
+import {SortOrder, TraitSortField} from "@/breeding-insight/model/Sort";
 
 export class TraitDAO {
 
@@ -41,9 +42,9 @@ export class TraitDAO {
         }))
     }
 
-    static getFilteredTraits(programId: string, paginationQuery: PaginationQuery, full: boolean, filters?: TraitFilter[]): Promise<BiResponse> {
+    static getFilteredTraits(programId: string, paginationQuery: PaginationQuery, full: boolean, filters?: TraitFilter[], sortField: TraitSortField, sortOrder: SortOrder): Promise<BiResponse> {
         const config: any = {};
-        config.params = {full};
+        config.params = {full, sortField, sortOrder};
 
         if (filters) {
             //
