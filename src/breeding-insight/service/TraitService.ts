@@ -140,7 +140,6 @@ export class TraitService {
 
           if (biResponse.result.data) {
             //TODO: Remove when backend default sorting is implemented
-            biResponse.result.data = PaginationController.mockSortRecords(biResponse.result.data);
             traits = biResponse.result.data.map((trait: any) => {
               return trait as Trait;
             });
