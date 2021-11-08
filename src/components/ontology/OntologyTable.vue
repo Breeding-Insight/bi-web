@@ -384,6 +384,11 @@ export default class OntologyTable extends Vue {
     return this.editTrait && this.editTrait.active ? 'restore' : 'archive';
   }
 
+  @Watch('traitSortField')
+  @Watch('nameSortOrder')
+  @Watch('methodSortOrder')
+  @Watch('scaleClassSortOrder')
+  @Watch('unitSortOrder')
   @Watch('paginationController', { deep: true})
   getTraits() {
     let paginationQuery: PaginationQuery = PaginationController.getPaginationSelections(
