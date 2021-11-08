@@ -439,7 +439,7 @@ export default class ImportTemplate extends ProgramsBase {
         if (previewResponse && previewResponse.preview){
           if (previewResponse.preview && previewResponse.preview.rows) {
             this.previewTotalRows = previewResponse.preview.rows.length;
-            this.previewData = previewResponse.preview.rows.slice(0, 100);
+            this.previewData = previewResponse.preview.rows as any[];
             this.newObjectCounts = previewResponse.preview.statistics;
             this.importService.send(ImportEvent.IMPORT_SUCCESS);
           }

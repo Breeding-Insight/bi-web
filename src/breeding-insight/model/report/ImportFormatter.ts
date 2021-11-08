@@ -28,33 +28,72 @@
 
   [
     {
-      field: Path to json field in dot notation (ex. germplasmName),
+      field: Path to json field in dot notation, excluding brapiObject, the formatter inserts this. (ex. germplasmName),
       displayName: Display name for the column. Will use the json field dot notation if display
         name not provided. (ex. Germplasm Name)
       visible: true/false indicating whether the field is visible in the table.
-    },
-    {
-      field: * (indicates show all fields. Display name is not allowed when this option is used),
-      visible: true/false
     }
   ]
 
  */
 
 import {ReportStruct} from "@/breeding-insight/model/report/ReportStruct";
+import {FormatConfig} from "@/breeding-insight/model/report/FormatConfig";
+var flatten = require('flat');
 
 export class ImportFormatter {
 
-  static format(json: any, config: any): ReportStruct {
+  static format(jsonData: any[], configs: FormatConfig[]): ReportStruct {
 
     // Loop through the config and construct the column order
-    const columns: string[] = [];
-
-    // Loop through the json and construct the data
-    const data: string[] = [];
-
+    const columns: any[] = this.getColumns(configs);
+    // Format the data
+    const data: any[] = this.getData(jsonData);
 
     const report: ReportStruct = new ReportStruct(data, columns);
+    console.log(report);
     return report;
+  }
+
+  static getColumns(configs: FormatConfig[]): any[] {
+    const tableColumns: any[] = [];
+    for (const config of configs) {
+      tableColumns.push({
+        field: config.field.split('.').join('_'),
+        label: config.displayName ? config.displayName : config.field
+      });
+    }
+    return tableColumns;
+  }
+
+  static getData(jsonData: any[]): any[] {
+
+    const data: any[] = [];
+    for (const datum of jsonData) {
+      const row: any = {};
+      //TODO: Remove test data
+      datum.germplasm.brAPIObject.externalReferences = [
+        {'externalReferenceSource': 'breedinginsight.net', 'externalReferenceID': '1'},
+        {'externalReferenceSource': 'breedinginsight.net', 'externalReferenceID': '2'}
+      ];
+      // TODO: Add report id for details
+
+      // Lift the brapi object out
+      for (const brapiTypeKey of Object.keys(datum)) {
+        row[brapiTypeKey] = datum[brapiTypeKey].brAPIObject;
+      }
+      // Flatten
+      const result: any = flatten(row, {safe: true, delimiter: '_'});
+
+      // Filter out the list types and replace with descriptors
+      for (const key of Object.keys(result)) {
+        if (Array.isArray(result[key])) {
+          result[key] = `${result[key].length} members`;
+        }
+      }
+
+      data.push(result);
+    }
+    return data;
   }
 }

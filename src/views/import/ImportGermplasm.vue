@@ -49,6 +49,7 @@
 
       <template v-slot:importPreviewTable="previewData">
         <!-- TODO: Replace tree-view when table is ready -->
+        <report-table v-bind:report="ImportFormatter.format(previewData.previewData, importTableConfig)"/>
         <tree-view v-bind:data="previewData.previewData" v-bind:options="{maxDepth: 0}"></tree-view>
       </template>
 
@@ -63,15 +64,25 @@ import ImportInfoTemplateMessageBox from "@/components/file-import/ImportInfoTem
 import ConfirmImportMessageBox from "@/components/trait/ConfirmImportMessageBox.vue";
 import ImportTemplate from "@/views/import/ImportTemplate.vue";
 import {DataFormEventBusHandler} from "@/components/forms/DataFormEventBusHandler";
+import ReportTable from "@/components/report/ReportTable.vue";
+import {ImportFormatter} from "@/breeding-insight/model/report/ImportFormatter";
 
 @Component({
-  components: {ImportInfoTemplateMessageBox, ConfirmImportMessageBox, ImportTemplate
-  }
+  components: {
+    ReportTable, ImportInfoTemplateMessageBox, ConfirmImportMessageBox, ImportTemplate
+  },
+  data: () => ({ImportFormatter})
 })
 export default class ImportGermplasm extends ProgramsBase {
 
   // TODO: maybe move to config instead of hardcode?
   private germplasmImportTemplateName = 'GermplasmTemplateMap';
+  private importTableConfig: any = [
+    {field: 'germplasm.germplasmName', displayName: 'Germplasm Name'},
+    {field: 'germplasm.externalReferences', displayName: 'External References'},
+    {field: 'germplasm.additionalInfo.programId', displayName: 'Program ID'},
+    {field: 'germplasm.commonCropName', displayName: 'Species'},
+  ];
 
   private confirmImportState: DataFormEventBusHandler = new DataFormEventBusHandler();
 
