@@ -70,6 +70,7 @@
         <h1 class="title">Confirm New Ontology Term</h1>
         <ConfirmImportMessageBox v-bind:num-records="numTraits"
                                  v-bind:import-type-name="'Trait'"
+                                 v-bind:confirm-import-state="confirmImportState"
                                  v-on:abort="showAbortModal = true"
                                  v-on:confirm="importService.send(ImportEvent.CONFIRMED)"
                                  class="mb-4"/>
@@ -118,6 +119,7 @@ import {Metadata} from "@/breeding-insight/model/BiResponse";
 import {Trait} from "@/breeding-insight/model/Trait";
 import {ProgramUpload} from "@/breeding-insight/model/ProgramUpload";
 import {AxiosResponse} from "axios";
+import {DataFormEventBusHandler} from "@/components/forms/DataFormEventBusHandler";
 
 enum ImportState {
   CHOOSE_FILE = "CHOOSE_FILE",
@@ -176,6 +178,8 @@ export default class TraitsImport extends ProgramsBase {
   private showAbortModal = false;
 
   private yesAbortId: string = "traitsimport-yes-abort";
+
+  private confirmImportState: DataFormEventBusHandler = new DataFormEventBusHandler();
 
   private ImportState = ImportState;
   private ImportEvent = ImportEvent;
@@ -321,6 +325,7 @@ export default class TraitsImport extends ProgramsBase {
   }
 
   async confirm() {
+    this.confirmImportState.bus.$emit(DataFormEventBusHandler.SAVE_STARTED_EVENT);
     const name = this.activeProgram && this.activeProgram.name ? this.activeProgram.name : 'the program';
     try {
       // fetch uploaded traits
@@ -339,6 +344,8 @@ export default class TraitsImport extends ProgramsBase {
       const note = err.message ? err.message : `Error: Imported ontology terms were not added to ${name}.`;
       this.$emit('show-error-notification', `${note}`);
       Vue.$log.error(err);
+    } finally {
+      this.confirmImportState.bus.$emit(DataFormEventBusHandler.SAVE_COMPLETE_EVENT);
     }
   }
 

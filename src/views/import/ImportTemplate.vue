@@ -67,6 +67,7 @@
             v-bind:statistics="newObjectCounts"
             v-bind:abort="handleAbortEvent"
             v-bind:confirm="handleConfirmEvent"
+            v-bind:confirm-import-state="confirmImportState"
       />
 
       <slot name="importPreviewTable" v-bind:previewData="previewData" />
@@ -79,6 +80,7 @@
         <FileSelectMessageBox v-model="file"
                               v-bind:fileTypes="'.csv, .xls, .xlsx'"
                               v-bind:errors="import_errors"
+                              v-bind:confirm-import-state="confirmImportState"
                               v-on:import="importService.send(ImportEvent.IMPORT_STARTED)"/>
       </div>
     </template>
@@ -104,6 +106,7 @@ import {ImportMappingConfig} from "@/breeding-insight/model/import/ImportMapping
 import {ImportService} from "@/breeding-insight/service/ImportService";
 import {ImportResponse} from "@/breeding-insight/model/import/ImportResponse";
 import { titleCase } from "title-case";
+import {DataFormEventBusHandler} from "@/components/forms/DataFormEventBusHandler";
 
 enum ImportState {
   CHOOSE_FILE = "CHOOSE_FILE",
@@ -168,6 +171,9 @@ export default class ImportTemplate extends ProgramsBase {
 
   @Prop()
   importTypeName!: string;
+
+  @Prop()
+  confirmImportState!: DataFormEventBusHandler;
 
   private systemImportTemplateId!: string;
   private currentImport?: ImportResponse = new ImportResponse({});
@@ -350,7 +356,7 @@ export default class ImportTemplate extends ProgramsBase {
   }
 
   async confirm() {
-
+    this.confirmImportState.bus.$emit(DataFormEventBusHandler.SAVE_STARTED_EVENT);
     const name = this.activeProgram && this.activeProgram.name ? this.activeProgram.name : 'the program';
     try {
       await this.updateDataUpload(this.currentImport!.importId!, true);
@@ -362,6 +368,8 @@ export default class ImportTemplate extends ProgramsBase {
       const note = e.message ? e.message : `Error: Imported ${this.importTypeName.toLowerCase()} records were not added to ${name}.`;
       this.$emit('show-error-notification', `${note}`);
       this.$log.error(e);
+    } finally {
+      this.confirmImportState.bus.$emit(DataFormEventBusHandler.SAVE_COMPLETE_EVENT);
     }
 
   }

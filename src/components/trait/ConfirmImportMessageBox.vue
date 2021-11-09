@@ -32,7 +32,13 @@
           <div class="level-right">
             <div class="level-item">
               <div>
-                <button class="button is-success has-text-weight-bold" v-on:click="confirm">Confirm</button>
+                <button
+                    class="button is-success has-text-weight-bold"
+                    v-on:click="confirm"
+                    v-bind:disabled="confirmImportState.saveStarted"
+                    v-bind:class="{'is-loading': confirmImportState.saveStarted}">
+                  Confirm
+                </button>
               </div>
             </div>
             <div class="level-item">
@@ -51,6 +57,7 @@
   import { Component, Prop, Vue } from 'vue-property-decorator'
   import {AlertTriangleIcon} from 'vue-feather-icons'
   import {StringFormatters} from '@/breeding-insight/utils/StringFormatters'
+  import {DataFormEventBusHandler} from "@/components/forms/DataFormEventBusHandler";
 
   @Component({
     components: {
@@ -64,6 +71,9 @@
 
     @Prop()
     importTypeName! : string;
+
+    @Prop()
+    confirmImportState!: DataFormEventBusHandler;
 
     confirm() {
       this.$emit('confirm');
