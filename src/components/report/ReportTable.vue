@@ -18,23 +18,46 @@
 <!--
   Documentation
   -------------
-
+  Displays brapi objects in table format. Requires a formatter to get the data into the correct
+  shape. Accepts a ReportStruct as input.
 
 
 -->
 <template>
   <b-table
       v-bind:data="report.data"
-      v-bind:columns="report.columns">
+      v-bind:columns="report.columns"
+      detailed
+  >
+
+    <template #detail="props">
+      <div v-for="[key, value] of Object.entries(getDetails(props.row.rowId))" v-bind:key="key">
+        <template v-if="value !== Object(value)">
+          <!-- Primitive type, simple display -->
+          <p>{{key}} {{value}}</p>
+        </template>
+        <template v-else>
+          <!-- Array, parse into separate info -->
+          <div v-for="[index, item] of value.entries()" v-bind:key="index">
+            <!-- Check if its a string or object -->
+            <template v-if="item !== Object(item)">
+              <p>{{item}}</p>
+            </template>
+            <template v-else>
+              <p v-for="[subKey, subValue] of Object.entries(item)" v-bind:key="subKey">
+                {{subKey}} {{subValue}}
+              </p>
+            </template>
+          </div>
+        </template>
+      </div>
+    </template>
   </b-table>
 </template>
 
 <script lang="ts">
 
 import {Component, Prop, Vue, Watch} from 'vue-property-decorator'
-import {TableRow} from "@/breeding-insight/model/view_models/TableRow"
-import TableColumn from "@/components/tables/TableColumn.vue";
-import { VBreakpoint } from '@/components/VBreakpoint';
 import {ReportStruct} from "@/breeding-insight/model/report/ReportStruct";
 
 @Component({
@@ -44,6 +67,14 @@ export default class ReportTable extends Vue {
   @Prop()
   report!: ReportStruct;
   //TODO: Allow all other props to be passed through
+
+  getDetails(rowId: string): any {
+    if (this.report.details) {
+      // TODO: Remove rowId
+      console.log(this.report.details[rowId]);
+      return this.report.details[rowId];
+    }
+  }
 }
 
 </script>

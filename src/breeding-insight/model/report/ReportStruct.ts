@@ -15,11 +15,14 @@
  */
 
 export class ReportStruct {
-  data: string[];
+  data: any[];
   columns: string[];
+  details?: any;
 
-  constructor(data: string[], columns: string[]) {
+
+  constructor(data: any[], columns: string[], details?: any) {
     this.data = data;
     this.columns = columns;
+    this.details = details;
   }
 }

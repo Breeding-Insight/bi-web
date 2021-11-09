@@ -39,18 +39,25 @@
 
 import {ReportStruct} from "@/breeding-insight/model/report/ReportStruct";
 import {FormatConfig} from "@/breeding-insight/model/report/FormatConfig";
+import { v4 as uuidv4 } from 'uuid';
 var flatten = require('flat');
 
+
 export class ImportFormatter {
+
+  // TODO: Make 'n members' into a pill?
+  // TODO: Display details
+    // TODO: Make detail panel dependent on detail variable and type flag (side panel, expandable)
+  // TODO: Auto expand for multiple sibling objects
 
   static format(jsonData: any[], configs: FormatConfig[]): ReportStruct {
 
     // Loop through the config and construct the column order
     const columns: any[] = this.getColumns(configs);
     // Format the data
-    const data: any[] = this.getData(jsonData);
+    const [data, details] = this.getData(jsonData);
 
-    const report: ReportStruct = new ReportStruct(data, columns);
+    const report: ReportStruct = new ReportStruct(data, columns, details);
     console.log(report);
     return report;
   }
@@ -66,9 +73,10 @@ export class ImportFormatter {
     return tableColumns;
   }
 
-  static getData(jsonData: any[]): any[] {
+  static getData(jsonData: any[]): [any[], any] {
 
     const data: any[] = [];
+    const details: any = {};
     for (const datum of jsonData) {
       const row: any = {};
       //TODO: Remove test data
@@ -76,7 +84,7 @@ export class ImportFormatter {
         {'externalReferenceSource': 'breedinginsight.net', 'externalReferenceID': '1'},
         {'externalReferenceSource': 'breedinginsight.net', 'externalReferenceID': '2'}
       ];
-      // TODO: Add report id for details
+      datum.germplasm.brAPIObject.seasons = ['fall 2020', 'spring 2020', 'summer 2020'];
 
       // Lift the brapi object out
       for (const brapiTypeKey of Object.keys(datum)) {
@@ -84,6 +92,13 @@ export class ImportFormatter {
       }
       // Flatten
       const result: any = flatten(row, {safe: true, delimiter: '_'});
+
+      // Add row id to data
+      const newRowId = uuidv4();
+      result.rowId = newRowId;
+
+      // Details for detail panel
+      details[newRowId] = Object.assign({}, result);
 
       // Filter out the list types and replace with descriptors
       for (const key of Object.keys(result)) {
@@ -94,6 +109,6 @@ export class ImportFormatter {
 
       data.push(result);
     }
-    return data;
+    return [data, details];
   }
 }

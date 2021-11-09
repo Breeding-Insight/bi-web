@@ -82,6 +82,7 @@ export default class ImportGermplasm extends ProgramsBase {
     {field: 'germplasm.externalReferences', displayName: 'External References'},
     {field: 'germplasm.additionalInfo.programId', displayName: 'Program ID'},
     {field: 'germplasm.commonCropName', displayName: 'Species'},
+    {field: 'germplasm.seasons', displayName: 'Seasons'}
   ];
 
   private confirmImportState: DataFormEventBusHandler = new DataFormEventBusHandler();
