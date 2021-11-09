@@ -25,7 +25,7 @@
   slot is passed the flatten brapi content, without the arrays flattened. Example:
   <template v-slot:details="row"></template>
 
-  - If you do not specify your own details slot, this component will display all the details for you. 
+  - If you do not specify your own details slot, this component will display all the details for you.
 
 
 -->
@@ -36,32 +36,14 @@
       detailed
   >
 
-    <template #detail="props">
+    <template v-slot:detail="props">
       <slot name="details" v-bind:row="props.row"></slot>
 
       <!-- Default content if slot not used -->
-      <template v-if="!hasDetailSlot()">
-        <div v-for="[key, value] of Object.entries(getDetails(props.row.rowId))" v-bind:key="key">
-          <template v-if="value !== Object(value)">
-            <!-- Primitive type, simple display -->
-            <p>{{key}} {{value}}</p>
-          </template>
-          <template v-else>
-            <!-- Array, parse into separate info -->
-            <div v-for="[index, item] of value.entries()" v-bind:key="index">
-              <!-- Check if its a string or object -->
-              <template v-if="item !== Object(item)">
-                <p>{{item}}</p>
-              </template>
-              <template v-else>
-                <p v-for="[subKey, subValue] of Object.entries(item)" v-bind:key="subKey">
-                  {{subKey}} {{subValue}}
-                </p>
-              </template>
-            </div>
-          </template>
-        </div>
-      </template>
+      <ReportExpandableDetails
+        v-if="!hasDetailSlot()"
+        v-bind:details="getDetails(props.row.rowId)"
+      ></ReportExpandableDetails>
     </template>
   </b-table>
 </template>
@@ -70,9 +52,10 @@
 
 import {Component, Prop, Vue, Watch} from 'vue-property-decorator'
 import {ReportStruct} from "@/breeding-insight/model/report/ReportStruct";
+import ReportExpandableDetails from "@/components/report/ReportExpandableDetails.vue";
 
 @Component({
-  components: {}
+  components: {ReportExpandableDetails}
 })
 export default class ReportTable extends Vue {
   @Prop()
@@ -88,9 +71,6 @@ export default class ReportTable extends Vue {
   }
 
   hasDetailSlot() {
-    console.log(!!this.$slots.details);
-    console.log(this.$slots);
-    console.log(this.$scopedSlots);
     return !!this.$scopedSlots.details;
   }
 }
