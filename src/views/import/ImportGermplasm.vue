@@ -49,7 +49,7 @@
 
       <template v-slot:importPreviewTable="previewData">
         <!-- TODO: Replace tree-view when table is ready -->
-        <report-table v-bind:report="ImportFormatter.format(previewData.previewData, importTableConfig)"/>
+        <report-table v-bind:report="processPreviewData(previewData.previewData)"></report-table>
         <tree-view v-bind:data="previewData.previewData" v-bind:options="{maxDepth: 0}"></tree-view>
       </template>
 
@@ -66,6 +66,7 @@ import ImportTemplate from "@/views/import/ImportTemplate.vue";
 import {DataFormEventBusHandler} from "@/components/forms/DataFormEventBusHandler";
 import ReportTable from "@/components/report/ReportTable.vue";
 import {ImportFormatter} from "@/breeding-insight/model/report/ImportFormatter";
+import {ReportStruct} from "@/breeding-insight/model/report/ReportStruct";
 
 @Component({
   components: {
@@ -94,6 +95,12 @@ export default class ImportGermplasm extends ProgramsBase {
       }
     }
     return undefined;
+  }
+
+  processPreviewData(previewData: any[]): ReportStruct {
+    // Do special germplasm import formatting here
+
+    return ImportFormatter.format(previewData, this.importTableConfig);
   }
 
 }
