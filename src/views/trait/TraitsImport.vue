@@ -287,7 +287,6 @@ export default class TraitsImport extends ProgramsBase {
       let count = 0;
       let traits: Trait[] = [];
       if( response==null || response.data==null){
-        console.log("")
         throw new ValidationError();
       }
       else {
