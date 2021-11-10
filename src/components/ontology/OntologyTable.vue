@@ -299,7 +299,6 @@ export default class OntologyTable extends Vue {
   private loadingTraitEditable = true;
 
   // table column sorting
-  private sortOptions = TraitSortField;
   private traitSortField: string = TraitSortField.Name;
   private nameSortLabel: string = TraitSortField.Name;
   private methodSortLabel: string = TraitSortField.MethodDescription;
