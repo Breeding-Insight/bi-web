@@ -285,7 +285,15 @@ export default class TraitsImport extends ProgramsBase {
   upload() {
     TraitUploadService.uploadFile(this.activeProgram!.id!, this.file!).then((response) => {
       let count = 0;
-      for(let trait of response.data){
+      let traits: Trait[] = [];
+      if( response==null || response.data==null){
+        console.log("")
+        throw new ValidationError();
+      }
+      else {
+        traits = response.data;
+      }
+      for(let trait of traits){
         if(!trait.isDup){
           count += 1;
         }

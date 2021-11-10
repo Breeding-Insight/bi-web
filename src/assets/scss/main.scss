@@ -324,6 +324,7 @@ table tr.is-edited + .detail {
 }
 
 .table.is-striped tbody tr:not(.is-edited).is-dup {
+  border-left: 5px solid $warning;
   background-color: $warning-light;
 }
 .is-new {
