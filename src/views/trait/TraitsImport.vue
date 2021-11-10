@@ -325,7 +325,6 @@ export default class TraitsImport extends ProgramsBase {
   }
 
   async confirm() {
-    this.confirmImportState.bus.$emit(DataFormEventBusHandler.SAVE_STARTED_EVENT);
     const name = this.activeProgram && this.activeProgram.name ? this.activeProgram.name : 'the program';
     try {
       // fetch uploaded traits

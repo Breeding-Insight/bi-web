@@ -77,6 +77,7 @@
 
     confirm() {
       this.$emit('confirm');
+      this.confirmImportState.bus.$emit(DataFormEventBusHandler.SAVE_STARTED_EVENT);
     }
 
     abort() {

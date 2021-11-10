@@ -356,7 +356,6 @@ export default class ImportTemplate extends ProgramsBase {
   }
 
   async confirm() {
-    this.confirmImportState.bus.$emit(DataFormEventBusHandler.SAVE_STARTED_EVENT);
     const name = this.activeProgram && this.activeProgram.name ? this.activeProgram.name : 'the program';
     try {
       await this.updateDataUpload(this.currentImport!.importId!, true);
