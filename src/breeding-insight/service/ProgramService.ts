@@ -46,6 +46,7 @@ export class ProgramService {
           } else {
             error['errorMessage'] = this.errorCreatingProgram;
           }
+          //TODO handle duplicate program key
           reject(error);
         });
       }
@@ -105,7 +106,7 @@ export class ProgramService {
 
         // Parse our programs into the vue programs param
         programs = biResponse.result.data.map((program: any) => {
-          return new Program(program.id, program.name, program.species.id, program.numUsers, program.brapiUrl);
+          return new Program(program.id, program.name, program.species.id, program.numUsers, program.brapiUrl, program.key);
         });
 
         //TODO: Remove when backend pagination is implemented

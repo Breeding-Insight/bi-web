@@ -90,6 +90,15 @@
               v-bind:field-name="'Species'"
             />
           </div>
+          <div class="column is-one-half">
+            <BasicInputField
+                v-model="newProgram.key"
+                v-bind:validations="validations.key"
+                v-bind:field-name="'Program Key'"
+                v-bind:field-help="'Unique 2-6 character key representing the program. Alphabetic characters only.'"
+                v-bind:autocomplete=false
+            />
+          </div>
         </div>
         <div class="columns">
           <div class="column">
@@ -136,6 +145,9 @@
           {{ getSpeciesName(props.row.data.speciesId) }}
         </template>
       </b-table-column>
+      <b-table-column field="data.key" label="Program Key" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+        {{ props.row.data.key }}
+      </b-table-column>
       <b-table-column field="data.numUsers" label="# Users" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
         {{ props.row.data.numUsers }}
       </b-table-column>
@@ -177,7 +189,7 @@
   import {Component, Prop, Vue, Watch} from 'vue-property-decorator'
   import {PlusCircleIcon} from 'vue-feather-icons'
   import {validationMixin} from 'vuelidate'
-  import {required} from 'vuelidate/lib/validators'
+  import {maxLength, minLength, required, alpha} from 'vuelidate/lib/validators'
 
   import WarningModal from '@/components/modals/WarningModal.vue'
   import {Program} from '@/breeding-insight/model/Program'
@@ -253,10 +265,24 @@ export default class AdminProgramsTable extends Vue {
     }
   }
 
+  //Auto-capitalize Program Key upon change
+  @Watch('newProgram.key', {immediate: true})
+  onProgramKeyChanged(newVal: String){
+    if (newVal != null){
+      this.newProgram.key = newVal.toUpperCase();
+    }
+  }
+
   programValidations = {
     name: {required},
     speciesId: {required},
-    brapiUrl: {url}
+    brapiUrl: {url},
+    key: {
+      required,
+      minLength: minLength(2),
+      maxLength: maxLength(6),
+      alpha
+    }
   }
 
   programEditValidations = {

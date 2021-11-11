@@ -28,6 +28,8 @@ export class ProgramDAO {
     return new Promise<BiResponse>((resolve, reject) => {
 
       // Construct request body
+      //Todo alter name
+      //program.name + program.key but need to handle whether undefined check when should be required
       const body = {'name': program.name, 'species': { 'id': program.speciesId }, 'brapiUrl': program.brapiUrl };
 
       // Make api request
