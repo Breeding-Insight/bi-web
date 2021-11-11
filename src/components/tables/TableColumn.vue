@@ -45,16 +45,16 @@ import BaseTable from '@/components/tables/BaseTable.vue';
     private width!: number | string | undefined;
 
     @Prop({default: () => ''})
-    private sortField: string;
+    private sortField!: string;
 
     @Prop({default: () => ''})
-    private sortFieldLabel: string;
+    private sortFieldLabel!: string;
 
     @Prop({default: () => true})
-    private sortOrder: boolean;
+    private sortOrder!: boolean;
 
     @Prop({default: () => false})
-    private sortable: boolean;
+    private sortable!: boolean;
 
     private table!: BaseTable;
 
