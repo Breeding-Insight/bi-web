@@ -35,6 +35,7 @@ export class Trait {
   active?: boolean;
   tags?: string[];
   fullName?: string;
+  isDup?: boolean;
 
   constructor(id?: string,
               traitName?: string,
@@ -49,7 +50,8 @@ export class Trait {
               synonyms?: Array<string>,
               active?: boolean,
               tags?: string[],
-              fullName?: string
+              fullName?: string,
+              isDup?: boolean,
               ) {
     this.id = id;
     this.traitName = traitName;
@@ -81,11 +83,12 @@ export class Trait {
     }
     this.tags = tags;
     this.fullName = fullName;
+    this.isDup = isDup;
   }
 
   static assign(trait: Trait): Trait {
     return new Trait(trait.id, trait.traitName, trait.observationVariableName, trait.programObservationLevel, trait.entity, trait.attribute,
-        trait.traitDescription, trait.method, trait.scale, trait.abbreviations, trait.synonyms, trait.active, trait.tags, trait.fullName);
+        trait.traitDescription, trait.method, trait.scale, trait.abbreviations, trait.synonyms, trait.active, trait.tags, trait.fullName, trait.isDup);
   }
 
   checkStringListEquals(list: string[] | undefined, otherList: string[] | undefined): boolean {
@@ -122,7 +125,8 @@ export class Trait {
       (
         (this.method && this.method.equals(trait.method)) ||
         (!this.method && !trait.method)
-      );
+      ) &&
+      (this.isDup === trait.isDup);
   }
 
   addTag(tag: string) {
