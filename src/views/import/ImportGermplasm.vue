@@ -49,7 +49,10 @@
 
       <template v-slot:importPreviewTable="previewData">
         <!-- TODO: Replace tree-view when table is ready -->
-        <report-table v-bind:report="processPreviewData(previewData.previewData)"></report-table>
+        <report-table
+            v-bind:report="processPreviewData(previewData.previewData)"
+            detailed
+        />
         <tree-view v-bind:data="previewData.previewData" v-bind:options="{maxDepth: 0}"></tree-view>
       </template>
 
@@ -85,6 +88,18 @@ export default class ImportGermplasm extends ProgramsBase {
     {field: 'germplasm.commonCropName', displayName: 'Species'},
     {field: 'germplasm.seasons', displayName: 'Seasons'}
   ];
+  private importTableConfigv2: any = {
+    names: {
+      'germplasmName': 'Germplasm Name',
+      'externalReferences': 'External References',
+      'additionalInfo.programId': 'Program ID',
+      'commonCropName': 'Species',
+      'seasons': 'Seasons'
+    },
+    display: ['germplasm.germplasmName', 'germplasm.externalReferences', 'germplasm.additionalInfo.programId', 'germplasm.commonCropName', 'germplasm.seasons'],
+    visible: [],
+    detailDisplay: '*'
+  }
 
   private confirmImportState: DataFormEventBusHandler = new DataFormEventBusHandler();
 
@@ -100,7 +115,7 @@ export default class ImportGermplasm extends ProgramsBase {
   processPreviewData(previewData: any[]): ReportStruct {
     // Do special germplasm import formatting here
 
-    return ImportFormatter.format(previewData, this.importTableConfig);
+    return ImportFormatter.format(previewData, this.importTableConfigv2);
   }
 
 }

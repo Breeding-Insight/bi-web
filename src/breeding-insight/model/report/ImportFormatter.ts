@@ -35,6 +35,18 @@
     }
   ]
 
+  {
+    names: { 'yadayada_yada': 'display_name' }, (short names ok)
+    display: [ 'this_field', 'that_field' ], (full path required)
+    visible: [ 'this_field' ], (full path needed) (everything is visible if not indicated)
+    detailDisplay: ['this_field', 'that_field']
+  }
+
+  Display name priority (high to low)
+  1. Longer paths in component
+  2. Shorter paths in component
+  3. Longer paths in global
+  4. Shorter paths in global
  */
 
 import {ReportStruct} from "@/breeding-insight/model/report/ReportStruct";
@@ -46,9 +58,12 @@ var flatten = require('flat');
 export class ImportFormatter {
 
   // TODO: Make 'n members' into a pill?
-  // TODO: Display details
-    // TODO: Make detail panel dependent on detail variable and type flag (side panel, expandable)
   // TODO: Auto expand for multiple sibling objects
+  // TODO: Format details panel
+  // TODO: Naming replacements for details
+
+  // TODO: Some other time
+  //  TODO: Return all columns in data if "*" is passed
 
   static format(jsonData: any[], configs: FormatConfig[]): ReportStruct {
 
@@ -62,15 +77,33 @@ export class ImportFormatter {
     return report;
   }
 
-  static getColumns(configs: FormatConfig[]): any[] {
+  static getColumns(configs: any): any[] {
     const tableColumns: any[] = [];
-    for (const config of configs) {
+    const displayColumns = configs.display;
+    for (const displayColumn of displayColumns) {
+      // Check for the renames
       tableColumns.push({
-        field: config.field.split('.').join('_'),
-        label: config.displayName ? config.displayName : config.field
+        field: displayColumn.split('.').join('_'),
+        label: this.getColumnName(displayColumn, configs)
       });
     }
     return tableColumns;
+  }
+
+  static getColumnName(column: string, configs: any): string {
+    const path: string[] = column.split('.');
+    // Check path passed by component
+    let currentStep = 0;
+    let currentPath;
+    while (currentStep <= path.length - 1) {
+      currentPath = path.slice(currentStep).join('.');
+      if (currentPath in configs.names) {
+        return configs.names[currentPath];
+      }
+      currentStep += 1;
+    }
+    //TODO: Check globale renames when we have them. Global paths have lower priority
+    return path.join('.');
   }
 
   static getData(jsonData: any[]): [any[], any] {

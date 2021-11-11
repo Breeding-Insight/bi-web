@@ -21,11 +21,14 @@
   Displays brapi objects in table format. Requires a formatter to get the data into the correct
   shape. Accepts a ReportStruct as input.
 
-  - You can define your own content for the details panel by using the 'details' slot. The details
-  slot is passed the flatten brapi content, without the arrays flattened. Example:
-  <template v-slot:details="row"></template>
+  - Details Panel:
+    - You can define your own content for the details panel by using the 'details' slot. The details
+      slot is passed the flatten brapi content, without the arrays flattened. Example:
+      <template v-slot:details="row"></template>
 
-  - If you do not specify your own details slot, this component will display all the details for you.
+    - If you do not specify your own details slot, this component will display all the details for you.
+
+    - To show the expandable row details, include `detailed` as a prop on this component when specified.
 
 
 -->
@@ -33,7 +36,7 @@
   <b-table
       v-bind:data="report.data"
       v-bind:columns="report.columns"
-      detailed
+      v-bind:detailed="detailed"
   >
 
     <template v-slot:detail="props">
@@ -60,6 +63,8 @@ import ReportExpandableDetails from "@/components/report/ReportExpandableDetails
 export default class ReportTable extends Vue {
   @Prop()
   report!: ReportStruct;
+  @Prop()
+  detailed!: boolean;
   //TODO: Allow all other props to be passed through
 
   getDetails(rowId: string): any {

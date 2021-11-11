@@ -43,6 +43,7 @@
 <script lang="ts">
 
 import {Component, Prop, Vue, Watch} from 'vue-property-decorator'
+import {ReportStruct} from "@/breeding-insight/model/report/ReportStruct";
 
 @Component({
   components: {}
@@ -50,10 +51,8 @@ import {Component, Prop, Vue, Watch} from 'vue-property-decorator'
 export default class ReportExpandableDetails extends Vue {
   @Prop()
   details!: any;
-
-  mount() {
-    console.log('HERE!!')
-  }
+  @Prop()
+  report!: ReportStruct;
 }
 
 </script>
