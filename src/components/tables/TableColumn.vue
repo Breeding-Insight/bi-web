@@ -27,7 +27,6 @@
 
 import {Component, Prop, Vue} from "vue-property-decorator";
 import BaseTable from '@/components/tables/BaseTable.vue';
-import {SortOrder} from "@/breeding-insight/model/Sort";
 
 @Component({
   })
