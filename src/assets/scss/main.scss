@@ -342,10 +342,6 @@ table tr.is-edited + .detail {
   z-index: 30;
 }
 
-.notification {
-  height: 10px;
-}
-
 .notification > span, .notification > a{
   position: relative;
   bottom: 13px;
