@@ -15,8 +15,16 @@
  * limitations under the License.
  */
 
-export const NEW_SORT_COLUMN = 'newSortColumn';
-export const TOGGLE_NAME_SORT_ORDER = 'toggleNameSortOrder';
-export const TOGGLE_METHOD_SORT_ORDER = 'toggleMethodSortOrder';
-export const TOGGLE_SCALE_CLASS_SORT_ORDER = 'toggleScaleClassSortOrder';
-export const TOGGLE_UNIT_SORT_ORDER = 'toggleUnitSortOrder';
+// active ontology table
+export const ACTIVE_ONT_NEW_SORT_COLUMN = 'activeOntNewSortColumn';
+export const ACTIVE_ONT_TOGGLE_NAME_SORT_ORDER = 'activeOntToggleNameSortOrder';
+export const ACTIVE_ONT_TOGGLE_METHOD_SORT_ORDER = 'activeOntToggleMethodSortOrder';
+export const ACTIVE_ONT_TOGGLE_SCALE_CLASS_SORT_ORDER = 'activeOntToggleScaleClassSortOrder';
+export const ACTIVE_ONT_TOGGLE_UNIT_SORT_ORDER = 'activeOntToggleUnitSortOrder';
+
+// archived ontology table
+export const ARCHIVED_ONT_NEW_SORT_COLUMN = 'archivedOntNewSortColumn';
+export const ARCHIVED_ONT_TOGGLE_NAME_SORT_ORDER = 'archivedOntToggleNameSortOrder';
+export const ARCHIVED_ONT_TOGGLE_METHOD_SORT_ORDER = 'archivedOntToggleMethodSortOrder';
+export const ARCHIVED_ONT_TOGGLE_SCALE_CLASS_SORT_ORDER = 'archivedOntToggleScaleClassSortOrder';
+export const ARCHIVED_ONT_TOGGLE_UNIT_SORT_ORDER = 'archivedOntToggleUnitSortOrder';
