@@ -132,8 +132,8 @@
             v-bind:sortFieldLabel="nameSortLabel"
             v-bind:sortable="true"
             v-bind:sortOrder="nameSortOrder"
-            v-on:newSortColumn="traitSortField = $event"
-            v-on:toggleSortOrder="nameSortOrder = !nameSortOrder"
+            v-on:newSortColumn="changeSortColumn($event)"
+            v-on:toggleSortOrder="changeNameSortOrder"
         >
           {{ data.observationVariableName }}
         </TableColumn>
@@ -148,8 +148,8 @@
             v-bind:sortFieldLabel="methodSortLabel"
             v-bind:sortable="true"
             v-bind:sortOrder="methodSortOrder"
-            v-on:newSortColumn="traitSortField = $event"
-            v-on:toggleSortOrder="methodSortOrder = !methodSortOrder"
+            v-on:newSortColumn="changeSortColumn($event)"
+            v-on:toggleSortOrder="changeMethodSortOrder"
         >
           {{ data.method.description + " " + StringFormatters.toStartCase(data.method.methodClass) }}
         </TableColumn>
@@ -161,8 +161,8 @@
             v-bind:sortFieldLabel="scaleClassSortLabel"
             v-bind:sortable="true"
             v-bind:sortOrder="scaleClassSortOrder"
-            v-on:newSortColumn="traitSortField = $event"
-            v-on:toggleSortOrder="scaleClassSortOrder = !scaleClassSortOrder"
+            v-on:newSortColumn="changeSortColumn($event)"
+            v-on:toggleSortOrder="changeScaleClassSortOrder"
         >
           {{ TraitStringFormatters.getScaleTypeString(data.scale) }}
         </TableColumn>
@@ -174,8 +174,8 @@
             v-bind:sortFieldLabel="unitSortLabel"
             v-bind:sortable="true"
             v-bind:sortOrder="unitSortOrder"
-            v-on:newSortColumn="traitSortField = $event"
-            v-on:toggleSortOrder="unitSortOrder = !unitSortOrder"
+            v-on:newSortColumn="changeSortColumn($event)"
+            v-on:toggleSortOrder="changeUnitSortOrder"
         >
           <template v-if="data.scale.dataType==='NUMERICAL'">
             {{ data.scale.scaleName }}
@@ -241,7 +241,7 @@ import WarningModal from '@/components/modals/WarningModal.vue'
 import {PlusCircleIcon} from 'vue-feather-icons'
 import {validationMixin} from 'vuelidate';
 import {Trait} from '@/breeding-insight/model/Trait'
-import {mapGetters} from 'vuex'
+import {mapGetters, mapMutations} from 'vuex'
 import {Program} from "@/breeding-insight/model/Program";
 import NewDataForm from '@/components/forms/NewDataForm.vue'
 import BasicInputField from "@/components/forms/BasicInputField.vue";
@@ -265,6 +265,12 @@ import {DataFormEventBusHandler} from '@/components/forms/DataFormEventBusHandle
 import {integer, maxLength} from "vuelidate/lib/validators";
 import {TraitField, TraitFilter} from "@/breeding-insight/model/TraitSelector";
 import {SortOrder, TraitSortField} from "@/breeding-insight/model/Sort";
+import {
+  NEW_SORT_COLUMN,
+  TOGGLE_METHOD_SORT_ORDER,
+  TOGGLE_NAME_SORT_ORDER,
+  TOGGLE_SCALE_CLASS_SORT_ORDER, TOGGLE_UNIT_SORT_ORDER
+} from "@/store/sorting/mutation-types";
 
 @Component({
   mixins: [validationMixin],
@@ -275,6 +281,22 @@ import {SortOrder, TraitSortField} from "@/breeding-insight/model/Sort";
   computed: {
     ...mapGetters([
       'activeProgram'
+    ]),
+    ...mapGetters('sorting',[
+      'traitSortField',
+      'nameSortOrder',
+      'methodSortOrder',
+      'scaleClassSortOrder',
+      'unitSortOrder'
+    ])
+  },
+  methods: {
+    ...mapMutations('sorting', [
+      NEW_SORT_COLUMN,
+      TOGGLE_NAME_SORT_ORDER,
+      TOGGLE_METHOD_SORT_ORDER,
+      TOGGLE_SCALE_CLASS_SORT_ORDER,
+      TOGGLE_UNIT_SORT_ORDER
     ])
   },
   data: () => ({Trait, StringFormatters, TraitStringFormatters})
@@ -299,15 +321,10 @@ export default class OntologyTable extends Vue {
   private loadingTraitEditable = true;
 
   // table column sorting
-  private traitSortField: string = TraitSortField.Name;
   private nameSortLabel: string = TraitSortField.Name;
   private methodSortLabel: string = TraitSortField.MethodDescription;
   private scaleClassSortLabel: string = TraitSortField.ScaleClass;
   private unitSortLabel: string = TraitSortField.ScaleName;
-  private nameSortOrder: boolean = true;
-  private methodSortOrder: boolean = true;
-  private scaleClassSortOrder: boolean = true;
-  private unitSortOrder: boolean = true;
 
   // New trait form
   private newTraitActive: boolean = false;
@@ -381,6 +398,26 @@ export default class OntologyTable extends Vue {
 
   archiveWarning() {
     return this.editTrait && this.editTrait.active ? 'restore' : 'archive';
+  }
+
+  changeSortColumn(field: TraitSortField) {
+    this[NEW_SORT_COLUMN](field);
+  }
+
+  changeNameSortOrder() {
+    this[TOGGLE_NAME_SORT_ORDER]();
+  }
+
+  changeMethodSortOrder() {
+    this[TOGGLE_METHOD_SORT_ORDER]();
+  }
+
+  changeScaleClassSortOrder() {
+    this[TOGGLE_SCALE_CLASS_SORT_ORDER]();
+  }
+
+  changeUnitSortOrder() {
+    this[TOGGLE_UNIT_SORT_ORDER]();
   }
 
   @Watch('traitSortField')
