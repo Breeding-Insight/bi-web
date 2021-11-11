@@ -283,20 +283,20 @@ export default class OntologyTable extends Vue {
   @Prop({default: () => true})
   active?: boolean;
 
-  @Prop({default: () => TraitSortField.name})
-  traitSortField: TraitSortField;
+  @Prop({default: () => TraitSortField.Name})
+  traitSortField!: TraitSortField;
 
   @Prop({default: () => true})
-  nameSortOrder: boolean;
+  nameSortOrder!: boolean;
 
   @Prop({default: () => true})
-  methodSortOrder: boolean;
+  methodSortOrder!: boolean;
 
   @Prop({default: () => true})
-  scaleClassSortOrder: boolean;
+  scaleClassSortOrder!: boolean;
 
   @Prop({default: () => true})
-  unitSortOrder: boolean;
+  unitSortOrder!: boolean;
 
   private activeProgram?: Program;
   private traits: Trait[] = [];
