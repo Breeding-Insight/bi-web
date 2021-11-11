@@ -23,9 +23,9 @@
           <div class="level-left">
             <div class="level-item">
               <div class="has-text-dark">
-                <strong>{{numRecords}} new {{importTypeName.toLowerCase()}} records and duplicates not checked yet</strong>
-                <br/>Duplicate {{importTypeName.toLowerCase()}} records, highlighted in yellow and a <alert-triangle-icon size="1.2x" class="icon-align"/> icon, will not be imported.
-                <br/>{{toStartCase(importTypeName)}} records in this list can be directly edited using the "Show details" link.
+                {{numRecords}} unique term(s) have been detected. Terms, highlighted and with
+                a <alert-triangle-icon size="1x" class="has-vertical-align-middle"></alert-triangle-icon> icon,
+                match existing terms in the database and will not be imported.
               </div>
             </div>
           </div>
@@ -77,6 +77,7 @@
 
     confirm() {
       this.$emit('confirm');
+      this.confirmImportState.bus.$emit(DataFormEventBusHandler.SAVE_STARTED_EVENT);
     }
 
     abort() {
