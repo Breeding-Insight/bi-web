@@ -20,6 +20,7 @@ import Vuex, { StoreOptions } from 'vuex';
 import { RootState } from './types';
 import { mutations } from './mutations';
 import {actions} from './actions';
+import {sorting} from '@/store/sorting/index';
 
 Vue.use(Vuex);
 
@@ -43,6 +44,9 @@ const store: StoreOptions<RootState> = {
     warningNotificationActive: false,
     warningNotificationMsg: '',
     showSidebarMobile: true
+  },
+  modules: {
+    sorting
   },
   mutations,
   actions,
