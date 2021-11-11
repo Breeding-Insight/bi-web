@@ -126,6 +126,7 @@
       -->
       <template v-slot:columns="data">
         <TableColumn name="name" v-bind:label="'Name'">
+
           <b-button
               size="is-small"
               class="archive-tag"
