@@ -241,7 +241,7 @@ import WarningModal from '@/components/modals/WarningModal.vue'
 import {PlusCircleIcon} from 'vue-feather-icons'
 import {validationMixin} from 'vuelidate';
 import {Trait} from '@/breeding-insight/model/Trait'
-import {mapGetters, mapMutations} from 'vuex'
+import {mapGetters} from 'vuex'
 import {Program} from "@/breeding-insight/model/Program";
 import NewDataForm from '@/components/forms/NewDataForm.vue'
 import BasicInputField from "@/components/forms/BasicInputField.vue";
@@ -275,22 +275,6 @@ import {OntologySort, OntologySortField, SortOrder, TraitSortField} from "@/bree
   computed: {
     ...mapGetters([
       'activeProgram'
-    ]),
-    ...mapGetters('sorting',[
-      'traitSortField',
-      'nameSortOrder',
-      'methodSortOrder',
-      'scaleClassSortOrder',
-      'unitSortOrder'
-    ])
-  },
-  methods: {
-    ...mapMutations('sorting', [
-      NEW_SORT_COLUMN,
-      TOGGLE_NAME_SORT_ORDER,
-      TOGGLE_METHOD_SORT_ORDER,
-      TOGGLE_SCALE_CLASS_SORT_ORDER,
-      TOGGLE_UNIT_SORT_ORDER
     ])
   },
   data: () => ({Trait, StringFormatters, TraitStringFormatters})
