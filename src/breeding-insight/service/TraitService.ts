@@ -134,7 +134,7 @@ export class TraitService {
       }
 
       if (programId) {
-        TraitDAO.getFilteredTraits(programId, paginationQuery, full, filters, sortField, sortOrder).then((biResponse) => {
+        TraitDAO.getFilteredTraits(programId, paginationQuery, full, sortField, sortOrder, filters).then((biResponse) => {
 
           let traits: Trait[] = [];
 

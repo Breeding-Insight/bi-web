@@ -42,7 +42,7 @@ export class TraitDAO {
         }))
     }
 
-    static getFilteredTraits(programId: string, paginationQuery: PaginationQuery, full: boolean, filters?: TraitFilter[], sortField: TraitSortField, sortOrder: SortOrder): Promise<BiResponse> {
+    static getFilteredTraits(programId: string, paginationQuery: PaginationQuery, full: boolean, sortField: TraitSortField, sortOrder: SortOrder, filters?: TraitFilter[]): Promise<BiResponse> {
         const config: any = {};
         config.params = {full, sortField, sortOrder};
 

@@ -72,23 +72,23 @@ import {TraitSortField} from "@/breeding-insight/model/Sort";
 export default class OntologyActiveTable extends Vue {
 
   changeSortColumn(field: TraitSortField) {
-    this[ACTIVE_ONT_NEW_SORT_COLUMN](field);
+    this[ACTIVE_ONT_NEW_SORT_COLUMN as keyof OntologyActiveTable](field);
   }
 
   changeNameSortOrder() {
-    this[ACTIVE_ONT_TOGGLE_NAME_SORT_ORDER]();
+    this[ACTIVE_ONT_TOGGLE_NAME_SORT_ORDER as keyof OntologyActiveTable]();
   }
 
   changeMethodSortOrder() {
-    this[ACTIVE_ONT_TOGGLE_METHOD_SORT_ORDER]();
+    this[ACTIVE_ONT_TOGGLE_METHOD_SORT_ORDER as keyof OntologyActiveTable]();
   }
 
   changeScaleClassSortOrder() {
-    this[ACTIVE_ONT_TOGGLE_SCALE_CLASS_SORT_ORDER]();
+    this[ACTIVE_ONT_TOGGLE_SCALE_CLASS_SORT_ORDER as keyof OntologyActiveTable]();
   }
 
   changeUnitSortOrder() {
-    this[ACTIVE_ONT_TOGGLE_UNIT_SORT_ORDER]();
+    this[ACTIVE_ONT_TOGGLE_UNIT_SORT_ORDER as keyof OntologyActiveTable]();
   }
 }
 </script>
