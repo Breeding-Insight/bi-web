@@ -79,8 +79,7 @@ import {DisplayNameManager} from "@/breeding-insight/model/report/DisplayNameMan
 import {ChevronUpIcon, ChevronDownIcon} from 'vue-feather-icons';
 
 @Component({
-  components: {ChevronUpIcon, ChevronDownIcon},
-  data: () => {DisplayNameManager}
+  components: {ChevronUpIcon, ChevronDownIcon}
 })
 export default class ReportExpandableDetails extends Vue {
   @Prop()

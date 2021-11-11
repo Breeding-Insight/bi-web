@@ -68,7 +68,6 @@ export default class ReportTable extends Vue {
   detailed!: boolean;
   @Prop()
   config!: any;
-  //TODO: Allow all other props to be passed through
 
   getDetails(rowId: string): any {
     if (this.report.details) {

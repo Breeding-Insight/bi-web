@@ -51,7 +51,7 @@
         <!-- TODO: Replace tree-view when table is ready -->
         <report-table
             v-bind:report="processPreviewData(previewData.previewData)"
-            v-bind:config="importTableConfigv2"
+            v-bind:config="importConfig"
             detailed
         />
         <tree-view v-bind:data="previewData.previewData" v-bind:options="{maxDepth: 0}"></tree-view>
@@ -82,14 +82,7 @@ export default class ImportGermplasm extends ProgramsBase {
 
   // TODO: maybe move to config instead of hardcode?
   private germplasmImportTemplateName = 'GermplasmTemplateMap';
-  private importTableConfig: any = [
-    {field: 'germplasm.germplasmName', displayName: 'Germplasm Name'},
-    {field: 'germplasm.externalReferences', displayName: 'External References'},
-    {field: 'germplasm.additionalInfo.programId', displayName: 'Program ID'},
-    {field: 'germplasm.commonCropName', displayName: 'Species'},
-    {field: 'germplasm.seasons', displayName: 'Seasons'}
-  ];
-  private importTableConfigv2: any = {
+  private importConfig: any = {
     names: {
       'additionalInfo.programId': 'Program ID',
     },
@@ -112,7 +105,7 @@ export default class ImportGermplasm extends ProgramsBase {
   processPreviewData(previewData: any[]): ReportStruct {
     // Do special germplasm import formatting here
 
-    return ImportFormatter.format(previewData, this.importTableConfigv2);
+    return ImportFormatter.format(previewData, this.importConfig);
   }
 
 }
