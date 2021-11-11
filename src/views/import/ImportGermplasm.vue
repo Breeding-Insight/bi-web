@@ -91,13 +91,7 @@ export default class ImportGermplasm extends ProgramsBase {
   ];
   private importTableConfigv2: any = {
     names: {
-      'germplasmName': 'Germplasm Name',
-      'externalReferences': 'External References',
-      'externalReferenceSource': 'External Reference Source',
-      'externalReferenceID': 'External Reference ID',
       'additionalInfo.programId': 'Program ID',
-      'commonCropName': 'Species',
-      'seasons': 'Seasons'
     },
     display: ['germplasm.germplasmName', 'germplasm.externalReferences', 'germplasm.additionalInfo.programId', 'germplasm.commonCropName', 'germplasm.seasons'],
     visible: [],

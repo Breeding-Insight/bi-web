@@ -13,23 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import globalRenames from '@/config/displaynames/ReportRenames';
 
 export class DisplayNameManager {
 
   // TODO: Load in the global renames
   static getDisplayName(name: string, config?: any) {
+    // Check local renames first
+    let displayName = this.searchDisplayName(name, config.names);
+    if (displayName) return displayName;
+    // Check global renames when we have them. Global paths have lower priority
+    displayName = this.searchDisplayName(name, globalRenames);
+    if (displayName) return displayName;
+    // Return same name if nothing was found
+    return name;
+  }
+
+  static searchDisplayName(name: string, nameMap?: any): string | undefined {
     const path: string[] = name.split('.');
     // Check path passed by component
     let currentStep = 0;
     let currentPath;
     while (currentStep <= path.length - 1) {
       currentPath = path.slice(currentStep).join('.');
-      if (currentPath in config.names) {
-        return config.names[currentPath];
+      if (currentPath in nameMap) {
+        return nameMap[currentPath];
       }
       currentStep += 1;
     }
-    //TODO: Check globale renames when we have them. Global paths have lower priority
-    return path.join('.');
+    return undefined;
   }
 }

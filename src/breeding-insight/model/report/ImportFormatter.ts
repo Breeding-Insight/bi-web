@@ -60,11 +60,10 @@ export class ImportFormatter {
 
   // TODO: Make 'n members' into a pill?
   // TODO: Auto expand for multiple sibling objects
-  // TODO: Format details panel
-  // TODO: Naming replacements for details
-
-  // TODO: Some other time
-  //  TODO: Return all columns in data if "*" is passed
+  // TODO: Return all columns in data if "*" is passed
+  // TODO: Pagination
+  // TODO: Filtering
+  // TODO: Column toggle
 
   static format(jsonData: any[], configs: FormatConfig[]): ReportStruct {
 
