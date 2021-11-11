@@ -132,8 +132,8 @@
             v-bind:sortFieldLabel="nameSortLabel"
             v-bind:sortable="true"
             v-bind:sortOrder="nameSortOrder"
-            v-on:newSortColumn="changeSortColumn($event)"
-            v-on:toggleSortOrder="changeNameSortOrder"
+            v-on:newSortColumn="$emit('newSortColumn', $event)"
+            v-on:toggleSortOrder="$emit('toggleNameSortOrder')"
         >
           {{ data.observationVariableName }}
         </TableColumn>
@@ -161,8 +161,8 @@
             v-bind:sortFieldLabel="scaleClassSortLabel"
             v-bind:sortable="true"
             v-bind:sortOrder="scaleClassSortOrder"
-            v-on:newSortColumn="changeSortColumn($event)"
-            v-on:toggleSortOrder="changeScaleClassSortOrder"
+            v-on:newSortColumn="$emit('newSortColumn', $event)"
+            v-on:toggleSortOrder="$emit('toggleScaleClassSortOrder')"
         >
           {{ TraitStringFormatters.getScaleTypeString(data.scale) }}
         </TableColumn>
@@ -174,8 +174,8 @@
             v-bind:sortFieldLabel="unitSortLabel"
             v-bind:sortable="true"
             v-bind:sortOrder="unitSortOrder"
-            v-on:newSortColumn="changeSortColumn($event)"
-            v-on:toggleSortOrder="changeUnitSortOrder"
+            v-on:newSortColumn="$emit('newSortColumn', $event)"
+            v-on:toggleSortOrder="$emit('toggleUnitSortOrder')"
         >
           <template v-if="data.scale.dataType==='NUMERICAL'">
             {{ data.scale.scaleName }}
@@ -241,7 +241,7 @@ import WarningModal from '@/components/modals/WarningModal.vue'
 import {PlusCircleIcon} from 'vue-feather-icons'
 import {validationMixin} from 'vuelidate';
 import {Trait} from '@/breeding-insight/model/Trait'
-import {mapGetters, mapMutations} from 'vuex'
+import {mapGetters} from 'vuex'
 import {Program} from "@/breeding-insight/model/Program";
 import NewDataForm from '@/components/forms/NewDataForm.vue'
 import BasicInputField from "@/components/forms/BasicInputField.vue";
@@ -265,12 +265,6 @@ import {DataFormEventBusHandler} from '@/components/forms/DataFormEventBusHandle
 import {integer, maxLength} from "vuelidate/lib/validators";
 import {TraitField, TraitFilter} from "@/breeding-insight/model/TraitSelector";
 import {SortOrder, TraitSortField} from "@/breeding-insight/model/Sort";
-import {
-  NEW_SORT_COLUMN,
-  TOGGLE_METHOD_SORT_ORDER,
-  TOGGLE_NAME_SORT_ORDER,
-  TOGGLE_SCALE_CLASS_SORT_ORDER, TOGGLE_UNIT_SORT_ORDER
-} from "@/store/sorting/mutation-types";
 
 @Component({
   mixins: [validationMixin],
@@ -281,22 +275,6 @@ import {
   computed: {
     ...mapGetters([
       'activeProgram'
-    ]),
-    ...mapGetters('sorting',[
-      'traitSortField',
-      'nameSortOrder',
-      'methodSortOrder',
-      'scaleClassSortOrder',
-      'unitSortOrder'
-    ])
-  },
-  methods: {
-    ...mapMutations('sorting', [
-      NEW_SORT_COLUMN,
-      TOGGLE_NAME_SORT_ORDER,
-      TOGGLE_METHOD_SORT_ORDER,
-      TOGGLE_SCALE_CLASS_SORT_ORDER,
-      TOGGLE_UNIT_SORT_ORDER
     ])
   },
   data: () => ({Trait, StringFormatters, TraitStringFormatters})
@@ -304,6 +282,21 @@ import {
 export default class OntologyTable extends Vue {
   @Prop({default: () => true})
   active?: boolean;
+
+  @Prop()
+  traitSortField: TraitSortField;
+
+  @Prop()
+  nameSortOrder: boolean;
+
+  @Prop()
+  methodSortOrder: boolean;
+
+  @Prop()
+  scaleClassSortOrder: boolean;
+
+  @Prop()
+  unitSortOrder: boolean;
 
   private activeProgram?: Program;
   private traits: Trait[] = [];
@@ -398,26 +391,6 @@ export default class OntologyTable extends Vue {
 
   archiveWarning() {
     return this.editTrait && this.editTrait.active ? 'restore' : 'archive';
-  }
-
-  changeSortColumn(field: TraitSortField) {
-    this[NEW_SORT_COLUMN](field);
-  }
-
-  changeNameSortOrder() {
-    this[TOGGLE_NAME_SORT_ORDER]();
-  }
-
-  changeMethodSortOrder() {
-    this[TOGGLE_METHOD_SORT_ORDER]();
-  }
-
-  changeScaleClassSortOrder() {
-    this[TOGGLE_SCALE_CLASS_SORT_ORDER]();
-  }
-
-  changeUnitSortOrder() {
-    this[TOGGLE_UNIT_SORT_ORDER]();
   }
 
   @Watch('traitSortField')

@@ -23,12 +23,19 @@ import {TraitSortField} from "@/breeding-insight/model/Sort";
 import {SortState} from "@/store/sorting/types";
 
 export const state: SortState = {
-    // ontology table
-    traitSortField: TraitSortField.Name,
-    nameSortOrder: true,
-    methodSortOrder: true,
-    scaleClassSortOrder: true,
-    unitSortOrder: true
+    // active ontology table
+    activeTraitSortField: TraitSortField.Name,
+    activeOntNameSortOrder: true,
+    activeOntMethodSortOrder: true,
+    activeOntScaleClassSortOrder: true,
+    activeOntUnitSortOrder: true,
+
+    // archived ontology table
+    archivedTraitSortField: TraitSortField.Name,
+    archivedOntNameSortOrder: true,
+    archivedOntMethodSortOrder: true,
+    archivedOntScaleClassSortOrder: true,
+    archivedOntUnitSortOrder: true
 };
 
 const namespaced: boolean = true
