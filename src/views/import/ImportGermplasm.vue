@@ -51,6 +51,7 @@
         <!-- TODO: Replace tree-view when table is ready -->
         <report-table
             v-bind:report="processPreviewData(previewData.previewData)"
+            v-bind:config="importTableConfigv2"
             detailed
         />
         <tree-view v-bind:data="previewData.previewData" v-bind:options="{maxDepth: 0}"></tree-view>
@@ -92,6 +93,8 @@ export default class ImportGermplasm extends ProgramsBase {
     names: {
       'germplasmName': 'Germplasm Name',
       'externalReferences': 'External References',
+      'externalReferenceSource': 'External Reference Source',
+      'externalReferenceID': 'External Reference ID',
       'additionalInfo.programId': 'Program ID',
       'commonCropName': 'Species',
       'seasons': 'Seasons'

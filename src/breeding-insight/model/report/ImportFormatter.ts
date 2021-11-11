@@ -52,6 +52,7 @@
 import {ReportStruct} from "@/breeding-insight/model/report/ReportStruct";
 import {FormatConfig} from "@/breeding-insight/model/report/FormatConfig";
 import { v4 as uuidv4 } from 'uuid';
+import {DisplayNameManager} from "@/breeding-insight/model/report/DisplayNameManager";
 var flatten = require('flat');
 
 
@@ -84,26 +85,10 @@ export class ImportFormatter {
       // Check for the renames
       tableColumns.push({
         field: displayColumn.split('.').join('_'),
-        label: this.getColumnName(displayColumn, configs)
+        label: DisplayNameManager.getDisplayName(displayColumn, configs)
       });
     }
     return tableColumns;
-  }
-
-  static getColumnName(column: string, configs: any): string {
-    const path: string[] = column.split('.');
-    // Check path passed by component
-    let currentStep = 0;
-    let currentPath;
-    while (currentStep <= path.length - 1) {
-      currentPath = path.slice(currentStep).join('.');
-      if (currentPath in configs.names) {
-        return configs.names[currentPath];
-      }
-      currentStep += 1;
-    }
-    //TODO: Check globale renames when we have them. Global paths have lower priority
-    return path.join('.');
   }
 
   static getData(jsonData: any[]): [any[], any] {
@@ -123,15 +108,13 @@ export class ImportFormatter {
       for (const brapiTypeKey of Object.keys(datum)) {
         row[brapiTypeKey] = datum[brapiTypeKey].brAPIObject;
       }
-      // Flatten
-      const result: any = flatten(row, {safe: true, delimiter: '_'});
-
-      // Add row id to data
       const newRowId = uuidv4();
+      // Flatten for buefy. Not ideal, but it doesn't like the '.'
+      const result: any = flatten(row, {safe: true, delimiter: '_'});
+      // Add row id to data
       result.rowId = newRowId;
-
-      // Details for detail panel
-      details[newRowId] = Object.assign({}, result);
+      // Flatten again with no frills
+      details[newRowId] = flatten(row, {safe: true});
 
       // Filter out the list types and replace with descriptors
       for (const key of Object.keys(result)) {

@@ -46,6 +46,7 @@
       <ReportExpandableDetails
         v-if="!hasDetailSlot()"
         v-bind:details="getDetails(props.row.rowId)"
+        v-bind:config="config"
       ></ReportExpandableDetails>
     </template>
   </b-table>
@@ -65,12 +66,12 @@ export default class ReportTable extends Vue {
   report!: ReportStruct;
   @Prop()
   detailed!: boolean;
+  @Prop()
+  config!: any;
   //TODO: Allow all other props to be passed through
 
   getDetails(rowId: string): any {
     if (this.report.details) {
-      // TODO: Remove rowId
-      console.log(this.report.details[rowId]);
       return this.report.details[rowId];
     }
   }
