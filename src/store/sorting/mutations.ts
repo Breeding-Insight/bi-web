@@ -16,28 +16,51 @@
  */
 
 import {MutationTree} from 'vuex';
-import {NEW_SORT_COLUMN,
-    TOGGLE_NAME_SORT_ORDER,
-    TOGGLE_METHOD_SORT_ORDER,
-    TOGGLE_SCALE_CLASS_SORT_ORDER,
-    TOGGLE_UNIT_SORT_ORDER} from "@/store/sorting/mutation-types";
+import {
+    ARCHIVED_ONT_NEW_SORT_COLUMN,
+    ARCHIVED_ONT_TOGGLE_NAME_SORT_ORDER,
+    ARCHIVED_ONT_TOGGLE_METHOD_SORT_ORDER,
+    ARCHIVED_ONT_TOGGLE_SCALE_CLASS_SORT_ORDER,
+    ARCHIVED_ONT_TOGGLE_UNIT_SORT_ORDER,
+    ACTIVE_ONT_TOGGLE_METHOD_SORT_ORDER,
+    ACTIVE_ONT_TOGGLE_UNIT_SORT_ORDER,
+    ACTIVE_ONT_TOGGLE_SCALE_CLASS_SORT_ORDER, ACTIVE_ONT_NEW_SORT_COLUMN, ACTIVE_ONT_TOGGLE_NAME_SORT_ORDER
+} from "@/store/sorting/mutation-types";
 import {SortState} from "@/store/sorting/types";
 import {TraitSortField} from "@/breeding-insight/model/Sort";
 
 export const mutations: MutationTree<SortState> = {
-    [TOGGLE_NAME_SORT_ORDER](state: SortState) {
-        state.nameSortOrder = !state.nameSortOrder;
+    // active ontology table
+    [ACTIVE_ONT_TOGGLE_NAME_SORT_ORDER](state: SortState) {
+        state.activeOntNameSortOrder = !state.activeOntNameSortOrder;
     },
-    [TOGGLE_METHOD_SORT_ORDER](state: SortState) {
-        state.methodSortOrder = !state.methodSortOrder;
+    [ACTIVE_ONT_TOGGLE_METHOD_SORT_ORDER](state: SortState) {
+        state.activeOntMethodSortOrder = !state.activeOntMethodSortOrder;
     },
-    [TOGGLE_SCALE_CLASS_SORT_ORDER](state: SortState) {
-        state.scaleClassSortOrder = !state.scaleClassSortOrder;
+    [ACTIVE_ONT_TOGGLE_SCALE_CLASS_SORT_ORDER](state: SortState) {
+        state.activeOntScaleClassSortOrder = !state.activeOntScaleClassSortOrder;
     },
-    [TOGGLE_UNIT_SORT_ORDER](state: SortState) {
-        state.unitSortOrder = !state.unitSortOrder;
+    [ACTIVE_ONT_TOGGLE_UNIT_SORT_ORDER](state: SortState) {
+        state.activeOntUnitSortOrder = !state.activeOntUnitSortOrder;
     },
-    [NEW_SORT_COLUMN](state: SortState, field: TraitSortField) {
-        state.traitSortField = field;
+    [ACTIVE_ONT_NEW_SORT_COLUMN](state: SortState, field: TraitSortField) {
+        state.activeTraitSortField = field;
+    },
+
+    // archived ontology table
+    [ARCHIVED_ONT_TOGGLE_NAME_SORT_ORDER](state: SortState) {
+        state.archivedOntNameSortOrder = !state.archivedOntNameSortOrder;
+    },
+    [ARCHIVED_ONT_TOGGLE_METHOD_SORT_ORDER](state: SortState) {
+        state.archivedOntMethodSortOrder = !state.archivedOntMethodSortOrder;
+    },
+    [ARCHIVED_ONT_TOGGLE_SCALE_CLASS_SORT_ORDER](state: SortState) {
+        state.archivedOntScaleClassSortOrder = !state.archivedOntScaleClassSortOrder;
+    },
+    [ARCHIVED_ONT_TOGGLE_UNIT_SORT_ORDER](state: SortState) {
+        state.archivedOntUnitSortOrder = !state.archivedOntUnitSortOrder;
+    },
+    [ARCHIVED_ONT_NEW_SORT_COLUMN](state: SortState, field: TraitSortField) {
+        state.archivedTraitSortField = field;
     }
 };

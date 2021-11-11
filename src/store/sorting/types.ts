@@ -1,10 +1,17 @@
 import {TraitSortField} from "@/breeding-insight/model/Sort";
 
 export interface SortState {
-    // ontology table
-    traitSortField: TraitSortField,
-    nameSortOrder: boolean,
-    methodSortOrder: boolean,
-    scaleClassSortOrder: boolean,
-    unitSortOrder: boolean
+    // active ontology table
+    activeTraitSortField: TraitSortField,
+    activeOntNameSortOrder: boolean,
+    activeOntMethodSortOrder: boolean,
+    activeOntScaleClassSortOrder: boolean,
+    activeOntUnitSortOrder: boolean
+
+    // archived ontology table
+    archivedTraitSortField: TraitSortField,
+    archivedOntNameSortOrder: boolean,
+    archivedOntMethodSortOrder: boolean,
+    archivedOntScaleClassSortOrder: boolean,
+    archivedOntUnitSortOrder: boolean
 }

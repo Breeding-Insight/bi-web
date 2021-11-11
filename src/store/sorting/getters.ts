@@ -21,19 +21,37 @@ import {SortState} from "@/store/sorting/types";
 import {TraitSortField} from "@/breeding-insight/model/Sort";
 
 export const getters: GetterTree<SortState, RootState> = {
-    traitSortField(state: SortState): TraitSortField {
-        return state.traitSortField;
+    // active ontology table
+    activeTraitSortField(state: SortState): TraitSortField {
+        return state.activeTraitSortField;
     },
-    nameSortOrder(state: SortState): boolean {
-        return state.nameSortOrder;
+    activeOntNameSortOrder(state: SortState): boolean {
+        return state.activeOntNameSortOrder;
     },
-    methodSortOrder(state: SortState): boolean {
-        return state.methodSortOrder;
+    activeOntMethodSortOrder(state: SortState): boolean {
+        return state.activeOntMethodSortOrder;
     },
-    scaleClassSortOrder(state: SortState): boolean {
-        return state.scaleClassSortOrder;
+    activeOntScaleClassSortOrder(state: SortState): boolean {
+        return state.activeOntScaleClassSortOrder;
     },
-    unitSortOrder(state: SortState): boolean {
-        return state.unitSortOrder;
+    activeOntUnitSortOrder(state: SortState): boolean {
+        return state.activeOntUnitSortOrder;
+    },
+
+    // archived ontology table
+    archivedTraitSortField(state: SortState): TraitSortField {
+        return state.archivedTraitSortField;
+    },
+    archivedOntNameSortOrder(state: SortState): boolean {
+        return state.archivedOntNameSortOrder;
+    },
+    archivedOntMethodSortOrder(state: SortState): boolean {
+        return state.archivedOntMethodSortOrder;
+    },
+    archivedOntScaleClassSortOrder(state: SortState): boolean {
+        return state.archivedOntScaleClassSortOrder;
+    },
+    archivedOntUnitSortOrder(state: SortState): boolean {
+        return state.archivedOntUnitSortOrder;
     }
 };
