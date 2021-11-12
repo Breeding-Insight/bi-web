@@ -62,7 +62,7 @@
     placeholder: boolean | undefined;
     @Prop()
     inputId: string | undefined;
-    @Prop
+    @Prop()
     autocomplete: boolean | true;
 
     get fieldTypeComputed() {
