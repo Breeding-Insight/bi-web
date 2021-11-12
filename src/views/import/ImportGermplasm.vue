@@ -53,6 +53,7 @@
             v-bind:report="processPreviewData(previewData.previewData)"
             v-bind:config="importConfig"
             detailed
+            searchable
         />
         <tree-view v-bind:data="previewData.previewData" v-bind:options="{maxDepth: 0}"></tree-view>
       </template>
@@ -71,6 +72,7 @@ import {DataFormEventBusHandler} from "@/components/forms/DataFormEventBusHandle
 import ReportTable from "@/components/report/ReportTable.vue";
 import {ImportFormatter} from "@/breeding-insight/model/report/ImportFormatter";
 import {ReportStruct} from "@/breeding-insight/model/report/ReportStruct";
+import defaultRenames from '@/config/displaynames/ReportRenames';
 
 @Component({
   components: {
@@ -83,12 +85,11 @@ export default class ImportGermplasm extends ProgramsBase {
   // TODO: maybe move to config instead of hardcode?
   private germplasmImportTemplateName = 'GermplasmTemplateMap';
   private importConfig: any = {
-    names: {
-      'additionalInfo.programId': 'Program ID',
-    },
+    names: Object.assign(defaultRenames, {}),
     display: ['germplasm.germplasmName', 'germplasm.externalReferences', 'germplasm.additionalInfo.programId', 'germplasm.commonCropName', 'germplasm.seasons'],
     visible: [],
-    detailDisplay: '*'
+    detailDisplay: '*',
+    searchable: '*'
   }
 
   private confirmImportState: DataFormEventBusHandler = new DataFormEventBusHandler();

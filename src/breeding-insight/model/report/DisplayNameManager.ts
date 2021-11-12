@@ -13,17 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import globalRenames from '@/config/displaynames/ReportRenames';
 
 export class DisplayNameManager {
 
-  // TODO: Load in the global renames
   static getDisplayName(name: string, config?: any) {
     // Check local renames first
     let displayName = this.searchDisplayName(name, config.names);
-    if (displayName) return displayName;
-    // Check global renames when we have them. Global paths have lower priority
-    displayName = this.searchDisplayName(name, globalRenames);
     if (displayName) return displayName;
     // Return same name if nothing was found
     return name;

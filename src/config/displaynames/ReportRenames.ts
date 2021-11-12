@@ -21,5 +21,6 @@ export default {
   externalReferenceID: 'External Reference ID',
   germplasmName: 'Germplasm Name',
   commonCropName: 'Species',
-  seasons: 'Seasons'
+  seasons: 'Seasons',
+  programId: 'Program ID'
 }

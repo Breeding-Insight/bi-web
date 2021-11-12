@@ -53,6 +53,7 @@ import {ReportStruct} from "@/breeding-insight/model/report/ReportStruct";
 import {FormatConfig} from "@/breeding-insight/model/report/FormatConfig";
 import { v4 as uuidv4 } from 'uuid';
 import {DisplayNameManager} from "@/breeding-insight/model/report/DisplayNameManager";
+import {ReportSort} from "@/breeding-insight/model/report/ReportSort";
 var flatten = require('flat');
 
 
@@ -82,9 +83,13 @@ export class ImportFormatter {
     const displayColumns = configs.display;
     for (const displayColumn of displayColumns) {
       // Check for the renames
+      const field = displayColumn.split('.').join('_');
       tableColumns.push({
-        field: displayColumn.split('.').join('_'),
-        label: DisplayNameManager.getDisplayName(displayColumn, configs)
+        field: field,
+        label: DisplayNameManager.getDisplayName(displayColumn, configs),
+        searchable: configs.searchable === '*' || configs.searchable.includes(displayColumn),
+        sortable: true,
+        customSort: (a: any, b: any, isAsc: boolean) => this.sort(field, a, b, isAsc)
       });
     }
     return tableColumns;
@@ -126,4 +131,12 @@ export class ImportFormatter {
     }
     return [data, details];
   }
+
+  static sort(column: string, a: any, b: any, isAsc: boolean) {
+    const aString = a[column];
+    const bString = b[column];
+    const order = aString.localeCompare(bString, undefined, {numeric: true, sensitivity: 'base'});
+    return isAsc ? order: order * -1;
+  }
+
 }

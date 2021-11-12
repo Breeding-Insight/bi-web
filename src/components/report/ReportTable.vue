@@ -37,6 +37,7 @@
       v-bind:data="report.data"
       v-bind:columns="report.columns"
       v-bind:detailed="detailed"
+      v-bind:debounce-search="200"
   >
 
     <template v-slot:detail="props">
