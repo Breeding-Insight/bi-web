@@ -63,7 +63,7 @@
     @Prop()
     inputId: string | undefined;
     @Prop()
-    autocomplete: boolean | true;
+    autocomplete!: boolean | true;
 
     get fieldTypeComputed() {
       return this.fieldType ? this.fieldType : 'text';
