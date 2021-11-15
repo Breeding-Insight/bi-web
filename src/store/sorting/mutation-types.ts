@@ -28,3 +28,6 @@ export const ARCHIVED_ONT_TOGGLE_NAME_SORT_ORDER = 'archivedOntToggleNameSortOrd
 export const ARCHIVED_ONT_TOGGLE_METHOD_SORT_ORDER = 'archivedOntToggleMethodSortOrder';
 export const ARCHIVED_ONT_TOGGLE_SCALE_CLASS_SORT_ORDER = 'archivedOntToggleScaleClassSortOrder';
 export const ARCHIVED_ONT_TOGGLE_UNIT_SORT_ORDER = 'archivedOntToggleUnitSortOrder';
+
+// program users table
+export const UPDATE_PROGRAM_USER_SORT = 'updateProgramUserSort';
