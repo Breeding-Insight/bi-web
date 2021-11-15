@@ -93,7 +93,7 @@ export default class ReportExpandableDetails extends Vue {
     return DisplayNameManager.getDisplayName(name, this.config);
   }
 
-  lastElement(index, listLength) {
+  lastElement(index: number, listLength: number) {
     return index >= listLength - 1;
   }
 }

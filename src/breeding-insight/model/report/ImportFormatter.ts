@@ -24,47 +24,43 @@
   Formatter Configuration
   ---------------
   This configuration shows the formatter how to convert the json into tabular format.
-  The order of the fields in the config is the order they will display.
-
-  [
-    {
-      field: Path to json field in dot notation, excluding brapiObject, the formatter inserts this. (ex. germplasmName),
-      displayName: Display name for the column. Will use the json field dot notation if display
-        name not provided. (ex. Germplasm Name)
-      visible: true/false indicating whether the field is visible in the table.
-    }
-  ]
 
   {
-    names: { 'yadayada_yada': 'display_name' }, (short names ok)
-    display: [ 'this_field', 'that_field' ], (full path required)
-    visible: [ 'this_field' ], (full path needed) (everything is visible if not indicated)
-    detailDisplay: ['this_field', 'that_field']
+    names: { 'germplasm.germplasmName': 'Germplasm Name', 'programID': 'Program ID' }, (see naming priority below)
+    display: [ 'germplasm.germplasmName', 'germplasm.programId' ], (the columns shown in the table, full path required)
+    detailDisplay: ['germplasm.germplasmName', 'program.programId'] (columns to automatically show in details panel, full path required.)
+      (not needed if you are manually creating your own details panel).
   }
 
-  Display name priority (high to low)
-  1. Longer paths in component
-  2. Shorter paths in component
-  3. Longer paths in global
-  4. Shorter paths in global
+  Explanation
+  ------------
+  names: Convertion for json paths to display names. Property names can be used on their own (ex. germplasmName) but longer, more precise names
+          (ex. germplasm.germplasmName) will be used instead if present.
+  display: The columns to be shown in the table. The order of the columns is the order in which they will be displayed.
+            Full paths are required (ex. germplasm.germplasmName).
+  detailDisplay: The columns to automatically show in details panel, full paths are required. This property is not needed
+                  if you are manually creating your own details panel. See the ReportsTable component for details on custom details.
  */
 
 import {ReportStruct} from "@/breeding-insight/model/report/ReportStruct";
 import {FormatConfig} from "@/breeding-insight/model/report/FormatConfig";
 import { v4 as uuidv4 } from 'uuid';
 import {DisplayNameManager} from "@/breeding-insight/model/report/DisplayNameManager";
-import {ReportSort} from "@/breeding-insight/model/report/ReportSort";
-var flatten = require('flat');
-
+import flatten from "flat";
 
 export class ImportFormatter {
 
-  // TODO: Make 'n members' into a pill?
   // TODO: Auto expand for multiple sibling objects
-  // TODO: Return all columns in data if "*" is passed
-  // TODO: Pagination
-  // TODO: Filtering
-  // TODO: Column toggle
+  // TODO: Add default sorting
+  // TODO: Add to general importer
+  // TODO: Clean up
+  // TODO: Add summary panel
+
+  // TODO: Later
+    // TODO: Column toggle
+    // TODO: Make 'n members' into a pill?
+    // TODO: Show all columns in data if "*" is passed
+    // TODO: Allow for backend paging
 
   static format(jsonData: any[], configs: FormatConfig[]): ReportStruct {
 
@@ -74,7 +70,6 @@ export class ImportFormatter {
     const [data, details] = this.getData(jsonData);
 
     const report: ReportStruct = new ReportStruct(data, columns, details);
-    console.log(report);
     return report;
   }
 
@@ -87,7 +82,7 @@ export class ImportFormatter {
       tableColumns.push({
         field: field,
         label: DisplayNameManager.getDisplayName(displayColumn, configs),
-        searchable: configs.searchable === '*' || configs.searchable.includes(displayColumn),
+        searchable: configs.searchable !== undefined && (configs.searchable === '*' || configs.searchable.includes(displayColumn)),
         sortable: true,
         customSort: (a: any, b: any, isAsc: boolean) => this.sort(field, a, b, isAsc)
       });

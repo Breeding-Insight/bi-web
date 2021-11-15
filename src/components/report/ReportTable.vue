@@ -23,21 +23,46 @@
 
   - Details Panel:
     - You can define your own content for the details panel by using the 'details' slot. The details
-      slot is passed the flatten brapi content, without the arrays flattened. Example:
+      slot is passed the flattened brapi content, without the arrays flattened. Example:
       <template v-slot:details="row"></template>
 
-    - If you do not specify your own details slot, this component will display all the details for you.
+    - If you do not specify your own details slot, this component will display all the details
+      that you displayed in the configuration.
 
     - To show the expandable row details, include `detailed` as a prop on this component when specified.
 
+  Example Usage With Automated Details
+  -------------
+  <report-table
+      v-bind:report="processPreviewData(currentImport.import)"
+      v-bind:config="importConfig"
+      detailed
+      paginated
+  />
 
+  Example Usage with Custom Details
+  ------------
+  <report-table
+      v-bind:report="processPreviewData(currentImport.import)"
+      v-bind:config="importConfig"
+      detailed
+      paginated
+  >
+    <template v-slot:details="row">
+      <p>Detail JSON Dump: {{row}}</p>
+    </template>
+  </report-table>
 -->
+
 <template>
   <b-table
       v-bind:data="report.data"
       v-bind:columns="report.columns"
       v-bind:detailed="detailed"
       v-bind:debounce-search="200"
+      v-bind:paginated="paginated"
+      v-bind:per-page.sync="pagination.pageSize"
+      v-bind:current-page="pagination.currentPage"
   >
 
     <template v-slot:detail="props">
@@ -50,6 +75,16 @@
         v-bind:config="config"
       ></ReportExpandableDetails>
     </template>
+
+    <template v-slot:pagination>
+      <pagination-controls
+          v-show="report.data.length > 0"
+          v-bind:pagination.sync="pagination"
+          v-on:paginate="updatePage($event)"
+          v-on:paginate-toggle-all="toggleShowAll()"
+          v-on:paginate-page-size="updatePageSize($event)"
+      />
+    </template>
   </b-table>
 </template>
 
@@ -58,9 +93,11 @@
 import {Component, Prop, Vue, Watch} from 'vue-property-decorator'
 import {ReportStruct} from "@/breeding-insight/model/report/ReportStruct";
 import ReportExpandableDetails from "@/components/report/ReportExpandableDetails.vue";
+import PaginationControls from "@/components/tables/PaginationControls.vue";
+import {Pagination} from "@/breeding-insight/model/BiResponse";
 
 @Component({
-  components: {ReportExpandableDetails}
+  components: {ReportExpandableDetails, PaginationControls}
 })
 export default class ReportTable extends Vue {
   @Prop()
@@ -69,6 +106,16 @@ export default class ReportTable extends Vue {
   detailed!: boolean;
   @Prop()
   config!: any;
+  @Prop()
+  paginated!: boolean;
+
+  defaultPageSize: number = 20;
+  pagination: Pagination = new Pagination({
+    totalPages: this.report.data.length / this.defaultPageSize,
+    currentPage: 1,
+    totalCount: this.report.data.length,
+    pageSize: this.defaultPageSize
+  });
 
   getDetails(rowId: string): any {
     if (this.report.details) {
@@ -78,6 +125,19 @@ export default class ReportTable extends Vue {
 
   hasDetailSlot() {
     return !!this.$scopedSlots.details;
+  }
+
+  updatePage(i: number) {
+    this.pagination.currentPage = i;
+  }
+
+  updatePageSize(i: number) {
+    this.pagination.pageSize = i;
+  }
+
+  toggleShowAll() {
+    this.pagination.currentPage = 1;
+    this.pagination.pageSize = this.report.data.length;
   }
 }
 
