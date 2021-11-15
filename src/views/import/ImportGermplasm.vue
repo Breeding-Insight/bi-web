@@ -38,24 +38,31 @@
         </ImportInfoTemplateMessageBox>
       </template>
 
-      <template v-slot:confirmImportMessageBox="{ statistics, abort, confirm }">
+      <template v-slot:confirmImportMessageBox="{ statistics, abort, confirm, rows }">
         <ConfirmImportMessageBox v-bind:num-records="getNumNewGermplasmRecords(statistics)"
                                  v-bind:import-type-name="'Germplasm'"
                                  v-bind:confirm-import-state="confirmImportState"
                                  v-on:abort="abort"
                                  v-on:confirm="confirm"
-                                 class="mb-4"/>
+                                 class="mb-4">
+          <div>
+            <p class="is-size-5 mb-2"><strong>Import Summary</strong></p>
+            <p>Total rows: {{ rows.length }}</p>
+            <p>New Germplasm: {{ statistics.Germplasm.newObjectCount }}</p>
+            <p>New Pedigree Connections: {{ statistics["Pedigree Connections"].newObjectCount }}</p>
+            <p>Potential duplicate Germplasm records are highlighted in yellow and show a <alert-triangle-icon size="1.2x" class="icon-align"/> icon.
+              These records will be imported as new germplasm.</p>
+          </div>
+        </ConfirmImportMessageBox>
       </template>
 
-      <template v-slot:importPreviewTable="previewData">
-        <!-- TODO: Replace tree-view when table is ready -->
+      <template v-slot:importPreviewTable="currentImport">
         <report-table
-            v-bind:report="processPreviewData(previewData.previewData)"
+            v-bind:report="processPreviewData(currentImport.import)"
             v-bind:config="importConfig"
             detailed
-            searchable
+            paginated
         />
-        <tree-view v-bind:data="previewData.previewData" v-bind:options="{maxDepth: 0}"></tree-view>
       </template>
 
     </ImportTemplate>
@@ -73,10 +80,11 @@ import ReportTable from "@/components/report/ReportTable.vue";
 import {ImportFormatter} from "@/breeding-insight/model/report/ImportFormatter";
 import {ReportStruct} from "@/breeding-insight/model/report/ReportStruct";
 import defaultRenames from '@/config/displaynames/ReportRenames';
+import { AlertTriangleIcon } from 'vue-feather-icons';
 
 @Component({
   components: {
-    ReportTable, ImportInfoTemplateMessageBox, ConfirmImportMessageBox, ImportTemplate
+    ReportTable, ImportInfoTemplateMessageBox, ConfirmImportMessageBox, ImportTemplate, AlertTriangleIcon
   },
   data: () => ({ImportFormatter})
 })
@@ -88,8 +96,8 @@ export default class ImportGermplasm extends ProgramsBase {
     names: Object.assign(defaultRenames, {}),
     display: ['germplasm.germplasmName', 'germplasm.externalReferences', 'germplasm.additionalInfo.programId', 'germplasm.commonCropName', 'germplasm.seasons'],
     visible: [],
-    detailDisplay: '*',
-    searchable: '*'
+    // TODO: Is this even used?
+    detailDisplay: '*'
   }
 
   private confirmImportState: DataFormEventBusHandler = new DataFormEventBusHandler();
@@ -103,10 +111,9 @@ export default class ImportGermplasm extends ProgramsBase {
     return undefined;
   }
 
-  processPreviewData(previewData: any[]): ReportStruct {
+  processPreviewData(currentImport: any): ReportStruct {
     // Do special germplasm import formatting here
-
-    return ImportFormatter.format(previewData, this.importConfig);
+    return ImportFormatter.format(currentImport.preview.rows, this.importConfig);
   }
 
 }

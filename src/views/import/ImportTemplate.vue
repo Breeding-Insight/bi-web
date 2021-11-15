@@ -68,9 +68,10 @@
             v-bind:abort="handleAbortEvent"
             v-bind:confirm="handleConfirmEvent"
             v-bind:confirm-import-state="confirmImportState"
+            v-bind:rows="currentImport.preview.rows"
       />
 
-      <slot name="importPreviewTable" v-bind:previewData="previewData" />
+      <slot name="importPreviewTable" v-bind:import="currentImport" />
     </template>
 
     <template v-if="state === ImportState.IMPORT_ERROR">

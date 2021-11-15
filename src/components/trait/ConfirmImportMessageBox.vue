@@ -40,10 +40,10 @@
                   Confirm
                 </button>
               </div>
-            </div>
-            <div class="level-item">
-              <div>
-                <button class="button is-outlined" v-on:click="abort">Abort</button>
+              <div class="column">
+                <div>
+                  <button class="button is-outlined" v-on:click="abort">Abort</button>
+                </div>
               </div>
             </div>
           </div>
