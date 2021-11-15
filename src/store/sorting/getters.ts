@@ -18,7 +18,14 @@
 import {GetterTree} from 'vuex';
 import {RootState} from "@/store/types";
 import {SortState} from "@/store/sorting/types";
-import {SortOrder, TraitSortField, UserSort, UserSortField} from "@/breeding-insight/model/Sort";
+import {
+    LocationSort,
+    LocationSortField,
+    SortOrder,
+    TraitSortField,
+    UserSort,
+    UserSortField
+} from "@/breeding-insight/model/Sort";
 
 export const getters: GetterTree<SortState, RootState> = {
     // active ontology table
@@ -66,5 +73,18 @@ export const getters: GetterTree<SortState, RootState> = {
     programUserSortOrderAsBuefy(state: SortState): string {
         const orderMap: any = {[SortOrder.Ascending]: 'asc', [SortOrder.Descending]: 'desc'};
         return orderMap[state.programUserSort.order];
+    },
+
+    // location table
+    locationSort(state: SortState): LocationSort {
+        return state.locationSort;
+    },
+    locationSortFieldAsBuefy(state: SortState): string {
+        const fieldMap: any = {[LocationSortField.Name]: 'data.name'};
+        return fieldMap[state.locationSort.field];
+    },
+    locationSortOrderAsBuefy(state: SortState): string {
+        const orderMap: any = {[SortOrder.Ascending]: 'asc', [SortOrder.Descending]: 'desc'};
+        return orderMap[state.locationSort.order];
     }
 };

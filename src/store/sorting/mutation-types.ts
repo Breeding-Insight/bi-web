@@ -31,3 +31,6 @@ export const ARCHIVED_ONT_TOGGLE_UNIT_SORT_ORDER = 'archivedOntToggleUnitSortOrd
 
 // program users table
 export const UPDATE_PROGRAM_USER_SORT = 'updateProgramUserSort';
+
+// location table
+export const UPDATE_LOCATION_SORT = 'updateLocationSort';

@@ -19,7 +19,14 @@ import {Module} from 'vuex';
 import {getters} from '@/store/sorting/getters';
 import {mutations} from '@/store/sorting/mutations';
 import {RootState} from '@/store/types';
-import {SortOrder, TraitSortField, UserSort, UserSortField} from "@/breeding-insight/model/Sort";
+import {
+    LocationSort,
+    LocationSortField,
+    SortOrder,
+    TraitSortField,
+    UserSort,
+    UserSortField
+} from "@/breeding-insight/model/Sort";
 import {SortState} from "@/store/sorting/types";
 
 export let state: SortState;
@@ -39,7 +46,10 @@ state = {
     archivedOntUnitSortOrder: true,
 
     // program user table
-    programUserSort: new UserSort(UserSortField.Name, SortOrder.Ascending)
+    programUserSort: new UserSort(UserSortField.Name, SortOrder.Ascending),
+
+    // location table
+    locationSort: new LocationSort(LocationSortField.Name, SortOrder.Ascending)
 };
 
 const namespaced: boolean = true
