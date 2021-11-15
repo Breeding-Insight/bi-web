@@ -55,37 +55,40 @@
 -->
 
 <template>
-  <b-table
-      v-bind:data="report.data"
-      v-bind:columns="report.columns"
-      v-bind:detailed="detailed"
-      v-bind:debounce-search="200"
-      v-bind:paginated="paginated"
-      v-bind:per-page.sync="pagination.pageSize"
-      v-bind:current-page="pagination.currentPage"
-  >
+    <b-table
+        v-bind:data="report.data"
+        v-bind:columns="report.columns"
+        v-bind:detailed="detailed"
+        v-bind:debounce-search="200"
+        v-bind:paginated="paginated"
+        v-bind:per-page.sync="pagination.pageSize"
+        v-bind:current-page="pagination.currentPage"
+        v-bind:default-sort="report.defaultSort"
+        v-bind:default-sort-direction="report.defaultSortOrder"
+        scrollable
+    >
 
-    <template v-slot:detail="props">
-      <slot name="details" v-bind:row="props.row"></slot>
+      <template v-slot:detail="props">
+        <slot name="details" v-bind:row="props.row"></slot>
 
-      <!-- Default content if slot not used -->
-      <ReportExpandableDetails
-        v-if="!hasDetailSlot()"
-        v-bind:details="getDetails(props.row.rowId)"
-        v-bind:config="config"
-      ></ReportExpandableDetails>
-    </template>
+        <!-- Default content if slot not used -->
+        <ReportExpandableDetails
+            v-if="!hasDetailSlot()"
+            v-bind:details="getDetails(props.row.rowId)"
+            v-bind:config="config"
+        ></ReportExpandableDetails>
+      </template>
 
-    <template v-slot:pagination>
-      <pagination-controls
-          v-show="report.data.length > 0"
-          v-bind:pagination.sync="pagination"
-          v-on:paginate="updatePage($event)"
-          v-on:paginate-toggle-all="toggleShowAll()"
-          v-on:paginate-page-size="updatePageSize($event)"
-      />
-    </template>
-  </b-table>
+      <template v-slot:pagination>
+        <pagination-controls
+            v-show="report.data.length > 0"
+            v-bind:pagination.sync="pagination"
+            v-on:paginate="updatePage($event)"
+            v-on:paginate-toggle-all="toggleShowAll()"
+            v-on:paginate-page-size="updatePageSize($event)"
+        />
+      </template>
+    </b-table>
 </template>
 
 <script lang="ts">

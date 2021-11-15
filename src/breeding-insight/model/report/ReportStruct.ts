@@ -18,11 +18,14 @@ export class ReportStruct {
   data: any[];
   columns: string[];
   details?: any;
+  defaultSort?: string;
+  defaultSortOrder?: string; // asc or desc
 
-
-  constructor(data: any[], columns: string[], details?: any) {
+  constructor(data: any[], columns: string[], details?: any, defaultSourt?: string, defaultSortOrder?: string) {
     this.data = data;
     this.columns = columns;
     this.details = details;
+    this.defaultSort = defaultSourt;
+    this.defaultSortOrder = defaultSortOrder;
   }
 }

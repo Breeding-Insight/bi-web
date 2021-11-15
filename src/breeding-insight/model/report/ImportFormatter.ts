@@ -26,10 +26,11 @@
   This configuration shows the formatter how to convert the json into tabular format.
 
   {
-    names: { 'germplasm.germplasmName': 'Germplasm Name', 'programID': 'Program ID' }, (see naming priority below)
-    display: [ 'germplasm.germplasmName', 'germplasm.programId' ], (the columns shown in the table, full path required)
-    detailDisplay: ['germplasm.germplasmName', 'program.programId'] (columns to automatically show in details panel, full path required.)
-      (not needed if you are manually creating your own details panel).
+    names: { 'germplasm.germplasmName': 'Germplasm Name', 'programID': 'Program ID' },
+    display: [ 'germplasm.germplasmName', 'germplasm.programId' ],
+    detailDisplay: ['germplasm.germplasmName', 'program.programId'],
+    defaultSort: 'germplasm.germplasmName',
+    defaultSortOrder: 'asc'
   }
 
   Explanation
@@ -40,10 +41,11 @@
             Full paths are required (ex. germplasm.germplasmName).
   detailDisplay: The columns to automatically show in details panel, full paths are required. This property is not needed
                   if you are manually creating your own details panel. See the ReportsTable component for details on custom details.
+  defaultSort: The column to sort when the table is initially displayed.
+  defaultSortOrder: The order to sort the defaultSort column on. Value can be either 'asc' or 'desc'
  */
 
 import {ReportStruct} from "@/breeding-insight/model/report/ReportStruct";
-import {FormatConfig} from "@/breeding-insight/model/report/FormatConfig";
 import { v4 as uuidv4 } from 'uuid';
 import {DisplayNameManager} from "@/breeding-insight/model/report/DisplayNameManager";
 import flatten from "flat";
@@ -51,10 +53,9 @@ import flatten from "flat";
 export class ImportFormatter {
 
   // TODO: Auto expand for multiple sibling objects
-  // TODO: Add default sorting
   // TODO: Add to general importer
   // TODO: Clean up
-  // TODO: Add summary panel
+  // TODO: Remove test data
 
   // TODO: Later
     // TODO: Column toggle
@@ -62,14 +63,17 @@ export class ImportFormatter {
     // TODO: Show all columns in data if "*" is passed
     // TODO: Allow for backend paging
 
-  static format(jsonData: any[], configs: FormatConfig[]): ReportStruct {
+  static format(jsonData: any[], configs: any): ReportStruct {
 
     // Loop through the config and construct the column order
     const columns: any[] = this.getColumns(configs);
     // Format the data
     const [data, details] = this.getData(jsonData);
+    // Get sort column
+    const sortColumn = this.getSortColumn(configs);
 
-    const report: ReportStruct = new ReportStruct(data, columns, details);
+    console.log(data);
+    const report: ReportStruct = new ReportStruct(data, columns, details, sortColumn, configs.defaultSortOrder);
     return report;
   }
 
@@ -132,6 +136,13 @@ export class ImportFormatter {
     const bString = b[column];
     const order = aString.localeCompare(bString, undefined, {numeric: true, sensitivity: 'base'});
     return isAsc ? order: order * -1;
+  }
+
+  static getSortColumn(config: any) {
+    const sortColumn = config.defaultSort;
+    if (sortColumn) {
+      return sortColumn.split('.').join('_');
+    }
   }
 
 }

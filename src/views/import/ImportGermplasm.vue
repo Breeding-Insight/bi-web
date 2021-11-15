@@ -97,7 +97,9 @@ export default class ImportGermplasm extends ProgramsBase {
     display: ['germplasm.germplasmName', 'germplasm.externalReferences', 'germplasm.additionalInfo.programId', 'germplasm.commonCropName', 'germplasm.seasons'],
     visible: [],
     // TODO: Is this even used?
-    detailDisplay: '*'
+    detailDisplay: '*',
+    defaultSort: 'germplasm.germplasmName',
+    defaultSortOrder: 'asc'
   }
 
   private confirmImportState: DataFormEventBusHandler = new DataFormEventBusHandler();

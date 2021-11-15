@@ -75,7 +75,7 @@
           </div>
         </div>
       </div>
-      <div class="column">
+      <div class="column no-overflow-x">
         <div>
           <main id="main">
             <section class="section p-5">

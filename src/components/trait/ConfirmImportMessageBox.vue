@@ -40,7 +40,7 @@
                   Confirm
                 </button>
               </div>
-              <div class="column">
+              <div class="level-item">
                 <div>
                   <button class="button is-outlined" v-on:click="abort">Abort</button>
                 </div>
