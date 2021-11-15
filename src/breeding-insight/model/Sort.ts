@@ -26,3 +26,79 @@ export enum TraitSortField {
   ScaleClass = 'scaleClass',
   ScaleName = 'scaleName'
 }
+
+// ontology
+export enum OntologySortField {
+  Name = 'name',
+  MethodDescription = 'methodDescription',
+  ScaleClass = 'scaleClass',
+  ScaleName = 'scaleName'
+}
+
+export class OntologySort {
+  field: OntologySortField;
+  order: SortOrder;
+
+  constructor(field: OntologySortField, order: SortOrder) {
+    this.field = field;
+    this.order = order;
+  }
+}
+
+// location
+export enum LocationSortField {
+  Name = 'name',
+  Abbreviation = 'abbreviation',
+  Slope = 'slope'
+}
+
+export class LocationSort {
+  field: LocationSortField;
+  order: SortOrder;
+
+  constructor(field: LocationSortField, order: SortOrder) {
+    this.field = field;
+    this.order = order;
+  }
+}
+
+// user
+export enum UserSortField {
+  Name = 'name',
+  Email = 'email',
+  Roles = 'roles',
+  Active = 'active'
+}
+
+export class UserSort {
+  field: UserSortField;
+  order: SortOrder;
+
+  constructor(field: UserSortField, order: SortOrder) {
+    this.field = field;
+    this.order = order;
+  }
+}
+
+// program
+export enum ProgramSortField {
+  Name = 'name',
+  Abbreviation = 'abbreviation',
+  Objective = 'objective',
+  DocumentationUrl = 'documentationUrl',
+  Active = 'active',
+  BrapiUrl = 'brapiUrl',
+  NumUsers = 'numUsers',
+  SpeciesId = 'speciesId',
+  SpeciesName = 'speciesName'
+}
+
+export class ProgramSort {
+  field: ProgramSortField;
+  order: SortOrder;
+
+  constructor(field: ProgramSortField, order: SortOrder) {
+    this.field = field;
+    this.order = order;
+  }
+}
