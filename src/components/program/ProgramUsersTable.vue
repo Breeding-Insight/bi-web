@@ -122,6 +122,7 @@
         v-on:paginate-toggle-all="paginationController.toggleShowAll(usersPagination.totalCount.valueOf())"
         v-on:paginate-page-size="updatePageSize($event)"
         backend-sorting
+        v-bind:default-sort="[programUserSortFieldAsBuefy, programUserSortOrderAsBuefy]"
         v-on:sort="setSort"
     >
       <b-table-column field="data.name" label="Name" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
@@ -177,7 +178,7 @@
   import {Role} from '@/breeding-insight/model/Role'
   import {ProgramUserService} from "@/breeding-insight/service/ProgramUserService";
   import {RoleService} from "@/breeding-insight/service/RoleService";
-  import { mapGetters } from 'vuex'
+  import { mapGetters, mapMutations } from 'vuex'
   import {Program} from "@/breeding-insight/model/Program";
   import EmptyTableMessage from "@/components/tables/EmtpyTableMessage.vue";
   import {BackendPaginationController} from "@/breeding-insight/model/view_models/BackendPaginationController";
@@ -190,7 +191,10 @@
   import {DEACTIVATE_ALL_NOTIFICATIONS, LOGIN} from "@/store/mutation-types";
   import {defineAbilityFor} from "@/config/ability";
   import ExpandableTable from '@/components/tables/expandableTable/ExpandableTable.vue';
-  import {SortField} from "@/breeding-insight/model/SortField";
+  import {SortOrder, UserSort, UserSortField} from "@/breeding-insight/model/Sort";
+  import {
+    UPDATE_PROGRAM_USER_SORT
+  } from "@/store/sorting/mutation-types";
 
 @Component({
   components: { ExpandableTable, NewDataForm, BasicInputField, BasicSelectField, TableColumn,
@@ -200,7 +204,17 @@
     ...mapGetters([
       'activeProgram',
       'activeUser'
+    ]),
+    ...mapGetters('sorting', [
+        'programUserSort',
+        'programUserSortFieldAsBuefy',
+        'programUserSortOrderAsBuefy'
     ])
+  },
+  methods: {
+    ...mapMutations('sorting', {
+      updateSort: UPDATE_PROGRAM_USER_SORT
+    })
   }
 })
 export default class ProgramUsersTable extends Vue {
@@ -247,9 +261,11 @@ export default class ProgramUsersTable extends Vue {
   }
 
   setSort(field: string, order: string) {
-    const fieldMap: any = {'data.email': 'email', 'data.name': 'name'};
-    if (field in fieldMap) {
-      this.getUsers(fieldMap[field], order);
+    const fieldMap: any = {'data.email': UserSortField.Email, 'data.name': UserSortField.Name};
+    const orderMap: any = {'asc': SortOrder.Ascending, 'desc': SortOrder.Descending};
+    if (field in fieldMap && order in orderMap) {
+      this.updateSort(new UserSort(fieldMap[field], orderMap[order]));
+      this.getUsers();
     }
   }
 
@@ -265,13 +281,9 @@ export default class ProgramUsersTable extends Vue {
     this.paginationController.setCurrentCall(paginationQuery);
   }
 
-  getUsers(sortField?: string, sortOrder?: string) {
-
-    const sort: SortField | undefined = sortField && sortOrder ? new SortField(sortField, sortOrder) : this.lastSortState;
-    this.lastSortState = sort;
-
-    ProgramUserService.getAll(this.activeProgram!.id!, this.paginationController.currentCall, sort).then(([programUsers, metadata]) => {
-      if (this.paginationController.matchesCurrentRequest(metadata.pagination)) {
+  getUsers() {
+    ProgramUserService.getAll(this.activeProgram!.id!, this.paginationController.currentCall, this.programUserSort).then(([programUsers, metadata]) => {
+      if (this.paginationController.matchesCurrentRequest(metadata.pagination)){
         this.users = programUsers;
         this.usersPagination = metadata.pagination;
       }

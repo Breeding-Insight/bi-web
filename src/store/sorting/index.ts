@@ -19,10 +19,11 @@ import {Module} from 'vuex';
 import {getters} from '@/store/sorting/getters';
 import {mutations} from '@/store/sorting/mutations';
 import {RootState} from '@/store/types';
-import {TraitSortField} from "@/breeding-insight/model/Sort";
+import {SortOrder, TraitSortField, UserSort, UserSortField} from "@/breeding-insight/model/Sort";
 import {SortState} from "@/store/sorting/types";
 
-export const state: SortState = {
+export let state: SortState;
+state = {
     // active ontology table
     activeTraitSortField: TraitSortField.Name,
     activeOntNameSortOrder: true,
@@ -35,7 +36,10 @@ export const state: SortState = {
     archivedOntNameSortOrder: true,
     archivedOntMethodSortOrder: true,
     archivedOntScaleClassSortOrder: true,
-    archivedOntUnitSortOrder: true
+    archivedOntUnitSortOrder: true,
+
+    // program user table
+    programUserSort: new UserSort(UserSortField.Name, SortOrder.Ascending)
 };
 
 const namespaced: boolean = true
