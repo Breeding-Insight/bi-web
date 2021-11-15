@@ -24,10 +24,13 @@ import {
     ARCHIVED_ONT_TOGGLE_UNIT_SORT_ORDER,
     ACTIVE_ONT_TOGGLE_METHOD_SORT_ORDER,
     ACTIVE_ONT_TOGGLE_UNIT_SORT_ORDER,
-    ACTIVE_ONT_TOGGLE_SCALE_CLASS_SORT_ORDER, ACTIVE_ONT_NEW_SORT_COLUMN, ACTIVE_ONT_TOGGLE_NAME_SORT_ORDER
+    ACTIVE_ONT_TOGGLE_SCALE_CLASS_SORT_ORDER,
+    ACTIVE_ONT_NEW_SORT_COLUMN,
+    ACTIVE_ONT_TOGGLE_NAME_SORT_ORDER,
+    UPDATE_PROGRAM_USER_SORT
 } from "@/store/sorting/mutation-types";
 import {SortState} from "@/store/sorting/types";
-import {TraitSortField} from "@/breeding-insight/model/Sort";
+import {SortOrder, TraitSortField, UserSort, UserSortField} from "@/breeding-insight/model/Sort";
 
 export const mutations: MutationTree<SortState> = {
     // active ontology table
@@ -62,5 +65,12 @@ export const mutations: MutationTree<SortState> = {
     },
     [ARCHIVED_ONT_NEW_SORT_COLUMN](state: SortState, field: TraitSortField) {
         state.archivedTraitSortField = field;
+    },
+
+    //program user table
+    [UPDATE_PROGRAM_USER_SORT](state: SortState, sort: UserSort) {
+        state.programUserSort.field = sort.field;
+        state.programUserSort.order = sort.order;
     }
+
 };
