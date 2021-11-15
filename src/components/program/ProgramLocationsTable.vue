@@ -93,6 +93,9 @@
       v-on:paginate="paginationController.updatePage($event)"
       v-on:paginate-toggle-all="paginationController.toggleShowAll()"
       v-on:paginate-page-size="paginationController.updatePageSize($event)"
+      backend-sorting
+      v-bind:default-sort="[locationSortFieldAsBuefy, locationSortOrderAsBuefy]"
+      v-on:sort="setSort"
     >
       <b-table-column field="data.name" label="Name" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
         {{ props.row.data.name }}
@@ -132,7 +135,7 @@
   import {Validations} from 'vuelidate-property-decorators'
   import {required} from 'vuelidate/lib/validators'
   import {ProgramLocation} from '@/breeding-insight/model/ProgramLocation'
-  import { mapGetters } from 'vuex'
+  import { mapGetters, mapMutations } from 'vuex'
   import {Program} from "@/breeding-insight/model/Program";
   import NewDataForm from '@/components/forms/NewDataForm.vue'
   import BasicInputField from "@/components/forms/BasicInputField.vue";
@@ -146,6 +149,8 @@
   import {
     DEACTIVATE_ALL_NOTIFICATIONS
   } from "@/store/mutation-types";
+  import {UPDATE_LOCATION_SORT} from "@/store/sorting/mutation-types";
+  import {LocationSortField, SortOrder, UserSort} from "@/breeding-insight/model/Sort";
 
 @Component({
   mixins: [validationMixin],
@@ -155,7 +160,17 @@
   computed: {
     ...mapGetters([
       'activeProgram'
+    ]),
+    ...mapGetters('sorting',[
+        'locationSort',
+        'locationSortFieldAsBuefy',
+        'locationSortOrderAsBuefy'
     ])
+  },
+  methods: {
+    ...mapMutations('sorting', {
+      updateSort: UPDATE_LOCATION_SORT
+    })
   }
 })
 export default class ProgramLocationsTable extends Vue {
@@ -185,13 +200,22 @@ export default class ProgramLocationsTable extends Vue {
     this.getLocations();
   }
 
+  setSort(field: string, order: string) {
+    const fieldMap: any = {'data.name': LocationSortField.Name};
+    const orderMap: any = {'asc': SortOrder.Ascending, 'desc': SortOrder.Descending};
+    if (field in fieldMap && order in orderMap) {
+      this.updateSort(new UserSort(fieldMap[field], orderMap[order]));
+      this.getLocations();
+    }
+  }
+
   @Watch('paginationController', { deep: true})
   getLocations() {
     let paginationQuery: PaginationQuery = PaginationController.getPaginationSelections(
       this.paginationController.currentPage, this.paginationController.pageSize, this.paginationController.showAll);
     this.paginationController.setCurrentCall(paginationQuery);
 
-    ProgramLocationService.getAll(this.activeProgram!.id!, paginationQuery).then(([programLocations, metadata]) => {
+    ProgramLocationService.getAll(this.activeProgram!.id!, paginationQuery, this.locationSort).then(([programLocations, metadata]) => {
       if (this.paginationController.matchesCurrentRequest(metadata.pagination)){
         this.locations = programLocations;
         this.locationsPagination = metadata.pagination;

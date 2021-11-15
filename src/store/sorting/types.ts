@@ -1,4 +1,4 @@
-import {TraitSortField, UserSort, UserSortField} from "@/breeding-insight/model/Sort";
+import {LocationSort, TraitSortField, UserSort, UserSortField} from "@/breeding-insight/model/Sort";
 
 export interface SortState {
     // active ontology table
@@ -16,5 +16,8 @@ export interface SortState {
     archivedOntUnitSortOrder: boolean,
 
     // program users table
-    programUserSort: UserSort
+    programUserSort: UserSort,
+
+    // program locations table
+    locationSort: LocationSort
 }
