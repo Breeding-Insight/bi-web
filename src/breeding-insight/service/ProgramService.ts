@@ -96,7 +96,7 @@ export class ProgramService {
     return new Promise<[Program[], Metadata]>(((resolve, reject) => {
 
       ProgramDAO.getAll(paginationQuery, sort).then((biResponse) => {
-        
+
         let programs: Program[] = [];
 
         // Parse our programs into the vue programs param
