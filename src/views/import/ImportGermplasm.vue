@@ -93,8 +93,19 @@ export default class ImportGermplasm extends ProgramsBase {
   // TODO: maybe move to config instead of hardcode?
   private germplasmImportTemplateName = 'GermplasmTemplateMap';
   private importConfig: any = {
-    names: Object.assign(defaultRenames, {}),
-    display: ['germplasm.germplasmName', 'germplasm.externalReferences', 'germplasm.additionalInfo.programId', 'germplasm.commonCropName', 'germplasm.seasons'],
+    names: Object.assign(defaultRenames, {
+      'germplasmName': 'GID',
+      'defaultDisplayName': 'Germplasm Name',
+      'breedingMethod': 'Breeding Method',
+      'seedSource': 'Wild',
+      'pedigree': 'Pedigree',
+      'createdDate': 'Created Date',
+      'createdUser': 'Creator',
+      'entryNumber': 'Entry No.'
+    }),
+    display: ['germplasm.additionalInfo.entryNumber','germplasm.germplasmName', 'germplasm.defaultDisplayName',
+      'germplasm.breedingMethod', 'germplasm.seedSource', 'germplasm.pedigree',
+      'germplasm.additionalInfo.createdDate', 'germplasm.additionalInfo.createdUser'],
     detailDisplay: '*',
     defaultSort: 'germplasm.germplasmName',
     defaultSortOrder: 'asc'
@@ -113,6 +124,26 @@ export default class ImportGermplasm extends ProgramsBase {
 
   processPreviewData(currentImport: any): ReportStruct {
     // Do special germplasm import formatting here
+    //TODO: Remove test data
+    for (const i: number in currentImport.preview.rows) {
+      currentImport.preview.rows[i] = {
+        germplasm: {
+          brAPIObject: {
+            germplasmName: 'SP ' + (+i+1),
+            defaultDisplayName: currentImport.preview.rows[i].germplasm.brAPIObject.germplasmName,
+            breedingMethod: i % 2 == 0 ? 'Biparental' : 'Open Pollination',
+            seedSource: i % 2 == 0 ? 'Greenhouse' : 'Field',
+            pedigree: i > 1 ? `${currentImport.preview.rows[i - 2].germplasm.brAPIObject.defaultDisplayName}/${currentImport.preview.rows[i - 1].germplasm.brAPIObject.defaultDisplayName}` : '',
+            additionalInfo: {
+              createdDate: '11/16/2021',
+              createdUser: 'BIDEV Team',
+              entryNumber: +i + 1
+            }
+          }
+        }
+      };
+    }
+
     return ImportFormatter.format(currentImport.preview.rows, this.importConfig);
   }
 

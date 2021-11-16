@@ -100,12 +100,6 @@ export class ImportFormatter {
     const details: any = {};
     for (const datum of jsonData) {
       const row: any = {};
-      //TODO: Remove test data
-      datum.germplasm.brAPIObject.externalReferences = [
-        {'externalReferenceSource': 'breedinginsight.net', 'externalReferenceID': '1'},
-        {'externalReferenceSource': 'breedinginsight.net', 'externalReferenceID': '2'}
-      ];
-      datum.germplasm.brAPIObject.seasons = ['fall 2020', 'spring 2020', 'summer 2020'];
 
       // Lift the brapi object out
       for (const brapiTypeKey of Object.keys(datum)) {
@@ -144,5 +138,4 @@ export class ImportFormatter {
       return sortColumn.split('.').join('_');
     }
   }
-
 }
