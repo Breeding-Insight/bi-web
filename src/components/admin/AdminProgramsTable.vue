@@ -334,7 +334,7 @@ export default class AdminProgramsTable extends Vue {
     };
     const orderMap: any = {'asc': SortOrder.Ascending, 'desc': SortOrder.Descending};
     if (field in fieldMap && order in orderMap) {
-      this.updateSort(new UserSort(fieldMap[field], orderMap[order]));
+      this.updateSort(new ProgramSort(fieldMap[field], orderMap[order]));
       this.getPrograms();
     }
   }
