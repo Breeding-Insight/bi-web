@@ -94,7 +94,7 @@
       v-on:paginate-toggle-all="paginationController.toggleShowAll()"
       v-on:paginate-page-size="paginationController.updatePageSize($event)"
       backend-sorting
-      v-bind:default-sort="[locationSortFieldAsBuefy, locationSortOrderAsBuefy]"
+      v-bind:default-sort="['data.name', locationSortOrderAsBuefy]"
       v-on:sort="setSort"
     >
       <b-table-column field="data.name" label="Name" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
@@ -132,7 +132,6 @@
   import WarningModal from '@/components/modals/WarningModal.vue'
   import {PlusCircleIcon} from 'vue-feather-icons'
   import {validationMixin} from 'vuelidate';
-  import {Validations} from 'vuelidate-property-decorators'
   import {required} from 'vuelidate/lib/validators'
   import {ProgramLocation} from '@/breeding-insight/model/ProgramLocation'
   import { mapGetters, mapMutations } from 'vuex'
@@ -163,7 +162,6 @@
     ]),
     ...mapGetters('sorting',[
         'locationSort',
-        'locationSortFieldAsBuefy',
         'locationSortOrderAsBuefy'
     ])
   },
