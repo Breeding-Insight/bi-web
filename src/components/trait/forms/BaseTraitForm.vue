@@ -32,7 +32,7 @@
       />
     </div>
     <div class="column is-2">
-      <span class="is-pulled-right new-term pb-2 pr-3">Full Name</span>
+      <span class="is-pulled-right required new-term pb-2 pr-3">Full Name</span>
     </div>
     <div class="column new-term is-10">
       <BasicInputField
@@ -130,7 +130,7 @@
       <span class="has-text-weight-bold">Method = Description + Class {{ methodName }}</span>
     </div>
     <div class="column is-2">
-      <span class="is-pulled-right required new-term pb-2 pr-3">Description</span>
+      <span class="is-pulled-right new-term pb-2 pr-3">Description</span>
     </div>
     <div class="column new-term is-10">
       <AutoCompleteField
