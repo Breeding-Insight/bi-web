@@ -24,6 +24,7 @@ import {Program} from "@/breeding-insight/model/Program";
 import {ProgramUser} from "@/breeding-insight/model/ProgramUser";
 import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
 import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
+import {ProgramSort, SortOrder, UserSort, UserSortField} from "@/breeding-insight/model/Sort";
 
 export class UserService {
 
@@ -130,14 +131,11 @@ export class UserService {
     }))
   }
 
-  static getAll(paginationQuery?: PaginationQuery): Promise<[User[], Metadata]> {
+  static getAll(paginationQuery: PaginationQuery = new PaginationQuery(0, 0, true),
+                sort: UserSort = new UserSort(UserSortField.Name, SortOrder.Ascending)): Promise<[User[], Metadata]> {
     return new Promise<[User[], Metadata]>(((resolve, reject) => {
 
-      if (paginationQuery === undefined){
-        paginationQuery = new PaginationQuery(0, 0, true);
-      }
-
-      UserDAO.getAll(paginationQuery).then((biResponse) => {
+      UserDAO.getAll(paginationQuery, sort).then((biResponse) => {
 
         biResponse.result.data = PaginationController.mockSortRecords(biResponse.result.data);
         // Parse our users into the vue users param
