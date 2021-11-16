@@ -27,10 +27,17 @@ import {
     ACTIVE_ONT_TOGGLE_SCALE_CLASS_SORT_ORDER,
     ACTIVE_ONT_NEW_SORT_COLUMN,
     ACTIVE_ONT_TOGGLE_NAME_SORT_ORDER,
-    UPDATE_PROGRAM_USER_SORT, UPDATE_LOCATION_SORT
+    UPDATE_PROGRAM_USER_SORT, UPDATE_LOCATION_SORT, UPDATE_SYSTEM_USER_SORT, UPDATE_PROGRAM_SORT
 } from "@/store/sorting/mutation-types";
 import {SortState} from "@/store/sorting/types";
-import {LocationSort, SortOrder, TraitSortField, UserSort, UserSortField} from "@/breeding-insight/model/Sort";
+import {
+    LocationSort,
+    ProgramSort,
+    SortOrder,
+    TraitSortField,
+    UserSort,
+    UserSortField
+} from "@/breeding-insight/model/Sort";
 
 export const mutations: MutationTree<SortState> = {
     // active ontology table
@@ -77,6 +84,17 @@ export const mutations: MutationTree<SortState> = {
     [UPDATE_LOCATION_SORT](state: SortState, sort: LocationSort) {
         state.locationSort.field = sort.field;
         state.locationSort.order = sort.order;
-    }
+    },
 
+    //system user table
+    [UPDATE_SYSTEM_USER_SORT](state: SortState, sort: UserSort) {
+        state.systemUserSort.field = sort.field;
+        state.systemUserSort.order = sort.order;
+    },
+
+    //program table
+    [UPDATE_PROGRAM_SORT](state: SortState, sort: ProgramSort) {
+        state.programSort.field = sort.field;
+        state.programSort.order = sort.order;
+    }
 };

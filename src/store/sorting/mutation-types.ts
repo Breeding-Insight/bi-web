@@ -34,3 +34,9 @@ export const UPDATE_PROGRAM_USER_SORT = 'updateProgramUserSort';
 
 // location table
 export const UPDATE_LOCATION_SORT = 'updateLocationSort';
+
+// system users table
+export const UPDATE_SYSTEM_USER_SORT = 'updateSystemUserSort';
+
+// program table
+export const UPDATE_PROGRAM_SORT = 'updateProgramSort'

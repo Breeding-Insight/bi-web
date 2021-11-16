@@ -22,6 +22,8 @@ import {RootState} from '@/store/types';
 import {
     LocationSort,
     LocationSortField,
+    ProgramSort,
+    ProgramSortField,
     SortOrder,
     TraitSortField,
     UserSort,
@@ -49,7 +51,13 @@ state = {
     programUserSort: new UserSort(UserSortField.Name, SortOrder.Ascending),
 
     // location table
-    locationSort: new LocationSort(LocationSortField.Name, SortOrder.Ascending)
+    locationSort: new LocationSort(LocationSortField.Name, SortOrder.Ascending),
+
+    // system user table
+    systemUserSort: new UserSort(UserSortField.Name, SortOrder.Ascending),
+
+    // program table
+    programSort: new ProgramSort(ProgramSortField.Name, SortOrder.Ascending)
 };
 
 const namespaced: boolean = true
