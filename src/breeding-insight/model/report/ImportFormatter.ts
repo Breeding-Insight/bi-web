@@ -41,6 +41,7 @@
             Full paths are required (ex. germplasm.germplasmName).
   detailDisplay: The columns to automatically show in details panel, full paths are required. This property is not needed
                   if you are manually creating your own details panel. See the ReportsTable component for details on custom details.
+                  Set value as '*' to display every field.
   defaultSort: The column to sort when the table is initially displayed.
   defaultSortOrder: The order to sort the defaultSort column on. Value can be either 'asc' or 'desc'
  */
@@ -52,8 +53,6 @@ import flatten from "flat";
 
 export class ImportFormatter {
 
-  // TODO: Auto expand for multiple sibling objects
-  // TODO: Add to general importer
   // TODO: Clean up
   // TODO: Remove test data
 
@@ -62,6 +61,8 @@ export class ImportFormatter {
     // TODO: Make 'n members' into a pill?
     // TODO: Show all columns in data if "*" is passed
     // TODO: Allow for backend paging
+    // TODO: Add to general importer
+    // TODO: Auto expand for multiple sibling objects
 
   static format(jsonData: any[], configs: any): ReportStruct {
 
@@ -72,7 +73,6 @@ export class ImportFormatter {
     // Get sort column
     const sortColumn = this.getSortColumn(configs);
 
-    console.log(data);
     const report: ReportStruct = new ReportStruct(data, columns, details, sortColumn, configs.defaultSortOrder);
     return report;
   }
@@ -81,7 +81,7 @@ export class ImportFormatter {
     const tableColumns: any[] = [];
     const displayColumns = configs.display;
     for (const displayColumn of displayColumns) {
-      // Check for the renames
+      // Buefy doesn't work with . notation
       const field = displayColumn.split('.').join('_');
       tableColumns.push({
         field: field,

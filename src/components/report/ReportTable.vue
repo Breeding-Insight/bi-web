@@ -27,7 +27,7 @@
       <template v-slot:details="row"></template>
 
     - If you do not specify your own details slot, this component will display all the details
-      that you displayed in the configuration.
+      that you specified in the configuration.
 
     - To show the expandable row details, include `detailed` as a prop on this component when specified.
 

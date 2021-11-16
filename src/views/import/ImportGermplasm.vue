@@ -95,7 +95,6 @@ export default class ImportGermplasm extends ProgramsBase {
   private importConfig: any = {
     names: Object.assign(defaultRenames, {}),
     display: ['germplasm.germplasmName', 'germplasm.externalReferences', 'germplasm.additionalInfo.programId', 'germplasm.commonCropName', 'germplasm.seasons'],
-    // TODO: Is this even used?
     detailDisplay: '*',
     defaultSort: 'germplasm.germplasmName',
     defaultSortOrder: 'asc'
