@@ -140,13 +140,13 @@
           {{ props.row.data.name }}
         </router-link>
       </b-table-column>
+      <b-table-column field="data.key" label="Program Key" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+        {{ props.row.data.key }}
+      </b-table-column>
       <b-table-column :custom-sort="sortSpecies" label="Species" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
         <template v-if="speciesMap.size > 0">
           {{ getSpeciesName(props.row.data.speciesId) }}
         </template>
-      </b-table-column>
-      <b-table-column field="data.key" label="Program Key" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-        {{ props.row.data.key }}
       </b-table-column>
       <b-table-column field="data.numUsers" label="# Users" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
         {{ props.row.data.numUsers }}
