@@ -152,6 +152,9 @@
       v-on:paginate-toggle-all="paginationController.toggleShowAll()"
       v-on:paginate-page-size="paginationController.updatePageSize($event)"
       v-on:is-mobile="isMobile = $event"
+      backend-sorting
+      v-bind:default-sort="[systemUserSortFieldAsBuefy, systemUserSortOrderAsBuefy]"
+      v-on:sort="setSort"
     >
         <b-table-column field="data.name" label="Name"  sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
           {{ props.row.data.name }}
@@ -159,12 +162,12 @@
          <b-table-column field="data.email" label="Email" v-bind:visible="!isMobile"  sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
           {{ props.row.data.email }}
         </b-table-column>
-        <b-table-column :custom-sort="sortRole" label="Role"  sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+        <b-table-column :custom-sort="sortRole" label="Role" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
           <template v-if="rolesMap.size > 0">
             {{ getRoleName(props.row.data.roleId) }}
           </template>
         </b-table-column>
-        <b-table-column :custom-sort="sortProgram" label="Programs"  sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+        <b-table-column :custom-sort="sortProgram" label="Programs" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
           <template
             v-if="getRoleName(props.row.data.roleId) === 'admin'"
           >
@@ -254,11 +257,13 @@
   import {Metadata, Pagination} from "@/breeding-insight/model/BiResponse";
   import {helpers} from "vuelidate/lib/validators";
   import { DataFormEventBusHandler } from '@/components/forms/DataFormEventBusHandler';
-  import {mapGetters} from "vuex";
+  import {mapGetters, mapMutations} from "vuex";
   import ExpandableTable from '@/components/tables/expandableTable/ExpandableTable.vue';
   import {
     DEACTIVATE_ALL_NOTIFICATIONS
   } from "@/store/mutation-types";
+  import {UPDATE_SYSTEM_USER_SORT} from "@/store/sorting/mutation-types";
+  import {ProgramSortField, SortOrder, UserSort, UserSortField} from "@/breeding-insight/model/Sort";
 
   @Component({
   components: {
@@ -267,8 +272,18 @@
   computed: {
     ...mapGetters([
         'activeUser'
+    ]),
+    ...mapGetters('sorting', [
+        'systemUserSort',
+        'systemUserSortFieldAsBuefy',
+        'systemUserSortOrderAsBuefy'
     ])
-  }
+  },
+    methods: {
+      ...mapMutations('sorting', {
+        updateSort: UPDATE_SYSTEM_USER_SORT
+      })
+    }
 })
 export default class AdminUsersTable extends Vue {
   private deactivateActive: boolean = false;
@@ -297,12 +312,27 @@ export default class AdminUsersTable extends Vue {
   public users: User[] = [];
   private usersPagination?: Pagination = new Pagination();
 
+  private systemUserSort!: UserSort;
+  private updateSort!: (sort: UserSort) => void;
+
   mounted() {
     this.getRoles();
     this.getUsers();
   }
 
-  getActiveProgramRoles() {
+    setSort(field: string, order: string) {
+      const fieldMap: any = {
+        'data.email': UserSortField.Email,
+        'data.name': UserSortField.Name
+      };
+      const orderMap: any = {'asc': SortOrder.Ascending, 'desc': SortOrder.Descending};
+      if (field in fieldMap && order in orderMap) {
+        this.updateSort(new UserSort(fieldMap[field], orderMap[order]));
+        this.getUsers();
+      }
+    }
+
+    getActiveProgramRoles() {
     if (this.currentDeleteUser) {
       if (this.currentDeleteUser.id && this.currentDeleteUser.programRoles) {
         return this.currentDeleteUser.programRoles.filter(programRole => programRole.active);
@@ -324,7 +354,7 @@ export default class AdminUsersTable extends Vue {
     this.paginationController.setCurrentCall(paginationQuery);
 
 
-    UserService.getAll(paginationQuery).then(([users, metadata]) => {
+    UserService.getAll(paginationQuery, this.systemUserSort).then(([users, metadata]) => {
       if (this.paginationController.matchesCurrentRequest(metadata.pagination)){
         this.users = users;
         this.usersPagination = metadata.pagination;

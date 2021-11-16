@@ -20,7 +20,7 @@ import {RootState} from "@/store/types";
 import {SortState} from "@/store/sorting/types";
 import {
     LocationSort,
-    LocationSortField,
+    LocationSortField, ProgramSort, ProgramSortField,
     SortOrder,
     TraitSortField,
     UserSort,
@@ -82,5 +82,37 @@ export const getters: GetterTree<SortState, RootState> = {
     },
     locationSortOrderAsBuefy(state: SortState): string {
         return orderMap[state.locationSort.order];
+    },
+
+    // system user table
+    systemUserSort(state: SortState): UserSort {
+        return state.systemUserSort;
+    },
+    systemUserSortFieldAsBuefy(state: SortState): string {
+        const fieldMap: any = {
+            [UserSortField.Email]: 'data.email',
+            [UserSortField.Name]: 'data.name'
+        };
+        return fieldMap[state.systemUserSort.field];
+    },
+    systemUserSortOrderAsBuefy(state: SortState): string {
+        return orderMap[state.systemUserSort.order];
+    },
+
+    // program table
+    programSort(state: SortState): ProgramSort {
+        return state.programSort;
+    },
+    programSortFieldAsBuefy(state: SortState): string {
+        const fieldMap: any = {
+            [ProgramSortField.Name]: 'data.name',
+            [ProgramSortField.SpeciesName]: 'data.species',
+            [ProgramSortField.NumUsers]: 'data.numUsers',
+            [ProgramSortField.BrapiUrl]: 'data.brapiUrl'
+        };
+        return fieldMap[state.programSort.field];
+    },
+    programSortOrderAsBuefy(state: SortState): string {
+        return orderMap[state.programSort.order];
     }
 };
