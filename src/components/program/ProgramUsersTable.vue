@@ -244,7 +244,7 @@ export default class ProgramUsersTable extends Vue {
   private usersLoading = true;
 
   private programUserSort!: UserSort;
-  private updateSort!: (field: UserSortField, order: SortOrder) => void;
+  private updateSort!: (sort: UserSort) => void;
 
   newUserValidations = {
     name: {required},
