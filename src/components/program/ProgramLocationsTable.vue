@@ -149,7 +149,7 @@
     DEACTIVATE_ALL_NOTIFICATIONS
   } from "@/store/mutation-types";
   import {UPDATE_LOCATION_SORT} from "@/store/sorting/mutation-types";
-  import {LocationSortField, SortOrder, UserSort} from "@/breeding-insight/model/Sort";
+  import {LocationSort, LocationSortField, SortOrder, UserSort} from "@/breeding-insight/model/Sort";
 
 @Component({
   mixins: [validationMixin],
@@ -189,6 +189,9 @@ export default class ProgramLocationsTable extends Vue {
 
   private newLocationFormState: DataFormEventBusHandler = new DataFormEventBusHandler();
   private editLocationFormState: DataFormEventBusHandler = new DataFormEventBusHandler();
+
+  private locationSort!: LocationSort;
+  private updateSort!: (field: LocationSortField, order: SortOrder) => void;
 
   locationValidations = {
     name: {required}
