@@ -191,7 +191,7 @@
   import {DEACTIVATE_ALL_NOTIFICATIONS, LOGIN} from "@/store/mutation-types";
   import {defineAbilityFor} from "@/config/ability";
   import ExpandableTable from '@/components/tables/expandableTable/ExpandableTable.vue';
-  import {SortOrder, UserSort, UserSortField} from "@/breeding-insight/model/Sort";
+  import {Sort, SortOrder, UserSort, UserSortField} from "@/breeding-insight/model/Sort";
   import {
     UPDATE_PROGRAM_USER_SORT
   } from "@/store/sorting/mutation-types";
@@ -265,9 +265,8 @@ export default class ProgramUsersTable extends Vue {
 
   setSort(field: string, order: string) {
     const fieldMap: any = {'data.email': UserSortField.Email, 'data.name': UserSortField.Name};
-    const orderMap: any = {'asc': SortOrder.Ascending, 'desc': SortOrder.Descending};
-    if (field in fieldMap && order in orderMap) {
-      this.updateSort(new UserSort(fieldMap[field], orderMap[order]));
+    if (field in fieldMap) {
+      this.updateSort(new UserSort(fieldMap[field], Sort.orderAsBI(order)));
       this.getUsers();
     }
   }

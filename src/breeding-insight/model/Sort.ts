@@ -20,6 +20,20 @@ export enum SortOrder {
   Descending = 'DESC'
 }
 
+export class Sort {
+  static orderMap: any = {
+    'asc': SortOrder.Ascending,
+    'desc': SortOrder.Descending
+  };
+
+  static orderAsBI(order: string) {
+    if (order in this.orderMap) {
+      return this.orderMap[order];
+    }
+    return SortOrder.Ascending;
+  }
+}
+
 export enum TraitSortField {
   Name = 'name',
   MethodDescription = 'methodDescription',
