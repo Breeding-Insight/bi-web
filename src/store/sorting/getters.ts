@@ -79,10 +79,6 @@ export const getters: GetterTree<SortState, RootState> = {
     locationSort(state: SortState): LocationSort {
         return state.locationSort;
     },
-    locationSortFieldAsBuefy(state: SortState): string {
-        const fieldMap: any = {[LocationSortField.Name]: 'data.name'};
-        return fieldMap[state.locationSort.field];
-    },
     locationSortOrderAsBuefy(state: SortState): string {
         const orderMap: any = {[SortOrder.Ascending]: 'asc', [SortOrder.Descending]: 'desc'};
         return orderMap[state.locationSort.order];
