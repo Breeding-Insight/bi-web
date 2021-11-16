@@ -205,7 +205,7 @@
     DEACTIVATE_ALL_NOTIFICATIONS,
   } from "@/store/mutation-types";
   import {UPDATE_PROGRAM_SORT} from "@/store/sorting/mutation-types";
-  import {ProgramSort, ProgramSortField, SortOrder, UserSort, UserSortField} from "@/breeding-insight/model/Sort";
+  import {ProgramSort, ProgramSortField, Sort, SortOrder, UserSort, UserSortField} from "@/breeding-insight/model/Sort";
 
   // create custom validation to handle cases default url validation doesn't
   const url = helpers.withParams(
@@ -301,13 +301,12 @@ export default class AdminProgramsTable extends Vue {
       'data.numUsers': ProgramSortField.NumUsers,
       'data.brapiUrl': ProgramSortField.BrapiUrl
     };
-    const orderMap: any = {'asc': SortOrder.Ascending, 'desc': SortOrder.Descending};
-    if (field in fieldMap && order in orderMap) {
-      this.updateSort(new ProgramSort(fieldMap[field], orderMap[order]));
+
+    if (field in fieldMap) {
+      this.updateSort(new ProgramSort(fieldMap[field], Sort.orderAsBI(order)));
       this.getPrograms();
     }
   }
-
 
   @Watch('paginationController', { deep: true})
   getPrograms() {

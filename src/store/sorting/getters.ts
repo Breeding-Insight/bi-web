@@ -20,7 +20,8 @@ import {RootState} from "@/store/types";
 import {SortState} from "@/store/sorting/types";
 import {
     LocationSort,
-    LocationSortField, ProgramSort, ProgramSortField,
+    ProgramSort,
+    ProgramSortField,
     SortOrder,
     TraitSortField,
     UserSort,
@@ -30,6 +31,7 @@ import {
 const orderMap: any = {[SortOrder.Ascending]: 'asc', [SortOrder.Descending]: 'desc'};
 
 export const getters: GetterTree<SortState, RootState> = {
+
     // active ontology table
     activeTraitSortField(state: SortState): TraitSortField {
         return state.activeTraitSortField;
