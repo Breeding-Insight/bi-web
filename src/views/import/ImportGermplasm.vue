@@ -79,7 +79,7 @@ import {DataFormEventBusHandler} from "@/components/forms/DataFormEventBusHandle
 import ReportTable from "@/components/report/ReportTable.vue";
 import {ImportFormatter} from "@/breeding-insight/model/report/ImportFormatter";
 import {ReportStruct} from "@/breeding-insight/model/report/ReportStruct";
-import defaultRenames from '@/config/displaynames/ReportRenames';
+import defaultRenames from '@/config/report/ReportRenames';
 import { AlertTriangleIcon } from 'vue-feather-icons';
 
 @Component({
