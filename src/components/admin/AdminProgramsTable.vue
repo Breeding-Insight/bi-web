@@ -123,6 +123,9 @@
       v-on:paginate="paginationController.updatePage($event)"
       v-on:paginate-toggle-all="paginationController.toggleShowAll()"
       v-on:paginate-page-size="paginationController.updatePageSize($event)"
+      backend-sorting
+      v-bind:default-sort="[programSortFieldAsBuefy, programSortOrderAsBuefy]"
+      v-on:sort="setSort"
     >
       <b-table-column field="data.name" label="Name" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
         <router-link
@@ -131,7 +134,7 @@
           {{ props.row.data.name }}
         </router-link>
       </b-table-column>
-      <b-table-column :custom-sort="sortSpecies" label="Species" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+      <b-table-column :custom-sort="sortSpecies" label="Species" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
         <template v-if="speciesMap.size > 0">
           {{ getSpeciesName(props.row.data.speciesId) }}
         </template>
@@ -178,7 +181,7 @@
   import {PlusCircleIcon} from 'vue-feather-icons'
   import {validationMixin} from 'vuelidate'
   import {required} from 'vuelidate/lib/validators'
-
+  import { mapGetters, mapMutations } from 'vuex'
   import WarningModal from '@/components/modals/WarningModal.vue'
   import {Program} from '@/breeding-insight/model/Program'
   import {Species} from '@/breeding-insight/model/Species'
@@ -201,6 +204,8 @@
   import {
     DEACTIVATE_ALL_NOTIFICATIONS,
   } from "@/store/mutation-types";
+  import {UPDATE_PROGRAM_SORT} from "@/store/sorting/mutation-types";
+  import {ProgramSort, ProgramSortField, SortOrder, UserSort, UserSortField} from "@/breeding-insight/model/Sort";
 
   // create custom validation to handle cases default url validation doesn't
   const url = helpers.withParams(
@@ -214,6 +219,18 @@
     ExpandableTable, EmtpyTableMessage,
     NewDataForm, WarningModal, PlusCircleIcon,
     TableColumn, BasicInputField, BasicSelectField
+  },
+  computed: {
+    ...mapGetters('sorting', [
+        'programSort',
+        'programSortFieldAsBuefy',
+        'programSortOrderAsBuefy'
+    ])
+  },
+  methods: {
+    ...mapMutations('sorting', {
+      updateSort: UPDATE_PROGRAM_SORT
+    })
   }
 })
 export default class AdminProgramsTable extends Vue {
@@ -243,6 +260,9 @@ export default class AdminProgramsTable extends Vue {
   private customBrapi: boolean = false;
 
   private serverError: FieldError[] = [];
+
+  private programSort!: ProgramSort;
+  private updateSort!: (sort: ProgramSort) => void;
 
   // reset brapiUrl if checkbox toggled back off
   @Watch('customBrapi', {immediate: true})
@@ -274,6 +294,21 @@ export default class AdminProgramsTable extends Vue {
     this.getSpecies();
   }
 
+  setSort(field: string, order: string) {
+    const fieldMap: any = {
+      'data.name': ProgramSortField.Name,
+      'data.species': ProgramSortField.SpeciesName,
+      'data.numUsers': ProgramSortField.NumUsers,
+      'data.brapiUrl': ProgramSortField.BrapiUrl
+    };
+    const orderMap: any = {'asc': SortOrder.Ascending, 'desc': SortOrder.Descending};
+    if (field in fieldMap && order in orderMap) {
+      this.updateSort(new UserSort(fieldMap[field], orderMap[order]));
+      this.getPrograms();
+    }
+  }
+
+
   @Watch('paginationController', { deep: true})
   getPrograms() {
 
@@ -281,7 +316,7 @@ export default class AdminProgramsTable extends Vue {
         this.paginationController.currentPage, this.paginationController.pageSize, this.paginationController.showAll);
     this.paginationController.setCurrentCall(paginationQuery);
 
-    ProgramService.getAll(paginationQuery).then(([programs, metadata]) => {
+    ProgramService.getAll(paginationQuery, this.programSort).then(([programs, metadata]) => {
 
       // Check that our most recent query is this one
       if (this.paginationController.matchesCurrentRequest(metadata.pagination)) {
