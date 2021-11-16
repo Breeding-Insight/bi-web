@@ -17,7 +17,7 @@
 
 <template>
   <div>
-    <div v-for="[key, value] of Object.entries(details)" v-bind:key="key">
+    <div v-for="[key, value] of Object.entries(getDisplayedDetails())" v-bind:key="key">
       <template v-if="value !== Object(value)">
         <!-- Primitive type, simple display -->
         <div class="columns is-centered is-mobile is-variable is-0 mt-5 my-0">
@@ -95,6 +95,20 @@ export default class ReportExpandableDetails extends Vue {
 
   lastElement(index: number, listLength: number) {
     return index >= listLength - 1;
+  }
+
+  isDisplayed(column: string) {
+    return this.config.detailDisplay === '*' || this.config.detailDisplay.includes(column);
+  }
+
+  getDisplayedDetails() {
+    const displayedDetails = {};
+    for (const key of Object.keys(this.details)) {
+      if (this.isDisplayed(key)) {
+        displayedDetails[key] = this.details[key];
+      }
+    }
+    return displayedDetails;
   }
 }
 
