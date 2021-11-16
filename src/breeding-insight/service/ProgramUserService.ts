@@ -105,14 +105,10 @@ export class ProgramUserService {
     }));
   }
 
-  static getAll(programId: string, paginationQuery?: PaginationQuery, sort?: UserSort): Promise<[ProgramUser[], Metadata]> {
+  static getAll(programId: string,
+                paginationQuery: PaginationQuery = new PaginationQuery(0, 0, true),
+                sort: UserSort = new UserSort(UserSortField.Name, SortOrder.Ascending)): Promise<[ProgramUser[], Metadata]> {
     return new Promise<[ProgramUser[], Metadata]>(((resolve, reject) => {
-
-      if (paginationQuery === undefined){
-        paginationQuery = new PaginationQuery(0, 0, true);
-      }
-
-      if (sort === undefined) sort = new UserSort(UserSortField.Name, SortOrder.Ascending);
 
       if (programId) {
         ProgramUserDAO.getAll(programId, paginationQuery, sort).then((biResponse) => {
