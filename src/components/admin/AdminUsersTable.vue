@@ -263,7 +263,7 @@
     DEACTIVATE_ALL_NOTIFICATIONS
   } from "@/store/mutation-types";
   import {UPDATE_SYSTEM_USER_SORT} from "@/store/sorting/mutation-types";
-  import {ProgramSortField, SortOrder, UserSort, UserSortField} from "@/breeding-insight/model/Sort";
+  import {ProgramSortField, Sort, SortOrder, UserSort, UserSortField} from "@/breeding-insight/model/Sort";
 
   @Component({
   components: {
@@ -325,9 +325,8 @@ export default class AdminUsersTable extends Vue {
         'data.email': UserSortField.Email,
         'data.name': UserSortField.Name
       };
-      const orderMap: any = {'asc': SortOrder.Ascending, 'desc': SortOrder.Descending};
-      if (field in fieldMap && order in orderMap) {
-        this.updateSort(new UserSort(fieldMap[field], orderMap[order]));
+      if (field in fieldMap) {
+        this.updateSort(new UserSort(fieldMap[field], Sort.orderAsBI(order)));
         this.getUsers();
       }
     }
