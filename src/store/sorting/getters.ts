@@ -27,6 +27,8 @@ import {
     UserSortField
 } from "@/breeding-insight/model/Sort";
 
+const orderMap: any = {[SortOrder.Ascending]: 'asc', [SortOrder.Descending]: 'desc'};
+
 export const getters: GetterTree<SortState, RootState> = {
     // active ontology table
     activeTraitSortField(state: SortState): TraitSortField {
@@ -71,7 +73,6 @@ export const getters: GetterTree<SortState, RootState> = {
         return fieldMap[state.programUserSort.field];
     },
     programUserSortOrderAsBuefy(state: SortState): string {
-        const orderMap: any = {[SortOrder.Ascending]: 'asc', [SortOrder.Descending]: 'desc'};
         return orderMap[state.programUserSort.order];
     },
 
@@ -80,7 +81,6 @@ export const getters: GetterTree<SortState, RootState> = {
         return state.locationSort;
     },
     locationSortOrderAsBuefy(state: SortState): string {
-        const orderMap: any = {[SortOrder.Ascending]: 'asc', [SortOrder.Descending]: 'desc'};
         return orderMap[state.locationSort.order];
     }
 };
