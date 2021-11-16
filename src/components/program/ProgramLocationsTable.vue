@@ -205,7 +205,7 @@ export default class ProgramLocationsTable extends Vue {
     const fieldMap: any = {'data.name': LocationSortField.Name};
     const orderMap: any = {'asc': SortOrder.Ascending, 'desc': SortOrder.Descending};
     if (field in fieldMap && order in orderMap) {
-      this.updateSort(new UserSort(fieldMap[field], orderMap[order]));
+      this.updateSort(new LocationSort(fieldMap[field], orderMap[order]));
       this.getLocations();
     }
   }
