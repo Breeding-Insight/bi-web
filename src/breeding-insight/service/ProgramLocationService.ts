@@ -105,14 +105,10 @@ export class ProgramLocationService {
     }));
   }
 
-  static getAll(programId: string, paginationQuery?: PaginationQuery, sort?: LocationSort): Promise<[ProgramLocation[], Metadata]> {
+  static getAll(programId: string,
+                paginationQuery: PaginationQuery = new PaginationQuery(0, 0, true),
+                sort: LocationSort = new LocationSort(LocationSortField.Name, SortOrder.Ascending)): Promise<[ProgramLocation[], Metadata]> {
     return new Promise<[ProgramLocation[], Metadata]>(((resolve, reject) => {
-
-      if (paginationQuery === undefined){
-        paginationQuery = new PaginationQuery(0, 0, true);
-      }
-
-      if (sort === undefined) sort = new LocationSort(LocationSortField.Name, SortOrder.Ascending);
 
       if (programId) {
         ProgramLocationDAO.getAll(programId, paginationQuery, sort).then((biResponse) => {
