@@ -191,7 +191,7 @@ export default class ProgramLocationsTable extends Vue {
   private editLocationFormState: DataFormEventBusHandler = new DataFormEventBusHandler();
 
   private locationSort!: LocationSort;
-  private updateSort!: (field: LocationSortField, order: SortOrder) => void;
+  private updateSort!: (sort: LocationSort) => void;
 
   locationValidations = {
     name: {required}
