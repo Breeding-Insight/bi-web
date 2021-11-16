@@ -100,7 +100,7 @@
       <b-table-column field="data.name" label="Name" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
         {{ props.row.data.name }}
       </b-table-column>
-      <b-table-column field="data.numExperiments" label="# Experiments" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+      <b-table-column field="data.numExperiments" label="# Experiments" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
         {{ props.row.data.numExperiments }}
       </b-table-column>
       <template v-slot:edit="{editData, validations}">
@@ -149,7 +149,7 @@
     DEACTIVATE_ALL_NOTIFICATIONS
   } from "@/store/mutation-types";
   import {UPDATE_LOCATION_SORT} from "@/store/sorting/mutation-types";
-  import {LocationSort, LocationSortField, SortOrder, UserSort} from "@/breeding-insight/model/Sort";
+  import {LocationSort, LocationSortField, Sort, SortOrder, UserSort} from "@/breeding-insight/model/Sort";
 
 @Component({
   mixins: [validationMixin],
@@ -203,9 +203,8 @@ export default class ProgramLocationsTable extends Vue {
 
   setSort(field: string, order: string) {
     const fieldMap: any = {'data.name': LocationSortField.Name};
-    const orderMap: any = {'asc': SortOrder.Ascending, 'desc': SortOrder.Descending};
-    if (field in fieldMap && order in orderMap) {
-      this.updateSort(new LocationSort(fieldMap[field], orderMap[order]));
+    if (field in fieldMap) {
+      this.updateSort(new LocationSort(fieldMap[field], Sort.orderAsBI(order)));
       this.getLocations();
     }
   }
