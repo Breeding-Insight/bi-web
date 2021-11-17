@@ -14,6 +14,9 @@ export interface SortState {
     // archived ontology table
     archivedOntologySort: OntologySort,
 
+    // import preview ontology table
+    importPreviewOntologySort: OntologySort,
+
     // program users table
     programUserSort: UserSort,
 

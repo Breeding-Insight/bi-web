@@ -18,6 +18,7 @@
 import {BiResponse} from "@/breeding-insight/model/BiResponse";
 import * as api from "@/util/api";
 import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
+import {OntologySort, SortOrder} from "@/breeding-insight/model/Sort";
 
 export class TraitUploadDAO {
 
@@ -46,17 +47,26 @@ export class TraitUploadDAO {
     });
   }
 
-  static getTraitUpload(programId: string, paginationQuery: PaginationQuery): Promise<BiResponse> {
+  static getTraitUpload(programId: string,
+                        paginationQuery: PaginationQuery,
+                        sort: OntologySort): Promise<BiResponse> {
 
     return new Promise<BiResponse>(((resolve, reject) => {
-
-      api.call({ url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/trait-upload`, method: 'get' })
-        .then((response: any) => {
-          const biResponse = new BiResponse(response.data);
-          resolve(biResponse);
-        }).catch((error) => {
-          reject(error);
-        })
+      const config: any = {
+        url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/trait-upload`,
+        method: 'get',
+        params: {
+          sortField: sort.field,
+          sortOrder: sort.flag ? SortOrder.Ascending : SortOrder.Descending
+        }
+      };
+      api.call(config)
+          .then((response: any) => {
+            const biResponse = new BiResponse(response.data);
+            resolve(biResponse);
+          }).catch((error) => {
+        reject(error);
+      })
 
     }))
   }
