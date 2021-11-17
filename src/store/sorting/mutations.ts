@@ -18,16 +18,12 @@
 import {MutationTree} from 'vuex';
 import {
     ARCHIVED_ONT_NEW_SORT_COLUMN,
-    ARCHIVED_ONT_TOGGLE_NAME_SORT_ORDER,
-    ARCHIVED_ONT_TOGGLE_METHOD_SORT_ORDER,
-    ARCHIVED_ONT_TOGGLE_SCALE_CLASS_SORT_ORDER,
-    ARCHIVED_ONT_TOGGLE_UNIT_SORT_ORDER,
     ACTIVE_ONT_NEW_SORT_COLUMN,
     UPDATE_PROGRAM_USER_SORT,
     UPDATE_LOCATION_SORT,
     UPDATE_SYSTEM_USER_SORT,
     UPDATE_PROGRAM_SORT,
-    UPDATE_ARCHIVED_ONT_SORT, ACTIVE_ONT_TOGGLE_SORT_ORDER
+    ACTIVE_ONT_TOGGLE_SORT_ORDER, ARCHIVED_ONT_TOGGLE_SORT_ORDER
 } from "@/store/sorting/mutation-types";
 import {SortState} from "@/store/sorting/types";
 import {
@@ -47,24 +43,11 @@ export const mutations: MutationTree<SortState> = {
     },
 
     // archived ontology table
-    [UPDATE_ARCHIVED_ONT_SORT](state: SortState, sort: OntologySort) {
-        state.archivedOntologySort.field = sort.field;
-        state.archivedOntologySort.order = sort.order;
+    [ARCHIVED_ONT_TOGGLE_SORT_ORDER](state: SortState) {
+        state.archivedOntologySort.flag = !state.archivedOntologySort.flag;
     },
-    [ARCHIVED_ONT_TOGGLE_NAME_SORT_ORDER](state: SortState) {
-        state.archivedOntNameSortOrder = !state.archivedOntNameSortOrder;
-    },
-    [ARCHIVED_ONT_TOGGLE_METHOD_SORT_ORDER](state: SortState) {
-        state.archivedOntMethodSortOrder = !state.archivedOntMethodSortOrder;
-    },
-    [ARCHIVED_ONT_TOGGLE_SCALE_CLASS_SORT_ORDER](state: SortState) {
-        state.archivedOntScaleClassSortOrder = !state.archivedOntScaleClassSortOrder;
-    },
-    [ARCHIVED_ONT_TOGGLE_UNIT_SORT_ORDER](state: SortState) {
-        state.archivedOntUnitSortOrder = !state.archivedOntUnitSortOrder;
-    },
-    [ARCHIVED_ONT_NEW_SORT_COLUMN](state: SortState, field: TraitSortField) {
-        state.archivedTraitSortField = field;
+    [ARCHIVED_ONT_NEW_SORT_COLUMN](state: SortState, field: OntologySortField) {
+        state.archivedOntologySort.field = field;
     },
 
     //program user table

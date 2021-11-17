@@ -18,16 +18,9 @@
 <template>
   <ontology-table
       v-bind:active="false"
-      v-bind:traitSortField="archivedTraitSortField"
-      v-bind:nameSortOrder="archivedOntNameSortOrder"
-      v-bind:methodSortOrder="archivedOntMethodSortOrder"
-      v-bind:scaleClassSortOrder="archivedOntScaleClassSortOrder"
-      v-bind:unitSortOrder="archivedOntUnitSortOrder"
-      v-on:newSortColumn="changeSortColumn"
-      v-on:toggleNameSortOrder="changeNameSortOrder"
-      v-on:toggleMethodSortOrder="changeMethodSortOrder"
-      v-on:toggleScaleClassSortOrder="changeScaleClassSortOrder"
-      v-on:toggleUnitSortOrder="changeUnitSortOrder"
+      v-bind:ontologySort="archivedOntologySort"
+      v-on:newSortColumn="newSortColumn"
+      v-on:toggleSortOrder="toggleSortOrder"
       @show-success-notification="$emit('show-success-notification', $event)"
       @show-info-notification="$emit('show-info-notification', $event)"
       @show-error-notification="$emit('show-error-notification', $event)"
@@ -40,9 +33,8 @@ import { Prop, Component, Vue } from 'vue-property-decorator'
 import OntologyTable from "@/components/ontology/OntologyTable.vue";
 import {mapGetters, mapMutations} from 'vuex'
 import {
-  ARCHIVED_ONT_NEW_SORT_COLUMN, ARCHIVED_ONT_TOGGLE_METHOD_SORT_ORDER, ARCHIVED_ONT_TOGGLE_NAME_SORT_ORDER,
-  ARCHIVED_ONT_TOGGLE_SCALE_CLASS_SORT_ORDER,
-  ARCHIVED_ONT_TOGGLE_UNIT_SORT_ORDER
+  ARCHIVED_ONT_NEW_SORT_COLUMN,
+  ARCHIVED_ONT_TOGGLE_SORT_ORDER
 } from "@/store/sorting/mutation-types";
 import {TraitSortField} from "@/breeding-insight/model/Sort";
 
@@ -50,21 +42,14 @@ import {TraitSortField} from "@/breeding-insight/model/Sort";
   components: {OntologyTable},
   computed: {
     ...mapGetters('sorting', [
-      'archivedTraitSortField',
-      'archivedOntNameSortOrder',
-      'archivedOntMethodSortOrder',
-      'archivedOntScaleClassSortOrder',
-      'archivedOntUnitSortOrder'
+        'archivedOntologySort'
     ])
   },
   methods: {
-    ...mapMutations('sorting', [
-      ARCHIVED_ONT_NEW_SORT_COLUMN,
-      ARCHIVED_ONT_TOGGLE_NAME_SORT_ORDER,
-      ARCHIVED_ONT_TOGGLE_METHOD_SORT_ORDER,
-      ARCHIVED_ONT_TOGGLE_SCALE_CLASS_SORT_ORDER,
-      ARCHIVED_ONT_TOGGLE_UNIT_SORT_ORDER
-    ])
+    ...mapMutations('sorting', {
+      newSortColumn: ARCHIVED_ONT_NEW_SORT_COLUMN,
+      toggleSortOrder: ARCHIVED_ONT_TOGGLE_SORT_ORDER
+    })
   }
 })
 export default class OntologyArchivedTable extends Vue {
