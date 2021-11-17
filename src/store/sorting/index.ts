@@ -22,6 +22,8 @@ import {RootState} from '@/store/types';
 import {
     LocationSort,
     LocationSortField,
+    OntologySort,
+    OntologySortField,
     ProgramSort,
     ProgramSortField,
     SortOrder,
@@ -34,13 +36,10 @@ import {SortState} from "@/store/sorting/types";
 export let state: SortState;
 state = {
     // active ontology table
-    activeTraitSortField: TraitSortField.Name,
-    activeOntNameSortOrder: true,
-    activeOntMethodSortOrder: true,
-    activeOntScaleClassSortOrder: true,
-    activeOntUnitSortOrder: true,
+    activeOntologySort: new OntologySort(OntologySortField.Name, true),
 
     // archived ontology table
+    archivedOntologySort: new OntologySort(OntologySortField.Name, SortOrder.Ascending),
     archivedTraitSortField: TraitSortField.Name,
     archivedOntNameSortOrder: true,
     archivedOntMethodSortOrder: true,
