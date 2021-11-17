@@ -128,12 +128,12 @@
         <TableColumn
             name="name"
             v-bind:label="'Name'"
-            v-bind:sortField="traitSortField"
+            v-bind:sortField="ontologySort.field"
             v-bind:sortFieldLabel="nameSortLabel"
             v-bind:sortable="true"
-            v-bind:sortOrder="nameSortOrder"
+            v-bind:sortOrder="ontologySort.flag"
             v-on:newSortColumn="$emit('newSortColumn', $event)"
-            v-on:toggleSortOrder="$emit('toggleNameSortOrder')"
+            v-on:toggleSortOrder="$emit('toggleSortOrder')"
         >
           {{ data.observationVariableName }}
         </TableColumn>
@@ -157,12 +157,12 @@
             name="scaleClass"
             v-bind:label="'Scale Class'"
             v-bind:visible="!traitSidePanelState.collapseColumns"
-            v-bind:sortField="traitSortField"
+            v-bind:sortField="ontologySort.field"
             v-bind:sortFieldLabel="scaleClassSortLabel"
             v-bind:sortable="true"
-            v-bind:sortOrder="scaleClassSortOrder"
+            v-bind:sortOrder="ontologySort.flag"
             v-on:newSortColumn="$emit('newSortColumn', $event)"
-            v-on:toggleSortOrder="$emit('toggleScaleClassSortOrder')"
+            v-on:toggleSortOrder="$emit('toggleSortOrder')"
         >
           {{ TraitStringFormatters.getScaleTypeString(data.scale) }}
         </TableColumn>
@@ -170,12 +170,12 @@
             name="unit"
             v-bind:label="'Unit'"
             v-bind:visible="!traitSidePanelState.collapseColumns"
-            v-bind:sortField="traitSortField"
+            v-bind:sortField="ontologySort.field"
             v-bind:sortFieldLabel="unitSortLabel"
             v-bind:sortable="true"
-            v-bind:sortOrder="unitSortOrder"
+            v-bind:sortOrder="ontologySort.flag"
             v-on:newSortColumn="$emit('newSortColumn', $event)"
-            v-on:toggleSortOrder="$emit('toggleUnitSortOrder')"
+            v-on:toggleSortOrder="$emit('toggleSortOrder')"
         >
           <template v-if="data.scale.dataType==='NUMERICAL'">
             {{ data.scale.scaleName }}
@@ -264,7 +264,7 @@ import {SidePanelTableEventBusHandler} from "@/components/tables/SidePanelTableE
 import {DataFormEventBusHandler} from '@/components/forms/DataFormEventBusHandler';
 import {integer, maxLength} from "vuelidate/lib/validators";
 import {TraitField, TraitFilter} from "@/breeding-insight/model/TraitSelector";
-import {SortOrder, TraitSortField} from "@/breeding-insight/model/Sort";
+import {OntologySort, SortOrder, TraitSortField} from "@/breeding-insight/model/Sort";
 
 @Component({
   mixins: [validationMixin],
@@ -283,20 +283,8 @@ export default class OntologyTable extends Vue {
   @Prop({default: () => true})
   active?: boolean;
 
-  @Prop({default: () => TraitSortField.Name})
-  traitSortField!: TraitSortField;
-
-  @Prop({default: () => true})
-  nameSortOrder!: boolean;
-
-  @Prop({default: () => true})
-  methodSortOrder!: boolean;
-
-  @Prop({default: () => true})
-  scaleClassSortOrder!: boolean;
-
-  @Prop({default: () => true})
-  unitSortOrder!: boolean;
+  @Prop()
+  ontologySort!: OntologySort;
 
   private activeProgram?: Program;
   private traits: Trait[] = [];
@@ -393,11 +381,7 @@ export default class OntologyTable extends Vue {
     return this.editTrait && this.editTrait.active ? 'restore' : 'archive';
   }
 
-  @Watch('traitSortField')
-  @Watch('nameSortOrder')
-  @Watch('methodSortOrder')
-  @Watch('scaleClassSortOrder')
-  @Watch('unitSortOrder')
+  @Watch('ontologySort', {deep: true})
   @Watch('paginationController', { deep: true})
   getTraits() {
     let paginationQuery: PaginationQuery = PaginationController.getPaginationSelections(
@@ -407,27 +391,7 @@ export default class OntologyTable extends Vue {
     // filter the terms pulled from the back-end
     let filters: TraitFilter[] = [{ field: TraitField.STATUS, value: this.active}];
 
-    // order the sorting of traits along a column
-    let order: SortOrder;
-    switch(this.traitSortField) {
-      case TraitSortField.Name:
-        order = this.nameSortOrder ? SortOrder.Ascending : SortOrder.Descending;
-        break;
-      case TraitSortField.MethodDescription:
-        order = this.methodSortOrder ? SortOrder.Ascending : SortOrder.Descending;
-        break;
-      case TraitSortField.ScaleClass:
-        order = this.scaleClassSortOrder ? SortOrder.Ascending : SortOrder.Descending;
-        break;
-      case TraitSortField.ScaleName:
-        order = this.unitSortOrder ? SortOrder.Ascending : SortOrder.Descending;
-        break;
-      default:
-        order = SortOrder.Ascending;
-        break;
-    }
-
-    TraitService.getFilteredTraits(this.activeProgram!.id!, paginationQuery, true, filters, this.traitSortField, order).then(([traits, metadata]) => {
+    TraitService.getFilteredTraits(this.activeProgram!.id!, paginationQuery, true, filters, this.ontologySort).then(([traits, metadata]) => {
       if (this.paginationController.matchesCurrentRequest(metadata.pagination)){
         this.traits = traits;
         this.traitsPagination = metadata.pagination;

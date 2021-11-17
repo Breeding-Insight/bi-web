@@ -22,42 +22,35 @@ import {
     ARCHIVED_ONT_TOGGLE_METHOD_SORT_ORDER,
     ARCHIVED_ONT_TOGGLE_SCALE_CLASS_SORT_ORDER,
     ARCHIVED_ONT_TOGGLE_UNIT_SORT_ORDER,
-    ACTIVE_ONT_TOGGLE_METHOD_SORT_ORDER,
-    ACTIVE_ONT_TOGGLE_UNIT_SORT_ORDER,
-    ACTIVE_ONT_TOGGLE_SCALE_CLASS_SORT_ORDER,
     ACTIVE_ONT_NEW_SORT_COLUMN,
-    ACTIVE_ONT_TOGGLE_NAME_SORT_ORDER,
-    UPDATE_PROGRAM_USER_SORT, UPDATE_LOCATION_SORT, UPDATE_SYSTEM_USER_SORT, UPDATE_PROGRAM_SORT
+    UPDATE_PROGRAM_USER_SORT,
+    UPDATE_LOCATION_SORT,
+    UPDATE_SYSTEM_USER_SORT,
+    UPDATE_PROGRAM_SORT,
+    UPDATE_ARCHIVED_ONT_SORT, ACTIVE_ONT_TOGGLE_SORT_ORDER
 } from "@/store/sorting/mutation-types";
 import {SortState} from "@/store/sorting/types";
 import {
-    LocationSort,
+    LocationSort, OntologySort, OntologySortField,
     ProgramSort,
-    SortOrder,
     TraitSortField,
-    UserSort,
-    UserSortField
+    UserSort
 } from "@/breeding-insight/model/Sort";
 
 export const mutations: MutationTree<SortState> = {
     // active ontology table
-    [ACTIVE_ONT_TOGGLE_NAME_SORT_ORDER](state: SortState) {
-        state.activeOntNameSortOrder = !state.activeOntNameSortOrder;
+    [ACTIVE_ONT_TOGGLE_SORT_ORDER](state: SortState) {
+        state.activeOntologySort.flag = !state.activeOntologySort.flag;
     },
-    [ACTIVE_ONT_TOGGLE_METHOD_SORT_ORDER](state: SortState) {
-        state.activeOntMethodSortOrder = !state.activeOntMethodSortOrder;
-    },
-    [ACTIVE_ONT_TOGGLE_SCALE_CLASS_SORT_ORDER](state: SortState) {
-        state.activeOntScaleClassSortOrder = !state.activeOntScaleClassSortOrder;
-    },
-    [ACTIVE_ONT_TOGGLE_UNIT_SORT_ORDER](state: SortState) {
-        state.activeOntUnitSortOrder = !state.activeOntUnitSortOrder;
-    },
-    [ACTIVE_ONT_NEW_SORT_COLUMN](state: SortState, field: TraitSortField) {
-        state.activeTraitSortField = field;
+    [ACTIVE_ONT_NEW_SORT_COLUMN](state: SortState, field: OntologySortField) {
+        state.activeOntologySort.field = field;
     },
 
     // archived ontology table
+    [UPDATE_ARCHIVED_ONT_SORT](state: SortState, sort: OntologySort) {
+        state.archivedOntologySort.field = sort.field;
+        state.archivedOntologySort.order = sort.order;
+    },
     [ARCHIVED_ONT_TOGGLE_NAME_SORT_ORDER](state: SortState) {
         state.archivedOntNameSortOrder = !state.archivedOntNameSortOrder;
     },
