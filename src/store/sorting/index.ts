@@ -39,12 +39,7 @@ state = {
     activeOntologySort: new OntologySort(OntologySortField.Name, true),
 
     // archived ontology table
-    archivedOntologySort: new OntologySort(OntologySortField.Name, SortOrder.Ascending),
-    archivedTraitSortField: TraitSortField.Name,
-    archivedOntNameSortOrder: true,
-    archivedOntMethodSortOrder: true,
-    archivedOntScaleClassSortOrder: true,
-    archivedOntUnitSortOrder: true,
+    archivedOntologySort: new OntologySort(OntologySortField.Name, true),
 
     // program user table
     programUserSort: new UserSort(UserSortField.Name, SortOrder.Ascending),

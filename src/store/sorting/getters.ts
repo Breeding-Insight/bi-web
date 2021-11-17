@@ -41,20 +41,11 @@ export const getters: GetterTree<SortState, RootState> = {
     },
 
     // archived ontology table
-    archivedTraitSortField(state: SortState): TraitSortField {
-        return state.archivedTraitSortField;
+    archivedOntologySort(state: SortState): OntologySort {
+        return state.archivedOntologySort;
     },
-    archivedOntNameSortOrder(state: SortState): boolean {
-        return state.archivedOntNameSortOrder;
-    },
-    archivedOntMethodSortOrder(state: SortState): boolean {
-        return state.archivedOntMethodSortOrder;
-    },
-    archivedOntScaleClassSortOrder(state: SortState): boolean {
-        return state.archivedOntScaleClassSortOrder;
-    },
-    archivedOntUnitSortOrder(state: SortState): boolean {
-        return state.archivedOntUnitSortOrder;
+    archivedOntologySortOrder(state: SortState): SortOrder {
+        return state.archivedOntologySort.flag ? SortOrder.Ascending : SortOrder.Descending;
     },
 
     // program user table
