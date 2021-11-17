@@ -36,7 +36,8 @@ import {
   ARCHIVED_ONT_NEW_SORT_COLUMN,
   ARCHIVED_ONT_TOGGLE_SORT_ORDER
 } from "@/store/sorting/mutation-types";
-import {TraitSortField} from "@/breeding-insight/model/Sort";
+import {OntologySort, OntologySortField} from "@/breeding-insight/model/Sort";
+
 
 @Component({
   components: {OntologyTable},
@@ -53,24 +54,9 @@ import {TraitSortField} from "@/breeding-insight/model/Sort";
   }
 })
 export default class OntologyArchivedTable extends Vue {
-  changeSortColumn(field: TraitSortField) {
-    this[ARCHIVED_ONT_NEW_SORT_COLUMN as keyof OntologyArchivedTable](field);
-  }
+  private archivedOntologySort!: OntologySort;
+  private newSortColumn!: (field: OntologySortField) => void;
+  private toggleSortOrder!: () => void;
 
-  changeNameSortOrder() {
-    this[ARCHIVED_ONT_TOGGLE_NAME_SORT_ORDER as keyof OntologyArchivedTable]();
-  }
-
-  changeMethodSortOrder() {
-    this[ARCHIVED_ONT_TOGGLE_METHOD_SORT_ORDER as keyof OntologyArchivedTable]();
-  }
-
-  changeScaleClassSortOrder() {
-    this[ARCHIVED_ONT_TOGGLE_SCALE_CLASS_SORT_ORDER as keyof OntologyArchivedTable]();
-  }
-
-  changeUnitSortOrder() {
-    this[ARCHIVED_ONT_TOGGLE_UNIT_SORT_ORDER as keyof OntologyArchivedTable]();
-  }
 }
 </script>
