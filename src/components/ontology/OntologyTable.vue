@@ -264,7 +264,7 @@ import {SidePanelTableEventBusHandler} from "@/components/tables/SidePanelTableE
 import {DataFormEventBusHandler} from '@/components/forms/DataFormEventBusHandler';
 import {integer, maxLength} from "vuelidate/lib/validators";
 import {TraitField, TraitFilter} from "@/breeding-insight/model/TraitSelector";
-import {OntologySort, SortOrder, TraitSortField} from "@/breeding-insight/model/Sort";
+import {OntologySort, OntologySortField, SortOrder, TraitSortField} from "@/breeding-insight/model/Sort";
 
 @Component({
   mixins: [validationMixin],
@@ -302,10 +302,10 @@ export default class OntologyTable extends Vue {
   private loadingTraitEditable = true;
 
   // table column sorting
-  private nameSortLabel: string = TraitSortField.Name;
-  private methodSortLabel: string = TraitSortField.MethodDescription;
-  private scaleClassSortLabel: string = TraitSortField.ScaleClass;
-  private unitSortLabel: string = TraitSortField.ScaleName;
+  private nameSortLabel: string = OntologySortField.Name;
+  private methodSortLabel: string = OntologySortField.MethodDescription;
+  private scaleClassSortLabel: string = OntologySortField.ScaleClass;
+  private unitSortLabel: string = OntologySortField.ScaleName;
 
   // New trait form
   private newTraitActive: boolean = false;

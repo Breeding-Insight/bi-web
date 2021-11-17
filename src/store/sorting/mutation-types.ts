@@ -23,6 +23,10 @@ export const ACTIVE_ONT_TOGGLE_SORT_ORDER = 'activeOntToggleSortOrder';
 export const ARCHIVED_ONT_NEW_SORT_COLUMN = 'archivedOntNewSortColumn';
 export const ARCHIVED_ONT_TOGGLE_SORT_ORDER = 'archivedOntToggleSortOrder';
 
+// importPreview ontology table
+export const IMPORT_PREVIEW_ONT_NEW_SORT_COLUMN = 'importPreviewOntNewSortColumn';
+export const IMPORT_PREVIEW_ONT_TOGGLE_SORT_ORDER = 'importPreviewOntToggleSortOrder';
+
 // program users table
 export const UPDATE_PROGRAM_USER_SORT = 'updateProgramUserSort';
 

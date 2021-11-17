@@ -48,6 +48,14 @@ export const getters: GetterTree<SortState, RootState> = {
         return state.archivedOntologySort.flag ? SortOrder.Ascending : SortOrder.Descending;
     },
 
+    // archived ontology table
+    importPreviewOntologySort(state: SortState): OntologySort {
+        return state.importPreviewOntologySort;
+    },
+    importPreviewOntologySortOrder(state: SortState): SortOrder {
+        return state.importPreviewOntologySort.flag ? SortOrder.Ascending : SortOrder.Descending;
+    },
+
     // program user table
     programUserSort(state: SortState): UserSort {
         return state.programUserSort;
