@@ -16,13 +16,13 @@
  */
 
 import {ProgramUpload} from "@/breeding-insight/model/ProgramUpload";
-import { TraitUploadDAO } from '@/breeding-insight/dao/TraitUploadDAO';
+import {TraitUploadDAO} from '@/breeding-insight/dao/TraitUploadDAO';
 import {Metadata} from "@/breeding-insight/model/BiResponse";
 import {Trait} from "@/breeding-insight/model/Trait";
 import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
 import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
 import {ValidationError} from "@/breeding-insight/model/errors/ValidationError";
-import {ProgramDAO} from "@/breeding-insight/dao/ProgramDAO";
+import {OntologySort, OntologySortField} from "@/breeding-insight/model/Sort";
 
 export class TraitUploadService {
 
@@ -74,18 +74,14 @@ export class TraitUploadService {
     });
   }
 
-  static getTraits(programId: string, paginationQuery?: PaginationQuery): Promise<[ProgramUpload, Metadata]> {
+  static getTraits(programId: string,
+                   paginationQuery: PaginationQuery = new PaginationQuery(0,0,true),
+                   sort: OntologySort = new OntologySort(OntologySortField.Name, true)): Promise<[ProgramUpload, Metadata]> {
     return new Promise<[ProgramUpload, Metadata]>(((resolve, reject) => {
 
-      if (paginationQuery === undefined){
-        paginationQuery = new PaginationQuery(0, 0, true);
-      }
-
       if (programId) {
-        TraitUploadDAO.getTraitUpload(programId, paginationQuery).then((biResponse) => {
+        TraitUploadDAO.getTraitUpload(programId, paginationQuery, sort).then((biResponse) => {
 
-          //TODO: Remove when backend sorts the data by default
-          biResponse.result.data = PaginationController.mockSortRecords(biResponse.result.data);
           let traits: Trait[] = [];
 
           traits = biResponse.result.data.map((trait: any) => {
