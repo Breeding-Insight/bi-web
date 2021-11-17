@@ -42,7 +42,7 @@ import {OntologySort, OntologySortField} from "@/breeding-insight/model/Sort";
   components: {OntologyTable},
   computed: {
     ...mapGetters('sorting',[
-      'activeOntologySort',
+      'activeOntologySort'
     ])
   },
   methods: {

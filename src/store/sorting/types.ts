@@ -13,11 +13,6 @@ export interface SortState {
 
     // archived ontology table
     archivedOntologySort: OntologySort,
-    archivedTraitSortField: TraitSortField,
-    archivedOntNameSortOrder: boolean,
-    archivedOntMethodSortOrder: boolean,
-    archivedOntScaleClassSortOrder: boolean,
-    archivedOntUnitSortOrder: boolean,
 
     // program users table
     programUserSort: UserSort,
