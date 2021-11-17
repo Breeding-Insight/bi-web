@@ -624,8 +624,8 @@ tr.detail {
   cursor: pointer;
 }
 
-.activesort {
-  text-decoration: underline;
+th.activesort.sortcolumn {
+  border-bottom: 2px solid;
 }
 
 .ascending, .descending {
