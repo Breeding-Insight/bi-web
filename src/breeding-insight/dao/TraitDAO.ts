@@ -20,9 +20,10 @@ import {BiResponse, Response} from "@/breeding-insight/model/BiResponse";
 import * as api from "@/util/api";
 import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
 import {TraitFilter, TraitSelector} from "@/breeding-insight/model/TraitSelector";
-import {SortOrder, TraitSortField} from "@/breeding-insight/model/Sort";
+import {OntologySort, SortOrder} from "@/breeding-insight/model/Sort";
 
 export class TraitDAO {
+    private activeOntologySortOrder!: SortOrder;
 
     static getAll(programId: string, paginationQuery: PaginationQuery, full: boolean): Promise<BiResponse> {
         const config: any = {};
@@ -38,13 +39,21 @@ export class TraitDAO {
                 }).catch((error) => {
                 reject(error);
             })
-
         }))
     }
 
-    static getFilteredTraits(programId: string, paginationQuery: PaginationQuery, full: boolean, sortField: TraitSortField, sortOrder: SortOrder, filters?: TraitFilter[]): Promise<BiResponse> {
-        const config: any = {};
-        config.params = {full, sortField, sortOrder};
+    static getFilteredTraits(programId: string,
+                             paginationQuery: PaginationQuery,
+                             full: boolean,
+                             sort: OntologySort,
+                             filters?: TraitFilter[]): Promise<BiResponse> {
+        const config: any = {
+            params: {
+                full,
+                sortField: sort.field,
+                sortOrder: sort.flag ? SortOrder.Ascending : SortOrder.Descending
+            }
+        };
 
         if (filters) {
             //
