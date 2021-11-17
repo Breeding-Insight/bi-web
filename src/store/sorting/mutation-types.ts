@@ -17,12 +17,10 @@
 
 // active ontology table
 export const ACTIVE_ONT_NEW_SORT_COLUMN = 'activeOntNewSortColumn';
-export const ACTIVE_ONT_TOGGLE_NAME_SORT_ORDER = 'activeOntToggleNameSortOrder';
-export const ACTIVE_ONT_TOGGLE_METHOD_SORT_ORDER = 'activeOntToggleMethodSortOrder';
-export const ACTIVE_ONT_TOGGLE_SCALE_CLASS_SORT_ORDER = 'activeOntToggleScaleClassSortOrder';
-export const ACTIVE_ONT_TOGGLE_UNIT_SORT_ORDER = 'activeOntToggleUnitSortOrder';
+export const ACTIVE_ONT_TOGGLE_SORT_ORDER = 'activeOntToggleNameSortOrder';
 
 // archived ontology table
+export const UPDATE_ARCHIVED_ONT_SORT = 'updateArchivedOntologySort';
 export const ARCHIVED_ONT_NEW_SORT_COLUMN = 'archivedOntNewSortColumn';
 export const ARCHIVED_ONT_TOGGLE_NAME_SORT_ORDER = 'archivedOntToggleNameSortOrder';
 export const ARCHIVED_ONT_TOGGLE_METHOD_SORT_ORDER = 'archivedOntToggleMethodSortOrder';

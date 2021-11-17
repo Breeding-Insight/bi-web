@@ -22,7 +22,7 @@ import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
 import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
 import {TraitUploadService} from "@/breeding-insight/service/TraitUploadService";
 import {TraitFilter} from "@/breeding-insight/model/TraitSelector";
-import {SortOrder, TraitSortField} from "@/breeding-insight/model/Sort";
+import {OntologySort, OntologySortField, SortOrder, TraitSortField} from "@/breeding-insight/model/Sort";
 
 export class TraitService {
 
@@ -120,21 +120,15 @@ export class TraitService {
     }));
   }
 
-  static getFilteredTraits(programId: string, paginationQuery?: PaginationQuery, full?: boolean, filters?: TraitFilter[], sortField?: TraitSortField, sortOrder?: SortOrder): Promise<[Trait[], Metadata]> {
+  static getFilteredTraits(programId: string,
+                           paginationQuery: PaginationQuery = new PaginationQuery(0, 0, true),
+                           full: boolean = false,
+                           filters?: TraitFilter[],
+                           sort: OntologySort = new OntologySort(OntologySortField.Name, true)): Promise<[Trait[], Metadata]> {
     return new Promise<[Trait[], Metadata]>(((resolve, reject) => {
 
-      if (paginationQuery === undefined) {
-        paginationQuery = new PaginationQuery(0, 0, true);
-      }
-
-      if (sortField === undefined) sortField = TraitSortField.Name;
-      if (sortOrder === undefined) sortOrder = SortOrder.Ascending;
-      if (full === undefined) {
-        full = false;
-      }
-
       if (programId) {
-        TraitDAO.getFilteredTraits(programId, paginationQuery, full, sortField, sortOrder, filters).then((biResponse) => {
+        TraitDAO.getFilteredTraits(programId, paginationQuery, full, sort, filters).then((biResponse) => {
 
           let traits: Trait[] = [];
 

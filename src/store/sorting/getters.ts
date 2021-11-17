@@ -19,7 +19,7 @@ import {GetterTree} from 'vuex';
 import {RootState} from "@/store/types";
 import {SortState} from "@/store/sorting/types";
 import {
-    LocationSort,
+    LocationSort, OntologySort,
     ProgramSort,
     ProgramSortField,
     SortOrder,
@@ -33,20 +33,11 @@ const orderMap: any = {[SortOrder.Ascending]: 'asc', [SortOrder.Descending]: 'de
 export const getters: GetterTree<SortState, RootState> = {
 
     // active ontology table
-    activeTraitSortField(state: SortState): TraitSortField {
-        return state.activeTraitSortField;
+    activeOntologySort(state: SortState): OntologySort {
+        return state.activeOntologySort;
     },
-    activeOntNameSortOrder(state: SortState): boolean {
-        return state.activeOntNameSortOrder;
-    },
-    activeOntMethodSortOrder(state: SortState): boolean {
-        return state.activeOntMethodSortOrder;
-    },
-    activeOntScaleClassSortOrder(state: SortState): boolean {
-        return state.activeOntScaleClassSortOrder;
-    },
-    activeOntUnitSortOrder(state: SortState): boolean {
-        return state.activeOntUnitSortOrder;
+    activeOntologySortOrder(state: SortState): SortOrder {
+      return state.activeOntologySort.flag ? SortOrder.Ascending : SortOrder.Descending;
     },
 
     // archived ontology table
