@@ -27,7 +27,6 @@ import {
     ProgramSort,
     ProgramSortField,
     SortOrder,
-    TraitSortField,
     UserSort,
     UserSortField
 } from "@/breeding-insight/model/Sort";
@@ -40,6 +39,9 @@ state = {
 
     // archived ontology table
     archivedOntologySort: new OntologySort(OntologySortField.Name, true),
+
+    // import preview ontology table
+    importPreviewOntologySort: new OntologySort(OntologySortField.Name, true),
 
     // program user table
     programUserSort: new UserSort(UserSortField.Name, SortOrder.Ascending),

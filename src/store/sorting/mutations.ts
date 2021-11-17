@@ -23,7 +23,10 @@ import {
     UPDATE_LOCATION_SORT,
     UPDATE_SYSTEM_USER_SORT,
     UPDATE_PROGRAM_SORT,
-    ACTIVE_ONT_TOGGLE_SORT_ORDER, ARCHIVED_ONT_TOGGLE_SORT_ORDER
+    ACTIVE_ONT_TOGGLE_SORT_ORDER,
+    ARCHIVED_ONT_TOGGLE_SORT_ORDER,
+    IMPORT_PREVIEW_ONT_TOGGLE_SORT_ORDER,
+    IMPORT_PREVIEW_ONT_NEW_SORT_COLUMN
 } from "@/store/sorting/mutation-types";
 import {SortState} from "@/store/sorting/types";
 import {
@@ -48,6 +51,14 @@ export const mutations: MutationTree<SortState> = {
     },
     [ARCHIVED_ONT_NEW_SORT_COLUMN](state: SortState, field: OntologySortField) {
         state.archivedOntologySort.field = field;
+    },
+
+    // importPreview ontology table
+    [IMPORT_PREVIEW_ONT_TOGGLE_SORT_ORDER](state: SortState) {
+        state.importPreviewOntologySort.flag = !state.importPreviewOntologySort.flag;
+    },
+    [IMPORT_PREVIEW_ONT_NEW_SORT_COLUMN](state: SortState, field: OntologySortField) {
+        state.importPreviewOntologySort.field = field;
     },
 
     //program user table
