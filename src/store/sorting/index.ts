@@ -43,6 +43,9 @@ state = {
     // import preview ontology table
     importPreviewOntologySort: new OntologySort(OntologySortField.Name, SortOrder.Ascending),
 
+    // import preview ontology table
+    importPreviewOntologySort: new OntologySort(OntologySortField.Name, true),
+
     // program user table
     programUserSort: new UserSort(UserSortField.Name, SortOrder.Ascending),
 
