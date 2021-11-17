@@ -44,7 +44,7 @@
                 v-bind:style="{visibility: column.isSortable && column.currentSortField === column.sortLabel ? 'visible' : 'hidden' }"
                 v-on:click="column.toggleSortOrder()"
                 v-bind:class="{ascending: column.order, descending: !column.order}"
-            ><i class="fas fa-chevron-circle-up"></i></span>
+            ><ArrowUpIcon size="1x" aria-hidden="true"></ArrowUpIcon></span>
           </th>
           <!-- Add a header column to match spacing for row controls if specified -->
           <template v-if="showExpandControls">
@@ -68,10 +68,11 @@
   import {TableRow} from "@/breeding-insight/model/view_models/TableRow"
   import TableColumn from "@/components/tables/TableColumn.vue";
   import { VBreakpoint } from '@/components/VBreakpoint';
+  import {ArrowUpIcon} from 'vue-feather-icons';
   import {SortOrder} from "@/breeding-insight/model/Sort";
 
   @Component({
-    components: { VBreakpoint
+    components: { VBreakpoint, ArrowUpIcon
     }
   })
   export default class BaseTable extends Vue {
