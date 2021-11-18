@@ -21,6 +21,7 @@
                     v-bind:system-import-template-name="germplasmImportTemplateName"
                     v-bind:confirm-msg="'Confirm New Germplasm Records'"
                     v-bind:import-type-name="'Germplasm'"
+                    v-bind:confirm-import-state="confirmImportState"
                     v-on="$listeners">
 
       <template v-slot:importInfoTemplateMessageBox>
@@ -40,6 +41,7 @@
       <template v-slot:confirmImportMessageBox="{ statistics, abort, confirm }">
         <ConfirmImportMessageBox v-bind:num-records="getNumNewGermplasmRecords(statistics)"
                                  v-bind:import-type-name="'Germplasm'"
+                                 v-bind:confirm-import-state="confirmImportState"
                                  v-on:abort="abort"
                                  v-on:confirm="confirm"
                                  class="mb-4"/>
@@ -60,6 +62,7 @@ import ProgramsBase from "@/components/program/ProgramsBase.vue";
 import ImportInfoTemplateMessageBox from "@/components/file-import/ImportInfoTemplateMessageBox.vue";
 import ConfirmImportMessageBox from "@/components/trait/ConfirmImportMessageBox.vue";
 import ImportTemplate from "@/views/import/ImportTemplate.vue";
+import {DataFormEventBusHandler} from "@/components/forms/DataFormEventBusHandler";
 
 @Component({
   components: {ImportInfoTemplateMessageBox, ConfirmImportMessageBox, ImportTemplate
@@ -69,6 +72,8 @@ export default class ImportGermplasm extends ProgramsBase {
 
   // TODO: maybe move to config instead of hardcode?
   private germplasmImportTemplateName = 'GermplasmTest';
+
+  private confirmImportState: DataFormEventBusHandler = new DataFormEventBusHandler();
 
   getNumNewGermplasmRecords(statistics: any): number | undefined {
     if (statistics.Germplasm) {

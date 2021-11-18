@@ -63,7 +63,7 @@ import ImportGermplasm from "@/views/import/ImportGermplasm.vue";
 import Ontology from "@/views/ontology/Ontology.vue";
 import OntologyActiveTable from "@/components/ontology/OntologyActiveTable.vue";
 import OntologyArchivedTable from "@/components/ontology/OntologyArchivedTable.vue";
-
+import PageNotFound from "@/views/PageNotFound.vue";
 
 Vue.use(VueRouter);
 
@@ -423,6 +423,15 @@ const routes = [
       layout: layouts.noSideBar
     },
     component: AccountCreationSuccess
+  },
+  {
+    path: '*',
+    name: 'page-does-not-exist',
+    meta: {
+      title: 'Page Does Not Exist',
+      layout: layouts.simple
+    },
+    component: PageNotFound
   }
 ]
 
