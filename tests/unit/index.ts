@@ -27,6 +27,7 @@ import { defineAbilityFor } from '@/config/ability';
 import {User} from "@/breeding-insight/model/User";
 import {ProgramUser} from "@/breeding-insight/model/ProgramUser";
 import {Role} from "@/breeding-insight/model/Role";
+import {sorting} from '@/store/sorting/index';
 import {SHOW_SUCCESS_NOTIFICATION} from "@/store/mutation-types";
 
 const localVue = createLocalVue();
@@ -43,6 +44,10 @@ Vue.use(Vuelidate);
 const fakeProgram = new Program('1', 'Test Program');
 export const defaultStore = new Vuex.Store({
   state:{
+    apiError: false,
+    apiUnavailable: false,
+    loginServerError: false,
+    loggedIn: false,
     errorNotificationActive: false,
     errorNotificationMsg: '',
     successNotificationActive: false,
@@ -52,6 +57,9 @@ export const defaultStore = new Vuex.Store({
     warningNotificationActive: false,
     warningNotificationMsg: '',
     showSidebarMobile: true
+  },
+  modules: {
+    sorting
   },
   getters: {
     activeProgram: () => fakeProgram
@@ -67,8 +75,6 @@ export const defaultStore = new Vuex.Store({
       state.successNotificationActive = true;
     },
   }
-
-
 });
 
 const fakeUser: User = new User('1', 'Test User','1', 'email@email.com',
