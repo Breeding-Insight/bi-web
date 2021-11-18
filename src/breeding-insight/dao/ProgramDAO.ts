@@ -44,7 +44,7 @@ export class ProgramDAO {
 
     return new Promise<BiResponse>((resolve, reject) => {
 
-      const body = {'name': program.name, 'species': { 'id': program.speciesId }};
+      const body = {'name': program.name, 'species': { 'id': program.speciesId } };
 
       api.call({ url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${id}`, method: 'put', data: body})
         .then((response: any) => {
