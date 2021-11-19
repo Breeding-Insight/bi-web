@@ -71,7 +71,7 @@ import {DataFormEventBusHandler} from "@/components/forms/DataFormEventBusHandle
 export default class ImportGermplasm extends ProgramsBase {
 
   // TODO: maybe move to config instead of hardcode?
-  private germplasmImportTemplateName = 'GermplasmTest';
+  private germplasmImportTemplateName = 'GermplasmTemplateMap';
 
   private confirmImportState: DataFormEventBusHandler = new DataFormEventBusHandler();
 
