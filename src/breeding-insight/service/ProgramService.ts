@@ -28,6 +28,8 @@ export class ProgramService {
   static errorCreatingProgram : string = 'Error creating program';
   static duplicateProgramName: string = 'A program with the same name already exists';
   static duplicateProgramKey: string = 'A program with the same key already exists';
+  static PROGRAM_NAME_IN_USE: string = "PROGRAM_NAME_IN_USE";
+  static PROGRAM_KEY_IN_USE: string = "PROGRAM_KEY_IN_USE";
 
   static create(program: Program): Promise<Program> {
     //TODO: Check everything is good
@@ -40,9 +42,9 @@ export class ProgramService {
           resolve(newProgram);
 
         }).catch((error) => {
-          if (error.response && error.response.status === 409 && error.response.statusText === "Program name already in use") {
+          if (error.response && error.response.status === 409 && error.response.statusText === ProgramService.PROGRAM_NAME_IN_USE) {
             error['errorMessage'] = this.duplicateProgramName;
-          } else if (error.response && error.response.status === 409 && error.response.statusText === "Program key already in use") {
+          } else if (error.response && error.response.status === 409 && error.response.statusText === ProgramService.PROGRAM_KEY_IN_USE) {
             error['errorMessage'] = this.duplicateProgramKey;
           } else if (error.response && error.response.status === 422) {
             error['errorMessage'] = this.unsupportedBrapiUrl;
