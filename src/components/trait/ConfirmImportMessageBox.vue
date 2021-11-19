@@ -23,16 +23,22 @@
           <div class="level-left">
             <div class="level-item">
               <div class="has-text-dark">
-                <strong>{{numRecords}} new {{importTypeName.toLowerCase()}} records and duplicates not checked yet</strong>
-                <br/>Duplicate {{importTypeName.toLowerCase()}} records, highlighted in yellow and a <alert-triangle-icon size="1.2x" class="icon-align"/> icon, will not be imported.
-                <br/>{{toStartCase(importTypeName)}} records in this list can be directly edited using the "Show details" link.
+                {{numRecords}} unique term(s) have been detected. Terms, highlighted and with
+                a <alert-triangle-icon size="1x" class="has-vertical-align-middle"></alert-triangle-icon> icon,
+                match existing terms in the database and will not be imported.
               </div>
             </div>
           </div>
           <div class="level-right">
             <div class="level-item">
               <div>
-                <button class="button is-success has-text-weight-bold" v-on:click="confirm">Confirm</button>
+                <button
+                    class="button is-success has-text-weight-bold"
+                    v-on:click="confirm"
+                    v-bind:disabled="confirmImportState.saveStarted"
+                    v-bind:class="{'is-loading': confirmImportState.saveStarted}">
+                  Confirm
+                </button>
               </div>
             </div>
             <div class="level-item">
@@ -51,6 +57,7 @@
   import { Component, Prop, Vue } from 'vue-property-decorator'
   import {AlertTriangleIcon} from 'vue-feather-icons'
   import {StringFormatters} from '@/breeding-insight/utils/StringFormatters'
+  import {DataFormEventBusHandler} from "@/components/forms/DataFormEventBusHandler";
 
   @Component({
     components: {
@@ -65,8 +72,12 @@
     @Prop()
     importTypeName! : string;
 
+    @Prop()
+    confirmImportState!: DataFormEventBusHandler;
+
     confirm() {
       this.$emit('confirm');
+      this.confirmImportState.bus.$emit(DataFormEventBusHandler.SAVE_STARTED_EVENT);
     }
 
     abort() {

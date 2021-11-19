@@ -70,6 +70,7 @@
         <h1 class="title">Confirm New Ontology Term</h1>
         <ConfirmImportMessageBox v-bind:num-records="numTraits"
                                  v-bind:import-type-name="'Trait'"
+                                 v-bind:confirm-import-state="confirmImportState"
                                  v-on:abort="showAbortModal = true"
                                  v-on:confirm="importService.send(ImportEvent.CONFIRMED)"
                                  class="mb-4"/>
@@ -118,6 +119,7 @@ import {Metadata} from "@/breeding-insight/model/BiResponse";
 import {Trait} from "@/breeding-insight/model/Trait";
 import {ProgramUpload} from "@/breeding-insight/model/ProgramUpload";
 import {AxiosResponse} from "axios";
+import {DataFormEventBusHandler} from "@/components/forms/DataFormEventBusHandler";
 
 enum ImportState {
   CHOOSE_FILE = "CHOOSE_FILE",
@@ -176,6 +178,8 @@ export default class TraitsImport extends ProgramsBase {
   private showAbortModal = false;
 
   private yesAbortId: string = "traitsimport-yes-abort";
+
+  private confirmImportState: DataFormEventBusHandler = new DataFormEventBusHandler();
 
   private ImportState = ImportState;
   private ImportEvent = ImportEvent;
@@ -284,7 +288,20 @@ export default class TraitsImport extends ProgramsBase {
 
   upload() {
     TraitUploadService.uploadFile(this.activeProgram!.id!, this.file!).then((response) => {
-      this.numTraits = response.data!.length;
+      let count = 0;
+      let traits: Trait[] = [];
+      if( response==null || response.data==null){
+        throw new ValidationError();
+      }
+      else {
+        traits = response.data;
+      }
+      for(let trait of traits){
+        if(!trait.isDup){
+          count += 1;
+        }
+      }
+      this.numTraits = count;
       this.importService.send(ImportEvent.IMPORT_SUCCESS);
     }).catch((error: ValidationError | AxiosResponse) => {
       this.import_errors = error;
@@ -339,6 +356,8 @@ export default class TraitsImport extends ProgramsBase {
       const note = err.message ? err.message : `Error: Imported ontology terms were not added to ${name}.`;
       this.$emit('show-error-notification', `${note}`);
       Vue.$log.error(err);
+    } finally {
+      this.confirmImportState.bus.$emit(DataFormEventBusHandler.SAVE_COMPLETE_EVENT);
     }
   }
 

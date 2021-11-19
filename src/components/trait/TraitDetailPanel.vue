@@ -158,7 +158,7 @@
       <div class="columns is-centered is-mobile is-variable is-multiline is-0 my-0">
         <div class="column is-half p-0 mt-5">
           <a
-              v-if="editable && !loadingEditable"
+              v-if="editable && !loadingEditable && !data.isDup"
               v-on:click="$emit('activate-edit', data)"
               v-on:keypress.enter.space="$emit('activate-edit', data)"
               tabindex="0"

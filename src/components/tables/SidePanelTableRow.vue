@@ -17,8 +17,13 @@
 
 <template>
   <tr v-on:click="state.bus.$emit(state.selectRowEvent, rowData.data)"
-      v-bind:class="{'is-new': (rowData.new && !checkIsOpen()), 'is-selected': checkIsOpen(), 'is-edit-selected': state.editActive && checkIsOpen()}" >
+      v-bind:class="{
+        'is-new':           (rowData.new && !checkIsOpen()),
+        'is-selected':      checkIsOpen(),
+        'is-edit-selected': state.editActive && checkIsOpen(),
+        'is-dup':            checkIsDup()}" >
     <slot></slot>
+
     <td class="has-text-right is-narrow">
         <a
           v-if="!state.openedRow && !checkIsOpen()"
@@ -48,7 +53,7 @@
 
   @Component({
     components: {
-      ChevronRightIcon
+      ChevronRightIcon,
     }
   })
   export default class SidePanelTableRow extends Vue {
@@ -69,6 +74,10 @@
       } else {
         return false;
       }
+    }
+
+    checkIsDup(): boolean {
+        return this.rowData.data.isDup;
     }
 
   }
