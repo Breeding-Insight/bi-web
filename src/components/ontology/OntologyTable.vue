@@ -390,7 +390,7 @@ export default class OntologyTable extends Vue {
 
     // filter the terms pulled from the back-end
     let filters: TraitFilter[] = [{ field: TraitField.STATUS, value: this.active}];
-
+console.log(this.ontologySort.order);
     TraitService.getFilteredTraits(this.activeProgram!.id!, paginationQuery, true, filters, this.ontologySort).then(([traits, metadata]) => {
       if (this.paginationController.matchesCurrentRequest(metadata.pagination)){
         this.traits = traits;
