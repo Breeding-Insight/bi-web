@@ -57,7 +57,7 @@ export class TraitUploadDAO {
         method: 'get',
         params: {
           sortField: sort.field,
-          sortOrder: sort.flag ? SortOrder.Ascending : SortOrder.Descending
+          sortOrder: sort.order
         }
       };
       api.call(config)

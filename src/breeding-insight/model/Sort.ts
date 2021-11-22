@@ -51,11 +51,11 @@ export enum OntologySortField {
 
 export class OntologySort {
   field: OntologySortField;
-  flag: boolean;
+  order: SortOrder;
 
-  constructor(field: OntologySortField, flag: boolean) {
+  constructor(field: OntologySortField, order: SortOrder) {
     this.field = field;
-    this.flag = flag;
+    this.order = order;
   }
 }
 

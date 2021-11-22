@@ -131,7 +131,7 @@
             v-bind:sortField="ontologySort.field"
             v-bind:sortFieldLabel="nameSortLabel"
             v-bind:sortable="true"
-            v-bind:sortOrder="ontologySort.flag"
+            v-bind:sortOrder="ontologySort.order"
             v-on:newSortColumn="$emit('newSortColumn', $event)"
             v-on:toggleSortOrder="$emit('toggleSortOrder')"
         >
@@ -160,7 +160,7 @@
             v-bind:sortField="ontologySort.field"
             v-bind:sortFieldLabel="scaleClassSortLabel"
             v-bind:sortable="true"
-            v-bind:sortOrder="ontologySort.flag"
+            v-bind:sortOrder="ontologySort.order"
             v-on:newSortColumn="$emit('newSortColumn', $event)"
             v-on:toggleSortOrder="$emit('toggleSortOrder')"
         >
@@ -173,7 +173,7 @@
             v-bind:sortField="ontologySort.field"
             v-bind:sortFieldLabel="unitSortLabel"
             v-bind:sortable="true"
-            v-bind:sortOrder="ontologySort.flag"
+            v-bind:sortOrder="ontologySort.order"
             v-on:newSortColumn="$emit('newSortColumn', $event)"
             v-on:toggleSortOrder="$emit('toggleSortOrder')"
         >
@@ -390,7 +390,7 @@ export default class OntologyTable extends Vue {
 
     // filter the terms pulled from the back-end
     let filters: TraitFilter[] = [{ field: TraitField.STATUS, value: this.active}];
-
+console.log(this.ontologySort.order);
     TraitService.getFilteredTraits(this.activeProgram!.id!, paginationQuery, true, filters, this.ontologySort).then(([traits, metadata]) => {
       if (this.paginationController.matchesCurrentRequest(metadata.pagination)){
         this.traits = traits;

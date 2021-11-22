@@ -51,7 +51,7 @@ export class TraitDAO {
             params: {
                 full,
                 sortField: sort.field,
-                sortOrder: sort.flag ? SortOrder.Ascending : SortOrder.Descending
+                sortOrder: sort.order
             }
         };
 
