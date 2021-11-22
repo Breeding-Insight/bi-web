@@ -42,7 +42,7 @@
             v-bind:sortField="importPreviewOntologySort.field"
             v-bind:sortFieldLabel="nameSortLabel"
             v-bind:sortable="true"
-            v-bind:sortOrder="importPreviewOntologySort.flag"
+            v-bind:sortOrder="importPreviewOntologySort.order"
             v-on:newSortColumn="newSortColumn"
             v-on:toggleSortOrder="toggleSortOrder"
         >
@@ -77,7 +77,7 @@
             v-bind:sortField="importPreviewOntologySort.field"
             v-bind:sortFieldLabel="scaleClassSortLabel"
             v-bind:sortable="true"
-            v-bind:sortOrder="importPreviewOntologySort.flag"
+            v-bind:sortOrder="importPreviewOntologySort.order"
             v-on:newSortColumn="newSortColumn"
             v-on:toggleSortOrder="toggleSortOrder"
         >
@@ -90,7 +90,7 @@
             v-bind:sortField="importPreviewOntologySort.field"
             v-bind:sortFieldLabel="unitSortLabel"
             v-bind:sortable="true"
-            v-bind:sortOrder="importPreviewOntologySort.flag"
+            v-bind:sortOrder="importPreviewOntologySort.order"
             v-on:newSortColumn="newSortColumn"
             v-on:toggleSortOrder="toggleSortOrder"
         >
