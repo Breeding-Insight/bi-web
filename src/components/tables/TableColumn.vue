@@ -27,6 +27,7 @@
 
 import {Component, Prop, Vue} from "vue-property-decorator";
 import BaseTable from '@/components/tables/BaseTable.vue';
+import {SortOrder} from "@/breeding-insight/model/Sort";
 
 @Component({
   })
@@ -51,7 +52,7 @@ import BaseTable from '@/components/tables/BaseTable.vue';
     private sortFieldLabel!: string;
 
     @Prop()
-    private sortOrder!: boolean;
+    private sortOrder!: SortOrder;
 
     @Prop()
     private sortable!: boolean;
@@ -87,7 +88,7 @@ import BaseTable from '@/components/tables/BaseTable.vue';
     }
 
     get order() {
-      return this.sortOrder;
+      return this.sortOrder === SortOrder.Ascending;
     }
 
     // any update to column props here will update column in parent table

@@ -35,13 +35,13 @@ import {SortState} from "@/store/sorting/types";
 export let state: SortState;
 state = {
     // active ontology table
-    activeOntologySort: new OntologySort(OntologySortField.Name, true),
+    activeOntologySort: new OntologySort(OntologySortField.Name, SortOrder.Ascending),
 
     // archived ontology table
-    archivedOntologySort: new OntologySort(OntologySortField.Name, true),
+    archivedOntologySort: new OntologySort(OntologySortField.Name, SortOrder.Ascending),
 
     // import preview ontology table
-    importPreviewOntologySort: new OntologySort(OntologySortField.Name, true),
+    importPreviewOntologySort: new OntologySort(OntologySortField.Name, SortOrder.Ascending),
 
     // program user table
     programUserSort: new UserSort(UserSortField.Name, SortOrder.Ascending),
