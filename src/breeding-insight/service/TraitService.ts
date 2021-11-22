@@ -124,7 +124,7 @@ export class TraitService {
                            paginationQuery: PaginationQuery = new PaginationQuery(0, 0, true),
                            full: boolean = false,
                            filters?: TraitFilter[],
-                           sort: OntologySort = new OntologySort(OntologySortField.Name, true)): Promise<[Trait[], Metadata]> {
+                           sort: OntologySort = new OntologySort(OntologySortField.Name, SortOrder.Ascending)): Promise<[Trait[], Metadata]> {
     return new Promise<[Trait[], Metadata]>(((resolve, reject) => {
 
       if (programId) {

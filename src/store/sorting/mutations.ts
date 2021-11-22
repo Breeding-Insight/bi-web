@@ -31,7 +31,7 @@ import {
 import {SortState} from "@/store/sorting/types";
 import {
     LocationSort, OntologySort, OntologySortField,
-    ProgramSort,
+    ProgramSort, SortOrder,
     TraitSortField,
     UserSort
 } from "@/breeding-insight/model/Sort";
@@ -39,7 +39,7 @@ import {
 export const mutations: MutationTree<SortState> = {
     // active ontology table
     [ACTIVE_ONT_TOGGLE_SORT_ORDER](state: SortState) {
-        state.activeOntologySort.flag = !state.activeOntologySort.flag;
+        state.activeOntologySort.order = state.activeOntologySort.order === SortOrder.Ascending ? SortOrder.Descending : SortOrder.Ascending;
     },
     [ACTIVE_ONT_NEW_SORT_COLUMN](state: SortState, field: OntologySortField) {
         state.activeOntologySort.field = field;
@@ -47,7 +47,7 @@ export const mutations: MutationTree<SortState> = {
 
     // archived ontology table
     [ARCHIVED_ONT_TOGGLE_SORT_ORDER](state: SortState) {
-        state.archivedOntologySort.flag = !state.archivedOntologySort.flag;
+        state.archivedOntologySort.order = state.archivedOntologySort.order === SortOrder.Ascending ? SortOrder.Descending : SortOrder.Ascending;
     },
     [ARCHIVED_ONT_NEW_SORT_COLUMN](state: SortState, field: OntologySortField) {
         state.archivedOntologySort.field = field;
@@ -55,7 +55,7 @@ export const mutations: MutationTree<SortState> = {
 
     // importPreview ontology table
     [IMPORT_PREVIEW_ONT_TOGGLE_SORT_ORDER](state: SortState) {
-        state.importPreviewOntologySort.flag = !state.importPreviewOntologySort.flag;
+        state.importPreviewOntologySort.order = state.importPreviewOntologySort.order === SortOrder.Ascending ? SortOrder.Descending : SortOrder.Ascending;
     },
     [IMPORT_PREVIEW_ONT_NEW_SORT_COLUMN](state: SortState, field: OntologySortField) {
         state.importPreviewOntologySort.field = field;
