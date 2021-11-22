@@ -22,7 +22,7 @@ import {Trait} from "@/breeding-insight/model/Trait";
 import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
 import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
 import {ValidationError} from "@/breeding-insight/model/errors/ValidationError";
-import {OntologySort, OntologySortField} from "@/breeding-insight/model/Sort";
+import {OntologySort, OntologySortField, SortOrder} from "@/breeding-insight/model/Sort";
 
 export class TraitUploadService {
 
@@ -76,7 +76,7 @@ export class TraitUploadService {
 
   static getTraits(programId: string,
                    paginationQuery: PaginationQuery = new PaginationQuery(0,0,true),
-                   sort: OntologySort = new OntologySort(OntologySortField.Name, true)): Promise<[ProgramUpload, Metadata]> {
+                   sort: OntologySort = new OntologySort(OntologySortField.Name, SortOrder.Ascending)): Promise<[ProgramUpload, Metadata]> {
     return new Promise<[ProgramUpload, Metadata]>(((resolve, reject) => {
 
       if (programId) {
