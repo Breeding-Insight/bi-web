@@ -154,6 +154,7 @@
     IMPORT_PREVIEW_ONT_TOGGLE_SORT_ORDER
   } from "@/store/sorting/mutation-types";
   import {OntologySort, OntologySortField} from "@/breeding-insight/model/Sort";
+  import {BackendPaginationController} from "@/breeding-insight/model/view_models/BackendPaginationController";
 
   @Component({
     mixins: [validationMixin],
@@ -181,7 +182,7 @@ export default class TraitsImportTable extends Vue {
 
   private activeProgram?: Program;
   private traitsPagination?: Pagination = new Pagination();
-  private paginationController: PaginationController = new PaginationController();
+  private paginationController: BackendPaginationController = new BackendPaginationController();
   private traits : Trait[] = [];
   private upload?: ProgramUpload;
   private loaded = false;
@@ -198,18 +199,25 @@ export default class TraitsImportTable extends Vue {
   private unitSortLabel: string = OntologySortField.ScaleName;
 
   mounted() {
+    this.updatePagination();
     this.getTraitUpload();
   }
 
   @Watch('paginationController', { deep: true})
   @Watch('importPreviewOntologySort', {deep: true})
-  getTraitUpload() {
+  paginationChanged() {
+    this.updatePagination();
+    this.getTraitUpload();
+  }
 
-    let paginationQuery: PaginationQuery = PaginationController.getPaginationSelections(
-      this.paginationController.currentPage, this.paginationController.pageSize, this.paginationController.showAll);
+  updatePagination() {
+    let paginationQuery: PaginationQuery = BackendPaginationController.getPaginationSelections(
+        this.paginationController.currentPage, this.paginationController.pageSize);
     this.paginationController.setCurrentCall(paginationQuery);
+  }
 
-    TraitUploadService.getTraits(this.activeProgram!.id!, paginationQuery, this.importPreviewOntologySort).then(([upload, metadata]) => {
+  getTraitUpload() {
+    TraitUploadService.getTraits(this.activeProgram!.id!, this.paginationController.currentCall, this.importPreviewOntologySort).then(([upload, metadata]) => {
       if (this.paginationController.matchesCurrentRequest(metadata.pagination)){
         this.traits = upload.data || [];
         this.traitsPagination = metadata.pagination;

@@ -75,7 +75,7 @@ export class TraitUploadService {
   }
 
   static getTraits(programId: string,
-                   paginationQuery: PaginationQuery = new PaginationQuery(0,0,true),
+                   paginationQuery: PaginationQuery = new PaginationQuery(1,50,true),
                    sort: OntologySort = new OntologySort(OntologySortField.Name, SortOrder.Ascending)): Promise<[ProgramUpload, Metadata]> {
     return new Promise<[ProgramUpload, Metadata]>(((resolve, reject) => {
 
@@ -87,11 +87,6 @@ export class TraitUploadService {
           traits = biResponse.result.data.map((trait: any) => {
             return trait as Trait;
           });
-
-          //TODO: Remove when backend pagination is implemented
-          let newPagination;
-          [traits, newPagination] = PaginationController.mockPagination(traits, paginationQuery!.page, paginationQuery!.pageSize, paginationQuery!.showAll);
-          biResponse.metadata.pagination = newPagination;
 
           let upload: ProgramUpload = new ProgramUpload(biResponse.result.id, traits);
 
