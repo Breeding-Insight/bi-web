@@ -121,7 +121,7 @@ export default class ImportGermplasm extends ProgramsBase {
   processPreviewData(currentImport: any): ReportStruct {
     // Do special germplasm import formatting here
     //TODO: Remove test data
-    for (const i: number in currentImport.preview.rows) {
+    for (const i in currentImport.preview.rows) {
       currentImport.preview.rows[i] = {
         germplasm: {
           brAPIObject: {
