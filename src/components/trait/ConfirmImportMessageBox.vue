@@ -19,19 +19,20 @@
   <div class="corfirm-import">
     <article class="message is-success">
       <div class="message-body">
-        <nav class="level">
-          <div class="level-left">
-            <div class="level-item">
-              <div class="has-text-dark">
-                {{numRecords}} unique term(s) have been detected. Terms, highlighted and with
-                a <alert-triangle-icon size="1x" class="has-vertical-align-middle"></alert-triangle-icon> icon,
-                match existing terms in the database and will not be imported.
-              </div>
+        <nav class="columns">
+          <div class="column">
+            <slot></slot>
+            <div
+              v-if="$slots.default === undefined"
+              class="has-text-dark">
+              {{numRecords}} unique term(s) have been detected. Terms, highlighted and with
+              a <alert-triangle-icon size="1x" class="has-vertical-align-middle"></alert-triangle-icon> icon,
+              match existing terms in the database and will not be imported.
             </div>
           </div>
-          <div class="level-right">
-            <div class="level-item">
-              <div>
+          <div class="column is-narrow">
+            <div class="level">
+              <div class="level-item">
                 <button
                     class="button is-success has-text-weight-bold"
                     v-on:click="confirm"
