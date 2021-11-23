@@ -96,7 +96,7 @@ export class ProgramService {
     }));
   }
 
-  static getAll(paginationQuery: PaginationQuery = new PaginationQuery(0, 0, true),
+  static getAll(paginationQuery: PaginationQuery = new PaginationQuery(1, 50, true),
                 sort: ProgramSort = new ProgramSort(ProgramSortField.Name, SortOrder.Ascending)): Promise<[Program[], Metadata]> {
     return new Promise<[Program[], Metadata]>(((resolve, reject) => {
 
@@ -108,11 +108,6 @@ export class ProgramService {
         programs = biResponse.result.data.map((program: any) => {
           return new Program(program.id, program.name, program.species.id, program.numUsers, program.brapiUrl, program.key);
         });
-
-        //TODO: Remove when backend pagination is implemented
-        let newPagination;
-        [programs, newPagination] = PaginationController.mockPagination(programs, paginationQuery!.page, paginationQuery!.pageSize, paginationQuery!.showAll);
-        biResponse.metadata.pagination = newPagination;
 
         resolve([programs, biResponse.metadata]);
     

@@ -60,7 +60,7 @@ export class ProgramDAO {
     return api.call({ url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/archive/${id}`, method: 'delete'});
   }
 
-  static getAll(paginationQuery: PaginationQuery, {field, order}: ProgramSort): Promise<BiResponse> {
+  static getAll({page, pageSize}: PaginationQuery, {field, order}: ProgramSort): Promise<BiResponse> {
 
     return new Promise<BiResponse>(((resolve, reject) => {
       const config = {
@@ -68,7 +68,9 @@ export class ProgramDAO {
         method: 'get',
         params: {
           sortField: field,
-          sortOrder: order
+          sortOrder: order,
+          page,
+          pageSize
         }
       }
       api.call(config)
