@@ -106,7 +106,7 @@ export class ProgramLocationService {
   }
 
   static getAll(programId: string,
-                paginationQuery: PaginationQuery = new PaginationQuery(0, 0, true),
+                paginationQuery: PaginationQuery = new PaginationQuery(1, 50, true),
                 sort: LocationSort = new LocationSort(LocationSortField.Name, SortOrder.Ascending)): Promise<[ProgramLocation[], Metadata]> {
     return new Promise<[ProgramLocation[], Metadata]>(((resolve, reject) => {
 
@@ -119,11 +119,6 @@ export class ProgramLocationService {
             return new ProgramLocation(programLocation.id, programLocation.programId, programLocation.name);
           });
 
-          //TODO: Remove when backend pagination is implemented
-          let newPagination;
-          [programLocations, newPagination] = PaginationController.mockPagination(programLocations, paginationQuery!.page, paginationQuery!.pageSize, paginationQuery!.showAll);
-          biResponse.metadata.pagination = newPagination;
-      
           resolve([programLocations, biResponse.metadata]);
       
         }).catch((error) => reject(error));

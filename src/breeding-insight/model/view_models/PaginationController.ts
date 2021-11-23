@@ -49,7 +49,6 @@ export class PaginationController {
   }
 
   matchesCurrentRequest(pagination: Pagination): boolean {
-
     if (this.currentCall) {
       if (this.showAll){
         return pagination.currentPage == 1 && pagination.totalPages == 1;

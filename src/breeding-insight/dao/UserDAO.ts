@@ -74,7 +74,7 @@ export class UserDAO {
     return api.call({ url: `${process.env.VUE_APP_BI_API_V1_PATH}/users/${id}`, method: 'delete'});
   }
 
-  static getAll(paginationQuery: PaginationQuery, {field, order}: UserSort):
+  static getAll({page, pageSize}: PaginationQuery, {field, order}: UserSort):
 
       Promise<BiResponse> {
 
@@ -84,7 +84,9 @@ export class UserDAO {
         method: 'get',
         params: {
           sortField: field,
-          sortOrder: order
+          sortOrder: order,
+          page,
+          pageSize
         }
       }
       api.call(config)
