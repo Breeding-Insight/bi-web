@@ -133,7 +133,6 @@ export class TraitService {
           let traits: Trait[] = [];
 
           if (biResponse.result.data) {
-            //TODO: Remove when backend default sorting is implemented
             traits = biResponse.result.data.map((trait: any) => {
               return trait as Trait;
             });

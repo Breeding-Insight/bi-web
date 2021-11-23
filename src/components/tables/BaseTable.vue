@@ -42,7 +42,6 @@
             <span
                 class="icon sort-control"
                 v-bind:style="{visibility: column.isSortable && column.currentSortField === column.sortLabel ? 'visible' : 'hidden' }"
-                v-on:click="column.toggleSortOrder()"
                 v-bind:class="{ascending: column.order, descending: !column.order}"
             ><ArrowUpIcon size="1x" aria-hidden="true"></ArrowUpIcon></span>
           </th>
