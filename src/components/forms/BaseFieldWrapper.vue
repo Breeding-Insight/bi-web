@@ -102,6 +102,12 @@
             case 'maxLength':
               validationMap['message'] = `${this.fieldName} must be less than ${this.validations.$params.maxLength.max} characters.`;
               break;
+            case 'minLength':
+              validationMap['message'] = `${this.fieldName} must have at least ${this.validations.$params.minLength.min} characters.`;
+              break;
+            case 'alpha':
+              validationMap['message'] = `${this.fieldName} must use only alphabetic characters.`;
+              break;
             default:
               // For now assume other possibility is a specific format
               validationMap['message'] = `${this.fieldName} must be in ${validation} format`;
