@@ -124,8 +124,9 @@ export class ImportFormatter {
   }
 
   static sort(column: string, a: any, b: any, isAsc: boolean) {
-    const aString = a[column];
-    const bString = b[column];
+    // Expected to be primitives, but JSON.stringify is safe for number, object, string, etc. 
+    const aString: string = JSON.stringify(a[column]);
+    const bString: string = JSON.stringify(b[column]);
     const order = aString.localeCompare(bString, undefined, {numeric: true, sensitivity: 'base'});
     return isAsc ? order: order * -1;
   }
