@@ -60,11 +60,11 @@ import {SortOrder} from "@/breeding-insight/model/Sort";
     private table!: BaseTable;
 
     changeSortColumn(field: string) {
-      this.$emit('newSortColumn', field);
-    }
-
-    toggleSortOrder() {
-      this.$emit('toggleSortOrder');
+      if (this.sortField === this.sortFieldLabel) {
+        this.$emit('toggleSortOrder');
+      } else {
+        this.$emit('newSortColumn', field);
+      }
     }
 
     get isVisible() {

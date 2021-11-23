@@ -621,7 +621,7 @@ tr.detail {
   cursor: pointer;
 }
 
-th.activesort.sortcolumn {
+th.activesort.sortcolumn, th.sortcolumn:hover {
   border-bottom: 2px solid;
 }
 
