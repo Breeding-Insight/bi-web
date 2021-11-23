@@ -218,6 +218,7 @@
   } from "@/store/mutation-types";
   import {UPDATE_PROGRAM_SORT} from "@/store/sorting/mutation-types";
   import {ProgramSort, ProgramSortField, Sort, SortOrder, UserSort, UserSortField} from "@/breeding-insight/model/Sort";
+  import {BackendPaginationController} from "@/breeding-insight/model/view_models/BackendPaginationController";
 
   // create custom validation to handle cases default url validation doesn't
   const url = helpers.withParams(
@@ -259,7 +260,7 @@ export default class AdminProgramsTable extends Vue {
   private speciesMap: Map<string, Species> = new Map();
   private deleteProgram: Program | undefined;
 
-  private paginationController: PaginationController = new PaginationController();
+  private paginationController: BackendPaginationController = new BackendPaginationController();
 
   private newLocationFormState: DataFormEventBusHandler = new DataFormEventBusHandler();
   private editLocationFormState: DataFormEventBusHandler = new DataFormEventBusHandler();
@@ -316,6 +317,7 @@ export default class AdminProgramsTable extends Vue {
   }
 
   mounted() {
+    this.updatePagination();
     this.getPrograms();
     this.getSpecies();
   }
@@ -335,13 +337,19 @@ export default class AdminProgramsTable extends Vue {
   }
 
   @Watch('paginationController', { deep: true})
-  getPrograms() {
+  paginationChanged() {
+    this.updatePagination();
+    this.getPrograms();
+  }
 
-    let paginationQuery: PaginationQuery = PaginationController.getPaginationSelections(
-        this.paginationController.currentPage, this.paginationController.pageSize, this.paginationController.showAll);
+  updatePagination() {
+    let paginationQuery: PaginationQuery = BackendPaginationController.getPaginationSelections(
+        this.paginationController.currentPage, this.paginationController.pageSize);
     this.paginationController.setCurrentCall(paginationQuery);
+  }
 
-    ProgramService.getAll(paginationQuery, this.programSort).then(([programs, metadata]) => {
+  getPrograms() {
+    ProgramService.getAll(this.paginationController.currentCall, this.programSort).then(([programs, metadata]) => {
 
       // Check that our most recent query is this one
       if (this.paginationController.matchesCurrentRequest(metadata.pagination)) {
