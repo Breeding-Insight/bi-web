@@ -47,8 +47,8 @@
                                  class="mb-4">
           <div>
             <p class="is-size-5 mb-2"><strong>Import Summary</strong></p>
-            <p>Total rows: {{ rows.length }}</p>
-            <p>New Germplasm: {{ statistics.Germplasm.newObjectCount }}</p>
+            <p>Total number of entries: {{ rows.length }}</p>
+            <p>New Germplasm count: {{ statistics.Germplasm.newObjectCount }}</p>
             <p>New Pedigree Connections: {{ statistics["Pedigree Connections"].newObjectCount }}</p>
             <p>Potential duplicate Germplasm records are highlighted in yellow and show a <alert-triangle-icon size="1.2x" class="icon-align"/> icon.
               These records will be imported as new germplasm.</p>
@@ -94,18 +94,14 @@ export default class ImportGermplasm extends ProgramsBase {
   private germplasmImportTemplateName = 'GermplasmTemplateMap';
   private importConfig: any = {
     names: Object.assign(defaultRenames, {
-      'germplasmName': 'GID',
-      'defaultDisplayName': 'Germplasm Name',
+      'defaultDisplayName': 'Name',
       'breedingMethod': 'Breeding Method',
-      'seedSource': 'Wild',
+      'seedSource': 'Source',
       'pedigree': 'Pedigree',
-      'createdDate': 'Created Date',
-      'createdUser': 'Creator',
       'entryNumber': 'Entry No.'
     }),
-    display: ['germplasm.additionalInfo.entryNumber','germplasm.germplasmName', 'germplasm.defaultDisplayName',
-      'germplasm.breedingMethod', 'germplasm.seedSource', 'germplasm.pedigree',
-      'germplasm.additionalInfo.createdDate', 'germplasm.additionalInfo.createdUser'],
+    display: ['germplasm.additionalInfo.entryNumber','germplasm.defaultDisplayName',
+      'germplasm.breedingMethod', 'germplasm.seedSource', 'germplasm.pedigree',],
     detailDisplay: '*',
     defaultSort: 'germplasm.germplasmName',
     defaultSortOrder: 'asc'
@@ -129,14 +125,11 @@ export default class ImportGermplasm extends ProgramsBase {
       currentImport.preview.rows[i] = {
         germplasm: {
           brAPIObject: {
-            germplasmName: 'SP ' + (+i+1),
             defaultDisplayName: currentImport.preview.rows[i].germplasm.brAPIObject.germplasmName,
             breedingMethod: i % 2 == 0 ? 'Biparental' : 'Open Pollination',
             seedSource: i % 2 == 0 ? 'Greenhouse' : 'Field',
             pedigree: i > 1 ? `${currentImport.preview.rows[i - 2].germplasm.brAPIObject.defaultDisplayName}/${currentImport.preview.rows[i - 1].germplasm.brAPIObject.defaultDisplayName}` : '',
             additionalInfo: {
-              createdDate: '11/16/2021',
-              createdUser: 'BIDEV Team',
               entryNumber: +i + 1
             }
           }
