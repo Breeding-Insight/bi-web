@@ -264,6 +264,7 @@
   } from "@/store/mutation-types";
   import {UPDATE_SYSTEM_USER_SORT} from "@/store/sorting/mutation-types";
   import {ProgramSortField, Sort, SortOrder, UserSort, UserSortField} from "@/breeding-insight/model/Sort";
+  import {BackendPaginationController} from "@/breeding-insight/model/view_models/BackendPaginationController";
 
   @Component({
   components: {
@@ -346,14 +347,19 @@ export default class AdminUsersTable extends Vue {
   }
 
   @Watch('paginationController', { deep: true})
+  paginationChanged() {
+    this.updatePagination();
+    this.getUsers();
+  }
+
+    updatePagination() {
+      let paginationQuery: PaginationQuery = BackendPaginationController.getPaginationSelections(
+          this.paginationController.currentPage, this.paginationController.pageSize);
+      this.paginationController.setCurrentCall(paginationQuery);
+    }
+
   getUsers() {
-
-    let paginationQuery: PaginationQuery = PaginationController.getPaginationSelections(
-      this.paginationController.currentPage, this.paginationController.pageSize, this.paginationController.showAll);
-    this.paginationController.setCurrentCall(paginationQuery);
-
-
-    UserService.getAll(paginationQuery, this.systemUserSort).then(([users, metadata]) => {
+    UserService.getAll(this.paginationController.currentCall, this.systemUserSort).then(([users, metadata]) => {
       if (this.paginationController.matchesCurrentRequest(metadata.pagination)){
         this.users = users;
         this.usersPagination = metadata.pagination;

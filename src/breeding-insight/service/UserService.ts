@@ -145,9 +145,9 @@ export class UserService {
           return new User(user.id, user.name, user.orcid, user.email, role, programRoles);
         });
         //TODO: Remove when backend pagination is implemented
-        let newPagination;
-        [users, newPagination] = PaginationController.mockPagination(users, paginationQuery!.page, paginationQuery!.pageSize, paginationQuery!.showAll);
-        biResponse.metadata.pagination = newPagination;
+        // let newPagination;
+        // [users, newPagination] = PaginationController.mockPagination(users, paginationQuery!.page, paginationQuery!.pageSize, paginationQuery!.showAll);
+        // biResponse.metadata.pagination = newPagination;
 
         resolve([users, biResponse.metadata]);
 
