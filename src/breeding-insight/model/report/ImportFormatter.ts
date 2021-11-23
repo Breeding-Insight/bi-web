@@ -56,8 +56,6 @@ export class ImportFormatter {
   // TODO: Later
     // TODO: Column toggle
     // TODO: Make 'n members' into a pill?
-    // TODO: Show all columns in data if "*" is passed
-    // TODO: Allow for backend paging
     // TODO: Add to general importer
     // TODO: Auto expand for multiple sibling objects
     // TODO: Remove test data
@@ -124,7 +122,7 @@ export class ImportFormatter {
   }
 
   static sort(column: string, a: any, b: any, isAsc: boolean) {
-    // Expected to be primitives, but JSON.stringify is safe for number, object, string, etc. 
+    // Expected to be primitives, but JSON.stringify is safe for number, object, string, etc.
     const aString: string = JSON.stringify(a[column]);
     const bString: string = JSON.stringify(b[column]);
     const order = aString.localeCompare(bString, undefined, {numeric: true, sensitivity: 'base'});
