@@ -265,6 +265,7 @@ import {DataFormEventBusHandler} from '@/components/forms/DataFormEventBusHandle
 import {integer, maxLength} from "vuelidate/lib/validators";
 import {TraitField, TraitFilter} from "@/breeding-insight/model/TraitSelector";
 import {OntologySort, OntologySortField, SortOrder, TraitSortField} from "@/breeding-insight/model/Sort";
+import {BackendPaginationController} from "@/breeding-insight/model/view_models/BackendPaginationController";
 
 @Component({
   mixins: [validationMixin],
@@ -325,7 +326,7 @@ export default class OntologyTable extends Vue {
 
   // TODO: Move these into an event bus in the future
   private traitsPagination?: Pagination = new Pagination();
-  private paginationController: PaginationController = new PaginationController();
+  private paginationController: BackendPaginationController = new BackendPaginationController();
 
   shortCharLimit = 12;
   longCharLimit = 30;
@@ -353,6 +354,7 @@ export default class OntologyTable extends Vue {
   }
 
   mounted() {
+    this.updatePagination();
     this.getTraits();
     this.getObservationLevels();
     this.getAttributesEntitiesDescriptions();
@@ -383,15 +385,22 @@ export default class OntologyTable extends Vue {
 
   @Watch('ontologySort', {deep: true})
   @Watch('paginationController', { deep: true})
-  getTraits() {
-    let paginationQuery: PaginationQuery = PaginationController.getPaginationSelections(
-      this.paginationController.currentPage, this.paginationController.pageSize, this.paginationController.showAll);
-    this.paginationController.setCurrentCall(paginationQuery);
+  paginationChanges() {
+    this.updatePagination();
+    this.getTraits();
+  }
 
+  updatePagination() {
+    let paginationQuery: PaginationQuery = BackendPaginationController.getPaginationSelections(
+        this.paginationController.currentPage, this.paginationController.pageSize);
+    this.paginationController.setCurrentCall(paginationQuery);
+  }
+
+  getTraits() {
     // filter the terms pulled from the back-end
     let filters: TraitFilter[] = [{ field: TraitField.STATUS, value: this.active}];
-console.log(this.ontologySort.order);
-    TraitService.getFilteredTraits(this.activeProgram!.id!, paginationQuery, true, filters, this.ontologySort).then(([traits, metadata]) => {
+
+    TraitService.getFilteredTraits(this.activeProgram!.id!, this.paginationController.currentCall, true, filters, this.ontologySort).then(([traits, metadata]) => {
       if (this.paginationController.matchesCurrentRequest(metadata.pagination)){
         this.traits = traits;
         this.traitsPagination = metadata.pagination;

@@ -25,11 +25,16 @@ import {OntologySort, SortOrder} from "@/breeding-insight/model/Sort";
 export class TraitDAO {
     private activeOntologySortOrder!: SortOrder;
 
-    static getAll(programId: string, paginationQuery: PaginationQuery, full: boolean): Promise<BiResponse> {
-        const config: any = {};
-        config.params = {full};
-        config.url = `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/traits`;
-        config.method = 'get';
+    static getAll(programId: string, {page, pageSize}: PaginationQuery, full: boolean): Promise<BiResponse> {
+        const config: any = {
+            params: {
+                full,
+                page,
+                pageSize
+            },
+            url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/traits`,
+            method: 'get'
+        };
 
         return new Promise<BiResponse>(((resolve, reject) => {
             api.call(config)
@@ -43,13 +48,15 @@ export class TraitDAO {
     }
 
     static getFilteredTraits(programId: string,
-                             paginationQuery: PaginationQuery,
+                             {page, pageSize}: PaginationQuery,
                              full: boolean,
                              sort: OntologySort,
                              filters?: TraitFilter[]): Promise<BiResponse> {
         const config: any = {
             params: {
                 full,
+                page,
+                pageSize,
                 sortField: sort.field,
                 sortOrder: sort.order
             }
