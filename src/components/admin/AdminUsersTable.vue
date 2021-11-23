@@ -305,7 +305,7 @@ export default class AdminUsersTable extends Vue {
     email: {required, email}
   }
 
-  private paginationController: PaginationController = new PaginationController();
+  private paginationController: BackendPaginationController = new BackendPaginationController();
 
   private newUserFormState: DataFormEventBusHandler = new DataFormEventBusHandler();
   private editUserFormState: DataFormEventBusHandler = new DataFormEventBusHandler();
@@ -318,6 +318,7 @@ export default class AdminUsersTable extends Vue {
 
   mounted() {
     this.getRoles();
+    this.updatePagination();
     this.getUsers();
   }
 
