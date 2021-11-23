@@ -104,7 +104,7 @@ export default class ReportExpandableDetails extends Vue {
 
   getDisplayedDetails() {
     const flattenedDetails = flatten(this.details, {safe:true});
-    const displayedDetails = {};
+    const displayedDetails:any = {};
     for (const key of Object.keys(flattenedDetails)) {
       if (this.isDisplayed(key)) {
         displayedDetails[key] = flattenedDetails[key];
