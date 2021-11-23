@@ -53,9 +53,6 @@ import flatten from "flat";
 
 export class ImportFormatter {
 
-  // TODO: Clean up
-  // TODO: Remove test data
-
   // TODO: Later
     // TODO: Column toggle
     // TODO: Make 'n members' into a pill?
@@ -63,6 +60,7 @@ export class ImportFormatter {
     // TODO: Allow for backend paging
     // TODO: Add to general importer
     // TODO: Auto expand for multiple sibling objects
+    // TODO: Remove test data
 
   static format(jsonData: any[], configs: any): ReportStruct {
 
@@ -111,7 +109,7 @@ export class ImportFormatter {
       // Add row id to data
       result.rowId = newRowId;
       // Flatten again with no frills
-      details[newRowId] = flatten(row, {safe: true});
+      details[newRowId] = row;
 
       // Filter out the list types and replace with descriptors
       for (const key of Object.keys(result)) {

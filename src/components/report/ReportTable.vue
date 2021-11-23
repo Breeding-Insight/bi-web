@@ -23,8 +23,8 @@
 
   - Details Panel:
     - You can define your own content for the details panel by using the 'details' slot. The details
-      slot is passed the flattened brapi content, without the arrays flattened. Example:
-      <template v-slot:details="row"></template>
+      slot is passed the original object for the row being displayed. Example:
+      <template v-slot:details="{row}"></template>
 
     - If you do not specify your own details slot, this component will display all the details
       that you specified in the configuration.
@@ -48,7 +48,7 @@
       detailed
       paginated
   >
-    <template v-slot:details="row">
+    <template v-slot:details="{row}">
       <p>Detail JSON Dump: {{row}}</p>
     </template>
   </report-table>
@@ -69,7 +69,7 @@
     >
 
       <template v-slot:detail="props">
-        <slot name="details" v-bind:row="props.row"></slot>
+        <slot name="details" v-bind:row="getDetails(props.row.rowId)"></slot>
 
         <!-- Default content if slot not used -->
         <ReportExpandableDetails

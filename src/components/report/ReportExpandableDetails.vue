@@ -77,6 +77,7 @@ import {Component, Prop, Vue, Watch} from 'vue-property-decorator'
 import {ReportStruct} from "@/breeding-insight/model/report/ReportStruct";
 import {DisplayNameManager} from "@/breeding-insight/model/report/DisplayNameManager";
 import {ChevronUpIcon, ChevronDownIcon} from 'vue-feather-icons';
+import flatten from "flat";
 
 @Component({
   components: {ChevronUpIcon, ChevronDownIcon}
@@ -102,10 +103,11 @@ export default class ReportExpandableDetails extends Vue {
   }
 
   getDisplayedDetails() {
+    const flattenedDetails = flatten(this.details, {safe:true});
     const displayedDetails = {};
-    for (const key of Object.keys(this.details)) {
+    for (const key of Object.keys(flattenedDetails)) {
       if (this.isDisplayed(key)) {
-        displayedDetails[key] = this.details[key];
+        displayedDetails[key] = flattenedDetails[key];
       }
     }
     return displayedDetails;
