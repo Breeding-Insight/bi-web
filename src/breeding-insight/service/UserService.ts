@@ -131,7 +131,7 @@ export class UserService {
     }))
   }
 
-  static getAll(paginationQuery: PaginationQuery = new PaginationQuery(0, 0, true),
+  static getAll(paginationQuery: PaginationQuery = new PaginationQuery(1, 50, true),
                 sort: UserSort = new UserSort(UserSortField.Name, SortOrder.Ascending)): Promise<[User[], Metadata]> {
     return new Promise<[User[], Metadata]>(((resolve, reject) => {
 
@@ -144,10 +144,6 @@ export class UserService {
           const programRoles: ProgramUser[] | undefined = this.parseProgramRoles(user.programRoles);
           return new User(user.id, user.name, user.orcid, user.email, role, programRoles);
         });
-        //TODO: Remove when backend pagination is implemented
-        // let newPagination;
-        // [users, newPagination] = PaginationController.mockPagination(users, paginationQuery!.page, paginationQuery!.pageSize, paginationQuery!.showAll);
-        // biResponse.metadata.pagination = newPagination;
 
         resolve([users, biResponse.metadata]);
 
