@@ -125,10 +125,10 @@ export default class ImportGermplasm extends ProgramsBase {
       currentImport.preview.rows[i] = {
         germplasm: {
           brAPIObject: {
-            defaultDisplayName: currentImport.preview.rows[i].germplasm.brAPIObject.germplasmName,
-            breedingMethod: i % 2 == 0 ? 'Biparental' : 'Open Pollination',
-            seedSource: i % 2 == 0 ? 'Greenhouse' : 'Field',
-            pedigree: i > 1 ? `${currentImport.preview.rows[i - 2].germplasm.brAPIObject.defaultDisplayName}/${currentImport.preview.rows[i - 1].germplasm.brAPIObject.defaultDisplayName}` : '',
+            defaultDisplayName: currentImport.preview.rows[+i].germplasm.brAPIObject.germplasmName,
+            breedingMethod: +i % 2 == 0 ? 'Biparental' : 'Open Pollination',
+            seedSource: +i % 2 == 0 ? 'Greenhouse' : 'Field',
+            pedigree: +i > 1 ? `${currentImport.preview.rows[+i - 2].germplasm.brAPIObject.defaultDisplayName}/${currentImport.preview.rows[+i - 1].germplasm.brAPIObject.defaultDisplayName}` : '',
             additionalInfo: {
               entryNumber: +i + 1
             }
