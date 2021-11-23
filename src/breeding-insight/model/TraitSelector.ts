@@ -1,6 +1,5 @@
 export enum TraitField {
   NAME = 'name',
-  ABBREVIATIONS = 'abbreviations',
   MAIN_ABBREVIATION = 'mainAbbreviation',
   SYNONYMS = 'synonyms',
   LEVEL = 'level',

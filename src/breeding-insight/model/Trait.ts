@@ -29,8 +29,8 @@ export class Trait {
   traitDescription?: string;
   method?: Method;
   scale?: Scale;
-  abbreviations?: Array<string>;
-  synonyms: string[] = [];
+  //abbreviations?: Array<string>;
+  synonyms?: Array<string>;
   mainAbbreviation?: string;
   active?: boolean;
   tags?: string[] = [];
@@ -46,7 +46,6 @@ export class Trait {
               traitDescription?: string,
               method?: Method,
               scale?: Scale,
-              abbreviations?: Array<string>,
               synonyms?: Array<string>,
               active?: boolean,
               tags?: string[],
@@ -74,7 +73,6 @@ export class Trait {
     } else {
       this.scale = new Scale();
     }
-    this.abbreviations = abbreviations;
     if (synonyms){
       this.synonyms = Array.from(synonyms);
     }
@@ -92,7 +90,7 @@ export class Trait {
 
   static assign(trait: Trait): Trait {
     return new Trait(trait.id, trait.traitName, trait.observationVariableName, trait.programObservationLevel, trait.entity, trait.attribute,
-        trait.traitDescription, trait.method, trait.scale, trait.abbreviations, trait.synonyms, trait.active, trait.tags, trait.fullName, trait.isDup);
+        trait.traitDescription, trait.method, trait.scale, trait.synonyms, trait.active, trait.tags, trait.fullName, trait.isDup);
   }
 
   checkStringListEquals(list: string[] | undefined, otherList: string[] | undefined): boolean {
@@ -114,7 +112,6 @@ export class Trait {
       (this.traitName === trait.traitName) &&
       (this.observationVariableName === trait.observationVariableName) &&
       (this.fullName === trait.fullName) &&
-      (this.checkStringListEquals(this.abbreviations, trait.abbreviations)) &&
       (this.checkStringListEquals(this.synonyms, trait.synonyms)) &&
       (this.mainAbbreviation === trait.mainAbbreviation) &&
         (this.entity === trait.entity) &&
