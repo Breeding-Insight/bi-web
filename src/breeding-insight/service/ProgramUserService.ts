@@ -106,7 +106,7 @@ export class ProgramUserService {
   }
 
   static getAll(programId: string,
-                paginationQuery: PaginationQuery = new PaginationQuery(0, 0, true),
+                paginationQuery: PaginationQuery = new PaginationQuery(1, 50, true),
                 sort: UserSort = new UserSort(UserSortField.Name, SortOrder.Ascending)): Promise<[ProgramUser[], Metadata]> {
     return new Promise<[ProgramUser[], Metadata]>(((resolve, reject) => {
 

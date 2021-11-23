@@ -59,7 +59,7 @@ export class ProgramLocationDAO {
     return api.call({ url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/locations/${locationId}`, method: 'delete'});
   }
 
-  static getAll(programId: string, paginationQuery: PaginationQuery, {field, order}: LocationSort): Promise<BiResponse> {
+  static getAll(programId: string, {page, pageSize}: PaginationQuery, {field, order}: LocationSort): Promise<BiResponse> {
 
     return new Promise<BiResponse>(((resolve, reject) => {
       const config: any = {
@@ -67,7 +67,9 @@ export class ProgramLocationDAO {
         method: 'get',
         params: {
           sortField: field,
-          sortOrder: order
+          sortOrder: order,
+          page,
+          pageSize
         }
       };
       api.call(config)
@@ -75,6 +77,7 @@ export class ProgramLocationDAO {
           const biResponse = new BiResponse(response.data);
           resolve(biResponse);
         }).catch((error) => {
+          console.log(error);
           reject(error);
         })
 

@@ -150,6 +150,7 @@
   } from "@/store/mutation-types";
   import {UPDATE_LOCATION_SORT} from "@/store/sorting/mutation-types";
   import {LocationSort, LocationSortField, Sort, SortOrder, UserSort} from "@/breeding-insight/model/Sort";
+  import {BackendPaginationController} from "@/breeding-insight/model/view_models/BackendPaginationController";
 
 @Component({
   mixins: [validationMixin],
@@ -185,7 +186,7 @@ export default class ProgramLocationsTable extends Vue {
 
   private locationsLoading = true;
 
-  private paginationController: PaginationController = new PaginationController();
+  private paginationController: BackendPaginationController = new BackendPaginationController();
 
   private newLocationFormState: DataFormEventBusHandler = new DataFormEventBusHandler();
   private editLocationFormState: DataFormEventBusHandler = new DataFormEventBusHandler();
@@ -198,6 +199,7 @@ export default class ProgramLocationsTable extends Vue {
   }
 
   mounted() {
+    this.updatePagination();
     this.getLocations();
   }
 
@@ -210,12 +212,19 @@ export default class ProgramLocationsTable extends Vue {
   }
 
   @Watch('paginationController', { deep: true})
-  getLocations() {
-    let paginationQuery: PaginationQuery = PaginationController.getPaginationSelections(
-      this.paginationController.currentPage, this.paginationController.pageSize, this.paginationController.showAll);
-    this.paginationController.setCurrentCall(paginationQuery);
+  paginationChanged() {
+    this.updatePagination();
+    this.getLocations();
+  }
 
-    ProgramLocationService.getAll(this.activeProgram!.id!, paginationQuery, this.locationSort).then(([programLocations, metadata]) => {
+  updatePagination() {
+    let paginationQuery: PaginationQuery = BackendPaginationController.getPaginationSelections(
+        this.paginationController.currentPage, this.paginationController.pageSize);
+    this.paginationController.setCurrentCall(paginationQuery);
+  }
+
+  getLocations() {
+    ProgramLocationService.getAll(this.activeProgram!.id!, this.paginationController.currentCall, this.locationSort).then(([programLocations, metadata]) => {
       if (this.paginationController.matchesCurrentRequest(metadata.pagination)){
         this.locations = programLocations;
         this.locationsPagination = metadata.pagination;
