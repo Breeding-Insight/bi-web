@@ -81,7 +81,9 @@ export class TraitService {
       else throw 'Unable to update trait';
     }
 
-  static getAll(programId: string, paginationQuery?: PaginationQuery, full?: boolean): Promise<[Trait[], Metadata]> {
+  static getAll(programId: string,
+                paginationQuery: PaginationQuery = new PaginationQuery(1, 50, true),
+                full?: boolean): Promise<[Trait[], Metadata]> {
     return new Promise<[Trait[], Metadata]>(((resolve, reject) => {
 
       if (paginationQuery === undefined) {
@@ -98,17 +100,10 @@ export class TraitService {
           let traits: Trait[] = [];
 
           if (biResponse.result.data) {
-            //TODO: Remove when backend default sorting is implemented
-            biResponse.result.data = PaginationController.mockSortRecords(biResponse.result.data);
             traits = biResponse.result.data.map((trait: any) => {
               return trait as Trait;
             });
           }
-
-          //TODO: Remove when backend pagination is implemented
-          let newPagination;
-          [traits, newPagination] = PaginationController.mockPagination(traits, paginationQuery!.page, paginationQuery!.pageSize, paginationQuery!.showAll);
-          biResponse.metadata.pagination = newPagination;
 
           resolve([traits, biResponse.metadata]);
 
@@ -121,7 +116,7 @@ export class TraitService {
   }
 
   static getFilteredTraits(programId: string,
-                           paginationQuery: PaginationQuery = new PaginationQuery(0, 0, true),
+                           paginationQuery: PaginationQuery = new PaginationQuery(1, 50, true),
                            full: boolean = false,
                            filters?: TraitFilter[],
                            sort: OntologySort = new OntologySort(OntologySortField.Name, SortOrder.Ascending)): Promise<[Trait[], Metadata]> {
@@ -139,9 +134,9 @@ export class TraitService {
           }
 
           //TODO: Remove when backend pagination is implemented
-          let newPagination;
-          [traits, newPagination] = PaginationController.mockPagination(traits, paginationQuery!.page, paginationQuery!.pageSize, paginationQuery!.showAll);
-          biResponse.metadata.pagination = newPagination;
+          // let newPagination;
+          // [traits, newPagination] = PaginationController.mockPagination(traits, paginationQuery!.page, paginationQuery!.pageSize, paginationQuery!.showAll);
+          // biResponse.metadata.pagination = newPagination;
 
           resolve([traits, biResponse.metadata]);
 

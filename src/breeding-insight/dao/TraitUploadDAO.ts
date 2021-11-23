@@ -48,7 +48,7 @@ export class TraitUploadDAO {
   }
 
   static getTraitUpload(programId: string,
-                        paginationQuery: PaginationQuery,
+                        {page, pageSize}: PaginationQuery,
                         sort: OntologySort): Promise<BiResponse> {
 
     return new Promise<BiResponse>(((resolve, reject) => {
@@ -56,6 +56,8 @@ export class TraitUploadDAO {
         url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/trait-upload`,
         method: 'get',
         params: {
+          page,
+          pageSize,
           sortField: sort.field,
           sortOrder: sort.order
         }
