@@ -28,7 +28,7 @@ export class ProgramDAO {
     return new Promise<BiResponse>((resolve, reject) => {
 
       // Construct request body
-      const body = {'name': program.name, 'species': { 'id': program.speciesId }, 'brapiUrl': program.brapiUrl };
+      const body = {'name': program.name, 'species': { 'id': program.speciesId }, 'brapiUrl': program.brapiUrl, 'key': program.key };
 
       // Make api request
       api.call({ url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs`, method: 'post', data: body})
