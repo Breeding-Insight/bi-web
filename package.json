@@ -61,7 +61,7 @@
     "@vue/eslint-config-typescript": "^4.0.0",
     "@vue/test-utils": "^1.0.3",
     "argparse": "^1.0.10",
-    "axios": "^0.21.1",
+    "axios": "^0.21.2",
     "babel-core": "^7.0.0-bridge.0",
     "babel-jest": "^24.9.0",
     "babel-preset-env": "^1.7.0",
