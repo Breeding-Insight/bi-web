@@ -27,6 +27,9 @@ export class ProgramService {
   static unsupportedBrapiUrl : string = 'BrAPI URL specified is not supported';
   static errorCreatingProgram : string = 'Error creating program';
   static duplicateProgramName: string = 'A program with the same name already exists';
+  static duplicateProgramKey: string = 'A program with the same key already exists';
+  static PROGRAM_NAME_IN_USE: string = "PROGRAM_NAME_IN_USE";
+  static PROGRAM_KEY_IN_USE: string = "PROGRAM_KEY_IN_USE";
 
   static create(program: Program): Promise<Program> {
     //TODO: Check everything is good
@@ -39,8 +42,10 @@ export class ProgramService {
           resolve(newProgram);
 
         }).catch((error) => {
-          if (error.response && error.response.status === 409) {
+          if (error.response && error.response.status === 409 && error.response.statusText === ProgramService.PROGRAM_NAME_IN_USE) {
             error['errorMessage'] = this.duplicateProgramName;
+          } else if (error.response && error.response.status === 409 && error.response.statusText === ProgramService.PROGRAM_KEY_IN_USE) {
+            error['errorMessage'] = this.duplicateProgramKey;
           } else if (error.response && error.response.status === 422) {
             error['errorMessage'] = this.unsupportedBrapiUrl;
           } else {
@@ -105,7 +110,7 @@ export class ProgramService {
 
         // Parse our programs into the vue programs param
         programs = biResponse.result.data.map((program: any) => {
-          return new Program(program.id, program.name, program.species.id, program.numUsers, program.brapiUrl);
+          return new Program(program.id, program.name, program.species.id, program.numUsers, program.brapiUrl, program.key);
         });
 
         //TODO: Remove when backend pagination is implemented

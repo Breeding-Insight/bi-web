@@ -15,7 +15,8 @@
 # limitations under the License.
 #
 
-FROM node:lts
+#FROM node:lts
+FROM node:14
 
 ARG HOST_USER_ID=1001
 ARG HOST_GROUP_ID=1001
