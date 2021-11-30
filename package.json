@@ -19,11 +19,13 @@
   "dependencies": {
     "@casl/ability": "~4.0.0",
     "@casl/vue": "^1.1.1",
+    "@types/flat": "^5.0.2",
     "@types/promise.allsettled": "^1.0.3",
     "@types/valid-url": "^1.0.3",
     "@types/vuelidate": "^0.7.10",
     "@xstate/fsm": "^1.4.0",
     "core-js": "^3.4.3",
+    "flat": "^5.0.2",
     "focus-trap": "^5.1.0",
     "focus-trap-vue": "0.0.6",
     "title-case": "^3.0.3",
