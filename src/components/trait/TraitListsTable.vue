@@ -139,7 +139,7 @@
           {{ StringFormatters.toStartCase(data.traitDescription) }}
         </TableColumn>
         <TableColumn name="method" v-bind:label="'Method'" v-bind:visible="!traitSidePanelState.collapseColumns">
-          {{ data.method.description + " " + StringFormatters.toStartCase(data.method.methodClass) }}
+          {{ data.method.description ? data.method.description : "" + " " + StringFormatters.toStartCase(data.method.methodClass) }}
         </TableColumn>
         <TableColumn name="scaleClass" v-bind:label="'Scale Class'" v-bind:visible="!traitSidePanelState.collapseColumns">
           {{ TraitStringFormatters.getScaleTypeString(data.scale) }}
@@ -446,9 +446,6 @@ export default class TraitTable extends Vue {
     } else if (Scale.dataTypeEquals(trait.scale!.dataType!, DataType.Numerical)) {
       // Rename scale name to unit
       handler.overrideMessage(0, 'scale.scaleName', 'Missing unit', 400);
-    } else if (Scale.dataTypeEquals(trait.scale!.dataType!, DataType.Duration)) {
-      // Rename scale name to unit of time
-      handler.overrideMessage(0, 'scale.scaleName', 'Missing unit of time', 400);
     }
     return deletions;
   }

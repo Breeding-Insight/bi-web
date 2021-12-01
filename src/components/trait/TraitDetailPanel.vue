@@ -110,28 +110,6 @@
           </div>
         </template>
 
-<!--        If duration scale class then show units and range-->
-        <template v-if="Scale.dataTypeEquals(scaleType, DataType.Duration)">
-          <div class="column is-half p-0">
-            <span class="is-pulled-right mr-2">Unit of Time</span>
-          </div>
-          <div class="column is-half p-0">
-            <span class="is-size-7 ml-2">{{valueOrNA(data.scale.scaleName)}}</span>
-          </div>
-          <div class="column is-half p-0">
-            <span class="is-pulled-right mr-2">Minimum valid value</span>
-          </div>
-          <div class="column is-half p-0">
-            <span class="is-size-7 ml-2">{{valueOrNA(data.scale.validValueMin)}}</span>
-          </div>
-          <div class="column is-half p-0">
-            <span class="is-pulled-right mr-2">Maximum valid value</span>
-          </div>
-          <div class="column is-half p-0">
-            <span class="is-size-7 ml-2">{{valueOrNA(data.scale.validValueMax)}}</span>
-          </div>
-        </template>
-
 <!--        nothing to show for date class now-->
         <template v-if="scaleType && Scale.dataTypeEquals(scaleType, DataType.Date)">
         </template>

@@ -471,9 +471,6 @@ export default class OntologyTable extends Vue {
     } else if (Scale.dataTypeEquals(trait.scale!.dataType!, DataType.Numerical)) {
       // Rename scale name to unit
       handler.overrideMessage(0, 'scale.scaleName', 'Missing unit', 400);
-    } else if (Scale.dataTypeEquals(trait.scale!.dataType!, DataType.Duration)) {
-      // Rename scale name to unit of time
-      handler.overrideMessage(0, 'scale.scaleName', 'Missing unit of time', 400);
     }
     return deletions;
   }
