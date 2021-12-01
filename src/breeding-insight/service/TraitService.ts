@@ -133,11 +133,6 @@ export class TraitService {
             });
           }
 
-          //TODO: Remove when backend pagination is implemented
-          // let newPagination;
-          // [traits, newPagination] = PaginationController.mockPagination(traits, paginationQuery!.page, paginationQuery!.pageSize, paginationQuery!.showAll);
-          // biResponse.metadata.pagination = newPagination;
-
           resolve([traits, biResponse.metadata]);
 
         }).catch((error) => reject(error));
