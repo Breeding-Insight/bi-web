@@ -96,12 +96,12 @@ export default class ImportGermplasm extends ProgramsBase {
     names: Object.assign(defaultRenames, {
       'defaultDisplayName': 'Name',
       'breedingMethod': 'Breeding Method',
-      'seedSource': 'Source',
+      'seedSourceDescription': 'Source',
       'pedigree': 'Pedigree',
-      'entryNumber': 'Entry No.'
+      'importEntryNumber': 'Entry No.'
     }),
-    display: ['germplasm.additionalInfo.entryNumber','germplasm.defaultDisplayName',
-      'germplasm.breedingMethod', 'germplasm.seedSource', 'germplasm.pedigree',],
+    display: ['germplasm.additionalInfo.importEntryNumber','germplasm.defaultDisplayName',
+      'germplasm.additionalInfo.breedingMethod', 'germplasm.seedSourceDescription', 'germplasm.pedigree'],
     detailDisplay: '*',
     defaultSort: 'germplasm.germplasmName',
     defaultSortOrder: 'asc'
@@ -120,23 +120,7 @@ export default class ImportGermplasm extends ProgramsBase {
 
   processPreviewData(currentImport: any): ReportStruct {
     // Do special germplasm import formatting here
-    //TODO: Remove test data
-    for (const i in currentImport.preview.rows) {
-      currentImport.preview.rows[i] = {
-        germplasm: {
-          brAPIObject: {
-            defaultDisplayName: currentImport.preview.rows[+i].germplasm.brAPIObject.germplasmName,
-            breedingMethod: +i % 2 == 0 ? 'Biparental' : 'Open Pollination',
-            seedSource: +i % 2 == 0 ? 'Greenhouse' : 'Field',
-            pedigree: +i > 1 ? `${currentImport.preview.rows[+i - 2].germplasm.brAPIObject.defaultDisplayName}/${currentImport.preview.rows[+i - 1].germplasm.brAPIObject.defaultDisplayName}` : '',
-            additionalInfo: {
-              entryNumber: +i + 1
-            }
-          }
-        }
-      };
-    }
-
+    console.log(currentImport.preview.rows);
     return ImportFormatter.format(currentImport.preview.rows, this.importConfig);
   }
 
