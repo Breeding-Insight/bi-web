@@ -91,7 +91,7 @@
       v-on:remove="displayWarning($event)"
       v-on:show-error-notification="$emit('show-error-notification', $event)"
       v-on:paginate="paginationController.updatePage($event)"
-      v-on:paginate-toggle-all="paginationController.toggleShowAll()"
+      v-on:paginate-toggle-all="paginationController.toggleShowAll(locationsPagination.totalCount.valueOf())"
       v-on:paginate-page-size="paginationController.updatePageSize($event)"
       backend-sorting
       v-bind:default-sort="['data.name', locationSortOrderAsBuefy]"

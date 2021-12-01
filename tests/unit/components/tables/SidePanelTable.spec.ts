@@ -23,7 +23,7 @@ import {Trait} from "@/breeding-insight/model/Trait";
 import {Method} from "@/breeding-insight/model/Method";
 import {Scale} from "@/breeding-insight/model/Scale";
 import {ProgramObservationLevel} from "@/breeding-insight/model/ProgramObservationLevel";
-import {mocked} from 'ts-jest'
+import {mocked} from 'ts-jest/utils'
 import {TraitUploadDAO} from "@/breeding-insight/dao/TraitUploadDAO";
 import SidePanelTableRow from "@/components/tables/SidePanelTableRow.vue";
 import DaoUtils from "../../test-utils/DaoUtils";
@@ -44,9 +44,8 @@ function setup() {
   const range = [...Array(200).keys()];
   traits = range.map((i:number) => new Trait(i.toString(), `Trait${i}`, `Trait${i}`, level, undefined, undefined, undefined, method, scale));
 
-  const response = DaoUtils.formatBiResponse(traits);
-
-  const traitUploadDAO = mocked(TraitUploadDAO, true);
+  const response = DaoUtils.formatBiResponseWithPaging(traits, 4, 1, 200, 50);
+  const traitUploadDAO = mocked(TraitUploadDAO, false);
   traitUploadDAO.getTraitUpload.mockResolvedValue(response);
 }
 
@@ -76,7 +75,6 @@ describe('Details panel works properly', () => {
   });
 
   it('Displays details panel when Show Details button is clicked', async () => {
-
     const row = wrapper.findComponent(SidePanelTableRow);
     const showDetailsLink = row.find('a[data-testid="showDetails"]');
     expect(showDetailsLink.exists()).toBeTruthy();
@@ -93,7 +91,6 @@ describe('Details panel works properly', () => {
 });
 
 describe('Pagination works with side table', () => {
-
   const store = defaultStore;
   const wrapper = mount(TraitsImportTable, {localVue, store});
   let pagination: Wrapper<any>;
@@ -108,6 +105,10 @@ describe('Pagination works with side table', () => {
   });
 
   it('Page size selection works when details closed', async () => {
+    const response = DaoUtils.formatBiResponseWithPaging(traits,2, 1, 200, 100);
+    const traitUploadDAO = mocked(TraitUploadDAO, false);
+    traitUploadDAO.getTraitUpload.mockResolvedValue(response);
+
     const editForm = wrapper.findComponent(EditDataRowForm);
     expect(editForm.exists()).toBeFalsy();
 
@@ -120,6 +121,10 @@ describe('Pagination works with side table', () => {
   });
 
   it('Page selection button works when details open', async () => {
+    const response = DaoUtils.formatBiResponseWithPaging(traits,4,1,200,50);
+    const traitUploadDAO = mocked(TraitUploadDAO, false);
+    traitUploadDAO.getTraitUpload.mockResolvedValue(response);
+
     await openEditForm(wrapper);
 
     const numSelect = pagination.find('select#paginationSelect');
@@ -134,6 +139,9 @@ describe('Pagination works with side table', () => {
   });
 
   it('Show all selection works when details closed', async () => {
+    const response = DaoUtils.formatBiResponseWithPaging(traits,1,1,200,200);
+    const traitUploadDAO = mocked(TraitUploadDAO, false);
+    traitUploadDAO.getTraitUpload.mockResolvedValue(response);
 
     let editForm = wrapper.findComponent(SidePanel);
     expect(editForm.exists()).toBeFalsy();
@@ -151,6 +159,10 @@ describe('Pagination works with side table', () => {
   });
 
   it('Show all selection works when details open', async () => {
+    const response = DaoUtils.formatBiResponseWithPaging(traits,1,1,200,200);
+    const traitUploadDAO = mocked(TraitUploadDAO, false);
+    traitUploadDAO.getTraitUpload.mockResolvedValue(response);
+
     await openEditForm(wrapper);
 
     const showAllBtn = wrapper.find('button[data-testid="showAll"]');
@@ -165,6 +177,9 @@ describe('Pagination works with side table', () => {
   });
 
   it('Next page button works when details closed', async () => {
+    const response = DaoUtils.formatBiResponseWithPaging(traits,4,2,200,50);
+    const traitUploadDAO = mocked(TraitUploadDAO, false);
+    traitUploadDAO.getTraitUpload.mockResolvedValue(response);
 
     let editForm = wrapper.findComponent(SidePanel);
     expect(editForm.exists()).toBeFalsy();
@@ -184,6 +199,10 @@ describe('Pagination works with side table', () => {
   });
 
   it('Next page button works when details open', async () => {
+    const response = DaoUtils.formatBiResponseWithPaging(traits,4,3,200,50);
+    const traitUploadDAO = mocked(TraitUploadDAO, false);
+    traitUploadDAO.getTraitUpload.mockResolvedValue(response);
+
     await openEditForm(wrapper);
 
     const nextPageBtn = wrapper.find('button[aria-label="Next page"');
@@ -199,6 +218,10 @@ describe('Pagination works with side table', () => {
   });
 
   it('Previous page button works when details open', async () => {
+    const response = DaoUtils.formatBiResponseWithPaging(traits,4,2,200,50);
+    const traitUploadDAO = mocked(TraitUploadDAO, false);
+    traitUploadDAO.getTraitUpload.mockResolvedValue(response);
+
     await openEditForm(wrapper);
 
     const nextPageBtn = wrapper.find('button[aria-label="Previous page"');
@@ -214,6 +237,10 @@ describe('Pagination works with side table', () => {
   });
 
   it('Previous page button works when details closed', async () => {
+    const response = DaoUtils.formatBiResponseWithPaging(traits,4,1,200,50);
+    const traitUploadDAO = mocked(TraitUploadDAO, false);
+    traitUploadDAO.getTraitUpload.mockResolvedValue(response);
+
     let editForm = wrapper.findComponent(SidePanel);
     expect(editForm.exists()).toBeFalsy();
 
