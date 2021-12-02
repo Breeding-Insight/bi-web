@@ -132,7 +132,7 @@
           {{ StringFormatters.toStartCase(data.traitDescription) }}
         </TableColumn>
         <TableColumn name="method" v-bind:label="'Method'" v-bind:visible="!traitSidePanelState.collapseColumns">
-          {{ data.method.description + " " + StringFormatters.toStartCase(data.method.methodClass) }}
+          {{ (data.method.description ? data.method.description : "") + " " + StringFormatters.toStartCase(data.method.methodClass) }}
         </TableColumn>
         <TableColumn name="scaleClass" v-bind:label="'Scale Class'" v-bind:visible="!traitSidePanelState.collapseColumns">
           {{ TraitStringFormatters.getScaleTypeString(data.scale) }}
