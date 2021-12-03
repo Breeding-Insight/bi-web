@@ -69,8 +69,17 @@ export class Trait {
   }
 
   static assign(trait: Trait): Trait {
+    // if arrays exist in trait, then COPY them
+    let tags;
+    if (trait.tags){
+       tags = Array.from(trait.tags);
+    }
+    let synonyms;
+    if (trait.synonyms){
+      synonyms = Array.from(trait.synonyms);
+    }
     return new Trait(trait.id, trait.traitName, trait.programObservationLevel, trait.method,
-      trait.scale, trait.abbreviations, trait.synonyms, trait.active, trait.tags);
+        trait.scale, trait.abbreviations, synonyms, trait.active, tags);
   }
 
   checkStringListEquals(list: string[] | undefined, otherList: string[] | undefined): boolean {
@@ -86,6 +95,7 @@ export class Trait {
 
   equals(trait?: Trait): boolean {
     if (!trait) {return false;}
+    // @ts-ignore
     return (this.id === trait.id) &&
       (this.traitName === trait.traitName) &&
       (this.checkStringListEquals(this.abbreviations, trait.abbreviations)) &&
@@ -102,7 +112,9 @@ export class Trait {
       (
         (this.method && this.method.equals(trait.method)) ||
         (!this.method && !trait.method)
-      );
+      ) &&
+        ( JSON.stringify(this.tags) === JSON.stringify(trait.tags) ) &&
+        ( JSON.stringify(this.synonyms) === JSON.stringify(trait.synonyms) );
   }
 
   addTag(tag: string) {
