@@ -59,27 +59,22 @@ export class Trait {
       this.scale = new Scale();
     }
     this.abbreviations = abbreviations;
-    this.synonyms = synonyms;
+    if (synonyms){
+      this.synonyms = Array.from(synonyms);
+    }
     if (active !== undefined) {
       this.active = active;
     } else {
       this.active = true;
     }
-    this.tags = tags;
+    if (tags){
+      this.tags = Array.from(tags);
+    }
   }
 
   static assign(trait: Trait): Trait {
-    // if arrays exist in trait, then COPY them
-    let tags;
-    if (trait.tags){
-       tags = Array.from(trait.tags);
-    }
-    let synonyms;
-    if (trait.synonyms){
-      synonyms = Array.from(trait.synonyms);
-    }
     return new Trait(trait.id, trait.traitName, trait.programObservationLevel, trait.method,
-        trait.scale, trait.abbreviations, synonyms, trait.active, tags);
+        trait.scale, trait.abbreviations, trait.synonyms, trait.active, trait.tags);
   }
 
   checkStringListEquals(list: string[] | undefined, otherList: string[] | undefined): boolean {
