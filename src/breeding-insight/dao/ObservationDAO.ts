@@ -28,7 +28,7 @@ export class ObservationDAO {
       const { data } = await api.call({
         url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/brapi/v2/observations`,
         method: 'get',
-        params: { full, studyDbId: studyId }
+        params: { full, studyDbId: studyId, pageSize: 1000000 }
       }) as Response;
 
       return ResultGenerator.success(new BiResponse(data));
