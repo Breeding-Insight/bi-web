@@ -59,18 +59,22 @@ export class Trait {
       this.scale = new Scale();
     }
     this.abbreviations = abbreviations;
-    this.synonyms = synonyms;
+    if (synonyms){
+      this.synonyms = Array.from(synonyms);
+    }
     if (active !== undefined) {
       this.active = active;
     } else {
       this.active = true;
     }
-    this.tags = tags;
+    if (tags){
+      this.tags = Array.from(tags);
+    }
   }
 
   static assign(trait: Trait): Trait {
     return new Trait(trait.id, trait.traitName, trait.programObservationLevel, trait.method,
-      trait.scale, trait.abbreviations, trait.synonyms, trait.active, trait.tags);
+        trait.scale, trait.abbreviations, trait.synonyms, trait.active, trait.tags);
   }
 
   checkStringListEquals(list: string[] | undefined, otherList: string[] | undefined): boolean {
@@ -86,6 +90,7 @@ export class Trait {
 
   equals(trait?: Trait): boolean {
     if (!trait) {return false;}
+    // @ts-ignore
     return (this.id === trait.id) &&
       (this.traitName === trait.traitName) &&
       (this.checkStringListEquals(this.abbreviations, trait.abbreviations)) &&
@@ -102,7 +107,9 @@ export class Trait {
       (
         (this.method && this.method.equals(trait.method)) ||
         (!this.method && !trait.method)
-      );
+      ) &&
+        ( JSON.stringify(this.tags) === JSON.stringify(trait.tags) ) &&
+        ( JSON.stringify(this.synonyms) === JSON.stringify(trait.synonyms) );
   }
 
   addTag(tag: string) {
