@@ -87,8 +87,17 @@ export class Trait {
   }
 
   static assign(trait: Trait): Trait {
+    // if arrays exist in trait, then COPY them
+    let tags;
+    if (trait.tags){
+       tags = Array.from(trait.tags);
+    }
+    let synonyms;
+    if (trait.synonyms){
+      synonyms = Array.from(trait.synonyms);
+    }
     return new Trait(trait.id, trait.traitName, trait.observationVariableName, trait.programObservationLevel, trait.entity, trait.attribute,
-        trait.traitDescription, trait.method, trait.scale, trait.abbreviations, trait.synonyms, trait.active, trait.tags, trait.fullName, trait.isDup);
+        trait.traitDescription, trait.method, trait.scale, trait.abbreviations, synonyms, trait.active, tags, trait.fullName, trait.isDup);
   }
 
   checkStringListEquals(list: string[] | undefined, otherList: string[] | undefined): boolean {
@@ -104,6 +113,7 @@ export class Trait {
 
   equals(trait?: Trait): boolean {
     if (!trait) {return false;}
+    // @ts-ignore
     return (this.id === trait.id) &&
       (this.traitName === trait.traitName) &&
       (this.observationVariableName === trait.observationVariableName) &&
@@ -126,6 +136,8 @@ export class Trait {
         (this.method && this.method.equals(trait.method)) ||
         (!this.method && !trait.method)
       ) &&
+        (JSON.stringify(this.tags) === JSON.stringify(trait.tags)) &&
+        (JSON.stringify(this.synonyms) === JSON.stringify(trait.synonyms)) &&
       (this.isDup === trait.isDup);
   }
 
