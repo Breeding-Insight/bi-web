@@ -295,6 +295,11 @@ export default class AdminProgramsTable extends Vue {
     this.$store.commit(DEACTIVATE_ALL_NOTIFICATIONS);
   }
 
+  programEditValidations = {
+    name: {required},
+    speciesId: {required}
+  }
+
   mounted() {
     this.getPrograms();
     this.getSpecies();

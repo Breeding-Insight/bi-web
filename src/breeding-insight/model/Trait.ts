@@ -75,7 +75,9 @@ export class Trait {
       this.scale = new Scale();
     }
     this.abbreviations = abbreviations;
-    this.synonyms = synonyms;
+    if (synonyms){
+      this.synonyms = Array.from(synonyms);
+    }
     if (active !== undefined) {
       this.active = active;
     } else {
@@ -104,6 +106,7 @@ export class Trait {
 
   equals(trait?: Trait): boolean {
     if (!trait) {return false;}
+    // @ts-ignore
     return (this.id === trait.id) &&
       (this.traitName === trait.traitName) &&
       (this.observationVariableName === trait.observationVariableName) &&
@@ -126,7 +129,9 @@ export class Trait {
         (this.method && this.method.equals(trait.method)) ||
         (!this.method && !trait.method)
       ) &&
-      (this.isDup === trait.isDup);
+      (this.isDup === trait.isDup) &&
+      ( JSON.stringify(this.tags) === JSON.stringify(trait.tags) ) &&
+      ( JSON.stringify(this.synonyms) === JSON.stringify(trait.synonyms) );
   }
 
   addTag(tag: string) {
