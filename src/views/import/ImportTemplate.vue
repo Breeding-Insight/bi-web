@@ -68,10 +68,10 @@
             v-bind:abort="handleAbortEvent"
             v-bind:confirm="handleConfirmEvent"
             v-bind:confirm-import-state="confirmImportState"
-            v-bind:rows="currentImport.preview.rows"
+            v-bind:rows="currentImport.preview !== undefined ? currentImport.preview.rows : []"
       />
 
-      <slot name="importPreviewTable" v-bind:import="currentImport" />
+      <slot name="importPreviewTable" v-bind:import="previewData" />
     </template>
 
     <template v-if="state === ImportState.IMPORT_ERROR">
@@ -309,7 +309,6 @@ export default class ImportTemplate extends ProgramsBase {
       await this.getSystemImportTemplateMapping();
       await this.uploadData();
       const response = await this.updateDataUpload(this.currentImport!.importId!, false);
-      console.log(response);
       if (response.progress!.statuscode == 500) {
         this.$emit('show-error-notification', 'An unknown error has occurred when processing your import.');
         this.importService.send(ImportEvent.IMPORT_ERROR);
@@ -455,7 +454,6 @@ export default class ImportTemplate extends ProgramsBase {
             this.importService.send(ImportEvent.IMPORT_SUCCESS);
           }
         }
-        console.log('no returned here');
         return previewResponse;
       }
 

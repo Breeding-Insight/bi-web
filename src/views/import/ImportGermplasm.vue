@@ -56,9 +56,9 @@
         </ConfirmImportMessageBox>
       </template>
 
-      <template v-slot:importPreviewTable="currentImport">
+      <template v-slot:importPreviewTable="previewData">
         <report-table
-            v-bind:report="processPreviewData(currentImport.import)"
+            v-bind:report="processPreviewData(previewData.import)"
             v-bind:config="importConfig"
             detailed
             paginated
@@ -118,10 +118,9 @@ export default class ImportGermplasm extends ProgramsBase {
     return undefined;
   }
 
-  processPreviewData(currentImport: any): ReportStruct {
+  processPreviewData(previewData: any): ReportStruct {
     // Do special germplasm import formatting here
-    console.log(currentImport.preview.rows);
-    return ImportFormatter.format(currentImport.preview.rows, this.importConfig);
+    return ImportFormatter.format(previewData, this.importConfig);
   }
 
 }
