@@ -192,13 +192,8 @@
   import {Component, Prop, Vue, Watch} from 'vue-property-decorator'
   import {PlusCircleIcon} from 'vue-feather-icons'
   import {validationMixin} from 'vuelidate'
-<<<<<<< HEAD
   import {maxLength, minLength, required, alpha} from 'vuelidate/lib/validators'
-
-=======
-  import {required} from 'vuelidate/lib/validators'
   import { mapGetters, mapMutations } from 'vuex'
->>>>>>> [BI-623] add backend sorting to programs table
   import WarningModal from '@/components/modals/WarningModal.vue'
   import {Program} from '@/breeding-insight/model/Program'
   import {Species} from '@/breeding-insight/model/Species'
