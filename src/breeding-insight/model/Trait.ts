@@ -29,7 +29,6 @@ export class Trait {
   traitDescription?: string;
   method?: Method;
   scale?: Scale;
-  //abbreviations?: Array<string>;
   synonyms?: Array<string>;
   mainAbbreviation?: string;
   active?: boolean;
