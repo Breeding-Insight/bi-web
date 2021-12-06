@@ -97,6 +97,7 @@ export class UserSort {
 // program
 export enum ProgramSortField {
   Name = 'name',
+  Key = 'key',
   Abbreviation = 'abbreviation',
   Objective = 'objective',
   DocumentationUrl = 'documentationUrl',
