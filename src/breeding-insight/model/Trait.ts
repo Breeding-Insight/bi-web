@@ -83,7 +83,9 @@ export class Trait {
     } else {
       this.active = true;
     }
-    this.tags = tags;
+    if (tags) {
+      this.tags = Array.from(tags);
+    }
     this.fullName = fullName;
     this.isDup = isDup;
   }
