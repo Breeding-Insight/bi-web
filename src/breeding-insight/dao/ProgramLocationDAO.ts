@@ -77,7 +77,6 @@ export class ProgramLocationDAO {
           const biResponse = new BiResponse(response.data);
           resolve(biResponse);
         }).catch((error) => {
-          console.log(error);
           reject(error);
         })
 
