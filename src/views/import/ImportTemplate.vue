@@ -310,17 +310,23 @@ export default class ImportTemplate extends ProgramsBase {
       await this.uploadData();
       const response = await this.updateDataUpload(this.currentImport!.importId!, false);
       console.log(response);
-      if (response.progress.statuscode == 500) {
+      if (response.progress!.statuscode == 500) {
         this.$emit('show-error-notification', 'An unknown error has occurred when processing your import.');
         this.importService.send(ImportEvent.IMPORT_ERROR);
-      } else if (response.progress.statuscode != 200) {
-        this.$emit('show-error-notification', `Error: ${response.progress.message}`);
+      } else if (response.progress!.statuscode != 200) {
+        this.$emit('show-error-notification', `Error: ${response.progress!.message}`);
         this.importService.send(ImportEvent.IMPORT_ERROR);
       }
       // this.importService.send(ImportEvent.IMPORT_SUCCESS) is in getDataUpload()
     } catch(e) {
-      this.$log.error(e);
-      this.$emit('show-error-notification', 'An unknown error has occurred when uploading your import.');
+      if (e.response && e.response.status == 422 && e.response.statusText) {
+        this.$log.error(e);
+        this.$emit('show-error-notification', e.response.statusText);
+      } else {
+        this.$log.error(e);
+        this.$emit('show-error-notification', 'An unknown error has occurred when uploading your import.');
+      }
+
       this.importService.send(ImportEvent.IMPORT_ERROR);
     }
   }
@@ -408,8 +414,7 @@ export default class ImportTemplate extends ProgramsBase {
       this.currentImport = previewResponse;
       // Get the import id
     } catch (e) {
-      this.$log.error(e);
-      throw 'Unable to upload file';
+      throw e;
     }
   }
 
