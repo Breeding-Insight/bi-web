@@ -106,6 +106,7 @@ export const getters: GetterTree<SortState, RootState> = {
     programSortFieldAsBuefy(state: SortState): string {
         const fieldMap: any = {
             [ProgramSortField.Name]: 'data.name',
+            [ProgramSortField.Key]: 'data.key',
             [ProgramSortField.SpeciesName]: 'data.species',
             [ProgramSortField.NumUsers]: 'data.numUsers',
             [ProgramSortField.BrapiUrl]: 'data.brapiUrl'

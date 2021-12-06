@@ -325,6 +325,7 @@ export default class AdminProgramsTable extends Vue {
   setSort(field: string, order: string) {
     const fieldMap: any = {
       'data.name': ProgramSortField.Name,
+      'data.key' : ProgramSortField.Key,
       'data.species': ProgramSortField.SpeciesName,
       'data.numUsers': ProgramSortField.NumUsers,
       'data.brapiUrl': ProgramSortField.BrapiUrl
