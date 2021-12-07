@@ -308,7 +308,7 @@ export default class ImportTemplate extends ProgramsBase {
     try {
       await this.getSystemImportTemplateMapping();
       await this.uploadData();
-      const response = await this.updateDataUpload(this.currentImport!.importId!, false);
+      const response: ImportResponse = await this.updateDataUpload(this.currentImport!.importId!, false);
       if (response.progress!.statuscode == 500) {
         this.$emit('show-error-notification', 'An unknown error has occurred when processing your import.');
         this.importService.send(ImportEvent.IMPORT_ERROR);
