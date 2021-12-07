@@ -313,7 +313,7 @@ export default class ImportTemplate extends ProgramsBase {
         this.$emit('show-error-notification', 'An unknown error has occurred when processing your import.');
         this.importService.send(ImportEvent.IMPORT_ERROR);
       } else if (response.progress!.statuscode != 200) {
-        this.$emit('show-error-notification', `Error: ${response.progress!.message}`);
+        this.$emit('show-error-notification', `Error: ${response.progress!.message!}`);
         this.importService.send(ImportEvent.IMPORT_ERROR);
       }
       // this.importService.send(ImportEvent.IMPORT_SUCCESS) is in getDataUpload()
@@ -417,7 +417,7 @@ export default class ImportTemplate extends ProgramsBase {
     }
   }
 
-  async updateDataUpload(uploadId: string, commit: boolean): ImportResponse {
+  async updateDataUpload(uploadId: string, commit: boolean) {
     let previewResponse: ImportResponse = await ImportService.updateDataUpload(this.activeProgram!.id!, this.systemImportTemplateId, uploadId!, commit);
     this.currentImport = previewResponse;
 
@@ -426,14 +426,14 @@ export default class ImportTemplate extends ProgramsBase {
     return this.getDataUpload(includeMapping);
   }
 
-  async getDataUpload(includeMapping: boolean): ImportResponse {
+  async getDataUpload(includeMapping: boolean): Promise<ImportResponse> {
     try {
       const previewResponse: ImportResponse = await ImportService.getDataUpload(this.activeProgram!.id!, this.systemImportTemplateId, this.currentImport!.importId!, includeMapping);
       this.currentImport = previewResponse;
 
       if (!previewResponse.progress) {
         this.$log.error('Progress object was not returned with progress response.')
-
+        throw 'Progress object not returned';
       } else if (previewResponse.progress.statuscode === 202) {
         // Wait a second, and call GET call again
         await new Promise(resolve => setTimeout(resolve, 1000));
