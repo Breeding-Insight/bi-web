@@ -309,11 +309,11 @@ export default class ImportTemplate extends ProgramsBase {
       await this.getSystemImportTemplateMapping();
       await this.uploadData();
       const response: ImportResponse = await this.updateDataUpload(this.currentImport!.importId!, false);
-      if (response.progress!.statuscode == 500) {
+      if (response!.progress!.statuscode == 500) {
         this.$emit('show-error-notification', 'An unknown error has occurred when processing your import.');
         this.importService.send(ImportEvent.IMPORT_ERROR);
-      } else if (response.progress!.statuscode != 200) {
-        this.$emit('show-error-notification', `Error: ${response.progress!.message!}`);
+      } else if (response!.progress!.statuscode != 200) {
+        this.$emit('show-error-notification', `Error: ${response!.progress!.message!}`);
         this.importService.send(ImportEvent.IMPORT_ERROR);
       }
       // this.importService.send(ImportEvent.IMPORT_SUCCESS) is in getDataUpload()
