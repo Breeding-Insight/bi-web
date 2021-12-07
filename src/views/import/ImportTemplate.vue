@@ -309,10 +309,10 @@ export default class ImportTemplate extends ProgramsBase {
       await this.getSystemImportTemplateMapping();
       await this.uploadData();
       const response: ImportResponse = await this.updateDataUpload(this.currentImport!.importId!, false);
-      if (response!.progress!.statuscode == 500) {
+      if (response.progress!.statuscode == 500) {
         this.$emit('show-error-notification', 'An unknown error has occurred when processing your import.');
         this.importService.send(ImportEvent.IMPORT_ERROR);
-      } else if (response!.progress!.statuscode != 200) {
+      } else if (response.progress!.statuscode != 200) {
         this.$emit('show-error-notification', `Error: ${response!.progress!.message!}`);
         this.importService.send(ImportEvent.IMPORT_ERROR);
       }
@@ -368,11 +368,11 @@ export default class ImportTemplate extends ProgramsBase {
   async confirm() {
     const name = this.activeProgram && this.activeProgram.name ? this.activeProgram.name : 'the program';
     try {
-      const response = await this.updateDataUpload(this.currentImport!.importId!, true);
-      if (response.progress.statuscode == 500) {
+      const response: ImportResponse = await this.updateDataUpload(this.currentImport!.importId!, true);
+      if (response.progress!.statuscode == 500) {
         this.$emit('show-error-notification', 'An unknown error has occurred when processing your import.');
-      } else if (response.progress.statuscode != 200) {
-        this.$emit('show-error-notification', `Error: ${response.progress.message}`);
+      } else if (response.progress!.statuscode != 200) {
+        this.$emit('show-error-notification', `Error: ${response.progress!.message}`);
       } else {
         this.$emit('show-success-notification', `Imported ${this.importTypeName.toLowerCase()} records have been added to ${name}.`);
         // TODO: navigate to appropriate record list page when we have it
