@@ -30,10 +30,10 @@ export class Trait {
   method?: Method;
   scale?: Scale;
   abbreviations?: Array<string>;
-  synonyms?: Array<string>;
+  synonyms: string[] = [];
   mainAbbreviation?: string;
   active?: boolean;
-  tags?: string[];
+  tags?: string[] = [];
   fullName?: string;
   isDup?: boolean;
 
@@ -109,6 +109,7 @@ export class Trait {
   equals(trait?: Trait): boolean {
     if (!trait) {return false;}
     // @ts-ignore
+
     return (this.id === trait.id) &&
       (this.traitName === trait.traitName) &&
       (this.observationVariableName === trait.observationVariableName) &&
@@ -132,8 +133,8 @@ export class Trait {
         (!this.method && !trait.method)
       ) &&
       (this.isDup === trait.isDup) &&
-      ( JSON.stringify(this.tags) === JSON.stringify(trait.tags) ) &&
-      ( JSON.stringify(this.synonyms) === JSON.stringify(trait.synonyms) );
+      ( this.checkStringListEquals(this.tags, trait.tags) ) &&
+      ( this.checkStringListEquals(this.synonyms, trait.synonyms) );
   }
 
   addTag(tag: string) {
