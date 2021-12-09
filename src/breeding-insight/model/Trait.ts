@@ -26,10 +26,10 @@ export class Trait {
   method?: Method;
   scale?: Scale;
   abbreviations?: Array<string>;
-  synonyms?: Array<string>;
+  synonyms: string[] = [];
   mainAbbreviation?: string;
   active?: boolean;
-  tags?: string[];
+  tags?: string[] = [];
 
   constructor(id?: string,
               traitName?: string,
@@ -91,6 +91,7 @@ export class Trait {
   equals(trait?: Trait): boolean {
     if (!trait) {return false;}
     // @ts-ignore
+
     return (this.id === trait.id) &&
       (this.traitName === trait.traitName) &&
       (this.checkStringListEquals(this.abbreviations, trait.abbreviations)) &&
@@ -108,8 +109,7 @@ export class Trait {
         (this.method && this.method.equals(trait.method)) ||
         (!this.method && !trait.method)
       ) &&
-        ( JSON.stringify(this.tags) === JSON.stringify(trait.tags) ) &&
-        ( JSON.stringify(this.synonyms) === JSON.stringify(trait.synonyms) );
+        ( this.checkStringListEquals(this.tags, trait.tags) );
   }
 
   addTag(tag: string) {
