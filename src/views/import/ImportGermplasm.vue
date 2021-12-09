@@ -38,18 +38,31 @@
         </ImportInfoTemplateMessageBox>
       </template>
 
-      <template v-slot:confirmImportMessageBox="{ statistics, abort, confirm }">
+      <template v-slot:confirmImportMessageBox="{ statistics, abort, confirm, rows }">
         <ConfirmImportMessageBox v-bind:num-records="getNumNewGermplasmRecords(statistics)"
                                  v-bind:import-type-name="'Germplasm'"
                                  v-bind:confirm-import-state="confirmImportState"
                                  v-on:abort="abort"
                                  v-on:confirm="confirm"
-                                 class="mb-4"/>
+                                 class="mb-4">
+          <div>
+            <p class="is-size-5 mb-2"><strong>Import Summary</strong></p>
+            <p>Total number of entries: {{ rows.length }}</p>
+            <p>New Germplasm count: {{ statistics.Germplasm.newObjectCount }}</p>
+            <p>New Pedigree Connections: {{ statistics["Pedigree Connections"].newObjectCount }}</p>
+            <p>Potential duplicate Germplasm records are highlighted in yellow and show a <alert-triangle-icon size="1.2x" class="icon-align"/> icon.
+              These records will be imported as new germplasm.</p>
+          </div>
+        </ConfirmImportMessageBox>
       </template>
 
-      <template v-slot:importPreviewTable="previewData">
-        <!-- TODO: Replace tree-view when table is ready -->
-        <tree-view v-bind:data="previewData.previewData" v-bind:options="{maxDepth: 0}"></tree-view>
+      <template v-slot:importPreviewTable="currentImport">
+        <report-table
+            v-bind:report="processPreviewData(currentImport.import)"
+            v-bind:config="importConfig"
+            detailed
+            paginated
+        />
       </template>
 
     </ImportTemplate>
@@ -63,15 +76,36 @@ import ImportInfoTemplateMessageBox from "@/components/file-import/ImportInfoTem
 import ConfirmImportMessageBox from "@/components/trait/ConfirmImportMessageBox.vue";
 import ImportTemplate from "@/views/import/ImportTemplate.vue";
 import {DataFormEventBusHandler} from "@/components/forms/DataFormEventBusHandler";
+import ReportTable from "@/components/report/ReportTable.vue";
+import {ImportFormatter} from "@/breeding-insight/model/report/ImportFormatter";
+import {ReportStruct} from "@/breeding-insight/model/report/ReportStruct";
+import defaultRenames from '@/config/report/ReportRenames';
+import { AlertTriangleIcon } from 'vue-feather-icons';
 
 @Component({
-  components: {ImportInfoTemplateMessageBox, ConfirmImportMessageBox, ImportTemplate
-  }
+  components: {
+    ReportTable, ImportInfoTemplateMessageBox, ConfirmImportMessageBox, ImportTemplate, AlertTriangleIcon
+  },
+  data: () => ({ImportFormatter})
 })
 export default class ImportGermplasm extends ProgramsBase {
 
   // TODO: maybe move to config instead of hardcode?
   private germplasmImportTemplateName = 'GermplasmTemplateMap';
+  private importConfig: any = {
+    names: Object.assign(defaultRenames, {
+      'defaultDisplayName': 'Name',
+      'breedingMethod': 'Breeding Method',
+      'seedSource': 'Source',
+      'pedigree': 'Pedigree',
+      'entryNumber': 'Entry No.'
+    }),
+    display: ['germplasm.additionalInfo.entryNumber','germplasm.defaultDisplayName',
+      'germplasm.breedingMethod', 'germplasm.seedSource', 'germplasm.pedigree',],
+    detailDisplay: '*',
+    defaultSort: 'germplasm.germplasmName',
+    defaultSortOrder: 'asc'
+  }
 
   private confirmImportState: DataFormEventBusHandler = new DataFormEventBusHandler();
 
@@ -82,6 +116,28 @@ export default class ImportGermplasm extends ProgramsBase {
       }
     }
     return undefined;
+  }
+
+  processPreviewData(currentImport: any): ReportStruct {
+    // Do special germplasm import formatting here
+    //TODO: Remove test data
+    for (const i in currentImport.preview.rows) {
+      currentImport.preview.rows[i] = {
+        germplasm: {
+          brAPIObject: {
+            defaultDisplayName: currentImport.preview.rows[+i].germplasm.brAPIObject.germplasmName,
+            breedingMethod: +i % 2 == 0 ? 'Biparental' : 'Open Pollination',
+            seedSource: +i % 2 == 0 ? 'Greenhouse' : 'Field',
+            pedigree: +i > 1 ? `${currentImport.preview.rows[+i - 2].germplasm.brAPIObject.defaultDisplayName}/${currentImport.preview.rows[+i - 1].germplasm.brAPIObject.defaultDisplayName}` : '',
+            additionalInfo: {
+              entryNumber: +i + 1
+            }
+          }
+        }
+      };
+    }
+
+    return ImportFormatter.format(currentImport.preview.rows, this.importConfig);
   }
 
 }

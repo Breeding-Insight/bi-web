@@ -83,3 +83,4 @@ declare module 'vue-breakpoint-component';
 declare module 'uuid';
 declare module 'vue-json-tree-view';
 declare module 'title-case';
+declare module 'flat';
