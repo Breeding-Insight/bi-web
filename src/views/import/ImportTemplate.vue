@@ -68,10 +68,10 @@
             v-bind:abort="handleAbortEvent"
             v-bind:confirm="handleConfirmEvent"
             v-bind:confirm-import-state="confirmImportState"
-            v-bind:rows="currentImport.preview.rows"
+            v-bind:rows="currentImport.preview !== undefined ? currentImport.preview.rows : []"
       />
 
-      <slot name="importPreviewTable" v-bind:import="currentImport" />
+      <slot name="importPreviewTable" v-bind:import="previewData" />
     </template>
 
     <template v-if="state === ImportState.IMPORT_ERROR">
@@ -308,15 +308,24 @@ export default class ImportTemplate extends ProgramsBase {
     try {
       await this.getSystemImportTemplateMapping();
       await this.uploadData();
-      await this.updateDataUpload(this.currentImport!.importId!, false);
+      const response: ImportResponse = await this.updateDataUpload(this.currentImport!.importId!, false);
+      if (response.progress!.statuscode == 500) {
+        this.$emit('show-error-notification', 'An unknown error has occurred when processing your import.');
+        this.importService.send(ImportEvent.IMPORT_ERROR);
+      } else if (response.progress!.statuscode != 200) {
+        this.$emit('show-error-notification', `Error: ${response!.progress!.message!}`);
+        this.importService.send(ImportEvent.IMPORT_ERROR);
+      }
       // this.importService.send(ImportEvent.IMPORT_SUCCESS) is in getDataUpload()
     } catch(e) {
-      if (typeof e === "string") {
-        this.$emit('show-error-notification', e);
+      if (e.response && e.response.status == 422 && e.response.statusText) {
+        this.$log.error(e);
+        this.$emit('show-error-notification', e.response.statusText);
       } else {
-        // TODO: proper error handling when added to importer
-        this.import_errors = e;
+        this.$log.error(e);
+        this.$emit('show-error-notification', 'An unknown error has occurred when uploading your import.');
       }
+
       this.importService.send(ImportEvent.IMPORT_ERROR);
     }
   }
@@ -359,15 +368,18 @@ export default class ImportTemplate extends ProgramsBase {
   async confirm() {
     const name = this.activeProgram && this.activeProgram.name ? this.activeProgram.name : 'the program';
     try {
-      await this.updateDataUpload(this.currentImport!.importId!, true);
-      this.$emit('show-success-notification', `Imported ${this.importTypeName.toLowerCase()} records have been added to ${name}.`);
-      // TODO: navigate to appropriate record list page when we have it
-      this.importService.send(ImportEvent.DONE);
-
+      const response: ImportResponse = await this.updateDataUpload(this.currentImport!.importId!, true);
+      if (response.progress!.statuscode == 500) {
+        this.$emit('show-error-notification', 'An unknown error has occurred when processing your import.');
+      } else if (response.progress!.statuscode != 200) {
+        this.$emit('show-error-notification', `Error: ${response.progress!.message}`);
+      } else {
+        this.$emit('show-success-notification', `Imported ${this.importTypeName.toLowerCase()} records have been added to ${name}.`);
+        // TODO: navigate to appropriate record list page when we have it
+        this.importService.send(ImportEvent.DONE);
+      }
     } catch (e) {
-      const note = e.message ? e.message : `Error: Imported ${this.importTypeName.toLowerCase()} records were not added to ${name}.`;
-      this.$emit('show-error-notification', `${note}`);
-      this.$log.error(e);
+      this.$emit('show-error-notification', 'An unknown error has occurred when uploading your import.');
     } finally {
       this.confirmImportState.bus.$emit(DataFormEventBusHandler.SAVE_COMPLETE_EVENT);
     }
@@ -401,8 +413,7 @@ export default class ImportTemplate extends ProgramsBase {
       this.currentImport = previewResponse;
       // Get the import id
     } catch (e) {
-      this.$log.error(e);
-      throw 'Unable to upload file';
+      throw e;
     }
   }
 
@@ -412,27 +423,25 @@ export default class ImportTemplate extends ProgramsBase {
 
     // Start check for our data upload
     const includeMapping = !commit;
-    this.getDataUpload(includeMapping);
+    return this.getDataUpload(includeMapping);
   }
 
-  async getDataUpload(includeMapping: boolean) {
+  async getDataUpload(includeMapping: boolean): Promise<ImportResponse> {
     try {
       const previewResponse: ImportResponse = await ImportService.getDataUpload(this.activeProgram!.id!, this.systemImportTemplateId, this.currentImport!.importId!, includeMapping);
       this.currentImport = previewResponse;
 
       if (!previewResponse.progress) {
         this.$log.error('Progress object was not returned with progress response.')
-
+        throw 'Progress object not returned';
       } else if (previewResponse.progress.statuscode === 202) {
         // Wait a second, and call GET call again
-        setTimeout(() => this.getDataUpload(includeMapping), 1000);
-
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        return this.getDataUpload(includeMapping);
       } else {
         // Our call is finished, check the response
         if (previewResponse.progress && previewResponse.progress.statuscode != 200){
-          this.$log.error(previewResponse.progress.message);
-          // TODO: Shouldn't show this to the user if its a 500
-          throw previewResponse.progress.message;
+          return previewResponse;
         }
 
         // Calculate some stuff for the preview data display
@@ -445,6 +454,7 @@ export default class ImportTemplate extends ProgramsBase {
             this.importService.send(ImportEvent.IMPORT_SUCCESS);
           }
         }
+        return previewResponse;
       }
 
     } catch (e) {
