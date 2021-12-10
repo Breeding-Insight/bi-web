@@ -30,10 +30,10 @@ export class Trait {
   method?: Method;
   scale?: Scale;
   abbreviations?: Array<string>;
-  synonyms?: Array<string>;
+  synonyms: string[] = [];
   mainAbbreviation?: string;
   active?: boolean;
-  tags?: string[];
+  tags?: string[] = [];
   fullName?: string;
   isDup?: boolean;
 
@@ -75,13 +75,17 @@ export class Trait {
       this.scale = new Scale();
     }
     this.abbreviations = abbreviations;
-    this.synonyms = synonyms;
+    if (synonyms){
+      this.synonyms = Array.from(synonyms);
+    }
     if (active !== undefined) {
       this.active = active;
     } else {
       this.active = true;
     }
-    this.tags = tags;
+    if (tags) {
+      this.tags = Array.from(tags);
+    }
     this.fullName = fullName;
     this.isDup = isDup;
   }
@@ -104,6 +108,8 @@ export class Trait {
 
   equals(trait?: Trait): boolean {
     if (!trait) {return false;}
+    // @ts-ignore
+
     return (this.id === trait.id) &&
       (this.traitName === trait.traitName) &&
       (this.observationVariableName === trait.observationVariableName) &&
@@ -126,7 +132,9 @@ export class Trait {
         (this.method && this.method.equals(trait.method)) ||
         (!this.method && !trait.method)
       ) &&
-      (this.isDup === trait.isDup);
+      (this.isDup === trait.isDup) &&
+      ( this.checkStringListEquals(this.tags, trait.tags) ) &&
+      ( this.checkStringListEquals(this.synonyms, trait.synonyms) );
   }
 
   addTag(tag: string) {

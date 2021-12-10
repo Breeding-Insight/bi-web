@@ -130,7 +130,7 @@
       <span class="has-text-weight-bold">Method = Description + Class {{ methodName }}</span>
     </div>
     <div class="column is-2">
-      <span class="is-pulled-right required new-term pb-2 pr-3">Description</span>
+      <span class="is-pulled-right new-term pb-2 pr-3">Description</span>
     </div>
     <div class="column new-term is-10">
       <AutoCompleteField
@@ -232,24 +232,6 @@
       </div>
       <div class="column is-10">
         <DateTraitForm class="p-0"/>
-      </div>
-    </template>
-
-<!--    duration options-->
-    <template v-if="trait.scale && Scale.dataTypeEquals(trait.scale.dataType, DataType.Duration)">
-      <div class="column is-full">
-        <DurationTraitForm
-            class="p-0"
-            v-bind:unit="trait.scale.scaleName"
-            v-bind:valid-min="trait.scale.validValueMin"
-            v-bind:valid-max="trait.scale.validValueMax"
-            v-on:unit-change="trait.scale.scaleName = $event"
-            v-on:min-change="trait.scale.validValueMin = $event"
-            v-on:max-change="trait.scale.validValueMax = $event"
-            v-bind:client-validations="clientValidations"
-            v-bind:validation-handler="validationHandler"
-            v-bind:validation-index="0"
-        />
       </div>
     </template>
 
@@ -472,7 +454,7 @@ export default class BaseTraitForm extends Vue {
       this.trait.scale.dataType = value;
 
       // Allow for units in the numerical and duration traits
-      if (Scale.dataTypeEquals(value, DataType.Numerical) || Scale.dataTypeEquals(value, DataType.Duration)) {
+      if (Scale.dataTypeEquals(value, DataType.Numerical)) {
         this.trait!.scale!.scaleName = undefined;
 
       } else {
