@@ -15,34 +15,84 @@
  * limitations under the License.
  */
 
-// Uses user location management to test
+// Uses program user management to test
 
-import {ProgramLocation} from "@/breeding-insight/model/ProgramLocation";
-import {mocked} from "ts-jest";
-import DaoUtils from "../../test-utils/DaoUtils";
-import {ProgramLocationDAO} from "@/breeding-insight/dao/ProgramLocationDAO";
-import ProgramLocationsTable from "@/components/program/ProgramLocationsTable.vue";
-import localVue, {defaultStore} from "../../index";
-import {mount, Wrapper} from "@vue/test-utils";
-import ExpandableTableRow from "@/components/tables/ExpandableTableRow.vue";
-import EditDataRowForm from "@/components/forms/EditDataRowForm.vue";
-import PaginationControls from "@/components/tables/PaginationControls.vue";
-import BasicInputField from "@/components/forms/BasicInputField.vue";
-import BaseFieldWrapper from "@/components/forms/BaseFieldWrapper.vue";
-import NewDataForm from "@/components/forms/NewDataForm.vue";
+import { mocked } from 'ts-jest';
+import DaoUtils from '../../test-utils/DaoUtils';
+import ProgramUsersTable from '@/components/program/ProgramUsersTable.vue';
+import localVue, { defaultStore } from '../../index';
+import { mount, Wrapper } from '@vue/test-utils';
+import EditDataRowForm from '@/components/forms/EditDataRowForm.vue';
+import PaginationControls from '@/components/tables/PaginationControls.vue';
+import BaseFieldWrapper from '@/components/forms/BaseFieldWrapper.vue';
+import NewDataForm from '@/components/forms/NewDataForm.vue';
 import Utils from '../../test-utils/TestingUtils';
+import { ProgramUserDAO } from '@/breeding-insight/dao/ProgramUserDAO';
+import { RoleDAO } from '@/breeding-insight/dao/RoleDAO';
+import { UserDAO } from '@/breeding-insight/dao/UserDAO';
+import ExpandableTable from '@/components/tables/expandableTable/ExpandableTable.vue';
+import BasicSelectField from '@/components/forms/BasicSelectField.vue';
 
-jest.mock('@/breeding-insight/dao/ProgramLocationDAO');
-let locations: ProgramLocation[] = [];
+jest.mock('@/breeding-insight/dao/ProgramUserDAO');
+jest.mock('@/breeding-insight/dao/RoleDAO');
+jest.mock('@/breeding-insight/dao/UserDAO');
+let users: any[] = [];
+let roles: any[] = [];
+let systemUsers: any[] = []
 
 function setup() {
 
   const range = [...Array(200).keys()];
-  locations = range.map((i:number) => new ProgramLocation(i.toString(), '1', `Test${i}`));
-  const response = DaoUtils.formatBiResponse(locations);
+  range.forEach(i => {
+    const user = {
+      'user': { 'id': `${i}`, 'name': `Test user ${i}`, 'email': `testuser_${i}@test.com`, 'active': 'true' },
+      'roles': [{ 'id': '1', 'domain': 'test role' }],
+      'program': { 'id': '1', 'name': 'Test Program' }, 'active': 'true'
+    };
+    users.push(user);
+  });
+  const response = DaoUtils.formatBiResponse(users);
+  const singleResponse = DaoUtils.formatBiResponseSingle({
+    'user': { 'id': '1-1', 'name': 'Test user', 'email': 'testuser_new@test.com', 'active': 'true' },
+    'roles': [{ 'id': '1', 'domain': 'test role' }],
+    'program': { 'id': '1', 'name': 'Test Program' }, 'active': 'true'
+  });
 
-  const programLocationDAO = mocked(ProgramLocationDAO, true);
-  programLocationDAO.getAll.mockResolvedValue(response);
+  const programUserDAO = mocked(ProgramUserDAO, false);
+  programUserDAO.getAll.mockResolvedValue(response);
+  programUserDAO.create.mockResolvedValue(singleResponse);
+
+  roles.push({'id':'1', 'domain':'test role'});
+  const rolesResponse = DaoUtils.formatBiResponse(roles);
+
+  const roleDAO = mocked(RoleDAO, false);
+  roleDAO.getAll.mockResolvedValue(rolesResponse);
+
+  const systemUser = {'id':'1', 'name':'Test user', 'email':'testuser@test.com', 'active':'true',
+    'systemRoles': [{'id':'1', 'domain':'admin'}],
+    'programRoles': [{'active':'true', 'program':{'id':'1', 'name':'Test Program'}, 'roles':{'id':'1','domain':'member'}}]};
+  const systemUser1 = {
+    'id':'2', 'name':'Test user 2', 'email':'testuser1@test.com', 'active':'true', 'orcid': '123',
+    'systemRoles': [{'id':'1', 'domain':'admin'}],
+    'programRoles': [{'active':'true', 'program':{'id':'1', 'name':'Test Program'}, 'roles':{'id':'1','domain':'member'}}]
+  };
+  const systemUser2 = {
+    'id':'2', 'name':'Test user 2', 'email':'testuse2@test.com', 'active':'true', 'orcid': '456',
+    'systemRoles': [{'id':'1', 'domain':'admin'}],
+    'programRoles': [{'active':'true', 'program':{'id':'1', 'name':'Test Program'}, 'roles':{'id':'1','domain':'member'}}]
+  }
+  systemUsers.push(systemUser, systemUser1, systemUser2);
+  users.forEach(user => {
+    systemUsers.push({
+      'id':user.id, 'name':user.name, 'email':user.email, 'active':'true', 'orcid': `456-${user.id}`,
+      'systemRoles': [{'id':'1', 'domain':'admin'}],
+      'programRoles': [{'active':'true', 'program':{'id':'1', 'name':'Test Program'}, 'roles':{'id':'1','domain':'member'}}]
+    })
+  })
+  const systemUsersResponse = DaoUtils.formatBiResponse(systemUsers);
+
+  const userDAO = mocked(UserDAO, false);
+  userDAO.getAll.mockResolvedValue(systemUsersResponse);
 
 }
 
@@ -50,11 +100,12 @@ setup();
 
 describe('Edit data form works properly', () => {
   const store = defaultStore;
-  const wrapper = mount(ProgramLocationsTable, {localVue, store});
+  const wrapper = mount(ProgramUsersTable, {localVue, store});
 
   it('Displays edit form when edit button is clicked', async() => {
 
-    const row = wrapper.findComponent(ExpandableTableRow);
+    const table = wrapper.findComponent(ExpandableTable);
+    const row = table.find('tbody tr');
     expect(row.exists()).toBeTruthy();
     const editBtn = row.find('a[data-testid="edit"]');
     expect(editBtn.exists()).toBeTruthy();
@@ -64,24 +115,6 @@ describe('Edit data form works properly', () => {
 
     editForm = wrapper.findComponent(EditDataRowForm);
     expect(editForm.exists()).toBeTruthy();
-  });
-
-  it('Displays input error when form validation occurs', async () => {
-
-    let editForm = wrapper.findComponent(EditDataRowForm);
-    const nameInput = editForm.findComponent(BasicInputField);
-    const input = nameInput.find('input');
-    await input.setValue('');
-
-    let fieldWrapper = editForm.findComponent(BaseFieldWrapper);
-    let fieldError = fieldWrapper.element.classList.contains('field--error');
-    expect(fieldError).toBeFalsy();
-
-    const submitBtn = editForm.find('button[data-testid="save"]');
-    await submitBtn.trigger('click');
-    await Utils.pause(500);
-    fieldError = fieldWrapper.element.classList.contains('field--error');
-    expect(fieldError).toBeTruthy();
   });
 
   it('Closes edit form when cancel button is clicked', async() => {
@@ -100,10 +133,10 @@ describe('Edit data form works properly', () => {
 
 describe('New data form works properly', () => {
   const store = defaultStore;
-  const wrapper = mount(ProgramLocationsTable, {localVue, store});
+  const wrapper = mount(ProgramUsersTable, {localVue, store});
 
   it('Input error is displayed appropriately when validation error occurs.', async () => {
-    const newBtn = wrapper.find('button[data-testid="newDataForm"]');
+    const newBtn = wrapper.find('button[data-testid="newUserBtn"]');
     expect(newBtn.exists()).toBeTruthy();
     await newBtn.trigger('click');
 
@@ -125,14 +158,21 @@ describe('New data form works properly', () => {
   it('Emits submit event with edited object on editing save', async () => {
     const newDataForm = wrapper.findComponent(NewDataForm);
 
-    const nameInput = newDataForm.findComponent(BasicInputField);
-    const input = nameInput.find('input');
-    await input.setValue('test');
+    const nameInput = newDataForm.find('#Name');
+    await nameInput.setValue('test');
+    const emailInput = newDataForm.find('#Email');
+    await emailInput.setValue('test_new_user@test.com');
+    const roleSelect = newDataForm.findComponent(BasicSelectField);
+    await roleSelect.find("select").setValue("1");
+    await roleSelect.trigger('change');
+
+    // @ts-ignore
+    expect(wrapper.find('#Role').element.value).toBe('1')
 
     const saveBtn = newDataForm.find('button[data-testid="save"]');
     expect(saveBtn.exists()).toBeTruthy();
     await saveBtn.trigger('click');
-    await Utils.pause(500);
+    await Utils.pause(1000);
     expect(newDataForm.emitted('submit')).toHaveLength(1);
   });
 
@@ -149,14 +189,15 @@ describe('New data form works properly', () => {
 describe('Pagination works with expandable table', () => {
 
   const store = defaultStore;
-  const wrapper = mount(ProgramLocationsTable, {localVue, store});
+  const wrapper = mount(ProgramUsersTable, {localVue, store});
   const pagination = wrapper.findComponent(PaginationControls);
 
   it('Displays only specified number of rows', () => {
     expect(pagination.exists()).toBeTruthy();
     expect(pagination.isVisible()).toBeTruthy();
 
-    const rows = wrapper.findAllComponents(ExpandableTableRow);
+    const table = wrapper.findComponent(ExpandableTable);
+    const rows = table.findAll('tbody tr');
     expect(rows.length).toEqual(pagination.props().pagination.pageSize);
   });
 
@@ -168,7 +209,8 @@ describe('Pagination works with expandable table', () => {
     await numSelect.find('option[value="100"]').setSelected();
     await wrapper.vm.$nextTick();
 
-    const rows = wrapper.findAllComponents(ExpandableTableRow);
+    const table = wrapper.findComponent(ExpandableTable);
+    const rows = table.findAll('tbody tr');
     expect(rows.length).toEqual(100);
   });
 
@@ -179,7 +221,8 @@ describe('Pagination works with expandable table', () => {
     await numSelect.find('option[value="50"]').setSelected();
     await wrapper.vm.$nextTick();
 
-    const rows = wrapper.findAllComponents(ExpandableTableRow);
+    const table = wrapper.findComponent(ExpandableTable);
+    const rows = table.findAll('tbody tr');
     expect(rows.length).toEqual(50);
 
     const editForm = wrapper.findComponent(EditDataRowForm);
@@ -191,11 +234,12 @@ describe('Pagination works with expandable table', () => {
     let editForm = wrapper.findComponent(EditDataRowForm);
     expect(editForm.exists()).toBeFalsy();
 
-    const showAllBtn = wrapper.find('a[data-testid="showAll"]');
+    const showAllBtn = wrapper.find('button[data-testid="showAll"]');
     await showAllBtn.trigger('click');
     await wrapper.vm.$nextTick();
 
-    const rows = wrapper.findAllComponents(ExpandableTableRow);
+    const table = wrapper.findComponent(ExpandableTable);
+    const rows = table.findAll('tbody tr');
     expect(rows.length).toEqual(200);
 
     // Unselect
@@ -206,11 +250,12 @@ describe('Pagination works with expandable table', () => {
   it('Show all selection works when expandable open', async () => {
     await openEditForm(wrapper);
 
-    const showAllBtn = wrapper.find('a[data-testid="showAll"]');
+    const showAllBtn = wrapper.find('button[data-testid="showAll"]');
     await showAllBtn.trigger('click');
     await wrapper.vm.$nextTick();
 
-    const rows = wrapper.findAllComponents(ExpandableTableRow);
+    const table = wrapper.findComponent(ExpandableTable);
+    const rows = table.findAll('tbody tr');
     expect(rows.length).toEqual(200);
 
     const editForm = wrapper.findComponent(EditDataRowForm);
@@ -226,26 +271,28 @@ describe('Pagination works with expandable table', () => {
     await numSelect.find('option[value="50"]').setSelected();
     await wrapper.vm.$nextTick();
 
-    const nextPageBtn = wrapper.find('a[aria-label="Next page"');
+    const nextPageBtn = wrapper.find('button[aria-label="Next page"');
     await nextPageBtn.trigger('click');
     await wrapper.vm.$nextTick();
 
-    const row = wrapper.findComponent(ExpandableTableRow);
-    const firstRowName = row.find('td[name="name"]');
-    expect(firstRowName.text()).toEqual('Test50');
+    const table = wrapper.findComponent(ExpandableTable);
+    const row = table.find('tbody tr');
+    const firstRowName = row.find('td[data-label="Name"]');
+    expect(firstRowName.text()).toEqual('Test user 50');
 
   });
 
   it('Next page button works when expandable open', async () => {
     await openEditForm(wrapper);
 
-    const nextPageBtn = wrapper.find('a[aria-label="Next page"');
+    const nextPageBtn = wrapper.find('button[aria-label="Next page"');
     await nextPageBtn.trigger('click');
     await wrapper.vm.$nextTick();
 
-    const row = wrapper.findComponent(ExpandableTableRow);
-    const firstRowName = row.find('td[name="name"]');
-    expect(firstRowName.text()).toEqual('Test100');
+    const table = wrapper.findComponent(ExpandableTable);
+    const row = table.find('tbody tr');
+    const firstRowName = row.find('td[data-label="Name"]');
+    expect(firstRowName.text()).toEqual('Test user 100');
 
     const editForm = wrapper.findComponent(EditDataRowForm);
     expect(editForm.exists()).toBeFalsy();
@@ -254,13 +301,14 @@ describe('Pagination works with expandable table', () => {
   it('Previous page button works when expandable open', async () => {
     await openEditForm(wrapper);
 
-    const nextPageBtn = wrapper.find('a[aria-label="Previous page"');
+    const nextPageBtn = wrapper.find('button[aria-label="Previous page"');
     await nextPageBtn.trigger('click');
     await wrapper.vm.$nextTick();
 
-    const row = wrapper.findComponent(ExpandableTableRow);
-    const firstRowName = row.find('td[name="name"]');
-    expect(firstRowName.text()).toEqual('Test50');
+    const table = wrapper.findComponent(ExpandableTable);
+    const row = table.find('tbody tr');
+    const firstRowName = row.find('td[data-label="Name"]');
+    expect(firstRowName.text()).toEqual('Test user 50');
 
     const editForm = wrapper.findComponent(EditDataRowForm);
     expect(editForm.exists()).toBeFalsy();
@@ -270,18 +318,20 @@ describe('Pagination works with expandable table', () => {
     let editForm = wrapper.findComponent(EditDataRowForm);
     expect(editForm.exists()).toBeFalsy();
 
-    const nextPageBtn = wrapper.find('a[aria-label="Previous page"');
+    const nextPageBtn = wrapper.find('button[aria-label="Previous page"');
     await nextPageBtn.trigger('click');
     await wrapper.vm.$nextTick();
 
-    const row = wrapper.findComponent(ExpandableTableRow);
-    const firstRowName = row.find('td[name="name"]');
-    expect(firstRowName.text()).toEqual('Test0');
+    const table = wrapper.findComponent(ExpandableTable);
+    const row = table.find('tbody tr');
+    const firstRowName = row.find('td[data-label="Name"]');
+    expect(firstRowName.text()).toEqual('Test user 0');
   });
 });
 
 async function openEditForm(wrapper: Wrapper<any>) {
-  const row = wrapper.findComponent(ExpandableTableRow);
+  const table = wrapper.findComponent(ExpandableTable);
+  const row = table.find('tbody tr');
   const editBtn = row.find('a[data-testid="edit"]');
   await editBtn.trigger('click');
   let editForm = wrapper.findComponent(EditDataRowForm);

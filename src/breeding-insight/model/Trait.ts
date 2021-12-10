@@ -26,9 +26,10 @@ export class Trait {
   method?: Method;
   scale?: Scale;
   abbreviations?: Array<string>;
-  synonyms?: Array<string>;
+  synonyms: string[] = [];
   mainAbbreviation?: string;
   active?: boolean;
+  tags?: string[] = [];
 
   constructor(id?: string,
               traitName?: string,
@@ -37,7 +38,8 @@ export class Trait {
               scale?: Scale,
               abbreviations?: Array<string>,
               synonyms?: Array<string>,
-              active?: boolean
+              active?: boolean,
+              tags?: string[]
               ) {
     this.id = id;
     this.traitName = traitName;
@@ -57,17 +59,22 @@ export class Trait {
       this.scale = new Scale();
     }
     this.abbreviations = abbreviations;
-    this.synonyms = synonyms;
+    if (synonyms){
+      this.synonyms = Array.from(synonyms);
+    }
     if (active !== undefined) {
       this.active = active;
     } else {
       this.active = true;
     }
+    if (tags){
+      this.tags = Array.from(tags);
+    }
   }
 
   static assign(trait: Trait): Trait {
     return new Trait(trait.id, trait.traitName, trait.programObservationLevel, trait.method,
-      trait.scale, trait.abbreviations, trait.synonyms, trait.active);
+        trait.scale, trait.abbreviations, trait.synonyms, trait.active, trait.tags);
   }
 
   checkStringListEquals(list: string[] | undefined, otherList: string[] | undefined): boolean {
@@ -83,6 +90,8 @@ export class Trait {
 
   equals(trait?: Trait): boolean {
     if (!trait) {return false;}
+    // @ts-ignore
+
     return (this.id === trait.id) &&
       (this.traitName === trait.traitName) &&
       (this.checkStringListEquals(this.abbreviations, trait.abbreviations)) &&
@@ -99,6 +108,40 @@ export class Trait {
       (
         (this.method && this.method.equals(trait.method)) ||
         (!this.method && !trait.method)
-      );
+      ) &&
+        ( this.checkStringListEquals(this.tags, trait.tags) );
   }
+
+  addTag(tag: string) {
+    if (this.tags) {
+      const index = this.tags.indexOf(tag);
+      if (index === -1) {
+        this.tags.push(tag);
+      }
+    }
+    else {
+      this.tags = [tag];
+    }
+  }
+
+  removeTag(tag: string) {
+    if (this.tags) {
+      const index = this.tags.indexOf(tag);
+      if (index > -1) {
+        this.tags.splice(index, 1);
+      }
+    }
+  }
+
+  hasTag(tag: string): boolean {
+    if (this.tags) {
+      for (const existingTag of this.tags) {
+        if (tag.toLowerCase().replace(' ', '') === existingTag.toLowerCase().replace(' ', '')) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
 }

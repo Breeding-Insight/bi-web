@@ -23,7 +23,7 @@
         v-on:deactivate="deleteModalActive = false"
     >
       <section>
-        <p class="has-text-dark">
+        <p class="has-text-dark" :class="this.$modalTextClass">
           Please confirm that you would like to remove this category.
         </p>
       </section>
@@ -67,7 +67,7 @@
             v-bind:value="item.value"
             v-on:delete="checkRemoveRow(i)"
             v-on:value-change="item.value = $event"
-            v-bind:value-placeholder="placeholders[i]"
+            v-bind:value-placeholder="nominalPlaceholders[i]"
             v-bind:key="i"
             v-bind:server-row-validation="getCategoryErrors(i)"
         />
@@ -121,6 +121,7 @@ export default class CategoryTraitForm extends Vue {
   private validationIndex!: number;
 
   private placeholders = ['ex. Very thin (< 4mm)', 'ex. Thin (4 - 6mm)', 'ex. Intermediate (7 - 9mm)', 'ex. Thick (10 - 12mm)', 'ex. Very Thick (> 12mm)'];
+  private nominalPlaceholders = ['Type A', 'Type B', 'Type C', 'Type D', 'Type E'];
   private deleteWarningTitle: string = "Remove category?"
   private activeRemoveRowIndex?: number;
   private deleteModalActive: boolean = false;
@@ -158,9 +159,9 @@ export default class CategoryTraitForm extends Vue {
   prepopulateCategories() {
     for (const i of Array(5).keys()) {
       if (this.type === DataType.Ordinal) {
-        this.data.push(new Category((i + 1).toString(), ''));
+        this.data.push(new Category('', (i + 1).toString()));
       } else {
-        this.data.push(new Category(undefined, ''));
+        this.data.push(new Category('', undefined));
       }
     }
   }

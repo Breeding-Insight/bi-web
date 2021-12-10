@@ -76,12 +76,12 @@
           </p>
           <ul class="menu-list">
             <li>
-              <router-link to="/admin/user-management">
+              <router-link to="/admin/user-management" :id="usersMenuId">
                 Users
               </router-link>
             </li>
             <li>
-              <router-link to="/admin/program-management">
+              <router-link to="/admin/program-management" :id="programsMenuId">
                 Programs
               </router-link>
               <ul class="menu-list">
@@ -105,22 +105,54 @@
         <template v-if="activeProgram">
           <ul class="menu-list">
             <li>
-              <router-link v-bind:to="{name: 'program-home', params: {programId: activeProgram.id}}">
+              <router-link v-bind:to="{name: 'program-home', params: {programId: activeProgram.id}}" :id="homeMenuId">
                 Home
               </router-link>
             </li>
-            <!--
             <li>
-              <a>Trials and Experiments</a>
+              <router-link
+                  v-bind:to="{name: 'trials-studies', params: {programId: activeProgram.id}}"
+                  v-bind:class="{ 'is-active': trialsAndStudiesActive }"
+              >
+                Trials and Studies
+                <MoreVerticalIcon
+                    v-if="!trialsAndStudiesActive"
+                    class="is-pulled-right"
+                />
+                <MoreHorizontalIcon
+                    v-if="trialsAndStudiesActive"
+                    class="is-pulled-right"
+                />
+              </router-link>
+              <ul v-show="trialsAndStudiesActive">
+                <li>
+                  <router-link v-bind:to="{name: 'trials-list', params: {programId: activeProgram.id}}">
+                    Trials
+                  </router-link>
+                </li>
+                <li>
+                  <router-link v-bind:to="{name: 'studies-list', params: {programId: activeProgram.id}}">
+                    Studies
+                  </router-link>
+                </li>
+              </ul>
             </li>
-            <li>
+<!--            <li>
               <a>Germplasm Inventory</a>
+            </li>-->
+            <li>
+              <router-link
+                v-bind:to="{name: 'import'}"
+                :id="importFileMenuId"
+              >
+                Import File
+              </router-link>
             </li>
-            -->
             <li>
               <router-link
                 v-bind:to="{name: 'traits', params: {programId: activeProgram.id}}"
                 v-bind:class="{ 'is-active': traitsActive }"
+                :id="traitsMenuId"
               >
                 Traits
                 <MoreVerticalIcon
@@ -169,6 +201,7 @@
               <router-link
                 v-bind:to="{name: 'program-management', params: {programId: activeProgram.id}}"
                 v-bind:class="{ 'is-active': programManagementActive }"
+                :id="programManagementMenuId"
               >
                 Program Management
                 <MoreVerticalIcon
@@ -193,6 +226,11 @@
                 </li>
               </ul>
             </li>
+            <li>
+              <router-link v-bind:to="{name: 'brapi-info', params: {programId: activeProgram.id}}" :id="brAPIMenuId">
+                BrAPI
+              </router-link>
+            </li>
           </ul>
         </template>
       </nav>
@@ -214,7 +252,7 @@
   import {EventBus} from "@/util/event-bus";
   import ClickOutside from 'vue-click-outside';
 
-@Component( {
+  @Component( {
     components: {BaseSideBarLayout, MoreVerticalIcon, MoreHorizontalIcon, ChevronDownIcon},
     computed: {
       ...mapGetters([
@@ -232,10 +270,20 @@
     private activeUser?: User;
     programManagementActive: boolean =  true;
     traitsActive: boolean = false;
+    trialsAndStudiesActive: boolean = false;
     private programs: Program[] = [];
     private programSelectActive: boolean = false;
 
-    @Prop()
+    private usersMenuId: string = "usersidebarlayout-users-menu";
+    private programsMenuId: string = "usersidebarlayout-programs-menu";
+
+    private homeMenuId: string = "usersidebarlayout-home-menu";
+    private importFileMenuId: string = "usersidebarlayout-import-file-menu";
+    private traitsMenuId: string = "usersidebarlayout-traits-menu";
+    private programManagementMenuId: string = "usersidebarlayout-program-management-menu";
+    private brAPIMenuId: string = "usersidebarlayout-brapi-menu";
+
+  @Prop()
     username!: string;
     created() {
       EventBus.bus.$on(EventBus.programChange, this.getPrograms);
@@ -278,6 +326,7 @@
     setActiveLinkSubmenus() {
       var path: string = this.$route.path;
       this.programManagementActive = path.includes('/program-management/');
+      this.trialsAndStudiesActive = path.includes('/trials-studies/');
       this.traitsActive = path.includes('/traits/');
     }
     hideProgramSelect() {

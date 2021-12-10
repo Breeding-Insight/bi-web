@@ -27,4 +27,5 @@ export interface RootState {
   loginServerError: boolean;
   requestedPath?: string;
   firstVisit?: boolean;
+  showSidebarMobile: boolean;
 }

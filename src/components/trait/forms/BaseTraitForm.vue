@@ -136,6 +136,19 @@
         v-bind:field-help="'Semicolon separated list.'"
         v-on:input="trait.synonyms = parseSemiColonList($event)"
       />
+
+      <!-- Tags -->
+      <div>
+        <TagField
+            v-bind:options="tags"
+            v-bind:value.sync="trait.tags"
+            v-bind:field-name="'Tags'"
+            v-bind:show-label="true"
+            v-bind:before-adding="checkTag"
+            v-on:add="addTag($event)"
+            v-on:remove="removeTag($event)"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -160,9 +173,11 @@ import AutoCompleteField from "@/components/forms/AutoCompleteField.vue";
 import { StringFormatters } from '@/breeding-insight/utils/StringFormatters';
 import {Category} from "@/breeding-insight/model/Category";
 import {integer} from "vuelidate/lib/validators";
+import TagField from "@/components/forms/TagField.vue";
 
 @Component({
   components: {
+    TagField,
     AutoCompleteField,
     CategoryTraitForm,
     NumericalTraitForm,
@@ -184,6 +199,8 @@ export default class BaseTraitForm extends Vue {
   trait!: Trait;
   @Prop({default: false})
   editFormat!: boolean;
+  @Prop()
+  tags?: string[];
 
   name: string = '';
   private methodHistory: {[key: string]: Method} = {};
@@ -243,31 +260,38 @@ export default class BaseTraitForm extends Vue {
 
     if (Scale.dataTypeEquals(value, DataType.Nominal) && Scale.dataTypeEquals(this.lastCategoryType, DataType.Ordinal)) {
       this.trait.scale = Scale.assign(this.scaleHistory[DataType.Ordinal.toLowerCase()]);
-      // Clear the labels
+      // Clear the scale category validations if there are any, the switch is confusing
+      this.validationHandler.clearValidation(0, 'scale.categories');
+
+      // Clear the values, use labels as the new values if they exist
       if (this.trait.scale.categories) {
-        this.trait.scale.categories.forEach(category => category.label = undefined);
+        this.trait.scale.categories.forEach(category => {
+          category.value = category.label;
+          category.label = undefined;
+        });
       }
 
       this.trait.scale.dataType = value;
       this.trait!.scale!.scaleName = value;
     } else if (Scale.dataTypeEquals(value, DataType.Ordinal) && Scale.dataTypeEquals(this.lastCategoryType, DataType.Nominal)) {
       this.trait.scale = Scale.assign(this.scaleHistory[DataType.Nominal.toLowerCase()]);
-      // Add 1-based index labels to categories
+      // Clear the scale category validations if there are any, the switch is confusing
+      this.validationHandler.clearValidation(0, 'scale.categories');
+
+      // Add 1-based index values to categories
       if (this.trait.scale.categories) {
         this.trait.scale.categories.forEach((category, index, categories) => {
-          // Use prior labels if they exist
+          // Use prior values if they exist
           const historicalCats: Category[] = this.scaleHistory[DataType.Ordinal.toLowerCase()] ? this.scaleHistory[DataType.Ordinal.toLowerCase()].categories as Category[] : [] as Category[];
-          if (historicalCats[index] && historicalCats[index].label) {
-            category.label = historicalCats[index].label;
+          // Assign the value in the label place for the switch back to ordinal
+          category.label = category.value;
+          if (historicalCats[index] && historicalCats[index].value) {
+              category.value = historicalCats[index].value;
           } else {
-            const autoLabel: string = index + 1 + '';
-            if(categories.find(anyCategory => anyCategory.label === autoLabel)) {
-              category.label = autoLabel + '_dup';
-            } else {
-              category.label = autoLabel;
-            }
+            const autoValue: string = index + 1 + '';
+            category.value = autoValue;
           }
-        })
+        });
       }
       this.trait.scale.dataType = value;
       this.trait!.scale!.scaleName = value;
@@ -307,6 +331,17 @@ export default class BaseTraitForm extends Vue {
   }
   parseSemiColonList(value: string): string[] {
     return value.split(';');
+  }
+  addTag(tag: string) {
+    // Check that the tag doesn't already exist
+    this.trait.addTag(tag.toLowerCase());
+  }
+  removeTag(tag: string) {
+    this.trait.removeTag(tag);
+  }
+  checkTag(tag: string): boolean {
+    //TODO: Show an error if tag already exists?
+    return !this.trait.hasTag(tag);
   }
 }
 

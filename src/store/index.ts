@@ -33,7 +33,8 @@ const store: StoreOptions<RootState> = {
     requestedPath: undefined,
     user: undefined,
     program: undefined,
-    firstVisit: undefined
+    firstVisit: undefined,
+    showSidebarMobile: true
   },
   mutations,
   actions,
@@ -43,6 +44,9 @@ const store: StoreOptions<RootState> = {
     },
     activeUser: state => {
       return state.user;
+    },
+    showSidebarMobile: state => {
+      return state.showSidebarMobile;
     }
   }
 };

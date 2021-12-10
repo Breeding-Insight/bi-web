@@ -66,9 +66,36 @@
         <p class="mb-0">{{valueOrNA(data.method.formula)}}</p>
       </template>
 
-
       <p class="has-text-weight-bold mt-3 mb-0">Description of collection method</p>
       <p>{{data.method.description}}</p>
+
+      <template v-if="data.tags && data.tags.length > 0">
+        <p class="has-text-weight-bold mt-3 mb-0">Tags</p>
+        <template v-for="tag in data.tags">
+          <span v-bind:key="tag" class="tag is-primary is-normal mr-1">{{ tag }}</span>
+        </template>
+      </template>
+
+      <ProgressBar v-if="loadingEditable && $ability.can('update', 'Trait')" v-bind:label="'Checking trait editability status'"
+                   v-bind:estimated-time-text="'May take a few seconds'"
+      />
+
+      <article v-if="!editable && !loadingEditable && $ability.can('update', 'Trait')" class="message is-info">
+        <div class="message-body">
+          <div class="media">
+            <figure class="media-left">
+              <p class="image is-24x24">
+                <help-circle-icon size="1.5x"></help-circle-icon>
+              </p>
+            </figure>
+            <div class="media-content">
+              <div class="has-text-dark">
+                Not editable because this trait has associated experiment data.
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
 
       <template v-if="!data.active">
         <p class="has-text-weight-bold mt-3 mb-0">Included in Favorites</p>
@@ -76,7 +103,7 @@
             size="is-small"
             style="background: lightgray"
             class="archive-tag"
-            v-if="!data.active">
+            v-if="archivable && !data.active">
           Archived
         </b-button>
       </template>
@@ -85,7 +112,7 @@
       <div class="columns is-mobile is-centered pt-6">
         <div class="column is-narrow">
           <a
-            v-if="editable"
+            v-if="editable && !loadingEditable"
             v-on:click="$emit('activate-edit', data)"
             v-on:keypress.enter.space="$emit('activate-edit', data)"
             tabindex="0"
@@ -95,7 +122,7 @@
         </div>
         <div class="column is-narrow">
           <a
-            v-if="data.active"
+            v-if="archivable && data.active"
             v-on:click="$emit('archive', data)"
             v-on:keypress.enter.space="$emit('archive', data)"
             tabindex="0"
@@ -127,6 +154,7 @@
               v-bind:trait.sync="editTrait"
               v-bind:edit-format="true"
               v-on:trait-change="traitUpdate($event)"
+              v-bind:tags="tags"
               v-bind:scale-options="scaleClassOptions"
               v-bind:method-options="methodClassOptions"
               v-bind:program-observation-levels="observationLevelOptions"
@@ -151,9 +179,11 @@
   import BaseTraitForm from "@/components/trait/forms/BaseTraitForm.vue";
   import EditDataForm from "@/components/forms/EditDataForm.vue";
   import { DataFormEventBusHandler } from '@/components/forms/DataFormEventBusHandler';
+  import { HelpCircleIcon } from 'vue-feather-icons'
+  import ProgressBar from '@/components/forms/ProgressBar.vue'
 
   @Component({
-    components: {EditDataForm, SidePanel, BaseTraitForm },
+    components: {EditDataForm, SidePanel, BaseTraitForm, HelpCircleIcon, ProgressBar},
     data: () => ({DataType, MethodClass, Scale, Method})
   })
   export default class TraitDetailPanel extends Vue {
@@ -164,8 +194,10 @@
     private observationLevelOptions!: string[];
     @Prop({default: false})
     private editActive!: boolean;
-    @Prop({default: false})
-    private editable!: boolean;
+    @Prop()
+    private editable!: boolean | undefined;
+    @Prop({default: true})
+    private loadingEditable!: boolean;
     @Prop({default: false})
     private archivable!: boolean;
     @Prop()
@@ -174,6 +206,8 @@
     private clientValidations!: any | undefined;
     @Prop()
     private validationHandler!: ValidationError;
+    @Prop()
+    private tags!: string[];
 
     private editTrait: Trait | null = null;
     private scalePostfix = new Set<string>().add(DataType.Ordinal).add(DataType.Nominal);

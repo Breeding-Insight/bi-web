@@ -15,7 +15,8 @@
 # limitations under the License.
 #
 
-FROM node:lts
+#FROM node:lts
+FROM node:14
 
 ARG HOST_USER_ID=1001
 ARG HOST_GROUP_ID=1001
@@ -47,7 +48,7 @@ COPY --chown=host:host ["package.json", "/home/host/biweb/package.json"]
 COPY --chown=host:host ["package-lock.json", "/home/host/biweb/package-lock.json"]
 COPY --chown=host:host ./src ./src/
 COPY --chown=host:host ./task ./task/
-RUN ["npm", "--verbose", "ci"]
+RUN ["npm", "ci"]
 
 # start the web server
 ENTRYPOINT ["npm", "run", "serve"]

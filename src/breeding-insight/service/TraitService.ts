@@ -17,7 +17,7 @@
 
 import {TraitDAO} from "@/breeding-insight/dao/TraitDAO";
 import {Trait} from "@/breeding-insight/model/Trait";
-import {Metadata} from "@/breeding-insight/model/BiResponse";
+import {BiResponse, Metadata} from "@/breeding-insight/model/BiResponse";
 import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
 import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
 import {TraitUploadService} from "@/breeding-insight/service/TraitUploadService";
@@ -25,17 +25,20 @@ import {ValidationError} from "@/breeding-insight/model/errors/ValidationError";
 
 export class TraitService {
 
-    static async createTraits(programId: string, newTraits: Trait[]): Promise<[Trait[], Metadata]> {
-      if (programId) {
-        try {
-          const { result: { data }, metadata } = await TraitDAO.createTraits(programId, newTraits);
-          return [data, metadata];
-        } catch (error) {
-          throw TraitUploadService.parseError(error);
-        }
+  static notAllowed : string = 'Trait has associated observations and cannot be updated';
+  static errorUpdating: string = 'Error updating trait';
+
+  static async createTraits(programId: string, newTraits: Trait[]): Promise<[Trait[], Metadata]> {
+    if (programId) {
+      try {
+        const { result: { data }, metadata } = await TraitDAO.createTraits(programId, newTraits);
+        return [data, metadata];
+      } catch (error) {
+        throw TraitUploadService.parseError(error);
       }
-      else throw 'Unable to create trait';
     }
+    else throw 'Unable to create trait';
+  }
 
     static async updateTraits(programId: string, traits: Trait[]): Promise<[Trait[], Metadata]> {
       if (programId && traits) {
@@ -48,6 +51,11 @@ export class TraitService {
           const { result: { data }, metadata } = await TraitDAO.updateTraits(programId, traits);
           return [data, metadata];
         } catch (error) {
+          if (error.response && error.response.status === 405) {
+            throw this.notAllowed;
+          } else if (error.response && error.response.status !== 422) {
+            throw this.errorUpdating;
+          }
           throw TraitUploadService.parseError(error);
         }
       }
@@ -110,5 +118,29 @@ export class TraitService {
       }
     }));
 
+  }
+
+  static async getTraitEditable(programId: string, traitId: string): Promise<[boolean, Metadata]> {
+    if (programId && traitId) {
+      try {
+        const response = await TraitDAO.getTraitEditable(programId, traitId);
+        return [response.result.editable, response.metadata];
+      } catch (error) {
+        throw error;
+      }
+    }
+    else throw 'Unable to get trait editable info';
+  }
+
+  static async getTraitTags(programId: string): Promise<[string[], Metadata]> {
+    if (programId) {
+      try {
+        const response = await TraitDAO.getTraitTags(programId);
+        return [response.result.data, response.metadata];
+      } catch (error) {
+        throw error;
+      }
+    }
+    else throw 'Unable to get trait editable info';
   }
 }

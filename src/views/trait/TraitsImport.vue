@@ -23,7 +23,7 @@
       v-on:deactivate="showAbortModal = false"
     >
       <section>
-        <p class="has-text-dark">
+        <p class="has-text-dark" :class="this.$modalTextClass">
           No traits will be added, and the import in progress will be completely removed.
         </p>
       </section>
@@ -31,7 +31,7 @@
         <div class="column is-whole has-text-centered buttons">
           <button
             class="button is-danger"
-            v-on:click="handleAbortModal()"
+            v-on:click="handleAbortModal()" :id="yesAbortId"
           >
             <strong>Yes, abort</strong>
           </button>
@@ -48,9 +48,11 @@
     <template v-if="state === ImportState.CHOOSE_FILE || state === ImportState.FILE_CHOSEN">
       <h1 class="title">Import Traits</h1>
       <TraitImportTemplateMessageBox class="mb-5"/>
-      <FileSelectMessageBox v-model="file"
-                               v-bind:fileTypes="'.csv, .xls, .xlsx'"
-                               v-on:import="importService.send(ImportEvent.IMPORT_STARTED)"/>        
+      <div class="box">
+        <FileSelectMessageBox v-model="file"
+                                 v-bind:fileTypes="'.csv, .xls, .xlsx'"
+                                 v-on:import="importService.send(ImportEvent.IMPORT_STARTED)"/>
+      </div>
     </template>
     
     <template v-if="state === ImportState.IMPORTING || state === ImportState.LOADING">
@@ -72,10 +74,12 @@
     <template v-if="state === ImportState.IMPORT_ERROR">
         <h1 class="title">Importing...</h1>
       <TraitImportTemplateMessageBox class="mb-5"/>
-        <FileSelectMessageBox v-model="file"
-                                 v-bind:fileTypes="'.csv, .xls, .xlsx'"
-                                 v-bind:errors="import_errors"
-                                 v-on:import="importService.send(ImportEvent.IMPORT_STARTED)"/>
+        <div class="box">
+          <FileSelectMessageBox v-model="file"
+                                v-bind:fileTypes="'.csv, .xls, .xlsx'"
+                                v-bind:errors="import_errors"
+                                v-on:import="importService.send(ImportEvent.IMPORT_STARTED)"/>
+        </div>
     </template>
 
   </div>
@@ -102,6 +106,7 @@ import {ValidationError} from "@/breeding-insight/model/errors/ValidationError";
 import {Metadata} from "@/breeding-insight/model/BiResponse";
 import {Trait} from "@/breeding-insight/model/Trait";
 import {ProgramUpload} from "@/breeding-insight/model/ProgramUpload";
+import {AxiosResponse} from "axios";
 
 enum ImportState {
   CHOOSE_FILE = "CHOOSE_FILE",
@@ -150,11 +155,13 @@ enum ImportAction {
 export default class TraitsImport extends ProgramsBase {
 
   private file : File | null = null;
-  private import_errors: ValidationError | string | null = null;
+  private import_errors: ValidationError | AxiosResponse | null = null;
   private activeProgram?: Program;
   private tableLoaded = false;
   private numTraits = 0;
   private showAbortModal = false;
+
+  private yesAbortId: string = "traitsimport-yes-abort";
   
   private ImportState = ImportState;
   private ImportEvent = ImportEvent;
@@ -265,7 +272,7 @@ export default class TraitsImport extends ProgramsBase {
     TraitUploadService.uploadFile(this.activeProgram!.id!, this.file!).then((response) => {
       this.numTraits = response.data!.length;
       this.importService.send(ImportEvent.IMPORT_SUCCESS);
-    }).catch((error: ValidationError | string) => {
+    }).catch((error: ValidationError | AxiosResponse) => {
       this.import_errors = error;
       this.importService.send(ImportEvent.IMPORT_ERROR);
     });

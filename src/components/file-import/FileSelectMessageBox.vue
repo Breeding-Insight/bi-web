@@ -17,7 +17,7 @@
 
 <template>
   <div class="file-select">
-    <div class="box">
+    <div>
       <article>
 
         <!-- Error messages -->
@@ -63,7 +63,7 @@
           <div class="level-left">
             <div v-if="file" class="level-item">
               <div
-                v-bind:class="{'has-text-dark': allErrors.length <= 0, 'has-text-danger': allErrors.length > 0}"
+                v-bind:class="{'has-text-dark': allErrors.length <= 0, 'has-text-danger': allErrors.length > 0}" :id="importFileNameId"
             >
                 {{file.name}}                  
               </div>
@@ -79,7 +79,7 @@
           <div class="level-right">
             <div class="level-item">
               <div>
-                <a v-if="file" class="button is-primary has-text-weight-bold" v-on:click="$emit('import')">Import</a>
+                <a v-if="file" class="button is-primary has-text-weight-bold" :id="importButtonId" v-on:click="$emit('import')">Import</a>
               </div>
             </div>
           </div>
@@ -94,6 +94,7 @@
   import FileSelector from "@/components/file-import/FileSelector.vue";
   import {ValidationError} from "@/breeding-insight/model/errors/ValidationError";
   import { AlertTriangleIcon } from 'vue-feather-icons';
+  import {AxiosResponse} from "axios";
 
   @Component({
     components: {
@@ -110,7 +111,10 @@
     private displayAllErrors: boolean = false;
 
     @Prop()
-    private errors!: ValidationError | string | null;
+    private errors!: ValidationError | AxiosResponse | null;
+
+    private importButtonId: string = "fileselectmessagebox-import-button";
+    private importFileNameId: string = "fileselectmessagebox-import-filename";
 
     mounted() {
       this.file = this.value;
@@ -146,10 +150,19 @@
         }
         return errors;
       } else if (this.errors != null) {
-        return [this.errors!] as string[];
-      } else {
-        return [];
+        // Parse 400 responses and display the message if its not empty
+        const apiResponse = this.errors as AxiosResponse;
+        if (apiResponse.status && apiResponse.status === 400 &&
+            apiResponse.data && apiResponse.data.message && apiResponse.data.message !== '') {
+          return [apiResponse.data.message] as string[];
+        }
       }
+
+      // A catch all for anything we haven't explicitly caught
+      if (this.errors) {
+        return ["An unknown error has occurred"] as string[];
+      }
+      return [];
     }
   }
 </script>

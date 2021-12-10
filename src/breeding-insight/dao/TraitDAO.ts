@@ -56,11 +56,27 @@ export class TraitDAO {
     return new BiResponse(data);
   }
 
+  static async getTraitEditable(programId: string, traitId: string) : Promise<BiResponse> {
+    const { data } =  await api.call({
+      url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/traits/${traitId}/editable`,
+      method: 'get'
+    }) as Response;
+    return new BiResponse(data);
+  }
+
   static async archiveTrait(programId: string, trait: Trait): Promise<BiResponse> {
     const { data } =  await api.call({
       url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/traits/${trait.id}/archive`,
       params: {'active': trait.active},
       method: 'put'
+    }) as Response;
+    return new BiResponse(data);
+  }
+
+  static async getTraitTags(programId: string): Promise<BiResponse> {
+    const { data } =  await api.call({
+      url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/traits/tags`,
+      method: 'get'
     }) as Response;
     return new BiResponse(data);
   }

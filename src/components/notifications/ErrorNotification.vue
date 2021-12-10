@@ -22,7 +22,7 @@
       <div class="column is-flex-grow-0">
           <AlertCircleIcon size="1.5x"></AlertCircleIcon>
       </div>
-      <div class="column">
+      <div class="column" :class="bannerTextClass">
         {{msg}}
       </div>
     </div>
@@ -39,6 +39,8 @@ import { AlertCircleIcon } from 'vue-feather-icons'
 export default class ErrorNotification extends Vue {
   public active: boolean = false;
   public msg : string = '';
+
+  private bannerTextClass: string = "banner-text";
 }
 
 </script>
