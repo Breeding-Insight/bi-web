@@ -59,7 +59,7 @@
 <script lang="ts">
 import {Component, Vue, Watch} from 'vue-property-decorator'
 import WarningModal from '@/components/modals/WarningModal.vue'
-import {DownloadIcon} from 'vue-feather-icons'
+import {PlusCircleIcon} from 'vue-feather-icons'
 import {validationMixin} from 'vuelidate';
 import { mapGetters } from 'vuex'
 import {Program} from "@/breeding-insight/model/Program";
