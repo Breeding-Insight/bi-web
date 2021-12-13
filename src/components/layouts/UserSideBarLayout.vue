@@ -177,6 +177,30 @@
             </li>
             <li>
               <router-link
+                  v-bind:to="{name: 'germplasmlists'}"
+                  v-bind:class="{ 'is-active': germplasmActive }"
+                  :id="germplasmMenuId"
+              >
+                Germplasm
+                <MoreVerticalIcon
+                    v-if="!germplasmActive"
+                    class="is-pulled-right"
+                />
+                <MoreHorizontalIcon
+                    v-if="germplasmActive"
+                    class="is-pulled-right"
+                />
+              </router-link>
+              <ul v-show="germplasmActive">
+                <li>
+                  <router-link v-bind:to="{name: 'germplasmlists', params: {programId: activeProgram.id}}">
+                    Germplasm Lists
+                  </router-link>
+                </li>
+              </ul>
+            </li>
+            <li>
+              <router-link
                 v-bind:to="{name: 'ontology', params: {programId: activeProgram.id}}"
                 v-bind:class="{ 'is-active': ontologyActive }"
                 :id="ontologyMenuId"
@@ -300,6 +324,7 @@
     traitsActive: boolean = false;
     trialsAndStudiesActive: boolean = false;
     importFileActive: boolean = false;
+    germplasmActive: boolean = false;
     private programs: Program[] = [];
     private programSelectActive: boolean = false;
 
@@ -311,6 +336,7 @@
     private ontologyMenuId: string = "usersidebarlayout-ontology-menu";
     private programManagementMenuId: string = "usersidebarlayout-program-management-menu";
     private brAPIMenuId: string = "usersidebarlayout-brapi-menu";
+    private germplasmMenuId: string = "usersidebarlayout-germplasm-menu";
 
   @Prop()
     username!: string;
@@ -358,7 +384,8 @@
       this.trialsAndStudiesActive = path.includes('/trials-studies/');
       this.ontologyActive = path.includes('/ontology/') || path.includes('traits/import') || path.includes('traits/favorites');
       this.traitsActive = path.includes('/traits/');
-      this.importFileActive = path.includes('/import/')
+      this.importFileActive = path.includes('/import/');
+      this.germplasmActive = path.includes('/germplasm/');
     }
     hideProgramSelect() {
       this.programSelectActive = false;
