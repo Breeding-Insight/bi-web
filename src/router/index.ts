@@ -66,6 +66,7 @@ import OntologyActiveTable from "@/components/ontology/OntologyActiveTable.vue";
 import OntologyArchivedTable from "@/components/ontology/OntologyArchivedTable.vue";
 import PageNotFound from "@/views/PageNotFound.vue";
 import Germplasm from "@/views/germplasm/Germplasm.vue";
+import GermplasmLists from "@/views/germplasm/GermplasmLists.vue";
 
 Vue.use(VueRouter);
 
@@ -378,6 +379,28 @@ const routes = [
           layout: layouts.userSideBar
         },
         component: BrAPIImporter
+      }
+    ]
+  },
+  {
+    path: '/programs/:programId/germplasm',
+    name: 'germplasm',
+    meta: {
+      title: 'Germplasm',
+      layout: layouts.userSideBar
+    },
+    component: GermplasmLists,
+    redirect: {name: 'import-ontology'},
+    beforeEnter: processProgramNavigation,
+    children: [
+      {
+        path: 'germplasmlists',
+        name: 'germplasmlists',
+        meta: {
+          title: 'Germplasm Lists',
+          layout: layouts.userSideBar
+        },
+        component: GermplasmLists
       }
     ]
   },
