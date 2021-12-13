@@ -43,7 +43,12 @@
         </TableColumn>
         <TableColumn name="download" v-bind:label="''">
           <template>
-            {{ "Download link here"}}
+            <span class="icon is-small">
+              <DownloadIcon
+                size="1.5x"
+                aria-hidden="true"
+              />
+            </span>
           </template>
         </TableColumn>
       </template>
@@ -62,16 +67,11 @@
 <script lang="ts">
 import {Component, Vue, Watch} from 'vue-property-decorator'
 import WarningModal from '@/components/modals/WarningModal.vue'
-import {PlusCircleIcon} from 'vue-feather-icons'
+import {DownloadIcon} from 'vue-feather-icons'
 import {validationMixin} from 'vuelidate';
-import {Trait} from '@/breeding-insight/model/Trait'
 import { mapGetters } from 'vuex'
 import {Program} from "@/breeding-insight/model/Program";
-import NewDataForm from '@/components/forms/NewDataForm.vue'
 import BasicInputField from "@/components/forms/BasicInputField.vue";
-import SidePanelTable from "@/components/tables/SidePanelTable.vue";
-import TraitDetailPanel from "@/components/trait/TraitDetailPanel.vue";
-import {TraitService} from "@/breeding-insight/service/TraitService";
 import EmptyTableMessage from "@/components/tables/EmtpyTableMessage.vue";
 import TableColumn from "@/components/tables/TableColumn.vue";
 import {Metadata, Pagination} from "@/breeding-insight/model/BiResponse";
@@ -84,9 +84,6 @@ import {ValidationError} from "@/breeding-insight/model/errors/ValidationError";
 import {ProgramService} from "@/breeding-insight/service/ProgramService";
 import {MethodClass} from "@/breeding-insight/model/Method";
 import {DataType, Scale} from "@/breeding-insight/model/Scale";
-import {SidePanelTableEventBusHandler} from "@/components/tables/SidePanelTableEventBus";
-import { DataFormEventBusHandler } from '@/components/forms/DataFormEventBusHandler';
-import {email, required, integer, maxLength} from "vuelidate/lib/validators";
 import {
   DEACTIVATE_ALL_NOTIFICATIONS,
 } from "@/store/mutation-types";
@@ -96,9 +93,8 @@ import ExpandableTable from "@/components/tables/expandableTable/ExpandableTable
   mixins: [validationMixin],
   components: {
     ExpandableTable,
-    BaseTraitForm, NewDataForm, BasicInputField, EmptyTableMessage, TableColumn,
-    WarningModal, TraitDetailPanel,
-    PlusCircleIcon },
+    BaseTraitForm, BasicInputField, EmptyTableMessage, TableColumn,
+    WarningModal, DownloadIcon },
   computed: {
     ...mapGetters([
       'activeProgram'
@@ -109,6 +105,8 @@ import ExpandableTable from "@/components/tables/expandableTable/ExpandableTable
 export default class GermplasmListsTable extends Vue {
 
   private activeProgram?: Program;
+  private germplasmListsPagination?: Pagination = new Pagination();
+  private paginationController: PaginationController = new PaginationController();
 
   mounted() {
     this.getGermplasmLists();
@@ -116,26 +114,21 @@ export default class GermplasmListsTable extends Vue {
 
   @Watch('paginationController', { deep: true})
   getGermplasmLists() {
-    /*
     let paginationQuery: PaginationQuery = PaginationController.getPaginationSelections(
         this.paginationController.currentPage, this.paginationController.pageSize, this.paginationController.showAll);
     this.paginationController.setCurrentCall(paginationQuery);
 
-    GermplasmListsService.getAll(this.activeProgram!.id!, paginationQuery, true).then(([germplasmLists, metadata]) => {
+    /*GermplasmListsService.getAll(this.activeProgram!.id!, paginationQuery, true).then(([germplasmLists, metadata]) => {
       if (this.paginationController.matchesCurrentRequest(metadata.pagination)){
         this.germplasmLists = germplasmLists;
         this.germplasmListsPagination = metadata.pagination;
       }
     }).catch((error) => {
-      // Display error that traits cannot be loaded
+      // Display error that germplasm lists cannot be loaded
       this.$emit('show-error-notification', 'Error while trying to load germplasm lists');
       throw error;
-    });
-     */
+    });*/
   }
-
-  //TODO handle download, look at template download for example but different here
-
 }
 
 </script>
