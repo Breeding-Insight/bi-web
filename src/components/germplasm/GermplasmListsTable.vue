@@ -41,14 +41,7 @@
           {{ data.user }}
         </TableColumn>
         <TableColumn name="download" v-bind:label="''">
-          <template>
-            <span class="icon is-small">
-              <DownloadIcon
-                size="1.5x"
-                aria-hidden="true"
-              />
-            </span>
-          </template>
+          <a href="#">Download</a>
         </TableColumn>
       </template>
 
@@ -114,15 +107,11 @@ export default class GermplasmListsTable extends Vue {
     this.paginationController.setCurrentCall(paginationQuery);
 
     GermplasmService.getAll(this.activeProgram!.id!, paginationQuery).then(([germplasmLists, metadata]) => {
-      //not getting to the "then"
-      this.germplasmLists = ["hello", "hi"];
-      console.log('here?');
+      this.germplasmLists = [];
       if (this.paginationController.matchesCurrentRequest(metadata.pagination)){
-        this.germplasmLists = germplasmLists; //not getting here?
+        this.germplasmLists = germplasmLists;
         this.germplasmListsPagination = metadata.pagination;
       }
-      this.germplasmLists = germplasmLists; //not getting here?
-      this.germplasmListsPagination = metadata.pagination;
     }).catch((error) => {
       // Display error that germplasm lists cannot be loaded
       this.$emit('show-error-notification', 'Error while trying to load germplasm lists');
