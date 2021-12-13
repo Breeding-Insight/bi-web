@@ -67,6 +67,7 @@ import OntologyArchivedTable from "@/components/ontology/OntologyArchivedTable.v
 import PageNotFound from "@/views/PageNotFound.vue";
 import Germplasm from "@/views/germplasm/Germplasm.vue";
 import GermplasmLists from "@/views/germplasm/GermplasmLists.vue";
+import GermplasmLists from "@/views/germplasm/GermplasmLists.vue";
 
 Vue.use(VueRouter);
 
