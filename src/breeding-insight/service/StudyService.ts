@@ -43,6 +43,9 @@ export class StudyService {
       } else {
         response = await StudyDAO.getAll(programId, paginationQuery, full) as Result<Error, BiResponse>;
       }
+
+      console.log('study service');
+      console.log(response);
       
       if(response.isErr()) throw response.value;
       

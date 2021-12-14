@@ -20,10 +20,12 @@ import {BiResponse, Response} from "@/breeding-insight/model/BiResponse";
 import * as api from "@/util/api";
 import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
 import { Result, Err, Success, ResultGenerator } from "@/breeding-insight/model/Result";
+import {BrAPIDAOUtil} from "@/breeding-insight/dao/BrAPIDAOUtil";
 
 export class StudyDAO {
 
   static async getAllForTrial(programId: string, trialId: string, paginationQuery: PaginationQuery, full : boolean): Promise<Result<Error, BiResponse>> {
+    /*
     try {
       const query = {
         page: 0,
@@ -44,7 +46,28 @@ export class StudyDAO {
         
     } catch (error) {
       return ResultGenerator.err(error);
-    }  
+    }
+
+     */
+
+    const body = {
+      page: 0,
+      pageSize: 50,
+      trialDbIds: [
+        trialId
+      ]
+    };
+
+    const res = await BrAPIDAOUtil.search(`${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/brapi/v2/search/studies`,
+      body,
+      full,
+      1000);
+
+    console.log('studydao');
+    console.log(res);
+
+    return res;
+
   }
 
   static async getAll(programId: string, paginationQuery: PaginationQuery, full : boolean): Promise<Result<Error, BiResponse>> {
@@ -62,7 +85,7 @@ export class StudyDAO {
     }  
   }
 
-    static async getById(programId: string, studyId: string): Promise<Result<Error, BiResponse>> {
+  static async getById(programId: string, studyId: string): Promise<Result<Error, BiResponse>> {
     try {
       const { data } = await api.call({
         url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/brapi/v2/studies`,
@@ -74,6 +97,6 @@ export class StudyDAO {
         
     } catch (error) {
       return ResultGenerator.err(error);
-    }  
-  }    
+    }
+  }
 }
