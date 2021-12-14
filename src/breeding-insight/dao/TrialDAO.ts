@@ -25,10 +25,11 @@ export class TrialDAO {
 
   static async getAll(programId: string, paginationQuery: PaginationQuery, full : boolean): Promise<Result<Error, BiResponse>> {
     try {
+      // TODO: update pageSize setting when we can do backend brapi sorting
       const { data } = await api.call({
         url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/brapi/v2/trials`,
         method: 'get',
-        params: { full }
+        params: { full, pageSize: 1000000 }
       }) as Response;
 
       return ResultGenerator.success(new BiResponse(data));
