@@ -61,7 +61,14 @@
         <p>{{ props.row.data.value }}</p>
       </b-table-column>
       <b-table-column field="data.season" label="Season" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-        <p>{{ props.row.data.season}}</p>
+        <template v-if="props.row.data.season.id">
+          <template v-if="(props.row.data.season.name != props.row.data.season.year)" >
+            <p>{{ props.row.data.season.name + " - " + props.row.data.season.year }}</p>
+          </template>
+          <template v-else>
+            <p>{{ props.row.data.season.name}}</p>
+          </template>
+        </template>
       </b-table-column>
       <b-table-column :custom-sort="sortTimestamp" label="Timestamp" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
         <p>{{ props.row.data.timeStamp | dmyFormat}}</p>

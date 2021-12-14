@@ -54,12 +54,12 @@
             <span class="is-size-7 ml-2">{{data.entity}} {{data.attribute | capitalize}}</span>
           </div>
         </template>
-        <template v-if="data.method && data.method.description && data.method.methodClass">
+        <template v-if="data.method && data.method.methodClass">
           <div class="column is-half p-0">
             <span class="is-pulled-right has-text-weight-bold mr-2">Method</span>
           </div>
           <div class="column is-half p-0">
-            <span class="is-size-7 ml-2">{{ data.method.description | capitalize }} {{data.method.methodClass}}</span>
+            <span class="is-size-7 ml-2">{{(data.method.description ? StringFormatters.toStartCase(data.method.description) : "") }} {{ data.method.methodClass }}</span>
           </div>
         </template>
         <template v-if="data.scale && data.scale.dataType">
@@ -107,28 +107,6 @@
           </div>
           <div class="column is-half p-0">
             <span class="is-size-7 ml-2">{{valueOrNA(data.method.formula)}}</span>
-          </div>
-        </template>
-
-<!--        If duration scale class then show units and range-->
-        <template v-if="Scale.dataTypeEquals(scaleType, DataType.Duration)">
-          <div class="column is-half p-0">
-            <span class="is-pulled-right mr-2">Unit of Time</span>
-          </div>
-          <div class="column is-half p-0">
-            <span class="is-size-7 ml-2">{{valueOrNA(data.scale.scaleName)}}</span>
-          </div>
-          <div class="column is-half p-0">
-            <span class="is-pulled-right mr-2">Minimum valid value</span>
-          </div>
-          <div class="column is-half p-0">
-            <span class="is-size-7 ml-2">{{valueOrNA(data.scale.validValueMin)}}</span>
-          </div>
-          <div class="column is-half p-0">
-            <span class="is-pulled-right mr-2">Maximum valid value</span>
-          </div>
-          <div class="column is-half p-0">
-            <span class="is-size-7 ml-2">{{valueOrNA(data.scale.validValueMax)}}</span>
           </div>
         </template>
 
@@ -241,7 +219,7 @@
 
   @Component({
     components: {EditDataForm, SidePanel, BaseTraitForm, HelpCircleIcon, ProgressBar},
-    data: () => ({DataType, MethodClass, Scale, Method}),
+    data: () => ({DataType, MethodClass, Scale, Method, StringFormatters}),
     filters: {
       capitalize: function(value: string | undefined) : string | undefined {
         if (value === undefined) value = '';
