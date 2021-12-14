@@ -96,12 +96,12 @@ export default class ImportGermplasm extends ProgramsBase {
     names: Object.assign(defaultRenames, {
       'defaultDisplayName': 'Name',
       'breedingMethod': 'Breeding Method',
-      'seedSourceDescription': 'Source',
+      'seedSource': 'Source',
       'pedigree': 'Pedigree',
       'importEntryNumber': 'Entry No.'
     }),
     display: ['germplasm.additionalInfo.importEntryNumber','germplasm.defaultDisplayName',
-      'germplasm.additionalInfo.breedingMethod', 'germplasm.seedSourceDescription', 'germplasm.pedigree'],
+      'germplasm.additionalInfo.breedingMethod', 'germplasm.seedSource', 'germplasm.pedigree'],
     detailDisplay: '*',
     defaultSort: 'germplasm.germplasmName',
     defaultSortOrder: 'asc'
