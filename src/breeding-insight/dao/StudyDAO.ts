@@ -23,7 +23,7 @@ import {BrAPIDAOUtil} from "@/breeding-insight/dao/BrAPIDAOUtil";
 
 export class StudyDAO {
 
-  static async getAllForTrial(programId: string, trialId: string, paginationQuery: PaginationQuery, full : boolean): Promise<Result<Error, BiResponse>> {
+  static async getAllForTrial(programId: string, trialId: string): Promise<Result<Error, BiResponse>> {
 
     const body = {
       trialDbIds: [
@@ -31,10 +31,7 @@ export class StudyDAO {
       ]
     };
 
-    return await BrAPIDAOUtil.search(
-      `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/brapi/v2/search/studies`,
-      body,
-      full);
+    return await BrAPIDAOUtil.search(`${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/brapi/v2/search/studies`, body);
   }
 
   static async getAll(programId: string, paginationQuery: PaginationQuery, full : boolean): Promise<Result<Error, BiResponse>> {
