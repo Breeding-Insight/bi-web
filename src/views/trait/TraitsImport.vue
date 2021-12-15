@@ -81,7 +81,7 @@
     <template v-if="state === ImportState.IMPORT_ERROR">
       <h1 class="title">Importing...</h1>
       <ImportInfoTemplateMessageBox v-bind:import-type-name="'Ontology'"
-                                    v-bind:template-url="'https://cornell.box.com/shared/static/lpikmfarysx11vyy4ujowsq4avc3wd1s.xls'"
+                                    v-bind:template-url="'https://cornell.box.com/shared/static/n3oapshmoqjju0yzuhlgh01cuevbzlj5.xls'"
                                     class="mb-5">
         <strong>Before You Import...</strong>
         <br/>Prepare ontology information for import using the provided template.
