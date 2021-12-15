@@ -60,8 +60,7 @@ export class StudyDAO {
 
     const res = await BrAPIDAOUtil.search(`${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/brapi/v2/search/studies`,
       body,
-      full,
-      1000);
+      full);
 
     console.log('studydao');
     console.log(res);
