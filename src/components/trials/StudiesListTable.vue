@@ -273,9 +273,6 @@ export default class StudyTable extends Vue {
 
     try {
       const response: Result<Error, [Study[], Metadata]> = await StudyService.getAll(this.activeProgram!.id!, this.trialId!, paginationQuery);
-      console.log('studies list');
-      console.log(response);
-
       if(response.isErr()) throw response.value;
       let [studies, metadata] = response.value;
 

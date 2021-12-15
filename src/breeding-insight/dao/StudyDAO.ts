@@ -15,7 +15,6 @@
  * limitations under the License.
  */
 
-import {Study} from "@/breeding-insight/model/Study";
 import {BiResponse, Response} from "@/breeding-insight/model/BiResponse";
 import * as api from "@/util/api";
 import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
@@ -25,48 +24,17 @@ import {BrAPIDAOUtil} from "@/breeding-insight/dao/BrAPIDAOUtil";
 export class StudyDAO {
 
   static async getAllForTrial(programId: string, trialId: string, paginationQuery: PaginationQuery, full : boolean): Promise<Result<Error, BiResponse>> {
-    /*
-    try {
-      const query = {
-        page: 0,
-        pageSize: 50,
-        trialDbIds: [
-          trialId
-        ]
-      };
-
-      const { data } = await api.call({
-        url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/brapi/v2/search/studies`,
-        method: 'post',
-        data: query,
-        params: { full }
-      }) as Response;
-
-      return ResultGenerator.success(new BiResponse(data));
-        
-    } catch (error) {
-      return ResultGenerator.err(error);
-    }
-
-     */
 
     const body = {
-      page: 0,
-      pageSize: 50,
       trialDbIds: [
         trialId
       ]
     };
 
-    const res = await BrAPIDAOUtil.search(`${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/brapi/v2/search/studies`,
+    return await BrAPIDAOUtil.search(
+      `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/brapi/v2/search/studies`,
       body,
       full);
-
-    console.log('studydao');
-    console.log(res);
-
-    return res;
-
   }
 
   static async getAll(programId: string, paginationQuery: PaginationQuery, full : boolean): Promise<Result<Error, BiResponse>> {
