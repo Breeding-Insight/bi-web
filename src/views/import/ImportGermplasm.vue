@@ -22,6 +22,7 @@
                     v-bind:confirm-msg="'Confirm New Germplasm Records'"
                     v-bind:import-type-name="'Germplasm'"
                     v-bind:confirm-import-state="confirmImportState"
+                    v-bind:userInput="germplasmList"
                     v-on="$listeners">
 
       <template v-slot:importInfoTemplateMessageBox>
@@ -36,6 +37,31 @@
           Any germplasm detail (attribute or passport information) not specified in the template can be added to the
           database via customized matching in the upcoming step.
         </ImportInfoTemplateMessageBox>
+      </template>
+
+      <template v-slot:userInput>
+        <form
+            class="new-form"
+            novalidate="true"
+        >
+          <p>The following information is required in order to keep a record of your import history.</p>
+          <div class="columns">
+            <div class="column is-one-quarter">
+              <BasicInputField
+                  v-model="germplasmList.germplasmListName"
+                  v-bind:field-name="'Import Group Name'"
+                  v-bind:field-help="'The name of this group of germplasm. It must be unique within your program.'"
+              />
+            </div>
+            <div class="column is-three-quarters">
+              <BasicInputField
+                  v-model="germplasmList.germplasmListDescription"
+                  v-bind:field-name="'Import Group Description'"
+                  v-bind:field-help="'The description of this group of germplasm. This field is optional.'"
+              />
+            </div>
+          </div>
+        </form>
       </template>
 
       <template v-slot:confirmImportMessageBox="{ statistics, abort, confirm, rows }">
@@ -81,14 +107,18 @@ import {ImportFormatter} from "@/breeding-insight/model/report/ImportFormatter";
 import {ReportStruct} from "@/breeding-insight/model/report/ReportStruct";
 import defaultRenames from '@/config/report/ReportRenames';
 import { AlertTriangleIcon } from 'vue-feather-icons';
+import {GermplasmList} from "@/breeding-insight/model/GermplasmList";
+import BasicInputField from "@/components/forms/BasicInputField.vue";
 
 @Component({
   components: {
-    ReportTable, ImportInfoTemplateMessageBox, ConfirmImportMessageBox, ImportTemplate, AlertTriangleIcon
+    ReportTable, ImportInfoTemplateMessageBox, ConfirmImportMessageBox, ImportTemplate, AlertTriangleIcon, BasicInputField
   },
   data: () => ({ImportFormatter})
 })
 export default class ImportGermplasm extends ProgramsBase {
+
+  private germplasmList: GermplasmList = new GermplasmList();
 
   // TODO: maybe move to config instead of hardcode?
   private germplasmImportTemplateName = 'GermplasmTemplateMap';
@@ -109,6 +139,10 @@ export default class ImportGermplasm extends ProgramsBase {
 
   private confirmImportState: DataFormEventBusHandler = new DataFormEventBusHandler();
 
+  mounted() {
+    this.confirmImportState.bus.$on(DataFormEventBusHandler.SAVE_COMPLETE_EVENT, () => this.importFinished());
+  }
+
   getNumNewGermplasmRecords(statistics: any): number | undefined {
     if (statistics.Germplasm) {
       if (statistics.Germplasm.newObjectCount !== undefined) {
@@ -123,5 +157,8 @@ export default class ImportGermplasm extends ProgramsBase {
     return ImportFormatter.format(previewData, this.importConfig);
   }
 
+  importFinished() {
+    this.germplasmList = new GermplasmList();
+  }
 }
 </script>

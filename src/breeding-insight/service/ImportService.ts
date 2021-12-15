@@ -106,7 +106,7 @@ export class ImportService {
 
   }
 
-  static async updateDataUpload(programId: string, mappingId: string, uploadId: string, commit: boolean) {
+  static async updateDataUpload(programId: string, mappingId: string, uploadId: string, userInput: any, commit: boolean) {
     if (!programId || programId === null) {
       throw 'Program ID not provided';
     }
@@ -114,7 +114,7 @@ export class ImportService {
       throw 'Upload ID not provided';
     }
 
-    const response: BiResponse = await ImportDAO.updateUploadData(programId, mappingId, uploadId, commit);
+    const response: BiResponse = await ImportDAO.updateUploadData(programId, mappingId, uploadId, userInput, commit);
     const data: any = response.result;
     const importResponse = new ImportResponse(data);
     return importResponse;
