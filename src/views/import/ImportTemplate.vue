@@ -71,6 +71,8 @@
             v-bind:rows="currentImport.preview !== undefined ? currentImport.preview.rows : []"
       />
 
+      <slot name="userInput" />
+
       <slot name="importPreviewTable" v-bind:import="previewData" />
     </template>
 
@@ -175,6 +177,9 @@ export default class ImportTemplate extends ProgramsBase {
 
   @Prop()
   confirmImportState!: DataFormEventBusHandler;
+
+  @Prop()
+  userInput!: any;
 
   private systemImportTemplateId!: string;
   private currentImport?: ImportResponse = new ImportResponse({});
@@ -418,7 +423,8 @@ export default class ImportTemplate extends ProgramsBase {
   }
 
   async updateDataUpload(uploadId: string, commit: boolean) {
-    let previewResponse: ImportResponse = await ImportService.updateDataUpload(this.activeProgram!.id!, this.systemImportTemplateId, uploadId!, commit);
+    let previewResponse: ImportResponse = await ImportService.updateDataUpload(this.activeProgram!.id!,
+        this.systemImportTemplateId, uploadId!, this.userInput, commit);
     this.currentImport = previewResponse;
 
     // Start check for our data upload

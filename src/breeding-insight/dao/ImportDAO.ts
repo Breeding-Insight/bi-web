@@ -99,12 +99,12 @@ export class ImportDAO {
     return new BiResponse(data);
   }
 
-  static async updateUploadData(programId: string, mappingId: string, uploadId: string, commit: boolean) {
+  static async updateUploadData(programId: string, mappingId: string, uploadId: string, userInput: any, commit: boolean) {
     let url = `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/import/mappings/${mappingId}/data/${uploadId}`;
     url += commit ? '/commit' : '/preview';
     const {data} = await api.call({
       url: url,
-      method: 'put', data: {}}
+      method: 'put', data: commit ? userInput : {}}
     ) as Response;
 
     return new BiResponse(data);
