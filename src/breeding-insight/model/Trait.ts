@@ -29,7 +29,7 @@ export class Trait {
   traitDescription?: string;
   method?: Method;
   scale?: Scale;
-  synonyms?: Array<string>;
+  synonyms: string[] = [];
   mainAbbreviation?: string;
   active?: boolean;
   tags?: string[] = [];
