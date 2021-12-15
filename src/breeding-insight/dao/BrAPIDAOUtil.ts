@@ -28,7 +28,6 @@ export class BrAPIDAOUtil {
   /**
    * Handle BrAPI searches of both saved search and immediate response types
    */
-
   static async search(url: string, body: any, full : boolean): Promise<Result<Error, BiResponse>> {
     try {
 

@@ -20,7 +20,7 @@ import {Study} from "@/breeding-insight/model/Study";
 import {BiResponse, Metadata} from "@/breeding-insight/model/BiResponse";
 import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
 import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
-import {Result, Err, Success, ResultGenerator } from "@/breeding-insight/model/Result";
+import {Result, ResultGenerator } from "@/breeding-insight/model/Result";
 
 export class StudyService {
   
@@ -44,9 +44,6 @@ export class StudyService {
         response = await StudyDAO.getAll(programId, paginationQuery, full) as Result<Error, BiResponse>;
       }
 
-      console.log('study service');
-      console.log(response);
-      
       if(response.isErr()) throw response.value;
       
       const frontendModel = (res: BiResponse): [Study[], Metadata] => {
