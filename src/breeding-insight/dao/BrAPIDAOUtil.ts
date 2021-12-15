@@ -28,7 +28,7 @@ export class BrAPIDAOUtil {
   /**
    * Handle BrAPI searches of both saved search and immediate response types
    */
-  static async search(url: string, body: any, full : boolean): Promise<Result<Error, BiResponse>> {
+  static async search(url: string, body: any): Promise<Result<Error, BiResponse>> {
     try {
 
       body.pageSize = BrAPIDAOUtil.RESULTS_PER_QUERY;
@@ -37,7 +37,6 @@ export class BrAPIDAOUtil {
         url: url,
         method: 'post',
         data: body,
-        params: { full }
       }) as Response;
 
       if (data.result && data.result.searchResultsDbId) {

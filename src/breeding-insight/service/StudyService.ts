@@ -39,7 +39,7 @@ export class StudyService {
       
       let response: Result<Error, BiResponse>;
       if (trialId) {
-        response = await StudyDAO.getAllForTrial(programId, trialId, paginationQuery, full) as Result<Error, BiResponse>;
+        response = await StudyDAO.getAllForTrial(programId, trialId) as Result<Error, BiResponse>;
       } else {
         response = await StudyDAO.getAll(programId, paginationQuery, full) as Result<Error, BiResponse>;
       }
