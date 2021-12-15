@@ -272,9 +272,8 @@ export default class BaseTraitForm extends Vue {
   }
   setAbbreviations(value: string) {
     const abbreviations = this.parseSemiColonList(value);
-    this.trait.abbreviations = abbreviations;
-    if (abbreviations.length > 0) {this.trait.mainAbbreviation = this.trait.abbreviations[0]}
   }
+
   parseSemiColonList(value: string): string[] {
     return value.split(';');
   }

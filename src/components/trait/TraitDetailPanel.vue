@@ -281,9 +281,7 @@
 
     abbreviationsSynonymsString(synonymsMaxLength: number) : string | undefined {
       let abbSyn = "";
-      if (this.data && this.data.abbreviations && this.data.abbreviations.length > 0) {
-        abbSyn = this.data.abbreviations[0];
-      }
+
       if (this.data && this.data.synonyms && this.data.synonyms.length > 0) {
         // Up to synonymsMaxLength synonyms will be shown before , ... cutoff
         const synonyms = this.data.synonyms.slice(0, Math.min(this.data.synonyms.length, synonymsMaxLength)).join(", ");
