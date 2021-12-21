@@ -14,6 +14,11 @@
 
 import {ImportRelation, ImportRelationType} from "@/breeding-insight/model/import/ImportRelation";
 
+export enum ImportCollectTime {
+  MAPPING ="MAPPING",
+  UPLOAD="UPLOAD"
+}
+
 export enum ImportDataType {
   TEXT = "TEXT",
   NUMERICAL = "NUMERICAL",
@@ -32,8 +37,9 @@ export class ImportField {
   required: boolean;
   fields?: ImportField[];
   relationOptions?: ImportRelation[];
+  collectTime?: ImportCollectTime;
 
-  constructor({name, id, description, type, required, fields, relationOptions}: ImportField) {
+  constructor({name, id, description, type, required, fields, relationOptions, collectTime}: ImportField) {
     this.name = name;
     this.id = id;
     this.description = description;
@@ -41,6 +47,7 @@ export class ImportField {
     this.required = required;
     this.fields = fields ? fields.map(field => new ImportField(field)) : fields;
     this.relationOptions = relationOptions ? relationOptions.map(relationOption => new ImportRelation(relationOption)) : relationOptions;
+    this.collectTime = collectTime;
   }
 
   getRelationObject(relationType: ImportRelationType): ImportRelation | undefined {
