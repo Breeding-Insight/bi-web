@@ -19,7 +19,7 @@
   <section id="traitTableLabel">
     <ExpandableTable
         v-bind:records="germplasmLists"
-        v-bind:pagination="GermplasmListsPagination"
+        v-bind:pagination="germplasmListsPagination"
         v-bind:auto-handle-close-panel-event="false"
         v-on:paginate="paginationController.updatePage($event)"
         v-on:paginate-toggle-all="paginationController.toggleShowAll()"
@@ -78,7 +78,6 @@ import {Metadata, Pagination} from "@/breeding-insight/model/BiResponse";
 import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
 import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
 import { StringFormatters } from '@/breeding-insight/utils/StringFormatters';
-import { TraitStringFormatters } from '@/breeding-insight/utils/TraitStringFormatters';
 import BaseTraitForm from "@/components/trait/forms/BaseTraitForm.vue";
 import {ValidationError} from "@/breeding-insight/model/errors/ValidationError";
 import {ProgramService} from "@/breeding-insight/service/ProgramService";
@@ -99,14 +98,16 @@ import ExpandableTable from "@/components/tables/expandableTable/ExpandableTable
     ...mapGetters([
       'activeProgram'
     ])
-  },
-  data: () => ({GermplasmLists})
+  }
 })
 export default class GermplasmListsTable extends Vue {
 
   private activeProgram?: Program;
   private germplasmListsPagination?: Pagination = new Pagination();
   private paginationController: PaginationController = new PaginationController();
+  private germplasmLists: String[] = [];
+  //private germplasmLists: Germplasm[] = [];
+  //todo do i need to make a germplasm model
 
   mounted() {
     this.getGermplasmLists();
