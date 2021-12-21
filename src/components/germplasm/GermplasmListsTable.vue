@@ -59,7 +59,7 @@
 <script lang="ts">
 import {Component, Vue, Watch} from 'vue-property-decorator'
 import WarningModal from '@/components/modals/WarningModal.vue'
-import {PlusCircleIcon} from 'vue-feather-icons'
+import {DownloadIcon} from 'vue-feather-icons'
 import {validationMixin} from 'vuelidate';
 import { mapGetters } from 'vuex'
 import {Program} from "@/breeding-insight/model/Program";
@@ -94,7 +94,7 @@ export default class GermplasmListsTable extends Vue {
   private activeProgram?: Program;
   private germplasmListsPagination?: Pagination = new Pagination();
   private paginationController: PaginationController = new PaginationController();
-  private germplasmLists: GermplasmList[] = ["hello"];
+  private germplasmLists: GermplasmList[] = [];
 
   mounted() {
     this.getGermplasmLists();
