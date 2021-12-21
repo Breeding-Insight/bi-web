@@ -775,12 +775,7 @@ enum PageState {
 
       const mappings: Mapping[] = focusedMapping ? focusedMapping.mapping! : this.mapping.mapping!;
       // Pair the config with its mapping
-      const results = focusedFields.map(field => {
-
-        // Skip user input during mapping stage
-        if (field.collectTime === ImportCollectTime.UPLOAD) {
-          return undefined;
-        }
+      const results = focusedFields.filter(field => field.collectTime !== ImportCollectTime.UPLOAD).map(field => {
 
         const mapping = mappings.find(mapping => mapping.objectId == field.id);
 
@@ -789,7 +784,7 @@ enum PageState {
           this.mapping.addMapping(field, this.focusObjectId!);
         }
         return {config: field, mappedField: mapping}
-      }).filter(field => field !== undefined);
+      });
 
       return results;
     }
