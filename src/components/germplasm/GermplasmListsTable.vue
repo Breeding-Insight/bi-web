@@ -19,7 +19,7 @@
   <section id="traitTableLabel">
     <ExpandableTable
         v-bind:records="germplasmLists"
-        v-bind:pagination="GermplasmListsPagination"
+        v-bind:pagination="germplasmListsPagination"
         v-bind:auto-handle-close-panel-event="false"
         v-on:paginate="paginationController.updatePage($event)"
         v-on:paginate-toggle-all="paginationController.toggleShowAll()"
