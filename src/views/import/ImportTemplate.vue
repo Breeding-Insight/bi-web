@@ -138,7 +138,8 @@ enum ImportAction {
   CONFIRM = "CONFIRM",
   ABORT = "ABORT",
   STOP_LOADING = "STOP_LOADING",
-  DELETE = "DELETE"
+  DELETE = "DELETE",
+  DONE_SUCCESS = "DONE_SUCCESS"
 }
 
 @Component({
@@ -249,6 +250,7 @@ export default class ImportTemplate extends ProgramsBase {
                 actions: ImportAction.CONFIRM
               },
               [ImportEvent.DONE]: {
+                actions: ImportAction.DONE_SUCCESS,
                 target: ImportState.CHOOSE_FILE,
               },
             }
@@ -282,7 +284,10 @@ export default class ImportTemplate extends ProgramsBase {
           },
           [ImportAction.DELETE]: (context, event) => {
             this.delete();
-          }
+          },
+          [ImportAction.DONE_SUCCESS]: (context, event) => {
+            this.finish();
+          },
         }
 
       });
@@ -345,15 +350,18 @@ export default class ImportTemplate extends ProgramsBase {
 
   abort() {
     // TODO: actually cancel request
+    this.finish();
     this.showCancelledNotification();
   }
 
   stopLoading() {
     // upload will still be there but didn't want to wait for it to load
+    this.finish();
     this.showCancelledNotification();
   }
 
   delete() {
+    this.finish();
     this.showCancelledNotification();
   }
 
@@ -468,5 +476,8 @@ export default class ImportTemplate extends ProgramsBase {
     }
   }
 
+  private finish() {
+    this.$emit('finished');
+  }
 }
 </script>

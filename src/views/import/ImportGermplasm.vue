@@ -17,13 +17,16 @@
 
 <template>
   <div id="import-germplasm">
-    <ImportTemplate v-bind:abort-msg="'No germplasm records will be added, and the import in progress will be completely removed.'"
-                    v-bind:system-import-template-name="germplasmImportTemplateName"
-                    v-bind:confirm-msg="'Confirm New Germplasm Records'"
-                    v-bind:import-type-name="'Germplasm'"
-                    v-bind:confirm-import-state="confirmImportState"
-                    v-bind:userInput="germplasmList"
-                    v-on="$listeners">
+    <ImportTemplate
+        v-bind:abort-msg="'No germplasm records will be added, and the import in progress will be completely removed.'"
+        v-bind:system-import-template-name="germplasmImportTemplateName"
+        v-bind:confirm-msg="'Confirm New Germplasm Records'"
+        v-bind:import-type-name="'Germplasm'"
+        v-bind:confirm-import-state="confirmImportState"
+        v-bind:userInput="germplasmList"
+        v-on="$listeners"
+        v-on:finished="importFinished"
+    >
 
       <template v-slot:importInfoTemplateMessageBox>
         <ImportInfoTemplateMessageBox v-bind:import-type-name="'Germplasm'"
@@ -138,10 +141,6 @@ export default class ImportGermplasm extends ProgramsBase {
   }
 
   private confirmImportState: DataFormEventBusHandler = new DataFormEventBusHandler();
-
-  mounted() {
-    this.confirmImportState.bus.$on(DataFormEventBusHandler.SAVE_COMPLETE_EVENT, () => this.importFinished());
-  }
 
   getNumNewGermplasmRecords(statistics: any): number | undefined {
     if (statistics.Germplasm) {
