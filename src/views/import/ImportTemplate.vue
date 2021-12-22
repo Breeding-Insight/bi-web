@@ -51,6 +51,7 @@
       <div class="box">
         <FileSelectMessageBox v-model="file"
                               v-bind:fileTypes="'.csv, .xls, .xlsx'"
+                              v-bind:errors="import_errors"
                               v-on:import="importService.send(ImportEvent.IMPORT_STARTED)"/>
       </div>
     </template>
@@ -319,19 +320,24 @@ export default class ImportTemplate extends ProgramsBase {
 
     try {
       await this.getSystemImportTemplateMapping();
+      this.import_errors=null;
       await this.uploadData();
       const response: ImportResponse = await this.updateDataUpload(this.currentImport!.importId!, false);
       if (response.progress!.statuscode == 500) {
         this.$emit('show-error-notification', 'An unknown error has occurred when processing your import.');
         this.importService.send(ImportEvent.IMPORT_ERROR);
       } else if (response.progress!.statuscode != 200) {
-        this.$emit('show-error-notification', `Error: ${response!.progress!.message!}`);
+        this.import_errors = ImportService.parseError(response);
+        if( this.import_errors==null) {
+          this.$emit('show-error-notification', `Errors: ${response!.progress!.message!}`);
+        }
         this.importService.send(ImportEvent.IMPORT_ERROR);
       }
       // this.importService.send(ImportEvent.IMPORT_SUCCESS) is in getDataUpload()
     } catch(e) {
       if (e.response && e.response.status == 422 && e.response.statusText) {
         this.$log.error(e);
+
         this.$emit('show-error-notification', e.response.statusText);
       } else {
         this.$log.error(e);

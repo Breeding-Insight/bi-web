@@ -21,6 +21,7 @@ import {ImportTypeConfig} from "@/breeding-insight/model/import/ImportTypeConfig
 import {ImportMappingConfig} from "@/breeding-insight/model/import/ImportMapping";
 import {BiResponse} from "@/breeding-insight/model/BiResponse";
 import {ImportResponse} from "@/breeding-insight/model/import/ImportResponse";
+import {ValidationError} from "@/breeding-insight/model/errors/ValidationError";
 
 export class ImportService {
   static mappingNameExists : string = 'A mapping with that name already exists';
@@ -119,5 +120,21 @@ export class ImportService {
     const importResponse = new ImportResponse(data);
     return importResponse;
 
+  }
+
+  static parseError(error: any): ValidationError | string | null {
+
+    const jsonError = error.progress;
+    if (jsonError.errors){
+      const rowErrors = jsonError.errors.rowErrors;
+      if (rowErrors) {
+        let validationError: ValidationError = new ValidationError(rowErrors);
+        return validationError;
+      } else {
+        return jsonError;
+      }
+    } else {
+      return "Cannot find error";
+    }
   }
 }
