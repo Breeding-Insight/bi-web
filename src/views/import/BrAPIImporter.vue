@@ -273,6 +273,23 @@
 
         <!-- Preview -->
         <template v-else-if="currentImport.progress.statuscode == 200">
+          <!-- User Input -->
+          <template v-if="getUserInputFields(selectedImportConfig.fields).length > 0">
+            <div class="box mb-5">
+              <h3>User Input</h3>
+              <template v-for="field of getUserInputFields(selectedImportConfig.fields)">
+
+                <BasicInputField
+                    v-bind:key="field.id"
+                    v-bind:field-name="field.name"
+                    v-bind:field-help="field.description"
+                    v-bind:value="userInput[field.id]"
+                    v-on:input="userInput[field.id] = $event"
+                />
+              </template>
+            </div>
+          </template>
+
           <p>Total number of rows: {{previewTotalRows}}</p>
           <template v-for="key of Object.keys(newObjectCounts)">
             <p v-bind:key="key">New {{key}} count: {{newObjectCounts[key].newObjectCount}}</p>
@@ -349,35 +366,33 @@
 <script lang="ts">
 
 
-  import {Component, Vue} from "vue-property-decorator";
-  import {createMachine, interpret} from "@xstate/fsm";
-  import {ValidationError} from "@/breeding-insight/model/errors/ValidationError";
-  import FileSelectMessageBox from "@/components/file-import/FileSelectMessageBox.vue";
-  import {ImportService} from "@/breeding-insight/service/ImportService";
-  import {ImportTypeConfig} from "@/breeding-insight/model/import/ImportTypeConfig";
-  import {ImportData} from "@/breeding-insight/model/import/ImportData";
-  import {ImportDataType, ImportField} from "@/breeding-insight/model/import/ImportField";
-  import {ImportMappingConfig} from "@/breeding-insight/model/import/ImportMapping";
-  import FieldMappingRow from "@/components/import/FieldMappingRow.vue";
-  import {ImportRelationType} from "@/breeding-insight/model/import/ImportRelation";
-  import {ChevronDownIcon} from "vue-feather-icons";
-  import ImportStepCard from "@/components/import/ImportStepCard.vue";
-  import ObjectMappingRow from "@/components/import/ObjectMappingRow.vue";
-  import ColumnSummary from "@/components/import/ColumnSummary.vue";
-  import RelationMappingRow from "@/components/import/RelationMappingRow.vue";
-  import {Mapping} from "@/breeding-insight/model/import/Mapping";
-  import ListMappingRow from "@/components/import/ListMappingRow.vue";
-  import {mapGetters} from "vuex";
-  import {Program} from "@/breeding-insight/model/Program";
-  import {User} from "@/breeding-insight/model/User";
-  import BasicInputField from "@/components/forms/BasicInputField.vue";
-  import BasicSelectField from "@/components/forms/BasicSelectField.vue";
-  import {ImportResponse} from "@/breeding-insight/model/import/ImportResponse";
-  import {ImportPreview} from "@/breeding-insight/model/import/ImportPreview";
-  import {ImportProgress} from "@/breeding-insight/model/import/ImportProgress";
-  import ProgressBar from "@/components/forms/ProgressBar.vue";
+import {Component, Vue} from "vue-property-decorator";
+import {createMachine, interpret} from "@xstate/fsm";
+import {ValidationError} from "@/breeding-insight/model/errors/ValidationError";
+import FileSelectMessageBox from "@/components/file-import/FileSelectMessageBox.vue";
+import {ImportService} from "@/breeding-insight/service/ImportService";
+import {ImportTypeConfig} from "@/breeding-insight/model/import/ImportTypeConfig";
+import {ImportData} from "@/breeding-insight/model/import/ImportData";
+import {ImportCollectTime, ImportDataType, ImportField} from "@/breeding-insight/model/import/ImportField";
+import {ImportMappingConfig} from "@/breeding-insight/model/import/ImportMapping";
+import FieldMappingRow from "@/components/import/FieldMappingRow.vue";
+import {ImportRelationType} from "@/breeding-insight/model/import/ImportRelation";
+import {ChevronDownIcon} from "vue-feather-icons";
+import ImportStepCard from "@/components/import/ImportStepCard.vue";
+import ObjectMappingRow from "@/components/import/ObjectMappingRow.vue";
+import ColumnSummary from "@/components/import/ColumnSummary.vue";
+import RelationMappingRow from "@/components/import/RelationMappingRow.vue";
+import {Mapping} from "@/breeding-insight/model/import/Mapping";
+import ListMappingRow from "@/components/import/ListMappingRow.vue";
+import {mapGetters} from "vuex";
+import {Program} from "@/breeding-insight/model/Program";
+import {User} from "@/breeding-insight/model/User";
+import BasicInputField from "@/components/forms/BasicInputField.vue";
+import BasicSelectField from "@/components/forms/BasicSelectField.vue";
+import {ImportResponse} from "@/breeding-insight/model/import/ImportResponse";
+import ProgressBar from "@/components/forms/ProgressBar.vue";
 
-  enum PageState {
+enum PageState {
     CREATE_MAPPING = "CREATE_MAPPING",
     IMPORT_DATA = "IMPORT_DATA"
   }
@@ -497,6 +512,7 @@
     private previewData: any[] = [];
     private previewTotalRows: number = 0;
     private newObjectCounts: any = [];
+    private userInput: any = {};
 
     private pageState = PageState.IMPORT_DATA;
     private state = ImportState.CHOOSE_IMPORT;
@@ -554,7 +570,6 @@
       {
         actions: {
           [ImportAction.CHOOSE_IMPORT_TYPE_START]: (context, event) => {
-            this.getImportConfigs();
           }
         }
     });
@@ -564,6 +579,7 @@
 
     created() {
       this.getImportMappings();
+      this.getImportConfigs();
       this.importService.subscribe(state => {
         this.state = ImportState[state.value as keyof typeof ImportState];
       });
@@ -585,6 +601,7 @@
       const foundMapping: ImportMappingConfig | undefined = this.importMappings.find(importMapping => importMapping.id === this.selectedMappingId);
       if (foundMapping) {
         this.mapping = foundMapping;
+        this.selectImportConfig(this.mapping.importTypeId!);
         this.importService.send(ImportEvent.SELECTED_MAPPING);
       } else {
         this.$emit('show-error-notification', 'Error selecting mapping');
@@ -671,17 +688,22 @@
     }
 
     async updateDataUpload(uploadId: string, commit: boolean) {
-      let previewResponse: ImportResponse = await ImportService.updateDataUpload(this.activeProgram!.id!, this.mapping.id!, uploadId!, commit);
-      this.currentImport = previewResponse;
+      try {
+        let previewResponse: ImportResponse = await ImportService.updateDataUpload(this.activeProgram!.id!, this.mapping.id!, uploadId!, this.userInput, commit);
+        this.currentImport = previewResponse;
 
-      // Start check for our data upload
-      const includeMapping = !commit;
-      this.getDataUpload(includeMapping);
+        // Start check for our data upload
+        const includeMapping = !commit;
+        this.getDataUpload(includeMapping);
 
-      if (commit) {
-        this.importService.send(ImportEvent.COMMIT_IMPORT);
-      } else {
-        this.importService.send(ImportEvent.PREVIEW_IMPORT);
+        if (commit) {
+          this.importService.send(ImportEvent.COMMIT_IMPORT);
+        } else {
+          this.importService.send(ImportEvent.PREVIEW_IMPORT);
+        }
+      } catch (e) {
+        this.$log.error(e);
+        this.$emit('show-error-notification', e.response.statusText);
       }
     }
 
@@ -753,7 +775,8 @@
 
       const mappings: Mapping[] = focusedMapping ? focusedMapping.mapping! : this.mapping.mapping!;
       // Pair the config with its mapping
-      const results = focusedFields.map(field => {
+      const results = focusedFields.filter(field => field.collectTime !== ImportCollectTime.UPLOAD).map(field => {
+
         const mapping = mappings.find(mapping => mapping.objectId == field.id);
 
         // Create new object if one doesn't exist
@@ -773,6 +796,21 @@
       } else {
         return undefined;
       }
+    }
+
+    getUserInputFields(fields: ImportField[]): ImportField[] {
+      // Go through all objects and look for user inputs
+      const userFields: ImportField[] = [];
+      for (const field of fields) {
+        if (field.type === ImportDataType.OBJECT) {
+          userFields.push(...this.getUserInputFields(field.fields!));
+        } else {
+          if (field.collectTime === ImportCollectTime.UPLOAD) {
+            userFields.push(field);
+          }
+        }
+      }
+      return userFields;
     }
 
     //TODO: We can make one funtion to combine object and config

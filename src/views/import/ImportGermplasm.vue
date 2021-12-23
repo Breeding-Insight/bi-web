@@ -17,12 +17,16 @@
 
 <template>
   <div id="import-germplasm">
-    <ImportTemplate v-bind:abort-msg="'No germplasm records will be added, and the import in progress will be completely removed.'"
-                    v-bind:system-import-template-name="germplasmImportTemplateName"
-                    v-bind:confirm-msg="'Confirm New Germplasm Records'"
-                    v-bind:import-type-name="'Germplasm'"
-                    v-bind:confirm-import-state="confirmImportState"
-                    v-on="$listeners">
+    <ImportTemplate
+        v-bind:abort-msg="'No germplasm records will be added, and the import in progress will be completely removed.'"
+        v-bind:system-import-template-name="germplasmImportTemplateName"
+        v-bind:confirm-msg="'Confirm New Germplasm Records'"
+        v-bind:import-type-name="'Germplasm'"
+        v-bind:confirm-import-state="confirmImportState"
+        v-bind:userInput="germplasmList"
+        v-on="$listeners"
+        v-on:finished="importFinished"
+    >
 
       <template v-slot:importInfoTemplateMessageBox>
         <ImportInfoTemplateMessageBox v-bind:import-type-name="'Germplasm'"
@@ -36,6 +40,31 @@
           Any germplasm detail (attribute or passport information) not specified in the template can be added to the
           database via customized matching in the upcoming step.
         </ImportInfoTemplateMessageBox>
+      </template>
+
+      <template v-slot:userInput>
+        <form
+            class="new-form"
+            novalidate="true"
+        >
+          <p>The following information is required in order to keep a record of your import history.</p>
+          <div class="columns">
+            <div class="column is-one-quarter">
+              <BasicInputField
+                  v-model="germplasmList.germplasmListName"
+                  v-bind:field-name="'List Name'"
+                  v-bind:field-help="'The name of this group of germplasm. It must be unique within your program.'"
+              />
+            </div>
+            <div class="column is-three-quarters">
+              <BasicInputField
+                  v-model="germplasmList.germplasmListDescription"
+                  v-bind:field-name="'List Description'"
+                  v-bind:field-help="'The description of this group of germplasm. This field is optional.'"
+              />
+            </div>
+          </div>
+        </form>
       </template>
 
       <template v-slot:confirmImportMessageBox="{ statistics, abort, confirm, rows }">
@@ -81,14 +110,18 @@ import {ImportFormatter} from "@/breeding-insight/model/report/ImportFormatter";
 import {ReportStruct} from "@/breeding-insight/model/report/ReportStruct";
 import defaultRenames from '@/config/report/ReportRenames';
 import { AlertTriangleIcon } from 'vue-feather-icons';
+import {GermplasmList} from "@/breeding-insight/model/GermplasmList";
+import BasicInputField from "@/components/forms/BasicInputField.vue";
 
 @Component({
   components: {
-    ReportTable, ImportInfoTemplateMessageBox, ConfirmImportMessageBox, ImportTemplate, AlertTriangleIcon
+    ReportTable, ImportInfoTemplateMessageBox, ConfirmImportMessageBox, ImportTemplate, AlertTriangleIcon, BasicInputField
   },
   data: () => ({ImportFormatter})
 })
 export default class ImportGermplasm extends ProgramsBase {
+
+  private germplasmList: GermplasmList = new GermplasmList();
 
   // TODO: maybe move to config instead of hardcode?
   private germplasmImportTemplateName = 'GermplasmTemplateMap';
@@ -96,12 +129,12 @@ export default class ImportGermplasm extends ProgramsBase {
     names: Object.assign(defaultRenames, {
       'defaultDisplayName': 'Name',
       'breedingMethod': 'Breeding Method',
-      'seedSourceDescription': 'Source',
+      'seedSource': 'Source',
       'pedigree': 'Pedigree',
       'importEntryNumber': 'Entry No.'
     }),
     display: ['germplasm.additionalInfo.importEntryNumber','germplasm.defaultDisplayName',
-      'germplasm.additionalInfo.breedingMethod', 'germplasm.seedSourceDescription', 'germplasm.pedigree'],
+      'germplasm.additionalInfo.breedingMethod', 'germplasm.seedSource', 'germplasm.pedigree'],
     detailDisplay: '*',
     defaultSort: 'germplasm.germplasmName',
     defaultSortOrder: 'asc'
@@ -123,5 +156,8 @@ export default class ImportGermplasm extends ProgramsBase {
     return ImportFormatter.format(previewData, this.importConfig);
   }
 
+  importFinished() {
+    this.germplasmList = new GermplasmList();
+  }
 }
 </script>

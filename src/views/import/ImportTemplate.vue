@@ -71,6 +71,8 @@
             v-bind:rows="currentImport.preview !== undefined ? currentImport.preview.rows : []"
       />
 
+      <slot name="userInput" />
+
       <slot name="importPreviewTable" v-bind:import="previewData" />
     </template>
 
@@ -136,7 +138,8 @@ enum ImportAction {
   CONFIRM = "CONFIRM",
   ABORT = "ABORT",
   STOP_LOADING = "STOP_LOADING",
-  DELETE = "DELETE"
+  DELETE = "DELETE",
+  DONE_SUCCESS = "DONE_SUCCESS"
 }
 
 @Component({
@@ -175,6 +178,9 @@ export default class ImportTemplate extends ProgramsBase {
 
   @Prop()
   confirmImportState!: DataFormEventBusHandler;
+
+  @Prop()
+  userInput!: any;
 
   private systemImportTemplateId!: string;
   private currentImport?: ImportResponse = new ImportResponse({});
@@ -244,6 +250,7 @@ export default class ImportTemplate extends ProgramsBase {
                 actions: ImportAction.CONFIRM
               },
               [ImportEvent.DONE]: {
+                actions: ImportAction.DONE_SUCCESS,
                 target: ImportState.CHOOSE_FILE,
               },
             }
@@ -277,7 +284,10 @@ export default class ImportTemplate extends ProgramsBase {
           },
           [ImportAction.DELETE]: (context, event) => {
             this.delete();
-          }
+          },
+          [ImportAction.DONE_SUCCESS]: (context, event) => {
+            this.finish();
+          },
         }
 
       });
@@ -340,15 +350,18 @@ export default class ImportTemplate extends ProgramsBase {
 
   abort() {
     // TODO: actually cancel request
+    this.finish();
     this.showCancelledNotification();
   }
 
   stopLoading() {
     // upload will still be there but didn't want to wait for it to load
+    this.finish();
     this.showCancelledNotification();
   }
 
   delete() {
+    this.finish();
     this.showCancelledNotification();
   }
 
@@ -379,7 +392,11 @@ export default class ImportTemplate extends ProgramsBase {
         this.importService.send(ImportEvent.DONE);
       }
     } catch (e) {
-      this.$emit('show-error-notification', 'An unknown error has occurred when uploading your import.');
+      if (e.response && e.response.statusText && e.response.status != 500) {
+        this.$emit('show-error-notification', e.response.statusText);
+      } else {
+        this.$emit('show-error-notification', 'An unknown error has occurred when uploading your import.');
+      }
     } finally {
       this.confirmImportState.bus.$emit(DataFormEventBusHandler.SAVE_COMPLETE_EVENT);
     }
@@ -418,7 +435,8 @@ export default class ImportTemplate extends ProgramsBase {
   }
 
   async updateDataUpload(uploadId: string, commit: boolean) {
-    let previewResponse: ImportResponse = await ImportService.updateDataUpload(this.activeProgram!.id!, this.systemImportTemplateId, uploadId!, commit);
+    let previewResponse: ImportResponse = await ImportService.updateDataUpload(this.activeProgram!.id!,
+        this.systemImportTemplateId, uploadId!, this.userInput, commit);
     this.currentImport = previewResponse;
 
     // Start check for our data upload
@@ -462,5 +480,8 @@ export default class ImportTemplate extends ProgramsBase {
     }
   }
 
+  private finish() {
+    this.$emit('finished');
+  }
 }
 </script>
