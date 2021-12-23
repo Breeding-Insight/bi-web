@@ -1,6 +1,6 @@
 {
   "name": "bi-web",
-  "version": "v0.5.0+224",
+  "version": "v0.5.0+226",
   "private": true,
   "scripts": {
     "build": "node $npm_package_config_task_path/build.js --dev-audit-level=critical --prod-audit-level=none",
@@ -87,5 +87,5 @@
     "vue-cli-plugin-axios": "0.0.4",
     "vue-template-compiler": "^2.6.10"
   },
-  "versionInfo": "https://github.com/Breeding-Insight/bi-web/commit/32f5fd2d791eb7c1b9c905626e520c281616e288"
+  "versionInfo": "https://github.com/Breeding-Insight/bi-web/commit/324c40bd50e70b2402721a6474eae0f383144276"
 }
