@@ -392,7 +392,11 @@ export default class ImportTemplate extends ProgramsBase {
         this.importService.send(ImportEvent.DONE);
       }
     } catch (e) {
-      this.$emit('show-error-notification', 'An unknown error has occurred when uploading your import.');
+      if (e.response && e.response.statusText && e.response.status != 500) {
+        this.$emit('show-error-notification', e.response.statusText);
+      } else {
+        this.$emit('show-error-notification', 'An unknown error has occurred when uploading your import.');
+      }
     } finally {
       this.confirmImportState.bus.$emit(DataFormEventBusHandler.SAVE_COMPLETE_EVENT);
     }

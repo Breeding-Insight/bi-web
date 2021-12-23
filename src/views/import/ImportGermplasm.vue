@@ -52,14 +52,14 @@
             <div class="column is-one-quarter">
               <BasicInputField
                   v-model="germplasmList.germplasmListName"
-                  v-bind:field-name="'Import Group Name'"
+                  v-bind:field-name="'List Name'"
                   v-bind:field-help="'The name of this group of germplasm. It must be unique within your program.'"
               />
             </div>
             <div class="column is-three-quarters">
               <BasicInputField
                   v-model="germplasmList.germplasmListDescription"
-                  v-bind:field-name="'Import Group Description'"
+                  v-bind:field-name="'List Description'"
                   v-bind:field-help="'The description of this group of germplasm. This field is optional.'"
               />
             </div>
