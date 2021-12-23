@@ -31,6 +31,7 @@ import ObservationsList from '@/views/observations/ObservationsList.vue';
 import AdminProgramManagement from '@/views/admin/AdminProgramManagement.vue'
 import AdminUserManagement from '@/views/admin/AdminUserManagement.vue'
 import BrAPIImporter from '@/views/import/BrAPIImporter.vue'
+import GermplasmTable from '@/views/germplasm/GermplasmTable.vue';
 import store from '@/store/index.ts';
 import {
   LOGIN,
@@ -258,6 +259,47 @@ const routes = [
         component: OntologyActiveTable
       }
     ]
+  },
+  {
+    path: '/programs/:programId/ontology',
+    name: 'ontology',
+    meta: {
+      title: 'Ontology',
+      layout: layouts.userSideBar
+    },
+    component: Ontology,
+    redirect: {name: 'active-terms'},
+    beforeEnter: processProgramNavigation,
+    children: [
+      {
+        path: 'archived-terms',
+        name: 'archived-terms',
+        meta: {
+          title: 'Archived Terms',
+          layout: layouts.userSideBar
+        },
+        component: OntologyArchivedTable
+      },
+      {
+        path: 'active-terms',
+        name: 'active-terms',
+        meta: {
+          title: 'Active Terms',
+          layout: layouts.userSideBar
+        },
+        component: OntologyActiveTable
+      }
+    ]
+  },
+  {
+    path: '/programs/:programId/germplasmlist',
+    name: 'germplasmlist',
+    meta: {
+      title: 'GermplasmList',
+      layout: layouts.userSideBar
+    },
+    component: GermplasmTable,
+    beforeEnter: processProgramNavigation,
   },
   {
     path: '/programs/:programId/traits',

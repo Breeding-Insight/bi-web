@@ -114,14 +114,14 @@ export default class ReportTable extends Vue {
 
   defaultPageSize: number = 20;
   pagination: Pagination = new Pagination({
-    totalPages: this.report.data.length / this.defaultPageSize,
+    totalPages: this.report ? this.report.data.length / this.defaultPageSize : 0,
     currentPage: 1,
-    totalCount: this.report.data.length,
-    pageSize: this.defaultPageSize
+    totalCount: this.report ? this.report.data.length : 0,
+    pageSize: this.report ? this.defaultPageSize : 0
   });
 
   getDetails(rowId: string): any {
-    if (this.report.details) {
+    if (this.report && this.report.details) {
       return this.report.details[rowId];
     }
   }
@@ -140,7 +140,7 @@ export default class ReportTable extends Vue {
 
   toggleShowAll() {
     this.pagination.currentPage = 1;
-    this.pagination.pageSize = this.report.data.length;
+    this.pagination.pageSize = this.report ? this.report.data.length : 0;
   }
 }
 
