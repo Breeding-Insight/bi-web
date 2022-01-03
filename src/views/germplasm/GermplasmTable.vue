@@ -1,32 +1,55 @@
 <template>
   <section id="germplasmTable">
-    <report-table
-        v-bind:report="this.report"
-        v-bind:config="importConfig"
-        detailed
-        paginated
-    />
+    <ExpandableTable
+        v-bind:records.sync="germplasm"
+        v-bind:loading="this.germplasmLoading"
+        v-bind:pagination="pagination"
+        v-on:show-error-notification="$emit('show-error-notification', $event)"
+        v-on:paginate="paginationController.updatePage($event)"
+        v-on:paginate-toggle-all="paginationController.toggleShowAll()"
+        v-on:paginate-page-size="paginationController.updatePageSize($event)"
+        v-on:sort="paginationController.updateSort($event)"
+    >
+      <b-table-column field="accessionNumber" label="Accession Number" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+        {{ props.row.data.accessionNumber }}
+      </b-table-column>
+      <b-table-column field="defaultDisplayName" label="Name" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+        {{ props.row.data.defaultDisplayName }}
+      </b-table-column>
+      <b-table-column field="additionalInfo.breedingMethod" label="Breeding Method" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+        {{ props.row.data.additionalInfo.breedingMethod }}
+      </b-table-column>
+      <b-table-column field="seedSource" label="Seed Source" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+        {{ props.row.data.seedSource }}
+      </b-table-column>
+      <b-table-column field="pedigree" label="Pedigree" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+        {{ props.row.data.pedigree }}
+      </b-table-column>
+      <b-table-column field="createdDate" label="Created Date" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+        {{ props.row.data.additionalInfo.createdDate }}
+      </b-table-column>
+    </ExpandableTable>
   </section>
 </template>
 
 <script lang="ts">
-import {Component, Vue} from "vue-property-decorator";
+import {Component, Vue, Watch} from "vue-property-decorator";
 import {validationMixin} from "vuelidate";
 import {mapGetters} from "vuex";
 import {Trait} from "@/breeding-insight/model/Trait";
 import {StringFormatters} from "@/breeding-insight/utils/StringFormatters";
 import {TraitStringFormatters} from "@/breeding-insight/utils/TraitStringFormatters";
-import {ReportStruct} from "@/breeding-insight/model/report/ReportStruct";
-import defaultRenames from "@/config/report/ReportRenames";
-import {BrAPIFormatter} from "@/breeding-insight/model/report/BrAPIFormatter";
 import ReportTable from "@/components/report/ReportTable.vue";
 import {Program} from "@/breeding-insight/model/Program";
 import {BrAPIService, BrAPIType} from "@/breeding-insight/service/BrAPIService";
 import {Germplasm} from "@/breeding-insight/brapps/reporter/model/germplasm";
+import {Pagination} from "@/breeding-insight/model/BiResponse";
+import ExpandableTable from "@/components/tables/expandableTable/ExpandableTable.vue";
+import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
 
 @Component({
   mixins: [validationMixin],
-  components: {ReportTable},
+  components: {ReportTable, ExpandableTable},
   computed: {
     ...mapGetters([
       'activeProgram'
@@ -36,45 +59,33 @@ import {Germplasm} from "@/breeding-insight/brapps/reporter/model/germplasm";
 })
 export default class GermplasmTable extends Vue {
 
-  // TODO: Add backend pagination
-  // TODO: Add backend sorting
-
-  // TODO: Male GID
-  // TODO: Female GID
-  // TODO: Created by
-  private importConfig: any = {
-    names: Object.assign(defaultRenames, {
-      'defaultDisplayName': 'Name',
-      'breedingMethod': 'Breeding Method',
-      'seedSource': 'Source',
-      'pedigree': 'Pedigree',
-      'importEntryNumber': 'Entry No.',
-      'createdDate': 'Created Date',
-      'accessionNumber': 'GID'
-    }),
-    display: ['accessionNumber','defaultDisplayName',
-      'additionalInfo.breedingMethod', 'seedSource', 'pedigree', "additionalInfo.createdDate"],
-    detailDisplay: '*',
-    defaultSort: 'accessionNumber',
-    defaultSortOrder: 'asc'
-  }
-
   private activeProgram?: Program;
-  private report?: ReportStruct = BrAPIFormatter.format([], this.importConfig);
+  private pagination?: Pagination = new Pagination();
+  private paginationController: PaginationController = new PaginationController();
+  private germplasmLoading: Boolean = false;
+  private germplasm: Germplasm[] = [];
 
   mounted() {
+    this.paginationController.pageSize = 20;
     this.getGermplasm();
   }
 
+  @Watch('paginationController', { deep: true})
   async getGermplasm() {
-    const response = await BrAPIService.get(BrAPIType.GERMPLASM, {}, this.activeProgram!.id!, 1000, 0);
-    this.processData(response.result.data as Germplasm[]);
+    this.germplasmLoading = true;
+    try {
+      const response = await BrAPIService.get(BrAPIType.GERMPLASM, {}, this.activeProgram!.id!,
+          this.paginationController.pageSize, this.paginationController.currentPage - 1);
+      this.pagination = new Pagination(response.metadata.pagination);
+      // Account for brapi 0 indexing of paging
+      this.pagination.currentPage = this.pagination.currentPage.valueOf() + 1;
+      this.germplasm = response.result.data;
+      this.germplasmLoading = false;
+    } catch (e) {
+      this.$emit('show-error-notification', 'Error loading germplasm');
+    }
+
   }
 
-  processData(data: any[]) {
-    console.log(data);
-    // Do special germplasm import formatting here
-    this.report = BrAPIFormatter.format(data ? data : [], this.importConfig);
-  }
 }
 </script>
