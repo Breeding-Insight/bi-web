@@ -10,7 +10,7 @@
         v-on:paginate-page-size="paginationController.updatePageSize($event)"
         v-on:sort="paginationController.updateSort($event)"
     >
-      <b-table-column field="accessionNumber" label="Accession Number" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+      <b-table-column field="accessionNumber" label="GID" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
         {{ props.row.data.accessionNumber }}
       </b-table-column>
       <b-table-column field="defaultDisplayName" label="Name" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
@@ -19,14 +19,17 @@
       <b-table-column field="additionalInfo.breedingMethod" label="Breeding Method" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
         {{ props.row.data.additionalInfo.breedingMethod }}
       </b-table-column>
-      <b-table-column field="seedSource" label="Seed Source" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+      <b-table-column field="seedSource" label="Source" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
         {{ props.row.data.seedSource }}
       </b-table-column>
-      <b-table-column field="pedigree" label="Pedigree" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+      <b-table-column field="pedigree" label="Parental GIDs" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
         {{ props.row.data.pedigree }}
       </b-table-column>
       <b-table-column field="createdDate" label="Created Date" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
         {{ props.row.data.additionalInfo.createdDate }}
+      </b-table-column>
+      <b-table-column field="createdBy.userName" label="Created By" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+        {{ props.row.data.additionalInfo.createdBy.userName }}
       </b-table-column>
     </ExpandableTable>
   </section>
@@ -74,6 +77,11 @@ export default class GermplasmTable extends Vue {
   async getGermplasm() {
     this.germplasmLoading = true;
     try {
+      if (this.paginationController.showAll) {
+        this.paginationController.pageSize = this.pagination.totalCount;
+        this.paginationController.currentPage = 1;
+        this.paginationController.showAll = false;
+      }
       const response = await BrAPIService.get(BrAPIType.GERMPLASM, {}, this.activeProgram!.id!,
           this.paginationController.pageSize, this.paginationController.currentPage - 1);
       this.pagination = new Pagination(response.metadata.pagination);
@@ -83,6 +91,7 @@ export default class GermplasmTable extends Vue {
       this.germplasmLoading = false;
     } catch (e) {
       this.$emit('show-error-notification', 'Error loading germplasm');
+      this.germplasmLoading = false;
     }
 
   }
