@@ -1,5 +1,8 @@
 <template>
   <section id="germplasmTable">
+    <h1 class="title">
+      Germplasm
+    </h1>
     <ExpandableTable
         v-bind:records.sync="germplasm"
         v-bind:loading="this.germplasmLoading"
@@ -31,6 +34,13 @@
       <b-table-column field="createdBy.userName" label="Created By" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
         {{ props.row.data.additionalInfo.createdBy.userName }}
       </b-table-column>
+
+      <template v-slot:emptyMessage>
+        <p class="has-text-weight-bold">
+          No germplasm are currently defined for this program.
+        </p>
+        Germplasm are able to be created through the germplasm import.<br>
+      </template>
     </ExpandableTable>
   </section>
 </template>
