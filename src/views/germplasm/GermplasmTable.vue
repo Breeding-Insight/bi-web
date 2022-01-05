@@ -88,7 +88,7 @@ export default class GermplasmTable extends Vue {
     this.germplasmLoading = true;
     try {
       if (this.paginationController.showAll) {
-        this.paginationController.pageSize = this.pagination.totalCount;
+        this.paginationController.pageSize = this.pagination!.totalCount.valueOf();
         this.paginationController.currentPage = 1;
         this.paginationController.showAll = false;
       }
