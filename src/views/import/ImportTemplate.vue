@@ -191,7 +191,7 @@ export default class ImportTemplate extends ProgramsBase {
   private newObjectCounts: any = [];
 
   private file : File | null = null;
-  private import_errors: ValidationError | AxiosResponse | null = null;
+  private import_errors: ValidationError | String | null = null;
   private activeProgram?: Program;
   private tableLoaded = false;
   private showAbortModal = false;
