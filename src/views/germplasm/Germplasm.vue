@@ -16,7 +16,7 @@
   -->
 
 <template>
-  <div class="ontology">
+  <div class="germplasm">
     <h1 class="title">
       Germplasm
     </h1>
@@ -56,14 +56,10 @@
 import { Component } from 'vue-property-decorator'
 import {mapGetters} from "vuex";
 import {Program} from "@/breeding-insight/model/Program";
-import OntologyActiveTable from "@/components/ontology/OntologyActiveTable.vue";
-import OntologyArchivedTable from "@/components/ontology/OntologyArchivedTable.vue";
 import GermplasmBase from "@/components/germplasm/GermplasmBase.vue";
 
 @Component({
-  components: {
-    OntologyArchivedTable, OntologyActiveTable
-  },
+  components: {},
   computed: {
     ...mapGetters([
       'activeProgram'

@@ -262,37 +262,6 @@ const routes = [
     ]
   },
   {
-    path: '/programs/:programId/ontology',
-    name: 'ontology',
-    meta: {
-      title: 'Ontology',
-      layout: layouts.userSideBar
-    },
-    component: Ontology,
-    redirect: {name: 'active-terms'},
-    beforeEnter: processProgramNavigation,
-    children: [
-      {
-        path: 'archived-terms',
-        name: 'archived-terms',
-        meta: {
-          title: 'Archived Terms',
-          layout: layouts.userSideBar
-        },
-        component: OntologyArchivedTable
-      },
-      {
-        path: 'active-terms',
-        name: 'active-terms',
-        meta: {
-          title: 'Active Terms',
-          layout: layouts.userSideBar
-        },
-        component: OntologyActiveTable
-      }
-    ]
-  },
-  {
     path: '/programs/:programId/germplasm',
     name: 'germplasm',
     meta: {
