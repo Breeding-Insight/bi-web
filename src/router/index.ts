@@ -363,7 +363,7 @@ const routes = [
       },
       {
         path: 'germplasm',
-        name: 'germplasm',
+        name: 'germplasm-import',
         meta: {
           title: 'Germplasm',
           layout: layouts.userSideBar

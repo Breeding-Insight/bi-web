@@ -164,7 +164,7 @@
                   </router-link>
                 </li>
                 <li>
-                  <router-link v-bind:to="{name: 'germplasm', params: {programId: activeProgram.id}}">
+                  <router-link v-bind:to="{name: 'germplasm-import', params: {programId: activeProgram.id}}">
                     Germplasm
                   </router-link>
                 </li>
@@ -341,6 +341,7 @@
     private ontologyMenuId: string = "usersidebarlayout-ontology-menu";
     private programManagementMenuId: string = "usersidebarlayout-program-management-menu";
     private brAPIMenuId: string = "usersidebarlayout-brapi-menu";
+    private germplasmMenuId: string = "usersidebarlayout-germplasm-menu";
 
   @Prop()
     username!: string;
