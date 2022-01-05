@@ -16,11 +16,10 @@
   -->
 
 <template>
-  <section id="traitTableLabel">
+  <section id="germplasmListTableLabel">
     <ExpandableTable
         v-bind:records="germplasmLists"
         v-bind:pagination="germplasmListsPagination"
-        v-bind:auto-handle-close-panel-event="false"
         v-on:paginate="paginationController.updatePage($event)"
         v-on:paginate-toggle-all="paginationController.toggleShowAll()"
         v-on:paginate-page-size="paginationController.updatePageSize($event)"
@@ -77,12 +76,9 @@ import TableColumn from "@/components/tables/TableColumn.vue";
 import {Metadata, Pagination} from "@/breeding-insight/model/BiResponse";
 import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
 import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
-import { StringFormatters } from '@/breeding-insight/utils/StringFormatters';
 import BaseTraitForm from "@/components/trait/forms/BaseTraitForm.vue";
-import {ValidationError} from "@/breeding-insight/model/errors/ValidationError";
-import {ProgramService} from "@/breeding-insight/service/ProgramService";
-import {MethodClass} from "@/breeding-insight/model/Method";
-import {DataType, Scale} from "@/breeding-insight/model/Scale";
+import {GermplasmList} from "@/breeding-insight/model/GermplasmList";
+import {GermplasmService} from "@/breeding-insight/service/GermplasmService";
 import {
   DEACTIVATE_ALL_NOTIFICATIONS,
 } from "@/store/mutation-types";
@@ -105,9 +101,7 @@ export default class GermplasmListsTable extends Vue {
   private activeProgram?: Program;
   private germplasmListsPagination?: Pagination = new Pagination();
   private paginationController: PaginationController = new PaginationController();
-  private germplasmLists: String[] = [];
-  //private germplasmLists: Germplasm[] = [];
-  //todo do i need to make a germplasm model
+  private germplasmLists: GermplasmList[] = ["hello"];
 
   mounted() {
     this.getGermplasmLists();
@@ -119,16 +113,21 @@ export default class GermplasmListsTable extends Vue {
         this.paginationController.currentPage, this.paginationController.pageSize, this.paginationController.showAll);
     this.paginationController.setCurrentCall(paginationQuery);
 
-    /*GermplasmListsService.getAll(this.activeProgram!.id!, paginationQuery, true).then(([germplasmLists, metadata]) => {
+    GermplasmService.getAll(this.activeProgram!.id!, paginationQuery).then(([germplasmLists, metadata]) => {
+      //not getting to the "then"
+      this.germplasmLists = ["hello", "hi"];
+      console.log('here?');
       if (this.paginationController.matchesCurrentRequest(metadata.pagination)){
-        this.germplasmLists = germplasmLists;
+        this.germplasmLists = germplasmLists; //not getting here?
         this.germplasmListsPagination = metadata.pagination;
       }
+      this.germplasmLists = germplasmLists; //not getting here?
+      this.germplasmListsPagination = metadata.pagination;
     }).catch((error) => {
       // Display error that germplasm lists cannot be loaded
       this.$emit('show-error-notification', 'Error while trying to load germplasm lists');
       throw error;
-    });*/
+    });
   }
 }
 
