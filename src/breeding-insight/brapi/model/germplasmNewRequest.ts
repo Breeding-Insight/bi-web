@@ -9,12 +9,12 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { ExternalReferences } from '@/breeding-insight/brapps/reporter/model/externalReferences';
-import { GermplasmNewRequestDonors } from '@/breeding-insight/brapps/reporter/model/germplasmNewRequestDonors';
-import { GermplasmNewRequestStorageTypes } from '@/breeding-insight/brapps/reporter/model/germplasmNewRequestStorageTypes';
-import { GermplasmNewRequestSynonyms } from '@/breeding-insight/brapps/reporter/model/germplasmNewRequestSynonyms';
-import { GermplasmOrigin } from '@/breeding-insight/brapps/reporter/model/germplasmOrigin';
-import { TaxonID } from '@/breeding-insight/brapps/reporter/model/taxonID';
+import { ExternalReferences } from '@/breeding-insight/brapi/model/externalReferences';
+import { GermplasmNewRequestDonors } from '@/breeding-insight/brapi/model/germplasmNewRequestDonors';
+import { GermplasmNewRequestStorageTypes } from '@/breeding-insight/brapi/model/germplasmNewRequestStorageTypes';
+import { GermplasmNewRequestSynonyms } from '@/breeding-insight/brapi/model/germplasmNewRequestSynonyms';
+import { GermplasmOrigin } from '@/breeding-insight/brapi/model/germplasmOrigin';
+import { TaxonID } from '@/breeding-insight/brapi/model/taxonID';
 
 export interface GermplasmNewRequest { 
     /**

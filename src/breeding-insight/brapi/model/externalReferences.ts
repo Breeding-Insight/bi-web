@@ -9,7 +9,7 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { ExternalReferencesInner } from '@/breeding-insight/brapps/reporter/model/externalReferencesInner';
+import { ExternalReferencesInner } from '@/breeding-insight/brapi/model/externalReferencesInner';
 
 /**
  * An array of external reference ids. These are references to this piece of data in an external system. Could be a simple string or a URI.

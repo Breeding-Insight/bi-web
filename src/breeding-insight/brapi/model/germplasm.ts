@@ -9,7 +9,7 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { GermplasmNewRequest } from '@/breeding-insight/brapps/reporter/model/germplasmNewRequest';
+import { GermplasmNewRequest } from '@/breeding-insight/brapi/model/germplasmNewRequest';
 
 export interface Germplasm extends GermplasmNewRequest { 
     /**

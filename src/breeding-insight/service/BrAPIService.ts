@@ -17,8 +17,6 @@
 
 import * as api from "@/util/api";
 import {BiResponse, Response} from "@/breeding-insight/model/BiResponse";
-import {ResultGenerator} from "@/breeding-insight/model/Result";
-import {Germplasm} from "@/breeding-insight/brapps/reporter/model/germplasm";
 
 export enum BrAPIType {
   GERMPLASM = "germplasm"

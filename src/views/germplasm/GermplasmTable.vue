@@ -1,7 +1,7 @@
 <template>
   <section id="germplasmTable">
     <h1 class="title">
-      Germplasm
+      All Germplasm
     </h1>
     <ExpandableTable
         v-bind:records.sync="germplasm"
@@ -55,7 +55,7 @@ import {TraitStringFormatters} from "@/breeding-insight/utils/TraitStringFormatt
 import ReportTable from "@/components/report/ReportTable.vue";
 import {Program} from "@/breeding-insight/model/Program";
 import {BrAPIService, BrAPIType} from "@/breeding-insight/service/BrAPIService";
-import {Germplasm} from "@/breeding-insight/brapps/reporter/model/germplasm";
+import {Germplasm} from "@/breeding-insight/brapi/model/germplasm";
 import {Pagination} from "@/breeding-insight/model/BiResponse";
 import ExpandableTable from "@/components/tables/expandableTable/ExpandableTable.vue";
 import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";

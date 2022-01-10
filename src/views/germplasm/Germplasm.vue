@@ -29,7 +29,7 @@
               tag="li"
               active-class="is-active"
           >
-            <a>Germplasm</a>
+            <a>All Germplasm</a>
           </router-link>
           <router-link
               v-bind:to="{name: 'germplasm-list', params: {programId: activeProgram.id}}"

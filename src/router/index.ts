@@ -276,7 +276,7 @@ const routes = [
         path: 'germplasm-all',
         name: 'germplasm-all',
         meta: {
-          title: 'Germplasm',
+          title: 'All Germplasm',
           layout: layouts.userSideBar
         },
         component: GermplasmTable
