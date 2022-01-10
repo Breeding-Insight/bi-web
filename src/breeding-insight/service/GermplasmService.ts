@@ -19,7 +19,7 @@ import {GermplasmList} from "@/breeding-insight/model/GermplasmList";
 import {BiResponse, Metadata} from "@/breeding-insight/model/BiResponse";
 import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
 import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
-import * as api from "@/util/api";
+import {GermplasmDAO} from "@/breeding-insight/dao/GermplasmDAO";
 
 export class GermplasmService {
 
@@ -33,37 +33,24 @@ export class GermplasmService {
             }
 
             if (programId) {
-                const config: any = {};
-                config.url = `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/brapi/v2/lists`;
-                //http://localhost:8081/v1/lists
+                GermplasmDAO.getAllLists(programId, paginationQuery).then((biResponse: BiResponse) => {
+                    if (biResponse.result.data) {
+                        //TODO: Remove when backend default sorting is implemented
+                        biResponse.result.data = PaginationController.mockSortRecords(biResponse.result.data);
+                        germplasmLists = biResponse.result.data.map((germplasmList: any) => {
+                            return germplasmList as GermplasmList;
+                        });
+                    }
 
-                config.method = 'get';
-                config.programId = programId;
+                    //TODO: Remove when backend pagination is implemented
+                    let newPagination;
+                    [germplasmLists, newPagination] = PaginationController.mockPagination(germplasmLists, paginationQuery!.page, paginationQuery!.pageSize, paginationQuery!.showAll);
+                    biResponse.metadata.pagination = newPagination;
 
-                return new Promise<[GermplasmList[], Metadata]>(((resolve, reject) => {
-                    api.call(config)
-                        .then((response: any) => {
-                            const biResponse = new BiResponse(response.data);
-                            if (biResponse.result.data) {
-                                //TODO: Remove when backend default sorting is implemented
-                                biResponse.result.data = PaginationController.mockSortRecords(biResponse.result.data);
-                                germplasmLists = biResponse.result.data.map((germplasmList: any) => {
-                                    return germplasmList as GermplasmList;
-                                });
-                            }
-
-                            //TODO: Remove when backend pagination is implemented
-                            let newPagination;
-                            [germplasmLists, newPagination] = PaginationController.mockPagination(germplasmLists, paginationQuery!.page, paginationQuery!.pageSize, paginationQuery!.showAll);
-                            biResponse.metadata.pagination = newPagination;
-
-                            resolve([germplasmLists, biResponse.metadata]);
-                            //resolve(biResponse);
-                        }).catch((error) => {
-                        reject(error);
-                    })
-
-                }))
+                    resolve([germplasmLists, biResponse.metadata]);
+                }).catch((error) => {
+                    reject(error);
+                })
             } else {
                 reject();
             }

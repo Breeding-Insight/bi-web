@@ -18,32 +18,28 @@
 <template>
   <section id="germplasmListTableLabel">
     <ExpandableTable
-        v-bind:records="germplasmLists"
+        v-bind:records.sync="germplasmLists"
+        v-bind:loading="this.germplasmListsLoading"
         v-bind:pagination="germplasmListsPagination"
         v-on:paginate="paginationController.updatePage($event)"
         v-on:paginate-toggle-all="paginationController.toggleShowAll()"
         v-on:paginate-page-size="paginationController.updatePageSize($event)"
     >
-      <template v-slot:columns="data">
-        <TableColumn name="name" v-bind:label="'Name'">
-          {{ data.name }}
-        </TableColumn>
-        <TableColumn name="description" v-bind:label="'Description'">
-          {{ data.traitDescription }}
-        </TableColumn>
-        <TableColumn name="totalEntries" v-bind:label="'Total Entries'">
-          {{ data.totalEntries }}
-        </TableColumn>
-        <TableColumn name="dateCreated" v-bind:label="'Date Created'">
-          {{ data.creationdate }}
-        </TableColumn>
-        <TableColumn name="user" v-bind:label="'User'">
-          {{ data.user }}
-        </TableColumn>
-        <TableColumn name="download" v-bind:label="''">
+        <b-table-column field="data.listName" label="Name" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+          {{ props.row.data.listName}}
+        </b-table-column>
+        <b-table-column field="data.listDescription" label="Description" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+          {{ props.row.data.listDescription }}
+        </b-table-column>
+        <b-table-column field="data.listSize" label="Total Entries" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+          {{ props.row.data.listSize }}
+        </b-table-column>
+        <b-table-column field="data.dateCreated" label="Date Created" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+          {{ formatDate(props.row.data.dateCreated) }}
+        </b-table-column>
+        <b-table-column field="data.listDbId">
           <a href="#">Download</a>
-        </TableColumn>
-      </template>
+        </b-table-column>
 
       <template v-slot:emptyMessage>
         <EmptyTableMessage>
@@ -76,6 +72,7 @@ import {
   DEACTIVATE_ALL_NOTIFICATIONS,
 } from "@/store/mutation-types";
 import ExpandableTable from "@/components/tables/expandableTable/ExpandableTable.vue";
+import moment from "moment";
 
 @Component({
   mixins: [validationMixin],
@@ -95,6 +92,7 @@ export default class GermplasmListsTable extends Vue {
   private germplasmListsPagination?: Pagination = new Pagination();
   private paginationController: PaginationController = new PaginationController();
   private germplasmLists: GermplasmList[] = [];
+  private germplasmListsLoading = true;
 
   mounted() {
     this.getGermplasmLists();
@@ -107,7 +105,6 @@ export default class GermplasmListsTable extends Vue {
     this.paginationController.setCurrentCall(paginationQuery);
 
     GermplasmService.getAll(this.activeProgram!.id!, paginationQuery).then(([germplasmLists, metadata]) => {
-      this.germplasmLists = [];
       if (this.paginationController.matchesCurrentRequest(metadata.pagination)){
         this.germplasmLists = germplasmLists;
         this.germplasmListsPagination = metadata.pagination;
@@ -116,7 +113,11 @@ export default class GermplasmListsTable extends Vue {
       // Display error that germplasm lists cannot be loaded
       this.$emit('show-error-notification', 'Error while trying to load germplasm lists');
       throw error;
-    });
+    }).finally(() => this.germplasmListsLoading = false);
+  }
+
+  formatDate(date) {
+    return moment(date).format('YYYY-M-D, h:mm:ss');
   }
 }
 
