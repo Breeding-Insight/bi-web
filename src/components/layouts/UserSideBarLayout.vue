@@ -235,7 +235,7 @@
               <ul v-show="germplasmActive">
                 <li>
                   <router-link v-bind:to="{name: 'germplasm-all', params: {programId: activeProgram.id}}">
-                    Germplasm
+                    All Germplasm
                   </router-link>
                 </li>
                 <li>
