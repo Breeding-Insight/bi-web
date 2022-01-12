@@ -50,8 +50,9 @@ import {ReportStruct} from "@/breeding-insight/model/report/ReportStruct";
 import { v4 as uuidv4 } from 'uuid';
 import {DisplayNameManager} from "@/breeding-insight/model/report/DisplayNameManager";
 import flatten from "flat";
+import {ReportFormatter} from "@/breeding-insight/model/report/ReportFormatter";
 
-export class ImportFormatter {
+export class ImportFormatter extends ReportFormatter {
 
   // TODO: Later
     // TODO: Column toggle
@@ -63,37 +64,19 @@ export class ImportFormatter {
   static format(jsonData: any[], configs: any): ReportStruct {
 
     // Loop through the config and construct the column order
-    const columns: any[] = this.getColumns(configs);
+    const columns: any[] = super.getColumns(configs);
     // Format the data
-    const [data, details] = this.getData(jsonData);
+    const [data, details] = super.getData(this.getBrAPIData(jsonData));
     // Get sort column
-    const sortColumn = this.getSortColumn(configs);
+    const sortColumn = super.getSortColumn(configs);
 
     const report: ReportStruct = new ReportStruct(data, columns, details, sortColumn, configs.defaultSortOrder);
     return report;
   }
 
-  static getColumns(configs: any): any[] {
-    const tableColumns: any[] = [];
-    const displayColumns = configs.display;
-    for (const displayColumn of displayColumns) {
-      // Buefy doesn't work with . notation
-      const field = displayColumn.split('.').join('_');
-      tableColumns.push({
-        field: field,
-        label: DisplayNameManager.getDisplayName(displayColumn, configs),
-        searchable: configs.searchable !== undefined && (configs.searchable === '*' || configs.searchable.includes(displayColumn)),
-        sortable: true,
-        customSort: (a: any, b: any, isAsc: boolean) => this.sort(field, a, b, isAsc)
-      });
-    }
-    return tableColumns;
-  }
-
-  static getData(jsonData: any[]): [any[], any] {
+  static getBrAPIData(jsonData: any[]): any[] {
 
     const data: any[] = [];
-    const details: any = {};
     for (const datum of jsonData) {
       const row: any = {};
 
@@ -101,38 +84,8 @@ export class ImportFormatter {
       for (const brapiTypeKey of Object.keys(datum)) {
         row[brapiTypeKey] = datum[brapiTypeKey].brAPIObject;
       }
-      const newRowId = uuidv4();
-      // Flatten for buefy. Not ideal, but it doesn't like the '.'
-      const result: any = flatten(row, {safe: true, delimiter: '_'});
-      // Add row id to data
-      result.rowId = newRowId;
-      // Flatten again with no frills
-      details[newRowId] = row;
-
-      // Filter out the list types and replace with descriptors
-      for (const key of Object.keys(result)) {
-        if (Array.isArray(result[key])) {
-          result[key] = `${result[key].length} members`;
-        }
-      }
-
-      data.push(result);
+      data.push(row);
     }
-    return [data, details];
-  }
-
-  static sort(column: string, a: any, b: any, isAsc: boolean) {
-    // Expected to be primitives, but JSON.stringify is safe for number, object, string, etc.
-    const aString: string = JSON.stringify(a[column]);
-    const bString: string = JSON.stringify(b[column]);
-    const order = aString.localeCompare(bString, undefined, {numeric: true, sensitivity: 'base'});
-    return isAsc ? order: order * -1;
-  }
-
-  static getSortColumn(config: any) {
-    const sortColumn = config.defaultSort;
-    if (sortColumn) {
-      return sortColumn.split('.').join('_');
-    }
+    return data;
   }
 }

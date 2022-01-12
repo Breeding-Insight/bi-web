@@ -16,28 +16,27 @@
   -->
 
 <template>
-  <div class="import-file">
+  <div class="germplasm">
     <h1 class="title">
-      Import File
+      Germplasm
     </h1>
 
     <section>
       <nav class="tabs is-boxed">
         <ul>
           <router-link
-              v-bind:to="{name: 'import-ontology', params: {programId: activeProgram.id}}"
-              tag="li" active-class="is-active">
-            <a>Ontology</a>
+              v-bind:to="{name: 'germplasm-all', params: {programId: activeProgram.id}}"
+              tag="li"
+              active-class="is-active"
+          >
+            <a>All Germplasm</a>
           </router-link>
           <router-link
-              v-bind:to="{name: 'germplasm-import', params: {programId: activeProgram.id}}"
-              tag="li" active-class="is-active">
-            <a>Germplasm</a>
-          </router-link>
-          <router-link
-              v-bind:to="{name: 'brapi-import', params: {programId: activeProgram.id}}"
-              tag="li" active-class="is-active">
-            <a>BrAPI Import<span class="ml-2 tag is-warning">Beta</span></a>
+              v-bind:to="{name: 'germplasm-list', params: {programId: activeProgram.id}}"
+              tag="li"
+              active-class="is-active"
+          >
+            <a>Germplasm Lists</a>
           </router-link>
         </ul>
       </nav>
@@ -48,28 +47,26 @@
           @show-success-notification="$emit('show-success-notification', $event)"
           @show-info-notification="$emit('show-info-notification', $event)"
           @show-error-notification="$emit('show-error-notification', $event)"
-      ></router-view>
+      />
     </div>
-
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator'
+import { Component } from 'vue-property-decorator'
 import {mapGetters} from "vuex";
 import {Program} from "@/breeding-insight/model/Program";
-import ProgramsBase from "@/components/program/ProgramsBase.vue";
+import GermplasmBase from "@/components/germplasm/GermplasmBase.vue";
 
 @Component({
-  components: {
-  },
+  components: {},
   computed: {
     ...mapGetters([
       'activeProgram'
     ])
   }
 })
-export default class ImportFile extends ProgramsBase {
+export default class Germplasm extends GermplasmBase {
 
   private activeProgram?: Program;
 
