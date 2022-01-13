@@ -111,30 +111,6 @@
             </li>
             <li>
               <router-link
-                  v-bind:to="{name: 'germplasmlists'}"
-                  v-bind:class="{ 'is-active': germplasmActive }"
-                  :id="germplasmMenuId"
-              >
-                Germplasm
-                <MoreVerticalIcon
-                    v-if="!germplasmActive"
-                    class="is-pulled-right"
-                />
-                <MoreHorizontalIcon
-                    v-if="germplasmActive"
-                    class="is-pulled-right"
-                />
-              </router-link>
-              <ul v-show="germplasmActive">
-                <li>
-                  <router-link v-bind:to="{name: 'germplasmlists', params: {programId: activeProgram.id}}">
-                    Germplasm Lists
-                  </router-link>
-                </li>
-              </ul>
-            </li>
-            <li>
-              <router-link
                   v-bind:to="{name: 'trials-studies', params: {programId: activeProgram.id}}"
                   v-bind:class="{ 'is-active': trialsAndStudiesActive }"
               >
@@ -263,8 +239,8 @@
                   </router-link>
                 </li>
                 <li>
-                  <router-link v-bind:to="{name: 'germplasm-list', params: {programId: activeProgram.id}}">
-                    Germplasm List
+                  <router-link v-bind:to="{name: 'germplasm-lists', params: {programId: activeProgram.id}}">
+                    Germplasm Lists
                   </router-link>
                 </li>
               </ul>
