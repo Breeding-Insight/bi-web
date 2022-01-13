@@ -383,28 +383,6 @@ const routes = [
     ]
   },
   {
-    path: '/programs/:programId/germplasm',
-    name: 'germplasm',
-    meta: {
-      title: 'Germplasm',
-      layout: layouts.userSideBar
-    },
-    component: GermplasmLists,
-    redirect: {name: 'import-ontology'},
-    beforeEnter: processProgramNavigation,
-    children: [
-      {
-        path: 'germplasmlists',
-        name: 'germplasmlists',
-        meta: {
-          title: 'Germplasm Lists',
-          layout: layouts.userSideBar
-        },
-        component: GermplasmLists
-      }
-    ]
-  },
-  {
     path: '/program-selection',
     name: 'program-selection',
     meta: {
