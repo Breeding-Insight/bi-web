@@ -36,6 +36,7 @@
         aria-page-label="Page"
         aria-current-label="Current"
         v-bind="$attrs"
+        :default-sort="defaultSort"
         v-on="$listeners"
         :row-class="calculateRowClass"
     >
@@ -120,6 +121,8 @@ export default class ExpandableTable extends Mixins(ValidationMixin) {
   pagination!: Pagination;
   @Prop()
   dataFormState!: DataFormEventBusHandler;
+  @Prop()
+  defaultSort!: String[];
 
   private tableRows: Array<TableRow<any>> = new Array<TableRow<any>>();
   private openDetail: Array<TableRow<any>> = new Array<TableRow<any>>();
