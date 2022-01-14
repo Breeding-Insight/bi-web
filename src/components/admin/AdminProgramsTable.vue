@@ -131,7 +131,7 @@
       v-on:show-error-notification="$emit('show-error-notification', $event)"
       v-on:paginate="paginationController.updatePage($event)"
       v-on:paginate-toggle-all="paginationController.toggleShowAll(programsPagination.totalCount.valueOf())"
-      v-on:paginate-page-size="paginationController.updatePageSize($event)"
+      v-on:paginate-page-size="updatePageSize($event)"
       backend-sorting
       v-bind:default-sort="[programSortFieldAsBuefy, programSortOrderAsBuefy]"
       v-on:sort="setSort"
@@ -379,6 +379,10 @@ export default class AdminProgramsTable extends Vue {
       throw error;
     }).finally(() => this.speciesLoading = false);
 
+  }
+
+  updatePageSize(pageSize: number) {
+    this.paginationController.updatePageSize(Number(pageSize).valueOf());
   }
 
   updateProgram(updatedProgram: Program) {

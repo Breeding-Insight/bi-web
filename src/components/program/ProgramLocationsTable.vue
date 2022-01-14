@@ -92,8 +92,8 @@
       v-on:show-error-notification="$emit('show-error-notification', $event)"
       v-on:paginate="paginationController.updatePage($event)"
       v-on:paginate-toggle-all="paginationController.toggleShowAll(locationsPagination.totalCount.valueOf())"
-      v-on:paginate-page-size="paginationController.updatePageSize($event)"
-      backend-sorting
+      v-on:paginate-page-size="updatePageSize($event)"
+      :backend-sorting="true"
       v-bind:default-sort="['data.name', locationSortOrderAsBuefy]"
       v-on:sort="setSort"
     >
@@ -250,6 +250,10 @@ export default class ProgramLocationsTable extends Vue {
       this.$emit('show-error-notification', error['errorMessage']);
     }).finally(() => this.editLocationFormState.bus.$emit(DataFormEventBusHandler.SAVE_COMPLETE_EVENT));
 
+  }
+
+  updatePageSize(pageSize: number) {
+    this.paginationController.updatePageSize(Number(pageSize).valueOf());
   }
 
   saveLocation() {

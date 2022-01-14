@@ -150,7 +150,7 @@
       v-on:show-error-notification="$emit('show-error-notification', $event)"
       v-on:paginate="paginationController.updatePage($event)"
       v-on:paginate-toggle-all="paginationController.toggleShowAll(usersPagination.totalCount.valueOf())"
-      v-on:paginate-page-size="paginationController.updatePageSize($event)"
+      v-on:paginate-page-size="updatePageSize($event)"
       v-on:is-mobile="isMobile = $event"
       backend-sorting
       v-bind:default-sort="[systemUserSortFieldAsBuefy, systemUserSortOrderAsBuefy]"
@@ -427,7 +427,11 @@ export default class AdminUsersTable extends Vue {
     this.getUsers();
   }
 
-  updateUser(user: User) {
+    updatePageSize(pageSize: number) {
+      this.paginationController.updatePageSize(Number(pageSize).valueOf());
+    }
+
+    updateUser(user: User) {
 
     const updateUserPromise = UserService.update(user);
 
