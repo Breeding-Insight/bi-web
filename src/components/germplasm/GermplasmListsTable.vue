@@ -116,7 +116,7 @@ export default class GermplasmListsTable extends Vue {
     }).finally(() => this.germplasmListsLoading = false);
   }
 
-  formatDate(date) {
+  formatDate(date: Date) {
     return moment(date).format('YYYY-M-D, h:mm:ss');
   }
 }
