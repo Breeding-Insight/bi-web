@@ -159,13 +159,18 @@
               </router-link>
               <ul v-show="importFileActive">
                 <li>
-                  <router-link v-bind:to="{name: 'ontology', params: {programId: activeProgram.id}}">
+                  <router-link v-bind:to="{name: 'import-ontology', params: {programId: activeProgram.id}}">
                     Ontology
                   </router-link>
                 </li>
                 <li>
                   <router-link v-bind:to="{name: 'germplasm-import', params: {programId: activeProgram.id}}">
                     Germplasm
+                  </router-link>
+                </li>
+                <li>
+                  <router-link v-bind:to="{name: 'experiment-import', params: {programId: activeProgram.id}}">
+                    Experiments & Observations
                   </router-link>
                 </li>
                 <li>
