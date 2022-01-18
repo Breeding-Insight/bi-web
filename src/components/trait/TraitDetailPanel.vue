@@ -123,11 +123,10 @@
              :key="category.label"
              class="columns is-centered is-mobile is-variable is-multiline is-0 my-0">
           <div class="column is-half p-0">
-            <span v-if="category.label" class="is-pulled-right mr-2">{{ category.label }}</span>
-            <span v-else class="is-pulled-right mr-2">{{ category.value }}</span>
+            <span class="is-pulled-right mr-2">{{ category.value }}</span>
           </div>
           <div class="column is-half p-0">
-            <span v-if="category.label" class="is-size-7 ml-2">{{ category.value }}</span>
+            <span v-if="category.label" class="is-size-7 ml-2">{{ category.label }}</span>
           </div>
         </div>
       </template>
