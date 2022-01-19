@@ -136,7 +136,8 @@ export default class ExpandableTable extends Mixins(ValidationMixin) {
   }
 
   isVisibleDetailRow(row:any) {
-    return (this.$refs[this.tableRef] as Vue & { isVisibleDetailRow: (row:any) => boolean }).isVisibleDetailRow(row);
+    // If data is passed in at same time as component loading, this ref won't be assigned yet. Check if assigned before referencing.
+    return this.$refs[this.tableRef] ? (this.$refs[this.tableRef] as Vue & { isVisibleDetailRow: (row:any) => boolean }).isVisibleDetailRow(row): false;
   }
 
   detailsVisible() {

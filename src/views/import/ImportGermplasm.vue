@@ -86,12 +86,35 @@
       </template>
 
       <template v-slot:importPreviewTable="previewData">
-        <report-table
-            v-bind:report="processPreviewData(previewData.import)"
-            v-bind:config="importConfig"
-            detailed
-            paginated
-        />
+        <ExpandableTable
+            v-bind:records="processPreviewData(previewData.import)"
+            v-bind:loading="false"
+            v-bind:pagination="previewData.pagination"
+            v-on:show-error-notification="$emit('show-error-notification', $event)"
+        >
+          <b-table-column field="defaultDisplayName" label="Name" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+            {{ props.row.data.brAPIObject.defaultDisplayName }}
+          </b-table-column>
+          <b-table-column field="breedingMethod" label="Breeding Method" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+            {{ props.row.data.brAPIObject.additionalInfo.breedingMethod }}
+          </b-table-column>
+          <b-table-column field="seedSource" label="Source" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+            {{ props.row.data.brAPIObject.seedSource }}
+          </b-table-column>
+          <b-table-column field="pedigree" label="Pedigree" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+            {{ props.row.data.brAPIObject.pedigree }}
+          </b-table-column>
+          <b-table-column field="importEntryNumber" label="Entry No." v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+            {{ props.row.data.brAPIObject.additionalInfo.importEntryNumber }}
+          </b-table-column>
+
+          <template v-slot:emptyMessage>
+            <p class="has-text-weight-bold">
+              No germplasm are currently defined for this program.
+            </p>
+            Germplasm are able to be created through the germplasm import.<br>
+          </template>
+        </ExpandableTable>
       </template>
 
     </ImportTemplate>
@@ -105,17 +128,16 @@ import ImportInfoTemplateMessageBox from "@/components/file-import/ImportInfoTem
 import ConfirmImportMessageBox from "@/components/trait/ConfirmImportMessageBox.vue";
 import ImportTemplate from "@/views/import/ImportTemplate.vue";
 import {DataFormEventBusHandler} from "@/components/forms/DataFormEventBusHandler";
-import ReportTable from "@/components/report/ReportTable.vue";
 import {ImportFormatter} from "@/breeding-insight/model/report/ImportFormatter";
-import {ReportStruct} from "@/breeding-insight/model/report/ReportStruct";
 import defaultRenames from '@/config/report/ReportRenames';
 import { AlertTriangleIcon } from 'vue-feather-icons';
 import {GermplasmList} from "@/breeding-insight/model/GermplasmList";
 import BasicInputField from "@/components/forms/BasicInputField.vue";
+import ExpandableTable from "@/components/tables/expandableTable/ExpandableTable.vue";
 
 @Component({
   components: {
-    ReportTable, ImportInfoTemplateMessageBox, ConfirmImportMessageBox, ImportTemplate, AlertTriangleIcon, BasicInputField
+    ExpandableTable, ImportInfoTemplateMessageBox, ConfirmImportMessageBox, ImportTemplate, AlertTriangleIcon, BasicInputField
   },
   data: () => ({ImportFormatter})
 })
@@ -151,9 +173,9 @@ export default class ImportGermplasm extends ProgramsBase {
     return undefined;
   }
 
-  processPreviewData(previewData: any): ReportStruct {
+  processPreviewData(importPreviewRows: any): any[] {
     // Do special germplasm import formatting here
-    return ImportFormatter.format(previewData, this.importConfig);
+    return importPreviewRows.map((record:any) => record.germplasm);
   }
 
   importFinished() {
