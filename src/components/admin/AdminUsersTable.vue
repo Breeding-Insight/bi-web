@@ -427,7 +427,7 @@ export default class AdminUsersTable extends Vue {
     this.getUsers();
   }
 
-    updatePageSize(pageSize: number) {
+    updatePageSize(pageSize: string) {
       this.paginationController.updatePageSize(Number(pageSize).valueOf());
     }
 
