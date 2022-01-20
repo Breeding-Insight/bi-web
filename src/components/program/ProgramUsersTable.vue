@@ -311,7 +311,7 @@ export default class ProgramUsersTable extends Vue {
 
   }
 
-  updatePageSize(pageSize: number) {
+  updatePageSize(pageSize: string) {
     this.paginationController.updatePageSize(Number(pageSize).valueOf());
   }
 

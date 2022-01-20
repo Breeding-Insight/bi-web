@@ -56,14 +56,6 @@ export const getters: GetterTree<SortState, RootState> = {
         return state.importPreviewOntologySort.order;
     },
 
-    // archived ontology table
-    importPreviewOntologySort(state: SortState): OntologySort {
-        return state.importPreviewOntologySort;
-    },
-    importPreviewOntologySortOrder(state: SortState): SortOrder {
-        return state.importPreviewOntologySort.order;
-    },
-
     // program user table
     programUserSort(state: SortState): UserSort {
         return state.programUserSort;
