@@ -23,14 +23,10 @@ import {GermplasmDAO} from "@/breeding-insight/dao/GermplasmDAO";
 
 export class GermplasmService {
 
-    static getAll(programId: string, paginationQuery?: PaginationQuery): Promise<[GermplasmList[], Metadata]> {
+    static getAll(programId: string, paginationQuery: PaginationQuery = new PaginationQuery(0, 0, true)): Promise<[GermplasmList[], Metadata]> {
         return new Promise<[GermplasmList[], Metadata]>(((resolve, reject) => {
 
             let germplasmLists: GermplasmList[] = [];
-
-            if (paginationQuery === undefined) {
-                paginationQuery = new PaginationQuery(0, 0, true);
-            }
 
             if (programId) {
                 GermplasmDAO.getAllLists(programId, paginationQuery).then((biResponse: BiResponse) => {
