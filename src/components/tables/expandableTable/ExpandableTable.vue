@@ -123,6 +123,7 @@ export default class ExpandableTable extends Mixins(ValidationMixin) {
   dataFormState!: DataFormEventBusHandler;
   @Prop()
   defaultSort!: String[];
+  rowClasses: any;
 
   private tableRows: Array<TableRow<any>> = new Array<TableRow<any>>();
   private openDetail: Array<TableRow<any>> = new Array<TableRow<any>>();
@@ -146,12 +147,12 @@ export default class ExpandableTable extends Mixins(ValidationMixin) {
 
   calculateRowClass(row: TableRow<any>, index: Number) {
     if (this.isVisibleDetailRow(row)) {
-      return "is-edited";
+      return this.rowClasses && this.rowClasses[row.data.id] ? this.rowClasses[row.data.id] + " is-edited" : " is-edited";
     } else if (row.new) {
-      return "is-new";
+      return this.rowClasses && this.rowClasses[row.data.id] ? this.rowClasses[row.data.id] + " is-new" : " is-new";
     }
     
-    return "";
+    return this.rowClasses && this.rowClasses[row.data.id] ? this.rowClasses[row.data.id] : "";
   }
 
   updated() {

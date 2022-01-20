@@ -79,8 +79,11 @@
             <p>Total number of entries: {{ rows.length }}</p>
             <p>New Germplasm count: {{ statistics.Germplasm.newObjectCount }}</p>
             <p>New Pedigree Connections: {{ statistics["Pedigree Connections"].newObjectCount }}</p>
-            <p>Potential duplicate Germplasm records are highlighted in yellow and show a <alert-triangle-icon size="1.2x" class="icon-align"/> icon.
-              These records will be imported as new germplasm.</p>
+            <template v-if="duplicatesPresent(rows)">
+              <p>Duplicate names detected and are highlighted in yellow and show a <alert-triangle-icon size="1.2x" class="icon-align"/> icon.
+                Upon import duplicates will become independent database entries.</p>
+            </template>
+
           </div>
         </ConfirmImportMessageBox>
       </template>
@@ -90,9 +93,16 @@
             v-bind:records="processPreviewData(previewData.import)"
             v-bind:loading="false"
             v-bind:pagination="previewData.pagination"
+            v-bind:rowClasses="constructRowClasses(previewData.import)"
             v-on:show-error-notification="$emit('show-error-notification', $event)"
         >
           <b-table-column field="defaultDisplayName" label="Name" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+            <AlertTriangleIcon
+                size="1x"
+                class="has-vertical-align-middle"
+                v-if="props.row.data.state === ImportObjectState.EXISTING"
+            >
+            </AlertTriangleIcon>
             {{ props.row.data.brAPIObject.defaultDisplayName }}
           </b-table-column>
           <b-table-column field="breedingMethod" label="Breeding Method" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
@@ -128,39 +138,23 @@ import ImportInfoTemplateMessageBox from "@/components/file-import/ImportInfoTem
 import ConfirmImportMessageBox from "@/components/trait/ConfirmImportMessageBox.vue";
 import ImportTemplate from "@/views/import/ImportTemplate.vue";
 import {DataFormEventBusHandler} from "@/components/forms/DataFormEventBusHandler";
-import {ImportFormatter} from "@/breeding-insight/model/report/ImportFormatter";
-import defaultRenames from '@/config/report/ReportRenames';
 import { AlertTriangleIcon } from 'vue-feather-icons';
 import {GermplasmList} from "@/breeding-insight/model/GermplasmList";
 import BasicInputField from "@/components/forms/BasicInputField.vue";
 import ExpandableTable from "@/components/tables/expandableTable/ExpandableTable.vue";
+import {ImportObjectState} from "@/breeding-insight/model/import/ImportObjectState";
 
 @Component({
   components: {
     ExpandableTable, ImportInfoTemplateMessageBox, ConfirmImportMessageBox, ImportTemplate, AlertTriangleIcon, BasicInputField
   },
-  data: () => ({ImportFormatter})
+  data: () => ({ImportObjectState})
 })
 export default class ImportGermplasm extends ProgramsBase {
 
   private germplasmList: GermplasmList = new GermplasmList();
-
-  // TODO: maybe move to config instead of hardcode?
+  private duplicateClassName = "is-dup";
   private germplasmImportTemplateName = 'GermplasmTemplateMap';
-  private importConfig: any = {
-    names: Object.assign(defaultRenames, {
-      'defaultDisplayName': 'Name',
-      'breedingMethod': 'Breeding Method',
-      'seedSource': 'Source',
-      'pedigree': 'Pedigree',
-      'importEntryNumber': 'Entry No.'
-    }),
-    display: ['germplasm.additionalInfo.importEntryNumber','germplasm.defaultDisplayName',
-      'germplasm.additionalInfo.breedingMethod', 'germplasm.seedSource', 'germplasm.pedigree'],
-    detailDisplay: '*',
-    defaultSort: 'germplasm.germplasmName',
-    defaultSortOrder: 'asc'
-  }
 
   private confirmImportState: DataFormEventBusHandler = new DataFormEventBusHandler();
 
@@ -176,6 +170,29 @@ export default class ImportGermplasm extends ProgramsBase {
   processPreviewData(importPreviewRows: any): any[] {
     // Do special germplasm import formatting here
     return importPreviewRows.map((record:any) => record.germplasm);
+  }
+
+  constructRowClasses(importPreviewRows: any): any[] {
+    // Do special germplasm import formatting here
+    const rowClasses: any = {};
+    for (const record of this.processPreviewData(importPreviewRows)) {
+      if (record.state === ImportObjectState.EXISTING) {
+        rowClasses[record.id] = this.duplicateClassName;
+      }
+    }
+    return rowClasses;
+  }
+
+  duplicatesPresent(rows: any[]) {
+    // TODO: If we paginate the import, this probably won't work anymore
+    if (rows) {
+      for (const row of rows) {
+        if (row.germplasm.state === ImportObjectState.EXISTING) {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
   importFinished() {
