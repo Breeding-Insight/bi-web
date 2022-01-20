@@ -252,7 +252,7 @@ export default class ProgramLocationsTable extends Vue {
 
   }
 
-  updatePageSize(pageSize: number) {
+  updatePageSize(pageSize: string) {
     this.paginationController.updatePageSize(Number(pageSize).valueOf());
   }
 
