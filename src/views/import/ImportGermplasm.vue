@@ -120,9 +120,8 @@
 
           <template v-slot:emptyMessage>
             <p class="has-text-weight-bold">
-              No germplasm are currently defined for this program.
+              No germplasm were found in this import file.
             </p>
-            Germplasm are able to be created through the germplasm import.<br>
           </template>
         </ExpandableTable>
       </template>

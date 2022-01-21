@@ -147,9 +147,9 @@ export default class ExpandableTable extends Mixins(ValidationMixin) {
 
   calculateRowClass(row: TableRow<any>, index: Number) {
     if (this.isVisibleDetailRow(row)) {
-      return this.rowClasses && this.rowClasses[row.data.id] ? this.rowClasses[row.data.id] + " is-edited" : " is-edited";
+      return this.rowClasses && this.rowClasses[row.data.id] ? this.rowClasses[row.data.id] + " is-edited" : "is-edited";
     } else if (row.new) {
-      return this.rowClasses && this.rowClasses[row.data.id] ? this.rowClasses[row.data.id] + " is-new" : " is-new";
+      return this.rowClasses && this.rowClasses[row.data.id] ? this.rowClasses[row.data.id] + " is-new" : "is-new";
     }
     
     return this.rowClasses && this.rowClasses[row.data.id] ? this.rowClasses[row.data.id] : "";
