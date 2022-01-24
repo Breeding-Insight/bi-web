@@ -21,13 +21,11 @@ import {Metadata} from "@/breeding-insight/model/BiResponse";
 import {Trait} from "@/breeding-insight/model/Trait";
 import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
 import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
-import {ValidationError} from "@/breeding-insight/model/errors/ValidationError";
-import {ProgramDAO} from "@/breeding-insight/dao/ProgramDAO";
+import {ValidationErrorService} from "@/breeding-insight/service/ValidationErrorService";
 
 export class TraitUploadService {
 
   static errorContactingServer: string = "Unknown error when contacting server. Please try again.";
-  static errorUnknown: string = "Unable to determine reason for failure upload. Please check file and try again.";
   static forbiddenUploadingFile: string = "You do not have permission to upload ontology terms";
 
   static async deleteTraits(programId: string): Promise<void|Error> {
@@ -60,7 +58,7 @@ export class TraitUploadService {
             reject(this.forbiddenUploadingFile);
           }
           if (error.response){
-            reject(this.parseError(error));
+            reject(ValidationErrorService.parseError(error));
           } else {
             reject(this.errorContactingServer);
           }
@@ -118,24 +116,6 @@ export class TraitUploadService {
     }
   }
 
-  static parseError(error: any): ValidationError | string {
 
-    const jsonError = error.response;
-    if (jsonError.data){
-      const rowErrors = jsonError.data.rowErrors;
-      if (rowErrors) {
-        let validationError: ValidationError = new ValidationError(rowErrors);
-        return validationError;
-      } else {
-        return jsonError;
-      }
-    } else {
-      if (jsonError.statusText){
-        return jsonError.statusText;
-      } else {
-        return this.errorUnknown;
-      }
-    }
-  }
 
 }
