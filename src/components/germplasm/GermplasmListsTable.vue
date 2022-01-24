@@ -22,8 +22,8 @@
         v-bind:loading="this.germplasmListsLoading"
         v-bind:pagination="germplasmListsPagination"
         v-on:paginate="paginationController.updatePage($event)"
-        v-on:paginate-toggle-all="paginationController.toggleShowAll()"
-        v-on:paginate-page-size="paginationController.updatePageSize($event)"
+        v-on:paginate-toggle-all="paginationController.toggleShowAll(germplasmListsPagination.totalCount.valueOf())"
+        v-on:paginate-page-size="updatePageSize($event)"
     >
         <b-table-column field="data.listName" label="Name" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
           {{ props.row.data.listName}}
@@ -119,6 +119,11 @@ export default class GermplasmListsTable extends Vue {
   formatDate(date: Date) {
     return moment(date).format('YYYY-M-D, h:mm:ss');
   }
+
+  updatePageSize(pageSize: string) {
+    this.paginationController.updatePageSize(Number(pageSize).valueOf());
+  }
+
 }
 
 </script>
