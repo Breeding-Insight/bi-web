@@ -239,8 +239,8 @@
                   </router-link>
                 </li>
                 <li>
-                  <router-link v-bind:to="{name: 'germplasm-list', params: {programId: activeProgram.id}}">
-                    Germplasm List
+                  <router-link v-bind:to="{name: 'germplasm-lists', params: {programId: activeProgram.id}}">
+                    Germplasm Lists
                   </router-link>
                 </li>
               </ul>
