@@ -345,13 +345,13 @@ export default class TraitsImport extends ProgramsBase {
       await TraitUploadService.confirmUpload(this.activeProgram!.id!, upload!.id!);
 
       // show all program traits
-      this.$emit('show-success-notification', `Imported ontology terms have been added to ${name}.`);
       this.$router.push({
         name: 'traits-list',
         params: {
           programId: this.activeProgram!.id!
         },
       });
+      this.$emit('show-success-notification', `Imported ontology terms have been added to ${name}.`);
     } catch(err) {
       const note = err.message ? err.message : `Error: Imported ontology terms were not added to ${name}.`;
       this.$emit('show-error-notification', `${note}`);

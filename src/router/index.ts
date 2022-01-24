@@ -66,6 +66,7 @@ import OntologyActiveTable from "@/components/ontology/OntologyActiveTable.vue";
 import OntologyArchivedTable from "@/components/ontology/OntologyArchivedTable.vue";
 import PageNotFound from "@/views/PageNotFound.vue";
 import Germplasm from "@/views/germplasm/Germplasm.vue";
+import GermplasmLists from "@/views/germplasm/GermplasmLists.vue";
 
 Vue.use(VueRouter);
 
@@ -282,13 +283,13 @@ const routes = [
         component: GermplasmTable
       },
       {
-        path: 'germplasm-list',
-        name: 'germplasm-list',
+        path: 'germplasm-lists',
+        name: 'germplasm-lists',
         meta: {
           title: 'Germplasm Lists',
           layout: layouts.userSideBar
         },
-        component: undefined
+        component: GermplasmLists
       }
     ]
   },
