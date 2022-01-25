@@ -16,7 +16,7 @@
   -->
 
 <template>
-  <div id="import-germplasm">
+  <div id="import-experiment">
     <ImportTemplate
         v-bind:abort-msg="'No records will be added, and the import in progress will be completely removed.'"
         v-bind:system-import-template-name="experimentImportTemplateName"
