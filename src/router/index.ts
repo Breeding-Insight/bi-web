@@ -67,6 +67,7 @@ import OntologyArchivedTable from "@/components/ontology/OntologyArchivedTable.v
 import PageNotFound from "@/views/PageNotFound.vue";
 import Germplasm from "@/views/germplasm/Germplasm.vue";
 import GermplasmLists from "@/views/germplasm/GermplasmLists.vue";
+import ImportExperiment from "@/views/import/ImportExperiment.vue";
 
 Vue.use(VueRouter);
 
@@ -370,6 +371,15 @@ const routes = [
           layout: layouts.userSideBar
         },
         component: ImportGermplasm
+      },
+      {
+        path: 'experiment',
+        name: 'experiment-import',
+        meta: {
+          title: 'Experiments & Observations',
+          layout: layouts.userSideBar
+        },
+        component: ImportExperiment
       },
       {
         path: 'brapi-import',
