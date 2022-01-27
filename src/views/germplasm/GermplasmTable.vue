@@ -25,8 +25,11 @@
       <b-table-column field="seedSource" label="Source" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
         {{ props.row.data.seedSource }}
       </b-table-column>
-      <b-table-column field="pedigree" label="Parental GIDs" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-        {{ props.row.data.pedigree }}
+      <b-table-column field="pedigree" label="Female Parent GID" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+        {{ Pedigree.parsePedigreeString(props.row.data.pedigree).femaleParent }}
+      </b-table-column>
+      <b-table-column field="pedigree" label="Male Parent GID" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+        {{ Pedigree.parsePedigreeString(props.row.data.pedigree).maleParent }}
       </b-table-column>
       <b-table-column field="createdDate" label="Created Date" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
         {{ props.row.data.additionalInfo.createdDate }}
@@ -59,6 +62,7 @@ import {Germplasm} from "@/breeding-insight/brapi/model/germplasm";
 import {Pagination} from "@/breeding-insight/model/BiResponse";
 import ExpandableTable from "@/components/tables/expandableTable/ExpandableTable.vue";
 import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
+import {Pedigree} from "@/breeding-insight/model/import/germplasm/Pedigree";
 
 @Component({
   mixins: [validationMixin],
@@ -68,7 +72,7 @@ import {PaginationController} from "@/breeding-insight/model/view_models/Paginat
       'activeProgram'
     ])
   },
-  data: () => ({Trait, StringFormatters, TraitStringFormatters})
+  data: () => ({Trait, StringFormatters, TraitStringFormatters, Pedigree})
 })
 export default class GermplasmTable extends Vue {
 
