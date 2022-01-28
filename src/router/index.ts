@@ -383,6 +383,13 @@ const routes = [
     ]
   },
   {
+    path: '/programs/:programId/germplasm/lists/:listDbId/export',
+    name: 'germplasmlist-download',
+    meta: {
+      title: 'Germplasm List Download',
+    },
+  },
+  {
     path: '/program-selection',
     name: 'program-selection',
     meta: {

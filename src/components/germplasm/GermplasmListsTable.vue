@@ -18,28 +18,30 @@
 <template>
   <section id="germplasmListTableLabel">
     <ExpandableTable
-        v-bind:records.sync="germplasmLists"
-        v-bind:loading="this.germplasmListsLoading"
-        v-bind:pagination="germplasmListsPagination"
-        v-on:paginate="paginationController.updatePage($event)"
-        v-on:paginate-toggle-all="paginationController.toggleShowAll(germplasmListsPagination.totalCount.valueOf())"
-        v-on:paginate-page-size="updatePageSize($event)"
+      v-bind:records.sync="germplasmLists"
+      v-bind:loading="this.germplasmListsLoading"
+      v-bind:pagination="germplasmListsPagination"
+      v-on:paginate="paginationController.updatePage($event)"
+      v-on:paginate-toggle-all="paginationController.toggleShowAll(germplasmListsPagination.totalCount.valueOf())"
+      v-on:paginate-page-size="updatePageSize($event)"
     >
-        <b-table-column field="data.listName" label="Name" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-          {{ props.row.data.listName}}
-        </b-table-column>
-        <b-table-column field="data.listDescription" label="Description" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-          {{ props.row.data.listDescription }}
-        </b-table-column>
-        <b-table-column field="data.listSize" label="Total Entries" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-          {{ props.row.data.listSize }}
-        </b-table-column>
-        <b-table-column field="data.dateCreated" label="Date Created" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-          {{ formatDate(props.row.data.dateCreated) }}
-        </b-table-column>
-        <b-table-column field="data.listDbId">
-          <a href="#">Download</a>
-        </b-table-column>
+      <b-table-column field="data.listName" label="Name" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+        {{ props.row.data.listName}}
+      </b-table-column>
+      <b-table-column field="data.listDescription" label="Description" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+        {{ props.row.data.listDescription }}
+      </b-table-column>
+      <b-table-column field="data.listSize" label="Total Entries" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+        {{ props.row.data.listSize }}
+      </b-table-column>
+      <b-table-column field="data.dateCreated" label="Date Created" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+        {{ formatDate(props.row.data.dateCreated) }}
+      </b-table-column>
+      <b-table-column field="data.listDbId" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+        <router-link v-bind:to="{name: 'germplasmlist-download', params: {programId: activeProgram.id, listDbId: props.row.data.listDbId}}" target="_blank">
+          Download
+        </router-link>
+      </b-table-column>
 
       <template v-slot:emptyMessage>
         <EmptyTableMessage>
