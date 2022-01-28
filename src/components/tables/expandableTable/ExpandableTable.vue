@@ -123,6 +123,8 @@ export default class ExpandableTable extends Mixins(ValidationMixin) {
   dataFormState!: DataFormEventBusHandler;
   @Prop()
   defaultSort!: String[];
+  @Prop()
+  rowClasses: any;
 
   private tableRows: Array<TableRow<any>> = new Array<TableRow<any>>();
   private openDetail: Array<TableRow<any>> = new Array<TableRow<any>>();
@@ -136,7 +138,8 @@ export default class ExpandableTable extends Mixins(ValidationMixin) {
   }
 
   isVisibleDetailRow(row:any) {
-    return (this.$refs[this.tableRef] as Vue & { isVisibleDetailRow: (row:any) => boolean }).isVisibleDetailRow(row);
+    // If data is passed in at same time as component loading, this ref won't be assigned yet. Check if assigned before referencing.
+    return this.$refs[this.tableRef] ? (this.$refs[this.tableRef] as Vue & { isVisibleDetailRow: (row:any) => boolean }).isVisibleDetailRow(row): false;
   }
 
   detailsVisible() {
@@ -145,12 +148,12 @@ export default class ExpandableTable extends Mixins(ValidationMixin) {
 
   calculateRowClass(row: TableRow<any>, index: Number) {
     if (this.isVisibleDetailRow(row)) {
-      return "is-edited";
+      return this.rowClasses && this.rowClasses[row.data.id] ? this.rowClasses[row.data.id] + " is-edited" : "is-edited";
     } else if (row.new) {
-      return "is-new";
+      return this.rowClasses && this.rowClasses[row.data.id] ? this.rowClasses[row.data.id] + " is-new" : "is-new";
     }
     
-    return "";
+    return this.rowClasses && this.rowClasses[row.data.id] ? this.rowClasses[row.data.id] : "";
   }
 
   updated() {
