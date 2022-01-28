@@ -123,6 +123,7 @@ export default class ExpandableTable extends Mixins(ValidationMixin) {
   dataFormState!: DataFormEventBusHandler;
   @Prop()
   defaultSort!: String[];
+  @Prop()
   rowClasses: any;
 
   private tableRows: Array<TableRow<any>> = new Array<TableRow<any>>();
