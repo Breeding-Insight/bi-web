@@ -37,10 +37,10 @@
       <b-table-column field="data.dateCreated" label="Date Created" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
         {{ formatDate(props.row.data.dateCreated) }}
       </b-table-column>
-      <b-table-column field="data.listDbId" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-        <router-link v-bind:to="{name: 'germplasmlist-download', params: {programId: activeProgram.id, listDbId: props.row.data.listDbId}}" target="_blank">
+      <b-table-column  field="data.listDbId" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+        <a href="#" v-on:click="downloadList(props.row.data.listDbId)">
           Download
-        </router-link>
+        </a>
       </b-table-column>
 
       <template v-slot:emptyMessage>
@@ -124,6 +124,10 @@ export default class GermplasmListsTable extends Vue {
 
   updatePageSize(pageSize: string) {
     this.paginationController.updatePageSize(Number(pageSize).valueOf());
+  }
+
+  downloadList(listDbId: string) {
+    window.open(process.env.VUE_APP_BI_API_ROOT+'/v1/programs/'+this.activeProgram.id+'/germplasm/lists/'+listDbId+'/export', '_blank');
   }
 
 }
