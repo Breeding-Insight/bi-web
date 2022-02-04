@@ -127,7 +127,9 @@ export default class GermplasmListsTable extends Vue {
   }
 
   downloadList(listDbId: string) {
-    window.open(process.env.VUE_APP_BI_API_ROOT+'/v1/programs/'+this.activeProgram.id+'/germplasm/lists/'+listDbId+'/export', '_blank');
+    if (this.activeProgram) {
+      window.open(process.env.VUE_APP_BI_API_ROOT + '/v1/programs/' + this.activeProgram.id + '/germplasm/lists/' + listDbId + '/export', '_blank');
+    }
   }
 
 }
