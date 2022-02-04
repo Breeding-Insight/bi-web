@@ -119,9 +119,10 @@
         v-on:remove="displayWarning($event)"
         v-on:show-error-notification="$emit('show-error-notification', $event)"
         v-on:paginate="paginationController.updatePage($event)"
-        v-on:paginate-toggle-all="paginationController.toggleShowAll()"
-        v-on:paginate-page-size="paginationController.updatePageSize($event)"
+        v-on:paginate-toggle-all="paginationController.toggleShowAll(usersPagination.totalCount.valueOf())"
+        v-on:paginate-page-size="updatePageSize($event)"
         backend-sorting
+        v-bind:default-sort="[programUserSortFieldAsBuefy, programUserSortOrderAsBuefy]"
         v-on:sort="setSort"
     >
       <b-table-column field="data.name" label="Name" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
@@ -130,7 +131,7 @@
       <b-table-column field="data.email" label="Email" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
         {{ props.row.data.email }}
       </b-table-column>
-      <b-table-column :custom-sort="sortRole" label="Role" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+      <b-table-column :custom-sort="sortRole" label="Role" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
         <template v-if="rolesMap.size > 0">
           {{ getRoleName(props.row.data.roleId) }}
         </template>
@@ -177,10 +178,10 @@
   import {Role} from '@/breeding-insight/model/Role'
   import {ProgramUserService} from "@/breeding-insight/service/ProgramUserService";
   import {RoleService} from "@/breeding-insight/service/RoleService";
-  import { mapGetters } from 'vuex'
+  import { mapGetters, mapMutations } from 'vuex'
   import {Program} from "@/breeding-insight/model/Program";
   import EmptyTableMessage from "@/components/tables/EmtpyTableMessage.vue";
-  import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
+  import {BackendPaginationController} from "@/breeding-insight/model/view_models/BackendPaginationController";
   import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
   import {Pagination} from "@/breeding-insight/model/BiResponse";
   import { User } from '@/breeding-insight/model/User';
@@ -190,7 +191,10 @@
   import {DEACTIVATE_ALL_NOTIFICATIONS, LOGIN} from "@/store/mutation-types";
   import {defineAbilityFor} from "@/config/ability";
   import ExpandableTable from '@/components/tables/expandableTable/ExpandableTable.vue';
-  import {SortField} from "@/breeding-insight/model/SortField";
+  import {Sort, UserSort, UserSortField} from "@/breeding-insight/model/Sort";
+  import {
+    UPDATE_PROGRAM_USER_SORT
+  } from "@/store/sorting/mutation-types";
 
 @Component({
   components: { ExpandableTable, NewDataForm, BasicInputField, BasicSelectField, TableColumn,
@@ -200,7 +204,17 @@
     ...mapGetters([
       'activeProgram',
       'activeUser'
+    ]),
+    ...mapGetters('sorting', [
+        'programUserSort',
+        'programUserSortFieldAsBuefy',
+        'programUserSortOrderAsBuefy'
     ])
+  },
+  methods: {
+    ...mapMutations('sorting', {
+      updateSort: UPDATE_PROGRAM_USER_SORT
+    })
   }
 })
 export default class ProgramUsersTable extends Vue {
@@ -220,13 +234,16 @@ export default class ProgramUsersTable extends Vue {
   private deleteUser?: ProgramUser;
   private rolesMap: Map<string, Role> = new Map();
 
-  private paginationController: PaginationController = new PaginationController();
+  private paginationController: BackendPaginationController = new BackendPaginationController();
 
   private newUserFormState: DataFormEventBusHandler = new DataFormEventBusHandler();
   private editUserFormState: DataFormEventBusHandler = new DataFormEventBusHandler();
 
   private rolesLoading = true;
   private usersLoading = true;
+
+  private programUserSort!: UserSort;
+  private updateSort!: (sort: UserSort) => void;
 
   newUserValidations = {
     name: {required},
@@ -239,32 +256,38 @@ export default class ProgramUsersTable extends Vue {
   }
 
   mounted() {
+    this.updatePagination();
     this.getRoles();
     this.getUsers();
     this.getSystemUsers();
   }
 
   setSort(field: string, order: string) {
-    const fieldMap: any = {'data.email': 'email', 'data.name': 'name'};
+    const fieldMap: any = {'data.email': UserSortField.Email, 'data.name': UserSortField.Name};
     if (field in fieldMap) {
-      this.getUsers(fieldMap[field], order);
+      this.updateSort(new UserSort(fieldMap[field], Sort.orderAsBI(order)));
+      this.getUsers();
     }
   }
 
   @Watch('paginationController', { deep: true})
-  getUsers(sortField?: string, sortOrder?: string) {
+  paginationChanged() {
+    this.updatePagination();
+    this.getUsers();
+  }
 
-    let paginationQuery: PaginationQuery = PaginationController.getPaginationSelections(
-      this.paginationController.currentPage, this.paginationController.pageSize, this.paginationController.showAll);
+  updatePagination() {
+    let paginationQuery: PaginationQuery = BackendPaginationController.getPaginationSelections(
+        this.paginationController.currentPage, this.paginationController.pageSize);
     this.paginationController.setCurrentCall(paginationQuery);
+  }
 
-    const sort: SortField | undefined = sortField && sortOrder ? new SortField(sortField, sortOrder) : undefined;
-    ProgramUserService.getAll(this.activeProgram!.id!, paginationQuery, sort).then(([programUsers, metadata]) => {
+  getUsers() {
+    ProgramUserService.getAll(this.activeProgram!.id!, this.paginationController.currentCall, this.programUserSort).then(([programUsers, metadata]) => {
       if (this.paginationController.matchesCurrentRequest(metadata.pagination)){
         this.users = programUsers;
         this.usersPagination = metadata.pagination;
       }
-
     }).catch((error) => {
       // Display error that users cannot be loaded
       this.$emit('show-error-notification', 'Error while trying to load program users');
@@ -286,6 +309,10 @@ export default class ProgramUsersTable extends Vue {
       throw error;
     }).finally(() => this.rolesLoading = false);
 
+  }
+
+  updatePageSize(pageSize: string) {
+    this.paginationController.updatePageSize(Number(pageSize).valueOf());
   }
 
   updateUser(updatedUser: ProgramUser) {

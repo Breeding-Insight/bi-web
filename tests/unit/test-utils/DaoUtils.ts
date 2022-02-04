@@ -38,6 +38,27 @@ export default class DaoUtils {
     });
   }
 
+  static formatBiResponseWithPaging(data: any[], totalPages: number, currentPage: number,
+                                    totalCount : number, pageSize : number): BiResponse {
+    const metadata: Metadata = new Metadata({
+      pagination: {
+        totalPages: totalPages,
+        currentPage: currentPage,
+        totalCount: totalCount,
+        pageSize: pageSize
+      },
+      status: []
+    });
+
+    let pagedData = data.slice((currentPage * pageSize - pageSize), (currentPage * pageSize > data.length ? data.length : currentPage * pageSize));
+    return new BiResponse({
+      metadata,
+      result: {
+        data: pagedData
+      }
+    });
+  }
+
   static formatBiResponseSingle(data: any): BiResponse {
     const metadata: Metadata = new Metadata({
       pagination: {

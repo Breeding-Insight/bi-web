@@ -20,6 +20,7 @@ import {ProgramLocation} from "@/breeding-insight/model/ProgramLocation";
 import {Metadata} from "@/breeding-insight/model/BiResponse";
 import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
 import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
+import {LocationSort, LocationSortField, SortOrder} from "@/breeding-insight/model/Sort";
 
 export class ProgramLocationService {
 
@@ -104,18 +105,13 @@ export class ProgramLocationService {
     }));
   }
 
-  static getAll(programId: string, paginationQuery?: PaginationQuery): Promise<[ProgramLocation[], Metadata]> {
+  static getAll(programId: string,
+                paginationQuery: PaginationQuery = new PaginationQuery(1, 50, true),
+                sort: LocationSort = new LocationSort(LocationSortField.Name, SortOrder.Ascending)): Promise<[ProgramLocation[], Metadata]> {
     return new Promise<[ProgramLocation[], Metadata]>(((resolve, reject) => {
 
-      if (paginationQuery === undefined){
-        paginationQuery = new PaginationQuery(0, 0, true);
-      }
-
       if (programId) {
-        ProgramLocationDAO.getAll(programId, paginationQuery).then((biResponse) => {
-
-          //TODO: Remove when backend sorts the data by default
-          biResponse.result.data = PaginationController.mockSortRecords(biResponse.result.data);
+        ProgramLocationDAO.getAll(programId, paginationQuery, sort).then((biResponse) => {
 
           let programLocations: ProgramLocation[] = [];
 
@@ -123,11 +119,6 @@ export class ProgramLocationService {
             return new ProgramLocation(programLocation.id, programLocation.programId, programLocation.name);
           });
 
-          //TODO: Remove when backend pagination is implemented
-          let newPagination;
-          [programLocations, newPagination] = PaginationController.mockPagination(programLocations, paginationQuery!.page, paginationQuery!.pageSize, paginationQuery!.showAll);
-          biResponse.metadata.pagination = newPagination;
-      
           resolve([programLocations, biResponse.metadata]);
       
         }).catch((error) => reject(error));

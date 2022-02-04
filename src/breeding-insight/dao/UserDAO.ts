@@ -20,6 +20,7 @@ import * as api from "@/util/api";
 import {BiResponse} from "@/breeding-insight/model/BiResponse";
 import {Role} from "@/breeding-insight/model/Role";
 import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
+import {UserSort} from "@/breeding-insight/model/Sort";
 
 export class UserDAO {
 
@@ -73,17 +74,28 @@ export class UserDAO {
     return api.call({ url: `${process.env.VUE_APP_BI_API_V1_PATH}/users/${id}`, method: 'delete'});
   }
 
-  static getAll(paginationQuery: PaginationQuery): Promise<BiResponse> {
+  static getAll({page, pageSize}: PaginationQuery, {field, order}: UserSort):
+
+      Promise<BiResponse> {
 
     return new Promise<BiResponse>(((resolve, reject) => {
-
-      api.call({ url: `${process.env.VUE_APP_BI_API_V1_PATH}/users`, method: 'get'})
-        .then((response: any) => {
-          const biResponse = new BiResponse(response.data);
-          resolve(biResponse);
-        }).catch((error) => {
-          reject(error);
-        })
+      const config = {
+        url: `${process.env.VUE_APP_BI_API_V1_PATH}/users`,
+        method: 'get',
+        params: {
+          sortField: field,
+          sortOrder: order,
+          page,
+          pageSize
+        }
+      }
+      api.call(config)
+          .then((response: any) => {
+            const biResponse = new BiResponse(response.data);
+            resolve(biResponse);
+          }).catch((error) => {
+        reject(error);
+      })
 
     }))
 
