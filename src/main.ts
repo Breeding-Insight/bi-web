@@ -30,6 +30,7 @@ import { defineAbilityFor } from './config/ability';
 import TreeView from "vue-json-tree-view";
 import VueQRCodeComponent from 'vue-qrcode-component'
 import VueFeatherIconPack from "./components/VueFeatherIconPack.vue";
+import VueGtag from "vue-gtag";
 
 Vue.component("vue-feather-icon-pack", VueFeatherIconPack);
 
@@ -72,6 +73,11 @@ Vue.use(Buefy, {
     }
   }
 });
+
+// Google analytics config
+Vue.use(VueGtag, {
+  config: { id: process.env.VUE_APP_ANALYTICS_GTAG_ID }
+}, router);
 
 Vue.component('qr-code', VueQRCodeComponent)
 
