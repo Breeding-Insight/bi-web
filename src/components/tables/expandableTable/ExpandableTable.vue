@@ -36,6 +36,7 @@
         aria-page-label="Page"
         aria-current-label="Current"
         v-bind="$attrs"
+        :default-sort="defaultSort"
         v-on="$listeners"
         :row-class="calculateRowClass"
     >
@@ -120,6 +121,10 @@ export default class ExpandableTable extends Mixins(ValidationMixin) {
   pagination!: Pagination;
   @Prop()
   dataFormState!: DataFormEventBusHandler;
+  @Prop()
+  defaultSort!: String[];
+  @Prop()
+  rowClasses: any;
 
   private tableRows: Array<TableRow<any>> = new Array<TableRow<any>>();
   private openDetail: Array<TableRow<any>> = new Array<TableRow<any>>();
@@ -133,7 +138,8 @@ export default class ExpandableTable extends Mixins(ValidationMixin) {
   }
 
   isVisibleDetailRow(row:any) {
-    return (this.$refs[this.tableRef] as Vue & { isVisibleDetailRow: (row:any) => boolean }).isVisibleDetailRow(row);
+    // If data is passed in at same time as component loading, this ref won't be assigned yet. Check if assigned before referencing.
+    return this.$refs[this.tableRef] ? (this.$refs[this.tableRef] as Vue & { isVisibleDetailRow: (row:any) => boolean }).isVisibleDetailRow(row): false;
   }
 
   detailsVisible() {
@@ -142,12 +148,12 @@ export default class ExpandableTable extends Mixins(ValidationMixin) {
 
   calculateRowClass(row: TableRow<any>, index: Number) {
     if (this.isVisibleDetailRow(row)) {
-      return "is-edited";
+      return this.rowClasses && this.rowClasses[row.data.id] ? this.rowClasses[row.data.id] + " is-edited" : "is-edited";
     } else if (row.new) {
-      return "is-new";
+      return this.rowClasses && this.rowClasses[row.data.id] ? this.rowClasses[row.data.id] + " is-new" : "is-new";
     }
     
-    return "";
+    return this.rowClasses && this.rowClasses[row.data.id] ? this.rowClasses[row.data.id] : "";
   }
 
   updated() {
@@ -157,6 +163,10 @@ export default class ExpandableTable extends Mixins(ValidationMixin) {
   @Watch('records', {immediate: true, deep:true})
   updateTableRows(newRecords: any, oldRecords: any) {
     let difference: Array<string> = [];
+    let difference_direction: number | undefined = undefined;
+    if (oldRecords !== undefined) {
+      difference_direction = newRecords.length - oldRecords.length;
+    }
     if (oldRecords !== null && this.initialUpdate) {
       const newSet: Set<string> = new Set(newRecords
           .filter( (record: any) => record.id !== undefined)
@@ -173,12 +183,20 @@ export default class ExpandableTable extends Mixins(ValidationMixin) {
     for (const record of this.records){
       const newTableRow = new TableRow<any>(this.editable, this.archivable, record);
 
-      // See if it is our new row
-      if (difference.length === 1) {
+      // TODO: this is a hack to try and deal with pagination edge cases
+      // Should probably implement this in a different way or get rid of new row highlighting
+      const paginationCases = this.pagination.totalCount.valueOf() % this.pagination.pageSize.valueOf() === 1 &&
+                              this.pagination.currentPage === this.pagination.totalPages ||
+                              this.pagination.totalCount.valueOf() % this.pagination.pageSize.valueOf() === this.pagination.totalCount.valueOf() &&
+                              this.pagination.currentPage === this.pagination.totalPages &&
+                              this.pagination.currentPage === 1;
+
+      if (difference.length === 1 && difference_direction !== undefined && difference_direction > 0 && !paginationCases) {
         if (record.id === difference[0]) {
           newTableRow.toggleNew();
         }
       }
+
       rowArray.push(newTableRow);
     }
     this.tableRows = rowArray;

@@ -133,11 +133,10 @@ export default class CategoryTraitForm extends Vue {
 
   @Watch('type', {immediate: true})
   updateCategories() {
-    if (this.data.filter((value,index) => {
+    this.data = this.data.filter((value,index) => {
       return (value.value !== undefined || value.label !== undefined);
-    }).length !== 0) {
-      this.data.splice(0, this.data.length)
-    }
+    });
+    
     if (this.data.length === 0) {
       this.prepopulateCategories();
     }

@@ -23,7 +23,7 @@ function setup() {
                   'roles':[{'id':'1', 'domain':'test role'}],
                   'program': {'id':'1', 'name':'Test Program'}, 'active':'true' };
     users.push(user);
-    const response = DaoUtils.formatBiResponse(users);
+    const response = DaoUtils.formatBiResponseWithPaging(users, 1, 1, 1, 50);
     const singleResponse = DaoUtils.formatBiResponseSingle(user);
 
     const programUserDAO = mocked(ProgramUserDAO, false);

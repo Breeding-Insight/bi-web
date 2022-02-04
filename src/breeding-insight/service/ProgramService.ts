@@ -17,10 +17,11 @@
 
 import {ProgramDAO} from "@/breeding-insight/dao/ProgramDAO";
 import {Program} from "@/breeding-insight/model/Program";
-import {Metadata, Pagination} from "@/breeding-insight/model/BiResponse";
+import {Metadata} from "@/breeding-insight/model/BiResponse";
 import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
 import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
 import {ProgramObservationLevel} from "@/breeding-insight/model/ProgramObservationLevel";
+import {ProgramSort, ProgramSortField, SortOrder} from "@/breeding-insight/model/Sort";
 
 export class ProgramService {
 
@@ -95,16 +96,11 @@ export class ProgramService {
     }));
   }
 
-  static getAll(paginationQuery?: PaginationQuery): Promise<[Program[], Metadata]> {
+  static getAll(paginationQuery: PaginationQuery = new PaginationQuery(1, 50, true),
+                sort: ProgramSort = new ProgramSort(ProgramSortField.Name, SortOrder.Ascending)): Promise<[Program[], Metadata]> {
     return new Promise<[Program[], Metadata]>(((resolve, reject) => {
 
-      if (paginationQuery === undefined){
-        paginationQuery = new PaginationQuery(0, 0, true);
-      }
-      ProgramDAO.getAll(paginationQuery).then((biResponse) => {
-
-        //TODO: Remove when backend sorts the data by default
-        biResponse.result.data = PaginationController.mockSortRecords(biResponse.result.data);
+      ProgramDAO.getAll(paginationQuery, sort).then((biResponse) => {
 
         let programs: Program[] = [];
 
@@ -112,11 +108,6 @@ export class ProgramService {
         programs = biResponse.result.data.map((program: any) => {
           return new Program(program.id, program.name, program.species.id, program.numUsers, program.brapiUrl, program.key);
         });
-
-        //TODO: Remove when backend pagination is implemented
-        let newPagination;
-        [programs, newPagination] = PaginationController.mockPagination(programs, paginationQuery!.page, paginationQuery!.pageSize, paginationQuery!.showAll);
-        biResponse.metadata.pagination = newPagination;
 
         resolve([programs, biResponse.metadata]);
     

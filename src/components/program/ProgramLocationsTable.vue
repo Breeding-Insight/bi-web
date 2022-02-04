@@ -91,13 +91,16 @@
       v-on:remove="displayWarning($event)"
       v-on:show-error-notification="$emit('show-error-notification', $event)"
       v-on:paginate="paginationController.updatePage($event)"
-      v-on:paginate-toggle-all="paginationController.toggleShowAll()"
-      v-on:paginate-page-size="paginationController.updatePageSize($event)"
+      v-on:paginate-toggle-all="paginationController.toggleShowAll(locationsPagination.totalCount.valueOf())"
+      v-on:paginate-page-size="updatePageSize($event)"
+      :backend-sorting="true"
+      v-bind:default-sort="['data.name', locationSortOrderAsBuefy]"
+      v-on:sort="setSort"
     >
       <b-table-column field="data.name" label="Name" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
         {{ props.row.data.name }}
       </b-table-column>
-      <b-table-column field="data.numExperiments" label="# Experiments" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+      <b-table-column field="data.numExperiments" label="# Experiments" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
         {{ props.row.data.numExperiments }}
       </b-table-column>
       <template v-slot:edit="{editData, validations}">
@@ -129,10 +132,9 @@
   import WarningModal from '@/components/modals/WarningModal.vue'
   import {PlusCircleIcon} from 'vue-feather-icons'
   import {validationMixin} from 'vuelidate';
-  import {Validations} from 'vuelidate-property-decorators'
   import {required} from 'vuelidate/lib/validators'
   import {ProgramLocation} from '@/breeding-insight/model/ProgramLocation'
-  import { mapGetters } from 'vuex'
+  import { mapGetters, mapMutations } from 'vuex'
   import {Program} from "@/breeding-insight/model/Program";
   import NewDataForm from '@/components/forms/NewDataForm.vue'
   import BasicInputField from "@/components/forms/BasicInputField.vue";
@@ -146,6 +148,9 @@
   import {
     DEACTIVATE_ALL_NOTIFICATIONS
   } from "@/store/mutation-types";
+  import {UPDATE_LOCATION_SORT} from "@/store/sorting/mutation-types";
+  import {LocationSort, LocationSortField, Sort, SortOrder, UserSort} from "@/breeding-insight/model/Sort";
+  import {BackendPaginationController} from "@/breeding-insight/model/view_models/BackendPaginationController";
 
 @Component({
   mixins: [validationMixin],
@@ -155,7 +160,16 @@
   computed: {
     ...mapGetters([
       'activeProgram'
+    ]),
+    ...mapGetters('sorting',[
+        'locationSort',
+        'locationSortOrderAsBuefy'
     ])
+  },
+  methods: {
+    ...mapMutations('sorting', {
+      updateSort: UPDATE_LOCATION_SORT
+    })
   }
 })
 export default class ProgramLocationsTable extends Vue {
@@ -172,26 +186,45 @@ export default class ProgramLocationsTable extends Vue {
 
   private locationsLoading = true;
 
-  private paginationController: PaginationController = new PaginationController();
+  private paginationController: BackendPaginationController = new BackendPaginationController();
 
   private newLocationFormState: DataFormEventBusHandler = new DataFormEventBusHandler();
   private editLocationFormState: DataFormEventBusHandler = new DataFormEventBusHandler();
+
+  private locationSort!: LocationSort;
+  private updateSort!: (sort: LocationSort) => void;
 
   locationValidations = {
     name: {required}
   }
 
   mounted() {
+    this.updatePagination();
     this.getLocations();
   }
 
-  @Watch('paginationController', { deep: true})
-  getLocations() {
-    let paginationQuery: PaginationQuery = PaginationController.getPaginationSelections(
-      this.paginationController.currentPage, this.paginationController.pageSize, this.paginationController.showAll);
-    this.paginationController.setCurrentCall(paginationQuery);
+  setSort(field: string, order: string) {
+    const fieldMap: any = {'data.name': LocationSortField.Name};
+    if (field in fieldMap) {
+      this.updateSort(new LocationSort(fieldMap[field], Sort.orderAsBI(order)));
+      this.getLocations();
+    }
+  }
 
-    ProgramLocationService.getAll(this.activeProgram!.id!, paginationQuery).then(([programLocations, metadata]) => {
+  @Watch('paginationController', { deep: true})
+  paginationChanged() {
+    this.updatePagination();
+    this.getLocations();
+  }
+
+  updatePagination() {
+    let paginationQuery: PaginationQuery = BackendPaginationController.getPaginationSelections(
+        this.paginationController.currentPage, this.paginationController.pageSize);
+    this.paginationController.setCurrentCall(paginationQuery);
+  }
+
+  getLocations() {
+    ProgramLocationService.getAll(this.activeProgram!.id!, this.paginationController.currentCall, this.locationSort).then(([programLocations, metadata]) => {
       if (this.paginationController.matchesCurrentRequest(metadata.pagination)){
         this.locations = programLocations;
         this.locationsPagination = metadata.pagination;
@@ -217,6 +250,10 @@ export default class ProgramLocationsTable extends Vue {
       this.$emit('show-error-notification', error['errorMessage']);
     }).finally(() => this.editLocationFormState.bus.$emit(DataFormEventBusHandler.SAVE_COMPLETE_EVENT));
 
+  }
+
+  updatePageSize(pageSize: string) {
+    this.paginationController.updatePageSize(Number(pageSize).valueOf());
   }
 
   saveLocation() {
