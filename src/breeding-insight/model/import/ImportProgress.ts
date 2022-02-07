@@ -16,6 +16,7 @@
  */
 
 import {ValidationError} from "@/breeding-insight/model/errors/ValidationError";
+import {RowError} from "@/breeding-insight/model/errors/RowError";
 
 export class ImportProgress {
   statuscode?: number;
@@ -23,13 +24,13 @@ export class ImportProgress {
   total?: number;
   finished?: number;
   inProgress?: number;
-  errors?: ValidationError;
+  rowErrors?: RowError[];
 
-  constructor({statuscode, message, total, finished, inProgress, errors}: ImportProgress) {
+  constructor({statuscode, message, total, finished, inProgress, rowErrors}: ImportProgress) {
     this.statuscode = statuscode;
     this.message = message;
     this.total = total;
     this.finished = finished;
     this.inProgress = inProgress;
-    this.errors = errors;  }
+    this.rowErrors = rowErrors;  }
 }
