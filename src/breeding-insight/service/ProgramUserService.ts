@@ -21,9 +21,7 @@ import {Program} from "@/breeding-insight/model/Program";
 import {Metadata} from "@/breeding-insight/model/BiResponse";
 import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
 import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
-import {User} from "@/breeding-insight/model/User";
-import {UserService} from "@/breeding-insight/service/UserService";
-import {SortField} from "@/breeding-insight/model/SortField";
+import {SortOrder, UserSort, UserSortField} from "@/breeding-insight/model/Sort";
 
 export class ProgramUserService {
 
@@ -107,15 +105,13 @@ export class ProgramUserService {
     }));
   }
 
-  static getAll(programId: string, paginationQuery?: PaginationQuery, sortField?: SortField): Promise<[ProgramUser[], Metadata]> {
+  static getAll(programId: string,
+                paginationQuery: PaginationQuery = new PaginationQuery(1, 50, true),
+                sort: UserSort = new UserSort(UserSortField.Name, SortOrder.Ascending)): Promise<[ProgramUser[], Metadata]> {
     return new Promise<[ProgramUser[], Metadata]>(((resolve, reject) => {
 
-      if (paginationQuery === undefined){
-        paginationQuery = new PaginationQuery(0, 0, true);
-      }
-
       if (programId) {
-        ProgramUserDAO.getAll(programId, paginationQuery, sortField).then((biResponse) => {
+        ProgramUserDAO.getAll(programId, paginationQuery, sort).then((biResponse) => {
 
           let programUsers: ProgramUser[] = [];
 
@@ -124,11 +120,6 @@ export class ProgramUserService {
             return new ProgramUser(programUser.user.id, programUser.user.name, programUser.user.email,
               programUser.roles[0].id, programUser.roles[0].domain, newProgram, programUser.active);
           });
-
-          //TODO: Remove when backend pagination is implemented
-          let newPagination;
-          [programUsers, newPagination] = PaginationController.mockPagination(programUsers, paginationQuery!.page, paginationQuery!.pageSize, paginationQuery!.showAll);
-          biResponse.metadata.pagination = newPagination;
 
           resolve([programUsers, biResponse.metadata]);
       
