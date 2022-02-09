@@ -148,7 +148,7 @@
           v-on:newSortColumn="$emit('newSortColumn', $event)"
           v-on:toggleSortOrder="$emit('toggleSortOrder')"
         >
-          {{ StringFormatters.toStartCase(data.traitDescription) }}
+          {{ data.entity }} {{data.attribute | capitalize }}
         </TableColumn>
         <TableColumn
             name="method"
@@ -287,6 +287,12 @@ import {BackendPaginationController} from "@/breeding-insight/model/view_models/
     ...mapGetters([
       'activeProgram'
     ])
+  },
+  filters: {
+    capitalize: function(value: string | undefined) : string | undefined {
+      if (value === undefined) value = '';
+      return StringFormatters.toStartCase(value);
+    }
   },
   data: () => ({Trait, StringFormatters, TraitStringFormatters})
 })
