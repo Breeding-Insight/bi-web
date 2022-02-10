@@ -74,7 +74,7 @@
 
       <slot name="userInput" />
 
-      <slot name="importPreviewTable" v-bind:import="previewData" />
+      <slot name="importPreviewTable" v-bind:import="previewData" v-bind:pagination="pagination"/>
     </template>
 
     <template v-if="state === ImportState.IMPORT_ERROR">
@@ -111,6 +111,7 @@ import {ImportResponse} from "@/breeding-insight/model/import/ImportResponse";
 import { titleCase } from "title-case";
 import {DataFormEventBusHandler} from "@/components/forms/DataFormEventBusHandler";
 import {ValidationErrorService} from "@/breeding-insight/service/ValidationErrorService";
+import {Pagination} from "@/breeding-insight/model/BiResponse";
 
 enum ImportState {
   CHOOSE_FILE = "CHOOSE_FILE",
@@ -194,6 +195,7 @@ export default class ImportTemplate extends ProgramsBase {
   private activeProgram?: Program;
   private tableLoaded = false;
   private showAbortModal = false;
+  private pagination = new Pagination();
 
   private yesAbortId: string = "import-yes-abort";
 
@@ -341,6 +343,7 @@ export default class ImportTemplate extends ProgramsBase {
         this.importService.send(ImportEvent.IMPORT_ERROR);
       } else if (e.response && e.response.status == 422 && e.response.statusText) {
         this.$log.error(e);
+
         this.$emit('show-error-notification', e.response.statusText);
       } else {
         this.$log.error(e);
@@ -481,6 +484,11 @@ export default class ImportTemplate extends ProgramsBase {
             this.previewData = previewResponse.preview.rows as any[];
             this.newObjectCounts = previewResponse.preview.statistics;
             this.importService.send(ImportEvent.IMPORT_SUCCESS);
+            // TODO: Temp pagination
+            this.pagination.totalCount = previewResponse.preview.rows.length;
+            this.pagination.pageSize = 10;
+            this.pagination.currentPage = 1;
+            this.pagination.totalPages = 1;
           }
         }
         return previewResponse;

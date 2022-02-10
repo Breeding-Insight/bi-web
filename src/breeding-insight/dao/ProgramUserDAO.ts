@@ -19,7 +19,7 @@ import {ProgramUser} from "@/breeding-insight/model/ProgramUser";
 import {BiResponse} from "@/breeding-insight/model/BiResponse";
 import * as api from "@/util/api";
 import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
-import {SortField} from "@/breeding-insight/model/SortField";
+import {UserSort} from "@/breeding-insight/model/Sort";
 
 export class ProgramUserDAO {
 
@@ -71,17 +71,25 @@ export class ProgramUserDAO {
     return api.call({ url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/users/${userId}`, method: 'delete'});
   }
 
-  static getAll(programId: string, paginationQuery: PaginationQuery, sortField: SortField | undefined): Promise<BiResponse> {
-
+  static getAll(programId: string, {page, pageSize}: PaginationQuery, {field, order}: UserSort): Promise<BiResponse> {
     return new Promise<BiResponse>(((resolve, reject) => {
-
-      api.call({ url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/users`, method: 'get', params: sortField })
-        .then((response: any) => {
-          const biResponse = new BiResponse(response.data);
-          resolve(biResponse);
-        }).catch((error) => {
-          reject(error);
-        })
+      const config = {
+        url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/users`,
+        method: 'get',
+        params: {
+          sortField: field,
+          sortOrder: order,
+          page,
+          pageSize
+        }
+      }
+      api.call(config)
+          .then((response: any) => {
+            const biResponse = new BiResponse(response.data);
+            resolve(biResponse);
+          }).catch((error) => {
+        reject(error);
+      })
 
     }))
   }

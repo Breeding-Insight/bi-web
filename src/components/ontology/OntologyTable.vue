@@ -116,8 +116,8 @@
       v-bind:auto-handle-close-panel-event="false"
       v-bind:side-panel-state="traitSidePanelState"
       v-on:paginate="paginationController.updatePage($event)"
-      v-on:paginate-toggle-all="paginationController.toggleShowAll()"
-      v-on:paginate-page-size="paginationController.updatePageSize($event)"
+      v-on:paginate-toggle-all="paginationController.toggleShowAll(traitsPagination.totalCount.valueOf())"
+      v-on:paginate-page-size="paginationController.updatePageSize(parseInt($event,10))"
     >
 
       <!-- 
@@ -125,19 +125,58 @@
         data: T
       -->
       <template v-slot:columns="data">
-        <TableColumn name="name" v-bind:label="'Name'">
+        <TableColumn
+            name="name"
+            v-bind:label="'Name'"
+            v-bind:sortField="ontologySort.field"
+            v-bind:sortFieldLabel="nameSortLabel"
+            v-bind:sortable="true"
+            v-bind:sortOrder="ontologySort.order"
+            v-on:newSortColumn="$emit('newSortColumn', $event)"
+            v-on:toggleSortOrder="$emit('toggleSortOrder')"
+        >
           {{ data.observationVariableName }}
         </TableColumn>
         <TableColumn name="trait" v-bind:label="'Trait'" v-bind:visible="!traitSidePanelState.collapseColumns">
           {{ StringFormatters.toStartCase(data.traitDescription) }}
         </TableColumn>
-        <TableColumn name="method" v-bind:label="'Method'" v-bind:visible="!traitSidePanelState.collapseColumns">
-          {{ (data.method.description ? data.method.description : "") + " " + StringFormatters.toStartCase(data.method.methodClass) }}
+        <TableColumn
+            name="method"
+            v-bind:label="'Method'"
+            v-bind:visible="!traitSidePanelState.collapseColumns"
+            v-bind:sortField="ontologySort.field"
+            v-bind:sortFieldLabel="methodSortLabel"
+            v-bind:sortable="true"
+            v-bind:sortOrder="ontologySort.order"
+            v-on:newSortColumn="$emit('newSortColumn', $event)"
+            v-on:toggleSortOrder="$emit('toggleSortOrder')"
+        >
+          {{ data.method.description + " " + StringFormatters.toStartCase(data.method.methodClass) }}
         </TableColumn>
-        <TableColumn name="scaleClass" v-bind:label="'Scale Class'" v-bind:visible="!traitSidePanelState.collapseColumns">
+        <TableColumn
+            name="scaleClass"
+            v-bind:label="'Scale Class'"
+            v-bind:visible="!traitSidePanelState.collapseColumns"
+            v-bind:sortField="ontologySort.field"
+            v-bind:sortFieldLabel="scaleClassSortLabel"
+            v-bind:sortable="true"
+            v-bind:sortOrder="ontologySort.order"
+            v-on:newSortColumn="$emit('newSortColumn', $event)"
+            v-on:toggleSortOrder="$emit('toggleSortOrder')"
+        >
           {{ TraitStringFormatters.getScaleTypeString(data.scale) }}
         </TableColumn>
-        <TableColumn name="unit" v-bind:label="'Unit'" v-bind:visible="!traitSidePanelState.collapseColumns">
+        <TableColumn
+            name="unit"
+            v-bind:label="'Unit'"
+            v-bind:visible="!traitSidePanelState.collapseColumns"
+            v-bind:sortField="ontologySort.field"
+            v-bind:sortFieldLabel="unitSortLabel"
+            v-bind:sortable="true"
+            v-bind:sortOrder="ontologySort.order"
+            v-on:newSortColumn="$emit('newSortColumn', $event)"
+            v-on:toggleSortOrder="$emit('toggleSortOrder')"
+        >
           <template v-if="data.scale.dataType==='NUMERICAL'">
             {{ data.scale.scaleName }}
           </template>
@@ -197,12 +236,12 @@
 </template>
 
 <script lang="ts">
-import {Prop, Component, Vue, Watch} from 'vue-property-decorator'
+import {Component, Prop, Vue, Watch} from 'vue-property-decorator'
 import WarningModal from '@/components/modals/WarningModal.vue'
 import {PlusCircleIcon} from 'vue-feather-icons'
 import {validationMixin} from 'vuelidate';
 import {Trait} from '@/breeding-insight/model/Trait'
-import { mapGetters } from 'vuex'
+import {mapGetters} from 'vuex'
 import {Program} from "@/breeding-insight/model/Program";
 import NewDataForm from '@/components/forms/NewDataForm.vue'
 import BasicInputField from "@/components/forms/BasicInputField.vue";
@@ -214,19 +253,21 @@ import TableColumn from "@/components/tables/TableColumn.vue";
 import {Metadata, Pagination} from "@/breeding-insight/model/BiResponse";
 import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
 import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
-import { StringFormatters } from '@/breeding-insight/utils/StringFormatters';
-import { TraitStringFormatters } from '@/breeding-insight/utils/TraitStringFormatters';
+import {StringFormatters} from '@/breeding-insight/utils/StringFormatters';
+import {TraitStringFormatters} from '@/breeding-insight/utils/TraitStringFormatters';
 import BaseTraitForm from "@/components/trait/forms/BaseTraitForm.vue";
 import {ValidationError} from "@/breeding-insight/model/errors/ValidationError";
 import {ProgramService} from "@/breeding-insight/service/ProgramService";
 import {MethodClass} from "@/breeding-insight/model/Method";
 import {DataType, Scale} from "@/breeding-insight/model/Scale";
 import {SidePanelTableEventBusHandler} from "@/components/tables/SidePanelTableEventBus";
-import { DataFormEventBusHandler } from '@/components/forms/DataFormEventBusHandler';
-import {email, required, integer, maxLength} from "vuelidate/lib/validators";
-import {TraitFilter, TraitField} from "@/breeding-insight/model/TraitSelector";
+import {DataFormEventBusHandler} from '@/components/forms/DataFormEventBusHandler';
+import {integer, maxLength} from "vuelidate/lib/validators";
+import {TraitField, TraitFilter} from "@/breeding-insight/model/TraitSelector";
+import {OntologySort, OntologySortField, SortOrder, TraitSortField} from "@/breeding-insight/model/Sort";
+import {BackendPaginationController} from "@/breeding-insight/model/view_models/BackendPaginationController";
 
-  @Component({
+@Component({
   mixins: [validationMixin],
   components: {
     BaseTraitForm, NewDataForm, BasicInputField, SidePanelTable, EmptyTableMessage, TableColumn,
@@ -243,6 +284,9 @@ export default class OntologyTable extends Vue {
   @Prop({default: () => true})
   active?: boolean;
 
+  @Prop()
+  ontologySort!: OntologySort;
+
   private activeProgram?: Program;
   private traits: Trait[] = [];
   private methodClassOptions: string[] = Object.values(MethodClass);
@@ -257,6 +301,12 @@ export default class OntologyTable extends Vue {
   private newTrait: Trait = new Trait();
   private currentTraitEditable = false;
   private loadingTraitEditable = true;
+
+  // table column sorting
+  private nameSortLabel: string = OntologySortField.Name;
+  private methodSortLabel: string = OntologySortField.MethodDescription;
+  private scaleClassSortLabel: string = OntologySortField.ScaleClass;
+  private unitSortLabel: string = OntologySortField.ScaleName;
 
   // New trait form
   private newTraitActive: boolean = false;
@@ -276,7 +326,7 @@ export default class OntologyTable extends Vue {
 
   // TODO: Move these into an event bus in the future
   private traitsPagination?: Pagination = new Pagination();
-  private paginationController: PaginationController = new PaginationController();
+  private paginationController: BackendPaginationController = new BackendPaginationController();
 
   shortCharLimit = 12;
   longCharLimit = 30;
@@ -304,6 +354,7 @@ export default class OntologyTable extends Vue {
   }
 
   mounted() {
+    this.updatePagination();
     this.getTraits();
     this.getObservationLevels();
     this.getAttributesEntitiesDescriptions();
@@ -332,16 +383,24 @@ export default class OntologyTable extends Vue {
     return this.editTrait && this.editTrait.active ? 'restore' : 'archive';
   }
 
+  @Watch('ontologySort', {deep: true})
   @Watch('paginationController', { deep: true})
-  getTraits() {
-    let paginationQuery: PaginationQuery = PaginationController.getPaginationSelections(
-      this.paginationController.currentPage, this.paginationController.pageSize, this.paginationController.showAll);
-    this.paginationController.setCurrentCall(paginationQuery);
+  paginationChanges() {
+    this.updatePagination();
+    this.getTraits();
+  }
 
+  updatePagination() {
+    let paginationQuery: PaginationQuery = BackendPaginationController.getPaginationSelections(
+        this.paginationController.currentPage, this.paginationController.pageSize);
+    this.paginationController.setCurrentCall(paginationQuery);
+  }
+
+  getTraits() {
     // filter the terms pulled from the back-end
     let filters: TraitFilter[] = [{ field: TraitField.STATUS, value: this.active}];
 
-    TraitService.getFilteredTraits(this.activeProgram!.id!, paginationQuery, true, filters).then(([traits, metadata]) => {
+    TraitService.getFilteredTraits(this.activeProgram!.id!, this.paginationController.currentCall, true, filters, this.ontologySort).then(([traits, metadata]) => {
       if (this.paginationController.matchesCurrentRequest(metadata.pagination)){
         this.traits = traits;
         this.traitsPagination = metadata.pagination;

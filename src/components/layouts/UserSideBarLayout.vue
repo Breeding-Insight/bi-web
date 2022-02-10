@@ -164,7 +164,7 @@
                   </router-link>
                 </li>
                 <li>
-                  <router-link v-bind:to="{name: 'germplasm', params: {programId: activeProgram.id}}">
+                  <router-link v-bind:to="{name: 'germplasm-import', params: {programId: activeProgram.id}}">
                     Germplasm
                   </router-link>
                 </li>
@@ -212,6 +212,35 @@
                 <li>
                   <router-link v-bind:to="{name: 'archived-terms', params: {programId: activeProgram.id}}">
                     Archived Ontology
+                  </router-link>
+                </li>
+              </ul>
+            </li>
+            <li>
+              <router-link
+                  v-bind:to="{name: 'germplasm', params: {programId: activeProgram.id}}"
+                  v-bind:class="{ 'is-active': germplasmActive }"
+                  :id="germplasmMenuId"
+              >
+                Germplasm
+                <MoreVerticalIcon
+                    v-if="!germplasmActive"
+                    class="is-pulled-right"
+                />
+                <MoreHorizontalIcon
+                    v-if="germplasmActive"
+                    class="is-pulled-right"
+                />
+              </router-link>
+              <ul v-show="germplasmActive">
+                <li>
+                  <router-link v-bind:to="{name: 'germplasm-all', params: {programId: activeProgram.id}}">
+                    All Germplasm
+                  </router-link>
+                </li>
+                <li>
+                  <router-link v-bind:to="{name: 'germplasm-lists', params: {programId: activeProgram.id}}">
+                    Germplasm Lists
                   </router-link>
                 </li>
               </ul>
@@ -300,6 +329,7 @@
     traitsActive: boolean = false;
     trialsAndStudiesActive: boolean = false;
     importFileActive: boolean = false;
+    germplasmActive: boolean = false;
     private programs: Program[] = [];
     private programSelectActive: boolean = false;
 
@@ -311,6 +341,7 @@
     private ontologyMenuId: string = "usersidebarlayout-ontology-menu";
     private programManagementMenuId: string = "usersidebarlayout-program-management-menu";
     private brAPIMenuId: string = "usersidebarlayout-brapi-menu";
+    private germplasmMenuId: string = "usersidebarlayout-germplasm-menu";
 
   @Prop()
     username!: string;
@@ -358,7 +389,8 @@
       this.trialsAndStudiesActive = path.includes('/trials-studies/');
       this.ontologyActive = path.includes('/ontology/') || path.includes('traits/import') || path.includes('traits/favorites');
       this.traitsActive = path.includes('/traits/');
-      this.importFileActive = path.includes('/import/')
+      this.importFileActive = path.includes('/import/');
+      this.germplasmActive = path.includes('/germplasm/');
     }
     hideProgramSelect() {
       this.programSelectActive = false;

@@ -1,6 +1,6 @@
 {
   "name": "bi-web",
-  "version": "v0.5.0+230",
+  "version": "v0.5.0+254",
   "private": true,
   "scripts": {
     "build": "node $npm_package_config_task_path/build.js --dev-audit-level=critical --prod-audit-level=none",
@@ -37,6 +37,7 @@
     "vue-click-outside": "^1.1.0",
     "vue-cookies": "^1.7.0",
     "vue-feather-icons": "^5.1.0",
+    "vue-gtag": "^1.16.1",
     "vue-json-tree-view": "^2.1.6",
     "vue-property-decorator": "^8.3.0",
     "vue-qrcode-component": "^2.1.1",
@@ -87,5 +88,5 @@
     "vue-cli-plugin-axios": "0.0.4",
     "vue-template-compiler": "^2.6.10"
   },
-  "versionInfo": "https://github.com/Breeding-Insight/bi-web/commit/a0ed43f46c714a48e2b870129c48f36330216838"
+  "versionInfo": "https://github.com/Breeding-Insight/bi-web/commit/8c05b53647f74436b76ed51782b881ec4a7fe6da"
 }

@@ -128,8 +128,8 @@ export class ImportService {
       return null;
     }
     let jsonError: ImportProgress | undefined = error.progress;
-    if (jsonError && jsonError.errors){
-      const rowErrors = jsonError.errors.rowErrors;
+    if (jsonError){
+      const rowErrors = jsonError.rowErrors;
       if (rowErrors) {
         let validationError: ValidationError = new ValidationError(rowErrors);
         return validationError;
