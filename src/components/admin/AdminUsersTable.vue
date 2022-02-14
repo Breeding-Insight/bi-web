@@ -167,7 +167,7 @@
             {{ getRoleName(props.row.data.roleId) }}
           </template>
         </b-table-column>
-        <b-table-column :custom-sort="sortProgram" label="Programs" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+        <b-table-column field="data.programId" label="Programs" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
           <template
             v-if="getRoleName(props.row.data.roleId) === 'admin'"
           >
@@ -333,7 +333,8 @@ export default class AdminUsersTable extends Vue {
       const fieldMap: any = {
         'data.email': SystemUserSortField.Email,
         'data.name': SystemUserSortField.Name,
-        'data.roleId': SystemUserSortField.Roles
+        'data.roleId': SystemUserSortField.Roles,
+        'data.programId': SystemUserSortField.Programs
       };
       if (field in fieldMap) {
         this.updateSort(new SystemUserSort(fieldMap[field], Sort.orderAsBI(order)));
