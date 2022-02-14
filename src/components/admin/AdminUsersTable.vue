@@ -162,12 +162,12 @@
          <b-table-column field="data.email" label="Email" v-bind:visible="!isMobile"  sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
           {{ props.row.data.email }}
         </b-table-column>
-        <b-table-column :custom-sort="sortRole" label="Role" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+        <b-table-column :custom-sort="sortRole" label="Role" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
           <template v-if="rolesMap.size > 0">
             {{ getRoleName(props.row.data.roleId) }}
           </template>
         </b-table-column>
-        <b-table-column :custom-sort="sortProgram" label="Programs" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+        <b-table-column :custom-sort="sortProgram" label="Programs" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
           <template
             v-if="getRoleName(props.row.data.roleId) === 'admin'"
           >
