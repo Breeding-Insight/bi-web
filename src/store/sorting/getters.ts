@@ -22,7 +22,7 @@ import {
     LocationSort, OntologySort,
     ProgramSort,
     ProgramSortField,
-    SortOrder,
+    SortOrder, SystemUserSort, SystemUserSortField,
     TraitSortField,
     UserSort,
     UserSortField
@@ -81,13 +81,14 @@ export const getters: GetterTree<SortState, RootState> = {
     },
 
     // system user table
-    systemUserSort(state: SortState): UserSort {
+    systemUserSort(state: SortState): SystemUserSort {
         return state.systemUserSort;
     },
     systemUserSortFieldAsBuefy(state: SortState): string {
         const fieldMap: any = {
-            [UserSortField.Email]: 'data.email',
-            [UserSortField.Name]: 'data.name'
+            [SystemUserSortField.Email]: 'data.email',
+            [SystemUserSortField.Name]: 'data.name',
+            [SystemUserSortField.Roles]: 'data.roleId'
         };
         return fieldMap[state.systemUserSort.field];
     },

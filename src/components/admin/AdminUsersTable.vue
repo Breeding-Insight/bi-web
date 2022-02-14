@@ -162,7 +162,7 @@
          <b-table-column field="data.email" label="Email" v-bind:visible="!isMobile"  sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
           {{ props.row.data.email }}
         </b-table-column>
-        <b-table-column :custom-sort="sortRole" label="Role" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+        <b-table-column field="data.roleId" label="Role" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
           <template v-if="rolesMap.size > 0">
             {{ getRoleName(props.row.data.roleId) }}
           </template>
@@ -263,7 +263,14 @@
     DEACTIVATE_ALL_NOTIFICATIONS
   } from "@/store/mutation-types";
   import {UPDATE_SYSTEM_USER_SORT} from "@/store/sorting/mutation-types";
-  import {ProgramSortField, Sort, SortOrder, UserSort, UserSortField} from "@/breeding-insight/model/Sort";
+  import {
+    ProgramSortField,
+    Sort,
+    SortOrder, SystemUserSort,
+    SystemUserSortField,
+    UserSort,
+    UserSortField
+  } from "@/breeding-insight/model/Sort";
   import {BackendPaginationController} from "@/breeding-insight/model/view_models/BackendPaginationController";
 
   @Component({
@@ -324,11 +331,12 @@ export default class AdminUsersTable extends Vue {
 
     setSort(field: string, order: string) {
       const fieldMap: any = {
-        'data.email': UserSortField.Email,
-        'data.name': UserSortField.Name
+        'data.email': SystemUserSortField.Email,
+        'data.name': SystemUserSortField.Name,
+        'data.roleId': SystemUserSortField.Roles
       };
       if (field in fieldMap) {
-        this.updateSort(new UserSort(fieldMap[field], Sort.orderAsBI(order)));
+        this.updateSort(new SystemUserSort(fieldMap[field], Sort.orderAsBI(order)));
         this.getUsers();
       }
     }
