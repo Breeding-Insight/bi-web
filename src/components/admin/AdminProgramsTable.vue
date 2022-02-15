@@ -146,7 +146,7 @@
       <b-table-column field="data.key" label="Program Key" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
         {{ props.row.data.key }}
       </b-table-column>
-      <b-table-column :custom-sort="sortSpecies" label="Species" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+      <b-table-column field="data.species" label="Species" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
         <template v-if="speciesMap.size > 0">
           {{ getSpeciesName(props.row.data.speciesId) }}
         </template>
@@ -471,17 +471,6 @@ export default class AdminProgramsTable extends Vue {
   emitProgramChange() {
     EventBus.bus.$emit(EventBus.programChange);
   }
-
-  sortSpecies(a: any, b: any, isAsc: boolean) {
-    if(isAsc) {
-      return this.getSpeciesName(a.data.speciesId)!.localeCompare(this.getSpeciesName(b.data.speciesId)!);
-    } else {
-      return this.getSpeciesName(b.data.speciesId)!.localeCompare(this.getSpeciesName(a.data.speciesId)!);
-    }
-  }
-
-
-
 }
 
 </script>
