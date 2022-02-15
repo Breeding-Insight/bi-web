@@ -337,9 +337,6 @@ export default class ImportTemplate extends ProgramsBase {
     } catch(e) {
       if (e.response && e.response.status == 422 && e.response.data && e.response.data.rowErrors) {
         this.import_errors = ValidationErrorService.parseError(e);
-        if(this.import_errors==null) {
-          this.$emit('show-error-notification', `Errors: ${e.response!.progress!.message!}`);
-        }
         this.importService.send(ImportEvent.IMPORT_ERROR);
       } else if (e.response && e.response.status == 422 && e.response.statusText) {
         this.$log.error(e);
