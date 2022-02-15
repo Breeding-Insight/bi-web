@@ -19,11 +19,11 @@ import {RowError} from "@/breeding-insight/model/errors/RowError";
 import {FieldError} from "@/breeding-insight/model/errors/FieldError";
 
 export class ValidationError {
-  rows?: RowError[];
+  rowErrors?: RowError[];
 
   constructor(rows?: RowError[]){
     if (rows) {
-      this.rows = rows.map(row => new RowError(row.rowIndex, row.errors));
+      this.rowErrors = rows.map(row => new RowError(row.rowIndex, row.errors));
     }
   }
 
@@ -33,7 +33,7 @@ export class ValidationError {
 
   private getFieldErrorMessage(rowIndex: number, errorName: string): FieldError[] {
 
-    const rowError: RowError | undefined = this.rows ? this.rows[rowIndex] : undefined;
+    const rowError: RowError | undefined = this.rowErrors ? this.rowErrors[rowIndex] : undefined;
     if (rowError) {
       return rowError.getValidation(errorName);
     } else {
@@ -53,8 +53,8 @@ export class ValidationError {
   condenseErrorsSingleRow(deletions?: string[]) {
 
     let errorSentence: string = '';
-    if (this.rows) {
-      for (const row of this.rows) {
+    if (this.rowErrors) {
+      for (const row of this.rowErrors) {
         if (row.errors) {
           for (const field of row.errors) {
 
@@ -77,10 +77,10 @@ export class ValidationError {
   }
 
   clearValidation(rowIndex: number, errorName: string) {
-    if (this.rows && this.rows[rowIndex]) {
-      for (const [errorIndex, field] of this.rows[rowIndex].errors!.entries()) {
+    if (this.rowErrors && this.rowErrors[rowIndex]) {
+      for (const [errorIndex, field] of this.rowErrors[rowIndex].errors!.entries()) {
         if (field.field === errorName) {
-          delete this.rows[rowIndex].errors![errorIndex];
+          delete this.rowErrors[rowIndex].errors![errorIndex];
         }
       }
     }

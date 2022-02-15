@@ -15,18 +15,22 @@
  * limitations under the License.
  */
 
+import {ValidationError} from "@/breeding-insight/model/errors/ValidationError";
+import {RowError} from "@/breeding-insight/model/errors/RowError";
+
 export class ImportProgress {
   statuscode?: number;
   message?: string;
   total?: number;
   finished?: number;
   inProgress?: number;
+  rowErrors?: RowError[];
 
-  constructor({statuscode, message, total, finished, inProgress}: ImportProgress) {
+  constructor({statuscode, message, total, finished, inProgress, rowErrors}: ImportProgress) {
     this.statuscode = statuscode;
     this.message = message;
     this.total = total;
     this.finished = finished;
     this.inProgress = inProgress;
-  }
+    this.rowErrors = rowErrors;  }
 }
