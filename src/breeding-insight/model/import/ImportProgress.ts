@@ -15,7 +15,6 @@
  * limitations under the License.
  */
 
-import {ValidationError} from "@/breeding-insight/model/errors/ValidationError";
 import {RowError} from "@/breeding-insight/model/errors/RowError";
 
 export class ImportProgress {

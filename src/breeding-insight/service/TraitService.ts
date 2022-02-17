@@ -19,10 +19,9 @@ import {TraitDAO} from "@/breeding-insight/dao/TraitDAO";
 import {Trait} from "@/breeding-insight/model/Trait";
 import {Metadata} from "@/breeding-insight/model/BiResponse";
 import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
-import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
-import {TraitUploadService} from "@/breeding-insight/service/TraitUploadService";
+import {ValidationErrorService} from "@/breeding-insight/service/ValidationErrorService";
 import {TraitFilter} from "@/breeding-insight/model/TraitSelector";
-import {OntologySort, OntologySortField, SortOrder, TraitSortField} from "@/breeding-insight/model/Sort";
+import {OntologySort, OntologySortField, SortOrder} from "@/breeding-insight/model/Sort";
 
 export class TraitService {
 
@@ -35,7 +34,7 @@ export class TraitService {
         const { result: { data }, metadata } = await TraitDAO.createTraits(programId, newTraits);
         return [data, metadata];
       } catch (error) {
-        throw TraitUploadService.parseError(error);
+        throw ValidationErrorService.parseError(error);
       }
     }
     else throw 'Unable to create trait';
@@ -57,7 +56,7 @@ export class TraitService {
           } else if (error.response && error.response.status !== 422) {
             throw this.errorUpdating;
           }
-          throw TraitUploadService.parseError(error);
+          throw ValidationErrorService.parseError(error);
         }
       }
       else throw 'Unable to update trait';
@@ -75,7 +74,7 @@ export class TraitService {
           const { result, metadata } = await TraitDAO.archiveTrait(programId, trait);
           return Trait.assign(result);
         } catch (error) {
-          throw TraitUploadService.parseError(error);
+          throw ValidationErrorService.parseError(error);
         }
       }
       else throw 'Unable to update trait';

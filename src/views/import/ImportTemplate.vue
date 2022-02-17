@@ -105,12 +105,12 @@ import WarningModal from '@/components/modals/WarningModal.vue'
 import {Program} from '@/breeding-insight/model/Program'
 import { createMachine, interpret } from '@xstate/fsm';
 import {ValidationError} from "@/breeding-insight/model/errors/ValidationError";
-import {AxiosResponse} from "axios";
 import {ImportMappingConfig} from "@/breeding-insight/model/import/ImportMapping";
 import {ImportService} from "@/breeding-insight/service/ImportService";
 import {ImportResponse} from "@/breeding-insight/model/import/ImportResponse";
 import { titleCase } from "title-case";
 import {DataFormEventBusHandler} from "@/components/forms/DataFormEventBusHandler";
+import {ValidationErrorService} from "@/breeding-insight/service/ValidationErrorService";
 import {Pagination} from "@/breeding-insight/model/BiResponse";
 
 enum ImportState {
@@ -335,7 +335,10 @@ export default class ImportTemplate extends ProgramsBase {
       }
       // this.importService.send(ImportEvent.IMPORT_SUCCESS) is in getDataUpload()
     } catch(e) {
-      if (e.response && e.response.status == 422 && e.response.statusText) {
+      if (e.response && e.response.status == 422 && e.response.data && e.response.data.rowErrors) {
+        this.import_errors = ValidationErrorService.parseError(e);
+        this.importService.send(ImportEvent.IMPORT_ERROR);
+      } else if (e.response && e.response.status == 422 && e.response.statusText) {
         this.$log.error(e);
 
         this.$emit('show-error-notification', e.response.statusText);
