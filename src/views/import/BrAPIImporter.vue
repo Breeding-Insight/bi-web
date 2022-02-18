@@ -311,7 +311,10 @@
         </template>
 
         <template v-else>
-          There was an error!
+          <MultipleErrors
+              v-bind:formatted-errors="formattedErrors"
+              v-bind:is-validation-error="isValidationError"
+          />
         </template>
       </template>
 
@@ -352,7 +355,10 @@
 
         <!-- Error -->
         <template v-else>
-          There was an error!
+          <MultipleErrors
+            v-bind:formatted-errors="formattedErrors"
+            v-bind:is-validation-error="isValidationError"
+          />
         </template>
       </template>
 
@@ -391,6 +397,7 @@ import BasicInputField from "@/components/forms/BasicInputField.vue";
 import BasicSelectField from "@/components/forms/BasicSelectField.vue";
 import {ImportResponse} from "@/breeding-insight/model/import/ImportResponse";
 import ProgressBar from "@/components/forms/ProgressBar.vue";
+import MultipleErrors from "@/components/file-import/MultipleErrors.vue";
 
 enum PageState {
     CREATE_MAPPING = "CREATE_MAPPING",
@@ -477,6 +484,7 @@ enum PageState {
 
   @Component({
     components: {
+      MultipleErrors,
       ProgressBar,
       BasicInputField,
       ListMappingRow,
@@ -497,6 +505,7 @@ enum PageState {
     private activeUser?: User;
     private file : File | null = null;
     private import_errors: ValidationError | string | null = null;
+    private formattedErrors: string[] = [];
     private focusObjectId: string | null = null;
 
     private prevImports: any[] = []
@@ -721,10 +730,20 @@ enum PageState {
 
         } else {
           // Our call is finished, check the response
-          if (previewResponse.progress && previewResponse.progress.statuscode != 200){
-            this.$log.error(previewResponse.progress.message);
-            // TODO: Shouldn't show this to the user if its a 500
-            this.$emit('show-error-notification', previewResponse.progress.message);
+          if (previewResponse.progress && previewResponse.progress.statuscode != 200 && previewResponse.progress.rowErrors){
+            // Check for multiple errors
+            this.import_errors = ImportService.parseError(previewResponse);
+            if (this.import_errors != null) {
+              this.formattedErrors = ImportService.formatErrors(this.import_errors as ValidationError);
+            }
+            this.$emit('show-error-notification', `Errors: ${previewResponse!.progress!.message!}`);
+          } else if (previewResponse.progress && previewResponse.progress.statuscode != 200) {
+            if (previewResponse.progress.message) {
+              this.$emit('show-error-notification', `Errors: ${previewResponse!.progress!.message!}`);
+            } else {
+              this.$emit('show-error-notification', `An unknown error has occurred`);
+            }
+
           }
 
           // Calculate some stuff for the preview data display
@@ -741,6 +760,10 @@ enum PageState {
       } catch (e) {
         throw e;
       }
+    }
+
+    get isValidationError(): boolean {
+      return this.import_errors instanceof ValidationError;
     }
 
     async commitData() {
