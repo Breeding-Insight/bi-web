@@ -346,7 +346,7 @@ export default class TraitsImport extends ProgramsBase {
 
       // show all program traits
       this.$router.push({
-        name: 'traits-list',
+        name: 'ontology',
         params: {
           programId: this.activeProgram!.id!
         },
