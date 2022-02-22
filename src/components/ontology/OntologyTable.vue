@@ -148,7 +148,7 @@
           v-on:newSortColumn="$emit('newSortColumn', $event)"
           v-on:toggleSortOrder="$emit('toggleSortOrder')"
         >
-          {{ data.entity }} {{data.attribute | capitalize }}
+          {{ data.entity | capitalize }} {{data.attribute | capitalize }}
         </TableColumn>
         <TableColumn
             name="method"

@@ -55,7 +55,7 @@
           {{ data.observationVariableName }}
         </TableColumn>
         <TableColumn name="trait" v-bind:label="'Trait'" v-bind:visible="!collapseColumns">
-          {{ data.entity }} {{ data.attribute | capitalize }}
+          {{ data.entity | capitalize }} {{ data.attribute | capitalize }}
         </TableColumn>
         <TableColumn
             name="method"
