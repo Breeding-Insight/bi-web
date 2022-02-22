@@ -142,7 +142,7 @@ export class ImportService {
     return null;
   }
 
-  static formatErrors(errors: ValidationError | AxiosResponse): string[] {
+  static formatErrors(errors: ValidationError | AxiosResponse | string): string[] {
     let formattedErrors = [];
     const isValidationError = errors instanceof ValidationError;
     if (isValidationError){
@@ -157,6 +157,8 @@ export class ImportService {
         }
       }
       return formattedErrors;
+    } else if (typeof errors == 'string') {
+      return [errors];
     } else if (errors != null) {
       // Parse 400 responses and display the message if its not empty
       const apiResponse = errors as AxiosResponse;

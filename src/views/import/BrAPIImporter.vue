@@ -312,7 +312,7 @@
 
         <template v-else>
           <MultipleErrors
-              v-bind:formatted-errors="formattedErrors"
+              v-bind:formatted-errors.sync="formattedErrors"
               v-bind:is-validation-error="isValidationError"
           />
         </template>
@@ -398,6 +398,7 @@ import BasicSelectField from "@/components/forms/BasicSelectField.vue";
 import {ImportResponse} from "@/breeding-insight/model/import/ImportResponse";
 import ProgressBar from "@/components/forms/ProgressBar.vue";
 import MultipleErrors from "@/components/file-import/MultipleErrors.vue";
+import {ValidationErrorService} from "@/breeding-insight/service/ValidationErrorService";
 
 enum PageState {
     CREATE_MAPPING = "CREATE_MAPPING",
@@ -680,8 +681,12 @@ enum PageState {
     }
 
     async viewPreview() {
-      await this.uploadData();
-      await this.updateDataUpload(this.currentImport!.importId!, false);
+      try {
+        await this.uploadData();
+        await this.updateDataUpload(this.currentImport!.importId!, false);
+      } catch (e) {
+        this.$log.error(e);
+      }
     }
 
     async uploadData() {
@@ -690,8 +695,7 @@ enum PageState {
         this.currentImport = previewResponse;
         // Get the import id
       } catch (e) {
-        this.$log.error(e);
-        this.$emit('show-error-notification', `Unable to upload file`);
+        this.parseImmediateErrorResponse(e);
         throw e;
       }
     }
@@ -712,7 +716,7 @@ enum PageState {
         }
       } catch (e) {
         this.$log.error(e);
-        this.$emit('show-error-notification', e.response.statusText);
+        this.parseImmediateErrorResponse(e);
       }
     }
 
@@ -729,36 +733,60 @@ enum PageState {
           setTimeout(() => this.getDataUpload(includeMapping), 1000);
 
         } else {
-          // Our call is finished, check the response
-          if (previewResponse.progress && previewResponse.progress.statuscode != 200 && previewResponse.progress.rowErrors){
-            // Check for multiple errors
-            this.import_errors = ImportService.parseError(previewResponse);
-            if (this.import_errors != null) {
-              this.formattedErrors = ImportService.formatErrors(this.import_errors as ValidationError);
-            }
-            this.$emit('show-error-notification', `Errors: ${previewResponse!.progress!.message!}`);
-          } else if (previewResponse.progress && previewResponse.progress.statuscode != 200) {
-            if (previewResponse.progress.message) {
-              this.$emit('show-error-notification', `Errors: ${previewResponse!.progress!.message!}`);
-            } else {
-              this.$emit('show-error-notification', `An unknown error has occurred`);
-            }
+          this.parseErrorResponse(previewResponse);
+        }
 
-          }
-
-          // Calculate some stuff for the preview data display
-          // TODO: Add pagination to this
-          if (previewResponse && previewResponse.preview){
-            if (previewResponse.preview && previewResponse.preview.rows) {
-              this.previewTotalRows = previewResponse.preview.rows.length;
-              this.previewData = previewResponse.preview.rows.slice(0, 100);
-              this.newObjectCounts = previewResponse.preview.statistics;
-            }
+        // Calculate some stuff for the preview data display
+        // TODO: Add pagination to this
+        if (previewResponse && previewResponse.preview){
+          if (previewResponse.preview && previewResponse.preview.rows) {
+            this.previewTotalRows = previewResponse.preview.rows.length;
+            this.previewData = previewResponse.preview.rows.slice(0, 100);
+            this.newObjectCounts = previewResponse.preview.statistics;
           }
         }
 
+
       } catch (e) {
         throw e;
+      }
+    }
+
+    parseErrorResponse(previewResponse: ImportResponse) {
+      if (previewResponse.progress && previewResponse.progress.statuscode != 200 && previewResponse.progress.rowErrors){
+        // Check for multiple errors
+        this.import_errors = ImportService.parseError(previewResponse);
+        if (this.import_errors != null) {
+          this.formattedErrors = ImportService.formatErrors(this.import_errors as ValidationError);
+        }
+        this.$emit('show-error-notification', `Unable to import file, multiple errors found`);
+      } else if (previewResponse.progress && previewResponse.progress.statuscode != 200) {
+        if (previewResponse.progress.message) {
+          this.formattedErrors = [previewResponse.progress.message];
+          this.$emit('show-error-notification', `Unable to import file.`);
+        } else {
+          const unknownError = `An unknown error has occurred`;
+          this.formattedErrors = [unknownError];
+          this.$emit('show-error-notification', unknownError);
+        }
+      }
+    }
+
+    parseImmediateErrorResponse(immediateResponse: any) {
+      console.log(immediateResponse);
+      const errorResponse = immediateResponse.response;
+      if (errorResponse.status != 200 && errorResponse.data.rowErrors) {
+        this.import_errors = ValidationErrorService.parseError(immediateResponse);
+        this.$emit('show-error-notification', `Unable to import file, multiple errors found`);
+      } else if (errorResponse.statusText){
+        this.import_errors = errorResponse.statusText;
+        console.log(this.import_errors);
+        this.$emit('show-error-notification', `Unable to import file.`);
+      } else {
+        const unknownError = `An unknown error has occurred`;
+        this.import_errors = unknownError;
+        console.log('here!');
+        this.$emit('show-error-notification', unknownError);
       }
     }
 
