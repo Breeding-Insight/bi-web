@@ -55,7 +55,7 @@
           {{ data.observationVariableName }}
         </TableColumn>
         <TableColumn name="trait" v-bind:label="'Trait'" v-bind:visible="!collapseColumns">
-          {{ StringFormatters.toStartCase(data.traitDescription) }}
+          {{ data.entity | capitalize }} {{ data.attribute | capitalize }}
         </TableColumn>
         <TableColumn
             name="method"
@@ -175,6 +175,12 @@
         newSortColumn: IMPORT_PREVIEW_ONT_NEW_SORT_COLUMN,
         toggleSortOrder: IMPORT_PREVIEW_ONT_TOGGLE_SORT_ORDER
       })
+    },
+    filters: {
+      capitalize: function(value: string | undefined) : string | undefined {
+        if (value === undefined) value = '';
+        return StringFormatters.toStartCase(value);
+      }
     },
     data: () => ({StringFormatters, TraitStringFormatters})
   })
