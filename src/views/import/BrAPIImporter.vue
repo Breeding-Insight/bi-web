@@ -773,19 +773,16 @@ enum PageState {
     }
 
     parseImmediateErrorResponse(immediateResponse: any) {
-      console.log(immediateResponse);
       const errorResponse = immediateResponse.response;
       if (errorResponse.status != 200 && errorResponse.data.rowErrors) {
         this.import_errors = ValidationErrorService.parseError(immediateResponse);
         this.$emit('show-error-notification', `Unable to import file, multiple errors found`);
       } else if (errorResponse.statusText){
         this.import_errors = errorResponse.statusText;
-        console.log(this.import_errors);
         this.$emit('show-error-notification', `Unable to import file.`);
       } else {
         const unknownError = `An unknown error has occurred`;
         this.import_errors = unknownError;
-        console.log('here!');
         this.$emit('show-error-notification', unknownError);
       }
     }
