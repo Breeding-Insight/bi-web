@@ -88,8 +88,8 @@ export const getters: GetterTree<SortState, RootState> = {
         const fieldMap: any = {
             [SystemUserSortField.Email]: 'data.email',
             [SystemUserSortField.Name]: 'data.name',
-            [SystemUserSortField.Roles]: 'data.roleId',
-            [SystemUserSortField.Programs]: 'data.programId'
+            [SystemUserSortField.Roles]: 'data.roleName',
+            [SystemUserSortField.Programs]: 'data.programList'
         };
         return fieldMap[state.systemUserSort.field];
     },
