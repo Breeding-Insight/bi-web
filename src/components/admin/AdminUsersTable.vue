@@ -298,7 +298,7 @@ export default class AdminUsersTable extends Vue {
   private usersPagination?: Pagination = new Pagination();
 
   private systemUserSort!: UserSort;
-  private updateSort!: (sort: UserSort) => void;
+  private updateSort!: (sort: SystemUserSort) => void;
 
   mounted() {
     this.getRoles();

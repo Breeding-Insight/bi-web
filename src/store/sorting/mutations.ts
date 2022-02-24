@@ -31,7 +31,7 @@ import {
 import {SortState} from "@/store/sorting/types";
 import {
     LocationSort, OntologySort, OntologySortField,
-    ProgramSort, SortOrder,
+    ProgramSort, SortOrder, SystemUserSort,
     TraitSortField,
     UserSort
 } from "@/breeding-insight/model/Sort";
@@ -74,7 +74,7 @@ export const mutations: MutationTree<SortState> = {
     },
 
     //system user table
-    [UPDATE_SYSTEM_USER_SORT](state: SortState, sort: UserSort) {
+    [UPDATE_SYSTEM_USER_SORT](state: SortState, sort: SystemUserSort) {
         state.systemUserSort.field = sort.field;
         state.systemUserSort.order = sort.order;
     },
