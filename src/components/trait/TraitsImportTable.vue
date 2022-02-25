@@ -54,7 +54,17 @@
             </AlertTriangleIcon>
           {{ data.observationVariableName }}
         </TableColumn>
-        <TableColumn name="trait" v-bind:label="'Trait'" v-bind:visible="!collapseColumns">
+        <TableColumn
+            name="trait"
+            v-bind:label="'Trait'"
+            v-bind:visible="!collapseColumns"
+            v-bind:sortField="importPreviewOntologySort.field"
+            v-bind:sortFieldLabel="entityAttributeSortLabel"
+            v-bind:sortable="true"
+            v-bind:sortOrder="importPreviewOntologySort.order"
+            v-on:newSortColumn="newSortColumn"
+            v-on:toggleSortOrder="toggleSortOrder"
+        >
           {{ data.entity | capitalize }} {{ data.attribute | capitalize }}
         </TableColumn>
         <TableColumn
@@ -203,6 +213,7 @@ export default class TraitsImportTable extends Vue {
   private methodSortLabel: string = OntologySortField.MethodDescription;
   private scaleClassSortLabel: string = OntologySortField.ScaleClass;
   private unitSortLabel: string = OntologySortField.ScaleName;
+  private entityAttributeSortLabel: string = OntologySortField.entityAttributeSortLabel;
 
   mounted() {
     this.updatePagination();

@@ -47,7 +47,7 @@ export enum OntologySortField {
   MethodDescription = 'methodDescription',
   ScaleClass = 'scaleClass',
   ScaleName = 'scaleName',
-  TraitDescription = 'traitDescription'
+  entityAttributeSortLabel = 'entityAttribute'
 }
 
 export class OntologySort {

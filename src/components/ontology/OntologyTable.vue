@@ -142,7 +142,7 @@
           v-bind:label="'Trait'"
           v-bind:visible="!traitSidePanelState.collapseColumns"
           v-bind:sortField="ontologySort.field"
-          v-bind:sortFieldLabel="traitDescriptionSortLabel"
+          v-bind:sortFieldLabel="entityAttributeSortLabel"
           v-bind:sortable="true"
           v-bind:sortOrder="ontologySort.order"
           v-on:newSortColumn="$emit('newSortColumn', $event)"
@@ -323,7 +323,7 @@ export default class OntologyTable extends Vue {
   private methodSortLabel: string = OntologySortField.MethodDescription;
   private scaleClassSortLabel: string = OntologySortField.ScaleClass;
   private unitSortLabel: string = OntologySortField.ScaleName;
-  private traitDescriptionSortLabel: string = OntologySortField.TraitDescription;
+  private entityAttributeSortLabel: string = OntologySortField.entityAttributeSortLabel;
 
   // New trait form
   private newTraitActive: boolean = false;
