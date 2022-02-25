@@ -62,7 +62,7 @@
       </template>
     </template>
     <template v-if="Scale.dataTypeEquals(type, DataType.Nominal)">
-      <template v-for="[i, item] of data.entries()">
+      <template v-for="[i, item] of this.data.entries()">
         <ValueRow
             v-bind:value="item.value"
             v-on:delete="checkRemoveRow(i)"
@@ -106,7 +106,16 @@ import {RowError} from "@/breeding-insight/model/errors/RowError";
 
 @Component({
   components: {ValueRow, BasicInputField, LabelValueRow, WarningModal, PlusCircleIcon},
-  data: () => ({DataType, TraitError, Scale})
+  data: () => ({DataType, TraitError, Scale}),
+  computed: {
+    categories() {
+          console.log("tester");
+          console.log(this.data.entries());
+          console.log(this.data);
+          console.log(this.data.length)
+          return this.data;
+       }
+  }
 })
 export default class CategoryTraitForm extends Vue {
 
@@ -126,20 +135,41 @@ export default class CategoryTraitForm extends Vue {
   private activeRemoveRowIndex?: number;
   private deleteModalActive: boolean = false;
 
-  @Watch('data', {immediate: true, deep: true})
+  mounted() {
+    console.log("mounted");
+    //console.log(this.data);
+    console.log(this.data.length);
+  }
+
+  created(){
+    console.log('created');
+    //console.log(this.data.length);
+  }
+
+  beforeCreate(){
+    console.log('beforecreate');
+  }
+
+  /*@Watch('data', {immediate: true, deep: true})
   emitData(){
     this.$emit('update', this.data);
-  }
+  }*/ //not good cause not changing prop locally cause anti-pattern
 
   @Watch('type', {immediate: true})
   updateCategories() {
-    this.data = this.data.filter((value,index) => {
+    //todo swapping
+    let newCategories = this.data.filter((value,index) => {
       return (value.value !== undefined || value.label !== undefined);
     });
-    
-    if (this.data.length === 0) {
-      this.prepopulateCategories();
+
+    console.log('updatecat');
+    if (newCategories.length === 0) { //ah that is why...when passed in the thingy is set to 1, so it is defined so never hits this block
+      newCategories = this.prepopulateCategories(newCategories);
     }
+
+    this.$emit('update:data', newCategories);
+    console.log("post emit");
+    console.log(this.data.length);
   }
 
   getCategoryErrors(categoryIndex: number): RowError | undefined {
@@ -147,7 +177,7 @@ export default class CategoryTraitForm extends Vue {
       const fieldErrors: FieldError[] = this.validationHandler.getValidation(this.validationIndex, TraitError.ScaleCategories);
       if (fieldErrors.length > 0) {
         for (const [index, fieldError] of fieldErrors.entries()) {
-          // Check that it has nested errors for the catogeries
+          // Check that it has nested errors for the categories
           if (fieldError.rowErrors){
             // Get the specific category index requested
             const rowError: RowError[] = fieldError.rowErrors.filter(rowError => rowError.rowIndex === categoryIndex);
@@ -160,11 +190,15 @@ export default class CategoryTraitForm extends Vue {
     }
   }
 
-  prepopulateCategories() {
+  //todo remove
+  prepopulateCategories(categories) {
+    console.log('prepop');
     let minCategories = this.type === DataType.Ordinal ? 2 : 1;
     for (const i of Array(minCategories).keys()) {
-      this.data.push(new Category(undefined, undefined));
+      categories.push(new Category(undefined, undefined));
     }
+    console.log(categories.length);
+    return categories;
   }
 
   checkRemoveRow(index: number) {
@@ -197,11 +231,14 @@ export default class CategoryTraitForm extends Vue {
     }
     this.activeRemoveRowIndex = undefined;
     this.deleteModalActive = false;
+
+    //todo this will have to be synced i guess
     return;
   }
 
   addRow() {
     this.data.push(new Category());
+    //todo this will have to be synced i guess
   }
 }
 </script>
