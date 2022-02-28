@@ -38,7 +38,7 @@ export class User {
       this.roleName = role.name;
     }
     this.programRoles = programRoles;
-    this.programList = this.programRoles ? this.programRoles.map((x: ProgramUser = new ProgramUser() ) => x.program!.name).join(", ") : "";
+    this.programList = this.programRoles ? this.programRoles.map((x) =>  x.program ? x.program.name : '').join(", ") : "";
   }
 
   hasRole(roleName: string){
