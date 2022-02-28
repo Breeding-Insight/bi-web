@@ -11,42 +11,44 @@
         v-on:paginate="paginationController.updatePage($event)"
         v-on:paginate-toggle-all="paginationController.toggleShowAll(pagination.totalCount.valueOf())"
         v-on:paginate-page-size="paginationController.updatePageSize($event)"
-        v-on:sort="paginationController.updateSort($event)"
+        backend-sorting
+        v-bind:default-sort="[buefyFieldMap[germplasmSort.field], Sort.orderAsBuefy(germplasmSort.order)]"
+        v-on:sort="setSort"
         v-on:search="filters = $event"
         v-bind:search-debounce="400"
     >
-      <b-table-column field="accessionNumber" label="GID" v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
+      <b-table-column field="data.accessionNumber" label="GID" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
         <GermplasmLink
             v-bind:germplasmUUID="GermplasmUtils.getGermplasmUUID(props.row.data.externalReferences)"
             v-bind:germplasmGID="props.row.data.accessionNumber"
         >
         </GermplasmLink>
       </b-table-column>
-      <b-table-column field="defaultDisplayName" label="Name" v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
+      <b-table-column field="data.defaultDisplayName" label="Name" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
         {{ props.row.data.defaultDisplayName }}
       </b-table-column>
-      <b-table-column field="breedingMethod" label="Breeding Method" v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
+      <b-table-column field="data.breedingMethod" label="Breeding Method" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
         {{ props.row.data.additionalInfo.breedingMethod }}
       </b-table-column>
-      <b-table-column field="seedSource" label="Source" v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
+      <b-table-column field="data.seedSource" label="Source" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
         {{ props.row.data.seedSource }}
       </b-table-column>
-      <b-table-column field="femaleParentGID" label="Female Parent GID" v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
+      <b-table-column field="data.femaleParent" label="Female Parent GID" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
         <GermplasmLink
             v-bind:germplasmUUID="Pedigree.parsePedigreeString(props.row.data.additionalInfo.pedigreeByUUID).femaleParent"
             v-bind:germplasmGID="Pedigree.parsePedigreeString(props.row.data.pedigree).femaleParent"
         > </GermplasmLink>
       </b-table-column>
-      <b-table-column field="maleParentGID" label="Male Parent GID" v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
+      <b-table-column field="data.maleParent" label="Male Parent GID" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
         <GermplasmLink
             v-bind:germplasmUUID="Pedigree.parsePedigreeString(props.row.data.additionalInfo.pedigreeByUUID).maleParent"
             v-bind:germplasmGID="Pedigree.parsePedigreeString(props.row.data.pedigree).maleParent"
         > </GermplasmLink>
       </b-table-column>
-      <b-table-column field="createdDate" label="Created Date" v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
+      <b-table-column field="data.createdDate" label="Created Date" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
         {{ props.row.data.additionalInfo.createdDate }}
       </b-table-column>
-      <b-table-column field="createdByUserName" label="Created By" v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
+      <b-table-column field="data.userName" label="Created By" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
         {{ props.row.data.additionalInfo.createdBy.userName }}
       </b-table-column>
       <b-table-column v-slot="props" :th-attrs="(column) => ({scope:'col'})">
@@ -68,7 +70,7 @@
 <script lang="ts">
 import {Component, Vue, Watch} from "vue-property-decorator";
 import {validationMixin} from "vuelidate";
-import {mapGetters} from "vuex";
+import {mapGetters, mapMutations} from "vuex";
 import {Trait} from "@/breeding-insight/model/Trait";
 import {StringFormatters} from "@/breeding-insight/utils/StringFormatters";
 import {TraitStringFormatters} from "@/breeding-insight/utils/TraitStringFormatters";
@@ -83,6 +85,12 @@ import {Pedigree} from "@/breeding-insight/model/import/germplasm/Pedigree";
 import GermplasmLink from '@/components/germplasm/GermplasmLink.vue'
 import {GermplasmUtils} from '@/breeding-insight/utils/GermplasmUtils';
 import {CallStack} from "@/breeding-insight/utils/CallStack";
+import {
+  GermplasmSort,
+  GermplasmSortField,
+  Sort
+} from "@/breeding-insight/model/Sort";
+import {UPDATE_GERMPLASM_SORT} from "@/store/sorting/mutation-types";
 
 @Component({
   mixins: [validationMixin],
@@ -90,9 +98,18 @@ import {CallStack} from "@/breeding-insight/utils/CallStack";
   computed: {
     ...mapGetters([
       'activeProgram'
-    ])
+    ]),
+    ...mapGetters('sorting',
+        [
+          'germplasmSort'
+      ])
   },
-  data: () => ({Trait, StringFormatters, TraitStringFormatters, Pedigree, GermplasmUtils})
+  methods: {
+    ...mapMutations('sorting', {
+      updateSort: UPDATE_GERMPLASM_SORT
+    })
+  },
+  data: () => ({Trait, StringFormatters, TraitStringFormatters, Pedigree, GermplasmUtils, Sort})
 })
 export default class GermplasmTable extends Vue {
 
@@ -105,6 +122,21 @@ export default class GermplasmTable extends Vue {
 
   private germplasmCallStack: CallStack;
 
+  private germplasmSort!: GermplasmSort;
+  private updateSort!: (sort: GermplasmSort) => void;
+  private fieldMap: any = {
+    'data.accessionNumber': GermplasmSortField.AccessionNumber,
+    'data.defaultDisplayName' : GermplasmSortField.DefaultDisplayName,
+    'data.breedingMethod': GermplasmSortField.BreedingMethod,
+    'data.seedSource': GermplasmSortField.SeedSource,
+    'data.femaleParent': GermplasmSortField.FemaleParent,
+    'data.maleParent': GermplasmSortField.MaleParent,
+    'data.createdDate': GermplasmSortField.CreatedDate,
+    'data.userName': GermplasmSortField.UserName,
+  };
+  private buefyFieldMap: any = Object.keys(this.fieldMap)
+      .reduce((obj, key) => Object.assign({}, obj, { [this.fieldMap[key]]: key }), {});
+
   mounted() {
     this.germplasmCallStack = new CallStack((options) => BrAPIService.get(BrAPIType.GERMPLASM, options, this.activeProgram!.id!,
         this.paginationController.pageSize, this.paginationController.currentPage - 1));
@@ -116,11 +148,15 @@ export default class GermplasmTable extends Vue {
   async getGermplasm() {
     this.germplasmLoading = true;
     try {
+      // Set sort
+      filters.sortField = this.germplasmSort.field;
+      filters.sortOrder = this.germplasmSort.order;
+
       // Only process the most recent call
       const {call, callId} = this.germplasmCallStack.makeCall(this.filters);
       const response = await call;
       if (!this.germplasmCallStack.isCurrentCall(callId)) return;
-
+      
       this.pagination = new Pagination(response.metadata.pagination);
       // Account for brapi 0 indexing of paging
       this.pagination.currentPage = this.pagination.currentPage.valueOf() + 1;
@@ -133,5 +169,13 @@ export default class GermplasmTable extends Vue {
     }
 
   }
+
+  setSort(field: string, order: string) {
+    if (field in this.fieldMap) {
+      this.updateSort(new GermplasmSort(this.fieldMap[field], Sort.orderAsBI(order)));
+      this.getGermplasm();
+    }
+  }
+
 }
 </script>
