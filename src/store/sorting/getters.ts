@@ -61,7 +61,11 @@ export const getters: GetterTree<SortState, RootState> = {
         return state.programUserSort;
     },
     programUserSortFieldAsBuefy(state: SortState): string {
-        const fieldMap: any = {[UserSortField.Email]: 'data.email', [UserSortField.Name]: 'data.name'};
+        const fieldMap: any = {
+            [UserSortField.Email]: 'data.email',
+            [UserSortField.Name]: 'data.name',
+            [UserSortField.Roles]: 'data.roleName'
+        };
         return fieldMap[state.programUserSort.field];
     },
     programUserSortOrderAsBuefy(state: SortState): string {
