@@ -26,10 +26,11 @@ import {
     ACTIVE_ONT_TOGGLE_SORT_ORDER,
     ARCHIVED_ONT_TOGGLE_SORT_ORDER,
     IMPORT_PREVIEW_ONT_TOGGLE_SORT_ORDER,
-    IMPORT_PREVIEW_ONT_NEW_SORT_COLUMN
+    IMPORT_PREVIEW_ONT_NEW_SORT_COLUMN, UPDATE_GERMPLASM_SORT
 } from "@/store/sorting/mutation-types";
 import {SortState} from "@/store/sorting/types";
 import {
+    GermplasmSort,
     LocationSort, OntologySort, OntologySortField,
     ProgramSort, SortOrder,
     TraitSortField,
@@ -83,5 +84,11 @@ export const mutations: MutationTree<SortState> = {
     [UPDATE_PROGRAM_SORT](state: SortState, sort: ProgramSort) {
         state.programSort.field = sort.field;
         state.programSort.order = sort.order;
+    },
+
+    //program table
+    [UPDATE_GERMPLASM_SORT](state: SortState, sort: GermplasmSort) {
+        state.germplasmSort.field = sort.field;
+        state.germplasmSort.order = sort.order;
     }
 };

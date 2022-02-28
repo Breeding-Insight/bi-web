@@ -1,4 +1,5 @@
 import {
+    GermplasmSort,
     LocationSort,
     OntologySort,
     ProgramSort, Sort, SortOrder,
@@ -27,5 +28,8 @@ export interface SortState {
     systemUserSort: UserSort,
 
     // program table
-    programSort: ProgramSort
+    programSort: ProgramSort,
+
+    // germplasm table
+    germplasmSort: GermplasmSort
 }

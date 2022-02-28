@@ -38,4 +38,7 @@ export const UPDATE_LOCATION_SORT = 'updateLocationSort';
 export const UPDATE_SYSTEM_USER_SORT = 'updateSystemUserSort';
 
 // program table
-export const UPDATE_PROGRAM_SORT = 'updateProgramSort'
+export const UPDATE_PROGRAM_SORT = 'updateProgramSort';
+
+// germplasm tbale
+export const UPDATE_GERMPLASM_SORT = 'updateGermplasmSort';
