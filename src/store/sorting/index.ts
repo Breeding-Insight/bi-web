@@ -57,7 +57,7 @@ state = {
     // program table
     programSort: new ProgramSort(ProgramSortField.Name, SortOrder.Ascending),
 
-    // program table
+    // germplasm table
     germplasmSort: new GermplasmSort(GermplasmSortField.AccessionNumber, SortOrder.Ascending)
 };
 

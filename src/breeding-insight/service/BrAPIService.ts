@@ -17,6 +17,7 @@
 
 import * as api from "@/util/api";
 import {BiResponse, Response} from "@/breeding-insight/model/BiResponse";
+import {SortOrder} from "@/breeding-insight/model/Sort";
 
 export enum BrAPIType {
   GERMPLASM = "germplasm"
@@ -24,15 +25,25 @@ export enum BrAPIType {
 
 export class BrAPIService {
 
-  public static async get(type: BrAPIType, params: any, programId: string, pageSize: number, page: number): Promise<BiResponse> {
-    if (pageSize === undefined) throw 'A page size is required';
-    if (page === undefined) throw 'A page is required';
+  public static async get(type: BrAPIType, programId: string, sort: { field: string, order: SortOrder },
+                          pagination: {pageSize: number, page: number}): Promise<BiResponse> {
+    if (pagination.pageSize === undefined) throw 'A page size is required';
+    if (pagination.page === undefined) throw 'A page is required';
     if (!programId) throw 'Program ID required';
+
+    // Set sort
+    let params: any = {};
+    if (sort.field) {
+      params['sortField'] = sort.field;
+    }
+    if (sort.order) {
+      params['sortOrder'] = sort.order;
+    }
 
     // Make the program call
     try {
       const { data } = await api.call({
-        url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/brapi/v2/${type}?pageSize=${pageSize}&page=${page}`,
+        url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/brapi/v2/${type}?pageSize=${pagination.pageSize}&page=${pagination.page}`,
         method: 'get',
         params: params
       }) as Response;
