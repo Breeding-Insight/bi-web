@@ -86,7 +86,7 @@ export const mutations: MutationTree<SortState> = {
         state.programSort.order = sort.order;
     },
 
-    //program table
+    //germplasm table
     [UPDATE_GERMPLASM_SORT](state: SortState, sort: GermplasmSort) {
         state.germplasmSort.field = sort.field;
         state.germplasmSort.order = sort.order;

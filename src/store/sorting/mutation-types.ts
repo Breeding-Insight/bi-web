@@ -40,5 +40,5 @@ export const UPDATE_SYSTEM_USER_SORT = 'updateSystemUserSort';
 // program table
 export const UPDATE_PROGRAM_SORT = 'updateProgramSort';
 
-// germplasm tbale
+// germplasm table
 export const UPDATE_GERMPLASM_SORT = 'updateGermplasmSort';
