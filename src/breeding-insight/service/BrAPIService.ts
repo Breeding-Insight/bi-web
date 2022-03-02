@@ -27,23 +27,18 @@ export class BrAPIService {
 
   public static async get(type: BrAPIType, programId: string, sort: { field: string, order: SortOrder },
                           pagination: {pageSize: number, page: number}): Promise<BiResponse> {
-    if (pagination.pageSize === undefined) throw 'A page size is required';
-    if (pagination.page === undefined) throw 'A page is required';
     if (!programId) throw 'Program ID required';
 
-    // Set sort
+    // Set sort and pagination
     let params: any = {};
-    if (sort.field) {
-      params['sortField'] = sort.field;
-    }
-    if (sort.order) {
-      params['sortOrder'] = sort.order;
-    }
-
-    // Make the program call
+    if (sort.field) params['sortField'] = sort.field;
+    if (sort.order) params['sortOrder'] = sort.order;
+    if (pagination.page) params ['page'] = pagination.page;
+    if (pagination.pageSize) params['pageSize'] = pagination.pageSize;
+    // Make the GET call
     try {
       const { data } = await api.call({
-        url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/brapi/v2/${type}?pageSize=${pagination.pageSize}&page=${pagination.page}`,
+        url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/brapi/v2/${type}`,
         method: 'get',
         params: params
       }) as Response;
