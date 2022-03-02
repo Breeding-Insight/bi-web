@@ -138,8 +138,8 @@ export default class GermplasmTable extends Vue {
       .reduce((obj, key) => Object.assign({}, obj, { [this.fieldMap[key]]: key }), {});
 
   mounted() {
-    this.germplasmCallStack = new CallStack((options) => BrAPIService.get(BrAPIType.GERMPLASM, options, this.activeProgram!.id!,
-        this.paginationController.pageSize, this.paginationController.currentPage - 1));
+    this.germplasmCallStack = new CallStack((options) => BrAPIService.get(BrAPIType.GERMPLASM, this.activeProgram!.id!, this.germplasmSort,
+        { pageSize: this.paginationController.pageSize, page: this.paginationController.currentPage - 1 }));
     this.paginationController.pageSize = 20;
   }
 
@@ -148,15 +148,12 @@ export default class GermplasmTable extends Vue {
   async getGermplasm() {
     this.germplasmLoading = true;
     try {
-      // Set sort
-      filters.sortField = this.germplasmSort.field;
-      filters.sortOrder = this.germplasmSort.order;
 
       // Only process the most recent call
       const {call, callId} = this.germplasmCallStack.makeCall(this.filters);
       const response = await call;
       if (!this.germplasmCallStack.isCurrentCall(callId)) return;
-      
+
       this.pagination = new Pagination(response.metadata.pagination);
       // Account for brapi 0 indexing of paging
       this.pagination.currentPage = this.pagination.currentPage.valueOf() + 1;
