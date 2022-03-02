@@ -128,14 +128,9 @@ export default class GermplasmTable extends Vue {
         this.paginationController.currentPage = 1;
         this.paginationController.showAll = false;
       }
-      // Set sort
-      const params = {
-        sortField: this.germplasmSort.field,
-        sortOrder: this.germplasmSort.order
-      };
       // GET call
-      const response = await BrAPIService.get(BrAPIType.GERMPLASM, params, this.activeProgram!.id!,
-          this.paginationController.pageSize, this.paginationController.currentPage - 1);
+      const response = await BrAPIService.get(BrAPIType.GERMPLASM, this.activeProgram!.id!, this.germplasmSort,
+          { pageSize: this.paginationController.pageSize, page: this.paginationController.currentPage - 1 });
       this.pagination = new Pagination(response.metadata.pagination);
       // Account for brapi 0 indexing of paging
       this.pagination.currentPage = this.pagination.currentPage.valueOf() + 1;
