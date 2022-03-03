@@ -20,6 +20,8 @@ import {getters} from '@/store/sorting/getters';
 import {mutations} from '@/store/sorting/mutations';
 import {RootState} from '@/store/types';
 import {
+    GermplasmSort,
+    GermplasmSortField,
     LocationSort,
     LocationSortField,
     OntologySort,
@@ -53,7 +55,10 @@ state = {
     systemUserSort: new UserSort(UserSortField.Name, SortOrder.Ascending),
 
     // program table
-    programSort: new ProgramSort(ProgramSortField.Name, SortOrder.Ascending)
+    programSort: new ProgramSort(ProgramSortField.Name, SortOrder.Ascending),
+
+    // germplasm table
+    germplasmSort: new GermplasmSort(GermplasmSortField.AccessionNumber, SortOrder.Ascending)
 };
 
 const namespaced: boolean = true
