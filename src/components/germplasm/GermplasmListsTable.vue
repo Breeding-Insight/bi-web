@@ -103,10 +103,9 @@ export default class GermplasmListsTable extends Vue {
   @Watch('paginationController', { deep: true})
   getGermplasmLists() {
     // TODO: Nice to have a cleaner solution in the future
-    let paginationQuery: PaginationQuery = new PaginationQuery();
+    let paginationQuery: PaginationQuery;
     if (this.paginationController.showAll) {
-      paginationQuery.page = 1;
-      paginationQuery.pageSize = this.germplasmListsPagination!.totalCount.valueOf();
+      paginationQuery = new PaginationQuery(1, this.germplasmListsPagination!.totalCount.valueOf(), false);
     } else {
       paginationQuery = PaginationController.getPaginationSelections(
           this.paginationController.currentPage, this.paginationController.pageSize, this.paginationController.showAll);
