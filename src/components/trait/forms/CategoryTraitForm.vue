@@ -62,7 +62,7 @@
       </template>
     </template>
     <template v-if="Scale.dataTypeEquals(type, DataType.Nominal)">
-      <template v-for="[i, item] of this.data.entries()">
+      <template v-for="[i, item] of data.entries()">
         <ValueRow
             v-bind:value="item.value"
             v-on:delete="checkRemoveRow(i)"
@@ -108,13 +108,9 @@ import {RowError} from "@/breeding-insight/model/errors/RowError";
   components: {ValueRow, BasicInputField, LabelValueRow, WarningModal, PlusCircleIcon},
   data: () => ({DataType, TraitError, Scale}),
   computed: {
-    categories() {
-          console.log("tester");
-          console.log(this.data.entries());
-          console.log(this.data);
-          console.log(this.data.length)
-          return this.data;
-       }
+    categoryVals: function () {
+      //return this.data;
+    }
   }
 })
 export default class CategoryTraitForm extends Vue {
@@ -135,41 +131,24 @@ export default class CategoryTraitForm extends Vue {
   private activeRemoveRowIndex?: number;
   private deleteModalActive: boolean = false;
 
-  mounted() {
-    console.log("mounted");
-    //console.log(this.data);
-    console.log(this.data.length);
+  @Watch('data', {immediate: true, deep: true})
+  todo() {
+    //it doesn't get here on first try why
+    console.log("here is a watch");
   }
-
-  created(){
-    console.log('created');
-    //console.log(this.data.length);
-  }
-
-  beforeCreate(){
-    console.log('beforecreate');
-  }
-
-  /*@Watch('data', {immediate: true, deep: true})
-  emitData(){
-    this.$emit('update', this.data);
-  }*/ //not good cause not changing prop locally cause anti-pattern
 
   @Watch('type', {immediate: true})
   updateCategories() {
-    //todo swapping
-    let newCategories = this.data.filter((value,index) => {
-      return (value.value !== undefined || value.label !== undefined);
-    });
+    let newCategories = this.data;
 
-    console.log('updatecat');
-    if (newCategories.length === 0) { //ah that is why...when passed in the thingy is set to 1, so it is defined so never hits this block
-      newCategories = this.prepopulateCategories(newCategories);
-    }
+    console.log('updatecat old');
+    console.log(this.data.length);
 
-    this.$emit('update:data', newCategories);
+    this.$emit('update-data', newCategories);
     console.log("post emit");
     console.log(this.data.length);
+
+    //todo might not be needed anymore?
   }
 
   getCategoryErrors(categoryIndex: number): RowError | undefined {
@@ -188,17 +167,6 @@ export default class CategoryTraitForm extends Vue {
         }
       }
     }
-  }
-
-  //todo remove
-  prepopulateCategories(categories) {
-    console.log('prepop');
-    let minCategories = this.type === DataType.Ordinal ? 2 : 1;
-    for (const i of Array(minCategories).keys()) {
-      categories.push(new Category(undefined, undefined));
-    }
-    console.log(categories.length);
-    return categories;
   }
 
   checkRemoveRow(index: number) {
@@ -221,10 +189,11 @@ export default class CategoryTraitForm extends Vue {
   }
 
   removeRow() {
+    let newCategories = this.data;
     if ((this.type === DataType.Ordinal && this.data.length > 2) ||
         (this.type === DataType.Nominal && this.data.length > 1) ||
         (this.type !== DataType.Ordinal && this.type !== DataType.Nominal)) {
-      this.data.splice(this.activeRemoveRowIndex!,1);
+      newCategories.splice(this.activeRemoveRowIndex!,1);
       this.activeRemoveRowIndex = undefined;
       this.deleteModalActive = false;
       return;
@@ -232,13 +201,15 @@ export default class CategoryTraitForm extends Vue {
     this.activeRemoveRowIndex = undefined;
     this.deleteModalActive = false;
 
-    //todo this will have to be synced i guess
+    this.$emit('update-data', newCategories);
     return;
   }
 
   addRow() {
-    this.data.push(new Category());
-    //todo this will have to be synced i guess
+    let newCategories = this.data;
+    newCategories.push(new Category());
+    console.log("add");
+    this.$emit('update-data', newCategories);
   }
 }
 </script>
