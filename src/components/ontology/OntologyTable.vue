@@ -161,7 +161,7 @@
             v-on:newSortColumn="$emit('newSortColumn', $event)"
             v-on:toggleSortOrder="$emit('toggleSortOrder')"
         >
-          {{ data.method.description + " " + StringFormatters.toStartCase(data.method.methodClass) }}
+          {{ (data.method.description ? data.method.description + " ": "") + StringFormatters.toStartCase(data.method.methodClass) }}
         </TableColumn>
         <TableColumn
             name="scaleClass"
