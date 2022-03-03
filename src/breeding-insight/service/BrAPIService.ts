@@ -25,7 +25,7 @@ export enum BrAPIType {
 
 export class BrAPIService {
 
-  public static async get(type: BrAPIType, programId: string, sort: { field: string, order: SortOrder },
+  public static async get<T>(type: BrAPIType, programId: string, sort: { field: T, order: SortOrder },
                           pagination: {pageSize: number, page: number}): Promise<BiResponse> {
     if (!programId) throw 'Program ID required';
 

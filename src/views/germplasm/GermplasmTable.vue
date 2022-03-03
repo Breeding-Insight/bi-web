@@ -138,7 +138,7 @@ export default class GermplasmTable extends Vue {
       .reduce((obj, key) => Object.assign({}, obj, { [this.fieldMap[key]]: key }), {});
 
   mounted() {
-    this.germplasmCallStack = new CallStack((options) => BrAPIService.get(BrAPIType.GERMPLASM, this.activeProgram!.id!, this.germplasmSort,
+    this.germplasmCallStack = new CallStack((options) => BrAPIService.get<GermplasmSortField>(BrAPIType.GERMPLASM, this.activeProgram!.id!, this.germplasmSort,
         { pageSize: this.paginationController.pageSize, page: this.paginationController.currentPage - 1 }));
     this.paginationController.pageSize = 20;
   }
