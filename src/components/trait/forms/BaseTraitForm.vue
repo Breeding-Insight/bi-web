@@ -208,7 +208,7 @@
       <div class="column is-10">
         <CategoryTraitForm
             class="p-0"
-            v-bind:data="trait.scale.categories"
+            v-bind:data="categories"
             v-on:update-data="setCategories($event)"
             v-bind:type="trait.scale.dataType"
             v-bind:validation-handler="validationHandler"
@@ -327,6 +327,8 @@ export default class BaseTraitForm extends Vue {
   private scaleHistory: {[key: string]: Scale} = {};
   private lastCategoryType: string = '';
 
+  private categories: Category[] = [];
+
   get traitName(): string {
     let prefix = '';
     if (this.trait.entity || this.trait.attribute) prefix = '=';
@@ -397,7 +399,6 @@ export default class BaseTraitForm extends Vue {
   }
 
   setScaleClass(value: string) {
-    console.log("setscaleclass");
     // Save history of current scale class
     if (this.trait.scale!.dataType) {
       this.scaleHistory[this.trait.scale!.dataType.toLowerCase()] = Scale.assign({...this.trait.scale!} as Scale);
@@ -417,18 +418,10 @@ export default class BaseTraitForm extends Vue {
 
       // Clear the values, use labels as the new values if they exist
       if (this.trait.scale.categories) {
-        console.log("pre filter");
-        console.log(this.trait.scale.categories);
         //Remove empty categories
         this.trait.scale.categories = this.trait.scale.categories.filter((value,index) => {
-          console.log(value.value);
-          console.log(value.label);
-          console.log(value.value !== undefined);
-          console.log(value.label !== undefined);
-          return (value.value !== undefined || value.label !== undefined);
+          return (((value.value != null) && (value.value !== "")) || ((value.label != null) && (value.label !== "")));
         });
-        console.log("post filter");
-        console.log(this.trait.scale.categories);
         this.trait.scale.categories.forEach(category => {
           category.value = category.label;
           category.label = undefined;
@@ -446,13 +439,9 @@ export default class BaseTraitForm extends Vue {
       // Add 1-based index values to categories
       if (this.trait.scale.categories) {
         //Remove empty categories
-        console.log("pre filter");
-        console.log(this.trait.scale.categories);
         this.trait.scale.categories = this.trait.scale.categories.filter((value,index) => {
-          return (value.value !== undefined || value.label !== undefined);
+          return (((value.value != null) && (value.value !== "")) || ((value.label != null) && (value.label !== "")));
         });
-        console.log("post filter");
-        console.log(this.trait.scale.categories);
 
         //Restore minimum number of categories
         this.restoreMinCategories(2);
@@ -498,12 +487,12 @@ export default class BaseTraitForm extends Vue {
         this.trait.scale.categories = this.prepopulateCategories();
       }
     }
+    this.categories = this.trait.scale.categories;
   }
 
   prepopulateCategories() {
-    console.log('new prepop');
     let emptyCategories = [];
-    let minCategories = this.trait.scale.dataType === DataType.Ordinal ? 2 : 1;
+    let minCategories = this.trait.scale.dataType === DataType.Ordinal ? 2 : 4;
     let indexVal = this.trait.scale.dataType === DataType.Ordinal ? true : false;
     for (const i of Array(minCategories).keys()) {
       if (indexVal) {
@@ -527,8 +516,7 @@ export default class BaseTraitForm extends Vue {
 
   setCategories(categories: Category[]) {
     this.trait.scale!.categories = categories;
-    this.emitTrait(this.trait);
-    //
+    this.categories = categories;
   }
 
   setObservationLevel(value: string) {

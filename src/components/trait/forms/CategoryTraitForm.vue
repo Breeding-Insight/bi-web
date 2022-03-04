@@ -107,11 +107,6 @@ import {RowError} from "@/breeding-insight/model/errors/RowError";
 @Component({
   components: {ValueRow, BasicInputField, LabelValueRow, WarningModal, PlusCircleIcon},
   data: () => ({DataType, TraitError, Scale}),
-  computed: {
-    categoryVals: function () {
-      //return this.data;
-    }
-  }
 })
 export default class CategoryTraitForm extends Vue {
 
@@ -130,26 +125,6 @@ export default class CategoryTraitForm extends Vue {
   private deleteWarningTitle: string = "Remove category?"
   private activeRemoveRowIndex?: number;
   private deleteModalActive: boolean = false;
-
-  @Watch('data', {immediate: true, deep: true})
-  todo() {
-    //it doesn't get here on first try why
-    console.log("here is a watch");
-  }
-
-  @Watch('type', {immediate: true})
-  updateCategories() {
-    let newCategories = this.data;
-
-    console.log('updatecat old');
-    console.log(this.data.length);
-
-    this.$emit('update-data', newCategories);
-    console.log("post emit");
-    console.log(this.data.length);
-
-    //todo might not be needed anymore?
-  }
 
   getCategoryErrors(categoryIndex: number): RowError | undefined {
     if (this.validationHandler) {
@@ -189,11 +164,10 @@ export default class CategoryTraitForm extends Vue {
   }
 
   removeRow() {
-    let newCategories = this.data;
     if ((this.type === DataType.Ordinal && this.data.length > 2) ||
         (this.type === DataType.Nominal && this.data.length > 1) ||
         (this.type !== DataType.Ordinal && this.type !== DataType.Nominal)) {
-      newCategories.splice(this.activeRemoveRowIndex!,1);
+      this.data.splice(this.activeRemoveRowIndex!,1);
       this.activeRemoveRowIndex = undefined;
       this.deleteModalActive = false;
       return;
@@ -201,15 +175,11 @@ export default class CategoryTraitForm extends Vue {
     this.activeRemoveRowIndex = undefined;
     this.deleteModalActive = false;
 
-    this.$emit('update-data', newCategories);
     return;
   }
 
   addRow() {
-    let newCategories = this.data;
-    newCategories.push(new Category());
-    console.log("add");
-    this.$emit('update-data', newCategories);
+    this.data.push(new Category());
   }
 }
 </script>
