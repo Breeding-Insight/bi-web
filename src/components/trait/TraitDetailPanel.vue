@@ -268,7 +268,7 @@
       if (this.editActive){
         this.editTrait = Trait.assign({...this.data} as Trait);
         //For nominal, switch value and label for ease of display
-        if ((this.editTrait.scale) && (Scale.dataTypeEquals(this.editTrait.scale.dataType, DataType.Nominal))) {
+        if ((this.editTrait.scale) && (this.editTrait.scale.dataType) && (Scale.dataTypeEquals(this.editTrait.scale.dataType, DataType.Nominal)) && (this.editTrait.scale.categories)) {
           this.editTrait.scale.categories.forEach(category => {
             category.label = category.value;
             category.value = undefined;

@@ -327,7 +327,7 @@ export default class BaseTraitForm extends Vue {
   private scaleHistory: {[key: string]: Scale} = {};
   private lastCategoryType: string = '';
 
-  private categories: Category[] = this.trait.scale.categories;
+  private categories: Category[] = [];
 
   get traitName(): string {
     let prefix = '';
@@ -358,6 +358,9 @@ export default class BaseTraitForm extends Vue {
     }
     if (!this.trait.scale){
       this.trait.scale = new Scale();
+    }
+    if ((this.trait.scale) && (this.trait.scale.categories)) {
+      this.categories = this.trait.scale.categories;
     }
   }
 
