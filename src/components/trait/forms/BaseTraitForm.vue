@@ -472,29 +472,34 @@ export default class BaseTraitForm extends Vue {
         this.trait.scale.categories = this.prepopulateCategories();
       }
     }
-    this.categories = this.trait.scale.categories;
+    if ((this.trait.scale) && (this.trait.scale.categories)) {
+      this.categories = this.trait.scale.categories;
+    }
   }
 
   prepopulateCategories() {
     let emptyCategories = [];
-    let minCategories = this.trait.scale.dataType === DataType.Ordinal ? 2 : 1;
-    let indexVal = this.trait.scale.dataType === DataType.Ordinal ? true : false;
-    for (const i of Array(minCategories).keys()) {
-      if (indexVal) {
-        emptyCategories.push(new Category(undefined, i + 1 + ''))
-      }
-      else {
-        emptyCategories.push(new Category(undefined, undefined));
+    if ((this.trait.scale) && (this.trait.scale.dataType)) {
+      let minCategories = this.trait.scale.dataType === DataType.Ordinal ? 2 : 1;
+      let indexVal = this.trait.scale.dataType === DataType.Ordinal ? true : false;
+      for (const i of Array(minCategories).keys()) {
+        if (indexVal) {
+          emptyCategories.push(new Category(undefined, i + 1 + ''))
+        } else {
+          emptyCategories.push(new Category(undefined, undefined));
+        }
       }
     }
     return emptyCategories;
   }
 
   restoreMinCategories(minCategories: number) {
-    let belowMinCat = minCategories - this.trait.scale.categories.length;
-    if (belowMinCat > 0) {
-      for (const i of Array(belowMinCat).keys()) {
-        this.trait.scale.categories.push(new Category(undefined, undefined));
+    if ((this.trait.scale) && (this.trait.scale.categories)) {
+      let belowMinCat = minCategories - this.trait.scale.categories.length;
+      if (belowMinCat > 0) {
+        for (const i of Array(belowMinCat).keys()) {
+          this.trait.scale.categories.push(new Category(undefined, undefined));
+        }
       }
     }
   }
