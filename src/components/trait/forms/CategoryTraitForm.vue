@@ -64,9 +64,9 @@
     <template v-if="Scale.dataTypeEquals(type, DataType.Nominal)">
       <template v-for="[i, item] of data.entries()">
         <ValueRow
-            v-bind:value="item.value"
+            v-bind:value="item.label"
             v-on:delete="checkRemoveRow(i)"
-            v-on:value-change="item.value = $event"
+            v-on:value-change="item.label = $event"
             v-bind:value-placeholder="nominalPlaceholders[i]"
             v-bind:key="i"
             v-bind:can-be-removed="i > 0"
@@ -106,7 +106,7 @@ import {RowError} from "@/breeding-insight/model/errors/RowError";
 
 @Component({
   components: {ValueRow, BasicInputField, LabelValueRow, WarningModal, PlusCircleIcon},
-  data: () => ({DataType, TraitError, Scale}),
+  data: () => ({DataType, TraitError, Scale})
 })
 export default class CategoryTraitForm extends Vue {
 

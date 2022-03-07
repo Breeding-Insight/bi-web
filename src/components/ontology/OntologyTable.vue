@@ -493,6 +493,14 @@ export default class OntologyTable extends Vue {
 
   async saveTrait() {
     try {
+      //For nominal traits switch back label value
+      if ((this.newTrait.scale) && (Scale.dataTypeEquals(this.newTrait.scale.dataType, DataType.Nominal))) {
+        this.newTrait.scale.categories.forEach(category => {
+          category.value = category.label;
+          category.label = undefined;
+        });
+      }
+
       this.validationHandler = new ValidationError();
       const [ [savedTrait], metadata ] = await TraitService.createTraits(this.activeProgram!.id!, [this.newTrait]);
       if (this.newTrait.active === false) {
@@ -542,6 +550,14 @@ export default class OntologyTable extends Vue {
 
   async updateTrait(archiveStateChanged?: boolean) {
     try {
+      //For nominal traits switch back label value
+      if ((this.editTrait.scale) && (Scale.dataTypeEquals(this.editTrait.scale.dataType, DataType.Nominal))) {
+        this.editTrait.scale.categories.forEach(category => {
+          category.value = category.label;
+          category.label = undefined;
+        });
+      }
+
       this.editValidationHandler = new ValidationError();
       const [data] = await TraitService.updateTraits(this.activeProgram!.id!, [this.editTrait!]) as [Trait[], Metadata];
 

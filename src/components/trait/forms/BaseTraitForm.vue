@@ -327,7 +327,7 @@ export default class BaseTraitForm extends Vue {
   private scaleHistory: {[key: string]: Scale} = {};
   private lastCategoryType: string = '';
 
-  private categories: Category[] = [];
+  private categories: Category[] = this.trait.scale.categories;
 
   get traitName(): string {
     let prefix = '';
@@ -413,30 +413,26 @@ export default class BaseTraitForm extends Vue {
       // Clear the scale category validations if there are any, the switch is confusing
       this.validationHandler.clearValidation(0, 'scale.categories');
 
-      //Restore minimum number of categories
-      this.restoreMinCategories(1);
-
       // Clear the values, use labels as the new values if they exist
       if (this.trait.scale.categories) {
         //Remove empty categories
         this.trait.scale.categories = this.trait.scale.categories.filter((value,index) => {
           return (((value.value != null) && (value.value !== "")) || ((value.label != null) && (value.label !== "")));
         });
-        this.trait.scale.categories.forEach(category => {
-          category.value = category.label;
-          category.label = undefined;
-        });
+
+        //Restore minimum number of categories
+        this.restoreMinCategories(1);
       }
 
       this.trait.scale.dataType = value;
       this.trait!.scale!.scaleName = value;
-    //Nominal to Ordinal
+
     } else if (Scale.dataTypeEquals(value, DataType.Ordinal) && Scale.dataTypeEquals(this.lastCategoryType, DataType.Nominal)) {
+      //Nominal to Ordinal
       this.trait.scale = Scale.assign(this.scaleHistory[DataType.Nominal.toLowerCase()]);
       // Clear the scale category validations if there are any, the switch is confusing
       this.validationHandler.clearValidation(0, 'scale.categories');
 
-      // Add 1-based index values to categories
       if (this.trait.scale.categories) {
         //Remove empty categories
         this.trait.scale.categories = this.trait.scale.categories.filter((value,index) => {
@@ -445,19 +441,6 @@ export default class BaseTraitForm extends Vue {
 
         //Restore minimum number of categories
         this.restoreMinCategories(2);
-
-        this.trait.scale.categories.forEach((category, index, categories) => {
-          // Use prior values if they exist
-          const historicalCats: Category[] = this.scaleHistory[DataType.Ordinal.toLowerCase()] ? this.scaleHistory[DataType.Ordinal.toLowerCase()].categories as Category[] : [] as Category[];
-          // Assign the value in the label place for the switch back to ordinal
-          category.label = category.value;
-          if (historicalCats[index] && historicalCats[index].value) {
-              category.value = historicalCats[index].value;
-          } else {
-            const autoValue: string = index + 1 + '';
-            category.value = autoValue;
-          }
-        });
       }
       this.trait.scale.dataType = value;
       this.trait!.scale!.scaleName = value;
@@ -468,7 +451,6 @@ export default class BaseTraitForm extends Vue {
       this.trait.scale.dataType = value;
       this.trait!.scale!.scaleName = value;
 
-    //No history aka when just starting important
     } else {
       // No history
       this.trait.scale = new Scale();
@@ -492,7 +474,7 @@ export default class BaseTraitForm extends Vue {
 
   prepopulateCategories() {
     let emptyCategories = [];
-    let minCategories = this.trait.scale.dataType === DataType.Ordinal ? 2 : 4;
+    let minCategories = this.trait.scale.dataType === DataType.Ordinal ? 2 : 1;
     let indexVal = this.trait.scale.dataType === DataType.Ordinal ? true : false;
     for (const i of Array(minCategories).keys()) {
       if (indexVal) {
