@@ -22,8 +22,8 @@
       v-bind:loading="this.germplasmListsLoading"
       v-bind:pagination="germplasmListsPagination"
       v-on:paginate="paginationController.updatePage($event)"
-      v-on:paginate-toggle-all="paginationController.toggleShowAll(germplasmListsPagination.totalCount.valueOf())"
-      v-on:paginate-page-size="updatePageSize($event)"
+      v-on:paginate-toggle-all="paginationController.toggleShowAll()"
+      v-on:paginate-page-size="paginationController.updatePageSize($event)"
     >
       <b-table-column field="data.listName" label="Name" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
         {{ props.row.data.listName}}
@@ -102,15 +102,20 @@ export default class GermplasmListsTable extends Vue {
 
   @Watch('paginationController', { deep: true})
   getGermplasmLists() {
-    let paginationQuery: PaginationQuery = PaginationController.getPaginationSelections(
-        this.paginationController.currentPage, this.paginationController.pageSize, this.paginationController.showAll);
-    this.paginationController.setCurrentCall(paginationQuery);
+    // TODO: Nice to have a cleaner solution in the future
+    let paginationQuery: PaginationQuery;
+    if (this.paginationController.showAll) {
+      paginationQuery = new PaginationQuery(1, this.germplasmListsPagination!.totalCount.valueOf(), false);
+    } else {
+      paginationQuery = PaginationController.getPaginationSelections(
+          this.paginationController.currentPage, this.paginationController.pageSize, this.paginationController.showAll);
+    }
 
     GermplasmService.getAll(this.activeProgram!.id!, paginationQuery).then(([germplasmLists, metadata]) => {
-      if (this.paginationController.matchesCurrentRequest(metadata.pagination)){
         this.germplasmLists = germplasmLists;
-        this.germplasmListsPagination = metadata.pagination;
-      }
+        this.germplasmListsPagination = new Pagination(metadata.pagination);
+        // Account for brapi 0 indexing of paging
+        this.germplasmListsPagination.currentPage = this.germplasmListsPagination.currentPage.valueOf() + 1;
     }).catch((error) => {
       // Display error that germplasm lists cannot be loaded
       this.$emit('show-error-notification', 'Error while trying to load germplasm lists');
