@@ -46,7 +46,8 @@ export enum OntologySortField {
   Name = 'name',
   MethodDescription = 'methodDescription',
   ScaleClass = 'scaleClass',
-  ScaleName = 'scaleName'
+  ScaleName = 'scaleName',
+  entityAttributeSortLabel = 'entityAttribute'
 }
 
 export class OntologySort {
@@ -71,6 +72,24 @@ export class LocationSort {
   order: SortOrder;
 
   constructor(field: LocationSortField, order: SortOrder) {
+    this.field = field;
+    this.order = order;
+  }
+}
+
+// system user
+export enum SystemUserSortField {
+  Name = 'name',
+  Email = 'email',
+  Roles = 'systemRoles',
+  Programs = 'programs'
+}
+
+export class SystemUserSort {
+  field: SystemUserSortField;
+  order: SortOrder;
+
+  constructor(field: SystemUserSortField, order: SortOrder) {
     this.field = field;
     this.order = order;
   }
