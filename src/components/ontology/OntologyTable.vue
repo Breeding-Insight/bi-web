@@ -494,16 +494,17 @@ export default class OntologyTable extends Vue {
   async saveTrait() {
     try {
       //For nominal traits switch back label value
-      if ((this.newTrait) && (this.newTrait.scale) && (this.newTrait.scale.dataType) && (Scale.dataTypeEquals(this.newTrait.scale.dataType, DataType.Nominal)) && (this.newTrait.scale.categories)) {
-        this.newTrait.scale.categories.forEach(category => {
+      let traitToSave = JSON.parse(JSON.stringify(this.newTrait));
+      if ((traitToSave) && (traitToSave.scale) && (traitToSave.scale.dataType) && (Scale.dataTypeEquals(traitToSave.scale.dataType, DataType.Nominal)) && (traitToSave.scale.categories)) {
+        traitToSave.scale.categories.forEach(category => {
           category.value = category.label;
           category.label = undefined;
         });
       }
 
       this.validationHandler = new ValidationError();
-      const [ [savedTrait], metadata ] = await TraitService.createTraits(this.activeProgram!.id!, [this.newTrait]);
-      if (this.newTrait.active === false) {
+      const [ [savedTrait], metadata ] = await TraitService.createTraits(this.activeProgram!.id!, [traitToSave]);
+      if (traitToSave.active === false) {
         savedTrait.active = false;
         await TraitService.archiveTrait(this.activeProgram!.id!, savedTrait);
       }
@@ -551,15 +552,18 @@ export default class OntologyTable extends Vue {
   async updateTrait(archiveStateChanged?: boolean) {
     try {
       //For nominal traits switch back label value
-      if ((this.editTrait) && (this.editTrait.scale) && (this.editTrait.scale.dataType) && (Scale.dataTypeEquals(this.editTrait.scale.dataType, DataType.Nominal)) && (this.editTrait.scale.categories)) {
-        this.editTrait.scale.categories.forEach(category => {
-          category.value = category.label;
-          category.label = undefined;
-        });
+      if (this.editTrait) {
+        let traitToSave = JSON.parse(JSON.stringify(this.editTrait));
+        if ((traitToSave) && (traitToSave.scale) && (traitToSave.scale.dataType) && (Scale.dataTypeEquals(traitToSave.scale.dataType, DataType.Nominal)) && (traitToSave.scale.categories)) {
+          traitToSave.scale.categories.forEach(category => {
+            category.value = category.label;
+            category.label = undefined;
+          });
+        }
       }
 
       this.editValidationHandler = new ValidationError();
-      const [data] = await TraitService.updateTraits(this.activeProgram!.id!, [this.editTrait!]) as [Trait[], Metadata];
+      const [data] = await TraitService.updateTraits(this.activeProgram!.id!, [traitToSave!]) as [Trait[], Metadata];
 
       // Temporary: Only update the given trait.
       // TODO: Select all traits and find the edited trait within results to keep row open
