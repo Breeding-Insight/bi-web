@@ -137,8 +137,18 @@
         >
           {{ data.observationVariableName }}
         </TableColumn>
-        <TableColumn name="trait" v-bind:label="'Trait'" v-bind:visible="!traitSidePanelState.collapseColumns">
-          {{ StringFormatters.toStartCase(data.traitDescription) }}
+        <TableColumn
+          name="trait"
+          v-bind:label="'Trait'"
+          v-bind:visible="!traitSidePanelState.collapseColumns"
+          v-bind:sortField="ontologySort.field"
+          v-bind:sortFieldLabel="entityAttributeSortLabel"
+          v-bind:sortable="true"
+          v-bind:sortOrder="ontologySort.order"
+          v-on:newSortColumn="$emit('newSortColumn', $event)"
+          v-on:toggleSortOrder="$emit('toggleSortOrder')"
+        >
+          {{ data.entity | capitalize }} {{data.attribute | capitalize }}
         </TableColumn>
         <TableColumn
             name="method"
@@ -151,7 +161,7 @@
             v-on:newSortColumn="$emit('newSortColumn', $event)"
             v-on:toggleSortOrder="$emit('toggleSortOrder')"
         >
-          {{ data.method.description + " " + StringFormatters.toStartCase(data.method.methodClass) }}
+          {{ (data.method.description ? data.method.description + " ": "") + StringFormatters.toStartCase(data.method.methodClass) }}
         </TableColumn>
         <TableColumn
             name="scaleClass"
@@ -278,6 +288,12 @@ import {BackendPaginationController} from "@/breeding-insight/model/view_models/
       'activeProgram'
     ])
   },
+  filters: {
+    capitalize: function(value: string | undefined) : string | undefined {
+      if (value === undefined) value = '';
+      return StringFormatters.toStartCase(value);
+    }
+  },
   data: () => ({Trait, StringFormatters, TraitStringFormatters})
 })
 export default class OntologyTable extends Vue {
@@ -307,6 +323,7 @@ export default class OntologyTable extends Vue {
   private methodSortLabel: string = OntologySortField.MethodDescription;
   private scaleClassSortLabel: string = OntologySortField.ScaleClass;
   private unitSortLabel: string = OntologySortField.ScaleName;
+  private entityAttributeSortLabel: string = OntologySortField.entityAttributeSortLabel;
 
   // New trait form
   private newTraitActive: boolean = false;

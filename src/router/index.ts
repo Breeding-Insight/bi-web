@@ -152,13 +152,14 @@ const routes = [
     beforeEnter: processProgramNavigation,
   },
   {
-    path: '/program/:programId/study/:studyId/observations',
+    path: '/programs/:programId/study/:studyId/observations',
     name: 'observations',
     component: ObservationsList,
     meta: {
       title: 'Observations',
       layout: layouts.userSideBar
-    }
+    },
+    beforeEnter: processProgramNavigation
   },
   {
     path: '/programs/:programId/trial/:trialId/studies',
