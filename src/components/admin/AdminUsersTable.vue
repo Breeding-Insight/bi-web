@@ -162,37 +162,14 @@
          <b-table-column field="data.email" label="Email" v-bind:visible="!isMobile"  sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
           {{ props.row.data.email }}
         </b-table-column>
-        <b-table-column :custom-sort="sortRole" label="Role" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+        <b-table-column field="data.roleName" label="Role" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
           <template v-if="rolesMap.size > 0">
             {{ getRoleName(props.row.data.roleId) }}
           </template>
         </b-table-column>
-        <b-table-column :custom-sort="sortProgram" label="Programs" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-          <template
-            v-if="getRoleName(props.row.data.roleId) === 'admin'"
-          >
-            <span
-              class="is-text has-text-weight-bold"
-            >
-              Admin (all programs)
-            </span>
-          </template>
-          <template
-            v-for="(programRole, index) of props.row.data.programRoles"
-            v-else
-          >
-            <span v-bind:key="'program' + index">
-              <!-- One line span needed to remove after space. Don't change. -->
-              <!-- eslint-disable-next-line -->
-              <span v-if="programRole.active" class="is-text">{{ programRole.program.name }}</span>
-              <!-- One line span needed to remove after space. Don't change. -->
-              <!-- eslint-disable-next-line -->
-              <span v-else class="has-background-grey-lighter">[ {{ programRole.program.name }} ]</span>
-              <!-- One line span needed to remove after space. Don't change. -->
-              <!-- eslint-disable-next-line -->
-              <span v-if="index !== props.row.data.programRoles.length - 1">, </span>
-            </span>
-          </template>
+        <b-table-column field="data.programList" label="Programs" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+          <span>{{ props.row.data.programList }}</span>
+
         </b-table-column>
         <b-table-column v-slot="props" :th-attrs="(column) => ({scope:'col'})">
           <a
@@ -263,7 +240,14 @@
     DEACTIVATE_ALL_NOTIFICATIONS
   } from "@/store/mutation-types";
   import {UPDATE_SYSTEM_USER_SORT} from "@/store/sorting/mutation-types";
-  import {ProgramSortField, Sort, SortOrder, UserSort, UserSortField} from "@/breeding-insight/model/Sort";
+  import {
+    ProgramSortField,
+    Sort,
+    SortOrder, SystemUserSort,
+    SystemUserSortField,
+    UserSort,
+    UserSortField
+  } from "@/breeding-insight/model/Sort";
   import {BackendPaginationController} from "@/breeding-insight/model/view_models/BackendPaginationController";
 
   @Component({
@@ -314,7 +298,7 @@ export default class AdminUsersTable extends Vue {
   private usersPagination?: Pagination = new Pagination();
 
   private systemUserSort!: UserSort;
-  private updateSort!: (sort: UserSort) => void;
+  private updateSort!: (sort: SystemUserSort) => void;
 
   mounted() {
     this.getRoles();
@@ -324,11 +308,13 @@ export default class AdminUsersTable extends Vue {
 
     setSort(field: string, order: string) {
       const fieldMap: any = {
-        'data.email': UserSortField.Email,
-        'data.name': UserSortField.Name
+        'data.email': SystemUserSortField.Email,
+        'data.name': SystemUserSortField.Name,
+        'data.roleName': SystemUserSortField.Roles,
+        'data.programList': SystemUserSortField.Programs
       };
       if (field in fieldMap) {
-        this.updateSort(new UserSort(fieldMap[field], Sort.orderAsBI(order)));
+        this.updateSort(new SystemUserSort(fieldMap[field], Sort.orderAsBI(order)));
         this.getUsers();
       }
     }
@@ -514,31 +500,7 @@ export default class AdminUsersTable extends Vue {
       return false;
     }
   }
-
-  sortRole(a: any, b: any, isAsc: boolean) {
-    if(isAsc) {
-      return (this.getRoleName(a.data.roleId) || "")!.localeCompare((this.getRoleName(b.data.roleId) || "")!);
-    } else {
-      return (this.getRoleName(b.data.roleId) || "")!.localeCompare((this.getRoleName(a.data.roleId) || "")!);
-    }
-  }
-
-  sortProgram(a: any, b: any, isAsc: boolean) {
-    if(isAsc) {
-      return this.getProgramList(a)!.localeCompare(this.getProgramList(b)!);
-    } else {
-      return this.getProgramList(b)!.localeCompare(this.getProgramList(a)!);
-
-    }
-  }
-
-  //should mirror what is in the programs column, minus formatting
-  getProgramList(a: any) {
-    if (this.getRoleName(a.data.roleId) === 'admin') return "Admin (all programs)";
-    let programList = a.data.programRoles ? a.data.programRoles.map((x: { program: { name: any; }; }) => x.program.name).join(", ") : "";
-    return programList;
-  }
-
+    
   showNewUser() {
     this.newUserActive = true;
     this.$store.commit(DEACTIVATE_ALL_NOTIFICATIONS);
