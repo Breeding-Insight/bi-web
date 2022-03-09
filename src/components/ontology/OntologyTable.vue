@@ -512,13 +512,7 @@ export default class OntologyTable extends Vue {
   async saveTrait() {
     try {
       //For nominal traits switch back label value
-      let traitToSave = JSON.parse(JSON.stringify(this.newTrait));
-      if ((traitToSave) && (traitToSave.scale) && (traitToSave.scale.dataType) && (Scale.dataTypeEquals(traitToSave.scale.dataType, DataType.Nominal)) && (traitToSave.scale.categories)) {
-        traitToSave.scale.categories.forEach((category: Category) => {
-          category.value = category.label;
-          category.label = undefined;
-        });
-      }
+      let traitToSave = this.prepareScaleCategoriesForSave(this.newTrait);
 
       this.validationHandler = new ValidationError();
       const [ [savedTrait], metadata ] = await TraitService.createTraits(this.activeProgram!.id!, [traitToSave]);
@@ -570,13 +564,7 @@ export default class OntologyTable extends Vue {
   async updateTrait(archiveStateChanged?: boolean) {
     try {
       //For nominal traits switch back label value
-      let traitToSave = JSON.parse(JSON.stringify(this.editTrait));
-      if ((traitToSave) && (traitToSave.scale) && (traitToSave.scale.dataType) && (Scale.dataTypeEquals(traitToSave.scale.dataType, DataType.Nominal)) && (traitToSave.scale.categories)) {
-        traitToSave.scale.categories.forEach((category: Category) => {
-          category.value = category.label;
-          category.label = undefined;
-        });
-      }
+      let traitToSave = this.prepareScaleCategoriesForSave(this.editTrait);
 
       this.editValidationHandler = new ValidationError();
       const [data] = await TraitService.updateTraits(this.activeProgram!.id!, [traitToSave!]) as [Trait[], Metadata];
@@ -623,6 +611,17 @@ export default class OntologyTable extends Vue {
     this.newTrait = new Trait();
     this.validationHandler = new ValidationError();
     this.newTraitActive = false;
+  }
+
+  prepareScaleCategoriesForSave(inputTrait: Trait){
+    let traitToSave = JSON.parse(JSON.stringify(inputTrait));
+    if ((traitToSave) && (traitToSave.scale) && (traitToSave.scale.dataType) && (Scale.dataTypeEquals(traitToSave.scale.dataType, DataType.Nominal)) && (traitToSave.scale.categories)) {
+      traitToSave.scale.categories.forEach((category: Category) => {
+        category.value = category.label;
+        category.label = undefined;
+      });
+    }
+    return traitToSave;
   }
 
   async getAttributesEntitiesDescriptions() {
