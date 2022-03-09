@@ -513,7 +513,7 @@ export default class OntologyTable extends Vue {
       //For nominal traits switch back label value
       let traitToSave = JSON.parse(JSON.stringify(this.newTrait));
       if ((traitToSave) && (traitToSave.scale) && (traitToSave.scale.dataType) && (Scale.dataTypeEquals(traitToSave.scale.dataType, DataType.Nominal)) && (traitToSave.scale.categories)) {
-        traitToSave.scale.categories.forEach((category: Category[]) => {
+        traitToSave.scale.categories.forEach((category) => {
           category.value = category.label;
           category.label = undefined;
         });
@@ -571,7 +571,7 @@ export default class OntologyTable extends Vue {
       //For nominal traits switch back label value
       let traitToSave = JSON.parse(JSON.stringify(this.editTrait));
       if ((traitToSave) && (traitToSave.scale) && (traitToSave.scale.dataType) && (Scale.dataTypeEquals(traitToSave.scale.dataType, DataType.Nominal)) && (traitToSave.scale.categories)) {
-        traitToSave.scale.categories.forEach((category: Category[]) => {
+        traitToSave.scale.categories.forEach((category) => {
           category.value = category.label;
           category.label = undefined;
         });
