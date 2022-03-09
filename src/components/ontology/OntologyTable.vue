@@ -564,7 +564,7 @@ export default class OntologyTable extends Vue {
   async updateTrait(archiveStateChanged?: boolean) {
     try {
       //For nominal traits switch back label value
-      let traitToSave = this.prepareScaleCategoriesForSave(this.editTrait);
+      let traitToSave = this.prepareScaleCategoriesForSave(this.editTrait!);
 
       this.editValidationHandler = new ValidationError();
       const [data] = await TraitService.updateTraits(this.activeProgram!.id!, [traitToSave!]) as [Trait[], Metadata];
