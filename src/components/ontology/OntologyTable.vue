@@ -276,6 +276,7 @@ import {integer, maxLength} from "vuelidate/lib/validators";
 import {TraitField, TraitFilter} from "@/breeding-insight/model/TraitSelector";
 import {OntologySort, OntologySortField, SortOrder, TraitSortField} from "@/breeding-insight/model/Sort";
 import {BackendPaginationController} from "@/breeding-insight/model/view_models/BackendPaginationController";
+import {Category} from "@/breeding-insight/model/Category";
 
 @Component({
   mixins: [validationMixin],
@@ -513,7 +514,7 @@ export default class OntologyTable extends Vue {
       //For nominal traits switch back label value
       let traitToSave = JSON.parse(JSON.stringify(this.newTrait));
       if ((traitToSave) && (traitToSave.scale) && (traitToSave.scale.dataType) && (Scale.dataTypeEquals(traitToSave.scale.dataType, DataType.Nominal)) && (traitToSave.scale.categories)) {
-        traitToSave.scale.categories.forEach((category) => {
+        traitToSave.scale.categories.forEach((category: Category) => {
           category.value = category.label;
           category.label = undefined;
         });
@@ -571,7 +572,7 @@ export default class OntologyTable extends Vue {
       //For nominal traits switch back label value
       let traitToSave = JSON.parse(JSON.stringify(this.editTrait));
       if ((traitToSave) && (traitToSave.scale) && (traitToSave.scale.dataType) && (Scale.dataTypeEquals(traitToSave.scale.dataType, DataType.Nominal)) && (traitToSave.scale.categories)) {
-        traitToSave.scale.categories.forEach((category) => {
+        traitToSave.scale.categories.forEach((category: Category) => {
           category.value = category.label;
           category.label = undefined;
         });
