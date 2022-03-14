@@ -69,40 +69,10 @@
     </template>
     <template v-slot:menu>
       <nav role="navigation" aria-label="main navigation">
-        <template v-if="$ability.can('access', 'AdminSection')">
-
-          <p class="menu-label">
-            Admin
-          </p>
-          <ul class="menu-list">
-            <li>
-              <router-link to="/admin/user-management" :id="usersMenuId">
-                Users
-              </router-link>
-            </li>
-            <li>
-              <router-link to="/admin/program-management" :id="programsMenuId">
-                Programs
-              </router-link>
-              <ul class="menu-list">
-                <template v-for="program of programs">
-                  <li v-bind:key="program.id">
-                    <router-link v-bind:to="{name: 'program', params: {programId: program.id}}">
-                      {{program.name}}
-                    </router-link>
-                  </li>
-                </template>
-              </ul>
-            </li>
-          </ul>
-          <template v-if="activeProgram">
-            <hr style="margin:5px;">
-            <p class="menu-label">
-              {{activeProgram.name}}
-            </p>
-          </template>
-        </template>
         <template v-if="activeProgram">
+          <p class="menu-label">
+            {{activeProgram.name}}
+          </p>
           <ul class="menu-list">
             <li>
               <router-link v-bind:to="{name: 'program-home', params: {programId: activeProgram.id}}" :id="homeMenuId">
@@ -115,27 +85,7 @@
                   v-bind:class="{ 'is-active': trialsAndStudiesActive }"
               >
                 Trials and Studies
-                <MoreVerticalIcon
-                    v-if="!trialsAndStudiesActive"
-                    class="is-pulled-right"
-                />
-                <MoreHorizontalIcon
-                    v-if="trialsAndStudiesActive"
-                    class="is-pulled-right"
-                />
               </router-link>
-              <ul v-show="trialsAndStudiesActive">
-                <li>
-                  <router-link v-bind:to="{name: 'trials-list', params: {programId: activeProgram.id}}">
-                    Trials
-                  </router-link>
-                </li>
-                <li>
-                  <router-link v-bind:to="{name: 'studies-list', params: {programId: activeProgram.id}}">
-                    Studies
-                  </router-link>
-                </li>
-              </ul>
             </li>
 <!--            <li>
               <a>Germplasm Inventory</a>
@@ -148,32 +98,7 @@
                 v-if="$ability.can('create', 'Import')"
               >
                 Import File
-                <MoreVerticalIcon
-                    v-if="!importFileActive"
-                    class="is-pulled-right"
-                />
-                <MoreHorizontalIcon
-                    v-if="importFileActive"
-                    class="is-pulled-right"
-                />
               </router-link>
-              <ul v-show="importFileActive">
-                <li>
-                  <router-link v-bind:to="{name: 'ontology', params: {programId: activeProgram.id}}">
-                    Ontology
-                  </router-link>
-                </li>
-                <li>
-                  <router-link v-bind:to="{name: 'germplasm-import', params: {programId: activeProgram.id}}">
-                    Germplasm
-                  </router-link>
-                </li>
-                <li>
-                  <router-link v-bind:to="{name: 'brapi-import', params: {programId: activeProgram.id}}">
-                    BrAPI Import
-                  </router-link>
-                </li>
-              </ul>
             </li>
             <li>
               <router-link
@@ -182,39 +107,7 @@
                 :id="ontologyMenuId"
               >
                 Ontology
-                <MoreVerticalIcon
-                  v-if="!ontologyActive"
-                  class="is-pulled-right"
-                />
-                <MoreHorizontalIcon
-                  v-if="ontologyActive"
-                  class="is-pulled-right"
-                />
               </router-link>
-              <ul v-show="ontologyActive">
-                <li>
-                  <router-link v-bind:to="{name: 'active-terms', params: {programId: activeProgram.id}}">
-                    Ontology List
-                  </router-link>
-                </li>
-                <li>
-                  <router-link v-bind:to="{name: 'traits-favorites', params: {programId: activeProgram.id}}">
-                    Favorites
-                  </router-link>
-                </li>
-                <li
-                  v-if="$ability.can('create', 'Trait')"
-                >
-                  <router-link v-bind:to="{name: 'traits-import', params: {programId: activeProgram.id}}">
-                    Import Ontology
-                  </router-link>
-                </li>
-                <li>
-                  <router-link v-bind:to="{name: 'archived-terms', params: {programId: activeProgram.id}}">
-                    Archived Ontology
-                  </router-link>
-                </li>
-              </ul>
             </li>
             <li>
               <router-link
@@ -223,27 +116,7 @@
                   :id="germplasmMenuId"
               >
                 Germplasm
-                <MoreVerticalIcon
-                    v-if="!germplasmActive"
-                    class="is-pulled-right"
-                />
-                <MoreHorizontalIcon
-                    v-if="germplasmActive"
-                    class="is-pulled-right"
-                />
               </router-link>
-              <ul v-show="germplasmActive">
-                <li>
-                  <router-link v-bind:to="{name: 'germplasm-all', params: {programId: activeProgram.id}}">
-                    All Germplasm
-                  </router-link>
-                </li>
-                <li>
-                  <router-link v-bind:to="{name: 'germplasm-lists', params: {programId: activeProgram.id}}">
-                    Germplasm Lists
-                  </router-link>
-                </li>
-              </ul>
             </li>
             <!--
             <li>
@@ -260,31 +133,31 @@
                 :id="programManagementMenuId"
               >
                 Program Management
-                <MoreVerticalIcon
-                  v-if="!programManagementActive"
-                  class="is-pulled-right"
-                />
-                <MoreHorizontalIcon
-                  v-if="programManagementActive"
-                  class="is-pulled-right"
-                />
               </router-link>
-              <ul v-show="programManagementActive">
-                <li>
-                  <router-link v-bind:to="{name: 'program-locations', params: {programId: activeProgram.id}}">
-                    Locations
-                  </router-link>
-                </li>
-                <li>
-                  <router-link v-bind:to="{name: 'program-users', params: {programId: activeProgram.id}}">
-                    Users
-                  </router-link>
-                </li>
-              </ul>
             </li>
             <li>
               <router-link v-bind:to="{name: 'brapi-info', params: {programId: activeProgram.id}}" :id="brAPIMenuId">
                 BrAPI
+              </router-link>
+            </li>
+          </ul>
+        </template>
+        <template v-if="$ability.can('access', 'AdminSection')">
+          <template v-if="activeProgram">
+            <hr style="margin:5px;">
+          </template>
+          <p class="menu-label">
+            Admin
+          </p>
+          <ul class="menu-list">
+            <li>
+              <router-link to="/admin/user-management" :id="usersMenuId">
+                Users
+              </router-link>
+            </li>
+            <li>
+              <router-link to="/admin/program-management" :id="programsMenuId">
+                Programs
               </router-link>
             </li>
           </ul>
@@ -383,6 +256,7 @@
         throw error;
       });
     }
+    //deprecate or remove active submenu variable and method todo
     setActiveLinkSubmenus() {
       var path: string = this.$route.path;
       this.programManagementActive = path.includes('/program-management/');
