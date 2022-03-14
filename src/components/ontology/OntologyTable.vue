@@ -276,6 +276,7 @@ import {integer, maxLength} from "vuelidate/lib/validators";
 import {TraitField, TraitFilter} from "@/breeding-insight/model/TraitSelector";
 import {OntologySort, OntologySortField, SortOrder, TraitSortField} from "@/breeding-insight/model/Sort";
 import {BackendPaginationController} from "@/breeding-insight/model/view_models/BackendPaginationController";
+import {Category} from "@/breeding-insight/model/Category";
 
 @Component({
   mixins: [validationMixin],
@@ -510,9 +511,12 @@ export default class OntologyTable extends Vue {
 
   async saveTrait() {
     try {
+      //For nominal traits switch back label value
+      let traitToSave = this.prepareScaleCategoriesForSave(this.newTrait);
+
       this.validationHandler = new ValidationError();
-      const [ [savedTrait], metadata ] = await TraitService.createTraits(this.activeProgram!.id!, [this.newTrait]);
-      if (this.newTrait.active === false) {
+      const [ [savedTrait], metadata ] = await TraitService.createTraits(this.activeProgram!.id!, [traitToSave]);
+      if (traitToSave.active === false) {
         savedTrait.active = false;
         await TraitService.archiveTrait(this.activeProgram!.id!, savedTrait);
       }
@@ -559,8 +563,11 @@ export default class OntologyTable extends Vue {
 
   async updateTrait(archiveStateChanged?: boolean) {
     try {
+      //For nominal traits switch back label value
+      let traitToSave = this.prepareScaleCategoriesForSave(this.editTrait!);
+
       this.editValidationHandler = new ValidationError();
-      const [data] = await TraitService.updateTraits(this.activeProgram!.id!, [this.editTrait!]) as [Trait[], Metadata];
+      const [data] = await TraitService.updateTraits(this.activeProgram!.id!, [traitToSave!]) as [Trait[], Metadata];
 
       // Temporary: Only update the given trait.
       // TODO: Select all traits and find the edited trait within results to keep row open
@@ -604,6 +611,17 @@ export default class OntologyTable extends Vue {
     this.newTrait = new Trait();
     this.validationHandler = new ValidationError();
     this.newTraitActive = false;
+  }
+
+  prepareScaleCategoriesForSave(inputTrait: Trait){
+    let traitToSave = JSON.parse(JSON.stringify(inputTrait));
+    if ((traitToSave) && (traitToSave.scale) && (traitToSave.scale.dataType) && (Scale.dataTypeEquals(traitToSave.scale.dataType, DataType.Nominal)) && (traitToSave.scale.categories)) {
+      traitToSave.scale.categories.forEach((category: Category) => {
+        category.value = category.label;
+        category.label = undefined;
+      });
+    }
+    return traitToSave;
   }
 
   async getAttributesEntitiesDescriptions() {
