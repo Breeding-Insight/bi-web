@@ -1,7 +1,7 @@
 import {
     LocationSort,
     OntologySort,
-    ProgramSort, Sort, SortOrder,
+    ProgramSort, Sort, SortOrder, SystemUserSort,
     TraitSortField,
     UserSort,
     UserSortField
@@ -24,7 +24,7 @@ export interface SortState {
     locationSort: LocationSort,
 
     // system users table
-    systemUserSort: UserSort,
+    systemUserSort: SystemUserSort,
 
     // program table
     programSort: ProgramSort

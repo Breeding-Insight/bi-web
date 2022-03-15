@@ -64,9 +64,9 @@
     <template v-if="Scale.dataTypeEquals(type, DataType.Nominal)">
       <template v-for="[i, item] of data.entries()">
         <ValueRow
-            v-bind:value="item.value"
+            v-bind:value="item.label"
             v-on:delete="checkRemoveRow(i)"
-            v-on:value-change="item.value = $event"
+            v-on:value-change="item.label = $event"
             v-bind:value-placeholder="nominalPlaceholders[i]"
             v-bind:key="i"
             v-bind:can-be-removed="i > 0"
@@ -126,28 +126,12 @@ export default class CategoryTraitForm extends Vue {
   private activeRemoveRowIndex?: number;
   private deleteModalActive: boolean = false;
 
-  @Watch('data', {immediate: true, deep: true})
-  emitData(){
-    this.$emit('update', this.data);
-  }
-
-  @Watch('type', {immediate: true})
-  updateCategories() {
-    this.data = this.data.filter((value,index) => {
-      return (value.value !== undefined || value.label !== undefined);
-    });
-    
-    if (this.data.length === 0) {
-      this.prepopulateCategories();
-    }
-  }
-
   getCategoryErrors(categoryIndex: number): RowError | undefined {
     if (this.validationHandler) {
       const fieldErrors: FieldError[] = this.validationHandler.getValidation(this.validationIndex, TraitError.ScaleCategories);
       if (fieldErrors.length > 0) {
         for (const [index, fieldError] of fieldErrors.entries()) {
-          // Check that it has nested errors for the catogeries
+          // Check that it has nested errors for the categories
           if (fieldError.rowErrors){
             // Get the specific category index requested
             const rowError: RowError[] = fieldError.rowErrors.filter(rowError => rowError.rowIndex === categoryIndex);
@@ -157,13 +141,6 @@ export default class CategoryTraitForm extends Vue {
           }
         }
       }
-    }
-  }
-
-  prepopulateCategories() {
-    let minCategories = this.type === DataType.Ordinal ? 2 : 1;
-    for (const i of Array(minCategories).keys()) {
-      this.data.push(new Category(undefined, undefined));
     }
   }
 
@@ -197,6 +174,7 @@ export default class CategoryTraitForm extends Vue {
     }
     this.activeRemoveRowIndex = undefined;
     this.deleteModalActive = false;
+
     return;
   }
 

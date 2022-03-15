@@ -77,6 +77,24 @@ export class LocationSort {
   }
 }
 
+// system user
+export enum SystemUserSortField {
+  Name = 'name',
+  Email = 'email',
+  Roles = 'systemRoles',
+  Programs = 'programs'
+}
+
+export class SystemUserSort {
+  field: SystemUserSortField;
+  order: SortOrder;
+
+  constructor(field: SystemUserSortField, order: SortOrder) {
+    this.field = field;
+    this.order = order;
+  }
+}
+
 // user
 export enum UserSortField {
   Name = 'name',
