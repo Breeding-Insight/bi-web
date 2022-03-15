@@ -85,7 +85,6 @@
             <li>
               <router-link
                   v-bind:to="{name: 'germplasm', params: {programId: activeProgram.id}}"
-                  v-bind:class="{ 'is-active': germplasmActive }"
                   :id="germplasmMenuId"
               >
                 Germplasm
@@ -94,7 +93,6 @@
             <li>
               <router-link
                   v-bind:to="{name: 'ontology', params: {programId: activeProgram.id}}"
-                  v-bind:class="{ 'is-active': ontologyActive }"
                   :id="ontologyMenuId"
               >
                 Ontology
@@ -103,7 +101,6 @@
             <li>
               <router-link
                 v-bind:to="{name: 'import'}"
-                v-bind:class="{ 'is-active': importFileActive }"
                 :id="importFileMenuId"
                 v-if="$ability.can('create', 'Import')"
               >
@@ -121,7 +118,6 @@
             <li>
               <router-link
                 v-bind:to="{name: 'program-management', params: {programId: activeProgram.id}}"
-                v-bind:class="{ 'is-active': programManagementActive }"
                 :id="programManagementMenuId"
               >
                 Program Management
@@ -135,7 +131,6 @@
             <li>
               <router-link
                   v-bind:to="{name: 'trials-studies', params: {programId: activeProgram.id}}"
-                  v-bind:class="{ 'is-active': trialsAndStudiesActive }"
               >
                 Trials and Studies - Beta
               </router-link>
@@ -197,12 +192,6 @@
     sideMenuShownMobile: boolean = false;
     private activeProgram?: Program;
     private activeUser?: User;
-    programManagementActive: boolean =  true;
-    ontologyActive: boolean = false;
-    traitsActive: boolean = false;
-    trialsAndStudiesActive: boolean = false;
-    importFileActive: boolean = false;
-    germplasmActive: boolean = false;
     private programs: Program[] = [];
     private programSelectActive: boolean = false;
 
@@ -256,16 +245,7 @@
         throw error;
       });
     }
-    //deprecate or remove active submenu variable and method todo
-    setActiveLinkSubmenus() {
-      var path: string = this.$route.path;
-      this.programManagementActive = path.includes('/program-management/');
-      this.trialsAndStudiesActive = path.includes('/trials-studies/');
-      this.ontologyActive = path.includes('/ontology/') || path.includes('traits/import') || path.includes('traits/favorites');
-      this.traitsActive = path.includes('/traits/');
-      this.importFileActive = path.includes('/import/');
-      this.germplasmActive = path.includes('/germplasm/');
-    }
+
     hideProgramSelect() {
       this.programSelectActive = false;
     }
