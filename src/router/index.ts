@@ -47,7 +47,6 @@ import ProgramLocationsManagement from "@/views/program/ProgramLocationsManageme
 import ProgramUserManagement from "@/views/program/ProgramUsersManagement.vue";
 import Traits from '@/views/trait/Traits.vue'
 import TraitsList from "@/views/trait/TraitsList.vue";
-import TraitsFavorites from "@/views/trait/TraitsFavorites.vue";
 import TraitsImport from "@/views/trait/TraitsImport.vue";
 import TraitsArchived from "@/views/trait/TraitsArchived.vue";
 import ProgramSelection from "@/views/program/ProgramSelection.vue";
@@ -312,15 +311,6 @@ const routes = [
           layout: layouts.userSideBar
         },
         component: TraitsList
-      },
-      {
-        path: 'favorites',
-        name: 'traits-favorites',
-        meta: {
-          title: 'Favorites',
-          layout: layouts.userSideBar
-        },
-        component: TraitsFavorites
       },
       {
         path: 'import',

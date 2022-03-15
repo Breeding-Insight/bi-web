@@ -79,36 +79,9 @@
                 Home
               </router-link>
             </li>
-            <li>
-              <router-link
-                  v-bind:to="{name: 'trials-studies', params: {programId: activeProgram.id}}"
-                  v-bind:class="{ 'is-active': trialsAndStudiesActive }"
-              >
-                Trials and Studies
-              </router-link>
-            </li>
 <!--            <li>
               <a>Germplasm Inventory</a>
             </li>-->
-            <li>
-              <router-link
-                v-bind:to="{name: 'import'}"
-                v-bind:class="{ 'is-active': importFileActive }"
-                :id="importFileMenuId"
-                v-if="$ability.can('create', 'Import')"
-              >
-                Import File
-              </router-link>
-            </li>
-            <li>
-              <router-link
-                v-bind:to="{name: 'ontology', params: {programId: activeProgram.id}}"
-                v-bind:class="{ 'is-active': ontologyActive }"
-                :id="ontologyMenuId"
-              >
-                Ontology
-              </router-link>
-            </li>
             <li>
               <router-link
                   v-bind:to="{name: 'germplasm', params: {programId: activeProgram.id}}"
@@ -116,6 +89,25 @@
                   :id="germplasmMenuId"
               >
                 Germplasm
+              </router-link>
+            </li>
+            <li>
+              <router-link
+                  v-bind:to="{name: 'ontology', params: {programId: activeProgram.id}}"
+                  v-bind:class="{ 'is-active': ontologyActive }"
+                  :id="ontologyMenuId"
+              >
+                Ontology
+              </router-link>
+            </li>
+            <li>
+              <router-link
+                v-bind:to="{name: 'import'}"
+                v-bind:class="{ 'is-active': importFileActive }"
+                :id="importFileMenuId"
+                v-if="$ability.can('create', 'Import')"
+              >
+                Import Data
               </router-link>
             </li>
             <!--
@@ -140,6 +132,14 @@
                 BrAPI
               </router-link>
             </li>
+            <li>
+              <router-link
+                  v-bind:to="{name: 'trials-studies', params: {programId: activeProgram.id}}"
+                  v-bind:class="{ 'is-active': trialsAndStudiesActive }"
+              >
+                Trials and Studies - Beta
+              </router-link>
+            </li>
           </ul>
         </template>
         <template v-if="$ability.can('access', 'AdminSection')">
@@ -147,7 +147,7 @@
             <hr style="margin:5px;">
           </template>
           <p class="menu-label">
-            Admin
+            System Administration
           </p>
           <ul class="menu-list">
             <li>
