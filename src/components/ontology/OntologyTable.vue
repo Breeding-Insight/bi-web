@@ -112,6 +112,7 @@
     <SidePanelTable
       ref="sidePanelTable"
       v-bind:records="traits"
+      v-bind:loading="this.traitsLoading"
       v-bind:pagination="traitsPagination"
       v-bind:auto-handle-close-panel-event="false"
       v-bind:side-panel-state="traitSidePanelState"
@@ -412,7 +413,7 @@ export default class OntologyTable extends Vue {
       // Display error that traits cannot be loaded
       this.$emit('show-error-notification', 'Error while trying to load traits');
       throw error;
-    }).finally(() => this.traitsLoading = false );
+    }).finally( () => this.traitsLoading =  false );
   }
 
   async editable(trait: Trait) {
