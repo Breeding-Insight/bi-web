@@ -112,7 +112,6 @@
     <SidePanelTable
       ref="sidePanelTable"
       v-bind:records="traits"
-      v-bind:loading="this.traitsLoading"
       v-bind:pagination="traitsPagination"
       v-bind:auto-handle-close-panel-event="false"
       v-bind:side-panel-state="traitSidePanelState"
