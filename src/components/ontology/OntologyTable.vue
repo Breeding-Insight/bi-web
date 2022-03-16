@@ -407,14 +407,12 @@ export default class OntologyTable extends Vue {
       if (this.paginationController.matchesCurrentRequest(metadata.pagination)){
         this.traits = traits;
         this.traitsPagination = metadata.pagination;
-        this.traitsLoading = false;
       }
     }).catch((error) => {
       // Display error that traits cannot be loaded
       this.$emit('show-error-notification', 'Error while trying to load traits');
-      this.traitsLoading = false;
       throw error;
-    });
+    }).finally(() => this.traitsLoading = false );
   }
 
   async editable(trait: Trait) {
