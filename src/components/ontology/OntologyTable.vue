@@ -112,6 +112,7 @@
     <SidePanelTable
       ref="sidePanelTable"
       v-bind:records="traits"
+      v-bind:loading="this.traitsLoading"
       v-bind:pagination="traitsPagination"
       v-bind:auto-handle-close-panel-event="false"
       v-bind:side-panel-state="traitSidePanelState"
@@ -301,6 +302,7 @@ export default class OntologyTable extends Vue {
   private newTrait: Trait = new Trait();
   private currentTraitEditable = false;
   private loadingTraitEditable = true;
+  private traitsLoading: boolean = false;
 
   // table column sorting
   private nameSortLabel: string = OntologySortField.Name;
@@ -399,6 +401,7 @@ export default class OntologyTable extends Vue {
   getTraits() {
     // filter the terms pulled from the back-end
     let filters: TraitFilter[] = [{ field: TraitField.STATUS, value: this.active}];
+    this.traitsLoading = true;
 
     TraitService.getFilteredTraits(this.activeProgram!.id!, this.paginationController.currentCall, true, filters, this.ontologySort).then(([traits, metadata]) => {
       if (this.paginationController.matchesCurrentRequest(metadata.pagination)){
@@ -409,7 +412,7 @@ export default class OntologyTable extends Vue {
       // Display error that traits cannot be loaded
       this.$emit('show-error-notification', 'Error while trying to load traits');
       throw error;
-    });
+    }).finally( () => this.traitsLoading =  false );
   }
 
   async editable(trait: Trait) {

@@ -91,7 +91,7 @@
                           v-on:paginate-page-size="closePanelAndReEmit('paginate-page-size', $event)"/>
 
       <template v-if="records.length === 0">
-        <slot name="emptyMessage" />
+        <slot v-if="this.loading !== true" name="emptyMessage" />
       </template>
     </div>
 
@@ -148,6 +148,8 @@
     autoHandleClosePanelEvent!: boolean;
     @Prop()
     sidePanelState!: SidePanelTableEventBusHandler;
+    @Prop()
+    loading!: boolean;
 
     private BreakpointEvent = BreakpointEvent;
     private state = CollapseColumnsState.NORMAL_PANEL_CLOSED;
