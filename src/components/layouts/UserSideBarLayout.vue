@@ -211,11 +211,9 @@
       EventBus.bus.$on(EventBus.programChange, this.getPrograms);
     }
     mounted() {
-      this.setActiveLinkSubmenus();
       this.getPrograms();
     }
     updated() {
-      this.setActiveLinkSubmenus();
       this.getPrograms();
     }
     get title(): string {
