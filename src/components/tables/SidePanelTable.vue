@@ -30,7 +30,7 @@
       </div>
     </WarningModal>
 
-    <div class="side-panel-table">
+    <div class="side-panel-table table-min-height" v-bind:class="{'loading-indicator': loading}">
       <div class="columns is-mobile">
         <div class="column pr-0">
           <BaseTable

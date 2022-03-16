@@ -112,10 +112,10 @@
     <SidePanelTable
       ref="sidePanelTable"
       v-bind:records="traits"
-      v-bind:loading="this.traitsLoading"
       v-bind:pagination="traitsPagination"
       v-bind:auto-handle-close-panel-event="false"
       v-bind:side-panel-state="traitSidePanelState"
+      v-bind:loading="traitsLoading"
       v-on:paginate="paginationController.updatePage($event)"
       v-on:paginate-toggle-all="paginationController.toggleShowAll(traitsPagination.totalCount.valueOf())"
       v-on:paginate-page-size="paginationController.updatePageSize(parseInt($event,10))"
@@ -302,7 +302,7 @@ export default class OntologyTable extends Vue {
   private newTrait: Trait = new Trait();
   private currentTraitEditable = false;
   private loadingTraitEditable = true;
-  private traitsLoading: boolean = false;
+  private traitsLoading = true;
 
   // table column sorting
   private nameSortLabel: string = OntologySortField.Name;
