@@ -26,7 +26,7 @@ import {
     OntologySortField,
     ProgramSort,
     ProgramSortField,
-    SortOrder,
+    SortOrder, SystemUserSort, SystemUserSortField,
     UserSort,
     UserSortField
 } from "@/breeding-insight/model/Sort";
@@ -50,7 +50,7 @@ state = {
     locationSort: new LocationSort(LocationSortField.Name, SortOrder.Ascending),
 
     // system user table
-    systemUserSort: new UserSort(UserSortField.Name, SortOrder.Ascending),
+    systemUserSort: new SystemUserSort(SystemUserSortField.Name, SortOrder.Ascending),
 
     // program table
     programSort: new ProgramSort(ProgramSortField.Name, SortOrder.Ascending)

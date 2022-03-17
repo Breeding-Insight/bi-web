@@ -79,7 +79,7 @@ export class ValidationError {
   clearValidation(rowIndex: number, errorName: string) {
     if (this.rowErrors && this.rowErrors[rowIndex]) {
       for (const [errorIndex, field] of this.rowErrors[rowIndex].errors!.entries()) {
-        if (field.field === errorName) {
+        if ((field) && (field.field === errorName)) {
           delete this.rowErrors[rowIndex].errors![errorIndex];
         }
       }

@@ -21,19 +21,33 @@
       <p v-if="data.observationVariableName" class="is-size-5 has-text-weight-bold mb-0">
         {{data.observationVariableName}}
         <span v-if="!data.active" class="tag is-link is-normal ml-1">Archived</span>
-      </p>
+      </p><br>
 
-      <p v-if="data.traitDescription" class="is-size-7 mb-0">{{data.traitDescription}}</p>
+      <div v-if="data.traitDescription" class="columns is-multiline is-mobile pt-4 pl-3">
+        <div class="column is-narrow p-0">
+          <span class="is-pulled-left has-text-weight-bold mr-2">Description</span>
+        </div>
+        <div class="column is-narrow p-0">
+          <span class="is-size-7 mb-0">{{data.traitDescription}}</span>
+        </div>
+      </div>
       <!-- just shows first abbreviation AKA main abbreviation and first synonym -->
       <template v-if="abbreviationsSynonymsString">
-        <p class="is-size-7 mb-0">{{ abbreviationsSynonymsString(2)}}</p>
+        <div class="columns is-multiline is-mobile pt-1 pl-3">
+          <div class="column is-narrow p-0">
+            <span class="is-pulled-left has-text-weight-bold mr-2">Synonyms</span>
+          </div>
+          <div class="column is-narrow p-0">
+            <span class="is-size-7 mb-0">{{ abbreviationsSynonymsString(2)}}</span>
+          </div>
+        </div>
       </template>
       <template v-else>
         <p class="mb-0"/>
       </template>
 
       <template v-if="data.tags && data.tags.length > 0">
-        <div class="columns is-multiline is-mobile pt-4 pl-3">
+        <div class="columns is-multiline is-mobile pt-1 pl-3">
           <div class="column is-narrow p-0">
             <span class="is-pulled-left has-text-weight-bold mr-2">Tags</span>
           </div>
@@ -267,6 +281,13 @@
     watchEdit() {
       if (this.editActive){
         this.editTrait = Trait.assign({...this.data} as Trait);
+        //For nominal, switch value and label for ease of display
+        if ((this.editTrait.scale) && (this.editTrait.scale.dataType) && (Scale.dataTypeEquals(this.editTrait.scale.dataType, DataType.Nominal)) && (this.editTrait.scale.categories)) {
+          this.editTrait.scale.categories.forEach(category => {
+            category.label = category.value;
+            category.value = undefined;
+          });
+        }
       } else {
         this.editTrait = null;
       }

@@ -22,11 +22,11 @@
     <p>Which program are you working with today?</p>
     <div class="columns">
       <div class="column is-narrow">
-        <div class="buttons">
+        <div class="buttons is-block">
           <template v-if="activeUser && activeUser.hasRole('admin')">
             <router-link
               v-bind:to="{name: 'admin'}"
-              class="button is-primary is-light is-fullwidth is-outlined"
+              class="button is-primary is-light is-block is-outlined mr-0"
             >
               System Administration
             </router-link>
@@ -36,7 +36,7 @@
                 v-for="program in programs"
                 v-bind:key="program.id"
                 v-bind:to="{name: 'program-home', params: {programId: program.id}}"
-                class="button is-primary is-light is-fullwidth is-outlined"
+                class="button is-primary is-light is-block is-outlined mr-0"
             >
               {{program.name}}
             </router-link>

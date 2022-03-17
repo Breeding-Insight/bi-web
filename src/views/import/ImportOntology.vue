@@ -17,7 +17,10 @@
 
 <template>
   <div id="import-ontology">
-    <TraitsImport v-bind:show-title="false"/>
+    <TraitsImport
+      v-bind:show-title="false"
+      v-on="$listeners"
+    />
   </div>
 </template>
 
