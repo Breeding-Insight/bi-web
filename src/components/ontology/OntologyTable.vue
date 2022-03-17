@@ -51,7 +51,7 @@
             v-if="$ability.can('create', 'Trait')"
             v-show="!newTraitActive && traits.length > 0"
             class="button is-primary is-pulled-right has-text-weight-bold"
-            v-on:click="$router.push({name: 'traits-import', params: {programId: activeProgram.id}})"
+            v-on:click="$router.push({name: 'import-ontology', params: {programId: activeProgram.id}})"
         >
         <span class="icon is-small">
           <PlusCircleIcon
