@@ -26,6 +26,7 @@ export class User {
   roleId?: string;
   roleName?: string;
   programRoles?: ProgramUser[];
+  programList?: string;
 
   constructor(id?:string, name?: string, orcid?: string, email?: string, role?: Role, programRoles?: ProgramUser[]) {
     this.id = id;
@@ -37,9 +38,11 @@ export class User {
       this.roleName = role.name;
     }
     this.programRoles = programRoles;
+    this.programList = this.programRoles ? this.programRoles.map((x) =>  x.program ? x.program.name : '').join(", ") : "";
   }
 
   hasRole(roleName: string){
     return this.roleName === roleName;
   }
+
 }
