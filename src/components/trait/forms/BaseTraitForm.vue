@@ -456,7 +456,6 @@ export default class BaseTraitForm extends Vue {
       if (!Scale.dataTypeEquals(value, DataType.Numerical)) {
         this.trait!.scale!.scaleName = value;
       }
-
     } else {
       // No history
       this.trait.scale = new Scale();
