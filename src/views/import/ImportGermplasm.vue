@@ -30,7 +30,7 @@
 
       <template v-slot:importInfoTemplateMessageBox>
         <ImportInfoTemplateMessageBox v-bind:import-type-name="'Germplasm'"
-                                      v-bind:template-url="'https://cornell.box.com/shared/static/rzpfijnvk3x6rn2gb1of64sigqvyxgu5.xls'"
+                                      v-bind:template-url="'https://cornell.box.com/shared/static/kjocibgs3hhg05vclsidk7hce30eqpu4.xls'"
                                       class="mb-5">
           <strong>Before You Import...</strong>
           <br/>
@@ -114,8 +114,23 @@
           <b-table-column field="pedigree" label="Pedigree" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
             {{ props.row.data.brAPIObject.pedigree }}
           </b-table-column>
+          <b-table-column field="femaleParentGid" label="Female Parent GID" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+            {{ props.row.data.brAPIObject.additionalInfo.femaleParentGid }}
+          </b-table-column>
+          <b-table-column field="maleParentGid" label="Male Parent GID" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+            {{ props.row.data.brAPIObject.additionalInfo.maleParentGid }}
+          </b-table-column>
           <b-table-column field="importEntryNumber" label="Entry No." v-slot="props" :th-attrs="(column) => ({scope:'col'})">
             {{ props.row.data.brAPIObject.additionalInfo.importEntryNumber }}
+          </b-table-column>
+          <b-table-column field="femaleParentEntryNo" label="Female Parent Entry No." v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+            {{ props.row.data.brAPIObject.additionalInfo.femaleParentEntryNo }}
+          </b-table-column>
+          <b-table-column field="maleParentEntryNo" label="Male Parent Entry No." v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+            {{ props.row.data.brAPIObject.additionalInfo.maleParentEntryNo }}
+          </b-table-column>
+          <b-table-column field="externalUID" label="External UID" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+            {{ ExternalUID.getExternalUIDFromExternalReferences(props.row.data.brAPIObject.externalReferences, props.row.data.brAPIObject.seedSource) }}
           </b-table-column>
 
           <template v-slot:emptyMessage>
@@ -142,12 +157,13 @@ import {GermplasmList} from "@/breeding-insight/model/GermplasmList";
 import BasicInputField from "@/components/forms/BasicInputField.vue";
 import ExpandableTable from "@/components/tables/expandableTable/ExpandableTable.vue";
 import {ImportObjectState} from "@/breeding-insight/model/import/ImportObjectState";
+import {ExternalUID} from "@/breeding-insight/model/import/germplasm/ExternalUID";
 
 @Component({
   components: {
     ExpandableTable, ImportInfoTemplateMessageBox, ConfirmImportMessageBox, ImportTemplate, AlertTriangleIcon, BasicInputField
   },
-  data: () => ({ImportObjectState})
+  data: () => ({ImportObjectState, ExternalUID})
 })
 export default class ImportGermplasm extends ProgramsBase {
 

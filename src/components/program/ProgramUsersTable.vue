@@ -131,7 +131,7 @@
       <b-table-column field="data.email" label="Email" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
         {{ props.row.data.email }}
       </b-table-column>
-      <b-table-column :custom-sort="sortRole" label="Role" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+      <b-table-column field="data.roleName" label="Role" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
         <template v-if="rolesMap.size > 0">
           {{ getRoleName(props.row.data.roleId) }}
         </template>
@@ -263,7 +263,11 @@ export default class ProgramUsersTable extends Vue {
   }
 
   setSort(field: string, order: string) {
-    const fieldMap: any = {'data.email': UserSortField.Email, 'data.name': UserSortField.Name};
+    const fieldMap: any = {
+      'data.email': UserSortField.Email,
+      'data.name': UserSortField.Name,
+      'data.roleName': UserSortField.Roles
+    };
     if (field in fieldMap) {
       this.updateSort(new UserSort(fieldMap[field], Sort.orderAsBI(order)));
       this.getUsers();
@@ -472,14 +476,6 @@ export default class ProgramUsersTable extends Vue {
 
   getRoleName(id: string): string | undefined {
     return this.rolesMap.get(id)!.name;
-  }
-
-  sortRole(a: any, b: any, isAsc: boolean) {
-    if(isAsc) {
-      return this.getRoleName(a.data.roleId)!.localeCompare(this.getRoleName(b.data.roleId)!);
-    } else {
-      return this.getRoleName(b.data.roleId)!.localeCompare(this.getRoleName(a.data.roleId)!);
-    }
   }
 
 }

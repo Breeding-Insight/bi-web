@@ -22,7 +22,7 @@ import {
     LocationSort, OntologySort,
     ProgramSort,
     ProgramSortField,
-    SortOrder,
+    SortOrder, SystemUserSort, SystemUserSortField,
     TraitSortField,
     UserSort,
     UserSortField
@@ -61,7 +61,11 @@ export const getters: GetterTree<SortState, RootState> = {
         return state.programUserSort;
     },
     programUserSortFieldAsBuefy(state: SortState): string {
-        const fieldMap: any = {[UserSortField.Email]: 'data.email', [UserSortField.Name]: 'data.name'};
+        const fieldMap: any = {
+            [UserSortField.Email]: 'data.email',
+            [UserSortField.Name]: 'data.name',
+            [UserSortField.Roles]: 'data.roleName'
+        };
         return fieldMap[state.programUserSort.field];
     },
     programUserSortOrderAsBuefy(state: SortState): string {
@@ -77,13 +81,15 @@ export const getters: GetterTree<SortState, RootState> = {
     },
 
     // system user table
-    systemUserSort(state: SortState): UserSort {
+    systemUserSort(state: SortState): SystemUserSort {
         return state.systemUserSort;
     },
     systemUserSortFieldAsBuefy(state: SortState): string {
         const fieldMap: any = {
-            [UserSortField.Email]: 'data.email',
-            [UserSortField.Name]: 'data.name'
+            [SystemUserSortField.Email]: 'data.email',
+            [SystemUserSortField.Name]: 'data.name',
+            [SystemUserSortField.Roles]: 'data.roleName',
+            [SystemUserSortField.Programs]: 'data.programList'
         };
         return fieldMap[state.systemUserSort.field];
     },

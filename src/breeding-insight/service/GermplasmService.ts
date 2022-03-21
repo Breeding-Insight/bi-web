@@ -38,11 +38,6 @@ export class GermplasmService {
                         });
                     }
 
-                    //TODO: Remove when backend pagination is implemented
-                    let newPagination;
-                    [germplasmLists, newPagination] = PaginationController.mockPagination(germplasmLists, paginationQuery!.page, paginationQuery!.pageSize, paginationQuery!.showAll);
-                    biResponse.metadata.pagination = newPagination;
-
                     resolve([germplasmLists, biResponse.metadata]);
                 }).catch((error) => {
                     reject(error);
