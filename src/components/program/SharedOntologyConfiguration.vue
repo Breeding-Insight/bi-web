@@ -219,6 +219,7 @@ export default class SharedOntologyConfiguration extends ProgramsBase {
         await SharedOntologyService.revokeAll(this.activeProgram!.id, programIdsToRevoke);
       } catch (e) {
         this.$emit('show-error-notification', e);
+        this.shareProgramProcessing = false;
         return;
       }
     }
@@ -229,15 +230,16 @@ export default class SharedOntologyConfiguration extends ProgramsBase {
         await SharedOntologyService.share(this.activeProgram!.id, newSharePrograms);
       } catch (e) {
         this.$emit('show-error-notification', e);
+        this.shareProgramProcessing = false;
         return;
       }
     }
 
     // Show progress wheel on save button
+    this.shareProgramProcessing = false;
+    this.showShareModal = false;
     if (programIdsToRevoke.length > 0 || newSharePrograms.length > 0) {
-      this.shareProgramProcessing = false;
       this.$emit('show-success-notification', 'Changes to shared ontology successfully saved');
-      this.showShareModal = false;
     }
 
     this.getSharedPrograms();

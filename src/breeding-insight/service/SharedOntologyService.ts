@@ -21,6 +21,7 @@ import {TraitDAO} from "@/breeding-insight/dao/TraitDAO";
 import {ValidationErrorService} from "@/breeding-insight/service/ValidationErrorService";
 import {SharedOntologyDAO} from "@/breeding-insight/dao/SharedOntologyDAO";
 import {SharedProgramRequest} from "@/breeding-insight/model/SharedProgramRequest";
+import {ValidationError} from "@/breeding-insight/model/errors/ValidationError";
 
 export class SharedOntologyService {
 
@@ -55,9 +56,12 @@ export class SharedOntologyService {
       }
       return [sharedPrograms, metadata];
     } catch (error) {
-      // TODO: There is also a potentional validation error thrown here
       if (error.response && error.response.status === 404) {
         throw error.response.message;
+      } else if (error.response && error.response.status == 422) {
+        const parsedErrors: ValidationError | string =  ValidationErrorService.parseError(error);
+        // Stringify and format msg
+        throw ValidationErrorService.stringify(parsedErrors, {includeRowNum: false, includeField: false}).join(" ");
       } else {
         throw 'An unknown error has occurred';
       }

@@ -17,7 +17,7 @@
 
 <template>
   <div id="program-configuration">
-    <SharedOntologyConfiguration/>
+    <SharedOntologyConfiguration v-on="$listeners"/>
   </div>
 </template>
 
