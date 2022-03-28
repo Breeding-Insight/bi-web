@@ -25,15 +25,11 @@
 import { Component, Prop, Vue } from 'vue-property-decorator'
 import ProgramsBase from "@/components/program/ProgramsBase.vue";
 import {mapGetters} from "vuex";
-import BaseModal from "@/components/modals/BaseModal.vue";
-import GenericModal from "@/components/modals/GenericModal.vue";
 import SharedOntologyConfiguration from "@/components/program/SharedOntologyConfiguration.vue";
 
 @Component({
   components: {
-    SharedOntologyConfiguration,
-    GenericModal,
-    InfoModal, BaseModal
+    SharedOntologyConfiguration
   },
   computed: {
     ...mapGetters([

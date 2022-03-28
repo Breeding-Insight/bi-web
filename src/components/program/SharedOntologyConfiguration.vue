@@ -149,7 +149,7 @@ export default class SharedOntologyConfiguration extends ProgramsBase {
   private shareProgramProcessing: boolean = false;
   private showShareModal: boolean = false;
 
-  private matchedPrograms: {string, SharedProgram} = {};
+  private matchedPrograms: {[key: string]: SharedProgram} = {};
   private sharedPrograms: SharedProgram[] = [];
   private editableMatchedPrograms: SharedProgram[] = [];
 
@@ -163,8 +163,8 @@ export default class SharedOntologyConfiguration extends ProgramsBase {
     try {
       // Loading with show
       this.sharedProgramLoading = true;
-      const [data, metadata] = await SharedOntologyService.get(this.activeProgram!.id);
-      data.forEach(datum => this.matchedPrograms[datum.programId] = datum);
+      const [data, metadata] = await SharedOntologyService.get(this.activeProgram!.id!);
+      data.forEach((datum: SharedProgram) => this.matchedPrograms[datum.programId] = datum);
       // Filter for shared programs
       this.sharedPrograms = Object.values(this.matchedPrograms).filter(matchedProgram => matchedProgram.shared);
     } catch (e) {
@@ -191,7 +191,7 @@ export default class SharedOntologyConfiguration extends ProgramsBase {
     const programIdsToRevoke: string[] = [];
     const newSharePrograms: SharedProgramRequest[] = [];
     for (const program of this.editableMatchedPrograms) {
-      const originalProgram = this.matchedPrograms[program.programId];
+      const originalProgram: SharedProgram = this.matchedPrograms[program.programId];
 
       if (program.shared === originalProgram.shared) {
         // If no change skip
