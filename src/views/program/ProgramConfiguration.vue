@@ -24,13 +24,8 @@
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator'
 import ProgramsBase from "@/components/program/ProgramsBase.vue";
-import {SharedProgram} from "@/breeding-insight/model/SharedProgram";
-import {SharedOntologyService} from "@/breeding-insight/service/SharedOntologyService";
 import {mapGetters} from "vuex";
-import {Program} from "@/breeding-insight/model/Program";
-import InfoModal from '@/components/modals/InfoModal';
 import BaseModal from "@/components/modals/BaseModal.vue";
-import {SharedProgramRequest} from "@/breeding-insight/model/SharedProgramRequest";
 import GenericModal from "@/components/modals/GenericModal.vue";
 import SharedOntologyConfiguration from "@/components/program/SharedOntologyConfiguration.vue";
 

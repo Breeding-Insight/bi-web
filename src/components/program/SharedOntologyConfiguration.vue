@@ -128,15 +128,12 @@ import {SharedProgram} from "@/breeding-insight/model/SharedProgram";
 import {SharedOntologyService} from "@/breeding-insight/service/SharedOntologyService";
 import {mapGetters} from "vuex";
 import {Program} from "@/breeding-insight/model/Program";
-import InfoModal from '@/components/modals/InfoModal';
-import BaseModal from "@/components/modals/BaseModal.vue";
 import {SharedProgramRequest} from "@/breeding-insight/model/SharedProgramRequest";
 import GenericModal from "@/components/modals/GenericModal.vue";
 
 @Component({
   components: {
-    GenericModal,
-    InfoModal, BaseModal
+    GenericModal
   },
   computed: {
     ...mapGetters([
@@ -218,7 +215,7 @@ export default class SharedOntologyConfiguration extends ProgramsBase {
     // Revoke ontologies
     if (programIdsToRevoke.length > 0) {
       try {
-        await SharedOntologyService.revokeAll(this.activeProgram!.id, programIdsToRevoke);
+        await SharedOntologyService.revokeAll(this.activeProgram!.id!, programIdsToRevoke);
       } catch (e) {
         this.$emit('show-error-notification', e);
         this.shareProgramProcessing = false;
@@ -229,7 +226,7 @@ export default class SharedOntologyConfiguration extends ProgramsBase {
     // Shared ontologies
     if (newSharePrograms.length > 0) {
       try {
-        await SharedOntologyService.share(this.activeProgram!.id, newSharePrograms);
+        await SharedOntologyService.share(this.activeProgram!.id!, newSharePrograms);
       } catch (e) {
         this.$emit('show-error-notification', e);
         this.shareProgramProcessing = false;
