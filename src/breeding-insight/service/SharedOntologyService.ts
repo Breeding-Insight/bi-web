@@ -49,7 +49,6 @@ export class SharedOntologyService {
     try {
       const { result: { data }, metadata } = await SharedOntologyDAO.share(programId, shareRequests);
       // Parse into SharedPrograms
-      console.log(data);
       const sharedPrograms: SharedProgram[] = [];
       for (const datum of data) {
         sharedPrograms.push(new SharedProgram(datum));
