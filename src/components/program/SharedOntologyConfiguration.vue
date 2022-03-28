@@ -67,7 +67,9 @@
                 v-if="editableMatchedPrograms.length > 0"
                 class="mb-6"
             >
-              <h5 class="is-underlined title is-6">Available Programs</h5>
+              <h5 class="is-underlined title is-6">
+                Select/Unselect Programs to Share Ontology
+              </h5>
               <template v-for="matchedProgram of editableMatchedPrograms">
                 <div v-bind:key="matchedProgram.programId">
                   <label
@@ -97,19 +99,19 @@
           <div class="columns">
             <div class="column is-whole has-text-centered buttons">
               <button
+                  class="button"
+                  v-on:click="showShareModal = false"
+                  id="cancelSharedOntology"
+              >
+                Cancel
+              </button>
+              <button
                   class="button is-danger"
                   v-bind:class="{'is-loading': shareProgramProcessing}"
                   v-on:click="processSelections()"
                   id="confirmSharedOntology"
               >
                 <strong>Confirm</strong>
-              </button>
-              <button
-                  class="button"
-                  v-on:click="showShareModal = false"
-                  id="cancelSharedOntology"
-              >
-                Cancel
               </button>
             </div>
           </div>
