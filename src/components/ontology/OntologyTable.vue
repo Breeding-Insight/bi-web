@@ -51,7 +51,7 @@
             v-if="$ability.can('create', 'Trait')"
             v-show="!newTraitActive && traits.length > 0"
             class="button is-primary is-pulled-right has-text-weight-bold"
-            v-on:click="$router.push({name: 'import-ontology', params: {programId: activeProgram.id}})"
+            v-on:click="$router.push({name: 'traits-import', params: {programId: activeProgram.id}})"
         >
         <span class="icon is-small">
           <PlusCircleIcon
@@ -115,7 +115,6 @@
       v-bind:pagination="traitsPagination"
       v-bind:auto-handle-close-panel-event="false"
       v-bind:side-panel-state="traitSidePanelState"
-      v-bind:loading="traitsLoading"
       v-on:paginate="paginationController.updatePage($event)"
       v-on:paginate-toggle-all="paginationController.toggleShowAll(traitsPagination.totalCount.valueOf())"
       v-on:paginate-page-size="paginationController.updatePageSize(parseInt($event,10))"
@@ -319,7 +318,6 @@ export default class OntologyTable extends Vue {
   private newTrait: Trait = new Trait();
   private currentTraitEditable = false;
   private loadingTraitEditable = true;
-  private traitsLoading = true;
 
   // table column sorting
   private nameSortLabel: string = OntologySortField.Name;
@@ -419,7 +417,6 @@ export default class OntologyTable extends Vue {
   getTraits() {
     // filter the terms pulled from the back-end
     let filters: TraitFilter[] = [{ field: TraitField.STATUS, value: this.active}];
-    this.traitsLoading = true;
 
     TraitService.getFilteredTraits(this.activeProgram!.id!, this.paginationController.currentCall, true, filters, this.ontologySort).then(([traits, metadata]) => {
       if (this.paginationController.matchesCurrentRequest(metadata.pagination)){
@@ -430,7 +427,7 @@ export default class OntologyTable extends Vue {
       // Display error that traits cannot be loaded
       this.$emit('show-error-notification', 'Error while trying to load traits');
       throw error;
-    }).finally( () => this.traitsLoading =  false );
+    });
   }
 
   async editable(trait: Trait) {

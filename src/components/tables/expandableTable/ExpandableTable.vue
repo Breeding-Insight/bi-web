@@ -38,7 +38,6 @@
         v-bind="$attrs"
         :default-sort="defaultSort"
         v-on="$listeners"
-        v-bind:loading="loading"
         :row-class="calculateRowClass"
     >
 
@@ -69,7 +68,7 @@
         </a>
       </b-table-column>
 
-      <template v-slot:empty v-if="this.loading !== true">
+      <template v-slot:empty>
         <slot name="emptyMessage" />
       </template>
 
@@ -126,8 +125,6 @@ export default class ExpandableTable extends Mixins(ValidationMixin) {
   defaultSort!: String[];
   @Prop()
   rowClasses: any;
-  @Prop()
-  loading!: boolean;
 
   private tableRows: Array<TableRow<any>> = new Array<TableRow<any>>();
   private openDetail: Array<TableRow<any>> = new Array<TableRow<any>>();

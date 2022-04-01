@@ -30,7 +30,7 @@
       </div>
     </WarningModal>
 
-    <div class="side-panel-table table-min-height" v-bind:class="{'loading-indicator': loading}">
+    <div class="side-panel-table">
       <div class="columns is-mobile">
         <div class="column pr-0">
           <BaseTable
@@ -91,7 +91,7 @@
                           v-on:paginate-page-size="closePanelAndReEmit('paginate-page-size', $event)"/>
 
       <template v-if="records.length === 0">
-        <slot v-if="this.loading !== true" name="emptyMessage" />
+        <slot name="emptyMessage" />
       </template>
     </div>
 
@@ -148,8 +148,6 @@
     autoHandleClosePanelEvent!: boolean;
     @Prop()
     sidePanelState!: SidePanelTableEventBusHandler;
-    @Prop()
-    loading!: boolean;
 
     private BreakpointEvent = BreakpointEvent;
     private state = CollapseColumnsState.NORMAL_PANEL_CLOSED;

@@ -78,7 +78,7 @@
             v-on:newSortColumn="newSortColumn"
             v-on:toggleSortOrder="toggleSortOrder"
         >
-          {{ (data.method.description ? data.method.description + " ": "") + StringFormatters.toStartCase(data.method.methodClass) }}
+          {{ data.method.description + " " + StringFormatters.toStartCase(data.method.methodClass) }}
         </TableColumn>
         <TableColumn
             name="scaleClass"
