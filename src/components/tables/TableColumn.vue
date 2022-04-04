@@ -25,10 +25,11 @@
 
 <script lang="ts">
 
-  import {Component, Prop, Vue} from "vue-property-decorator";
-  import BaseTable from '@/components/tables/BaseTable.vue';
+import {Component, Prop, Vue} from "vue-property-decorator";
+import BaseTable from '@/components/tables/BaseTable.vue';
+import {SortOrder} from "@/breeding-insight/model/Sort";
 
-  @Component({
+@Component({
   })
   export default class TableColumn extends Vue {
 
@@ -44,7 +45,27 @@
     @Prop([Number, String])
     private width!: number | string | undefined;
 
+    @Prop()
+    private sortField!: string;
+
+    @Prop()
+    private sortFieldLabel!: string;
+
+    @Prop()
+    private sortOrder!: SortOrder;
+
+    @Prop()
+    private sortable!: boolean;
+
     private table!: BaseTable;
+
+    changeSortColumn(field: string) {
+      if (this.sortField === this.sortFieldLabel) {
+        this.$emit('toggleSortOrder');
+      } else {
+        this.$emit('newSortColumn', field);
+      }
+    }
 
     get isVisible() {
       return this.visible;
@@ -52,6 +73,22 @@
 
     get newKey() {
       return this.label;
+    }
+
+    get isSortable() {
+      return this.sortable;
+    }
+
+    get currentSortField() {
+      return this.sortField;
+    }
+
+    get sortLabel() {
+      return this.sortFieldLabel;
+    }
+
+    get order() {
+      return this.sortOrder === SortOrder.Ascending;
     }
 
     // any update to column props here will update column in parent table

@@ -19,6 +19,7 @@ import {Program} from "@/breeding-insight/model/Program";
 import {BiResponse, Response} from "@/breeding-insight/model/BiResponse";
 import * as api from "@/util/api";
 import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
+import {ProgramSort} from "@/breeding-insight/model/Sort";
 
 
 export class ProgramDAO {
@@ -28,7 +29,7 @@ export class ProgramDAO {
     return new Promise<BiResponse>((resolve, reject) => {
 
       // Construct request body
-      const body = {'name': program.name, 'species': { 'id': program.speciesId }, 'brapiUrl': program.brapiUrl };
+      const body = {'name': program.name, 'species': { 'id': program.speciesId }, 'brapiUrl': program.brapiUrl, 'key': program.key };
 
       // Make api request
       api.call({ url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs`, method: 'post', data: body})
@@ -59,17 +60,26 @@ export class ProgramDAO {
     return api.call({ url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/archive/${id}`, method: 'delete'});
   }
 
-  static getAll(paginationQuery: PaginationQuery): Promise<BiResponse> {
+  static getAll({page, pageSize}: PaginationQuery, {field, order}: ProgramSort): Promise<BiResponse> {
 
     return new Promise<BiResponse>(((resolve, reject) => {
-
-      api.call({ url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs`, method: 'get'})
-        .then((response: any) => {
-          const biResponse = new BiResponse(response.data);
-          resolve(biResponse);
-        }).catch((error) => {
-          reject(error);
-        })
+      const config = {
+        url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs`,
+        method: 'get',
+        params: {
+          sortField: field,
+          sortOrder: order,
+          page,
+          pageSize
+        }
+      }
+      api.call(config)
+          .then((response: any) => {
+            const biResponse = new BiResponse(response.data);
+            resolve(biResponse);
+          }).catch((error) => {
+        reject(error);
+      })
 
     }))
   }

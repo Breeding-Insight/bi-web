@@ -16,48 +16,60 @@
   -->
 
 <template>
-  <div>
-    <div class="columns is-vcentered">
-      <div class="column is-half">
-        <BasicInputField
-            v-bind:field-name="'Unit'"
-            v-bind:value="unit"
-            v-on:input="$emit('unit-change', $event)"
-            v-bind:field-help="'Can be any measurable unit.'"
-            v-bind:server-validations="validationHandler.getValidation(validationIndex, TraitError.ScaleName)"
-        />
-      </div>
-      <div class="column is-half">
-        <BasicInputField
-            v-bind:field-name="'Decimal Places'"
-            v-bind:value="decimalPlaces"
-            v-on:input="$emit('decimal-change', $event)"
-            v-bind:field-help="'Leave blank to constrain to integers.'"
-            v-bind:validations="clientValidations && clientValidations.scale.decimalPlaces ? clientValidations.scale.decimalPlaces : undefined"
-        />
-      </div>
+  <div class="columns is-multiline is-vcentered is-gapless">
+    <div class="column is-2">
+      <span class="is-pulled-right required new-term pb-4 mb-1 pr-3">Unit</span>
     </div>
-    <div class="columns is-vcentered">
-      <div class="column is-half">
-        <BasicInputField
-            v-bind:field-name="'Minimum Valid Value'"
-            v-bind:value="validMin"
-            v-on:input="$emit('min-change', $event)"
-            v-bind:field-help="'Numbers only. Decimals ok.'"
-            v-bind:validations="clientValidations && clientValidations.scale.validValueMin ? clientValidations.scale.validValueMin : undefined"
-            v-bind:server-validations="validationHandler.getValidation(validationIndex, TraitError.MaximumValue)"
-        />
-      </div>
-      <div class="column is-half">
-        <BasicInputField
-            v-bind:field-name="'Maximum Valid Value'"
-            v-bind:value="validMax"
-            v-on:input="$emit('max-change', $event)"
-            v-bind:field-help="'Numbers only. Decimals ok.'"
-            v-bind:validations="clientValidations && clientValidations.scale.validValueMax ? clientValidations.scale.validValueMax : undefined"
-            v-bind:server-validations="validationHandler.getValidation(validationIndex, TraitError.MaximumValue)"
-        />
-      </div>
+    <div class="column new-term is-10">
+      <BasicInputField
+          v-bind:field-name="'Unit'"
+          v-bind:value="unit"
+          v-bind:show-label="false"
+          v-on:input="$emit('unit-change', $event)"
+          v-bind:field-help="'Can be any measurable unit.'"
+          v-bind:server-validations="validationHandler.getValidation(validationIndex, TraitError.ScaleName)"
+      />
+    </div>
+    <div class="column is-2 mt-0 pb-6 pt-2">
+      <span class="is-pulled-right new-term pb-4 mb-1 pr-3">Min</span>
+    </div>
+    <div class="column new-term is-2">
+      <BasicInputField
+          v-bind:field-name="'Minimum Valid Value'"
+          v-bind:value="validMin"
+          v-bind:show-label="false"
+          v-on:input="$emit('min-change', $event)"
+          v-bind:field-help="'Enter integer value only.'"
+          v-bind:validations="clientValidations && clientValidations.scale.validValueMin ? clientValidations.scale.validValueMin : undefined"
+          v-bind:server-validations="validationHandler.getValidation(validationIndex, TraitError.MaximumValue)"
+      />
+    </div>
+    <div class="column is-2 mt-0 pb-6 pt-2">
+      <span class="is-pulled-right new-term pb-4 mb-1 pr-3">Max</span>
+    </div>
+    <div class="column new-term is-2">
+      <BasicInputField
+          v-bind:field-name="'Maximum Valid Value'"
+          v-bind:value="validMax"
+          v-bind:show-label="false"
+          v-on:input="$emit('max-change', $event)"
+          v-bind:field-help="'Enter integer value only.'"
+          v-bind:validations="clientValidations && clientValidations.scale.validValueMax ? clientValidations.scale.validValueMax : undefined"
+          v-bind:server-validations="validationHandler.getValidation(validationIndex, TraitError.MaximumValue)"
+      />
+    </div>
+    <div class="column is-2 mt-0 pb-6 pt-2">
+      <span class="is-pulled-right new-term pb-4 mb-1 pr-3">Decimals</span>
+    </div>
+    <div class="column new-term is-2">
+      <BasicInputField
+          v-bind:field-name="'Decimal Places'"
+          v-bind:value="decimalPlaces"
+          v-bind:show-label="false"
+          v-on:input="$emit('decimal-change', $event)"
+          v-bind:field-help="'Leave blank for integer type.'"
+          v-bind:validations="clientValidations && clientValidations.scale.decimalPlaces ? clientValidations.scale.decimalPlaces : undefined"
+      />
     </div>
   </div>
 </template>

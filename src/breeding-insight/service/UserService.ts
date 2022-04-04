@@ -24,6 +24,7 @@ import {Program} from "@/breeding-insight/model/Program";
 import {ProgramUser} from "@/breeding-insight/model/ProgramUser";
 import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
 import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
+import {ProgramSort, SortOrder, UserSort, UserSortField} from "@/breeding-insight/model/Sort";
 
 export class UserService {
 
@@ -130,26 +131,18 @@ export class UserService {
     }))
   }
 
-  static getAll(paginationQuery?: PaginationQuery): Promise<[User[], Metadata]> {
+  static getAll(paginationQuery: PaginationQuery = new PaginationQuery(1, 50, true),
+                sort: UserSort = new UserSort(UserSortField.Name, SortOrder.Ascending)): Promise<[User[], Metadata]> {
     return new Promise<[User[], Metadata]>(((resolve, reject) => {
 
-      if (paginationQuery === undefined){
-        paginationQuery = new PaginationQuery(0, 0, true);
-      }
+      UserDAO.getAll(paginationQuery, sort).then((biResponse) => {
 
-      UserDAO.getAll(paginationQuery).then((biResponse) => {
-
-        biResponse.result.data = PaginationController.mockSortRecords(biResponse.result.data);
         // Parse our users into the vue users param
         let users = biResponse.result.data.map((user: any) => {
           const role: Role | undefined = this.parseSystemRoles(user.systemRoles);
           const programRoles: ProgramUser[] | undefined = this.parseProgramRoles(user.programRoles);
           return new User(user.id, user.name, user.orcid, user.email, role, programRoles);
         });
-        //TODO: Remove when backend pagination is implemented
-        let newPagination;
-        [users, newPagination] = PaginationController.mockPagination(users, paginationQuery!.page, paginationQuery!.pageSize, paginationQuery!.showAll);
-        biResponse.metadata.pagination = newPagination;
 
         resolve([users, biResponse.metadata]);
 

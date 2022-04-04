@@ -23,7 +23,7 @@
         v-on:deactivate="deleteModalActive = false"
     >
       <section>
-        <p class="has-text-dark">
+        <p class="has-text-dark" :class="this.$modalTextClass">
           Please confirm that you would like to remove this category.
         </p>
       </section>
@@ -55,8 +55,8 @@
           v-on:delete="checkRemoveRow(i)"
           v-on:value-change="item.value = $event"
           v-on:label-change="item.label = $event"
-          v-bind:value-placeholder="placeholders[i]"
           v-bind:key="i"
+          v-bind:can-be-removed="i > 1"
           v-bind:server-row-validation="getCategoryErrors(i)"
         />
       </template>
@@ -64,11 +64,12 @@
     <template v-if="Scale.dataTypeEquals(type, DataType.Nominal)">
       <template v-for="[i, item] of data.entries()">
         <ValueRow
-            v-bind:value="item.value"
+            v-bind:value="item.label"
             v-on:delete="checkRemoveRow(i)"
-            v-on:value-change="item.value = $event"
-            v-bind:value-placeholder="placeholders[i]"
+            v-on:value-change="item.label = $event"
+            v-bind:value-placeholder="nominalPlaceholders[i]"
             v-bind:key="i"
+            v-bind:can-be-removed="i > 0"
             v-bind:server-row-validation="getCategoryErrors(i)"
         />
       </template>
@@ -120,29 +121,17 @@ export default class CategoryTraitForm extends Vue {
   @Prop()
   private validationIndex!: number;
 
-  private placeholders = ['ex. Very thin (< 4mm)', 'ex. Thin (4 - 6mm)', 'ex. Intermediate (7 - 9mm)', 'ex. Thick (10 - 12mm)', 'ex. Very Thick (> 12mm)'];
+  private nominalPlaceholders = ['Category', 'Category', 'Category', 'Category', 'Category'];
   private deleteWarningTitle: string = "Remove category?"
   private activeRemoveRowIndex?: number;
   private deleteModalActive: boolean = false;
-
-  @Watch('data', {immediate: true, deep: true})
-  emitData(){
-    this.$emit('update', this.data);
-  }
-
-  @Watch('type', {immediate: true})
-  updateCategories() {
-    if (this.data.length === 0) {
-      this.prepopulateCategories();
-    }
-  }
 
   getCategoryErrors(categoryIndex: number): RowError | undefined {
     if (this.validationHandler) {
       const fieldErrors: FieldError[] = this.validationHandler.getValidation(this.validationIndex, TraitError.ScaleCategories);
       if (fieldErrors.length > 0) {
         for (const [index, fieldError] of fieldErrors.entries()) {
-          // Check that it has nested errors for the catogeries
+          // Check that it has nested errors for the categories
           if (fieldError.rowErrors){
             // Get the specific category index requested
             const rowError: RowError[] = fieldError.rowErrors.filter(rowError => rowError.rowIndex === categoryIndex);
@@ -151,16 +140,6 @@ export default class CategoryTraitForm extends Vue {
             }
           }
         }
-      }
-    }
-  }
-
-  prepopulateCategories() {
-    for (const i of Array(5).keys()) {
-      if (this.type === DataType.Ordinal) {
-        this.data.push(new Category((i + 1).toString(), ''));
-      } else {
-        this.data.push(new Category(undefined, ''));
       }
     }
   }
@@ -185,9 +164,17 @@ export default class CategoryTraitForm extends Vue {
   }
 
   removeRow() {
-    this.data.splice(this.activeRemoveRowIndex!,1);
+    if ((this.type === DataType.Ordinal && this.data.length > 2) ||
+        (this.type === DataType.Nominal && this.data.length > 1) ||
+        (this.type !== DataType.Ordinal && this.type !== DataType.Nominal)) {
+      this.data.splice(this.activeRemoveRowIndex!,1);
+      this.activeRemoveRowIndex = undefined;
+      this.deleteModalActive = false;
+      return;
+    }
     this.activeRemoveRowIndex = undefined;
     this.deleteModalActive = false;
+
     return;
   }
 

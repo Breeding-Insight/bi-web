@@ -16,15 +16,15 @@
   -->
 
 <template>
-  <b-notification type="is-success" v-bind:active.sync="active" aria-close-label="Close Notification" 
-    role="alert">
+  <b-notification type="is-success" v-bind:active.sync="isSuccessNotificationActive" aria-close-label="Close Notification"
+    role="alert" v-on:close="onClose">
     <div class="level">
       <div class="level-left">
         <div class="level-item">
           <CheckCircleIcon size="1.5x"></CheckCircleIcon>
         </div>
-        <div class="level-item">
-          {{msg}}
+        <div class="level-item" :class="bannerTextClass">
+          {{successNotificationMsg}}
         </div>
       </div>
     </div>
@@ -32,15 +32,26 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue, Inject } from 'vue-property-decorator';
-import { CheckCircleIcon } from 'vue-feather-icons'
+import {Component, Prop, Vue, Inject, Watch} from 'vue-property-decorator';
+import { CheckCircleIcon } from 'vue-feather-icons';
+import { DEACTIVATE_SUCCESS_NOTIFICATION } from "@/store/mutation-types";
+import {mapGetters} from "vuex";
 
 @Component({
-  components: {CheckCircleIcon}
+  components: {CheckCircleIcon},
+  computed: {
+    ...mapGetters([
+      'isSuccessNotificationActive',
+      'successNotificationMsg'
+    ])
+  }
 })
 export default class SuccessNotification extends Vue {
-  public active: boolean = false;
-  public msg : string = '';
+  private bannerTextClass: string = "banner-text";
+
+  onClose(){
+    this.$store.commit(DEACTIVATE_SUCCESS_NOTIFICATION);
+  }
 }
 
 </script>

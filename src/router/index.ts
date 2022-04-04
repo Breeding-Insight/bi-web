@@ -21,10 +21,17 @@ import Index from '@/views/Index.vue'
 import Home from '@/views/Home.vue'
 import StyleGuide from '@/views/StyleGuide.vue'
 import NotAuthorized from '@/views/NotAuthorized.vue'
-import BrapiAuthorize from '@/views/BrapiAuthorize.vue'
+import BrapiAuthorize from '@/views/BrAPI/BrapiAuthorize.vue'
+import BrAPIInfo from '@/views/BrAPI/BrAPIInfo.vue'
 import ProgramManagement from '@/views/program/ProgramManagement.vue'
+import TrialsAndStudies from "@/views/trials-and-studies/TrialsAndStudies.vue";
+import Trials from "@/views/trials-and-studies/Trials.vue";
+import StudiesList from "@/views/trials-and-studies/StudiesList.vue";
+import ObservationsList from '@/views/observations/ObservationsList.vue';
 import AdminProgramManagement from '@/views/admin/AdminProgramManagement.vue'
 import AdminUserManagement from '@/views/admin/AdminUserManagement.vue'
+import BrAPIImporter from '@/views/import/BrAPIImporter.vue'
+import GermplasmTable from '@/views/germplasm/GermplasmTable.vue';
 import store from '@/store/index.ts';
 import {
   LOGIN,
@@ -33,7 +40,8 @@ import {
   ERROR_STATE,
   SET_ACTIVE_PROGRAM,
   FIRST_VISIT,
-  RETURN_VISIT
+  RETURN_VISIT,
+  DEACTIVATE_ALL_NOTIFICATIONS,
 } from '@/store/mutation-types';
 import ProgramLocationsManagement from "@/views/program/ProgramLocationsManagement.vue";
 import ProgramUserManagement from "@/views/program/ProgramUsersManagement.vue";
@@ -50,7 +58,15 @@ import AccountSignUp from "@/views/account/AccountSignUp.vue";
 import AccountCreationFailure from "@/views/account/AccountCreationFailure.vue"
 import AccountCreationSuccess from "@/views/account/AccountCreationSuccess.vue"
 import {defineAbilityFor} from "@/config/ability";
-
+import ImportFile from "@/views/import/ImportFile.vue";
+import ImportOntology from "@/views/import/ImportOntology.vue";
+import ImportGermplasm from "@/views/import/ImportGermplasm.vue";
+import Ontology from "@/views/ontology/Ontology.vue";
+import OntologyActiveTable from "@/components/ontology/OntologyActiveTable.vue";
+import OntologyArchivedTable from "@/components/ontology/OntologyArchivedTable.vue";
+import PageNotFound from "@/views/PageNotFound.vue";
+import Germplasm from "@/views/germplasm/Germplasm.vue";
+import GermplasmLists from "@/views/germplasm/GermplasmLists.vue";
 
 Vue.use(VueRouter);
 
@@ -136,6 +152,56 @@ const routes = [
     beforeEnter: processProgramNavigation,
   },
   {
+    path: '/programs/:programId/study/:studyId/observations',
+    name: 'observations',
+    component: ObservationsList,
+    meta: {
+      title: 'Observations',
+      layout: layouts.userSideBar
+    },
+    beforeEnter: processProgramNavigation
+  },
+  {
+    path: '/programs/:programId/trial/:trialId/studies',
+    name: 'studies',
+    meta: {
+      title: 'Studies',
+      layout: layouts.userSideBar
+    },
+    component: StudiesList
+  },
+  {
+    path: '/programs/:programId/trials-studies',
+    name: 'trials-studies',
+    meta: {
+      title: 'Trials and Studies',
+      layout: layouts.userSideBar
+    },
+    component: TrialsAndStudies,
+    redirect: {name: 'trials-list'},
+    beforeEnter: processProgramNavigation,
+    children: [
+     {
+        path: 'studies',
+        name: 'studies-list',
+        meta: {
+          title: 'Studies',
+          layout: layouts.userSideBar
+        },
+        component: StudiesList
+      },
+      {
+        path: 'trials',
+        name: 'trials-list',
+        meta: {
+          title: 'Trials',
+          layout: layouts.userSideBar
+        },
+        component: Trials
+      }
+    ]
+  },    
+  {
     path: '/programs/:programId/program-management',
     name: 'program-management',
     meta: {
@@ -163,6 +229,68 @@ const routes = [
           layout: layouts.userSideBar
         },
         component: ProgramUserManagement
+      }
+    ]
+  },
+  {
+    path: '/programs/:programId/ontology',
+    name: 'ontology',
+    meta: {
+      title: 'Ontology',
+      layout: layouts.userSideBar
+    },
+    component: Ontology,
+    redirect: {name: 'active-terms'},
+    beforeEnter: processProgramNavigation,
+    children: [
+      {
+        path: 'archived-terms',
+        name: 'archived-terms',
+        meta: {
+          title: 'Archived Terms',
+          layout: layouts.userSideBar
+        },
+        component: OntologyArchivedTable
+      },
+      {
+        path: 'active-terms',
+        name: 'active-terms',
+        meta: {
+          title: 'Active Terms',
+          layout: layouts.userSideBar
+        },
+        component: OntologyActiveTable
+      }
+    ]
+  },
+  {
+    path: '/programs/:programId/germplasm',
+    name: 'germplasm',
+    meta: {
+      title: 'Germplasm',
+      layout: layouts.userSideBar
+    },
+    component: Germplasm,
+    redirect: {name: 'germplasm-all'},
+    beforeEnter: processProgramNavigation,
+    children: [
+      {
+        path: 'germplasm-all',
+        name: 'germplasm-all',
+        meta: {
+          title: 'All Germplasm',
+          layout: layouts.userSideBar
+        },
+        component: GermplasmTable
+      },
+      {
+        path: 'germplasm-lists',
+        name: 'germplasm-lists',
+        meta: {
+          title: 'Germplasm Lists',
+          layout: layouts.userSideBar
+        },
+        component: GermplasmLists
       }
     ]
   },
@@ -216,6 +344,46 @@ const routes = [
     ]
   },
   {
+    path: '/programs/:programId/import',
+    name: 'import',
+    meta: {
+      title: 'File Import',
+      layout: layouts.userSideBar
+    },
+    component: ImportFile,
+    redirect: {name: 'import-ontology'},
+    beforeEnter: processProgramNavigation,
+    children: [
+      {
+        path: 'ontology',
+        name: 'import-ontology',
+        meta: {
+          title: 'Ontology',
+          layout: layouts.userSideBar
+        },
+        component: ImportOntology
+      },
+      {
+        path: 'germplasm',
+        name: 'germplasm-import',
+        meta: {
+          title: 'Germplasm',
+          layout: layouts.userSideBar
+        },
+        component: ImportGermplasm
+      },
+      {
+        path: 'brapi-import',
+        name: 'brapi-import',
+        meta: {
+          title: 'BrAPI Import',
+          layout: layouts.userSideBar
+        },
+        component: BrAPIImporter
+      }
+    ]
+  },
+  {
     path: '/program-selection',
     name: 'program-selection',
     meta: {
@@ -234,7 +402,17 @@ const routes = [
     component: NotAuthorized
   },
   {
-    path: '/brapi/authorize',
+    path: '/programs/:programId/brapi',
+    name: 'brapi-info',
+    meta: {
+      title: 'BrAPI Information',
+      layout: layouts.userSideBar
+    },
+    component: BrAPIInfo,
+    beforeEnter: processProgramNavigation
+  },
+  {
+    path: '/programs/:programId/brapi/authorize',
     name: 'brapi-authorize',
     meta: {
       title: 'BrAPI Authorize',
@@ -244,7 +422,8 @@ const routes = [
     props: (route: Route) => ({
       applicationName: route.query.display_name,
       returnUrl: route.query.return_url
-    })
+    }),
+    beforeEnter: processProgramNavigation
   },
   {
     path: '/signup',
@@ -279,6 +458,15 @@ const routes = [
       layout: layouts.noSideBar
     },
     component: AccountCreationSuccess
+  },
+  {
+    path: '*',
+    name: 'page-does-not-exist',
+    meta: {
+      title: 'Page Does Not Exist',
+      layout: layouts.simple
+    },
+    component: PageNotFound
   }
 ]
 
@@ -289,6 +477,7 @@ const router = new VueRouter({
 })
 
 router.beforeEach((to: Route, from: Route, next: Function) => {
+  store.commit(DEACTIVATE_ALL_NOTIFICATIONS);
 
   // TODO: Check if the page is a protected resource, if not, let them through
   // If page is protected, check if they are logged in.

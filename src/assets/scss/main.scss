@@ -21,6 +21,9 @@
 @import url('https://fonts.googleapis.com/css?family=Fira+Sans:400,600,700');
 @import url('https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600');
 
+// Import Font Awesome
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css');
+
 // Override Bulma default colors
 $red: #E20057;
 $yellow: #FFCC21;
@@ -96,6 +99,7 @@ $table-striped-row-even-hover-background-color:$link-light;
 // Bulma extensions
 $divider-margin-inner-size: 0;
 @import "~@creativebulma/bulma-divider";
+@import "~bulma-switch/src/sass/index.sass";
 
 // Overrides that can't be done with variables go here
 // may be broken out into a separate file later
@@ -156,7 +160,7 @@ nav.pagination {
         margin-left: 4px;
       }
     }
-    & a.show-all-button {
+    & button.show-all-button {
       order: 2;
     }
   }
@@ -175,6 +179,10 @@ main li {
 
 footer {
   flex-shrink:0;
+}
+
+.main-footer {
+  margin-left: 300px;
 }
 
 .field {
@@ -252,6 +260,10 @@ nav.tabs li.is-active {
   }
 }
 
+.table.is-narrow {
+  border-collapse: collapse;
+}
+
 .table td {
   vertical-align: middle;
 }
@@ -261,14 +273,21 @@ nav.tabs li.is-active {
 }
 
 // TODO: see if we can get this in bulma variable
-.table tr.is-edited {
+.table tr.is-edited, table tr.is-edited + .detail {
   border-left: 5px solid $primary;
   background-color: $primary-light;
+
   td {
     color:$dark;
   }
   a {
     color:$link;
+  }
+}
+
+table tr.is-edited + .detail {
+  > td, > td > .detail-container {
+    padding: 0!important;
   }
 }
 
@@ -296,6 +315,7 @@ nav.tabs li.is-active {
   }
 }
 
+
 .table.is-striped tbody tr:not(.is-edited):nth-child(2n).is-new {
   background-color: $success-light;
   td {
@@ -306,6 +326,10 @@ nav.tabs li.is-active {
   }
 }
 
+.table.is-striped tbody tr:not(.is-edited).is-dup {
+  border-left: 5px solid $warning;
+  background-color: $warning-light;
+}
 .is-new {
   border-left: 5px solid $success;
   background-color: $success-light;
@@ -314,26 +338,42 @@ nav.tabs li.is-active {
   }
 }
 
+.main-header {
+  position: sticky;
+  top: 0;
+  background: white;
+  z-index: 30;
+}
+
+.notification > span, .notification > a{
+  position: relative;
+  bottom: 13px;
+}
+
 .header-title {
   border-bottom: 1px #363636 solid;
   padding: 0 2.5em 0 2.5em;
   margin-bottom: 0;
-  @include until($desktop) {
-    padding: .5em 2.5em .5em 1em;
-    position: fixed;
-    left: 0;
-    right: 0;
-    top: 0;
-    z-index: 30;
-    background-color: white;
-  }
+  height: 65px;
   & .navbar-hamburger {
     padding-top: .5em;
   }
 }
 
+#sandbox-feedback {
+  padding: 0;
+  height: 55px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  & p.title {
+    letter-spacing: 0.05rem;
+  }
+}
+
 .side-menu {
-  position: relative;
   background-color: $darkmenu;
   padding: 1em 1em 1em 0;
   p {
@@ -353,6 +393,32 @@ nav.tabs li.is-active {
       margin-left:2.5em;
     }
   }
+}
+
+.menu-scroll {
+  position: absolute;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.sidebar {
+  position: fixed;
+  display: inline-block;
+  vertical-align: top;
+  max-height: calc(100vh - 65px);
+  overflow-y: auto;
+  width: inherit;
+  top: 65px;
+  bottom: 0;
+  z-index: 30;
+}
+
+.is-300px {
+  width: 300px;
+}
+
+.page-content {
+  display: inline-block;
 }
 
 .new-form {
@@ -455,7 +521,7 @@ a.is-underlined {
 }
 
 #versionInfo {
-  position: absolute;
+  padding-top: 2em;
   bottom: 10px;
   color: white;
   width: 100%;
@@ -484,4 +550,88 @@ div.sentence-input {
 .archive-tag {
   background: lightgray;
 
+}
+
+.skip-link {
+  background: $purple;
+  color: #fff;
+  font-weight: 700;
+  left: 50%;
+  padding: 4px;
+  position: absolute;
+  transform: translateY(-150%);
+  transition: transform 0.3s;
+}
+
+.skip-link:focus {
+  transform: translateY(0%);
+}
+
+.new-form-content {
+  @extend .is-full;
+  @extend .is-pulled-left;
+  @extend .column;
+}
+
+.form-heading {
+  font-weight: 700;
+  padding: 1.75em 0em 0em 0em;
+}
+
+.form-heading-toggle {
+  font-weight: 700;
+}
+
+.computed-display {
+  min-height: 1.5em;
+}
+
+.new-form-divider {
+  height: 5em;
+}
+
+span.required::after {
+  content: "*";
+  color: $danger;
+}
+
+div.new-term div.field-label.is-normal.has-text-left {
+  padding: 0;
+  margin: 0;
+}
+
+div.new-term div.taginput-container.is-focusable {
+  padding: 0;
+  margin: 0;
+}
+
+div.new-term p.help {
+  padding: 0;
+  margin: 0;
+}
+
+tr.detail {
+  background: $info-light !important;
+}
+
+.no-overflow-x {
+  overflow-x: hidden;
+}
+
+
+
+.sortcolumn, .activesort {
+  cursor: pointer;
+}
+
+th.activesort.sortcolumn, th.sortcolumn:hover {
+  border-bottom: 2px solid;
+}
+
+.ascending, .descending {
+  transition: transform 0.3s ease;
+}
+
+.descending {
+  transform: rotate(180deg);
 }

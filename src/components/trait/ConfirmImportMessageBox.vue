@@ -19,25 +19,32 @@
   <div class="corfirm-import">
     <article class="message is-success">
       <div class="message-body">
-        <nav class="level">
-          <div class="level-left">
-            <div class="level-item">
-              <div class="has-text-dark">
-                <strong>{{numTraits}} new traits and duplicates not checked yet</strong>
-                <br/>Duplicate traits, highlighted in yellow and a <alert-triangle-icon size="1.2x" class="icon-align"/> icon, will not be imported.
-                <br/>Traits in this list can be directly edited using the "Show details" link.
-              </div>
+        <nav class="columns">
+          <div class="column">
+            <slot></slot>
+            <div
+              v-if="$slots.default === undefined"
+              class="has-text-dark">
+              {{numRecords}} unique term(s) have been detected. Terms, highlighted and with
+              a <alert-triangle-icon size="1x" class="has-vertical-align-middle"></alert-triangle-icon> icon,
+              match existing terms in the database and will not be imported.
             </div>
           </div>
-          <div class="level-right">
-            <div class="level-item">
-              <div>
-                <button class="button is-success has-text-weight-bold" v-on:click="confirm">Confirm</button>
+          <div class="column is-narrow">
+            <div class="level">
+              <div class="level-item">
+                <button
+                    class="button is-success has-text-weight-bold"
+                    v-on:click="confirm"
+                    v-bind:disabled="confirmImportState.saveStarted"
+                    v-bind:class="{'is-loading': confirmImportState.saveStarted}">
+                  Confirm
+                </button>
               </div>
-            </div>
-            <div class="level-item">
-              <div>
-                <button class="button is-outlined" v-on:click="abort">Abort</button>
+              <div class="level-item  ml-2">
+                <div>
+                  <button class="button is-outlined" v-on:click="abort">Abort</button>
+                </div>
               </div>
             </div>
           </div>
@@ -50,6 +57,8 @@
 <script lang="ts">
   import { Component, Prop, Vue } from 'vue-property-decorator'
   import {AlertTriangleIcon} from 'vue-feather-icons'
+  import {StringFormatters} from '@/breeding-insight/utils/StringFormatters'
+  import {DataFormEventBusHandler} from "@/components/forms/DataFormEventBusHandler";
 
   @Component({
     components: {
@@ -59,14 +68,25 @@
   export default class ConfirmImportMessageBox extends Vue {
 
     @Prop()
-    private numTraits!: number;
+    private numRecords!: number;
+
+    @Prop()
+    importTypeName! : string;
+
+    @Prop()
+    confirmImportState!: DataFormEventBusHandler;
 
     confirm() {
       this.$emit('confirm');
+      this.confirmImportState.bus.$emit(DataFormEventBusHandler.SAVE_STARTED_EVENT);
     }
 
     abort() {
       this.$emit('abort');
+    }
+
+    toStartCase(str : string) {
+      return StringFormatters.toStartCase(str);
     }
 
   }

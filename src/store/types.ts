@@ -27,4 +27,14 @@ export interface RootState {
   loginServerError: boolean;
   requestedPath?: string;
   firstVisit?: boolean;
+  showSidebarMobile: boolean;
+
+  errorNotificationActive: boolean;
+  errorNotificationMsg?: string;
+  successNotificationActive: boolean;
+  successNotificationMsg?: string;
+  infoNotificationActive: boolean;
+  infoNotificationMsg?: string;
+  warningNotificationActive: boolean;
+  warningNotificationMsg?: string;
 }

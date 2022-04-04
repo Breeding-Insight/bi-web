@@ -19,23 +19,72 @@ import {Trait} from "@/breeding-insight/model/Trait";
 import {BiResponse, Response} from "@/breeding-insight/model/BiResponse";
 import * as api from "@/util/api";
 import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
+import {TraitFilter, TraitSelector} from "@/breeding-insight/model/TraitSelector";
+import {OntologySort, SortOrder} from "@/breeding-insight/model/Sort";
 
 export class TraitDAO {
+    private activeOntologySortOrder!: SortOrder;
 
-    static getAll(programId: string, paginationQuery: PaginationQuery, full : boolean): Promise<BiResponse> {
+    static getAll(programId: string, {page, pageSize}: PaginationQuery, full: boolean): Promise<BiResponse> {
+        const config: any = {
+            params: {
+                full,
+                page,
+                pageSize
+            },
+            url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/traits`,
+            method: 'get'
+        };
 
-    return new Promise<BiResponse>(((resolve, reject) => {
+        return new Promise<BiResponse>(((resolve, reject) => {
+            api.call(config)
+                .then((response: any) => {
+                    const biResponse = new BiResponse(response.data);
+                    resolve(biResponse);
+                }).catch((error) => {
+                reject(error);
+            })
+        }))
+    }
 
-        api.call({ url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/traits`, method: 'get', params: {full} })
-        .then((response: any) => {
-          const biResponse = new BiResponse(response.data);
-          resolve(biResponse);
-        }).catch((error) => {
-          reject(error);
-        })
+    static getFilteredTraits(programId: string,
+                             {page, pageSize}: PaginationQuery,
+                             full: boolean,
+                             sort: OntologySort,
+                             filters?: TraitFilter[]): Promise<BiResponse> {
+        const config: any = {
+            params: {
+                full,
+                page,
+                pageSize,
+                sortField: sort.field,
+                sortOrder: sort.order
+            }
+        };
 
-    }))
-  }
+        if (filters) {
+            //
+            // get filtered list of traits
+            config.url = `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/traits/search`;
+            config.method = 'post';
+            config.data = new TraitSelector(filters);
+        } else {
+            // get all traits
+            config.url = `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/traits`;
+            config.method = 'get';
+        }
+
+        return new Promise<BiResponse>(((resolve, reject) => {
+            api.call(config)
+                .then((response: any) => {
+                    const biResponse = new BiResponse(response.data);
+                    resolve(biResponse);
+                }).catch((error) => {
+                reject(error);
+            })
+
+        }))
+    }
 
   static async createTraits(programId: string, newTraits: Trait[]): Promise<BiResponse> {
       const { data } =  await api.call({
@@ -56,11 +105,27 @@ export class TraitDAO {
     return new BiResponse(data);
   }
 
+  static async getTraitEditable(programId: string, traitId: string) : Promise<BiResponse> {
+    const { data } =  await api.call({
+      url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/traits/${traitId}/editable`,
+      method: 'get'
+    }) as Response;
+    return new BiResponse(data);
+  }
+
   static async archiveTrait(programId: string, trait: Trait): Promise<BiResponse> {
     const { data } =  await api.call({
       url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/traits/${trait.id}/archive`,
       params: {'active': trait.active},
       method: 'put'
+    }) as Response;
+    return new BiResponse(data);
+  }
+
+  static async getTraitTags(programId: string): Promise<BiResponse> {
+    const { data } =  await api.call({
+      url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/traits/tags`,
+      method: 'get'
     }) as Response;
     return new BiResponse(data);
   }

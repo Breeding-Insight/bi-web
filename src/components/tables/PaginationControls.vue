@@ -2,7 +2,7 @@
   <b-pagination
       v-if="pagination"
       :total="pagination.totalCount"
-      :current="pagination.currentPage"
+      :current.sync="pagination.currentPage"
       range-before="1"
       range-after="1"
       order="is-centered"
@@ -20,7 +20,7 @@
         slot="previous"
         slot-scope="props"
         :page="props.page"
-        tag="a"
+        tag="button"
     >
       Previous
     </b-pagination-button>
@@ -31,7 +31,7 @@
     >
       <b-pagination-button
           :page="props.page"
-          tag="a"
+          tag="button"
       >
         Next
       </b-pagination-button>
@@ -43,7 +43,7 @@
             <select
                 id="paginationSelect"
                 v-model="pagination.pageSize"
-                v-on:change="$emit('paginate-page-size', $event.target.value)"
+                v-on:change="changePageSize($event)"
             >
               <option value="10">
                 10
@@ -65,15 +65,15 @@
           <span>per page</span>
         </div>
 
-        <a
+        <button
             data-testid="showAll"
             role="button"
             class="pagination-link show-all-button"
-            v-bind:class="{ 'has-background-info': pagination.totalPages === 1}"
-            v-on:click="$emit('paginate-toggle-all')"
+            v-bind:class="{ 'has-background-info': showAllState}"
+            v-on:click="toggleShowAll()"
         >
           Show All
-        </a>
+        </button>
       </div>
     </template>
   </b-pagination>
@@ -91,6 +91,19 @@
 
     @Prop()
     private pagination!: Pagination;
+
+    private showAllState = false;
+
+    toggleShowAll() {
+      this.showAllState = !this.showAllState;
+      this.$emit('paginate-toggle-all');
+    }
+
+    changePageSize($event:any) {
+      this.pagination.pageSize = $event.target.value;
+      this.$emit('paginate-page-size', $event.target.value)
+      this.showAllState = false;
+    }
 
   }
 </script>

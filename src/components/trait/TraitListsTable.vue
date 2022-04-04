@@ -23,7 +23,7 @@
       v-on:deactivate="deactivateActive = false"
     >
       <section>
-        <p class="has-text-dark">
+        <p class="has-text-dark" :class="this.$modalTextClass">
           Program-related data referencing this trait will not be affected by this change.
         </p>
       </section>
@@ -45,9 +45,10 @@
       </div>              
     </WarningModal>
 
-    <div class="columns has-text-right mb-0">
+    <div class="columns has-text-right mb-0 buttons">
       <div class="column">
         <button
+            v-if="$ability.can('create', 'Trait')"
             data-testid="newDataForm"
             v-show="!newTraitActive & traits.length > 0"
             class="button is-primary has-text-weight-bold"
@@ -60,7 +61,23 @@
           />
         </span>
           <span>
-          New Trait
+          New Term
+        </span>
+        </button>
+        <button
+            v-if="$ability.can('create', 'Trait')"
+            v-show="!newTraitActive & traits.length > 0"
+            class="button is-primary has-text-weight-bold"
+            v-on:click="$router.push({name: 'traits-import', params: {programId: activeProgram.id}})"
+        >
+        <span class="icon is-small">
+          <PlusCircleIcon
+              size="1.5x"
+              aria-hidden="true"
+          />
+        </span>
+        <span>
+          Import Batch File
         </span>
         </button>
       </div>
@@ -81,7 +98,11 @@
             v-bind:trait="newTrait"
             v-bind:scale-options="scaleClassOptions"
             v-bind:method-options="methodClassOptions"
+            v-bind:descriptions="descriptionOptions"
             v-bind:program-observation-levels="observationLevelOptions"
+            v-bind:entities="entityOptions"
+            v-bind:attributes="attributeOptions"
+            v-bind:tags="tagOptions"
             v-bind:client-validations="validations"
             v-bind:validation-handler="validationHandler"
         ></BaseTraitForm>
@@ -105,23 +126,29 @@
       -->
       <template v-slot:columns="data">
         <TableColumn name="name" v-bind:label="'Name'">
+
           <b-button
               size="is-small"
               class="archive-tag"
               v-if="!data.active && data.active !== undefined">
             Archived
           </b-button>
-          {{ data.traitName }}
+          {{ data.observationVariableName }}
         </TableColumn>
-        <TableColumn name="level" v-bind:label="'Level'" v-bind:visible="!traitSidePanelState.collapseColumns">
-          {{ data.programObservationLevel.name }}
+        <TableColumn name="trait" v-bind:label="'Trait'" v-bind:visible="!collapseColumns">
+          {{ StringFormatters.toStartCase(data.traitDescription) }}
         </TableColumn>
         <TableColumn name="method" v-bind:label="'Method'" v-bind:visible="!traitSidePanelState.collapseColumns">
-          {{ StringFormatters.toStartCase(data.method.methodClass) }}
+          {{ (data.method.description ? data.method.description : "") + " " + StringFormatters.toStartCase(data.method.methodClass) }}
         </TableColumn>
-        <TableColumn name="scale" v-bind:label="'Scale'" v-bind:visible="!traitSidePanelState.collapseColumns">
+        <TableColumn name="scaleClass" v-bind:label="'Scale Class'" v-bind:visible="!traitSidePanelState.collapseColumns">
           {{ TraitStringFormatters.getScaleTypeString(data.scale) }}
-        </TableColumn>        
+        </TableColumn>
+        <TableColumn name="unit" v-bind:label="'Unit'" v-bind:visible="!traitSidePanelState.collapseColumns">
+          <template v-if="data.scale.dataType==='NUMERICAL'">
+            {{ data.scale.scaleName }}
+          </template>
+        </TableColumn>
       </template>
 
       <!-- 
@@ -131,13 +158,18 @@
       <template v-slot:side-panel="{tableRow}">
         <TraitDetailPanel
           v-bind:data="traitSidePanelState.openedRow"
+          v-bind:tags="tagOptions"
           v-bind:observation-level-options="observationLevelOptions"
+          v-bind:description-options="descriptionOptions"
+          v-bind:entity-options="entityOptions"
+          v-bind:attribute-options="attributeOptions"
           v-bind:edit-active="traitSidePanelState.editActive"
-          v-bind:editable="true"
+          v-bind:editable="$ability.can('update', 'Trait') && currentTraitEditable"
+          v-bind:loading-editable="loadingTraitEditable"
           v-bind:edit-form-state="traitSidePanelState.dataFormState"
           v-bind:client-validations="traitValidations"
           v-bind:validation-handler="editValidationHandler"
-          v-bind:archivable="true"
+          v-bind:archivable="$ability.can('archive', 'Trait')"
           v-on:activate-edit="activateEdit($event)"
           v-on:deactivate-edit="traitSidePanelState.bus.$emit(traitSidePanelState.closePanelEvent)"
           v-on:trait-change="editTrait = Trait.assign({...$event})"
@@ -151,13 +183,16 @@
       <template v-slot:emptyMessage>
         <EmptyTableMessage
             v-bind:button-view-toggle="!newTraitActive"
-            v-bind:button-text="'New Trait'"
+            v-bind:button-text="'New Term'"
             v-on:newClick="activateNewTraitForm"
+            v-bind:create-enabled="$ability.can('create', 'Trait')"
         >
           <p class="has-text-weight-bold">
-            No traits are currently defined for this program.
+            No ontology terms are currently defined for this program.
           </p>
-          Create new traits by clicking "New Trait" or navigating to "Import Traits".
+          <p v-if="$ability.can('create', 'Trait')">
+            Create new ontology terms by clicking "New Term" or navigating to "Import Ontology".
+          </p>
         </EmptyTableMessage>
       </template>
     </SidePanelTable>
@@ -191,7 +226,10 @@ import {MethodClass} from "@/breeding-insight/model/Method";
 import {DataType, Scale} from "@/breeding-insight/model/Scale";
 import {SidePanelTableEventBusHandler} from "@/components/tables/SidePanelTableEventBus";
 import { DataFormEventBusHandler } from '@/components/forms/DataFormEventBusHandler';
-import {email, required, integer} from "vuelidate/lib/validators";
+import {email, required, integer, maxLength} from "vuelidate/lib/validators";
+import {
+  DEACTIVATE_ALL_NOTIFICATIONS,
+} from "@/store/mutation-types";
 
   @Component({
   mixins: [validationMixin],
@@ -212,10 +250,16 @@ export default class TraitTable extends Vue {
   private traits: Trait[] = [];
   private methodClassOptions: string[] = Object.values(MethodClass);
   private observationLevelOptions?: string[];
+  private attributeOptions?: string[];
+  private entityOptions?: string[];
+  private descriptionOptions?: string[];
+  private tagOptions?: string[];
   private scaleClassOptions: string[] = Object.values(DataType);
   private editTrait?: Trait;
   private originalTrait?: Trait;
   private newTrait: Trait = new Trait();
+  private currentTraitEditable = false;
+  private loadingTraitEditable = true;
 
   // New trait form
   private newTraitActive: boolean = false;
@@ -237,7 +281,24 @@ export default class TraitTable extends Vue {
   private traitsPagination?: Pagination = new Pagination();
   private paginationController: PaginationController = new PaginationController();
 
+  shortCharLimit = 12;
+  longCharLimit = 30;
+
   traitValidations = {
+    observationVariableName: {
+      maxLength: maxLength(this.shortCharLimit)
+    },
+    entity: {
+      maxLength: maxLength(this.longCharLimit)
+    },
+    attribute: {
+      maxLength: maxLength(this.longCharLimit)
+    },
+    method: {
+      description: {
+        maxLength: maxLength(this.longCharLimit)
+      }
+    },
     scale: {
       decimalPlaces: {integer},
       validValueMax: {integer},
@@ -248,6 +309,8 @@ export default class TraitTable extends Vue {
   mounted() {
     this.getTraits();
     this.getObservationLevels();
+    this.getAttributesEntitiesDescriptions();
+    this.getTraitTags();
 
     // Events
     this.traitSidePanelState.bus.$on(this.traitSidePanelState.requestClosePanelEvent, (showWarningEvent: Function, confirmCloseEvent: Function) => {
@@ -260,6 +323,12 @@ export default class TraitTable extends Vue {
     this.traitSidePanelState.bus.$on(this.traitSidePanelState.confirmCloseEditEvent, () => {
       this.clearSelectedRow();
     });
+
+    this.traitSidePanelState.bus.$on(this.traitSidePanelState.selectRowEvent, (row: any) => {
+      if(this.$ability.can('update', 'Trait')) {
+        this.editable(row);
+      }
+    })
   }
 
   @Watch('paginationController', { deep: true})
@@ -278,6 +347,22 @@ export default class TraitTable extends Vue {
       this.$emit('show-error-notification', 'Error while trying to load traits');
       throw error;
     });
+  }
+
+  async editable(trait: Trait) {
+    let traitEditable = false;
+    this.loadingTraitEditable = true;
+    try {
+      const [editable] = await TraitService.getTraitEditable(this.activeProgram!.id!, trait.id!) as [boolean, Metadata]
+      traitEditable = editable;
+      this.currentTraitEditable = traitEditable;
+    } catch (error) {
+      // Display error that traits cannot be loaded
+      this.$emit('show-error-notification', 'Error getting editable status');
+      throw error;
+    } finally {
+      this.loadingTraitEditable = false;
+    }
   }
 
   activateArchive(focusTrait: Trait){
@@ -317,7 +402,7 @@ export default class TraitTable extends Vue {
   }
 
   activateNewTraitForm() {
-    this.traitSidePanelState.bus.$emit(this.traitSidePanelState.closePanelEvent, () => { this.newTraitActive = true; });
+    this.traitSidePanelState.bus.$emit(this.traitSidePanelState.closePanelEvent, () => { this.showNewTrait(); });
   }
 
   clearSelectedRow() {
@@ -332,7 +417,9 @@ export default class TraitTable extends Vue {
       await TraitService.createTraits(this.activeProgram!.id!, [this.newTrait]);
       this.$emit('show-success-notification', 'Trait creation successful.');
       this.getTraits();
-      await this.getObservationLevels();
+      const levelPromise = this.getObservationLevels();
+      const tagPromise = this.getTraitTags();
+      await this.getAttributesEntitiesDescriptions();
       this.newTrait = new Trait();
       this.newTraitActive = false;
     } catch (error) {
@@ -359,9 +446,6 @@ export default class TraitTable extends Vue {
     } else if (Scale.dataTypeEquals(trait.scale!.dataType!, DataType.Numerical)) {
       // Rename scale name to unit
       handler.overrideMessage(0, 'scale.scaleName', 'Missing unit', 400);
-    } else if (Scale.dataTypeEquals(trait.scale!.dataType!, DataType.Duration)) {
-      // Rename scale name to unit of time
-      handler.overrideMessage(0, 'scale.scaleName', 'Missing unit of time', 400);
     }
     return deletions;
   }
@@ -381,7 +465,7 @@ export default class TraitTable extends Vue {
         }
         this.traits = traitCopy;
       }
-
+      const tagPromise = this.getTraitTags();
       this.traitSidePanelState.bus.$emit(this.traitSidePanelState.successEditEvent, data[0]);
       this.clearSelectedRow();
       await this.getObservationLevels();
@@ -392,7 +476,7 @@ export default class TraitTable extends Vue {
         const deletions: string[] = this.processValidationErrors(this.editValidationHandler, this.editTrait!);
         this.$emit('show-error-notification', `Error updating trait. ${this.editValidationHandler.condenseErrorsSingleRow(deletions)}`);
       } else {
-        this.$emit('show-error-notification', 'Error updating trait.');
+        this.$emit('show-error-notification', error);
       }
     } finally {
       this.traitSidePanelState.dataFormState.bus.$emit(DataFormEventBusHandler.SAVE_COMPLETE_EVENT);
@@ -403,6 +487,20 @@ export default class TraitTable extends Vue {
     this.newTrait = new Trait();
     this.validationHandler = new ValidationError();
     this.newTraitActive = false;
+  }
+
+  async getAttributesEntitiesDescriptions() {
+    try {
+      const response = await TraitService.getAttributesEntitiesDescriptions(this.activeProgram!.id!);
+      if (response) {
+        const attributesEntitiesDescriptions: [string[], string[], string[]] = response;
+        [this.attributeOptions, this.entityOptions, this.descriptionOptions] = attributesEntitiesDescriptions;
+        return;
+      }
+    } catch (error) {
+      this.$emit('show-error-notification', 'Unable to retrieve ontology term entities, attributes, and descriptions');
+    }
+    this.$emit('show-error-notification', 'Unable to retrieve ontology term entities, attributes, and descriptions');
   }
 
   async getObservationLevels() {
@@ -417,6 +515,25 @@ export default class TraitTable extends Vue {
       this.$emit('show-error-notification', 'Unable to retrieve observation levels');
     }
     this.$emit('show-error-notification', 'Unable to retrieve observation levels');
+  }
+
+  showNewTrait() {
+    this.newTraitActive = true;
+    this.$store.commit(DEACTIVATE_ALL_NOTIFICATIONS);
+  }
+
+  async getTraitTags() {
+    try {
+      const response = await TraitService.getTraitTags(this.activeProgram!.id!);
+      if (response) {
+        const [tags, metadata] = response;
+        this.tagOptions = tags;
+        return;
+      }
+    } catch (error) {
+      this.$emit('show-error-notification', 'Unable to retrieve existing trait tags');
+    }
+    this.$emit('show-error-notification', 'Unable to retrieve existing trait tags');
   }
 
 }

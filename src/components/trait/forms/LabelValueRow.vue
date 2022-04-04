@@ -20,12 +20,13 @@
     <div class="columns is-mobile is-gapless">
       <div class="column is-2">
         <BasicInputField
-            v-bind:field-name="'Label'"
+            v-bind:field-name="'Value'"
             v-bind:show-label="false"
-            v-bind:value="label"
-            v-on:input="$emit('label-change', $event)"
-            v-bind:input-id="'label' + Math.random()"
-            v-bind:server-validations="serverRowValidation ? serverRowValidation.getValidation(TraitError.CategoryLabel): undefined"
+            v-bind:value="value"
+            v-bind:placeholder="valuePlaceholder"
+            v-on:input="$emit('value-change', $event)"
+            v-bind:input-id="'value' + Math.random()"
+            v-bind:server-validations="serverRowValidation ? serverRowValidation.getValidation(TraitError.CategoryValue): undefined"
         />
       </div>
       <div class="column is-1 has-text-centered">
@@ -35,17 +36,18 @@
         <div class="columns is-mobile is-gapless">
           <div class="column is-four-fifths">
             <BasicInputField
-                v-bind:field-name="'Value'"
+                v-bind:field-name="'Category'"
                 v-bind:show-label="false"
-                v-bind:placeholder="valuePlaceholder"
-                v-bind:value="value"
-                v-on:input="$emit('value-change', $event)"
-                v-bind:input-id="'value' + Math.random()"
-                v-bind:server-validations="serverRowValidation ? serverRowValidation.getValidation(TraitError.CategoryValue): undefined"
+                v-bind:field-help="canBeRemoved ? undefined : 'Ordinal scales require at least two categories'"
+                v-bind:placeholder="categoryPlaceholder"
+                v-bind:value="label"
+                v-on:input="$emit('label-change', $event)"
+                v-bind:input-id="'label' + Math.random()"
+                v-bind:server-validations="serverRowValidation ? serverRowValidation.getValidation(TraitError.CategoryLabel): undefined"
             />
           </div>
           <div class="column is-one-fifth ml-2">
-            <button type="button" class="delete mt-4" v-on:click="$emit('delete')"></button>
+            <button v-show="canBeRemoved" type="button" class="delete mt-4" v-on:click="$emit('delete')"></button>
           </div>
 
         </div>
@@ -76,7 +78,11 @@ export default class LabelValueRow extends Vue {
   @Prop()
   valuePlaceholder: string | undefined;
   @Prop()
+  categoryPlaceholder: string | undefined;
+  @Prop()
   serverRowValidation!: RowError;
+  @Prop()
+  canBeRemoved!: boolean;
 }
 
 </script>

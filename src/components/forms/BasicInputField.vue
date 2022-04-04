@@ -24,12 +24,13 @@
     v-bind:server-validations="serverValidations"
   >
     <input
-        v-bind:id="inputId ? inputId : fieldName.replace(' ', '-')"
+        v-bind:id="inputId ? inputId : fieldName.split(' ').join('-')"
         v-bind:value="value"
         @input="$emit('input', $event.target.value)"
         class="input"
         v-bind:type="fieldTypeComputed"
         v-bind:placeholder="placeholder ? placeholder : fieldName"
+        v-bind:autocomplete="autocomplete"
     />
   </BaseFieldWrapper>
 </template>
@@ -61,6 +62,8 @@
     placeholder: boolean | undefined;
     @Prop()
     inputId: string | undefined;
+    @Prop()
+    autocomplete!: boolean | true;
 
     get fieldTypeComputed() {
       return this.fieldType ? this.fieldType : 'text';

@@ -23,15 +23,15 @@
       v-on:deactivate="showAbortModal = false"
     >
       <section>
-        <p class="has-text-dark">
-          No traits will be added, and the import in progress will be completely removed.
+        <p class="has-text-dark" :class="this.$modalTextClass">
+          No ontology terms will be added, and the import in progress will be completely removed.
         </p>
       </section>
       <div class="columns">
         <div class="column is-whole has-text-centered buttons">
           <button
             class="button is-danger"
-            v-on:click="handleAbortModal()"
+            v-on:click="handleAbortModal()" :id="yesAbortId"
           >
             <strong>Yes, abort</strong>
           </button>
@@ -42,40 +42,56 @@
             Cancel
           </button>
         </div>
-      </div>              
+      </div>
     </WarningModal>
 
     <template v-if="state === ImportState.CHOOSE_FILE || state === ImportState.FILE_CHOSEN">
-      <h1 class="title">Import Traits</h1>
-      <TraitImportTemplateMessageBox class="mb-5"/>
-      <FileSelectMessageBox v-model="file"
-                               v-bind:fileTypes="'.csv, .xls, .xlsx'"
-                               v-on:import="importService.send(ImportEvent.IMPORT_STARTED)"/>        
+      <h1 class="title" v-if="showTitle">Import Ontology</h1>
+      <ImportInfoTemplateMessageBox v-bind:import-type-name="'Ontology'"
+                                    v-bind:template-url="'https://cornell.box.com/shared/static/n3oapshmoqjju0yzuhlgh01cuevbzlj5.xls'"
+                                    class="mb-5">
+        <strong>Before You Import...</strong>
+        <br/>Prepare ontology information for import using the provided template.
+      </ImportInfoTemplateMessageBox>
+      <div class="box">
+        <FileSelectMessageBox v-model="file"
+                                 v-bind:fileTypes="'.csv, .xls, .xlsx'"
+                                 v-on:import="importService.send(ImportEvent.IMPORT_STARTED)"/>
+      </div>
     </template>
-    
+
     <template v-if="state === ImportState.IMPORTING || state === ImportState.LOADING">
       <h1 class="title">Importing...</h1>
       <ImportingMessageBox v-bind:file="file" v-on:abort="importService.send(ImportEvent.ABORT_IMPORT)"/>
     </template>
-    
+
     <template v-if="state === ImportState.LOADING || state === ImportState.CURATE">
       <template v-if="tableLoaded">
-        <h1 class="title">Curate and Confirm New Traits</h1>
-        <ConfirmImportMessageBox v-bind:num-traits="numTraits"
-                                    v-on:abort="showAbortModal = true" 
-                                    v-on:confirm="importService.send(ImportEvent.CONFIRMED)"
-                                    class="mb-4"/>
+        <h1 class="title">Confirm New Ontology Term</h1>
+        <ConfirmImportMessageBox v-bind:num-records="numTraits"
+                                 v-bind:import-type-name="'Trait'"
+                                 v-bind:confirm-import-state="confirmImportState"
+                                 v-on:abort="showAbortModal = true"
+                                 v-on:confirm="importService.send(ImportEvent.CONFIRMED)"
+                                 class="mb-4"/>
       </template>
       <TraitsImportTable v-on:loaded="importService.send(ImportEvent.TABLE_LOADED)"/>
     </template>
 
     <template v-if="state === ImportState.IMPORT_ERROR">
-        <h1 class="title">Importing...</h1>
-      <TraitImportTemplateMessageBox class="mb-5"/>
-        <FileSelectMessageBox v-model="file"
-                                 v-bind:fileTypes="'.csv, .xls, .xlsx'"
-                                 v-bind:errors="import_errors"
-                                 v-on:import="importService.send(ImportEvent.IMPORT_STARTED)"/>
+      <h1 class="title">Importing...</h1>
+      <ImportInfoTemplateMessageBox v-bind:import-type-name="'Ontology'"
+                                    v-bind:template-url="'https://cornell.box.com/shared/static/n3oapshmoqjju0yzuhlgh01cuevbzlj5.xls'"
+                                    class="mb-5">
+        <strong>Before You Import...</strong>
+        <br/>Prepare ontology information for import using the provided template.
+      </ImportInfoTemplateMessageBox>
+        <div class="box">
+          <FileSelectMessageBox v-model="file"
+                                v-bind:fileTypes="'.csv, .xls, .xlsx'"
+                                v-bind:errors="import_errors"
+                                v-on:import="importService.send(ImportEvent.IMPORT_STARTED)"/>
+        </div>
     </template>
 
   </div>
@@ -89,7 +105,7 @@ import ProgramsBase from "@/components/program/ProgramsBase.vue"
 import TraitsImportTable from "@/components/trait/TraitsImportTable.vue";
 import ImportingMessageBox from "@/components/file-import/ImportingMessageBox.vue";
 import ConfirmImportMessageBox from "@/components/trait/ConfirmImportMessageBox.vue";
-import TraitImportTemplateMessageBox from "@/components/trait/TraitImportTemplateMessageBox.vue";
+import ImportInfoTemplateMessageBox from "@/components/file-import/ImportInfoTemplateMessageBox.vue";
 import FileSelectMessageBox from "@/components/file-import/FileSelectMessageBox.vue"
 import WarningModal from '@/components/modals/WarningModal.vue'
 
@@ -102,6 +118,8 @@ import {ValidationError} from "@/breeding-insight/model/errors/ValidationError";
 import {Metadata} from "@/breeding-insight/model/BiResponse";
 import {Trait} from "@/breeding-insight/model/Trait";
 import {ProgramUpload} from "@/breeding-insight/model/ProgramUpload";
+import {AxiosResponse} from "axios";
+import {DataFormEventBusHandler} from "@/components/forms/DataFormEventBusHandler";
 
 enum ImportState {
   CHOOSE_FILE = "CHOOSE_FILE",
@@ -138,7 +156,7 @@ enum ImportAction {
     ImportingMessageBox,
     ConfirmImportMessageBox,
     FileSelectMessageBox,
-    TraitImportTemplateMessageBox,
+    ImportInfoTemplateMessageBox,
     WarningModal
   },
   computed: {
@@ -149,13 +167,20 @@ enum ImportAction {
 })
 export default class TraitsImport extends ProgramsBase {
 
+  @Prop({default: true})
+  private showTitle! : boolean;
+
   private file : File | null = null;
-  private import_errors: ValidationError | string | null = null;
+  private import_errors: ValidationError | AxiosResponse | null = null;
   private activeProgram?: Program;
   private tableLoaded = false;
   private numTraits = 0;
   private showAbortModal = false;
-  
+
+  private yesAbortId: string = "traitsimport-yes-abort";
+
+  private confirmImportState: DataFormEventBusHandler = new DataFormEventBusHandler();
+
   private ImportState = ImportState;
   private ImportEvent = ImportEvent;
   private ImportAction = ImportAction;
@@ -167,18 +192,18 @@ export default class TraitsImport extends ProgramsBase {
     states: {
       [ImportState.CHOOSE_FILE]: {
         entry: ImportAction.RESET,
-        on: { 
-          [ImportEvent.FILE_SELECTED]: ImportState.FILE_CHOSEN 
-        } 
+        on: {
+          [ImportEvent.FILE_SELECTED]: ImportState.FILE_CHOSEN
+        }
       },
-      [ImportState.FILE_CHOSEN]: { 
-        on: { 
-          [ImportEvent.IMPORT_STARTED]: ImportState.IMPORTING 
+      [ImportState.FILE_CHOSEN]: {
+        on: {
+          [ImportEvent.IMPORT_STARTED]: ImportState.IMPORTING
         }
       },
       [ImportState.IMPORTING]: {
         entry: ImportAction.START,
-        on: { 
+        on: {
           [ImportEvent.ABORT_IMPORT]: {
             target: ImportState.CHOOSE_FILE,
             actions: ImportAction.ABORT
@@ -263,9 +288,22 @@ export default class TraitsImport extends ProgramsBase {
 
   upload() {
     TraitUploadService.uploadFile(this.activeProgram!.id!, this.file!).then((response) => {
-      this.numTraits = response.data!.length;
+      let count = 0;
+      let traits: Trait[] = [];
+      if( response==null || response.data==null){
+        throw new ValidationError();
+      }
+      else {
+        traits = response.data;
+      }
+      for(let trait of traits){
+        if(!trait.isDup){
+          count += 1;
+        }
+      }
+      this.numTraits = count;
       this.importService.send(ImportEvent.IMPORT_SUCCESS);
-    }).catch((error: ValidationError | string) => {
+    }).catch((error: ValidationError | AxiosResponse) => {
       this.import_errors = error;
       this.importService.send(ImportEvent.IMPORT_ERROR);
     });
@@ -300,24 +338,26 @@ export default class TraitsImport extends ProgramsBase {
   }
 
   async confirm() {
-    const name = this.activeProgram && this.activeProgram.name ? this.activeProgram.name : 'the program';  
+    const name = this.activeProgram && this.activeProgram.name ? this.activeProgram.name : 'the program';
     try {
       // fetch uploaded traits
       const [ upload ] = await TraitUploadService.getTraits(this.activeProgram!.id!) as [ProgramUpload, Metadata];
       await TraitUploadService.confirmUpload(this.activeProgram!.id!, upload!.id!);
 
       // show all program traits
-      this.$emit('show-success-notification', `Imported traits have been added to ${name}.`);
       this.$router.push({
-        name: 'traits-list',
+        name: 'ontology',
         params: {
           programId: this.activeProgram!.id!
         },
       });
+      this.$emit('show-success-notification', `Imported ontology terms have been added to ${name}.`);
     } catch(err) {
-      const note = err.message ? err.message : `Error: Imported traits were not added to ${name}.`;
+      const note = err.message ? err.message : `Error: Imported ontology terms were not added to ${name}.`;
       this.$emit('show-error-notification', `${note}`);
       Vue.$log.error(err);
+    } finally {
+      this.confirmImportState.bus.$emit(DataFormEventBusHandler.SAVE_COMPLETE_EVENT);
     }
   }
 

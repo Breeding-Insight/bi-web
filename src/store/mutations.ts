@@ -18,6 +18,15 @@
 import { MutationTree } from 'vuex';
 import { RootState } from '@/store/types';
 import {
+  DEACTIVATE_ERROR_NOTIFICATION,
+  DEACTIVATE_SUCCESS_NOTIFICATION,
+  DEACTIVATE_INFO_NOTIFICATION,
+  DEACTIVATE_WARNING_NOTIFICATION,
+  DEACTIVATE_ALL_NOTIFICATIONS,
+  SHOW_ERROR_NOTIFICATION,
+  SHOW_SUCCESS_NOTIFICATION,
+  SHOW_INFO_NOTIFICATION,
+  SHOW_WARNING_NOTIFICATION,
   ERROR_STATE,
   FIRST_VISIT,
   LOGIN,
@@ -25,6 +34,7 @@ import {
   REQUESTED_PATH,
   RETURN_VISIT,
   SET_ACTIVE_PROGRAM,
+  SHOW_SIDEBAR_MOBILE,
 } from '@/store/mutation-types';
 import {User} from "@/breeding-insight/model/User";
 import {Program} from "@/breeding-insight/model/Program";
@@ -58,5 +68,56 @@ export const mutations: MutationTree<RootState> = {
   },
   [RETURN_VISIT] (state) {
     state.firstVisit = false;
+  },
+  // Closes the All Notification boxes.
+  [DEACTIVATE_ALL_NOTIFICATIONS] (state) {
+    state.errorNotificationActive = false;
+    state.successNotificationActive = false;
+    state.infoNotificationActive = false;
+    state.warningNotificationActive = false;
+  },
+
+  // Closes the Error Notification box.
+  [DEACTIVATE_ERROR_NOTIFICATION] (state) {
+    state.errorNotificationActive = false;
+  },
+  // Sets the message in the Error Notification box
+  // and makes it visible
+  [SHOW_ERROR_NOTIFICATION] (state, msg: string) {
+    state.errorNotificationMsg = msg;
+    state.errorNotificationActive = true;
+  },
+  // Closes the Success Notification message box.
+  [DEACTIVATE_SUCCESS_NOTIFICATION] (state) {
+    state.successNotificationActive = false;
+  },
+  // Sets the message in the Success Notification box
+  // and makes it visible
+  [SHOW_SUCCESS_NOTIFICATION] (state, msg: string) {
+    state.successNotificationMsg = msg;
+    state.successNotificationActive = true;
+  },
+  // Closes the Info Notification box.
+  [DEACTIVATE_INFO_NOTIFICATION] (state) {
+    state.infoNotificationActive = false;
+  },
+  // Sets the message in the Info Notification box
+  // and makes it visible
+  [SHOW_INFO_NOTIFICATION] (state, msg: string) {
+    state.infoNotificationMsg = msg;
+    state.infoNotificationActive = true;
+  },
+  // Closes the Warning Notification message box.
+  [DEACTIVATE_WARNING_NOTIFICATION] (state) {
+    state.warningNotificationActive = false;
+  },
+  // Sets the message in the Warning Notification box
+  // and makes it visible
+  [SHOW_WARNING_NOTIFICATION] (state, msg: string) {
+    state.warningNotificationMsg = msg;
+    state.warningNotificationActive = true;
+  },
+  [SHOW_SIDEBAR_MOBILE] (state, value: boolean) {
+    state.showSidebarMobile = value;
   }
 };

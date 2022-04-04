@@ -20,8 +20,9 @@
     <div class="columns is-vcentered is-mobile is-gapless">
       <div class="column is-four-fifths">
         <BasicInputField
-            v-bind:field-name="'Value'"
+            v-bind:field-name="'Category'"
             v-bind:show-label="false"
+            v-bind:field-help="canBeRemoved ? undefined : 'Nominal scales require at least one category'"
             v-bind:placeholder="valuePlaceholder"
             v-bind:value="value"
             v-on:input="$emit('value-change', $event)"
@@ -30,7 +31,7 @@
         />
       </div>
       <div class="column is-one-fifth ml-2">
-        <button type="button" class="delete" v-on:click="$emit('delete')"></button>
+        <button v-show="canBeRemoved" type="button" class="delete" v-on:click="$emit('delete')"></button>
       </div>
     </div>
   </div>
@@ -55,6 +56,8 @@
     valuePlaceholder: string | undefined;
     @Prop()
     serverRowValidation!: RowError;
+    @Prop()
+    canBeRemoved!: boolean;
   }
 
 </script>

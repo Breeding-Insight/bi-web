@@ -19,7 +19,6 @@ import {Category} from "@/breeding-insight/model/Category";
 
 export enum DataType {
   Date = "Date",
-  Duration = "Duration",
   Nominal = "Nominal",
   Numerical = "Numerical",
   Ordinal = "Ordinal",

@@ -19,23 +19,26 @@ import {TraitDAO} from "@/breeding-insight/dao/TraitDAO";
 import {Trait} from "@/breeding-insight/model/Trait";
 import {Metadata} from "@/breeding-insight/model/BiResponse";
 import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
-import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
-import {TraitUploadService} from "@/breeding-insight/service/TraitUploadService";
-import {ValidationError} from "@/breeding-insight/model/errors/ValidationError";
+import {ValidationErrorService} from "@/breeding-insight/service/ValidationErrorService";
+import {TraitFilter} from "@/breeding-insight/model/TraitSelector";
+import {OntologySort, OntologySortField, SortOrder} from "@/breeding-insight/model/Sort";
 
 export class TraitService {
 
-    static async createTraits(programId: string, newTraits: Trait[]): Promise<[Trait[], Metadata]> {
-      if (programId) {
-        try {
-          const { result: { data }, metadata } = await TraitDAO.createTraits(programId, newTraits);
-          return [data, metadata];
-        } catch (error) {
-          throw TraitUploadService.parseError(error);
-        }
+  static notAllowed : string = 'Trait has associated observations and cannot be updated';
+  static errorUpdating: string = 'Error updating trait';
+
+  static async createTraits(programId: string, newTraits: Trait[]): Promise<[Trait[], Metadata]> {
+    if (programId) {
+      try {
+        const { result: { data }, metadata } = await TraitDAO.createTraits(programId, newTraits);
+        return [data, metadata];
+      } catch (error) {
+        throw ValidationErrorService.parseError(error);
       }
-      else throw 'Unable to create trait';
     }
+    else throw 'Unable to create trait';
+  }
 
     static async updateTraits(programId: string, traits: Trait[]): Promise<[Trait[], Metadata]> {
       if (programId && traits) {
@@ -48,7 +51,12 @@ export class TraitService {
           const { result: { data }, metadata } = await TraitDAO.updateTraits(programId, traits);
           return [data, metadata];
         } catch (error) {
-          throw TraitUploadService.parseError(error);
+          if (error.response && error.response.status === 405) {
+            throw this.notAllowed;
+          } else if (error.response && error.response.status !== 422) {
+            throw this.errorUpdating;
+          }
+          throw ValidationErrorService.parseError(error);
         }
       }
       else throw 'Unable to update trait';
@@ -66,16 +74,18 @@ export class TraitService {
           const { result, metadata } = await TraitDAO.archiveTrait(programId, trait);
           return Trait.assign(result);
         } catch (error) {
-          throw TraitUploadService.parseError(error);
+          throw ValidationErrorService.parseError(error);
         }
       }
       else throw 'Unable to update trait';
     }
 
-    static getAll(programId: string, paginationQuery?: PaginationQuery, full?: boolean): Promise<[Trait[], Metadata]> {
-        return new Promise<[Trait[], Metadata]>(((resolve, reject) => {
+  static getAll(programId: string,
+                paginationQuery: PaginationQuery = new PaginationQuery(1, 50, true),
+                full?: boolean): Promise<[Trait[], Metadata]> {
+    return new Promise<[Trait[], Metadata]>(((resolve, reject) => {
 
-      if (paginationQuery === undefined){
+      if (paginationQuery === undefined) {
         paginationQuery = new PaginationQuery(0, 0, true);
       }
 
@@ -84,24 +94,17 @@ export class TraitService {
       }
 
       if (programId) {
-          TraitDAO.getAll(programId, paginationQuery, full).then((biResponse) => {
+        TraitDAO.getAll(programId, paginationQuery, full).then(biResponse => {
 
           let traits: Trait[] = [];
 
           if (biResponse.result.data) {
-            //TODO: Remove when backend default sorting is implemented
-            biResponse.result.data = PaginationController.mockSortRecords(biResponse.result.data);
             traits = biResponse.result.data.map((trait: any) => {
-                return trait as Trait;
+              return trait as Trait;
             });
           }
 
-          //TODO: Remove when backend pagination is implemented
-          let newPagination;
-          [traits, newPagination] = PaginationController.mockPagination(traits, paginationQuery!.page, paginationQuery!.pageSize, paginationQuery!.showAll);
-          biResponse.metadata.pagination = newPagination;
-
-              resolve([traits, biResponse.metadata]);
+          resolve([traits, biResponse.metadata]);
 
         }).catch((error) => reject(error));
 
@@ -109,6 +112,77 @@ export class TraitService {
         reject();
       }
     }));
+  }
 
+  static getFilteredTraits(programId: string,
+                           paginationQuery: PaginationQuery = new PaginationQuery(1, 50, true),
+                           full: boolean = false,
+                           filters?: TraitFilter[],
+                           sort: OntologySort = new OntologySort(OntologySortField.Name, SortOrder.Ascending)): Promise<[Trait[], Metadata]> {
+    return new Promise<[Trait[], Metadata]>(((resolve, reject) => {
+
+      if (programId) {
+        TraitDAO.getFilteredTraits(programId, paginationQuery, full, sort, filters).then((biResponse) => {
+
+          let traits: Trait[] = [];
+
+          if (biResponse.result.data) {
+            traits = biResponse.result.data.map((trait: any) => {
+              return trait as Trait;
+            });
+          }
+
+          resolve([traits, biResponse.metadata]);
+
+        }).catch((error) => reject(error));
+
+      } else {
+        reject();
+      }
+    }));
+  }
+
+  static async getTraitEditable(programId: string, traitId: string): Promise<[boolean, Metadata]> {
+    if (programId && traitId) {
+      try {
+        const response = await TraitDAO.getTraitEditable(programId, traitId);
+        return [response.result.editable, response.metadata];
+      } catch (error) {
+        throw error;
+      }
+    }
+    else throw 'Unable to get trait editable info';
+  }
+
+  static async getTraitTags(programId: string): Promise<[string[], Metadata]> {
+    if (programId) {
+      try {
+        const response = await TraitDAO.getTraitTags(programId);
+        return [response.result.data, response.metadata];
+      } catch (error) {
+        throw error;
+      }
+    }
+    else throw 'Unable to get trait editable info';
+  }
+
+  static async getAttributesEntitiesDescriptions(programId: string): Promise<[string[], string[], string[]]> {
+    if (programId) {
+      try {
+        const [ traits, metadata ] = await TraitService.getAll(programId, new PaginationQuery(1,50,true), true);
+        let attributes: Set<string> = new Set();
+        let entities: Set<string> = new Set();
+        let descriptions: Set<string> = new Set();
+        for (const trait of traits) {
+          if(trait.attribute) attributes.add(trait.attribute);
+          if(trait.entity) entities.add(trait.entity);
+          if(trait.method && trait.method.description) descriptions.add(trait.method.description);
+        }
+        return [[...attributes], [...entities], [...descriptions]];
+      } catch (error) {
+        throw error;
+      }
+    }
+    else throw 'Unable to get trait editable info';
   }
 }

@@ -18,101 +18,171 @@
 <template>
   <div class="is-full-length">
     <template v-if="data && !editActive">
-      <p v-if="data.traitName" class="is-size-5 has-text-weight-bold mb-0">{{data.traitName}}</p>
+      <p v-if="data.observationVariableName" class="is-size-5 has-text-weight-bold mb-0">
+        {{data.observationVariableName}}
+        <span v-if="!data.active" class="tag is-link is-normal ml-1">Archived</span>
+      </p><br>
 
+      <div v-if="data.traitDescription" class="columns is-multiline is-mobile pt-4 pl-3">
+        <div class="column is-narrow p-0">
+          <span class="is-pulled-left has-text-weight-bold mr-2">Description</span>
+        </div>
+        <div class="column is-narrow p-0">
+          <span class="is-size-7 mb-0">{{data.traitDescription}}</span>
+        </div>
+      </div>
       <!-- just shows first abbreviation AKA main abbreviation and first synonym -->
       <template v-if="abbreviationsSynonymsString">
-        <p class="is-size-7">{{abbreviationsSynonymsString(2)}}</p>
+        <div class="columns is-multiline is-mobile pt-1 pl-3">
+          <div class="column is-narrow p-0">
+            <span class="is-pulled-left has-text-weight-bold mr-2">Synonyms</span>
+          </div>
+          <div class="column is-narrow p-0">
+            <span class="is-size-7 mb-0">{{ abbreviationsSynonymsString(2)}}</span>
+          </div>
+        </div>
       </template>
       <template v-else>
-        <p class="mb-3"/>
+        <p class="mb-0"/>
       </template>
 
-      <p v-if="scaleTypeString" class="has-text-weight-bold mb-0">{{scaleTypeString}}</p>
+      <template v-if="data.tags && data.tags.length > 0">
+        <div class="columns is-multiline is-mobile pt-1 pl-3">
+          <div class="column is-narrow p-0">
+            <span class="is-pulled-left has-text-weight-bold mr-2">Tags</span>
+          </div>
+          <template v-for="tag in data.tags">
+            <div v-bind:key="tag" class="column is-narrow p-0">
+              <span class="tag is-info is-normal mr-1">{{ tag }}</span>
+            </div>
+          </template>
+        </div>
+      </template>
+
+      <div class="columns is-centered is-mobile is-variable is-multiline is-0 mt-5 my-0">
+        <template v-if="data.entity && data.attribute">
+          <div class="column is-half p-0">
+            <span class="is-pulled-right has-text-weight-bold mr-2">Trait</span>
+          </div>
+          <div class="column is-half p-0">
+            <span class="is-size-7 ml-2">{{data.entity}} {{data.attribute | capitalize}}</span>
+          </div>
+        </template>
+        <template v-if="data.method && data.method.methodClass">
+          <div class="column is-half p-0">
+            <span class="is-pulled-right has-text-weight-bold mr-2">Method</span>
+          </div>
+          <div class="column is-half p-0">
+            <span class="is-size-7 ml-2">{{(data.method.description ? StringFormatters.toStartCase(data.method.description) : "") }} {{ data.method.methodClass }}</span>
+          </div>
+        </template>
+        <template v-if="data.scale && data.scale.dataType">
+          <div class="column is-half p-0">
+            <span class="is-pulled-right has-text-weight-bold mr-2">Scale</span>
+          </div>
+          <div class="column is-half p-0">
+            <span class="is-size-7 ml-2">{{ scaleTypeString }}</span>
+          </div>
+        </template>
+        <template v-if="scaleType && Scale.dataTypeEquals(scaleType, DataType.Numerical)">
+          <div class="column is-half p-0">
+            <span class="is-pulled-right mr-2">Units</span>
+          </div>
+          <div class="column is-half p-0">
+            <span class="is-size-7 ml-2">{{ valueOrNA(data.scale.scaleName) | capitalize }}</span>
+          </div>
+          <div class="column is-half p-0">
+            <span class="is-pulled-right mr-2">Decimal Places</span>
+          </div>
+          <div class="column is-half p-0">
+            <span class="is-size-7 ml-2">{{ valueOrNA(data.scale.decimalPlaces) }}</span>
+          </div>
+          <div class="column is-half p-0">
+            <span class="is-pulled-right mr-2">Minimum Value</span>
+          </div>
+          <div class="column is-half p-0">
+            <span class="is-size-7 ml-2">{{ valueOrNA(data.scale.validValueMin) }}</span>
+          </div>
+          <div class="column is-half p-0">
+            <span class="is-pulled-right mr-2">Maximum Value</span>
+          </div>
+          <div class="column is-half p-0">
+            <span class="is-size-7 ml-2">{{ valueOrNA(data.scale.validValueMax) }}</span>
+          </div>
+        </template>
+        <template v-if="scaleType && Scale.dataTypeEquals(scaleType, DataType.Text)">
+          <!-- TODO: Not showing anything for this now -->
+        </template>
+
+        <!-- if computation method, show formula as well -->
+        <template v-if="methodClass && Method.methodClassEquals(methodClass, MethodClass.Computation)">
+          <div class="column is-half p-0">
+            <span class="is-pulled-right mr-2">Formula</span>
+          </div>
+          <div class="column is-half p-0">
+            <span class="is-size-7 ml-2">{{valueOrNA(data.method.formula)}}</span>
+          </div>
+        </template>
+
+<!--        nothing to show for date class now-->
+        <template v-if="scaleType && Scale.dataTypeEquals(scaleType, DataType.Date)">
+        </template>
+
+      </div>
 
       <!-- scale types hardcoded for now until we can get them from bi-api -->
-      <template v-if="scaleType && (Scale.dataTypeEquals(scaleType, DataType.Ordinal) || Scale.dataTypeEquals(scaleType, DataType.Nominal))">
-        <p class="mb-0" v-for="category in data.scale.categories" :key="category.label">
-          <template v-if="category.label">
-            {{ category.label }} =
-          </template>
-          {{category.value}}
-        </p>
-      </template>
-
-      <template v-if="scaleType && Scale.dataTypeEquals(scaleType, DataType.Text)">
-        <!-- TODO: Not showing anything for this now -->
-      </template>
-
-      <template v-if="scaleType && Scale.dataTypeEquals(scaleType, DataType.Numerical)">
-        <p class="mb-0">Units: {{valueOrNA(data.scale.scaleName)}}</p>
-        <p class="mb-0">Decimal Places: {{valueOrNA(data.scale.decimalPlaces)}}</p>
-        <p class="mb-0">Minimum valid value: {{valueOrNA(data.scale.validValueMin)}}</p>
-        <p class="mb-0">Maximum valid value: {{valueOrNA(data.scale.validValueMax)}}</p>
-      </template>
-
-      <template v-if="Scale.dataTypeEquals(scaleType, DataType.Duration)">
-        <p class="mb-0">Unit of time: {{valueOrNA(data.scale.scaleName)}}</p>
-        <p class="mb-0">Minimum valid value: {{valueOrNA(data.scale.validValueMin)}}</p>
-        <p class="mb-0">Maximum valid value: {{valueOrNA(data.scale.validValueMax)}}</p>
-      </template>
-
-      <template v-if="scaleType && Scale.dataTypeEquals(scaleType, DataType.Date)">
-      </template>
-
-      <!-- if computation method, show formula as well -->
-      <template v-if="methodClass && Method.methodClassEquals(methodClass, MethodClass.Computation)">
-        <p class="has-text-weight-bold mt-3 mb-0">Formula</p>
-        <p class="mb-0">{{valueOrNA(data.method.formula)}}</p>
-      </template>
-
-
-      <p class="has-text-weight-bold mt-3 mb-0">Description of collection method</p>
-      <p>{{data.method.description}}</p>
-
-      <template v-if="!data.active">
-        <p class="has-text-weight-bold mt-3 mb-0">Included in Favorites</p>
-        <b-button
-            size="is-small"
-            style="background: lightgray"
-            class="archive-tag"
-            v-if="!data.active">
-          Archived
-        </b-button>
+      <template
+          v-if="scaleType && (Scale.dataTypeEquals(scaleType, DataType.Ordinal) || Scale.dataTypeEquals(scaleType, DataType.Nominal))">
+        <div v-for="category in data.scale.categories"
+             :key="category.label"
+             class="columns is-centered is-mobile is-variable is-multiline is-0 my-0">
+          <div class="column is-half p-0">
+            <span class="is-pulled-right mr-2">{{ category.value }}</span>
+          </div>
+          <div class="column is-half p-0">
+            <span v-if="category.label" class="is-size-7 ml-2">{{ category.label }}</span>
+          </div>
+        </div>
       </template>
 
       <!-- maybe break out controls for reuse eventually -->
-      <div class="columns is-mobile is-centered pt-6">
-        <div class="column is-narrow">
+      <div class="columns is-centered is-mobile is-variable is-multiline is-0 my-0">
+        <div class="column is-half p-0 mt-5">
           <a
-            v-if="editable"
-            v-on:click="$emit('activate-edit', data)"
-            v-on:keypress.enter.space="$emit('activate-edit', data)"
-            tabindex="0"
+              v-if="editable && !loadingEditable && !data.isDup"
+              v-on:click="$emit('activate-edit', data)"
+              v-on:keypress.enter.space="$emit('activate-edit', data)"
+              tabindex="0"
+              class="is-pulled-right mr-2"
           >
             Edit
           </a>
         </div>
-        <div class="column is-narrow">
-          <a
-            v-if="data.active"
-            v-on:click="$emit('archive', data)"
-            v-on:keypress.enter.space="$emit('archive', data)"
-            tabindex="0"
-            >
-            Archive
-          </a>
-          <a
-            v-if="archivable && !data.active"
-            v-on:click="$emit('restore', data)"
-            v-on:keypress.enter.space="$emit('restore', data)"
-            tabindex="0"
-          >
-            Restore/Unarchive
-          </a>
-        </div>
+        <div class="column is-half p-0"></div>
       </div>
+
+      <ProgressBar v-if="loadingEditable && $ability.can('update', 'Trait')" v-bind:label="'Checking trait editability status'"
+                   v-bind:estimated-time-text="'May take a few seconds'"
+      />
+
+      <article v-if="!editable && !loadingEditable && $ability.can('update', 'Trait')" class="message is-info">
+        <div class="message-body">
+          <div class="media">
+            <figure class="media-left">
+              <p class="image is-24x24">
+                <help-circle-icon size="1.5x"></help-circle-icon>
+              </p>
+            </figure>
+            <div class="media-content">
+              <div class="has-text-dark">
+                Not editable because this trait has associated experiment data.
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
     </template>
+
     <template v-if="data && editActive">
       <EditDataForm
         v-on:cancel="$emit('deactivate-edit')"
@@ -127,9 +197,15 @@
               v-bind:trait.sync="editTrait"
               v-bind:edit-format="true"
               v-on:trait-change="traitUpdate($event)"
+              v-on:archive="$emit('archive', $event)"
+              v-on:restore="$emit('restore', $event)"
+              v-bind:tags="tags"
               v-bind:scale-options="scaleClassOptions"
               v-bind:method-options="methodClassOptions"
+              v-bind:descriptions="descriptionOptions"
               v-bind:program-observation-levels="observationLevelOptions"
+              v-bind:entities="entityOptions"
+              v-bind:attributes="attributeOptions"
               v-bind:client-validations="validations"
               v-bind:validation-handler="validationHandler"
           ></BaseTraitForm>
@@ -151,10 +227,18 @@
   import BaseTraitForm from "@/components/trait/forms/BaseTraitForm.vue";
   import EditDataForm from "@/components/forms/EditDataForm.vue";
   import { DataFormEventBusHandler } from '@/components/forms/DataFormEventBusHandler';
+  import { HelpCircleIcon } from 'vue-feather-icons'
+  import ProgressBar from '@/components/forms/ProgressBar.vue'
 
   @Component({
-    components: {EditDataForm, SidePanel, BaseTraitForm },
-    data: () => ({DataType, MethodClass, Scale, Method})
+    components: {EditDataForm, SidePanel, BaseTraitForm, HelpCircleIcon, ProgressBar},
+    data: () => ({DataType, MethodClass, Scale, Method, StringFormatters}),
+    filters: {
+      capitalize: function(value: string | undefined) : string | undefined {
+        if (value === undefined) value = '';
+        return StringFormatters.toStartCase(value);
+      }
+    }
   })
   export default class TraitDetailPanel extends Vue {
 
@@ -164,8 +248,10 @@
     private observationLevelOptions!: string[];
     @Prop({default: false})
     private editActive!: boolean;
-    @Prop({default: false})
-    private editable!: boolean;
+    @Prop()
+    private editable!: boolean | undefined;
+    @Prop({default: true})
+    private loadingEditable!: boolean;
     @Prop({default: false})
     private archivable!: boolean;
     @Prop()
@@ -174,6 +260,15 @@
     private clientValidations!: any | undefined;
     @Prop()
     private validationHandler!: ValidationError;
+    @Prop()
+    private tags!: string[];
+    @Prop()
+    private descriptionOptions?: string[];
+    @Prop()
+    private entityOptions?: string[];
+    @Prop()
+    private attributeOptions?: string[];
+
 
     private editTrait: Trait | null = null;
     private scalePostfix = new Set<string>().add(DataType.Ordinal).add(DataType.Nominal);
@@ -186,6 +281,13 @@
     watchEdit() {
       if (this.editActive){
         this.editTrait = Trait.assign({...this.data} as Trait);
+        //For nominal, switch value and label for ease of display
+        if ((this.editTrait.scale) && (this.editTrait.scale.dataType) && (Scale.dataTypeEquals(this.editTrait.scale.dataType, DataType.Nominal)) && (this.editTrait.scale.categories)) {
+          this.editTrait.scale.categories.forEach(category => {
+            category.label = category.value;
+            category.value = undefined;
+          });
+        }
       } else {
         this.editTrait = null;
       }
@@ -199,9 +301,7 @@
 
     abbreviationsSynonymsString(synonymsMaxLength: number) : string | undefined {
       let abbSyn = "";
-      if (this.data && this.data.abbreviations && this.data.abbreviations.length > 0) {
-        abbSyn = this.data.abbreviations[0];
-      }
+
       if (this.data && this.data.synonyms && this.data.synonyms.length > 0) {
         // Up to synonymsMaxLength synonyms will be shown before , ... cutoff
         const synonyms = this.data.synonyms.slice(0, Math.min(this.data.synonyms.length, synonymsMaxLength)).join(", ");
@@ -229,10 +329,8 @@
     }
 
     get scaleTypeString() {
-      if (this.data && this.data.programObservationLevel && this.data.method && this.data.scale) {
-        let str = this.data.programObservationLevel.name + " " +
-                  this.data.method.methodClass + " using " +
-                  StringFormatters.toStartCase(this.data.scale.dataType!);
+      if (this.data && this.data.scale) {
+        let str = StringFormatters.toStartCase(this.data.scale.dataType!);
         const postfix = this.scalePostFix(this.data.scale.dataType!);
         if (postfix !== "") {
           str = str + " " + postfix;

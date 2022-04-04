@@ -17,15 +17,20 @@
 
 import {ProgramDAO} from "@/breeding-insight/dao/ProgramDAO";
 import {Program} from "@/breeding-insight/model/Program";
-import {Metadata, Pagination} from "@/breeding-insight/model/BiResponse";
+import {Metadata} from "@/breeding-insight/model/BiResponse";
 import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
 import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
 import {ProgramObservationLevel} from "@/breeding-insight/model/ProgramObservationLevel";
+import {ProgramSort, ProgramSortField, SortOrder} from "@/breeding-insight/model/Sort";
 
 export class ProgramService {
 
   static unsupportedBrapiUrl : string = 'BrAPI URL specified is not supported';
   static errorCreatingProgram : string = 'Error creating program';
+  static duplicateProgramName: string = 'A program with the same name already exists';
+  static duplicateProgramKey: string = 'A program with the same key already exists';
+  static PROGRAM_NAME_IN_USE: string = "PROGRAM_NAME_IN_USE";
+  static PROGRAM_KEY_IN_USE: string = "PROGRAM_KEY_IN_USE";
 
   static create(program: Program): Promise<Program> {
     //TODO: Check everything is good
@@ -38,7 +43,11 @@ export class ProgramService {
           resolve(newProgram);
 
         }).catch((error) => {
-          if (error.response && error.response.status === 422) {
+          if (error.response && error.response.status === 409 && error.response.statusText === ProgramService.PROGRAM_NAME_IN_USE) {
+            error['errorMessage'] = this.duplicateProgramName;
+          } else if (error.response && error.response.status === 409 && error.response.statusText === ProgramService.PROGRAM_KEY_IN_USE) {
+            error['errorMessage'] = this.duplicateProgramKey;
+          } else if (error.response && error.response.status === 422) {
             error['errorMessage'] = this.unsupportedBrapiUrl;
           } else {
             error['errorMessage'] = this.errorCreatingProgram;
@@ -87,28 +96,18 @@ export class ProgramService {
     }));
   }
 
-  static getAll(paginationQuery?: PaginationQuery): Promise<[Program[], Metadata]> {
+  static getAll(paginationQuery: PaginationQuery = new PaginationQuery(1, 50, true),
+                sort: ProgramSort = new ProgramSort(ProgramSortField.Name, SortOrder.Ascending)): Promise<[Program[], Metadata]> {
     return new Promise<[Program[], Metadata]>(((resolve, reject) => {
 
-      if (paginationQuery === undefined){
-        paginationQuery = new PaginationQuery(0, 0, true);
-      }
-      ProgramDAO.getAll(paginationQuery).then((biResponse) => {
-
-        //TODO: Remove when backend sorts the data by default
-        biResponse.result.data = PaginationController.mockSortRecords(biResponse.result.data);
+      ProgramDAO.getAll(paginationQuery, sort).then((biResponse) => {
 
         let programs: Program[] = [];
 
         // Parse our programs into the vue programs param
         programs = biResponse.result.data.map((program: any) => {
-          return new Program(program.id, program.name, program.species.id, program.numUsers, program.brapiUrl);
+          return new Program(program.id, program.name, program.species.id, program.numUsers, program.brapiUrl, program.key);
         });
-
-        //TODO: Remove when backend pagination is implemented
-        let newPagination;
-        [programs, newPagination] = PaginationController.mockPagination(programs, paginationQuery!.page, paginationQuery!.pageSize, paginationQuery!.showAll);
-        biResponse.metadata.pagination = newPagination;
 
         resolve([programs, biResponse.metadata]);
     

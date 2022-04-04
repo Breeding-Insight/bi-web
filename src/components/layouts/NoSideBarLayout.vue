@@ -17,7 +17,7 @@
 
 <template>
   <div class="sidebarlayout">
-    <header>
+    <header class="main-header">
       <div class="level header-title is-marginless is-mobile">
         <div class="level-left">
           <div class="level-item">
@@ -25,32 +25,24 @@
               <img
                   src="../../assets/img/bi-logo.svg"
                   alt="Breeding Insight home"
-                  width="232"
+                  width="160"
               >
             </a>
           </div>
         </div>
         <div class="level-right">
-          <h1 class="title has-text-primary">{{title}}</h1>
+          <div class="level-item">
+            <h1 class="title has-text-primary level-item">{{title}}</h1>
+          </div>
+          <div class="level-item">
+            <UserStatusMenu v-bind:username="username" v-on:logout="$emit('logout')"/>
+          </div>
         </div>
       </div>
     </header>
     <div class="columns is-marginless">
       <div class="column">
-        <main>
-          <div
-            v-if="username"
-            class="level is-mobile">
-            <div class="level-left"></div>
-            <div class="level-right">
-              <div class="level-item">
-                <p>Logged in as <strong>{{username}}</strong></p>
-              </div>
-              <div class="level-item">
-                <button class="button is-outlined is-primary" @click="$emit('logout')">Log out</button>
-              </div>
-            </div>
-          </div>
+        <main id="main">
           <section class="section">
             <slot></slot>
           </section>
@@ -60,10 +52,14 @@
   </div>
 </template>
 
+
 <script lang="ts">
   import {Component, Prop, Vue} from 'vue-property-decorator'
+  import UserStatusMenu from "@/components/layouts/menus/UserStatusMenu.vue";
 
-  @Component
+  @Component({
+    components: {UserStatusMenu}
+  })
   export default class NoSideBarLayout extends Vue {
 
     @Prop()

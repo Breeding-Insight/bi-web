@@ -20,6 +20,7 @@ import Vuex, { StoreOptions } from 'vuex';
 import { RootState } from './types';
 import { mutations } from './mutations';
 import {actions} from './actions';
+import {sorting} from '@/store/sorting/index';
 
 Vue.use(Vuex);
 
@@ -33,7 +34,19 @@ const store: StoreOptions<RootState> = {
     requestedPath: undefined,
     user: undefined,
     program: undefined,
-    firstVisit: undefined
+    firstVisit: undefined,
+    errorNotificationActive: false,
+    errorNotificationMsg: '',
+    successNotificationActive: false,
+    successNotificationMsg: '',
+    infoNotificationActive: false,
+    infoNotificationMsg: '',
+    warningNotificationActive: false,
+    warningNotificationMsg: '',
+    showSidebarMobile: true
+  },
+  modules: {
+    sorting
   },
   mutations,
   actions,
@@ -43,6 +56,34 @@ const store: StoreOptions<RootState> = {
     },
     activeUser: state => {
       return state.user;
+    },
+    isErrorNotificationActive: state => {
+      return state.errorNotificationActive;
+    },
+    errorNotificationMsg: state => {
+      return state.errorNotificationMsg;
+    },
+    isSuccessNotificationActive: state => {
+      return state.successNotificationActive;
+    },
+    successNotificationMsg: state => {
+      return state.successNotificationMsg;
+    },
+
+    isInfoNotificationActive: state => {
+      return state.infoNotificationActive;
+    },
+    infoNotificationMsg: state => {
+      return state.infoNotificationMsg;
+    },
+    isWarningNotificationActive: state => {
+      return state.warningNotificationActive;
+    },
+    warningNotificationMsg: state => {
+      return state.warningNotificationMsg;
+    },
+    showSidebarMobile: state => {
+      return state.showSidebarMobile;
     }
   }
 };

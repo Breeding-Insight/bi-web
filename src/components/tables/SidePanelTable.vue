@@ -6,7 +6,7 @@
         v-on:deactivate="sidePanelState.bus.$emit(sidePanelState.cancelCloseEditEvent)"
     >
       <section>
-        <p class="has-text-dark">
+        <p class="has-text-dark" :class="this.$modalTextClass">
           You will lose any edits you have made upon closing.
         </p>
       </section>

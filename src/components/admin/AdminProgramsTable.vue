@@ -23,7 +23,7 @@
       v-on:deactivate="deactivateActive = false"
     >
       <section>
-        <p class="has-text-dark">
+        <p class="has-text-dark" :class="this.$modalTextClass">
           Program-related data will not be affected by this change.
         </p>
       </section>
@@ -46,9 +46,9 @@
     </WarningModal>
 
     <button
-      v-show="!newProgramActive & programs.length > 0"
+      v-show="!newProgramActive"
       class="button is-primary has-text-weight-bold is-pulled-right"
-      v-on:click="newProgramActive = true"
+      v-on:click="showNewProgram"
     >
       <span class="icon is-small">
         <PlusCircleIcon
@@ -60,6 +60,8 @@
         New Program
       </span>
     </button>
+
+    <div class="is-clearfix"></div>
 
     <NewDataForm
       v-if="newProgramActive"
@@ -88,6 +90,15 @@
               v-bind:field-name="'Species'"
             />
           </div>
+          <div class="column is-one-half">
+            <BasicInputField
+                v-model="newProgram.key"
+                v-bind:validations="validations.key"
+                v-bind:field-name="'Program Key'"
+                v-bind:field-help="'Unique 2-6 character key representing the program. Alphabetic characters only.'"
+                v-bind:autocomplete=false
+            />
+          </div>
         </div>
         <div class="columns">
           <div class="column">
@@ -107,8 +118,9 @@
       </template>
     </NewDataForm>
 
-    <ExpandableRowTable
+    <ExpandableTable
       v-bind:records.sync="programs"
+      v-bind:loading="this.speciesLoading || this.programsLoading"
       v-bind:row-validations="programEditValidations"
       v-bind:editable="true"
       v-bind:archivable="true"
@@ -118,29 +130,33 @@
       v-on:remove="displayWarning($event)"
       v-on:show-error-notification="$emit('show-error-notification', $event)"
       v-on:paginate="paginationController.updatePage($event)"
-      v-on:paginate-toggle-all="paginationController.toggleShowAll()"
-      v-on:paginate-page-size="paginationController.updatePageSize($event)"
+      v-on:paginate-toggle-all="paginationController.toggleShowAll(programsPagination.totalCount.valueOf())"
+      v-on:paginate-page-size="updatePageSize($event)"
+      backend-sorting
+      v-bind:default-sort="[programSortFieldAsBuefy, programSortOrderAsBuefy]"
+      v-on:sort="setSort"
     >
-      <template v-slot:columns="data">
-        <TableColumn name="name" v-bind:label="'Name'">
-          <router-link
-            v-bind:to="{name: 'program-home', params: {programId: data.id}}"
-          >
-            {{ data.name }}
-          </router-link>
-        </TableColumn>
-        <TableColumn name="species" v-bind:label="'Species'">
-          <template v-if="speciesMap.size > 0">
-            {{ getSpeciesName(data.speciesId) }}
-          </template>
-        </TableColumn>
-        <TableColumn name="numUsers" v-bind:label="'# Users'">
-          {{ data.numUsers }}
-        </TableColumn>
-        <TableColumn name="brapiUrl" v-bind:label="'BrAPI URL'">
-          {{ data.brapiUrl }}
-        </TableColumn>
-      </template>
+      <b-table-column field="data.name" label="Name" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+        <router-link
+            v-bind:to="{name: 'program-home', params: {programId: props.row.data.id}}"
+        >
+          {{ props.row.data.name }}
+        </router-link>
+      </b-table-column>
+      <b-table-column field="data.key" label="Program Key" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+        {{ props.row.data.key }}
+      </b-table-column>
+      <b-table-column field="data.species" label="Species" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+        <template v-if="speciesMap.size > 0">
+          {{ getSpeciesName(props.row.data.speciesId) }}
+        </template>
+      </b-table-column>
+      <b-table-column field="data.numUsers" label="# Users" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+        {{ props.row.data.numUsers }}
+      </b-table-column>
+      <b-table-column field="data.brapiUrl" label="BrAPI URL" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+        {{ props.row.data.brapiUrl }}
+      </b-table-column>
       <template v-slot:edit="{editData, validations}">
         <div class="columns">
           <div class="column is-one-half">
@@ -163,18 +179,12 @@
         </div>
       </template>
       <template v-slot:emptyMessage>
-        <EmtpyTableMessage
-          v-bind:button-view-toggle="!newProgramActive"
-          v-bind:button-text="'New Program'"
-          v-on:newClick="newProgramActive = true"
-        >
           <p class="has-text-weight-bold">
             No programs are currently defined.
           </p>
           You can add, edit, and delete programs from this panel.
-        </EmtpyTableMessage>
       </template>
-    </ExpandableRowTable>
+    </ExpandableTable>
   </section>
 </template>
 
@@ -182,12 +192,11 @@
   import {Component, Prop, Vue, Watch} from 'vue-property-decorator'
   import {PlusCircleIcon} from 'vue-feather-icons'
   import {validationMixin} from 'vuelidate'
-  import {required} from 'vuelidate/lib/validators'
-
+  import {maxLength, minLength, required, alpha} from 'vuelidate/lib/validators'
+  import { mapGetters, mapMutations } from 'vuex'
   import WarningModal from '@/components/modals/WarningModal.vue'
   import {Program} from '@/breeding-insight/model/Program'
   import {Species} from '@/breeding-insight/model/Species'
-  import ExpandableRowTable from "@/components/tables/ExpandableRowTable.vue";
   import TableColumn from "@/components/tables/TableColumn.vue";
   import BasicInputField from "@/components/forms/BasicInputField.vue";
   import BasicSelectField from "@/components/forms/BasicSelectField.vue";
@@ -203,6 +212,13 @@
   import { helpers } from 'vuelidate/lib/validators'
   import { isWebUri } from 'valid-url'
   import { FieldError } from '@/breeding-insight/model/errors/FieldError';
+  import ExpandableTable from "@/components/tables/expandableTable/ExpandableTable.vue";
+  import {
+    DEACTIVATE_ALL_NOTIFICATIONS,
+  } from "@/store/mutation-types";
+  import {UPDATE_PROGRAM_SORT} from "@/store/sorting/mutation-types";
+  import {ProgramSort, ProgramSortField, Sort, SortOrder, UserSort, UserSortField} from "@/breeding-insight/model/Sort";
+  import {BackendPaginationController} from "@/breeding-insight/model/view_models/BackendPaginationController";
 
   // create custom validation to handle cases default url validation doesn't
   const url = helpers.withParams(
@@ -213,9 +229,21 @@
 @Component({
   mixins: [validationMixin],
   components: {
-    EmtpyTableMessage,
+    ExpandableTable, EmtpyTableMessage,
     NewDataForm, WarningModal, PlusCircleIcon,
-    ExpandableRowTable, TableColumn, BasicInputField, BasicSelectField
+    TableColumn, BasicInputField, BasicSelectField
+  },
+  computed: {
+    ...mapGetters('sorting', [
+        'programSort',
+        'programSortFieldAsBuefy',
+        'programSortOrderAsBuefy'
+    ])
+  },
+  methods: {
+    ...mapMutations('sorting', {
+      updateSort: UPDATE_PROGRAM_SORT
+    })
   }
 })
 export default class AdminProgramsTable extends Vue {
@@ -232,16 +260,22 @@ export default class AdminProgramsTable extends Vue {
   private speciesMap: Map<string, Species> = new Map();
   private deleteProgram: Program | undefined;
 
-  private paginationController: PaginationController = new PaginationController();
+  private paginationController: BackendPaginationController = new BackendPaginationController();
 
   private newLocationFormState: DataFormEventBusHandler = new DataFormEventBusHandler();
   private editLocationFormState: DataFormEventBusHandler = new DataFormEventBusHandler();
+
+  private speciesLoading = true;
+  private programsLoading = true;
 
   private programName: string = "Program Name";
 
   private customBrapi: boolean = false;
 
   private serverError: FieldError[] = [];
+
+  private programSort!: ProgramSort;
+  private updateSort!: (sort: ProgramSort) => void;
 
   // reset brapiUrl if checkbox toggled back off
   @Watch('customBrapi', {immediate: true})
@@ -252,10 +286,24 @@ export default class AdminProgramsTable extends Vue {
     }
   }
 
+  //Auto-capitalize Program Key upon change
+  @Watch('newProgram.key', {immediate: true})
+  onProgramKeyChanged(newVal: String){
+    if (newVal != null){
+      this.newProgram.key = newVal.toUpperCase();
+    }
+  }
+
   programValidations = {
     name: {required},
     speciesId: {required},
-    brapiUrl: {url}
+    brapiUrl: {url},
+    key: {
+      required,
+      minLength: minLength(2),
+      maxLength: maxLength(6),
+      alpha
+    }
   }
 
   programEditValidations = {
@@ -263,19 +311,46 @@ export default class AdminProgramsTable extends Vue {
     speciesId: {required}
   }
 
+  showNewProgram() {
+    this.newProgramActive = true;
+    this.$store.commit(DEACTIVATE_ALL_NOTIFICATIONS);
+  }
+
   mounted() {
+    this.updatePagination();
     this.getPrograms();
     this.getSpecies();
   }
 
+  setSort(field: string, order: string) {
+    const fieldMap: any = {
+      'data.name': ProgramSortField.Name,
+      'data.key' : ProgramSortField.Key,
+      'data.species': ProgramSortField.SpeciesName,
+      'data.numUsers': ProgramSortField.NumUsers,
+      'data.brapiUrl': ProgramSortField.BrapiUrl
+    };
+
+    if (field in fieldMap) {
+      this.updateSort(new ProgramSort(fieldMap[field], Sort.orderAsBI(order)));
+      this.getPrograms();
+    }
+  }
+
   @Watch('paginationController', { deep: true})
-  getPrograms() {
+  paginationChanged() {
+    this.updatePagination();
+    this.getPrograms();
+  }
 
-    let paginationQuery: PaginationQuery = PaginationController.getPaginationSelections(
-        this.paginationController.currentPage, this.paginationController.pageSize, this.paginationController.showAll);
+  updatePagination() {
+    let paginationQuery: PaginationQuery = BackendPaginationController.getPaginationSelections(
+        this.paginationController.currentPage, this.paginationController.pageSize);
     this.paginationController.setCurrentCall(paginationQuery);
+  }
 
-    ProgramService.getAll(paginationQuery).then(([programs, metadata]) => {
+  getPrograms() {
+    ProgramService.getAll(this.paginationController.currentCall, this.programSort).then(([programs, metadata]) => {
 
       // Check that our most recent query is this one
       if (this.paginationController.matchesCurrentRequest(metadata.pagination)) {
@@ -283,10 +358,10 @@ export default class AdminProgramsTable extends Vue {
         this.programsPagination = metadata.pagination;
       }
     }).catch((error) => {
-      // Display error that users cannot be loaded
+      // Display error that programs cannot be loaded
       this.$emit('show-error-notification', 'Error while trying to load programs');
       throw error;
-    });
+    }).finally(() => this.programsLoading = false);
 
   }
 
@@ -299,11 +374,15 @@ export default class AdminProgramsTable extends Vue {
         this.speciesMap = new Map(this.speciesMap.set(individual.id, individual));
       }
     }).catch((error) => {
-      // Display error that users cannot be loaded
+      // Display error that species cannot be loaded
       this.$emit('show-error-notification', 'Error while trying to load species');
       throw error;
-    });
+    }).finally(() => this.speciesLoading = false);
 
+  }
+
+  updatePageSize(pageSize: string) {
+    this.paginationController.updatePageSize(Number(pageSize).valueOf());
   }
 
   updateProgram(updatedProgram: Program) {
@@ -352,7 +431,7 @@ export default class AdminProgramsTable extends Vue {
 
     if (program){
       this.deleteProgram = program;
-      this.deactivateWarningTitle = "Remove " + program.name + " from the system ?";
+      this.deactivateWarningTitle = "Remove " + program.name + " from the system?";
       this.deactivateActive = true;
     } else {
       Vue.$log.error('Could not find object to delete')
@@ -392,9 +471,6 @@ export default class AdminProgramsTable extends Vue {
   emitProgramChange() {
     EventBus.bus.$emit(EventBus.programChange);
   }
-
-
-
 }
 
 </script>

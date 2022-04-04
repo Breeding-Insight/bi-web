@@ -16,39 +16,48 @@
   -->
 
 <template>
-  <div>
-    <div class="columns is-vcentered">
-      <div class="column">
-        <AutoCompleteField
-            v-bind:options="unitOptions"
-            v-bind:value="unit"
-            v-bind:field-name="'Unit of Time'"
-            v-bind:server-validations="validationHandler.getValidation(0, TraitError.ScaleName)"
-            v-on:input="$emit('unit-change', $event)"
-        />
-      </div>
+  <div class="columns is-multiline is-gapless is-vcentered">
+    <div class="column is-2">
+      <span class="is-pulled-right required new-term pb-2 pr-3">Unit of Time</span>
     </div>
-    <div class="columns is-vcentered">
-      <div class="column is-half">
-        <BasicInputField
-            v-bind:field-name="'Minimum Valid Value'"
-            v-bind:value="validMin"
-            v-on:input="$emit('min-change', $event)"
-            v-bind:field-help="'Leave blank to specify no lower limit.'"
-            v-bind:validations="clientValidations && clientValidations.scale.validValueMin ? clientValidations.scale.validValueMin : undefined"
-            v-bind:server-validations="validationHandler.getValidation(validationIndex, TraitError.MaximumValue)"
-        />
-      </div>
-      <div class="column is-half">
-        <BasicInputField
-            v-bind:field-name="'Maximum Valid Value'"
-            v-bind:value="validMax"
-            v-on:input="$emit('max-change', $event)"
-            v-bind:field-help="'Leave blank to specify no upper limit.'"
-            v-bind:validations="clientValidations && clientValidations.scale.validValueMax ? clientValidations.scale.validValueMax : undefined"
-            v-bind:server-validations="validationHandler.getValidation(validationIndex, TraitError.MaximumValue)"
-        />
-      </div>
+    <div class="column new-term is-10">
+      <AutoCompleteField
+          class="pb-2"
+          v-bind:options="unitOptions"
+          v-bind:value="unit"
+          v-bind:show-label="false"
+          v-bind:field-name="'Unit of Time'"
+          v-bind:server-validations="validationHandler.getValidation(0, TraitError.ScaleName)"
+          v-on:input="$emit('unit-change', $event)"
+      />
+    </div>
+    <div class="column is-2 mt-0 pb-6 pt-2">
+      <span class="is-pulled-right new-term pb-4 mb-1 pr-3">Min</span>
+    </div>
+    <div class="column new-term is-4">
+      <BasicInputField
+          v-bind:field-name="'Minimum Valid Value'"
+          v-bind:value="validMin"
+          v-bind:show-label="false"
+          v-on:input="$emit('min-change', $event)"
+          v-bind:field-help="'Leave blank to specify no lower limit.'"
+          v-bind:validations="clientValidations && clientValidations.scale.validValueMin ? clientValidations.scale.validValueMin : undefined"
+          v-bind:server-validations="validationHandler.getValidation(validationIndex, TraitError.MaximumValue)"
+      />
+    </div>
+    <div class="column is-1 mt-0 pb-6 pt-2">
+      <span class="is-pulled-right new-term pb-4 mb-1 pr-3">Max</span>
+    </div>
+    <div class="column new-term is-5">
+      <BasicInputField
+          v-bind:field-name="'Maximum Valid Value'"
+          v-bind:value="validMax"
+          v-bind:show-label="false"
+          v-on:input="$emit('max-change', $event)"
+          v-bind:field-help="'Leave blank to specify no upper limit.'"
+          v-bind:validations="clientValidations && clientValidations.scale.validValueMax ? clientValidations.scale.validValueMax : undefined"
+          v-bind:server-validations="validationHandler.getValidation(validationIndex, TraitError.MaximumValue)"
+      />
     </div>
   </div>
 </template>

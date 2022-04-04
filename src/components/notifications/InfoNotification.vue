@@ -16,15 +16,15 @@
   -->
 
 <template>
-  <b-notification type="is-info" v-bind:active.sync="active" aria-close-label="Close Notification" 
-    role="alert">
+  <b-notification type="is-info" v-bind:active.sync="isInfoNotificationActive" aria-close-label="Close Notification"
+    role="alert" v-on:close="onClose">
     <div class="level">
         <div class="level-left">
             <div class="level-item">
                 <InfoIcon size="1.5x"></InfoIcon>
             </div>
-            <div class="level-item">
-                {{msg}}
+            <div class="level-item" :class="bannerTextClass">
+                {{infoNotificationMsg}}
             </div>
         </div>
     </div>
@@ -32,15 +32,26 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
-import { InfoIcon } from 'vue-feather-icons'
+import {Component, Prop, Vue, Watch} from 'vue-property-decorator';
+import { InfoIcon } from 'vue-feather-icons';
+import {DEACTIVATE_INFO_NOTIFICATION} from "@/store/mutation-types";
+import {mapGetters} from "vuex";
 
 @Component({
-  components: {InfoIcon}
+  components: {InfoIcon},
+  computed: {
+    ...mapGetters([
+      'isInfoNotificationActive',
+      'infoNotificationMsg'
+    ])
+  }
 })
 export default class InfoNotification extends Vue {
-  public active: boolean = false;
-  public msg : string = '';
+  private bannerTextClass: string = "banner-text";
+
+  onClose(){
+    this.$store.commit(DEACTIVATE_INFO_NOTIFICATION);
+  }
 }
 
 </script>

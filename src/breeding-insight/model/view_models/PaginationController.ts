@@ -38,7 +38,7 @@ export class PaginationController {
     this.pageSize = pageSize;
     this.showAll = false;
   }
-
+  
   updatePage(page: number) {
     this.currentPage = page;
     this.showAll = false;
@@ -49,7 +49,6 @@ export class PaginationController {
   }
 
   matchesCurrentRequest(pagination: Pagination): boolean {
-
     if (this.currentCall) {
       if (this.showAll){
         return pagination.currentPage == 1 && pagination.totalPages == 1;
@@ -63,7 +62,7 @@ export class PaginationController {
 
   static getPaginationSelections(currentPage: number, pageSize: number, showAll: boolean): PaginationQuery {
     if (showAll) {
-      return new PaginationQuery(0, 0, true);
+      return new PaginationQuery(0, pageSize, true);
     } else {
       return new PaginationQuery(
         currentPage, pageSize, false);
@@ -93,7 +92,7 @@ export class PaginationController {
       const newPagination: Pagination = new Pagination({
         totalCount: records.length,
         pageSize: pageSize,
-        totalPages: records.length / pageSize,
+        totalPages: Math.ceil(records.length / pageSize),
         currentPage: page
       });
       return [records.slice((page * pageSize - pageSize), (page * pageSize > records.length ? records.length : page * pageSize)), newPagination];

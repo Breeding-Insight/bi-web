@@ -22,30 +22,46 @@ import {Scale} from "@/breeding-insight/model/Scale";
 export class Trait {
   id?: string;
   traitName?: string;
+  observationVariableName?: string;
   programObservationLevel?: ProgramObservationLevel;
+  entity?: string;
+  attribute?: string;
+  traitDescription?: string;
   method?: Method;
   scale?: Scale;
-  abbreviations?: Array<string>;
-  synonyms?: Array<string>;
+  synonyms: string[] = [];
   mainAbbreviation?: string;
   active?: boolean;
+  tags?: string[] = [];
+  fullName?: string;
+  isDup?: boolean;
 
   constructor(id?: string,
               traitName?: string,
+              observationVariableName?: string,
               programObservationLevel?: ProgramObservationLevel,
+              entity?: string,
+              attribute?: string,
+              traitDescription?: string,
               method?: Method,
               scale?: Scale,
-              abbreviations?: Array<string>,
               synonyms?: Array<string>,
-              active?: boolean
+              active?: boolean,
+              tags?: string[],
+              fullName?: string,
+              isDup?: boolean,
               ) {
     this.id = id;
     this.traitName = traitName;
+    this.observationVariableName = observationVariableName;
     if (programObservationLevel) {
       this.programObservationLevel = ProgramObservationLevel.assign({...programObservationLevel} as ProgramObservationLevel);
     } else {
       this.programObservationLevel = new ProgramObservationLevel();
     }
+    this.entity = entity;
+    this.attribute = attribute;
+    this.traitDescription = traitDescription;
     if (method){
       this.method = Method.assign({...method} as Method);
     } else {
@@ -56,18 +72,24 @@ export class Trait {
     } else {
       this.scale = new Scale();
     }
-    this.abbreviations = abbreviations;
-    this.synonyms = synonyms;
+    if (synonyms){
+      this.synonyms = Array.from(synonyms);
+    }
     if (active !== undefined) {
       this.active = active;
     } else {
       this.active = true;
     }
+    if (tags) {
+      this.tags = Array.from(tags);
+    }
+    this.fullName = fullName;
+    this.isDup = isDup;
   }
 
   static assign(trait: Trait): Trait {
-    return new Trait(trait.id, trait.traitName, trait.programObservationLevel, trait.method,
-      trait.scale, trait.abbreviations, trait.synonyms, trait.active);
+    return new Trait(trait.id, trait.traitName, trait.observationVariableName, trait.programObservationLevel, trait.entity, trait.attribute,
+        trait.traitDescription, trait.method, trait.scale, trait.synonyms, trait.active, trait.tags, trait.fullName, trait.isDup);
   }
 
   checkStringListEquals(list: string[] | undefined, otherList: string[] | undefined): boolean {
@@ -83,11 +105,17 @@ export class Trait {
 
   equals(trait?: Trait): boolean {
     if (!trait) {return false;}
+    // @ts-ignore
+
     return (this.id === trait.id) &&
       (this.traitName === trait.traitName) &&
-      (this.checkStringListEquals(this.abbreviations, trait.abbreviations)) &&
+      (this.observationVariableName === trait.observationVariableName) &&
+      (this.fullName === trait.fullName) &&
       (this.checkStringListEquals(this.synonyms, trait.synonyms)) &&
       (this.mainAbbreviation === trait.mainAbbreviation) &&
+        (this.entity === trait.entity) &&
+        (this.attribute === trait.attribute) &&
+        (this.traitDescription === trait.traitDescription) &&
       (
         (this.programObservationLevel && this.programObservationLevel.equals(trait.programObservationLevel)) ||
         (!this.programObservationLevel && !trait.programObservationLevel)
@@ -99,6 +127,42 @@ export class Trait {
       (
         (this.method && this.method.equals(trait.method)) ||
         (!this.method && !trait.method)
-      );
+      ) &&
+      (this.isDup === trait.isDup) &&
+      ( this.checkStringListEquals(this.tags, trait.tags) ) &&
+      ( this.checkStringListEquals(this.synonyms, trait.synonyms) );
   }
+
+  addTag(tag: string) {
+    if (this.tags) {
+      const index = this.tags.indexOf(tag);
+      if (index === -1) {
+        this.tags.push(tag);
+      }
+    }
+    else {
+      this.tags = [tag];
+    }
+  }
+
+  removeTag(tag: string) {
+    if (this.tags) {
+      const index = this.tags.indexOf(tag);
+      if (index > -1) {
+        this.tags.splice(index, 1);
+      }
+    }
+  }
+
+  hasTag(tag: string): boolean {
+    if (this.tags) {
+      for (const existingTag of this.tags) {
+        if (tag.toLowerCase().replace(' ', '') === existingTag.toLowerCase().replace(' ', '')) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
 }

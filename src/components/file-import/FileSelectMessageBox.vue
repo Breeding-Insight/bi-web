@@ -17,53 +17,20 @@
 
 <template>
   <div class="file-select">
-    <div class="box">
+    <div>
       <article>
 
-        <!-- Error messages -->
-        <div v-if="allErrors.length > 0" class="has-text-danger mb-6">
-
-          <!-- Multiple errors list -->
-          <template v-if="isValidationError">
-            <AlertTriangleIcon size="1x" aria-hidden="true" class="has-vertical-align-middle"></AlertTriangleIcon>
-            <span class="has-text-weight-bold ml-1">File contains data errors</span>
-            <ul>
-              <template v-if="displayAllErrors">
-                <li v-for="(errorMessage, rowIndex) of allErrors" v-bind:key="rowIndex">{{errorMessage}}</li>
-              </template>
-              <template v-else>
-                <li v-for="(errorMessage, rowIndex) of allErrors.slice(0, numDisplayedErrors)" v-bind:key="rowIndex">{{errorMessage}}</li>
-              </template>
-            </ul>
-            <div v-if="allErrors.length > this.numDisplayedErrors">
-              <template v-if="displayAllErrors">
-                <a href="#" v-on:click="displayAllErrors = false" class="is-underlined">
-                  &lt; Show Less Errors
-                </a>
-              </template>
-              <template v-else>
-                <span>... and {{allErrors.length - numDisplayedErrors}} more.</span>
-                <a href="#" v-on:click="displayAllErrors = true" class="is-underlined ml-3">
-                  View All Errors &gt;
-                </a>
-              </template>
-            </div>
-          </template>
-
-          <!-- Single Error -->
-          <template v-else>
-            <AlertTriangleIcon size="1x" aria-hidden="true" class="has-vertical-align-middle"></AlertTriangleIcon>
-            <span class="has-text-weight-bold ml-1">{{allErrors[0]}}</span>
-          </template>
-
-        </div>
+        <MultipleErrors
+          v-bind:formatted-errors="allErrors"
+          v-bind:is-validation-error="isValidationError"
+        />
 
         <!-- Select file -->
         <nav class="level">
           <div class="level-left">
             <div v-if="file" class="level-item">
               <div
-                v-bind:class="{'has-text-dark': allErrors.length <= 0, 'has-text-danger': allErrors.length > 0}"
+                v-bind:class="{'has-text-dark': allErrors.length <= 0, 'has-text-danger': allErrors.length > 0}" :id="importFileNameId"
             >
                 {{file.name}}                  
               </div>
@@ -79,7 +46,7 @@
           <div class="level-right">
             <div class="level-item">
               <div>
-                <a v-if="file" class="button is-primary has-text-weight-bold" v-on:click="$emit('import')">Import</a>
+                <a v-if="file" class="button is-primary has-text-weight-bold" :id="importButtonId" v-on:click="$emit('import')">Import</a>
               </div>
             </div>
           </div>
@@ -94,9 +61,13 @@
   import FileSelector from "@/components/file-import/FileSelector.vue";
   import {ValidationError} from "@/breeding-insight/model/errors/ValidationError";
   import { AlertTriangleIcon } from 'vue-feather-icons';
+  import {AxiosResponse} from "axios";
+  import {ImportService} from "@/breeding-insight/service/ImportService";
+  import MultipleErrors from "@/components/file-import/MultipleErrors.vue";
 
   @Component({
     components: {
+      MultipleErrors,
       FileSelector,
       AlertTriangleIcon
     }
@@ -106,11 +77,11 @@
     private fileChosen = false;
     private file : File | null = null;
 
-    private numDisplayedErrors: number = 10;
-    private displayAllErrors: boolean = false;
-
     @Prop()
-    private errors!: ValidationError | string | null;
+    private errors!: ValidationError | AxiosResponse | null;
+
+    private importButtonId: string = "fileselectmessagebox-import-button";
+    private importFileNameId: string = "fileselectmessagebox-import-filename";
 
     mounted() {
       this.file = this.value;
@@ -132,24 +103,10 @@
     }
 
     get allErrors(): string[] {
-      let errors = [];
-      if (this.isValidationError){
-        const validationErrors = this.errors as ValidationError;
-        if (validationErrors.rows) {
-          for (const error of validationErrors.rows){
-            if (error.errors) {
-              for (const fieldError of error.errors){
-                errors.push(`${fieldError.field}: ${fieldError.errorMessage} in row ${error.rowIndex}`);
-              }
-            }
-          }
-        }
-        return errors;
-      } else if (this.errors != null) {
-        return [this.errors!] as string[];
-      } else {
-        return [];
+      if (this.errors != null) {
+        return ImportService.formatErrors(this.errors);
       }
+      return [];
     }
   }
 </script>

@@ -23,10 +23,10 @@
       v-on:deactivate="deactivateActive = false"
     >
       <section>
-        <p class="has-text-dark">
+        <p class="has-text-dark" :class="this.$modalTextClass">
           This will only remove the user's access to your program and will not affect their account.
         </p>
-        <p class="has-text-dark">
+        <p class="has-text-dark" :class="this.$modalTextClass">
           Program-related data collected by this user will not be affected by this change.
         </p>
       </section>
@@ -49,10 +49,10 @@
     </WarningModal>
 
     <button
-      v-show="!newUserActive & users.length > 0"
+      v-show="!newUserActive"
       v-if="$ability.can('create', 'ProgramUser')"
       class="button is-primary has-text-weight-bold is-pulled-right"
-      v-on:click="newUserActive = true"
+      v-on:click="showNewUser"
       data-testid="newUserBtn"
     >
       <span class="icon is-small">
@@ -65,6 +65,8 @@
         New User
       </span>
     </button>
+
+    <div class="is-clearfix"></div>
 
     <NewDataForm
       v-if="newUserActive"
@@ -105,55 +107,50 @@
       </template>
     </NewDataForm>
 
-    <ExpandableRowTable
-      v-bind:records.sync="users"
-      v-bind:row-validations="editUserValidations"
-      v-bind:editable="$ability.can('update', 'ProgramUser')"
-      v-bind:archivable="$ability.can('archive', 'ProgramUser')"
-      v-bind:pagination="usersPagination"
-      v-bind:data-form-state="editUserFormState"
-      v-on:submit="updateUser($event)"
-      v-on:remove="displayWarning($event)"
-      v-on:show-error-notification="$emit('show-error-notification', $event)"
-      v-on:paginate="paginationController.updatePage($event)"
-      v-on:paginate-toggle-all="paginationController.toggleShowAll()"
-      v-on:paginate-page-size="paginationController.updatePageSize($event)"
+    <ExpandableTable
+        v-bind:records.sync="users"
+        v-bind:loading="this.rolesLoading || this.usersLoading"
+        v-bind:row-validations="editUserValidations"
+        v-bind:editable="$ability.can('update', 'ProgramUser')"
+        v-bind:archivable="$ability.can('archive', 'ProgramUser')"
+        v-bind:pagination="usersPagination"
+        v-bind:data-form-state="editUserFormState"
+        v-on:submit="updateUser($event)"
+        v-on:remove="displayWarning($event)"
+        v-on:show-error-notification="$emit('show-error-notification', $event)"
+        v-on:paginate="paginationController.updatePage($event)"
+        v-on:paginate-toggle-all="paginationController.toggleShowAll(usersPagination.totalCount.valueOf())"
+        v-on:paginate-page-size="updatePageSize($event)"
+        backend-sorting
+        v-bind:default-sort="[programUserSortFieldAsBuefy, programUserSortOrderAsBuefy]"
+        v-on:sort="setSort"
     >
-
-      <template v-slot:columns="data">
-        <TableColumn name="name" v-bind:label="'Name'">
-          {{ data.name }}
-        </TableColumn>
-        <TableColumn name="email" v-bind:label="'Email'">
-          {{ data.email }}
-        </TableColumn>
-        <TableColumn name="roles" v-bind:label="'Roles'">
-          <template v-if="rolesMap.size > 0">
-            {{ getRoleName(data.roleId) }}
-          </template>
-        </TableColumn>
-      </template>
+      <b-table-column field="data.name" label="Name" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+        {{ props.row.data.name }}
+      </b-table-column>
+      <b-table-column field="data.email" label="Email" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+        {{ props.row.data.email }}
+      </b-table-column>
+      <b-table-column field="data.roleName" label="Role" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+        <template v-if="rolesMap.size > 0">
+          {{ getRoleName(props.row.data.roleId) }}
+        </template>
+      </b-table-column>
 
       <template v-slot:edit="{editData, validations}">
         <div class="columns">
           <div class="column is-two-fifths">
             <BasicSelectField
-              v-model="editData.roleId"
-              v-bind:validations="validations.roleId"
-              v-bind:options="roles"
-              v-bind:selected-id="editData.roleId"
-              v-bind:field-name="'Role'"
+                v-model="editData.roleId"
+                v-bind:validations="validations.roleId"
+                v-bind:options="roles"
+                v-bind:selected-id="editData.roleId"
+                v-bind:field-name="'Role'"
             />
           </div>
         </div>
       </template>
       <template v-slot:emptyMessage>
-        <EmptyTableMessage
-          v-bind:button-view-toggle="!newUserActive"
-          v-bind:button-text="'New User'"
-          v-bind:create-enabled="$ability.can('create', 'ProgramUser')"
-          v-on:newClick="newUserActive = true"
-        >
           <p class="has-text-weight-bold">
             No program users are currently defined.
           </p>
@@ -162,9 +159,8 @@
             program, their account and membership in other programs is not affected.
           </p>
           <p>You can add, edit, and delete users from your program from this panel.</p>
-        </EmptyTableMessage>
       </template>
-    </ExpandableRowTable>
+    </ExpandableTable>
   </section>
 </template>
 
@@ -177,34 +173,48 @@
   import NewDataForm from '@/components/forms/NewDataForm.vue'
   import BasicInputField from "@/components/forms/BasicInputField.vue";
   import BasicSelectField from "@/components/forms/BasicSelectField.vue";
-  import ExpandableRowTable from "@/components/tables/ExpandableRowTable.vue";
   import {ProgramUser} from '@/breeding-insight/model/ProgramUser'
   import TableColumn from "@/components/tables/TableColumn.vue";
   import {Role} from '@/breeding-insight/model/Role'
   import {ProgramUserService} from "@/breeding-insight/service/ProgramUserService";
   import {RoleService} from "@/breeding-insight/service/RoleService";
-  import { mapGetters } from 'vuex'
+  import { mapGetters, mapMutations } from 'vuex'
   import {Program} from "@/breeding-insight/model/Program";
   import EmptyTableMessage from "@/components/tables/EmtpyTableMessage.vue";
-  import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
+  import {BackendPaginationController} from "@/breeding-insight/model/view_models/BackendPaginationController";
   import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
   import {Pagination} from "@/breeding-insight/model/BiResponse";
   import { User } from '@/breeding-insight/model/User';
   import {UserService} from "@/breeding-insight/service/UserService";
   import { DataFormEventBusHandler } from '@/components/forms/DataFormEventBusHandler';
   import store from "@/store";
-  import {LOGIN} from "@/store/mutation-types";
+  import {DEACTIVATE_ALL_NOTIFICATIONS, LOGIN} from "@/store/mutation-types";
   import {defineAbilityFor} from "@/config/ability";
+  import ExpandableTable from '@/components/tables/expandableTable/ExpandableTable.vue';
+  import {Sort, UserSort, UserSortField} from "@/breeding-insight/model/Sort";
+  import {
+    UPDATE_PROGRAM_USER_SORT
+  } from "@/store/sorting/mutation-types";
 
 @Component({
-  components: { NewDataForm, BasicInputField, BasicSelectField, TableColumn,
-                WarningModal, PlusCircleIcon, EmptyTableMessage, ExpandableRowTable
+  components: { ExpandableTable, NewDataForm, BasicInputField, BasicSelectField, TableColumn,
+                WarningModal, PlusCircleIcon, EmptyTableMessage
               },
   computed: {
     ...mapGetters([
       'activeProgram',
       'activeUser'
+    ]),
+    ...mapGetters('sorting', [
+        'programUserSort',
+        'programUserSortFieldAsBuefy',
+        'programUserSortOrderAsBuefy'
     ])
+  },
+  methods: {
+    ...mapMutations('sorting', {
+      updateSort: UPDATE_PROGRAM_USER_SORT
+    })
   }
 })
 export default class ProgramUsersTable extends Vue {
@@ -224,10 +234,16 @@ export default class ProgramUsersTable extends Vue {
   private deleteUser?: ProgramUser;
   private rolesMap: Map<string, Role> = new Map();
 
-  private paginationController: PaginationController = new PaginationController();
+  private paginationController: BackendPaginationController = new BackendPaginationController();
 
   private newUserFormState: DataFormEventBusHandler = new DataFormEventBusHandler();
   private editUserFormState: DataFormEventBusHandler = new DataFormEventBusHandler();
+
+  private rolesLoading = true;
+  private usersLoading = true;
+
+  private programUserSort!: UserSort;
+  private updateSort!: (sort: UserSort) => void;
 
   newUserValidations = {
     name: {required},
@@ -240,29 +256,47 @@ export default class ProgramUsersTable extends Vue {
   }
 
   mounted() {
+    this.updatePagination();
     this.getRoles();
     this.getUsers();
     this.getSystemUsers();
   }
 
+  setSort(field: string, order: string) {
+    const fieldMap: any = {
+      'data.email': UserSortField.Email,
+      'data.name': UserSortField.Name,
+      'data.roleName': UserSortField.Roles
+    };
+    if (field in fieldMap) {
+      this.updateSort(new UserSort(fieldMap[field], Sort.orderAsBI(order)));
+      this.getUsers();
+    }
+  }
+
   @Watch('paginationController', { deep: true})
-  getUsers() {
+  paginationChanged() {
+    this.updatePagination();
+    this.getUsers();
+  }
 
-    let paginationQuery: PaginationQuery = PaginationController.getPaginationSelections(
-      this.paginationController.currentPage, this.paginationController.pageSize, this.paginationController.showAll);
+  updatePagination() {
+    let paginationQuery: PaginationQuery = BackendPaginationController.getPaginationSelections(
+        this.paginationController.currentPage, this.paginationController.pageSize);
     this.paginationController.setCurrentCall(paginationQuery);
+  }
 
-    ProgramUserService.getAll(this.activeProgram!.id!, paginationQuery).then(([programUsers, metadata]) => {
+  getUsers() {
+    ProgramUserService.getAll(this.activeProgram!.id!, this.paginationController.currentCall, this.programUserSort).then(([programUsers, metadata]) => {
       if (this.paginationController.matchesCurrentRequest(metadata.pagination)){
         this.users = programUsers;
         this.usersPagination = metadata.pagination;
       }
-
     }).catch((error) => {
       // Display error that users cannot be loaded
       this.$emit('show-error-notification', 'Error while trying to load program users');
       throw error;
-    });
+    }).finally(() => this.usersLoading = false);
   }
 
   getRoles() {
@@ -277,8 +311,12 @@ export default class ProgramUsersTable extends Vue {
       // Display error that users cannot be loaded
       this.$emit('show-error-notification', 'Error while trying to load roles');
       throw error;
-    });
+    }).finally(() => this.rolesLoading = false);
 
+  }
+
+  updatePageSize(pageSize: string) {
+    this.paginationController.updatePageSize(Number(pageSize).valueOf());
   }
 
   updateUser(updatedUser: ProgramUser) {
@@ -393,6 +431,11 @@ export default class ProgramUsersTable extends Vue {
     this.newUser = new ProgramUser();
     this.newUserActive = false;
   }
+  showNewUser() {
+    this.newUserActive = true;
+    this.$store.commit(DEACTIVATE_ALL_NOTIFICATIONS);
+  }
+
 
   displayWarning(user: ProgramUser) {
 

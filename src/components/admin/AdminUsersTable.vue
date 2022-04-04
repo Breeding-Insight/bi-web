@@ -25,7 +25,7 @@
       <section>
         <template v-if="deactivateActive">
           <template v-if="getActiveProgramRoles().length > 0">
-            <p class="has-text-dark">
+            <p class="has-text-dark" :class="this.$modalTextClass">
               Access for this user will be removed system wide, including:
             </p>
             <ul>
@@ -43,12 +43,12 @@
             </ul>
           </template>
           <template v-else>
-            <p class="has-text-dark">
+            <p class="has-text-dark" :class="this.$modalTextClass">
               Access for this user will be removed system wide.
             </p>
           </template>
         </template>
-        <p class="has-text-dark">
+        <p class="has-text-dark" :class="this.$modalTextClass">
           Program-related data collected by this user will not be affected by this change.
         </p>
       </section>
@@ -84,7 +84,7 @@
     <button
       v-show="!newUserActive"
       class="button is-primary has-text-weight-bold is-pulled-right"
-      v-on:click="newUserActive = true"
+      v-on:click="showNewUser"
       data-testid="newFormBtn"
     >
       <span class="icon is-small">
@@ -97,6 +97,8 @@
         New User
       </span>
     </button>
+
+    <div class="is-clearfix"></div>
 
     <NewDataForm
       v-if="newUserActive"
@@ -135,8 +137,9 @@
       </template>
     </NewDataForm>
 
-    <ExpandableRowTable
+    <ExpandableTable
       v-bind:records.sync="users"
+      v-bind:loading="this.rolesLoading || this.usersLoading"
       v-bind:row-validations="userValidations"
       v-bind:editable="true"
       v-bind:archivable="true"
@@ -146,60 +149,38 @@
       v-on:remove="displayWarning($event)"
       v-on:show-error-notification="$emit('show-error-notification', $event)"
       v-on:paginate="paginationController.updatePage($event)"
-      v-on:paginate-toggle-all="paginationController.toggleShowAll()"
-      v-on:paginate-page-size="paginationController.updatePageSize($event)"
+      v-on:paginate-toggle-all="paginationController.toggleShowAll(usersPagination.totalCount.valueOf())"
+      v-on:paginate-page-size="updatePageSize($event)"
       v-on:is-mobile="isMobile = $event"
+      backend-sorting
+      v-bind:default-sort="[systemUserSortFieldAsBuefy, systemUserSortOrderAsBuefy]"
+      v-on:sort="setSort"
     >
-      <template v-slot:columns="data">
-        <TableColumn name="name" v-bind:label="'Name'">
-          {{ data.name }}
-        </TableColumn>
-         <TableColumn name="email" v-bind:label="'Email'" v-bind:visible="!isMobile">
-          {{ data.email }}
-        </TableColumn>
-        <TableColumn name="roles" v-bind:label="'Role'">
+        <b-table-column field="data.name" label="Name"  sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+          {{ props.row.data.name }}
+        </b-table-column>
+         <b-table-column field="data.email" label="Email" v-bind:visible="!isMobile"  sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+          {{ props.row.data.email }}
+        </b-table-column>
+        <b-table-column field="data.roleName" label="Role" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
           <template v-if="rolesMap.size > 0">
-            {{ getRoleName(data.roleId) }}
+            {{ getRoleName(props.row.data.roleId) }}
           </template>
-        </TableColumn>
-        <TableColumn name="programs" v-bind:label="'Programs'">
-          <template
-            v-if="getRoleName(data.roleId) === 'admin'"
-          >
-            <span
-              class="is-text has-text-weight-bold"
-            >
-              Admin (all programs)
-            </span>
-          </template>
-          <template
-            v-for="(programRole, index) of data.programRoles"
-            v-else
-          >
-            <span v-bind:key="'program' + index">
-              <!-- One line span needed to remove after space. Don't change. -->
-              <!-- eslint-disable-next-line -->
-              <span v-if="programRole.active" class="is-text">{{ programRole.program.name }}</span>
-              <!-- One line span needed to remove after space. Don't change. -->
-              <!-- eslint-disable-next-line -->
-              <span v-else class="has-background-grey-lighter">[ {{ programRole.program.name }} ]</span>
-              <!-- One line span needed to remove after space. Don't change. -->
-              <!-- eslint-disable-next-line -->
-              <span v-if="index !== data.programRoles.length - 1">, </span>
-            </span>
-          </template>
-        </TableColumn>
-        <TableColumn>
+        </b-table-column>
+        <b-table-column field="data.programList" label="Programs" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+          <span>{{ props.row.data.programList }}</span>
+
+        </b-table-column>
+        <b-table-column v-slot="props" :th-attrs="(column) => ({scope:'col'})">
           <a
-              v-if="!data.orcid"
-              v-on:click="resendEmail(data.id)"
-              v-on:keypress.enter.space="resendEmail(data.id)"
+              v-if="!props.row.data.orcid"
+              v-on:click="resendEmail(props.row.data.id)"
+              v-on:keypress.enter.space="resendEmail(props.row.data.id)"
               tabindex="0"
           >
             Resend Email
           </a>
-        </TableColumn>
-      </template>
+        </b-table-column>
       <template v-slot:edit="{editData, validations}">
         <div class="columns">
           <div class="column is-one-half">
@@ -224,11 +205,12 @@
               v-bind:selected-id="editData.roleId"
               v-bind:field-name="'Role'"
               v-bind:empty-value-name="'No Role'"
+              v-bind:is-disabled="isCurrentUser(editData.id)"
             />
           </div>
         </div>
       </template>
-    </ExpandableRowTable>
+    </ExpandableTable>
   </div>
 </template>
 
@@ -239,7 +221,6 @@
   import WarningModal from '@/components/modals/WarningModal.vue'
 
   import {required, email} from 'vuelidate/lib/validators'
-  import ExpandableRowTable from "@/components/tables/ExpandableRowTable.vue";
   import TableColumn from "@/components/tables/TableColumn.vue";
   import BasicInputField from "@/components/forms/BasicInputField.vue";
   import {UserService} from "@/breeding-insight/service/UserService";
@@ -253,12 +234,41 @@
   import {Metadata, Pagination} from "@/breeding-insight/model/BiResponse";
   import {helpers} from "vuelidate/lib/validators";
   import { DataFormEventBusHandler } from '@/components/forms/DataFormEventBusHandler';
-
+  import {mapGetters, mapMutations} from "vuex";
+  import ExpandableTable from '@/components/tables/expandableTable/ExpandableTable.vue';
+  import {
+    DEACTIVATE_ALL_NOTIFICATIONS
+  } from "@/store/mutation-types";
+  import {UPDATE_SYSTEM_USER_SORT} from "@/store/sorting/mutation-types";
+  import {
+    ProgramSortField,
+    Sort,
+    SortOrder, SystemUserSort,
+    SystemUserSortField,
+    UserSort,
+    UserSortField
+  } from "@/breeding-insight/model/Sort";
+  import {BackendPaginationController} from "@/breeding-insight/model/view_models/BackendPaginationController";
 
   @Component({
   components: {
-    NewDataForm, PlusCircleIcon, WarningModal, ExpandableRowTable, TableColumn, BasicInputField, BasicSelectField
-  }
+    ExpandableTable, NewDataForm, PlusCircleIcon, WarningModal, TableColumn, BasicInputField, BasicSelectField
+  },
+  computed: {
+    ...mapGetters([
+        'activeUser'
+    ]),
+    ...mapGetters('sorting', [
+        'systemUserSort',
+        'systemUserSortFieldAsBuefy',
+        'systemUserSortOrderAsBuefy'
+    ])
+  },
+    methods: {
+      ...mapMutations('sorting', {
+        updateSort: UPDATE_SYSTEM_USER_SORT
+      })
+    }
 })
 export default class AdminUsersTable extends Vue {
   private deactivateActive: boolean = false;
@@ -269,13 +279,17 @@ export default class AdminUsersTable extends Vue {
   private roles: Role[] = [];
   private rolesMap: Map<string, Role> = new Map();
   private isMobile = false;
+  private activeUser?: User;
+
+  private rolesLoading = true;
+  private usersLoading = true;
 
   userValidations = {
     name: {required},
     email: {required, email}
   }
 
-  private paginationController: PaginationController = new PaginationController();
+  private paginationController: BackendPaginationController = new BackendPaginationController();
 
   private newUserFormState: DataFormEventBusHandler = new DataFormEventBusHandler();
   private editUserFormState: DataFormEventBusHandler = new DataFormEventBusHandler();
@@ -283,12 +297,29 @@ export default class AdminUsersTable extends Vue {
   public users: User[] = [];
   private usersPagination?: Pagination = new Pagination();
 
+  private systemUserSort!: UserSort;
+  private updateSort!: (sort: SystemUserSort) => void;
+
   mounted() {
     this.getRoles();
+    this.updatePagination();
     this.getUsers();
   }
 
-  getActiveProgramRoles() {
+    setSort(field: string, order: string) {
+      const fieldMap: any = {
+        'data.email': SystemUserSortField.Email,
+        'data.name': SystemUserSortField.Name,
+        'data.roleName': SystemUserSortField.Roles,
+        'data.programList': SystemUserSortField.Programs
+      };
+      if (field in fieldMap) {
+        this.updateSort(new SystemUserSort(fieldMap[field], Sort.orderAsBI(order)));
+        this.getUsers();
+      }
+    }
+
+    getActiveProgramRoles() {
     if (this.currentDeleteUser) {
       if (this.currentDeleteUser.id && this.currentDeleteUser.programRoles) {
         return this.currentDeleteUser.programRoles.filter(programRole => programRole.active);
@@ -303,14 +334,19 @@ export default class AdminUsersTable extends Vue {
   }
 
   @Watch('paginationController', { deep: true})
+  paginationChanged() {
+    this.updatePagination();
+    this.getUsers();
+  }
+
+    updatePagination() {
+      let paginationQuery: PaginationQuery = BackendPaginationController.getPaginationSelections(
+          this.paginationController.currentPage, this.paginationController.pageSize);
+      this.paginationController.setCurrentCall(paginationQuery);
+    }
+
   getUsers() {
-
-    let paginationQuery: PaginationQuery = PaginationController.getPaginationSelections(
-      this.paginationController.currentPage, this.paginationController.pageSize, this.paginationController.showAll);
-    this.paginationController.setCurrentCall(paginationQuery);
-
-
-    UserService.getAll(paginationQuery).then(([users, metadata]) => {
+    UserService.getAll(this.paginationController.currentCall, this.systemUserSort).then(([users, metadata]) => {
       if (this.paginationController.matchesCurrentRequest(metadata.pagination)){
         this.users = users;
         this.usersPagination = metadata.pagination;
@@ -319,7 +355,7 @@ export default class AdminUsersTable extends Vue {
       // Display error that users cannot be loaded
       this.$emit('show-error-notification', error.errorMessage);
       throw error;
-    });
+    }).finally(() => this.usersLoading = false);
 
   }
 
@@ -332,10 +368,10 @@ export default class AdminUsersTable extends Vue {
         this.rolesMap = new Map(this.rolesMap.set(role.id!, role));
       }
     }).catch((error) => {
-      // Display error that users cannot be loaded
+      // Display error that roles cannot be loaded
       this.$emit('show-error-notification', error.errorMessage);
       throw error;
-    });
+    }).finally(() => this.rolesLoading = false);
 
   }
 
@@ -377,21 +413,36 @@ export default class AdminUsersTable extends Vue {
     this.getUsers();
   }
 
-  updateUser(user: User) {
+    updatePageSize(pageSize: string) {
+      this.paginationController.updatePageSize(Number(pageSize).valueOf());
+    }
+
+    updateUser(user: User) {
 
     const updateUserPromise = UserService.update(user);
-    const updateRolesPromise = UserService.updateSystemRoles(user);
 
-    const promiseHandler = new PromiseHandler([updateRolesPromise, updateUserPromise]);
+    //if active user is same as modified user, don't update roles
+    let promiseHandler;
+    let noRoles = this.isCurrentUser(user.id!);
+    if (noRoles) {
+      promiseHandler = new PromiseHandler([updateUserPromise]);
+    } else {
+      const updateRolesPromise = UserService.updateSystemRoles(user);
+      promiseHandler = new PromiseHandler([updateRolesPromise, updateUserPromise]);
+    }
     promiseHandler.resolvePromises()
       .then((result:User[]) => {
-        this.$emit('show-success-notification', 'User successfully updated');
+        if (noRoles) {
+          this.$emit('show-success-notification', 'User info (name/email/program) successfully updated');
+        } else {
+          this.$emit('show-success-notification', 'User successfully updated');
+        }
       }).catch((errors: any[]) => {
-        // Show success if one of them succeeded
-        if (errors[0].status === PromiseHandler.FULFILLED){
+        // If two promises, show success if one of them succeeded
+        if ((!noRoles) && (errors[0].status === PromiseHandler.FULFILLED)){
           this.$emit('show-success-notification', 'User roles successfully updated');
         }
-        if (errors[1].status === PromiseHandler.FULFILLED){
+        if ((!noRoles) && (errors[1].status === PromiseHandler.FULFILLED)){
           this.$emit('show-success-notification', 'User info (name/email/program) successfully updated');
         }
 
@@ -440,6 +491,19 @@ export default class AdminUsersTable extends Vue {
     if (this.rolesMap.get(id)){
       return this.rolesMap.get(id)!.name;
     }
+  }
+
+  isCurrentUser(userId: string) {
+    if (this.activeUser!.id === userId){
+      return true;
+    } else {
+      return false;
+    }
+  }
+    
+  showNewUser() {
+    this.newUserActive = true;
+    this.$store.commit(DEACTIVATE_ALL_NOTIFICATIONS);
   }
 
 }
