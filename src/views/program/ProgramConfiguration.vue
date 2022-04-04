@@ -17,7 +17,8 @@
 
 <template>
   <div id="program-configuration">
-    <SharedOntologyConfiguration v-on="$listeners"/>
+    <SharedOntologyConfiguration v-on="$listeners" class="mb-6"/>
+    <SubscribeOntologyConfiguration v-on="$listeners"/>
   </div>
 </template>
 
@@ -26,9 +27,11 @@ import { Component, Prop, Vue } from 'vue-property-decorator'
 import ProgramsBase from "@/components/program/ProgramsBase.vue";
 import {mapGetters} from "vuex";
 import SharedOntologyConfiguration from "@/components/program/SharedOntologyConfiguration.vue";
+import SubscribeOntologyConfiguration from "@/components/program/SubscribeOntologyConfiguration.vue";
 
 @Component({
   components: {
+    SubscribeOntologyConfiguration,
     SharedOntologyConfiguration
   },
   computed: {

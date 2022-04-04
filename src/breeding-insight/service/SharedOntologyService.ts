@@ -22,6 +22,7 @@ import {ValidationErrorService} from "@/breeding-insight/service/ValidationError
 import {SharedOntologyDAO} from "@/breeding-insight/dao/SharedOntologyDAO";
 import {SharedProgramRequest} from "@/breeding-insight/model/SharedProgramRequest";
 import {ValidationError} from "@/breeding-insight/model/errors/ValidationError";
+import {SubscribedProgram} from "@/breeding-insight/model/SubscribedProgram";
 
 export class SharedOntologyService {
 
@@ -37,7 +38,7 @@ export class SharedOntologyService {
       return [sharedPrograms, metadata];
     } catch (error) {
       if (error.response && error.response.status === 404) {
-        throw error.response.message;
+        throw error.response.statusText;
       } else {
         throw 'An unknown error has occurred';
       }
@@ -57,7 +58,7 @@ export class SharedOntologyService {
       return [sharedPrograms, metadata];
     } catch (error) {
       if (error.response && error.response.status === 404) {
-        throw error.response.message;
+        throw error.response.statusText;
       } else if (error.response && error.response.status == 422) {
         const parsedErrors: ValidationError | string =  ValidationErrorService.parseError(error);
         // Stringify and format msg
@@ -78,10 +79,70 @@ export class SharedOntologyService {
         await SharedOntologyDAO.revoke(programId, programToRemove);
       } catch (error) {
         if (error.response && error.response.status === 404) {
-          throw error.response.message;
+          throw error.response.statusText;
         } else {
           throw 'An unknown error has occurred';
         }
+      }
+    }
+  }
+
+  static async getSubscriptionOptions(programId: string): Promise<[SubscribedProgram[], Metadata]> {
+    if (!programId) throw 'Program ID required';
+
+    try {
+      const { result: { data }, metadata } = await SharedOntologyDAO.getSubscriptionOptions(programId);
+      const subscribedPrograms: SubscribedProgram[] = [];
+      for (const datum of data) {
+        subscribedPrograms.push(new SubscribedProgram(datum));
+      }
+      return [subscribedPrograms, metadata];
+    } catch (error) {
+      if (error.response && error.response.status === 404) {
+        throw error.response.statusText;
+      } else if (error.response && error.response.status === 403) {
+        throw 'You do not have permissions required to manage program configurations.';
+      } else {
+        throw 'An unknown error has occurred';
+      }
+    }
+  }
+
+  static async subscribeOntology(programId: string, subscribedProgramId: string) {
+    if (!programId) throw 'Program ID required';
+
+    try {
+      const { result: { data }, metadata } = await SharedOntologyDAO.subscribeOntology(programId, subscribedProgramId);
+      return;
+    } catch (error) {
+      if (error.response && error.response.status === 404) {
+        throw error.response.statusText;
+      } else if (error.response && error.response.status === 403) {
+        throw 'You do not have permissions required to manage program configurations.';
+      } else if (error.response && error.response.status == 422) {
+        throw error.response.statusText;
+      } else {
+        throw 'An unknown error has occurred';
+      }
+    }
+  }
+
+  static async unsubscribeOntology(programId: string, subscribedProgramId: string) {
+    if (!programId) throw 'Program ID required';
+
+    try {
+      await SharedOntologyDAO.unsubscribeOntology(programId, subscribedProgramId);
+      return;
+    } catch (error) {
+      console.log(error);
+      if (error.response && error.response.status === 404) {
+        throw error.response.statusText;
+      } else if (error.response && error.response.status === 403) {
+        throw 'You do not have permissions required to manage program configurations.';
+      } else if (error.response && error.response.status == 422) {
+        throw error.response.statusText;
+      } else {
+        throw 'An unknown error has occurred';
       }
     }
   }

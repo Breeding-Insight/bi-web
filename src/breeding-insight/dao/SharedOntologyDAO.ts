@@ -47,4 +47,30 @@ export class SharedOntologyDAO {
 
     return new BiResponse(data);
   }
+
+  static async getSubscriptionOptions(programId: string) {
+    const { data } = await api.call({
+      url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/ontology/subscribe`,
+      method: 'get'
+    }) as Response;
+
+    return new BiResponse(data);
+  }
+
+  static async subscribeOntology(programId: string, subscribedProgramId: string) {
+    const { data } =  await api.call({
+      url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/ontology/subscribe/${subscribedProgramId}`,
+      method: 'put'
+    }) as Response;
+    return new BiResponse(data);
+  }
+
+  static async unsubscribeOntology(programId: string, subscribedProgramId: string) {
+    const { data } = await api.call({
+      url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/ontology/subscribe/${subscribedProgramId}`,
+      method: 'delete'
+    }) as Response;
+
+    return new BiResponse(data);
+  }
 }

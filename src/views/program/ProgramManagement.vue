@@ -35,6 +35,7 @@
             <a>Users</a>
           </router-link>
           <router-link
+              v-if="$ability.can('access', 'ProgramConfiguration')"
               v-bind:to="{name: 'program-configuration', params: {programId: activeProgram.id}}"
               tag="li" active-class="is-active">
             <a>Configuration</a>
