@@ -17,8 +17,17 @@
 
 <template>
   <div id="program-configuration">
-    <SharedOntologyConfiguration v-on="$listeners" class="mb-6"/>
-    <SubscribeOntologyConfiguration v-on="$listeners"/>
+    <SharedOntologyConfiguration
+        v-on="$listeners"
+        class="mb-6"
+        v-bind:subscription-change="subscribeAction"
+        v-on:share-change="shareAction += 1"
+    />
+    <SubscribeOntologyConfiguration
+        v-on="$listeners"
+        v-on:subscription-change="subscribeAction += 1"
+        v-bind:share-change="shareAction"
+    />
   </div>
 </template>
 
@@ -41,6 +50,8 @@ import SubscribeOntologyConfiguration from "@/components/program/SubscribeOntolo
   }
 })
 export default class ProgramConfiguration extends ProgramsBase {
-
+  // Change tracker to pass to children for refresh
+  private subscribeAction: number = 0;
+  private shareAction: number = 0;
 }
 </script>
