@@ -37,6 +37,11 @@
       <b-table-column field="createdBy.userName" label="Created By" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
         {{ props.row.data.additionalInfo.createdBy.userName }}
       </b-table-column>
+      <b-table-column field="germplasmId" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+        <router-link v-bind:to="{name: 'germplasm-details', params: {programId: activeProgram.id, germplasmId: getGermplasmUUID(props.row.data.externalReferences)}}">
+          Show Details
+        </router-link>
+      </b-table-column>
 
       <template v-slot:emptyMessage>
         <p class="has-text-weight-bold">
@@ -63,6 +68,7 @@ import {Pagination} from "@/breeding-insight/model/BiResponse";
 import ExpandableTable from "@/components/tables/expandableTable/ExpandableTable.vue";
 import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
 import {Pedigree} from "@/breeding-insight/model/import/germplasm/Pedigree";
+import {ExternalReferences} from "@/breeding-insight/brapi/model/externalReferences";
 
 @Component({
   mixins: [validationMixin],
@@ -109,6 +115,12 @@ export default class GermplasmTable extends Vue {
     }
 
   }
+
+  getGermplasmUUID(references: ExternalReferences){
+    let val = references.find(ref => ref.referenceSource === process.env.VUE_APP_BI_REFERENCE_SOURCE);
+    return val ? val.referenceID : ""; //todo error handling
+  }
+
 
 }
 </script>
