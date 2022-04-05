@@ -9,6 +9,9 @@
     <template v-else-if="sharedPrograms.length > 0">
       <p>You cannot subscribe to another programs ontology when you have shared your own program's ontology.</p>
     </template>
+    <template v-else-if="hasTraits">
+      <p>This program contains traits and so cannot subscribe to another program's ontology.</p>
+    </template>
     <template v-else-if="shareOffers.length == 0">
       <p>No ontologies are currently shared with your program at this time.</p>
     </template>
@@ -51,6 +54,7 @@ import ProgramsBase from "@/components/program/ProgramsBase.vue";
 import {Program} from "@/breeding-insight/model/Program";
 import BasicSelectField from "@/components/forms/BasicSelectField.vue";
 import {SharedProgram} from "@/breeding-insight/model/SharedProgram";
+import {TraitService} from "@/breeding-insight/service/TraitService";
 
 @Component({
   components: {BasicSelectField},
@@ -70,6 +74,7 @@ export default class SubscribeOntologyConfiguration extends ProgramsBase {
   private subscribedOntology?: SubscribedProgram;
   private selectedOntology?: any = {};
   private sharedPrograms?: SharedProgram[] = [];
+  private hasTraits: boolean = false;
 
   private activeProgram?: Program;
   private sharedProgramLoading: boolean = false;
@@ -86,7 +91,7 @@ export default class SubscribeOntologyConfiguration extends ProgramsBase {
     try {
       // Loading wheel show
       this.sharedProgramLoading = true;
-      await Promise.all([this.getSubscribedOntologyOptions(), this.getSharedPrograms()]);
+      await Promise.all([this.getSubscribedOntologyOptions(), this.getSharedPrograms(), this.getTraits()]);
     } catch (e) {
       // Check error statuses, show errors
       this.$emit('show-error-notification', e);
@@ -148,6 +153,16 @@ export default class SubscribeOntologyConfiguration extends ProgramsBase {
       this.subscribeProcessing = false;
       this.getSharedOntologyData();
     }
+  }
+
+  async getTraits() {
+
+    TraitService.getAll(this.activeProgram!.id!, undefined, false).then(([traits, metadata]) => {
+      this.hasTraits = traits && traits.length > 0;
+    }).catch((error) => {
+      // Non-crucial error, fail silently
+      this.$log.error(`Unable to query traits ${error}`)
+    });
   }
 
   isSubscribed() {
