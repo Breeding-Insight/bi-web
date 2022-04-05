@@ -88,9 +88,5 @@
     "vue-cli-plugin-axios": "0.0.4",
     "vue-template-compiler": "^2.6.10"
   },
-<<<<<<< HEAD
   "versionInfo": "https://github.com/Breeding-Insight/bi-web/commit/735810dc6ca235ad62714ab1b02db30f3662e6da"
-=======
-  "versionInfo": "https://github.com/Breeding-Insight/bi-web/commit/735810dc6ca235ad62714ab1b02db30f3662e6da"
->>>>>>> [1.0] set version to 1.0.0
 }
