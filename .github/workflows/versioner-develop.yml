@@ -6,6 +6,7 @@ on:
       - develop
       - release/**
       - future/**
+  workflow_dispatch:
 
 jobs:
   version:
