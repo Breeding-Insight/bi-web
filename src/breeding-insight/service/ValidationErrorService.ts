@@ -40,4 +40,27 @@ export class ValidationErrorService {
       }
     }
   }
+
+  static stringify(errors: ValidationError | string, {includeRowNum, includeField}: {includeRowNum: boolean, includeField: boolean}) {
+
+    const formattedErrors = [];
+    const isValidationError = errors instanceof ValidationError;
+    if (isValidationError){
+      const validationErrors = errors as ValidationError;
+      if (validationErrors.rowErrors) {
+        for (const error of validationErrors.rowErrors){
+          if (error.errors) {
+            for (const fieldError of error.errors){
+              let msg = includeField ? `${fieldError.field}: ${fieldError.errorMessage}` : fieldError.errorMessage;
+              msg += includeRowNum ? ` in row ${error.rowIndex}` : '';
+              formattedErrors.push(msg);
+            }
+          }
+        }
+      }
+      return formattedErrors;
+    } else {
+      return [errors];
+    }
+  }
 }

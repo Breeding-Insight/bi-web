@@ -67,6 +67,7 @@ import PageNotFound from "@/views/PageNotFound.vue";
 import Germplasm from "@/views/germplasm/Germplasm.vue";
 import GermplasmLists from "@/views/germplasm/GermplasmLists.vue";
 import GermplasmDetails from "@/views/germplasm/GermplasmDetails.vue";
+import ProgramConfiguration from "@/views/program/ProgramConfiguration.vue";
 
 Vue.use(VueRouter);
 
@@ -229,6 +230,15 @@ const routes = [
           layout: layouts.userSideBar
         },
         component: ProgramUserManagement
+      },
+      {
+        path: 'configure',
+        name: 'program-configuration',
+        meta: {
+          title: 'Program Configuration',
+          layout: layouts.userSideBar
+        },
+        component: ProgramConfiguration
       }
     ]
   },

@@ -34,6 +34,11 @@
               tag="li" active-class="is-active">
             <a>Users</a>
           </router-link>
+          <router-link
+              v-bind:to="{name: 'program-configuration', params: {programId: activeProgram.id}}"
+              tag="li" active-class="is-active">
+            <a>Configuration</a>
+          </router-link>
         </ul>
       </nav>
     </section>
