@@ -41,4 +41,22 @@ export class GermplasmDAO {
             })
         }))
     }
+
+    static getSingleGermplasm(programId: string, germplasmId: string): Promise<BiResponse> {
+        const config: any = {};
+        config.url = `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/brapi/v2/germplasm/${germplasmId}`;
+        config.method = 'get';
+        config.programId = programId;
+        config.germplasmId = germplasmId;
+        config.params = {}; //todo check if needed
+
+        return new Promise<any>(((resolve, reject) => {
+            api.call(config)
+                .then((response: any) => {
+                    resolve(response);
+                }).catch((error) => {
+                reject(error);
+            })
+        }))
+    }
 }

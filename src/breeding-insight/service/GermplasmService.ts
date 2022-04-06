@@ -20,6 +20,7 @@ import {BiResponse, Metadata} from "@/breeding-insight/model/BiResponse";
 import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
 import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
 import {GermplasmDAO} from "@/breeding-insight/dao/GermplasmDAO";
+import {Germplasm} from "@/breeding-insight/brapi/model/germplasm";
 
 export class GermplasmService {
 
@@ -39,6 +40,27 @@ export class GermplasmService {
                     }
 
                     resolve([germplasmLists, biResponse.metadata]);
+                }).catch((error) => {
+                    reject(error);
+                })
+            } else {
+                reject();
+            }
+        }));
+    }
+
+    static getSingleGermplasm(programId: string, germplasmId: string): Promise<Germplasm> {
+        return new Promise<Germplasm>(((resolve, reject) => {
+
+            let germplasm: Germplasm;
+
+            if (programId) {
+                GermplasmDAO.getSingleGermplasm(programId, germplasmId).then((response: any) => {
+                    if (response.data) {
+                        germplasm = response.data as Germplasm;
+                    }
+
+                    resolve(germplasm);
                 }).catch((error) => {
                     reject(error);
                 })
