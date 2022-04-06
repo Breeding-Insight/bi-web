@@ -19,10 +19,12 @@ export class SubscribedProgram {
   programName: string;
   programId: string;
   subscribed: boolean;
+  editable: boolean;
 
-  constructor({programName, programId, subscribed}: SubscribedProgram) {
+  constructor({programName, programId, subscribed, editable}: SubscribedProgram) {
     this.programName = programName;
     this.programId = programId;
     this.subscribed = subscribed;
+    this.editable = editable;
   }
 }

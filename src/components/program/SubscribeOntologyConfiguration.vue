@@ -16,15 +16,22 @@
       <p>No ontologies are currently shared with your program at this time.</p>
     </template>
     <template v-else-if="isSubscribed()">
+      <p>This program is currently subscribed to the {{subscribedOntology.programName}} ontology</p>
+
+      <!-- Program has observations, cannot unsubscribe -->
+      <template v-if="!subscribedOntology.editable">
+        <p>This program has collected observations on the traits in the subscribed ontology and cannot unsubscribe from the ontology.</p>
+      </template>
       <!-- Show subscribed program and unsubscribe button -->
-      <p>This program is current subscribed to the {{subscribedOntology.programName}} ontology</p>
-      <button
-          id="unSubscribeOntologyBtn"
-          class="button is-primary"
-          v-on:click="unsubscribeOntology(subscribedOntology.programId)"
-      >
-        Unsubscribe from {{subscribedOntology.programName}} ontology
-      </button>
+      <template v-else>
+        <button
+            id="unSubscribeOntologyBtn"
+            class="button is-primary"
+            v-on:click="unsubscribeOntology(subscribedOntology.programId)"
+        >
+          Unsubscribe from {{subscribedOntology.programName}} ontology
+        </button>
+      </template>
     </template>
     <template v-else>
       <!-- Dropdown for program subscription selection -->
