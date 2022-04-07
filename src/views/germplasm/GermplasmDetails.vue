@@ -111,7 +111,7 @@ export default class GermplasmDetails extends GermplasmBase {
   getExternalUID() {
     let val;
     if (this.germplasm!.externalReferences && this.germplasm!.seedSource) {
-      val = this.germplasm.externalReferences.filter(ref => ref.referenceSource == this.germplasm.seedSource!)
+      val = this.germplasm!.externalReferences!.filter(ref => ref.referenceSource == this.germplasm!.seedSource!)
           .map(ref => ref.referenceID);
       return val ? val[0]: "";
     }
@@ -120,8 +120,7 @@ export default class GermplasmDetails extends GermplasmBase {
 
   getCreatedDate(){
     if (this.germplasm!.additionalInfo && this.germplasm!.additionalInfo.createdDate) {
-      let createdDate = this.germplasm.additionalInfo.createdDate;
-      let dateTime = moment(createdDate, "DD/MM/YYYY h:mm:ss");
+      let dateTime = moment(this.germplasm!.additionalInfo!.createdDate!, "DD/MM/YYYY h:mm:ss");
       return dateTime.format("DD/MM/YYYY");
     }
     return "";
