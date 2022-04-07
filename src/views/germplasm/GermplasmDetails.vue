@@ -75,10 +75,8 @@ import {mapGetters} from "vuex";
 import {Program} from "@/breeding-insight/model/Program";
 import GermplasmBase from "@/components/germplasm/GermplasmBase.vue";
 import {Germplasm} from "@/breeding-insight/brapi/model/germplasm";
-import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
-import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
 import {GermplasmService} from "@/breeding-insight/service/GermplasmService";
-import {Pagination} from "@/breeding-insight/model/BiResponse";
+import moment from "moment";
 
 @Component({
   components: {},
@@ -91,12 +89,9 @@ import {Pagination} from "@/breeding-insight/model/BiResponse";
 export default class GermplasmDetails extends GermplasmBase {
 
   private activeProgram?: Program;
-  private germplasm: Germplasm;
+  private germplasm?: Germplasm;
   private germplasmLoading: boolean = true;
   private germplasmUUID: string = this.$route.params.germplasmId;
-  //private femaleParent: string = "";
-  //todo create empty obj then as germplasm
-  //todo take away time in datetime
 
   mounted() {
     this.getGermplasm();
@@ -114,14 +109,20 @@ export default class GermplasmDetails extends GermplasmBase {
   }
 
   getExternalUID() {
-    let val = this.germplasm.externalReferences.filter(ref => ref.referenceSource == this.germplasm.seedSource)
-        .map(ref => ref.referenceID);
+    let val = "";
+    if (this.germplasm.externalReferences && this.germplasm.seedSource) {
+      val = this.germplasm.externalReferences.filter(ref => ref.referenceSource == this.germplasm.seedSource)
+          .map(ref => ref.referenceID);
+    }
     return val ? val[0]: "";
   }
 
   getCreatedDate(){
-    let dateTime = new Date(this.germplasm.additionalInfo.createdDate);
-    return dateTime.toLocaleDateString();
+    if (this.germplasm.additionalInfo && this.germplasm.additionalInfo.createdDate) {
+      let dateTime = moment(this.germplasm.additionalInfo.createdDate, "DD/MM/YYYY h:mm:ss");
+      return dateTime.format("DD/MM/YYYY");
+    }
+    return "";
   }
 
 }
