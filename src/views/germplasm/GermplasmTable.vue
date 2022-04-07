@@ -118,7 +118,7 @@ export default class GermplasmTable extends Vue {
 
   getGermplasmUUID(references: ExternalReferences){
     let val = references.find(ref => ref.referenceSource === process.env.VUE_APP_BI_REFERENCE_SOURCE);
-    return val ? val.referenceID : ""; //todo error handling
+    return val ? val.referenceID : "";
   }
 
 

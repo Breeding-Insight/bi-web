@@ -89,7 +89,7 @@ import moment from "moment";
 export default class GermplasmDetails extends GermplasmBase {
 
   private activeProgram?: Program;
-  private germplasm?: Germplasm;
+  private germplasm: Germplasm;
   private germplasmLoading: boolean = true;
   private germplasmUUID: string = this.$route.params.germplasmId;
 
@@ -120,7 +120,8 @@ export default class GermplasmDetails extends GermplasmBase {
 
   getCreatedDate(){
     if (this.germplasm!.additionalInfo && this.germplasm!.additionalInfo.createdDate) {
-      let dateTime = moment(this.germplasm.additionalInfo.createdDate!, "DD/MM/YYYY h:mm:ss");
+      let createdDate = this.germplasm.additionalInfo.createdDate;
+      let dateTime = moment(createdDate, "DD/MM/YYYY h:mm:ss");
       return dateTime.format("DD/MM/YYYY");
     }
     return "";
