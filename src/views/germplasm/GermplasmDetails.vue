@@ -89,7 +89,7 @@ import moment from "moment";
 export default class GermplasmDetails extends GermplasmBase {
 
   private activeProgram?: Program;
-  private germplasm: Germplasm;
+  private germplasm?: Germplasm;
   private germplasmLoading: boolean = true;
   private germplasmUUID: string = this.$route.params.germplasmId;
 
