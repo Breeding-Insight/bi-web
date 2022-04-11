@@ -10,7 +10,7 @@
       <p>You cannot subscribe to another programs ontology when you have shared your own program's ontology.</p>
     </template>
     <template v-else-if="hasTraits">
-      <p>This program contains traits and so cannot subscribe to another program's ontology.</p>
+      <p>This program contains traits and therefore cannot subscribe to another program's ontology.</p>
     </template>
     <template v-else-if="shareOffers.length == 0">
       <p>No ontologies are currently shared with your program at this time.</p>
@@ -56,11 +56,11 @@
 import {Component, Prop, Watch} from "vue-property-decorator";
 import {mapGetters} from "vuex";
 import {SharedOntologyService} from "@/breeding-insight/service/SharedOntologyService";
-import {SubscribedProgram} from "@/breeding-insight/model/SubscribedProgram";
+import {SubscribedOntology} from "@/breeding-insight/model/SubscribedOntology";
 import ProgramsBase from "@/components/program/ProgramsBase.vue";
 import {Program} from "@/breeding-insight/model/Program";
 import BasicSelectField from "@/components/forms/BasicSelectField.vue";
-import {SharedProgram} from "@/breeding-insight/model/SharedProgram";
+import {SharedOntology} from "@/breeding-insight/model/SharedOntology";
 import {TraitService} from "@/breeding-insight/service/TraitService";
 
 @Component({
@@ -76,11 +76,11 @@ export default class SubscribeOntologyConfiguration extends ProgramsBase {
   @Prop()
   private shareChange?: number;
 
-  private shareOffers: SubscribedProgram[] = [];
+  private shareOffers: SubscribedOntology[] = [];
   private shareOffersOptions: any[] = [];
-  private subscribedOntology?: SubscribedProgram;
+  private subscribedOntology?: SubscribedOntology;
   private selectedOntology?: any = {};
-  private sharedPrograms?: SharedProgram[] = [];
+  private sharedPrograms?: SharedOntology[] = [];
   private hasTraits: boolean = false;
 
   private activeProgram?: Program;
@@ -112,7 +112,7 @@ export default class SubscribeOntologyConfiguration extends ProgramsBase {
     // Get subscribed ontology options
     const [data, metadata] = await SharedOntologyService.getSubscriptionOptions(this.activeProgram!.id!);
     // Check if we are subscribed to one of the programs
-    data.forEach((datum: SubscribedProgram) => {
+    data.forEach((datum: SubscribedOntology) => {
       if (datum.subscribed) {
         this.subscribedOntology = datum;
       }

@@ -16,11 +16,11 @@
  */
 
 
-export class SharedProgramRequest {
+export class SharedOntologyRequest {
   programName: string;
   programId: string;
 
-  constructor({programName, programId}: SharedProgramRequest) {
+  constructor({programName, programId}: SharedOntologyRequest) {
     this.programName = programName;
     this.programId = programId;
   }

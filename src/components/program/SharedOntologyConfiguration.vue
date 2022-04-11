@@ -134,13 +134,13 @@
 <script lang="ts">
 import {Component, Prop, Vue, Watch} from 'vue-property-decorator'
 import ProgramsBase from "@/components/program/ProgramsBase.vue";
-import {SharedProgram} from "@/breeding-insight/model/SharedProgram";
+import {SharedOntology} from "@/breeding-insight/model/SharedOntology";
 import {SharedOntologyService} from "@/breeding-insight/service/SharedOntologyService";
 import {mapGetters} from "vuex";
 import {Program} from "@/breeding-insight/model/Program";
-import {SharedProgramRequest} from "@/breeding-insight/model/SharedProgramRequest";
+import {SharedOntologyRequest} from "@/breeding-insight/model/SharedOntologyRequest";
 import GenericModal from "@/components/modals/GenericModal.vue";
-import {SubscribedProgram} from "@/breeding-insight/model/SubscribedProgram";
+import {SubscribedOntology} from "@/breeding-insight/model/SubscribedOntology";
 
 @Component({
   components: {
@@ -163,10 +163,10 @@ export default class SharedOntologyConfiguration extends ProgramsBase {
   private shareProgramProcessing: boolean = false;
   private showShareModal: boolean = false;
 
-  private matchedPrograms: {[key: string]: SharedProgram} = {};
-  private sharedPrograms: SharedProgram[] = [];
-  private editableMatchedPrograms: SharedProgram[] = [];
-  private subscribedOntology?: SubscribedProgram;
+  private matchedPrograms: {[key: string]: SharedOntology} = {};
+  private sharedPrograms: SharedOntology[] = [];
+  private editableMatchedPrograms: SharedOntology[] = [];
+  private subscribedOntology?: SubscribedOntology;
 
   async mounted() {
     // Get shared ontologies
@@ -196,7 +196,7 @@ export default class SharedOntologyConfiguration extends ProgramsBase {
   // Get shared ontologies
   async getSharedPrograms() {
       const [data, metadata] = await SharedOntologyService.get(this.activeProgram!.id!);
-      data.forEach((datum: SharedProgram) => this.matchedPrograms[datum.programId] = datum);
+      data.forEach((datum: SharedOntology) => this.matchedPrograms[datum.programId] = datum);
       // Filter for shared programs
       this.sharedPrograms = Object.values(this.matchedPrograms).filter(matchedProgram => matchedProgram.shared);
   }
@@ -205,7 +205,7 @@ export default class SharedOntologyConfiguration extends ProgramsBase {
       const [data, metadata] = await SharedOntologyService.getSubscriptionOptions(this.activeProgram!.id!);
       // Check if we are subscribed to one of the programs
       this.subscribedOntology = undefined;
-      data.forEach((datum: SubscribedProgram) => {
+      data.forEach((datum: SubscribedOntology) => {
         if (datum.subscribed) {
           this.subscribedOntology = datum;
         }
@@ -213,11 +213,11 @@ export default class SharedOntologyConfiguration extends ProgramsBase {
   }
 
   shareShowModalEvent() {
-    this.editableMatchedPrograms = Object.values(this.matchedPrograms).map(matchedProgram => new SharedProgram(matchedProgram));
+    this.editableMatchedPrograms = Object.values(this.matchedPrograms).map(matchedProgram => new SharedOntology(matchedProgram));
     this.showShareModal = true;
   }
 
-  isEditable(program: SharedProgram) {
+  isEditable(program: SharedOntology) {
     return !program.shared || program.editable;
   }
 
@@ -225,9 +225,9 @@ export default class SharedOntologyConfiguration extends ProgramsBase {
 
     // Process the selections
     const programIdsToRevoke: string[] = [];
-    const newSharePrograms: SharedProgramRequest[] = [];
+    const newSharePrograms: SharedOntologyRequest[] = [];
     for (const program of this.editableMatchedPrograms) {
-      const originalProgram: SharedProgram = this.matchedPrograms[program.programId];
+      const originalProgram: SharedOntology = this.matchedPrograms[program.programId];
 
       if (program.shared === originalProgram.shared) {
         // If no change skip
@@ -238,7 +238,7 @@ export default class SharedOntologyConfiguration extends ProgramsBase {
       } else if (!originalProgram.shared && program.shared) {
         // If program was not shared, and it now shared, add to share list
         newSharePrograms.push(
-            new SharedProgramRequest({programName: program.programName, programId: program.programId}));
+            new SharedOntologyRequest({programName: program.programName, programId: program.programId}));
       }
     }
 

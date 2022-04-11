@@ -17,7 +17,7 @@
 
 import {BiResponse, Metadata, Response} from "@/breeding-insight/model/BiResponse";
 import * as api from "@/util/api";
-import {SharedProgramRequest} from "@/breeding-insight/model/SharedProgramRequest";
+import {SharedOntologyRequest} from "@/breeding-insight/model/SharedOntologyRequest";
 
 export class SharedOntologyDAO {
 
@@ -30,7 +30,7 @@ export class SharedOntologyDAO {
     return new BiResponse(data);
   }
 
-  static async share(programId: string, sharedProgramsRequest: SharedProgramRequest[]): Promise<BiResponse> {
+  static async share(programId: string, sharedProgramsRequest: SharedOntologyRequest[]): Promise<BiResponse> {
     const { data } =  await api.call({
       url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/ontology/shared/programs`,
       method: 'post',

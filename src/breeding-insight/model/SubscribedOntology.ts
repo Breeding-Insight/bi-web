@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-export class SubscribedProgram {
+export class SubscribedOntology {
   programName: string;
   programId: string;
   subscribed: boolean;
   editable: boolean;
 
-  constructor({programName, programId, subscribed, editable}: SubscribedProgram) {
+  constructor({programName, programId, subscribed, editable}: SubscribedOntology) {
     this.programName = programName;
     this.programId = programId;
     this.subscribed = subscribed;
