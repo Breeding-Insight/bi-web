@@ -28,6 +28,8 @@
             id="unSubscribeOntologyBtn"
             class="button is-primary"
             v-on:click="unsubscribeOntology(subscribedOntology.programId)"
+            v-bind:class="{'is-loading': subscribeProcessing}"
+            v-bind:disabled="subscribeProcessing"
         >
           Unsubscribe from {{subscribedOntology.programName}} ontology
         </button>
@@ -45,6 +47,8 @@
           id="subscribeOntologyBtn"
           class="button is-primary"
           v-on:click="subscribeOntology()"
+          v-bind:class="{'is-loading': subscribeProcessing}"
+          v-bind:disabled="subscribeProcessing"
       >
         Subscribe to Ontology
       </button>

@@ -119,8 +119,9 @@
                     v-bind:class="{'is-loading': shareProgramProcessing}"
                     v-on:click="processSelections()"
                     id="confirmSharedOntology"
+                    v-bind:disabled="shareProgramProcessing"
                 >
-                  <strong>Confirm</strong>
+                  <strong>Save</strong>
                 </button>
               </div>
             </div>
