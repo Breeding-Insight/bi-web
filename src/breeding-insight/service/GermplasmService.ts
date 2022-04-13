@@ -21,6 +21,7 @@ import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
 import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
 import {GermplasmDAO} from "@/breeding-insight/dao/GermplasmDAO";
 import {Germplasm} from "@/breeding-insight/brapi/model/germplasm";
+import {Result, ResultGenerator} from "@/breeding-insight/model/Result";
 
 export class GermplasmService {
 
@@ -49,25 +50,14 @@ export class GermplasmService {
         }));
     }
 
-    static getSingleGermplasm(programId: string, germplasmId: string): Promise<Germplasm> {
-        return new Promise<Germplasm>(((resolve, reject) => {
-
-            let germplasm: Germplasm;
-
-            if (programId) {
-                GermplasmDAO.getSingleGermplasm(programId, germplasmId).then((response: any) => {
-                    if (response.data) {
-                        germplasm = response.data as Germplasm;
-                    }
-
-                    resolve(germplasm);
-                }).catch((error) => {
-                    reject(error);
-                })
-            } else {
-                reject();
-            }
-        }));
+    static async getSingleGermplasm(programId: string, germplasmId: string): Promise<Result<Error, Germplasm>> {
+        try {
+              if (!programId) throw new Error('Missing or invalid program id');
+              let response: Result<Error, Germplasm> = await GermplasmDAO.getSingleGermplasm(programId, germplasmId);
+              return response;
+          } catch(error) {
+              return ResultGenerator.err(error);
+          }
     }
 
 }

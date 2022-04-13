@@ -15,9 +15,11 @@
  * limitations under the License.
  */
 
-import {BiResponse} from "@/breeding-insight/model/BiResponse";
+import {BiResponse, Response} from "@/breeding-insight/model/BiResponse";
 import * as api from "@/util/api";
 import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
+import {Result, ResultGenerator} from "@/breeding-insight/model/Result";
+import {Germplasm} from "@/breeding-insight/brapi/model/germplasm";
 
 export class GermplasmDAO {
 
@@ -42,21 +44,20 @@ export class GermplasmDAO {
         }))
     }
 
-    static getSingleGermplasm(programId: string, germplasmId: string): Promise<BiResponse> {
+    static async getSingleGermplasm(programId: string, germplasmId: string): Promise<Result<Error, Germplasm>> {
         const config: any = {};
         config.url = `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/brapi/v2/germplasm/${germplasmId}`;
         config.method = 'get';
         config.programId = programId;
         config.germplasmId = germplasmId;
-        config.params = {}; //todo check if needed
+        config.params = {};
 
-        return new Promise<any>(((resolve, reject) => {
-            api.call(config)
-                .then((response: any) => {
-                    resolve(response);
-                }).catch((error) => {
-                reject(error);
-            })
-        }))
+        try {
+            const res = await api.call(config) as Response;
+            let { result } = res.data;
+            return ResultGenerator.success(result);
+        } catch (error) {
+            return ResultGenerator.err(error);
+        }
     }
 }

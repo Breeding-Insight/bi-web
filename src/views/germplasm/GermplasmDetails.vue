@@ -20,12 +20,12 @@
     <router-link v-bind:to="{name: 'germplasm-all', params: {programId: activeProgram.id}}">
       All Germplasm
     </router-link>
-    <p></p>
+    <div class="mb-4"></div>
     <h1 class="title">
       Germplasm Details
     </h1>
 
-    <template v-if="!germplasmLoading">
+    <template v-if="!germplasmLoading && germplasm!=null">
     <div class="columns is-multiline is-align-items-stretch mt-4">
     <article class="column ">
     <section>
@@ -42,9 +42,9 @@
     <article class="column px-2">
       <section>
         <ul style="list-style-type: none;">
-          <li><b>External UID: </b> {{ getExternalUID() }}</li>
+          <li><b>External UID: </b> {{ GermplasmUtils.getExternalUID(germplasm) }}</li>
           <li><b>User: </b> {{ germplasm.additionalInfo.createdBy.userName }}</li>
-          <li><b>Creation Date: </b> {{ getCreatedDate() }}</li>
+          <li><b>Creation Date: </b> {{ GermplasmUtils.getCreatedDate(germplasm) }}</li>
         </ul>
       </section>
     </article>
@@ -93,7 +93,8 @@ import {Program} from "@/breeding-insight/model/Program";
 import GermplasmBase from "@/components/germplasm/GermplasmBase.vue";
 import {Germplasm} from "@/breeding-insight/brapi/model/germplasm";
 import {GermplasmService} from "@/breeding-insight/service/GermplasmService";
-import moment from "moment";
+import {GermplasmUtils} from '@/breeding-insight/utils/GermplasmUtils';
+import { Result } from '@/breeding-insight/model/Result';
 
 @Component({
   components: {},
@@ -101,7 +102,8 @@ import moment from "moment";
     ...mapGetters([
       'activeProgram'
     ])
-  }
+  },
+  data: () => ({GermplasmUtils})
 })
 export default class GermplasmDetails extends GermplasmBase {
 
@@ -114,34 +116,19 @@ export default class GermplasmDetails extends GermplasmBase {
     this.getGermplasm();
   }
 
-  getGermplasm() {
+  async getGermplasm() {
     this.germplasmLoading = true;
-    GermplasmService.getSingleGermplasm(this.activeProgram!.id!, this.germplasmUUID).then((germplasm) => {
-      this.germplasm = germplasm;
-    }).catch((error) => {
+    try {
+      const response: Result<Error, Germplasm> = await GermplasmService.getSingleGermplasm(this.activeProgram!.id!, this.germplasmUUID);
+      if(response.isErr()) throw response.value;
+      this.germplasm = response.value;
+    } catch (err) {
       // Display error that germplasm cannot be loaded
       this.$emit('show-error-notification', 'Error while trying to load germplasm');
-      throw error;
-    }).finally(() => this.germplasmLoading = false);
-  }
-
-  getExternalUID() {
-    let val;
-    if (this.germplasm!.externalReferences && this.germplasm!.seedSource) {
-      val = this.germplasm!.externalReferences!.filter(ref => ref.referenceSource == this.germplasm!.seedSource!)
-          .map(ref => ref.referenceID);
-      return val ? val[0]: "";
+      throw err;
+    } finally {
+      this.germplasmLoading = false
     }
-    return "";
   }
-
-  getCreatedDate(){
-    if (this.germplasm!.additionalInfo && this.germplasm!.additionalInfo.createdDate) {
-      let dateTime = moment(this.germplasm!.additionalInfo!.createdDate!, "DD/MM/YYYY h:mm:ss");
-      return dateTime.format("DD/MM/YYYY");
-    }
-    return "";
-  }
-
 }
 </script>
