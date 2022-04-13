@@ -14,7 +14,11 @@
         v-on:sort="paginationController.updateSort($event)"
     >
       <b-table-column field="accessionNumber" label="GID" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-        {{ props.row.data.accessionNumber }}
+        <GermplasmLink
+            v-bind:germplasmUUID="getGermplasmUUID(props.row.data.externalReferences)"
+            v-bind:germplasmGID="props.row.data.accessionNumber"
+        >
+        </GermplasmLink>
       </b-table-column>
       <b-table-column field="defaultDisplayName" label="Name" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
         {{ props.row.data.defaultDisplayName }}
@@ -26,10 +30,16 @@
         {{ props.row.data.seedSource }}
       </b-table-column>
       <b-table-column field="pedigree" label="Female Parent GID" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-        {{ Pedigree.parsePedigreeString(props.row.data.pedigree).femaleParent }}
+        <GermplasmLink
+            v-bind:germplasmUUID="Pedigree.parsePedigreeString(props.row.data.additionalInfo.pedigreeByUUID).femaleParent"
+            v-bind:germplasmGID="Pedigree.parsePedigreeString(props.row.data.pedigree).femaleParent"
+        > </GermplasmLink>
       </b-table-column>
       <b-table-column field="pedigree" label="Male Parent GID" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-        {{ Pedigree.parsePedigreeString(props.row.data.pedigree).maleParent }}
+        <GermplasmLink
+            v-bind:germplasmUUID="Pedigree.parsePedigreeString(props.row.data.additionalInfo.pedigreeByUUID).maleParent"
+            v-bind:germplasmGID="Pedigree.parsePedigreeString(props.row.data.pedigree).maleParent"
+        > </GermplasmLink>
       </b-table-column>
       <b-table-column field="createdDate" label="Created Date" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
         {{ props.row.data.additionalInfo.createdDate }}
@@ -69,10 +79,11 @@ import ExpandableTable from "@/components/tables/expandableTable/ExpandableTable
 import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
 import {Pedigree} from "@/breeding-insight/model/import/germplasm/Pedigree";
 import {ExternalReferences} from "@/breeding-insight/brapi/model/externalReferences";
+import GermplasmLink from '@/components/germplasm/GermplasmLink.vue'
 
 @Component({
   mixins: [validationMixin],
-  components: {ReportTable, ExpandableTable},
+  components: {GermplasmLink, ReportTable, ExpandableTable},
   computed: {
     ...mapGetters([
       'activeProgram'
