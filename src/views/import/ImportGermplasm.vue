@@ -132,6 +132,9 @@
           <b-table-column field="externalUID" label="External UID" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
             {{ ExternalUID.getExternalUIDFromExternalReferences(props.row.data.brAPIObject.externalReferences, props.row.data.brAPIObject.seedSource) }}
           </b-table-column>
+          <b-table-column field="synonyms" label="Synonyms" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+            {{ formatSynonyms(props.row.data.brAPIObject.synonyms) }}
+          </b-table-column>
 
           <template v-slot:emptyMessage>
             <p class="has-text-weight-bold">
@@ -212,6 +215,12 @@ export default class ImportGermplasm extends ProgramsBase {
 
   importFinished() {
     this.germplasmList = new GermplasmList();
+  }
+
+  // TODO: Put in Heather's germplasm utils
+  formatSynonyms(synonyms: any[]) {
+    if (!synonyms) return "";
+    return synonyms.map(synonym => synonym.synonym).join(";");
   }
 }
 </script>
