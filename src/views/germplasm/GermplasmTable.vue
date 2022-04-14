@@ -15,7 +15,7 @@
     >
       <b-table-column field="accessionNumber" label="GID" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
         <GermplasmLink
-            v-bind:germplasmUUID="getGermplasmUUID(props.row.data.externalReferences)"
+            v-bind:germplasmUUID="GermplasmUtils.getGermplasmUUID(props.row.data.externalReferences)"
             v-bind:germplasmGID="props.row.data.accessionNumber"
         >
         </GermplasmLink>
