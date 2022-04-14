@@ -66,6 +66,7 @@ import OntologyArchivedTable from "@/components/ontology/OntologyArchivedTable.v
 import PageNotFound from "@/views/PageNotFound.vue";
 import Germplasm from "@/views/germplasm/Germplasm.vue";
 import GermplasmLists from "@/views/germplasm/GermplasmLists.vue";
+import GermplasmDetails from "@/views/germplasm/GermplasmDetails.vue";
 import ProgramConfiguration from "@/views/program/ProgramConfiguration.vue";
 
 Vue.use(VueRouter);
@@ -302,6 +303,16 @@ const routes = [
         component: GermplasmLists
       }
     ]
+  },
+  {
+    path: '/programs/:programId/germplasm/:germplasmId',
+    name: 'germplasm-details',
+    component: GermplasmDetails,
+    meta: {
+      title: 'Germplasm Details',
+      layout: layouts.userSideBar
+    },
+    beforeEnter: processProgramNavigation
   },
   {
     path: '/programs/:programId/traits',
