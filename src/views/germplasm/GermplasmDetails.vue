@@ -114,10 +114,7 @@ import { Result } from '@/breeding-insight/model/Result';
   computed: {
     ...mapGetters([
       'activeProgram'
-    ]),
-    germplasmUUID: function () {
-      return this.$route.params.germplasmId;
-    }
+    ])
   },
   data: () => ({Pedigree, GermplasmUtils})
 })
@@ -129,6 +126,10 @@ export default class GermplasmDetails extends GermplasmBase {
 
   mounted() {
     this.getGermplasm();
+  }
+
+  get germplasmUUID(): string {
+    return this.$route.params.germplasmId;
   }
 
   @Watch('$route')
