@@ -48,7 +48,7 @@
     <div v-if="active" class="columns has-text-right mb-0 buttons">
       <div class="column">
         <button
-            v-if="$ability.can('create', 'Trait')"
+            v-if="$ability.can('create', 'Trait') && !isSubscribed"
             v-show="!newTraitActive && traits.length > 0"
             class="button is-primary is-pulled-right has-text-weight-bold"
             v-on:click="$router.push({name: 'import-ontology', params: {programId: activeProgram.id}})"
@@ -64,7 +64,7 @@
         </span>
         </button>
         <button
-            v-if="$ability.can('create', 'Trait')"
+            v-if="$ability.can('create', 'Trait') && !isSubscribed"
             data-testid="newDataForm"
             v-show="!newTraitActive && traits.length > 0"
             class="button mx-2 is-primary is-pulled-right is-light has-text-weight-bold"
@@ -225,7 +225,7 @@
 
       <template v-slot:emptyMessage>
         <EmptyTableMessage
-            v-bind:button-view-toggle="!newTraitActive && active"
+            v-bind:button-view-toggle="!newTraitActive && active && !isSubscribed"
             v-bind:button-text="'New Term'"
             v-on:newClick="activateNewTraitForm"
             v-bind:create-enabled="$ability.can('create', 'Trait')"
@@ -252,7 +252,7 @@ import WarningModal from '@/components/modals/WarningModal.vue'
 import {PlusCircleIcon} from 'vue-feather-icons'
 import {validationMixin} from 'vuelidate';
 import {Trait} from '@/breeding-insight/model/Trait'
-import {mapGetters} from 'vuex'
+import {mapGetters, mapActions} from 'vuex'
 import {Program} from "@/breeding-insight/model/Program";
 import NewDataForm from '@/components/forms/NewDataForm.vue'
 import BasicInputField from "@/components/forms/BasicInputField.vue";
@@ -288,7 +288,15 @@ import {Category} from "@/breeding-insight/model/Category";
   computed: {
     ...mapGetters([
       'activeProgram'
+    ]),
+    ...mapGetters('programManagement',[
+      'isSubscribed'
     ])
+  },
+  methods: {
+    ...mapActions('programManagement', {
+        getSubscribedOntology: 'getSubscribedOntology'
+    })
   },
   filters: {
     capitalize: function(value: string | undefined) : string | undefined {
@@ -344,6 +352,9 @@ export default class OntologyTable extends Vue {
   private deactivateWarningTitle = 'Archive trait in this program?';
   private deactivateActive: boolean = false;
 
+  // Shared Ontology
+  private isSubscribed: boolean;
+
   // TODO: Move these into an event bus in the future
   private traitsPagination?: Pagination = new Pagination();
   private paginationController: BackendPaginationController = new BackendPaginationController();
@@ -374,6 +385,7 @@ export default class OntologyTable extends Vue {
   }
 
   mounted() {
+    this.getSubscribedOntology();
     this.updatePagination();
     this.getTraits();
     this.getObservationLevels();
