@@ -47,7 +47,7 @@
       <b-table-column field="createdBy.userName" label="Created By" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
         {{ props.row.data.additionalInfo.createdBy.userName }}
       </b-table-column>
-      <b-table-column field="germplasmId" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+      <b-table-column field="externalReferences" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
         <router-link v-bind:to="{name: 'germplasm-details', params: {programId: activeProgram.id, germplasmId: GermplasmUtils.getGermplasmUUID(props.row.data.externalReferences)}}">
           Show Details
         </router-link>

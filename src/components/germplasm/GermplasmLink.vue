@@ -16,7 +16,7 @@
   -->
 
 <template>
-    <router-link v-bind:to="{name: 'germplasm-details', params: {programId: activeProgram.id, germplasmId: this.germplasmUUID}}">
+    <router-link v-if="this.germplasmUUID" v-bind:to="{name: 'germplasm-details', params: {programId: activeProgram.id, germplasmId: this.germplasmUUID}}">
       {{ this.germplasmGID }}
     </router-link>
 </template>
