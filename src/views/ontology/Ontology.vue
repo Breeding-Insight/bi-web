@@ -18,8 +18,11 @@
 <template>
   <div class="ontology">
     <h1 class="title">
-      Ontology
+      Ontology<br>
     </h1>
+    <p v-if="isSubscribed" class="has-text-weight-bold">
+      This ontology is shared from {{subscribedOntology.programName}}.
+    </p>
 
     <section>
       <nav class="tabs is-boxed">
@@ -59,6 +62,7 @@
   import OntologyBase from "@/components/ontology/OntologyBase.vue";
   import OntologyActiveTable from "@/components/ontology/OntologyActiveTable.vue";
   import OntologyArchivedTable from "@/components/ontology/OntologyArchivedTable.vue";
+  import {SubscribedProgram} from "@/breeding-insight/model/SubscribedProgram";
 
   @Component({
     components: {
@@ -67,12 +71,17 @@
     computed: {
       ...mapGetters([
         'activeProgram'
+      ]),
+      ...mapGetters('programManagement',[
+        'isSubscribed', 'subscribedOntology'
       ])
     }
   })
   export default class Ontology extends OntologyBase {
 
     private activeProgram?: Program;
+    private isSubscribed: boolean;
+    private subscribedOntology?: SubscribedProgram;
 
   }
 </script>
