@@ -318,7 +318,7 @@ const routes = [
       layout: layouts.userSideBar
     },
     component: ImportFile,
-    redirect: {name: 'import-ontology'},
+    redirect: {name: 'germplasm-import'},
     beforeEnter: processProgramNavigation,
     children: [
       {
