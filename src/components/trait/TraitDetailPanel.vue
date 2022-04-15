@@ -168,7 +168,7 @@
       </div>
 
       <!-- maybe break out controls for reuse eventually -->
-      <div class="columns is-centered is-mobile is-variable is-multiline is-0 my-0">
+      <div v-if="!isSubscribed" class="columns is-centered is-mobile is-variable is-multiline is-0 my-0">
         <div class="column is-half p-0 mt-5">
           <a
               v-if="editable && !loadingEditable && !data.isDup"
@@ -240,6 +240,7 @@
 <script lang="ts">
 
   import {Component, Prop, Vue, Watch} from 'vue-property-decorator'
+  import {mapGetters} from 'vuex'
   import SidePanel from '@/components/tables/SidePanel.vue'
   import {Trait} from '@/breeding-insight/model/Trait'
   import {Scale, DataType} from '@/breeding-insight/model/Scale'
@@ -254,6 +255,11 @@
 
   @Component({
     components: {EditDataForm, SidePanel, BaseTraitForm, HelpCircleIcon, ProgressBar},
+    computed: {
+      ...mapGetters('programManagement',[
+        'isSubscribed'
+      ])
+    },
     data: () => ({DataType, MethodClass, Scale, Method, StringFormatters}),
     filters: {
       capitalize: function(value: string | undefined) : string | undefined {
