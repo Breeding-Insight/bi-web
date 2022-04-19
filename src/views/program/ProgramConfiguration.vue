@@ -17,7 +17,17 @@
 
 <template>
   <div id="program-configuration">
-    <SharedOntologyConfiguration v-on="$listeners"/>
+    <SharedOntologyConfiguration
+        v-on="$listeners"
+        class="mb-6"
+        v-bind:subscription-change="subscribeAction"
+        v-on:share-change="shareAction += 1"
+    />
+    <SubscribeOntologyConfiguration
+        v-on="$listeners"
+        v-on:subscription-change="subscribeAction += 1"
+        v-bind:share-change="shareAction"
+    />
   </div>
 </template>
 
@@ -26,9 +36,11 @@ import { Component, Prop, Vue } from 'vue-property-decorator'
 import ProgramsBase from "@/components/program/ProgramsBase.vue";
 import {mapGetters} from "vuex";
 import SharedOntologyConfiguration from "@/components/program/SharedOntologyConfiguration.vue";
+import SubscribeOntologyConfiguration from "@/components/program/SubscribeOntologyConfiguration.vue";
 
 @Component({
   components: {
+    SubscribeOntologyConfiguration,
     SharedOntologyConfiguration
   },
   computed: {
@@ -38,6 +50,8 @@ import SharedOntologyConfiguration from "@/components/program/SharedOntologyConf
   }
 })
 export default class ProgramConfiguration extends ProgramsBase {
-
+  // Change tracker to pass to children for refresh
+  private subscribeAction: number = 0;
+  private shareAction: number = 0;
 }
 </script>

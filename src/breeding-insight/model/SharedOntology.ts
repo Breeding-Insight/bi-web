@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-export class SharedProgram {
+export class SharedOntology {
   programName: string;
   programId: string;
   shared: boolean;
   accepted: boolean | undefined;
   editable: boolean | undefined;
 
-  constructor({programName, programId, shared, accepted, editable}: SharedProgram) {
+  constructor({programName, programId, shared, accepted, editable}: SharedOntology) {
     this.programName = programName;
     this.programId = programId;
     this.shared = shared;

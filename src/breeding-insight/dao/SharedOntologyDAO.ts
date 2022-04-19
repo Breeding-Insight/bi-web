@@ -17,7 +17,7 @@
 
 import {BiResponse, Metadata, Response} from "@/breeding-insight/model/BiResponse";
 import * as api from "@/util/api";
-import {SharedProgramRequest} from "@/breeding-insight/model/SharedProgramRequest";
+import {SharedOntologyRequest} from "@/breeding-insight/model/SharedOntologyRequest";
 
 export class SharedOntologyDAO {
 
@@ -30,7 +30,7 @@ export class SharedOntologyDAO {
     return new BiResponse(data);
   }
 
-  static async share(programId: string, sharedProgramsRequest: SharedProgramRequest[]): Promise<BiResponse> {
+  static async share(programId: string, sharedProgramsRequest: SharedOntologyRequest[]): Promise<BiResponse> {
     const { data } =  await api.call({
       url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/ontology/shared/programs`,
       method: 'post',
@@ -42,6 +42,32 @@ export class SharedOntologyDAO {
   static async revoke(programId: string, sharedProgramId: string) {
     const { data } = await api.call({
       url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/ontology/shared/programs/${sharedProgramId}`,
+      method: 'delete'
+    }) as Response;
+
+    return new BiResponse(data);
+  }
+
+  static async getSubscriptionOptions(programId: string) {
+    const { data } = await api.call({
+      url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/ontology/subscribe`,
+      method: 'get'
+    }) as Response;
+
+    return new BiResponse(data);
+  }
+
+  static async subscribeOntology(programId: string, subscribedProgramId: string) {
+    const { data } =  await api.call({
+      url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/ontology/subscribe/${subscribedProgramId}`,
+      method: 'put'
+    }) as Response;
+    return new BiResponse(data);
+  }
+
+  static async unsubscribeOntology(programId: string, subscribedProgramId: string) {
+    const { data } = await api.call({
+      url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/ontology/subscribe/${subscribedProgramId}`,
       method: 'delete'
     }) as Response;
 
