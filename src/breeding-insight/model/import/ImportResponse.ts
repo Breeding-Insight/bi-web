@@ -17,15 +17,30 @@
 
 import {ImportProgress} from "@/breeding-insight/model/import/ImportProgress";
 import {ImportPreview} from "@/breeding-insight/model/import/ImportPreview";
+import { User } from '@/breeding-insight/model/User';
 
 export class ImportResponse {
   importId?: string;
   progress?: ImportProgress;
   preview?: ImportPreview;
+  uploadFileName?: string;
+  importMappingName?:string;
+  importType?:string;
+  createdByUser?: User;
+  updatedByUser?: User;
+  createdAt?: Date;
+  updatedAt?: Date;
 
-  constructor({importId, progress, preview}: ImportResponse) {
+  constructor({importId, progress, preview, uploadFileName, importMappingName, importType, createdByUser, updatedByUser, createdAt, updatedAt}: ImportResponse) {
     this.importId = importId;
     this.progress = progress;
     this.preview = preview;
+    this.uploadFileName = uploadFileName;
+    this.importMappingName = importMappingName;
+    this.importType = importType;
+    this.createdByUser = createdByUser;
+    this.updatedByUser = updatedByUser;
+    this.createdAt = createdAt;
+    this.updatedAt = updatedAt;
   }
 }

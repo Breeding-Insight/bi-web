@@ -99,6 +99,15 @@ export class ImportDAO {
     return new BiResponse(data);
   }
 
+  static async getProgramUploads(programId: string, includeMapping: boolean) {
+    const {data} = await api.call({
+      url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/import/data?mapping=${includeMapping}`,
+      method: 'get'
+    }) as Response;
+
+    return new BiResponse(data);
+  }
+
   static async updateUploadData(programId: string, mappingId: string, uploadId: string, userInput: any, commit: boolean) {
     let url = `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/import/mappings/${mappingId}/data/${uploadId}`;
     url += commit ? '/commit' : '/preview';

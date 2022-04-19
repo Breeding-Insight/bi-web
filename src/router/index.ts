@@ -64,6 +64,7 @@ import Germplasm from "@/views/germplasm/Germplasm.vue";
 import GermplasmLists from "@/views/germplasm/GermplasmLists.vue";
 import GermplasmDetails from "@/views/germplasm/GermplasmDetails.vue";
 import ProgramConfiguration from "@/views/program/ProgramConfiguration.vue";
+import JobManagement from '@/views/program/JobManagement.vue';
 
 Vue.use(VueRouter);
 
@@ -376,6 +377,16 @@ const routes = [
       layout: layouts.userSideBar
     },
     component: BrAPIInfo,
+    beforeEnter: processProgramNavigation
+  },
+  {
+    path: '/programs/:programId/jobs',
+    name: 'job-management',
+    meta: {
+      title: 'Job Management',
+      layout: layouts.userSideBar
+    },
+    component: JobManagement,
     beforeEnter: processProgramNavigation
   },
   {
