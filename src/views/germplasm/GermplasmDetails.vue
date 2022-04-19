@@ -30,10 +30,10 @@
     <article class="column ">
     <section>
       <ul style="list-style-type: none;">
-      <li><b>Preferred Name: </b> {{germplasm.defaultDisplayName}}</li>
-      <li><b>GID: </b> {{ germplasm.accessionNumber }}</li>
-      <li><b>Breeding Method: </b> {{ germplasm.additionalInfo.breedingMethod }}</li>
-      <li><b>Source: </b> {{ germplasm.seedSource }}</li>
+        <li><b>Preferred Name: </b> {{germplasm.defaultDisplayName}}</li>
+        <li><b>GID: </b> {{ germplasm.accessionNumber }}</li>
+        <li><b>Breeding Method: </b> {{ germplasm.additionalInfo.breedingMethod }}</li>
+        <li><b>Source: </b> {{ germplasm.seedSource }}</li>
         <li><b>Pedigree: </b> {{ germplasm.additionalInfo.pedigreeByName }}</li>
         <li><b>Pedigree GID(s): </b>
           <GermplasmLink
@@ -47,6 +47,7 @@
             v-bind:germplasmGID="Pedigree.parsePedigreeString(germplasm.pedigree).maleParent"
           > </GermplasmLink></template>
         </li>
+        <li><b>Synonyms: </b> {{ GermplasmUtils.formatSynonyms(germplasm.synonyms) }}</li>
       </ul>
     </section>
     </article>

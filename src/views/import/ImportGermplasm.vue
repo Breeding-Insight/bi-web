@@ -133,7 +133,7 @@
             {{ ExternalUID.getExternalUIDFromExternalReferences(props.row.data.brAPIObject.externalReferences, props.row.data.brAPIObject.seedSource) }}
           </b-table-column>
           <b-table-column field="synonyms" label="Synonyms" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-            {{ formatSynonyms(props.row.data.brAPIObject.synonyms) }}
+            {{ GermplasmUtils.formatSynonyms(props.row.data.brAPIObject.synonyms) }}
           </b-table-column>
 
           <template v-slot:emptyMessage>
@@ -161,12 +161,13 @@ import BasicInputField from "@/components/forms/BasicInputField.vue";
 import ExpandableTable from "@/components/tables/expandableTable/ExpandableTable.vue";
 import {ImportObjectState} from "@/breeding-insight/model/import/ImportObjectState";
 import {ExternalUID} from "@/breeding-insight/model/import/germplasm/ExternalUID";
+import {GermplasmUtils} from "@/breeding-insight/utils/GermplasmUtils";
 
 @Component({
   components: {
     ExpandableTable, ImportInfoTemplateMessageBox, ConfirmImportMessageBox, ImportTemplate, AlertTriangleIcon, BasicInputField
   },
-  data: () => ({ImportObjectState, ExternalUID})
+  data: () => ({ImportObjectState, ExternalUID, GermplasmUtils})
 })
 export default class ImportGermplasm extends ProgramsBase {
 
@@ -215,12 +216,6 @@ export default class ImportGermplasm extends ProgramsBase {
 
   importFinished() {
     this.germplasmList = new GermplasmList();
-  }
-
-  // TODO: Put in Heather's germplasm utils
-  formatSynonyms(synonyms: any[]) {
-    if (!synonyms) return "";
-    return synonyms.map(synonym => synonym.synonym).join(";");
   }
 }
 </script>
