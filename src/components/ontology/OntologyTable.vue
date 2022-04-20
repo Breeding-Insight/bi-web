@@ -353,7 +353,8 @@ export default class OntologyTable extends Vue {
   private deactivateActive: boolean = false;
 
   // Shared Ontology
-  private isSubscribed: boolean;
+  private isSubscribed?: boolean;
+  private getSubscribedOntology!: () => any;
 
   // TODO: Move these into an event bus in the future
   private traitsPagination?: Pagination = new Pagination();

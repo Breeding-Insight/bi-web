@@ -80,7 +80,7 @@
   export default class Ontology extends OntologyBase {
 
     private activeProgram?: Program;
-    private isSubscribed: boolean;
+    private isSubscribed?: boolean;
     private subscribedOntology?: SubscribedProgram;
 
   }
