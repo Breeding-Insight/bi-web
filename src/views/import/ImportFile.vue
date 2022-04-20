@@ -81,7 +81,8 @@ import ProgramsBase from "@/components/program/ProgramsBase.vue";
 export default class ImportFile extends ProgramsBase {
 
   private activeProgram?: Program;
-  private isSubscribed: boolean;
+  private isSubscribed?: boolean;
+  private getSubscribedOntology!: () => any;
 
   mounted() {
     this.getSubscribedOntology();
