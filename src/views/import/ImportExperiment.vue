@@ -55,6 +55,83 @@
       </template>
 
       <template v-slot:importPreviewTable="previewData">
+        <ExpandableTable
+            v-bind:records="previewData.import"
+            v-bind:loading="false"
+            v-bind:pagination="previewData.pagination"
+            v-on:show-error-notification="$emit('show-error-notification', $event)"
+        >
+          <!-- Germplasm Name -->
+          <b-table-column field="germplasmName" label="Germplasm Name" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+            TODO
+          </b-table-column>
+          <!-- Germplasm GID -->
+          <b-table-column field="germplasmGID" label="Germplasm GID" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+            TODO
+          </b-table-column>
+          <!-- Test or Check -->
+          <b-table-column field="testOrCheck" label="Test (T) or Check (C)" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+            {{ getField(props.row.data.observationUnit, 'observationUnitPosition.entryType') }}
+          </b-table-column>
+          <!-- Experiment Title -->
+          <b-table-column field="expTitle" label="Experiment Title" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+
+          </b-table-column>
+          <!-- Experiment Description -->
+          <b-table-column field="expDescription" label="Experiment Description" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+
+          </b-table-column>
+          <!-- Exp Unit -->
+          <b-table-column field="expUnit" label="Experiment Unit" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+            {{ getField(props.row.data.observationUnit, 'observationUnitPosition.observationLevel.levelName') }}
+          </b-table-column>
+          <!-- Exp Type -->
+          <b-table-column field="expType" label="Experiment Type" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+
+          </b-table-column>
+          <!-- Env -->
+          <b-table-column field="env" label="Env" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+
+          </b-table-column>
+          <!-- Env Location -->
+          <b-table-column field="envLocation" label="Env Location" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+
+          </b-table-column>
+          <!-- Env year -->
+          <b-table-column field="envYear" label="Env Year" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+
+          </b-table-column>
+          <!-- Exp Unit ID -->
+          <b-table-column field="expUnitID" label="Exp Unit ID" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+            {{ getField(props.row.data.observationUnit, 'observationUnitName') }}
+          </b-table-column>
+          <!-- Exp Replicate # -->
+          <b-table-column field="expRepNo" label="Exp Replicate #" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+
+          </b-table-column>
+          <!-- Exp Block # -->
+          <b-table-column field="expBlockNo" label="Exp Block #" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+
+          </b-table-column>
+          <!-- Row -->
+          <b-table-column field="row" label="Row" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+            {{ getField(props.row.data.observationUnit, 'observationUnitPosition.positionCoordinateX') }}
+          </b-table-column>
+          <!-- Column -->
+          <b-table-column field="column" label="Column" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+            {{ getField(props.row.data.observationUnit, 'observationUnitPosition.positionCoordinateY') }}
+          </b-table-column>
+          <!-- Exp Treatment Factor Name -->
+          <b-table-column field="expTreatmentFactorName" label="Exp Treatment Factor Name" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+
+          </b-table-column>
+
+          <template v-slot:emptyMessage>
+            <p class="has-text-weight-bold">
+              No experiment data found in this import file.
+            </p>
+          </template>
+        </ExpandableTable>
       </template>
 
     </ImportTemplate>
@@ -68,17 +145,15 @@ import ImportInfoTemplateMessageBox from "@/components/file-import/ImportInfoTem
 import ConfirmImportMessageBox from "@/components/trait/ConfirmImportMessageBox.vue";
 import ImportTemplate from "@/views/import/ImportTemplate.vue";
 import {DataFormEventBusHandler} from "@/components/forms/DataFormEventBusHandler";
-import ReportTable from "@/components/report/ReportTable.vue";
 import {ImportFormatter} from "@/breeding-insight/model/report/ImportFormatter";
-import {ReportStruct} from "@/breeding-insight/model/report/ReportStruct";
-import defaultRenames from '@/config/report/ReportRenames';
 import { AlertTriangleIcon } from 'vue-feather-icons';
 import {GermplasmList} from "@/breeding-insight/model/GermplasmList";
 import BasicInputField from "@/components/forms/BasicInputField.vue";
+import ExpandableTable from "@/components/tables/expandableTable/ExpandableTable.vue";
 
 @Component({
   components: {
-    ImportInfoTemplateMessageBox, ConfirmImportMessageBox, ImportTemplate, AlertTriangleIcon, BasicInputField
+    ImportInfoTemplateMessageBox, ConfirmImportMessageBox, ImportTemplate, AlertTriangleIcon, BasicInputField, ExpandableTable
   },
   data: () => ({ImportFormatter})
 })
@@ -86,12 +161,31 @@ export default class ImportExperiment extends ProgramsBase {
 
   private experimentImportTemplateName = 'ExperimentsTemplateMap';
   private confirmImportState: DataFormEventBusHandler = new DataFormEventBusHandler();
-
-  private germplasmList: GermplasmList = new GermplasmList();
-
-
+  
   getNumNewExperimentRecords(statistics: any): number | undefined {
     return undefined;
+  }
+
+  getField(importReturnObject: any, fieldAccessor: string) {
+    const accessors: string[] = fieldAccessor.split('.');
+    const brapiObject = importReturnObject.brAPIObject;
+    let currObject = brapiObject;
+    while (accessors.length > 0) {
+      // Get highest accessor
+      const accessor: string | undefined = accessors.shift();
+      if (!accessor) return '';
+      console.log(accessor);
+
+      // Check if accessor exists, or is last element
+      if (!currObject[accessor]) {
+        return '';
+      } else if (accessors.length == 0) {
+        return currObject[accessor];
+      } else {
+        currObject = currObject[accessor];
+      }
+    }
+    return '';
   }
 
   importFinished(){}
