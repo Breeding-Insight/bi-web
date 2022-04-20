@@ -109,31 +109,6 @@ export class ImportService {
 
   }
 
-  static async getProgramUploads(programId: string, includeMapping: boolean): Promise<ImportResponse[]> {
-    if (!programId || programId === null) {
-      throw 'Program ID not provided';
-    }
-
-    try {
-      const response: BiResponse = await ImportDAO.getProgramUploads(programId, includeMapping);
-      const data: any = response.result;
-      if(data) {
-        const importResponse = data.map((response: ImportResponse) => new ImportResponse(response));
-        return importResponse;
-      } else {
-        return [];
-      }
-    } catch (e) {
-      if (e.response && e.response.statusText) {
-        e.errorMessage = e.response.statusText;
-      } else {
-        e.errorMessage = this.getUploadUnknown;
-      }
-      throw e;
-    }
-
-  }
-
   static async updateDataUpload(programId: string, mappingId: string, uploadId: string, userInput: any, commit: boolean) {
     if (!programId || programId === null) {
       throw 'Program ID not provided';

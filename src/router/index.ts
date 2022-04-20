@@ -383,7 +383,7 @@ const routes = [
     path: '/programs/:programId/jobs',
     name: 'job-management',
     meta: {
-      title: 'Job Management',
+      title: 'Jobs',
       layout: layouts.userSideBar
     },
     component: JobManagement,

@@ -133,7 +133,7 @@
                   v-bind:to="{name: 'job-management', params: {programId: activeProgram.id}}"
                   :id="jobManagementMenuId"
               >
-                Job Management
+                Jobs
               </router-link>
             </li>
             <li>

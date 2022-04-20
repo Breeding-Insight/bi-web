@@ -18,46 +18,69 @@
 <template>
   <div id="program-job-management">
     <h1 class="title">
-      Job Management
+      Jobs
     </h1>
+
+    <button
+        class="button is-primary has-text-weight-bold is-pulled-right"
+        v-on:click="refresh"
+        data-testid="refreshJobsBtn"
+    >
+        Refresh
+    </button>
+
+    <div class="is-clearfix"></div>
+
     <ExpandableTable
         v-bind:records.sync="jobs"
         v-bind:loading="loading"
         v-bind:pagination="pagination"
         v-bind:details="true"
-        v-bind:default-sort="['data.createdAt', 'asc']"
+        v-bind:default-sort="['data.createdAt', 'desc']"
     >
-      <b-table-column field="data.progress" label="Status" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-        <span class="tag" :class="progressTagType(props.row.data.progress)">
-          {{ formatProgress(props.row.data.progress) }}
+      <b-table-column field="data.statuscode" label="Status" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+        <span class="tag" :class="progressTagType(props.row.data.statuscode)">
+          {{ formatProgress(props.row.data.statuscode) }}
         </span>
       </b-table-column>
-      <b-table-column field="data.importType" label="Type" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-        {{ props.row.data.importType}}
+      <b-table-column field="data.jobType" label="Type" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+        {{ props.row.data.jobType}}
+      </b-table-column>
+      <b-table-column field="data.createdByUser.name" label="Submitted By" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+        {{ props.row.data.createdByUser.name}}
       </b-table-column>
       <b-table-column field="data.createdAt" label="Submitted At" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
         {{ formatDate(props.row.data.createdAt) }}
       </b-table-column>
-      <b-table-column field="data.createdAt" label="Last Updated" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+      <b-table-column field="data.updatedAt" label="Last Updated" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
         {{ formatDate(props.row.data.updatedAt) }}
       </b-table-column>
-      <b-table-column field="data.progress.message" label="Status Message" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-        {{ props.row.data.progress.message }}
+      <b-table-column field="data.statusMessage" label="Status Message" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+        {{ props.row.data.statusMessage }}
       </b-table-column>
 
       <template v-slot:detail="{row}">
-        <div class="column">
+        <div class="column" v-if="row.jobDetail.jobType === 'IMPORT'">
           <div>
-            <span class="has-text-weight-bold">Status Message: </span>{{ row.progress.message }}
+            <span class="has-text-weight-bold">Status Message: </span>{{ row.jobDetail.progress.message }}
           </div>
           <div>
-            <span class="has-text-weight-bold">Import Template Name: </span>{{ row.importMappingName}}
+            <span class="has-text-weight-bold">In Progress (count): </span>{{ row.jobDetail.progress.inProgress }}
+          </div>
+          <div>
+            <span class="has-text-weight-bold">Complete (count): </span>{{ row.jobDetail.progress.finished }}
+          </div>
+          <div>
+            <span class="has-text-weight-bold">Total (count): </span>{{ row.jobDetail.progress.total }}
+          </div>
+          <div>
+            <span class="has-text-weight-bold">Import Template Name: </span>{{ row.jobDetail.importMappingName}}
           </div>
           <div>
             <span class="has-text-weight-bold">Uploaded By: </span>{{ row.createdByUser.name }}
           </div>
           <div>
-            <span class="has-text-weight-bold">Uploaded File: </span>{{ row.uploadFileName }}
+            <span class="has-text-weight-bold">Uploaded File: </span>{{ row.jobDetail.uploadFileName }}
           </div>
         </div>
       </template>
@@ -86,6 +109,8 @@ import { Pagination } from '@/breeding-insight/model/BiResponse';
 import { PaginationController } from '@/breeding-insight/model/view_models/PaginationController';
 import { ImportProgress } from '@/breeding-insight/model/import/ImportProgress';
 import moment from 'moment';
+import { JobService } from '@/breeding-insight/service/JobService';
+import { Job } from '@/breeding-insight/model/job/Job';
 
 @Component({
   components: {
@@ -102,7 +127,7 @@ import moment from 'moment';
 export default class JobManagement extends Vue {
 
   private activeProgram?: Program;
-  private jobs?: any[] = [];
+  private jobs?: Job[] = [];
   private pagination: Pagination = new Pagination();
   private paginationController: PaginationController = new PaginationController();
   private loading = true;
@@ -115,29 +140,34 @@ export default class JobManagement extends Vue {
     return moment(date).format();
   }
 
-  formatProgress(progress:ImportProgress) {
-    if(progress.statuscode === 202) {
+  formatProgress(statuscode:number) {
+    if(statuscode === 202) {
       return  "In Progress";
-    } else if(progress.statuscode === 200) {
+    } else if(statuscode === 200) {
       return "Finished";
     } else {
-      return "Processing Error";
+      return "Error";
     }
   }
 
-  progressTagType(progress:ImportProgress) {
-    if(progress.statuscode === 202) {
+  progressTagType(statuscode:number) {
+    if(statuscode === 202) {
       return  "is-warning";
-    } else if(progress.statuscode === 200) {
+    } else if(statuscode === 200) {
       return "is-success";
     } else {
       return "is-error";
     }
   }
 
+  refresh() {
+    this.loading = true;
+    this.getJobs();
+  }
+
   async getJobs() {
     try {
-      this.jobs = await ImportService.getProgramUploads(this.activeProgram!.id!, false);
+      this.jobs = await JobService.getProgramJobs(this.activeProgram!.id!);
       this.pagination.totalCount = this.jobs.length;
       this.pagination.pageSize = 10;
       this.pagination.currentPage = 1;
