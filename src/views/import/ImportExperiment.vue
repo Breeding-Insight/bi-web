@@ -75,11 +75,11 @@
           </b-table-column>
           <!-- Experiment Title -->
           <b-table-column field="expTitle" label="Experiment Title" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-
+            {{ getField(props.row.data.trial, 'trialName') }}
           </b-table-column>
           <!-- Experiment Description -->
           <b-table-column field="expDescription" label="Experiment Description" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-
+            {{ getField(props.row.data.trial, 'trialDescription') }}
           </b-table-column>
           <!-- Exp Unit -->
           <b-table-column field="expUnit" label="Experiment Unit" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
@@ -87,19 +87,19 @@
           </b-table-column>
           <!-- Exp Type -->
           <b-table-column field="expType" label="Experiment Type" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-
+            {{ getField(props.row.data.study, 'studyType') }}
           </b-table-column>
           <!-- Env -->
           <b-table-column field="env" label="Env" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-
+            {{ getField(props.row.data.study, 'studyName') }}
           </b-table-column>
           <!-- Env Location -->
           <b-table-column field="envLocation" label="Env Location" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-
+            {{ getField(props.row.data.location, 'locationName') }}
           </b-table-column>
           <!-- Env year -->
           <b-table-column field="envYear" label="Env Year" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-
+            {{ getEnvYear(props.row.data.study) }}
           </b-table-column>
           <!-- Exp Unit ID -->
           <b-table-column field="expUnitID" label="Exp Unit ID" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
@@ -107,11 +107,12 @@
           </b-table-column>
           <!-- Exp Replicate # -->
           <b-table-column field="expRepNo" label="Exp Replicate #" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-
+            {{ getObservationLevelRelationships(props.row.data.observationUnit, 'replicate') }}
           </b-table-column>
           <!-- Exp Block # -->
           <b-table-column field="expBlockNo" label="Exp Block #" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-
+<!--            {{ getField(props.row.data.observationUnit, 'observationUnitPosition.observationLevelRelationships') }}-->
+            {{ getObservationLevelRelationships(props.row.data.observationUnit, 'block') }}
           </b-table-column>
           <!-- Row -->
           <b-table-column field="row" label="Row" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
@@ -123,7 +124,7 @@
           </b-table-column>
           <!-- Exp Treatment Factor Name -->
           <b-table-column field="expTreatmentFactorName" label="Exp Treatment Factor Name" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-
+            {{ getTreatment(props.row.data.observationUnit) }}
           </b-table-column>
 
           <template v-slot:emptyMessage>
@@ -174,8 +175,6 @@ export default class ImportExperiment extends ProgramsBase {
       // Get highest accessor
       const accessor: string | undefined = accessors.shift();
       if (!accessor) return '';
-      console.log(accessor);
-
       // Check if accessor exists, or is last element
       if (!currObject[accessor]) {
         return '';
@@ -185,7 +184,37 @@ export default class ImportExperiment extends ProgramsBase {
         currObject = currObject[accessor];
       }
     }
-    return '';
+    return undefined;
+  }
+
+  getEnvYear(importReturnObject: any) {
+    const years: String[] = this.getField(importReturnObject, 'seasons');
+    if( years && years.length > 0 ) {
+      return years[0];
+    }
+    return undefined;
+  }
+
+  getTreatment(importReturnObject: any){
+    const treatments: String[] = this.getField(importReturnObject, 'treatments');
+    if( treatments && treatments.length > 0 ) {
+      const treatment = treatments[0];
+      const factor = treatment["factor"];
+      return factor;
+    }
+    return undefined;
+  }
+
+  getObservationLevelRelationships(importReturnObject: any, levelName: String) {
+    const relationships: String[] = this.getField(importReturnObject, 'observationUnitPosition.observationLevelRelationships');
+    if( relationships  ) {
+      for(let rel of relationships){
+        if (levelName == rel["levelName"]){
+          return rel["levelCode"];
+        }
+      }
+    }
+    return undefined;
   }
 
   importFinished(){}
