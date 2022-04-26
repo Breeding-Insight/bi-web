@@ -263,7 +263,7 @@
       <!-- Editing View -->
       <template v-slot:write-display>
         <!-- Progress -->
-        <template v-if="currentImport.progress.statuscode == 202">
+        <template v-if="currentImport.progress.statusCode == 202">
           <ProgressBar
               v-bind:max="currentImport.progress.total"
               v-bind:value="currentImport.progress.finished"
@@ -272,7 +272,7 @@
         </template>
 
         <!-- Preview -->
-        <template v-else-if="currentImport.progress.statuscode == 200">
+        <template v-else-if="currentImport.progress.statusCode == 200">
           <!-- User Input -->
           <template v-if="getUserInputFields(selectedImportConfig.fields).length > 0">
             <div class="box mb-5">
@@ -332,7 +332,7 @@
     >
       <template v-slot:write-display>
         <!-- In Progress -->
-        <template v-if="currentImport.progress.statuscode == 202">
+        <template v-if="currentImport.progress.statusCode == 202">
           <ProgressBar
               v-bind:max="currentImport.progress.total"
               v-bind:value="currentImport.progress.finished"
@@ -341,7 +341,7 @@
         </template>
 
         <!-- Finished -->
-        <template v-else-if="currentImport.progress.statuscode == 200">
+        <template v-else-if="currentImport.progress.statusCode == 200">
           <p>
             Your data was uploaded successfully.
           </p>
@@ -728,7 +728,7 @@ enum PageState {
         if (!previewResponse.progress) {
           this.$log.error('Progress object was not returned with progress response.')
 
-        } else if (previewResponse.progress.statuscode === 202) {
+        } else if (previewResponse.progress.statusCode === 202) {
           // Wait a second, and call GET call again
           setTimeout(() => this.getDataUpload(includeMapping), 1000);
 
@@ -753,14 +753,14 @@ enum PageState {
     }
 
     parseErrorResponse(previewResponse: ImportResponse) {
-      if (previewResponse.progress && previewResponse.progress.statuscode != 200 && previewResponse.progress.rowErrors){
+      if (previewResponse.progress && previewResponse.progress.statusCode != 200 && previewResponse.progress.rowErrors){
         // Check for multiple errors
         this.import_errors = ImportService.parseError(previewResponse);
         if (this.import_errors != null) {
           this.formattedErrors = ImportService.formatErrors(this.import_errors as ValidationError);
         }
         this.$emit('show-error-notification', `Unable to import file, multiple errors found`);
-      } else if (previewResponse.progress && previewResponse.progress.statuscode != 200) {
+      } else if (previewResponse.progress && previewResponse.progress.statusCode != 200) {
         if (previewResponse.progress.message) {
           this.formattedErrors = [previewResponse.progress.message];
           this.$emit('show-error-notification', `Unable to import file.`);

@@ -19,7 +19,7 @@
   <div id="import-germplasm">
     <ImportTemplate
         v-bind:abort-msg="'No germplasm records will be added, and the import in progress will be completely removed.'"
-        v-bind:system-import-template-name="germplasmImportTemplateName"
+        v-bind:system-import-template-id="germplasmImportTemplateDbId"
         v-bind:confirm-msg="'Confirm New Germplasm Records'"
         v-bind:import-type-name="'Germplasm'"
         v-bind:confirm-import-state="confirmImportState"
@@ -169,7 +169,7 @@ export default class ImportGermplasm extends ProgramsBase {
 
   private germplasmList: GermplasmList = new GermplasmList();
   private duplicateClassName = "is-dup";
-  private germplasmImportTemplateName = 'GermplasmTemplateMap';
+  private germplasmImportTemplateDbId = 1;
 
   private confirmImportState: DataFormEventBusHandler = new DataFormEventBusHandler();
 

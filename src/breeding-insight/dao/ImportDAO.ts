@@ -77,22 +77,26 @@ export class ImportDAO {
       return new BiResponse(data);
   }
 
-  static async uploadData(programId: string, mappingId: string, file: File): Promise<any> {
+  static async uploadData(programId: string, templateId: string, file: File, userInput: any, commit: boolean): Promise<any> {
 
     var formData = new FormData();
     formData.append("file", file);
+    if (userInput) {
+      formData.append("userInput", userInput);
+    }
 
     const {data} = await api.call({
-      url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/import/mappings/${mappingId}/data`,
-      method: 'post', data: formData}
-    ) as Response;
+      url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/import/${templateId}?commit=${commit}`,
+      method: 'post',
+      data: formData
+    }) as Response;
 
     return new BiResponse(data);
   }
 
-  static async getDataUpload(programId: string, mappingId: string, uploadId: string, includeMapping: boolean) {
+  static async getDataUpload(programId: string, mappingId: string, uploadId: string) {
     const {data} = await api.call({
-      url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/import/mappings/${mappingId}/data/${uploadId}?mapping=${includeMapping}`,
+      url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/import/${uploadId}`,
       method: 'get'
     }) as Response;
 

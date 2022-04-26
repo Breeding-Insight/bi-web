@@ -77,24 +77,24 @@ export class ImportService {
     return importMapping;
   }
 
-  static async uploadData(programId: string, mappingId: string, file: File, commit: boolean): Promise<ImportResponse> {
+  static async uploadData(programId: string, mappingId: string, file: File, userInput: any, commit: boolean): Promise<ImportResponse> {
     if (!programId || programId === null) {
       throw 'Program ID not provided';
     }
 
-    const response: BiResponse = await ImportDAO.uploadData(programId, mappingId, file);
+    const response: BiResponse = await ImportDAO.uploadData(programId, mappingId, file, userInput, commit);
     const data: any = response.result;
     const importResponse = new ImportResponse(data);
     return importResponse;
   }
 
-  static async getDataUpload(programId: string, mappingId: string, uploadId: string, includeMapping: boolean): Promise<ImportResponse> {
+  static async getDataUpload(programId: string, mappingId: string, uploadId: string): Promise<ImportResponse> {
     if (!programId || programId === null) {
       throw 'Program ID not provided';
     }
 
     try {
-      const response: BiResponse = await ImportDAO.getDataUpload(programId, mappingId, uploadId, includeMapping);
+      const response: BiResponse = await ImportDAO.getDataUpload(programId, mappingId, uploadId);
       const data: any = response.result;
       const importResponse = new ImportResponse(data);
       return importResponse;

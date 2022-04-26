@@ -173,7 +173,7 @@ export default class ImportTemplate extends ProgramsBase {
   private confirmMsg!: string;
 
   @Prop()
-  private systemImportTemplateName!: string;
+  private systemImportTemplateId!: string;
 
   @Prop()
   importTypeName!: string;
@@ -271,7 +271,7 @@ export default class ImportTemplate extends ProgramsBase {
             this.reset();
           },
           [ImportAction.START]: (context, event) => {
-            this.upload();
+            this.upload(false);
           },
           [ImportAction.LOADED]: (context, event) => {
             this.loaded();
@@ -283,7 +283,7 @@ export default class ImportTemplate extends ProgramsBase {
             this.stopLoading();
           },
           [ImportAction.CONFIRM]: (context, event) => {
-            this.confirm();
+            this.upload(true);
           },
           [ImportAction.DELETE]: (context, event) => {
             this.delete();
@@ -314,41 +314,6 @@ export default class ImportTemplate extends ProgramsBase {
 
   toTitleCase(str: string) {
     return titleCase(str);
-  }
-
-  async upload() {
-
-    try {
-      await this.getSystemImportTemplateMapping();
-      this.import_errors=null;
-      await this.uploadData();
-      const response: ImportResponse = await this.updateDataUpload(this.currentImport!.importId!, false);
-      if (response.progress!.statuscode == 500) {
-        this.$emit('show-error-notification', 'An unknown error has occurred when processing your import.');
-        this.importService.send(ImportEvent.IMPORT_ERROR);
-      } else if (response.progress!.statuscode != 200) {
-        this.import_errors = ImportService.parseError(response);
-        if( this.import_errors==null) {
-          this.$emit('show-error-notification', `Errors: ${response!.progress!.message!}`);
-        }
-        this.importService.send(ImportEvent.IMPORT_ERROR);
-      }
-      // this.importService.send(ImportEvent.IMPORT_SUCCESS) is in getDataUpload()
-    } catch(e) {
-      if (e.response && e.response.status == 422 && e.response.data && e.response.data.rowErrors) {
-        this.import_errors = ValidationErrorService.parseError(e);
-        this.importService.send(ImportEvent.IMPORT_ERROR);
-      } else if (e.response && e.response.status == 422 && e.response.statusText) {
-        this.$log.error(e);
-
-        this.$emit('show-error-notification', e.response.statusText);
-      } else {
-        this.$log.error(e);
-        this.$emit('show-error-notification', 'An unknown error has occurred when uploading your import.');
-      }
-
-      this.importService.send(ImportEvent.IMPORT_ERROR);
-    }
   }
 
   handleAbortEvent() {
@@ -419,29 +384,36 @@ export default class ImportTemplate extends ProgramsBase {
     this.tableLoaded = false;
   }
 
-  async getSystemImportTemplateMapping() {
-    let importMappings: ImportMappingConfig[];
+  async upload(commit: boolean) {
     try {
-      importMappings = await ImportService.getSystemMappings(this.systemImportTemplateName);
+      let previewResponse: ImportResponse = await ImportService.uploadData(this.activeProgram!.id!, this.systemImportTemplateId, this.file!, this.userInput, commit);
+      this.currentImport = previewResponse;
+      // Check import response
+      const response: ImportResponse = await this.getDataUpload();
+
+      // Response succeeeded or failed in expected way, check the response for errors
+      if (response.progress!.statusCode == 500) {
+        this.$emit('show-error-notification', 'An unknown error has occurred when processing your import.');
+        this.importService.send(ImportEvent.IMPORT_ERROR);
+      } else if (response.progress!.statusCode != 200) {
+        this.import_errors = ImportService.parseError(response);
+        if( this.import_errors==null) {
+          this.$emit('show-error-notification', `Errors: ${response!.progress!.message!}`);
+        }
+        this.importService.send(ImportEvent.IMPORT_ERROR);
+      } else {
+        if (commit) {
+          this.$emit('show-success-notification', `Imported ${this.importTypeName.toLowerCase()} records have been added to ${name}.`);
+          // TODO: navigate to appropriate record list page when we have it
+          this.importService.send(ImportEvent.DONE);
+        }
+      }
     } catch (e) {
       this.$log.error(e);
-      throw 'Unable to load system import mappings';
-    }
-
-    if (importMappings.length === 1) {
-      this.systemImportTemplateId = importMappings[0].id!;
-    } else {
-      throw 'Expected system import mapping named ' + this.systemImportTemplateName;
-    }
-  }
-
-  async uploadData() {
-    try {
-      let previewResponse: ImportResponse = await ImportService.uploadData(this.activeProgram!.id!, this.systemImportTemplateId, this.file!, false);
-      this.currentImport = previewResponse;
-      // Get the import id
-    } catch (e) {
-      throw e;
+      this.$emit('show-error-notification', 'An unknown error has occurred when uploading your import.');
+      this.importService.send(ImportEvent.IMPORT_ERROR);
+    } finally {
+      this.confirmImportState.bus.$emit(DataFormEventBusHandler.SAVE_COMPLETE_EVENT);
     }
   }
 
@@ -451,25 +423,24 @@ export default class ImportTemplate extends ProgramsBase {
     this.currentImport = previewResponse;
 
     // Start check for our data upload
-    const includeMapping = !commit;
-    return this.getDataUpload(includeMapping);
+    return this.getDataUpload();
   }
 
-  async getDataUpload(includeMapping: boolean): Promise<ImportResponse> {
+  async getDataUpload(): Promise<ImportResponse> {
     try {
-      const previewResponse: ImportResponse = await ImportService.getDataUpload(this.activeProgram!.id!, this.systemImportTemplateId, this.currentImport!.importId!, includeMapping);
+      const previewResponse: ImportResponse = await ImportService.getDataUpload(this.activeProgram!.id!, this.systemImportTemplateId, this.currentImport!.importId!);
       this.currentImport = previewResponse;
 
       if (!previewResponse.progress) {
         this.$log.error('Progress object was not returned with progress response.')
         throw 'Progress object not returned';
-      } else if (previewResponse.progress.statuscode === 202) {
+      } else if (previewResponse.progress.statusCode === 202) {
         // Wait a second, and call GET call again
         await new Promise(resolve => setTimeout(resolve, 1000));
-        return this.getDataUpload(includeMapping);
+        return this.getDataUpload();
       } else {
         // Our call is finished, check the response
-        if (previewResponse.progress && previewResponse.progress.statuscode != 200){
+        if (previewResponse.progress && previewResponse.progress.statusCode != 200){
           return previewResponse;
         }
 
