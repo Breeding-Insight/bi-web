@@ -353,32 +353,6 @@ export default class ImportTemplate extends ProgramsBase {
   loaded() {
     this.tableLoaded = true;
   }
-
-  async confirm() {
-    const name = this.activeProgram && this.activeProgram.name ? this.activeProgram.name : 'the program';
-    try {
-      const response: ImportResponse = await this.updateDataUpload(this.currentImport!.importId!, true);
-      if (response.progress!.statuscode == 500) {
-        this.$emit('show-error-notification', 'An unknown error has occurred when processing your import.');
-      } else if (response.progress!.statuscode != 200) {
-        this.$emit('show-error-notification', `Error: ${response.progress!.message}`);
-      } else {
-        this.$emit('show-success-notification', `Imported ${this.importTypeName.toLowerCase()} records have been added to ${name}.`);
-        // TODO: navigate to appropriate record list page when we have it
-        this.importService.send(ImportEvent.DONE);
-      }
-    } catch (e) {
-      if (e.response && e.response.statusText && e.response.status != 500) {
-        this.$emit('show-error-notification', e.response.statusText);
-      } else {
-        this.$emit('show-error-notification', 'An unknown error has occurred when uploading your import.');
-      }
-    } finally {
-      this.confirmImportState.bus.$emit(DataFormEventBusHandler.SAVE_COMPLETE_EVENT);
-    }
-
-  }
-
   reset() {
     this.file = null;
     this.tableLoaded = false;
@@ -403,7 +377,7 @@ export default class ImportTemplate extends ProgramsBase {
         this.importService.send(ImportEvent.IMPORT_ERROR);
       } else {
         if (commit) {
-          this.$emit('show-success-notification', `Imported ${this.importTypeName.toLowerCase()} records have been added to ${name}.`);
+          this.$emit('show-success-notification', `Imported ${this.importTypeName.toLowerCase()} records have been added to ${this.activeProgram!.name}.`);
           // TODO: navigate to appropriate record list page when we have it
           this.importService.send(ImportEvent.DONE);
         }
@@ -415,15 +389,6 @@ export default class ImportTemplate extends ProgramsBase {
     } finally {
       this.confirmImportState.bus.$emit(DataFormEventBusHandler.SAVE_COMPLETE_EVENT);
     }
-  }
-
-  async updateDataUpload(uploadId: string, commit: boolean) {
-    let previewResponse: ImportResponse = await ImportService.updateDataUpload(this.activeProgram!.id!,
-        this.systemImportTemplateId, uploadId!, this.userInput, commit);
-    this.currentImport = previewResponse;
-
-    // Start check for our data upload
-    return this.getDataUpload();
   }
 
   async getDataUpload(): Promise<ImportResponse> {

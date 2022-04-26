@@ -82,7 +82,11 @@ export class ImportDAO {
     var formData = new FormData();
     formData.append("file", file);
     if (userInput) {
-      formData.append("userInput", userInput);
+      const json = JSON.stringify(userInput);
+      const jsonBlob = new Blob([json], {
+        type: 'application/json'
+      });
+      formData.append("userInput", jsonBlob);
     }
 
     const {data} = await api.call({
