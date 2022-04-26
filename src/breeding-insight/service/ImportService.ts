@@ -125,21 +125,16 @@ export class ImportService {
   }
 
   static parseError(error: ImportResponse): ValidationError | string | null {
-    if(! error){
+    if(!error){
       return null;
     }
     let jsonError: ImportProgress | undefined = error.progress;
-    if (jsonError){
-      const rowErrors = jsonError.rowErrors;
-      if (rowErrors) {
-        let validationError: ValidationError = new ValidationError(rowErrors);
+    if (jsonError && (jsonError.rowErrors || jsonError.errors)){
+        let validationError: ValidationError = new ValidationError(jsonError.rowErrors, jsonError.errors);
         return validationError;
-      }
     } else {
       return "Cannot find error";
     }
-    // Should not get here
-    return null;
   }
 
   static formatErrors(errors: ValidationError | AxiosResponse | string): string[] {
@@ -147,6 +142,15 @@ export class ImportService {
     const isValidationError = errors instanceof ValidationError;
     if (isValidationError){
       const validationErrors = errors as ValidationError;
+
+      // Errors
+      if (validationErrors.errors) {
+        for (const error of validationErrors.errors) {
+          formattedErrors.push(`${error.field}: ${error.errorMessage}`);
+        }
+      }
+
+      // Row errors
       if (validationErrors.rowErrors) {
         for (const error of validationErrors.rowErrors){
           if (error.errors) {
@@ -156,6 +160,7 @@ export class ImportService {
           }
         }
       }
+
       return formattedErrors;
     } else if (typeof errors == 'string') {
       return [errors];

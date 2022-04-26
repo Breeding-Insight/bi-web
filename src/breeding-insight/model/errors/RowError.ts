@@ -21,11 +21,10 @@ export class RowError {
   rowIndex: number;
   errors?: FieldError[];
 
-  constructor(rowIndex: number, errors?: FieldError[]){
+  constructor({rowIndex, errors}: RowError){
     this.rowIndex = rowIndex;
     if (errors) {
-      this.errors = errors.map(error =>
-        new FieldError(error.field, error.errorMessage, error.httpStatus, error.httpStatusCode, error.rowErrors));
+      this.errors = errors.map(error => new FieldError(error));
     }
   }
 

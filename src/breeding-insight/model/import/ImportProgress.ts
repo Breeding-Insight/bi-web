@@ -16,20 +16,24 @@
  */
 
 import {RowError} from "@/breeding-insight/model/errors/RowError";
+import {FieldError} from "@/breeding-insight/model/errors/FieldError";
 
 export class ImportProgress {
-  statuscode?: number;
+  statusCode?: number;
   message?: string;
   total?: number;
   finished?: number;
   inProgress?: number;
   rowErrors?: RowError[];
+  errors?: FieldError[];
 
-  constructor({statuscode, message, total, finished, inProgress, rowErrors}: ImportProgress) {
-    this.statuscode = statuscode;
+  constructor({statusCode, message, total, finished, inProgress, rowErrors, errors}: ImportProgress) {
+    this.statusCode = statusCode;
     this.message = message;
     this.total = total;
     this.finished = finished;
     this.inProgress = inProgress;
-    this.rowErrors = rowErrors;  }
+    this.rowErrors = rowErrors;
+    this.errors = errors;
+  }
 }
