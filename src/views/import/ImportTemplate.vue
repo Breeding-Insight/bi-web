@@ -371,8 +371,12 @@ export default class ImportTemplate extends ProgramsBase {
         this.importService.send(ImportEvent.IMPORT_ERROR);
       } else if (response.progress!.statusCode != 200) {
         this.import_errors = ImportService.parseError(response);
+        // TODO: FInd a better place to show these errors
         if( this.import_errors==null) {
           this.$emit('show-error-notification', `Errors: ${response!.progress!.message!}`);
+        } else if (commit) {
+          const formattedErrors = ImportService.formatErrors(this.import_errors as ValidationError).join(' ');
+          this.$emit('show-error-notification', formattedErrors);
         }
         this.importService.send(ImportEvent.IMPORT_ERROR);
       } else {
