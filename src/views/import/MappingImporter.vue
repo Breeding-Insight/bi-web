@@ -80,7 +80,16 @@
 
     <template v-if="state === ImportState.CURATE">
       <!-- Get our preview tables in here. Use the same ones as other importers -->
-      {{ previewData }}
+      <template v-if="selectedTemplate.id == 1">
+        <GermplasmImportPreview
+          v-bind:preview-data="previewData"
+          v-bind:pagination="pagination"
+        />
+      </template>
+      <template v-else-if="selectedTemplate.id == 2">
+        TODO: Insert experiment import preview here
+        {{ previewData }}
+      </template>
     </template>
   </div>
 </template>
@@ -106,6 +115,8 @@ import {DataFormEventBusHandler} from "@/components/forms/DataFormEventBusHandle
 import {Pagination} from "@/breeding-insight/model/BiResponse";
 import ImportProgress from "@/views/import/ImportProgress.vue";
 import ProgressBar from "@/components/forms/ProgressBar.vue";
+import ImportGermplasm from "@/views/import/ImportGermplasm.vue";
+import GermplasmImportPreview from "@/views/import/GermplasmImportPreview.vue";
 
 enum ImportState {
   TEMPLATE_SELECT = "TEMPLATE_SELECT",
@@ -133,7 +144,10 @@ enum ImportAction {
 }
 
 @Component({
-  components: {ImportProgress, ImportMappingView, BasicInputField, BasicSelectField, FileSelector, ProgressBar},
+  components: {
+    GermplasmImportPreview,
+    ImportGermplasm,
+    ImportProgress, ImportMappingView, BasicInputField, BasicSelectField, FileSelector, ProgressBar},
   computed: {
     ...mapGetters([
       'activeProgram',
