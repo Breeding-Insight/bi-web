@@ -44,6 +44,12 @@ export class ImportService {
     return mappings;
   }
 
+  static async getMapping(programId: string, mappingId: string): Promise<ImportMapping> {
+    const response: BiResponse = await ImportDAO.getMapping(programId, mappingId);
+    const mapping: ImportMapping = new ImportMapping(response.result);
+    return mapping;
+  }
+
   static async getFileColumns(file: File): Promise<string[]> {
     const response: BiResponse = await ImportDAO.getFileColumns(file);
     const fileColumns: string[] = response.result;
@@ -85,6 +91,7 @@ export class ImportService {
     }
   }
 
+  // TODO: REMOVE
   static async saveMappingFile(programId: string, file: File): Promise<ImportMapping> {
     if (!programId || programId === null) {
       throw 'Program ID not provided';
@@ -136,6 +143,7 @@ export class ImportService {
 
   }
 
+  // TODO: REMOVE
   static async updateDataUpload(programId: string, mappingId: string, uploadId: string, userInput: any, commit: boolean) {
     if (!programId || programId === null) {
       throw 'Program ID not provided';

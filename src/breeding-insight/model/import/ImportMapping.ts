@@ -84,7 +84,6 @@ export class ImportMapping {
 
     const splitPath = path.split('.');
     const currPath = splitPath.shift();
-
     for (const mapping of mappings) {
       if (mapping.objectId == currPath) {
 
@@ -100,6 +99,13 @@ export class ImportMapping {
     }
     return;
   }
+
+  equals(otherMapping: ImportMapping) {
+    // TODO: Write this
+    return false;
+  }
+
+  // TODO: Everything below here should be junk
 
   // Get object by id
   getMapping(id: string): {searchMapping?: Mapping, searchPath?: Mapping[]} {

@@ -24,8 +24,10 @@
 
       <!-- Select existing mapping -->
       <BasicSelectField
+          v-bind:selected-id="selectedMapping ? selectedMapping.id : undefined"
           v-bind:field-name="'Map file to template with existing mapping:'"
           v-bind:options="importMappingOptions"
+          v-bind:empty-value-name="`-- Existing Mapping --`"
           v-on:input="selectMapping($event)"
       />
 
@@ -171,7 +173,7 @@ export default class MappingImporter extends Vue {
   private importMappingOptions: any[] = [];
   private selectedMapping: ImportMapping | null = null;
   private currentMapping: ImportMapping = new ImportMapping();
-  private newMappingName: string = '';
+  private newMappingName?: string = '';
 
   // Import response variables
   private currentImport?: ImportResponse = new ImportResponse({});
@@ -268,10 +270,11 @@ export default class MappingImporter extends Vue {
     this.stateService.send(ImportEvent.TEMPLATE_SELECTED);
   }
 
-  selectMapping(mappingId: string) {
+  async selectMapping(mappingId: string) {
     this.selectedMapping = this.importMappings.filter(mapping => mapping.id == mappingId)[0];
     // Get the details for the mapping
-    // TODO: Get mapping details
+    await this.getMappingDetails();
+    console.log(this.selectedMapping);
   }
 
   async importFile() {
@@ -294,26 +297,38 @@ export default class MappingImporter extends Vue {
 
   async saveMapping() {
     try {
-      if (this.selectedMapping!.id) {
+      if (this.selectedMapping && this.selectedMapping.id) {
         // If there is a mapping id update the mapping
-        await this.updateMapping();
+        console.log('updating');
+        const response: ImportMapping = await this.updateMapping();
+        this.selectedMapping = response;
+        this.currentMapping = response;
       } else {
+        console.log('creating new');
         // If there is no mapping id, create a new mapping
-        await this.createMapping(true);
+        this.currentMapping.name = this.newMappingName;
+        const response: ImportMapping = await this.createMapping(true);
+        this.newMappingName = '';
+        this.selectedMapping = response;
+        this.currentMapping = response;
+        // Get our mappings again
+        await this.getImportMappings();
+        this.$emit('show-success-notification', 'Mapping successfully saved.');
       }
     } catch (e) {
-        this.$emit('show-error-notification', e.errorMessage);
+      this.$log.error(e);
+      this.$emit('show-error-notification', e.errorMessage);
     }
   }
 
-  async updateMapping() {
+  async updateMapping(): Promise<ImportMapping> {
     const result: ImportMapping = await ImportService.updateMapping(this.activeProgram!.id!, this.currentMapping);
-    this.selectedMapping = result;
+    return result;
   }
 
-  async createMapping(saved: boolean) {
-      const result: ImportMapping = await ImportService.saveMapping(this.activeProgram!.id!, this.currentMapping, {saved});
-      this.selectedMapping = result;
+  async createMapping(saved: boolean): Promise<ImportMapping> {
+    const result: ImportMapping = await ImportService.saveMapping(this.activeProgram!.id!, this.currentMapping, {saved});
+    return result;
   }
 
   async getTemplates() {
@@ -338,6 +353,17 @@ export default class MappingImporter extends Vue {
     }
   }
 
+  async getMappingDetails() {
+    try {
+      const response: ImportMapping = await ImportService.getMapping(this.activeProgram!.id!, this.selectedMapping!.id!);
+      this.selectedMapping = response;
+      this.currentMapping = response;
+    } catch (e) {
+      this.$log.error(e);
+      this.$emit('show-error-notification', `Unable to load existing import mappings`);
+    }
+  }
+
   async getFileColumns() {
     const fileColumns: string[] = await ImportService.getFileColumns(this.file!);
     this.fileColumns = fileColumns;
@@ -348,7 +374,19 @@ export default class MappingImporter extends Vue {
     // TODO: Loading wheel
     try {
       // Save the mapping if necessary before uploading
-      await this.createMapping(false);
+      if (this.selectedMapping && this.selectedMapping.id) {
+        // TODO: Check if mapping has changed and ask the user if they want to update or do one time import
+        if (!this.selectedMapping.equals(this.currentMapping)) {
+          const response: ImportMapping = await this.updateMapping();
+          // TODO: Just combine all of these setters into the updateMapping method. Do the same for createMapping.
+          this.selectedMapping = response;
+          this.currentMapping = response;
+        }
+      } else {
+        const response: ImportMapping = await this.createMapping(false);
+        this.selectedMapping = response;
+      }
+
 
       let previewResponse: ImportResponse = await ImportService.uploadData(
         this.activeProgram!.id!,

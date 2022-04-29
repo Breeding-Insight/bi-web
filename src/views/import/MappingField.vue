@@ -8,6 +8,7 @@
           v-bind:field="objectField"
           v-bind:col-options="colOptions"
           v-bind:parent-path="path"
+          v-bind:mapping="mapping"
           v-on="$listeners"
         />
       </template>
@@ -61,7 +62,10 @@ export default class MappingField extends Vue {
   private path?: string = this.parentPath ? `${this.parentPath}.${this.field.id}` : this.field.id;
 
   getValue() {
-    console.log(this.path);
+    if (this.mapping!.getFieldValue(this.path!)) {
+      console.log(this.mapping!.getFieldValue(this.path!));
+      console.log(this.colOptions);
+    }
     if (this.mapping) return this.mapping!.getFieldValue(this.path!);
   }
 }

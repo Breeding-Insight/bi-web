@@ -359,7 +359,14 @@ export default class ImportTemplate extends ProgramsBase {
 
   async upload(commit: boolean) {
     try {
-      let previewResponse: ImportResponse = await ImportService.uploadData(this.activeProgram!.id!, this.systemImportTemplateId, this.file!, this.userInput, commit);
+      let previewResponse: ImportResponse = await ImportService.uploadData(
+          this.activeProgram!.id!,
+          this.systemImportTemplateId,
+          this.file!,
+{
+            userInput: this.userInput,
+            commit
+          });
       this.currentImport = previewResponse;
       // Check import response
       const response: ImportResponse = await this.getDataUpload();
