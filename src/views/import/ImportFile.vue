@@ -44,6 +44,11 @@
               tag="li" active-class="is-active">
             <a>BrAPI Import<span class="ml-2 tag is-warning">Beta</span></a>
           </router-link>
+          <router-link
+              v-bind:to="{name: 'map-import', params: {programId: activeProgram.id}}"
+              tag="li" active-class="is-active">
+            <a>Map Import<span class="ml-2 tag is-warning">Beta</span></a>
+          </router-link>
         </ul>
       </nav>
     </section>

@@ -136,7 +136,7 @@
   import {ImportField} from "@/breeding-insight/model/import/ImportField";
   import {ImportRelationType} from "@/breeding-insight/model/import/ImportRelation";
   import {Mapping} from "@/breeding-insight/model/import/Mapping";
-  import {ImportMappingConfig} from "@/breeding-insight/model/import/ImportMapping";
+  import {ImportMapping} from "@/breeding-insight/model/import/ImportMapping";
 
   @Component({
     components: {BasicInputField, BasicSelectField, AlertCircleIcon, SearchIcon },
@@ -148,7 +148,7 @@
     @Prop()
     mapping!: Mapping;
     @Prop()
-    importMapping!: ImportMappingConfig;
+    importMapping!: ImportMapping;
     @Prop()
     fileColumns!: string[];
 

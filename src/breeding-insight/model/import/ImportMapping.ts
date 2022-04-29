@@ -19,15 +19,15 @@ import {MappingValue} from "@/breeding-insight/model/import/MappingValue";
 import {ImportRelationType} from "@/breeding-insight/model/import/ImportRelation";
 import {ImportRelationMap} from "@/breeding-insight/model/import/ImportRelationMap";
 
-export class ImportMappingConfig {
+export class ImportMapping {
   id?: string;
   name?: string;
   importTypeId?: string;
   file?: {[key:string]:string}[];
-  mapping?: Mapping[];
+  mapping: Mapping[] = [];
   draft?: boolean;
 
-  constructor(config: ImportMappingConfig | undefined) {
+  constructor(config?: ImportMapping) {
     if (config) this.id = config.id;
     if (config) this.name = config.name;
     if (config) this.importTypeId = config.importTypeId;
@@ -38,6 +38,67 @@ export class ImportMappingConfig {
     } else {
       this.mapping = [];
     }
+  }
+
+  /**
+   * Takes the path to set the mapping for and the value to set.
+   * @param path  -- Json notation path, ex. germplasm.germplasmName
+   * @param value -- File column for this mapping
+   */
+  static createOrUpdateMapping(mapping: Mapping[], path: string, value: string) {
+
+    // TODO: Clean up
+    const splitPath = path.split('.');
+    const currPath = splitPath.shift();
+
+    // See if there is an existing mapping to update
+    let foundMapping: Mapping | undefined;
+    for (const mappingField of mapping) {
+      // If object exists, get
+      if (mappingField.objectId == currPath) {
+        console.log('found a mapping');
+        foundMapping = mappingField;
+      }
+    }
+    if (!foundMapping) {
+      foundMapping = new Mapping({objectId: currPath} as Mapping);
+      mapping.push(foundMapping);
+    }
+
+    if (splitPath.length == 0) {
+      // If no path remaining, set value we're done
+      const mappingValue = new MappingValue({fileFieldName: value} as MappingValue);
+      foundMapping.value = mappingValue;
+    } else {
+      // If path has length > 0, recurse down
+      ImportMapping.createOrUpdateMapping(foundMapping.mapping!, splitPath.join('.'), value);
+    }
+  }
+
+  getFieldValue(path: string): string | undefined {
+    const foundMapping = this.getMappingByPath(this.mapping!, path);
+    if (foundMapping) return foundMapping.value!.fileFieldName;
+  }
+
+  getMappingByPath(mappings: Mapping[], path: string): Mapping | undefined {
+
+    const splitPath = path.split('.');
+    const currPath = splitPath.shift();
+
+    for (const mapping of mappings) {
+      if (mapping.objectId == currPath) {
+
+        if (splitPath.length == 0) {
+          // If end of path, return
+          return mapping;
+        } else {
+          // If more to see, recurse deeper
+          return this.getMappingByPath(mapping.mapping!, splitPath.join('.'));
+        }
+
+      }
+    }
+    return;
   }
 
   // Get object by id

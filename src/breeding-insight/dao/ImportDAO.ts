@@ -15,15 +15,15 @@
  * limitations under the License.
  */
 
-import {ImportMappingConfig} from "@/breeding-insight/model/import/ImportMapping";
+import {ImportMapping} from "@/breeding-insight/model/import/ImportMapping";
 import * as api from "@/util/api";
 import {BiResponse, Response} from "@/breeding-insight/model/BiResponse";
 
 export class ImportDAO {
 
-  static async getAllImportTypeConfigs(): Promise<BiResponse> {
+  static async getAllTemplates(): Promise<BiResponse> {
     const { data } =  await api.call({
-      url: `${process.env.VUE_APP_BI_API_V1_PATH}/import/types`,
+      url: `${process.env.VUE_APP_BI_API_V1_PATH}/import/templates`,
       method: 'get'
     }) as Response;
     return new BiResponse(data);
@@ -47,14 +47,14 @@ export class ImportDAO {
     return new BiResponse(data);
   }
 
-  static async updateMapping(programId: string, mapping: ImportMappingConfig, options: {[key:string]:boolean}): Promise<any> {
-    const mappingWithoutFile: ImportMappingConfig = new ImportMappingConfig({
+  static async updateMapping(programId: string, mapping: ImportMapping, options: {[key:string]:boolean}): Promise<any> {
+    const mappingWithoutFile: ImportMapping = new ImportMapping({
       id: mapping.id,
       name: mapping.name,
       importTypeId: mapping.importTypeId,
       mapping: mapping.mapping,
       draft: options.draft
-    } as ImportMappingConfig);
+    } as ImportMapping);
     const { data } =  await api.call({
       url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/import/mappings/${mapping.id}?validate=${options.validate}`,
       method: 'put',
@@ -77,7 +77,7 @@ export class ImportDAO {
       return new BiResponse(data);
   }
 
-  static async uploadData(programId: string, templateId: string, file: File, userInput: any, commit: boolean): Promise<any> {
+  static async uploadData(programId: string, templateId: number, file: File, userInput: any, commit: boolean): Promise<any> {
 
     var formData = new FormData();
     formData.append("file", file);
@@ -98,7 +98,19 @@ export class ImportDAO {
     return new BiResponse(data);
   }
 
-  static async getDataUpload(programId: string, mappingId: string, uploadId: string) {
+  static async getFileColumns(file: File) {
+    var formData = new FormData();
+    formData.append("file", file);
+    const {data} = await api.call({
+      url: `${process.env.VUE_APP_BI_API_V1_PATH}/import/fileColumns`,
+      method: 'post',
+      data: formData
+    }) as Response;
+
+    return new BiResponse(data);
+  }
+
+  static async getDataUpload(programId: string, uploadId: string) {
     const {data} = await api.call({
       url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/import/${uploadId}`,
       method: 'get'

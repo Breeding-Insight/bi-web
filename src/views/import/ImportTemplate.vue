@@ -105,7 +105,7 @@ import WarningModal from '@/components/modals/WarningModal.vue'
 import {Program} from '@/breeding-insight/model/Program'
 import { createMachine, interpret } from '@xstate/fsm';
 import {ValidationError} from "@/breeding-insight/model/errors/ValidationError";
-import {ImportMappingConfig} from "@/breeding-insight/model/import/ImportMapping";
+import {ImportMapping} from "@/breeding-insight/model/import/ImportMapping";
 import {ImportService} from "@/breeding-insight/service/ImportService";
 import {ImportResponse} from "@/breeding-insight/model/import/ImportResponse";
 import { titleCase } from "title-case";
@@ -173,7 +173,7 @@ export default class ImportTemplate extends ProgramsBase {
   private confirmMsg!: string;
 
   @Prop()
-  private systemImportTemplateId!: string;
+  private systemImportTemplateId!: number;
 
   @Prop()
   importTypeName!: string;
@@ -184,7 +184,6 @@ export default class ImportTemplate extends ProgramsBase {
   @Prop()
   userInput!: any;
 
-  private systemImportTemplateId!: string;
   private currentImport?: ImportResponse = new ImportResponse({});
   private previewData: any[] = [];
   private previewTotalRows: number = 0;
@@ -365,30 +364,24 @@ export default class ImportTemplate extends ProgramsBase {
       // Check import response
       const response: ImportResponse = await this.getDataUpload();
 
-      // Response succeeeded or failed in expected way, check the response for errors
-      if (response.progress!.statusCode == 500) {
-        this.$emit('show-error-notification', 'An unknown error has occurred when processing your import.');
-        this.importService.send(ImportEvent.IMPORT_ERROR);
-      } else if (response.progress!.statusCode != 200) {
-        this.import_errors = ImportService.parseError(response);
-        // TODO: FInd a better place to show these errors
-        if( this.import_errors==null) {
-          this.$emit('show-error-notification', `Errors: ${response!.progress!.message!}`);
-        } else if (commit) {
-          const formattedErrors = ImportService.formatErrors(this.import_errors as ValidationError).join(' ');
-          this.$emit('show-error-notification', formattedErrors);
-        }
-        this.importService.send(ImportEvent.IMPORT_ERROR);
-      } else {
-        if (commit) {
-          this.$emit('show-success-notification', `Imported ${this.importTypeName.toLowerCase()} records have been added to ${this.activeProgram!.name}.`);
-          // TODO: navigate to appropriate record list page when we have it
-          this.importService.send(ImportEvent.DONE);
-        }
+      if (commit) {
+        this.$emit('show-success-notification', `Imported ${this.importTypeName.toLowerCase()} records have been added to ${this.activeProgram!.name}.`);
+        // TODO: navigate to appropriate record list page when we have it
+        this.importService.send(ImportEvent.DONE);
       }
     } catch (e) {
-      this.$log.error(e);
-      this.$emit('show-error-notification', 'An unknown error has occurred when uploading your import.');
+
+      if (e.progress) {
+        this.import_errors = ImportService.parseError(e);
+        if (commit) {
+          const formattedErrors = ImportService.formatErrors(this.import_errors as ValidationError).join(' ');
+          this.$emit('show-error-notification', formattedErrors);
+        } else {
+          this.$emit('show-error-notification', e.progress.message);
+        }
+      } else {
+        this.$emit('show-error-notification', 'An unknown error has occurred during import');
+      }
       this.importService.send(ImportEvent.IMPORT_ERROR);
     } finally {
       this.confirmImportState.bus.$emit(DataFormEventBusHandler.SAVE_COMPLETE_EVENT);
@@ -397,7 +390,7 @@ export default class ImportTemplate extends ProgramsBase {
 
   async getDataUpload(): Promise<ImportResponse> {
     try {
-      const previewResponse: ImportResponse = await ImportService.getDataUpload(this.activeProgram!.id!, this.systemImportTemplateId, this.currentImport!.importId!);
+      const previewResponse: ImportResponse = await ImportService.getDataUpload(this.activeProgram!.id!, this.currentImport!.importId!);
       this.currentImport = previewResponse;
 
       if (!previewResponse.progress) {
@@ -432,6 +425,7 @@ export default class ImportTemplate extends ProgramsBase {
       }
 
     } catch (e) {
+      // TODO: Throw error here
       throw e;
     }
   }

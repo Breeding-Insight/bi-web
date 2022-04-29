@@ -67,6 +67,7 @@ import PageNotFound from "@/views/PageNotFound.vue";
 import Germplasm from "@/views/germplasm/Germplasm.vue";
 import GermplasmLists from "@/views/germplasm/GermplasmLists.vue";
 import ImportExperiment from "@/views/import/ImportExperiment.vue";
+import MappingImporter from "@/views/import/MappingImporter.vue";
 
 Vue.use(VueRouter);
 
@@ -380,6 +381,15 @@ const routes = [
           layout: layouts.userSideBar
         },
         component: BrAPIImporter
+      },
+      {
+        path: 'map-import',
+        name: 'map-import',
+        meta: {
+          title: 'Map Import',
+          layout: layouts.userSideBar
+        },
+        component: MappingImporter
       }
     ]
   },

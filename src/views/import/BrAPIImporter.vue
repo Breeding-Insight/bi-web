@@ -377,10 +377,10 @@ import {createMachine, interpret} from "@xstate/fsm";
 import {ValidationError} from "@/breeding-insight/model/errors/ValidationError";
 import FileSelectMessageBox from "@/components/file-import/FileSelectMessageBox.vue";
 import {ImportService} from "@/breeding-insight/service/ImportService";
-import {ImportTypeConfig} from "@/breeding-insight/model/import/ImportTypeConfig";
+import {ImportTemplate} from "@/breeding-insight/model/import/ImportTemplate";
 import {ImportData} from "@/breeding-insight/model/import/ImportData";
 import {ImportCollectTime, ImportDataType, ImportField} from "@/breeding-insight/model/import/ImportField";
-import {ImportMappingConfig} from "@/breeding-insight/model/import/ImportMapping";
+import {ImportMapping} from "@/breeding-insight/model/import/ImportMapping";
 import FieldMappingRow from "@/components/import/FieldMappingRow.vue";
 import {ImportRelationType} from "@/breeding-insight/model/import/ImportRelation";
 import {ChevronDownIcon} from "vue-feather-icons";
@@ -512,12 +512,12 @@ enum PageState {
     private prevImports: any[] = []
     private currentImport?: ImportResponse = new ImportResponse({});
     private selectedMappingId: string | null = null;
-    private importConfigs: ImportTypeConfig[] = [];
-    private selectedImportConfig: ImportTypeConfig | null = null
+    private importConfigs: ImportTemplate[] = [];
+    private selectedImportConfig: ImportTemplate | null = null
     private importData?: ImportData;
     private importConfigOptions: any[] = [];
-    private mapping: ImportMappingConfig = new ImportMappingConfig(undefined);
-    private importMappings: ImportMappingConfig[] = [];
+    private mapping: ImportMapping = new ImportMapping(undefined);
+    private importMappings: ImportMapping[] = [];
     private importMappingOptions: any[] = [];
     private previewData: any[] = [];
     private previewTotalRows: number = 0;
@@ -608,7 +608,7 @@ enum PageState {
 
     selectMapping() {
       this.pageState = PageState.IMPORT_DATA;
-      const foundMapping: ImportMappingConfig | undefined = this.importMappings.find(importMapping => importMapping.id === this.selectedMappingId);
+      const foundMapping: ImportMapping | undefined = this.importMappings.find(importMapping => importMapping.id === this.selectedMappingId);
       if (foundMapping) {
         this.mapping = foundMapping;
         this.selectImportConfig(this.mapping.importTypeId!);
@@ -634,7 +634,7 @@ enum PageState {
 
     async getImportMappings() {
       try {
-        const importMappings: ImportMappingConfig[] = await ImportService.getAllMappings(this.activeProgram!.id!);
+        const importMappings: ImportMapping[] = await ImportService.getAllMappings(this.activeProgram!.id!);
         this.importMappings = importMappings;
         this.importMappingOptions = importMappings.map(importMapping => { return { 'id': importMapping.id, 'name': importMapping.name}; });
       } catch (e) {
@@ -645,7 +645,7 @@ enum PageState {
 
     async getImportConfigs() {
       try {
-        const importConfigs: ImportTypeConfig[] = await ImportService.getAllImportTypeConfigs();
+        const importConfigs: ImportTemplate[] = await ImportService.getAllTemplates();
         this.importConfigs = importConfigs;
         this.importConfigOptions = importConfigs.map(importConfig => { return { 'id': importConfig.id, 'name': importConfig.name}; });
       } catch (e) {

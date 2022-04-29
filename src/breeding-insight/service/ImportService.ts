@@ -17,8 +17,8 @@
 
 import {ImportData} from "@/breeding-insight/model/import/ImportData";
 import {ImportDAO} from "@/breeding-insight/dao/ImportDAO";
-import {ImportTypeConfig} from "@/breeding-insight/model/import/ImportTypeConfig";
-import {ImportMappingConfig} from "@/breeding-insight/model/import/ImportMapping";
+import {ImportTemplate} from "@/breeding-insight/model/import/ImportTemplate";
+import {ImportMapping} from "@/breeding-insight/model/import/ImportMapping";
 import {BiResponse} from "@/breeding-insight/model/BiResponse";
 import {ImportResponse} from "@/breeding-insight/model/import/ImportResponse";
 import {ValidationError} from "@/breeding-insight/model/errors/ValidationError";
@@ -29,33 +29,39 @@ export class ImportService {
   static mappingNameExists : string = 'A mapping with that name already exists';
   static getUploadUnknown: string = 'An unknown error occurred while retrieving your upload status';
 
-  static async getAllImportTypeConfigs(): Promise<ImportTypeConfig[]> {
-    const response: BiResponse = await ImportDAO.getAllImportTypeConfigs();
-    const configs: ImportTypeConfig[] = response.result.data.map((config: ImportTypeConfig) => new ImportTypeConfig(config));
+  static async getAllTemplates(): Promise<ImportTemplate[]> {
+    const response: BiResponse = await ImportDAO.getAllTemplates();
+    const configs: ImportTemplate[] = response.result.data.map((config: ImportTemplate) => new ImportTemplate(config));
     return configs;
   }
 
-  static async getAllMappings(programId: string): Promise<ImportMappingConfig[]> {
+  static async getAllMappings(programId: string): Promise<ImportMapping[]> {
     if (!programId || programId === null){
       throw 'Program ID not provided';
     }
     const response: BiResponse = await ImportDAO.getAllMappings(programId);
-    const mappings: ImportMappingConfig[] = response.result.data.map((mapping: ImportMappingConfig) => new ImportMappingConfig(mapping));
+    const mappings: ImportMapping[] = response.result.data.map((mapping: ImportMapping) => new ImportMapping(mapping));
     return mappings;
   }
 
-  static async getSystemMappings(importName: string | undefined): Promise<ImportMappingConfig[]> {
+  static async getFileColumns(file: File): Promise<string[]> {
+    const response: BiResponse = await ImportDAO.getFileColumns(file);
+    const fileColumns: string[] = response.result;
+    return fileColumns;
+  }
+
+  static async getSystemMappings(importName: string | undefined): Promise<ImportMapping[]> {
     const response: BiResponse = await ImportDAO.getSystemMappings(importName);
-    const mappings: ImportMappingConfig[] = response.result.data.map((mapping: ImportMappingConfig) => new ImportMappingConfig(mapping));
+    const mappings: ImportMapping[] = response.result.data.map((mapping: ImportMapping) => new ImportMapping(mapping));
     return mappings;
   }
 
-  static async updateMapping(programId: string, mapping: ImportMappingConfig, options: {[key:string]:boolean}): Promise<any> {
+  static async updateMapping(programId: string, mapping: ImportMapping, options: {[key:string]:boolean}): Promise<any> {
     if (!programId || programId === null) throw 'Program ID not provided';
     if (!mapping || !mapping.id) throw 'Mapping must have an id.';
     try {
       const response: BiResponse = await ImportDAO.updateMapping(programId, mapping, options);
-      const importMapping: ImportMappingConfig = new ImportMappingConfig(response.result);
+      const importMapping: ImportMapping = new ImportMapping(response.result);
       return importMapping;
     } catch (e) {
       if (e.response && e.response.status === 409) {
@@ -67,44 +73,53 @@ export class ImportService {
     }
   }
 
-  static async saveMappingFile(programId: string, file: File): Promise<ImportMappingConfig> {
+  static async saveMappingFile(programId: string, file: File): Promise<ImportMapping> {
     if (!programId || programId === null) {
       throw 'Program ID not provided';
     }
 
     const response: BiResponse = await ImportDAO.saveMappingFile(programId, file);
-    const importMapping: ImportMappingConfig = new ImportMappingConfig(response.result);
+    const importMapping: ImportMapping = new ImportMapping(response.result);
     return importMapping;
   }
 
-  static async uploadData(programId: string, mappingId: string, file: File, userInput: any, commit: boolean): Promise<ImportResponse> {
+  static async uploadData(programId: string, templateId: number, file: File, userInput: any, commit: boolean): Promise<ImportResponse> {
     if (!programId || programId === null) {
       throw 'Program ID not provided';
     }
 
-    const response: BiResponse = await ImportDAO.uploadData(programId, mappingId, file, userInput, commit);
+    const response: BiResponse = await ImportDAO.uploadData(programId, templateId, file, userInput, commit);
     const data: any = response.result;
     const importResponse = new ImportResponse(data);
+
     return importResponse;
   }
 
-  static async getDataUpload(programId: string, mappingId: string, uploadId: string): Promise<ImportResponse> {
+  static async getDataUpload(programId: string, uploadId: string): Promise<ImportResponse> {
     if (!programId || programId === null) {
       throw 'Program ID not provided';
     }
 
     try {
-      const response: BiResponse = await ImportDAO.getDataUpload(programId, mappingId, uploadId);
+      const response: BiResponse = await ImportDAO.getDataUpload(programId, uploadId);
       const data: any = response.result;
-      const importResponse = new ImportResponse(data);
+      let importResponse = new ImportResponse(data);
+
+      // Handle errors
+      if (importResponse.progress!.statusCode == 202) {
+        return importResponse;
+      } else if (importResponse.progress!.statusCode != 200) {
+        throw importResponse;
+      }
+
       return importResponse;
     } catch (e) {
-      if (e.response && e.response.statusText) {
-        e.errorMessage = e.response.statusText;
-      } else {
-        e.errorMessage = this.getUploadUnknown;
-      }
-      throw e;
+      if (e instanceof ImportResponse) throw e;
+
+      const progress: ImportProgress = new ImportProgress({});
+      progress.statusCode = e.response.status;
+      progress.message = e.response && e.response.statusText ? e.response.statusText : this.getUploadUnknown;
+      throw new ImportResponse({progress});
     }
 
   }

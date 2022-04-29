@@ -100,7 +100,7 @@
   import BasicInputField from "@/components/forms/BasicInputField.vue";
   import {Mapping} from "@/breeding-insight/model/import/Mapping";
   import {AlertCircleIcon, SearchIcon} from "vue-feather-icons";
-  import {ImportMappingConfig} from "@/breeding-insight/model/import/ImportMapping";
+  import {ImportMapping} from "@/breeding-insight/model/import/ImportMapping";
 
   @Component({
     components: {BasicInputField, BasicSelectField, AlertCircleIcon, SearchIcon }
@@ -111,7 +111,7 @@
     @Prop()
     mapping!: Mapping;
     @Prop()
-    importMapping!: ImportMappingConfig;
+    importMapping!: ImportMapping;
     @Prop()
     fileFields!: string[];
 

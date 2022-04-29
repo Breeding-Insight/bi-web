@@ -14,13 +14,13 @@
 
 import {ImportField} from "@/breeding-insight/model/import/ImportField";
 
-export class ImportTypeConfig {
-  id: string;
+export class ImportTemplate {
+  id: number;
   name: string;
   description: string;
   fields: ImportField[];
 
-  constructor({id, name, description, fields}: ImportTypeConfig) {
+  constructor({id, name, description, fields}: ImportTemplate) {
     this.id = id;
     this.name = name;
     this.description = description;

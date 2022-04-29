@@ -53,7 +53,7 @@
   import {ImportField} from "@/breeding-insight/model/import/ImportField";
   import {Mapping} from "@/breeding-insight/model/import/Mapping";
   import ObjectMappingRow from "@/components/import/ObjectMappingRow.vue";
-  import {ImportMappingConfig} from "@/breeding-insight/model/import/ImportMapping";
+  import {ImportMapping} from "@/breeding-insight/model/import/ImportMapping";
 
   @Component({
     components: {ObjectMappingRow, BasicInputField, BasicSelectField},
@@ -65,7 +65,7 @@
     @Prop()
     mapping!: Mapping;
     @Prop()
-    importMapping!: ImportMappingConfig;
+    importMapping!: ImportMapping;
 
     mappingChangeEvent: string = 'mapping-change';
 
