@@ -22,17 +22,17 @@ import {ImportRelationMap} from "@/breeding-insight/model/import/ImportRelationM
 export class ImportMapping {
   id?: string;
   name?: string;
-  importTypeId?: string;
+  importerTemplateId?: number;
   file?: {[key:string]:string}[];
   mapping: Mapping[] = [];
-  draft?: boolean;
+  saved?: boolean;
 
   constructor(config?: ImportMapping) {
     if (config) this.id = config.id;
     if (config) this.name = config.name;
-    if (config) this.importTypeId = config.importTypeId;
+    if (config) this.importerTemplateId = config.importerTemplateId;
     if (config) this.file = config.file;
-    if (config) this.draft = config.draft;
+    if (config) this.saved = config.saved;
     if (config && config.mapping) {
       this.mapping = config.mapping;
     } else {

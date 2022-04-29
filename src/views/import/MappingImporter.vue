@@ -17,7 +17,7 @@
       <!-- Choose file -->
       Choose a file to import:
       <FileSelector
-          v-on:input="getFileColumns(file)"
+          v-on:input="importFile()"
           v-model="file"
           fileTypes="'.csv, .xls, .xlsx'"
       />
@@ -59,13 +59,11 @@
       </div>
     </template>
 
-    <template v-if="state === ImportState.PROCESSING">
+    <template v-if="state !== ImportState.TEMPLATE_SELECT">
       <!-- Progress view -->
-      <ProgressBar
-          v-bind:max="currentImport.progress ? currentImport.progress.total : undefined"
-          v-bind:value="currentImport.progress ? currentImport.progress.finished : undefined"
-          v-bind:estimated-time-text="currentImport.progress ? currentImport.progress.message: undefined"
-      />
+      <ImportProgress
+        v-bind:current-import="currentImport"
+        v-bind:import-errors="import_errors" />
     </template>
 
     <!-- Mapping view component-->
@@ -210,10 +208,12 @@ export default class MappingImporter extends Vue {
         entry: ImportAction.PREVIEW,
         on: {
           [ImportEvent.IMPORT_SUCCESS]: ImportState.CURATE,
+          [ImportEvent.IMPORT_ERROR]: ImportState.IMPORT
         }
       },
       [ImportState.CURATE]: {
         on: {
+          [ImportEvent.PREVIEW]: ImportState.PROCESSING,
           [ImportEvent.CONFIRM]: {
             actions: ImportAction.CONFIRM
           },
@@ -264,6 +264,7 @@ export default class MappingImporter extends Vue {
 
   selectTemplate(importId: number) {
     this.selectedTemplate = this.templates.filter(template => template.id == importId)[0];
+    this.currentMapping.importerTemplateId = this.selectedTemplate.id;
     this.stateService.send(ImportEvent.TEMPLATE_SELECTED);
   }
 
@@ -291,11 +292,28 @@ export default class MappingImporter extends Vue {
     this.$set(this.currentMapping, 'mapping', this.currentMapping.mapping);
   }
 
-  saveMapping() {
-    // TODO:
-    // If there is a mapping id update the mapping
+  async saveMapping() {
+    try {
+      if (this.selectedMapping!.id) {
+        // If there is a mapping id update the mapping
+        await this.updateMapping();
+      } else {
+        // If there is no mapping id, create a new mapping
+        await this.createMapping(true);
+      }
+    } catch (e) {
+        this.$emit('show-error-notification', e.errorMessage);
+    }
+  }
 
-    // If there is no mapping id, create a new mapping
+  async updateMapping() {
+    const result: ImportMapping = await ImportService.updateMapping(this.activeProgram!.id!, this.currentMapping);
+    this.selectedMapping = result;
+  }
+
+  async createMapping(saved: boolean) {
+      const result: ImportMapping = await ImportService.saveMapping(this.activeProgram!.id!, this.currentMapping, {saved});
+      this.selectedMapping = result;
   }
 
   async getTemplates() {
@@ -329,7 +347,19 @@ export default class MappingImporter extends Vue {
     // TODO: Try to combine code from the ImportTemplate, all this code is the same
     // TODO: Loading wheel
     try {
-      let previewResponse: ImportResponse = await ImportService.uploadData(this.activeProgram!.id!, this.selectedTemplate!.id!, this.file!, {}, commit);
+      // Save the mapping if necessary before uploading
+      await this.createMapping(false);
+
+      let previewResponse: ImportResponse = await ImportService.uploadData(
+        this.activeProgram!.id!,
+        this.selectedTemplate!.id!,
+        this.file!,
+        {
+          userInput: {},
+          commit,
+          mappingId: this.selectedMapping!.id
+        });
+
       this.currentImport = previewResponse;
       // Check import response
       const response: ImportResponse = await this.getDataUpload();
@@ -352,7 +382,10 @@ export default class MappingImporter extends Vue {
         } else {
           this.$emit('show-error-notification', e.progress.message);
         }
+      } else if (e.errorMessage) {
+        this.$emit('show-error-notification', e.errorMessage);
       } else {
+        this.$log.error(e);
         this.$emit('show-error-notification', 'An unknown error has occurred during import');
       }
       this.stateService.send(ImportEvent.IMPORT_ERROR);

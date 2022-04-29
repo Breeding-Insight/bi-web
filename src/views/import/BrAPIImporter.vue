@@ -611,7 +611,7 @@ enum PageState {
       const foundMapping: ImportMapping | undefined = this.importMappings.find(importMapping => importMapping.id === this.selectedMappingId);
       if (foundMapping) {
         this.mapping = foundMapping;
-        this.selectImportConfig(this.mapping.importTypeId!);
+        this.selectImportConfig(this.mapping.importerTemplateId!);
         this.importService.send(ImportEvent.SELECTED_MAPPING);
       } else {
         this.$emit('show-error-notification', 'Error selecting mapping');
@@ -802,7 +802,7 @@ enum PageState {
 
     selectImportConfig(importId: string) {
       this.selectedImportConfig = this.importConfigs.filter(importConfig => importConfig.id === importId)[0];
-      this.mapping.importTypeId = this.selectedImportConfig.id;
+      this.mapping.importerTemplateId = this.selectedImportConfig.id;
     }
 
     // Does not actually have possibility for object to be undefined

@@ -58,10 +58,11 @@ export default class MappingField extends Vue {
   parentPath?: string;
 
   // Parent path + this one
-  private path: string = this.parentPath ? `${this.parentPath}.${this.field.id}` : this.field.id;
+  private path?: string = this.parentPath ? `${this.parentPath}.${this.field.id}` : this.field.id;
 
   getValue() {
-    if (this.mapping) return this.mapping!.getFieldValue(this.path);
+    console.log(this.path);
+    if (this.mapping) return this.mapping!.getFieldValue(this.path!);
   }
 }
 </script>

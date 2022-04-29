@@ -27,7 +27,6 @@
                 v-bind:key="objectField.id"
                 v-bind:field="objectField"
                 v-bind:col-options="colOptions"
-                v-bind:parentPath="objectField.id"
                 v-bind:mapping="mapping"
                 v-on="$listeners"
             />
@@ -70,6 +69,9 @@ export default class ImportMappingView extends Vue {
 
   private colOptions: any[] = [];
 
+  mounted() {
+    console.log(this.template.fields);
+  }
   // Access mapping with string accessor eg. germplasm.germplasmName[0]
   @Watch('fileCols')
   generateColOptions(){

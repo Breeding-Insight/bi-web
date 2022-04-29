@@ -47,18 +47,30 @@ export class ImportDAO {
     return new BiResponse(data);
   }
 
-  static async updateMapping(programId: string, mapping: ImportMapping, options: {[key:string]:boolean}): Promise<any> {
+  static async saveMapping(programId: string, mapping: ImportMapping, options: {[key:string]:boolean}): Promise<any> {
     const mappingWithoutFile: ImportMapping = new ImportMapping({
       id: mapping.id,
       name: mapping.name,
-      importTypeId: mapping.importTypeId,
+      importerTemplateId: mapping.importerTemplateId,
       mapping: mapping.mapping,
-      draft: options.draft
+      saved: options.saved
     } as ImportMapping);
+
     const { data } =  await api.call({
-      url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/import/mappings/${mapping.id}?validate=${options.validate}`,
-      method: 'put',
+      url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/import/mappings`,
+      method: 'post',
       data: mappingWithoutFile,
+    }) as Response;
+
+    return new BiResponse(data);
+  }
+
+  static async updateMapping(programId: string, mapping: ImportMapping): Promise<any> {
+
+    const { data } =  await api.call({
+      url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/import/mappings/${mapping.id}`,
+      method: 'put',
+      data: mapping,
     }) as Response;
 
     return new BiResponse(data);
@@ -77,7 +89,7 @@ export class ImportDAO {
       return new BiResponse(data);
   }
 
-  static async uploadData(programId: string, templateId: number, file: File, userInput: any, commit: boolean): Promise<any> {
+  static async uploadData(programId: string, templateId: number, file: File, userInput: any, commit: boolean, mappingId: string): Promise<any> {
 
     var formData = new FormData();
     formData.append("file", file);
@@ -89,8 +101,10 @@ export class ImportDAO {
       formData.append("userInput", jsonBlob);
     }
 
+    let url = `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/import/${templateId}?commit=${commit}`;
+    url = mappingId ? url + `&mappingId=${mappingId}` : url;
     const {data} = await api.call({
-      url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/import/${templateId}?commit=${commit}`,
+      url: url,
       method: 'post',
       data: formData
     }) as Response;

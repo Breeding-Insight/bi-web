@@ -50,17 +50,29 @@ export class ImportService {
     return fileColumns;
   }
 
-  static async getSystemMappings(importName: string | undefined): Promise<ImportMapping[]> {
-    const response: BiResponse = await ImportDAO.getSystemMappings(importName);
-    const mappings: ImportMapping[] = response.result.data.map((mapping: ImportMapping) => new ImportMapping(mapping));
-    return mappings;
+  static async saveMapping(programId: string, mapping: ImportMapping, options: {[key:string]:boolean}) {
+
+    if (!programId || programId === null) throw 'Program ID not provided';
+    if (!mapping) throw 'Mapping must be provided';
+    try {
+      const response: BiResponse = await ImportDAO.saveMapping(programId, mapping, options);
+      const importMapping: ImportMapping = new ImportMapping(response.result);
+      return importMapping;
+    } catch (e) {
+      if (e.response && e.response.status === 409) {
+        e.errorMessage = this.mappingNameExists;
+      } else {
+        e.errorMessage = e.response.statusText;
+      }
+      throw e;
+    }
   }
 
-  static async updateMapping(programId: string, mapping: ImportMapping, options: {[key:string]:boolean}): Promise<any> {
+  static async updateMapping(programId: string, mapping: ImportMapping): Promise<any> {
     if (!programId || programId === null) throw 'Program ID not provided';
     if (!mapping || !mapping.id) throw 'Mapping must have an id.';
     try {
-      const response: BiResponse = await ImportDAO.updateMapping(programId, mapping, options);
+      const response: BiResponse = await ImportDAO.updateMapping(programId, mapping);
       const importMapping: ImportMapping = new ImportMapping(response.result);
       return importMapping;
     } catch (e) {
@@ -83,12 +95,12 @@ export class ImportService {
     return importMapping;
   }
 
-  static async uploadData(programId: string, templateId: number, file: File, userInput: any, commit: boolean): Promise<ImportResponse> {
+  static async uploadData(programId: string, templateId: number, file: File, {userInput, commit, mappingId}: any): Promise<ImportResponse> {
     if (!programId || programId === null) {
       throw 'Program ID not provided';
     }
 
-    const response: BiResponse = await ImportDAO.uploadData(programId, templateId, file, userInput, commit);
+    const response: BiResponse = await ImportDAO.uploadData(programId, templateId, file, userInput, commit, mappingId);
     const data: any = response.result;
     const importResponse = new ImportResponse(data);
 
