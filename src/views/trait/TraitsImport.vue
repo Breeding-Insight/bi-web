@@ -48,7 +48,7 @@
     <template v-if="state === ImportState.CHOOSE_FILE || state === ImportState.FILE_CHOSEN">
       <h1 class="title" v-if="showTitle">Import Ontology</h1>
       <ImportInfoTemplateMessageBox v-bind:import-type-name="'Ontology'"
-                                    v-bind:template-url="'https://cornell.box.com/shared/static/n3oapshmoqjju0yzuhlgh01cuevbzlj5.xls'"
+                                    v-bind:template-url="templateUrl"
                                     class="mb-5">
         <strong>Before You Import...</strong>
         <br/>Prepare ontology information for import using the provided template.
@@ -81,7 +81,7 @@
     <template v-if="state === ImportState.IMPORT_ERROR">
       <h1 class="title">Importing...</h1>
       <ImportInfoTemplateMessageBox v-bind:import-type-name="'Ontology'"
-                                    v-bind:template-url="'https://cornell.box.com/shared/static/n3oapshmoqjju0yzuhlgh01cuevbzlj5.xls'"
+                                    v-bind:template-url="templateUrl"
                                     class="mb-5">
         <strong>Before You Import...</strong>
         <br/>Prepare ontology information for import using the provided template.
@@ -178,6 +178,7 @@ export default class TraitsImport extends ProgramsBase {
   private showAbortModal = false;
 
   private yesAbortId: string = "traitsimport-yes-abort";
+  private templateUrl: string = "https://cornell.box.com/shared/static/8mp6ex7c07mregc84pcb81u3fcpjje69.xls";
 
   private confirmImportState: DataFormEventBusHandler = new DataFormEventBusHandler();
 
