@@ -26,6 +26,7 @@ process.env.VUE_APP_BI_API_ROOT = process.env.VUE_APP_BI_API_ROOT || "http://loc
 process.env.VUE_APP_OPENID_LOGOUT_URL = process.env.VUE_APP_OPENID_LOGOUT_URL || "https://sandbox.orcid.org/userStatus.json?logUserOut=true";
 process.env.VUE_APP_BI_API_V1_PATH = process.env.VUE_APP_BI_API_ROOT + "/v1";
 process.env.VUE_APP_LOG_LEVEL = process.env.VUE_APP_LOG_LEVEL || 'error';
+process.env.VUE_APP_BI_REFERENCE_SOURCE = process.env.VUE_APP_BI_REFERENCE_SOURCE || 'breedinginsight.org';
 
 module.exports = {
   devServer: {
