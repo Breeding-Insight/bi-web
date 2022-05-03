@@ -15,29 +15,29 @@
  * limitations under the License.
  */
 
-import {SharedProgram} from "@/breeding-insight/model/SharedProgram";
+import {SharedOntology} from "@/breeding-insight/model/SharedOntology";
 import {BiResponse, Metadata} from "@/breeding-insight/model/BiResponse";
-import {TraitDAO} from "@/breeding-insight/dao/TraitDAO";
 import {ValidationErrorService} from "@/breeding-insight/service/ValidationErrorService";
 import {SharedOntologyDAO} from "@/breeding-insight/dao/SharedOntologyDAO";
-import {SharedProgramRequest} from "@/breeding-insight/model/SharedProgramRequest";
+import {SharedOntologyRequest} from "@/breeding-insight/model/SharedOntologyRequest";
 import {ValidationError} from "@/breeding-insight/model/errors/ValidationError";
+import {SubscribedOntology} from "@/breeding-insight/model/SubscribedOntology";
 
 export class SharedOntologyService {
 
-  static async get(programId: string): Promise<[SharedProgram[], Metadata]> {
+  static async get(programId: string): Promise<[SharedOntology[], Metadata]> {
     if (!programId) throw 'Program ID required';
 
     try {
       const { result: { data }, metadata } = await SharedOntologyDAO.get(programId);
-      const sharedPrograms: SharedProgram[] = [];
+      const sharedPrograms: SharedOntology[] = [];
       for (const datum of data) {
-        sharedPrograms.push(new SharedProgram(datum));
+        sharedPrograms.push(new SharedOntology(datum));
       }
       return [sharedPrograms, metadata];
     } catch (error) {
       if (error.response && error.response.status === 404) {
-        throw error.response.message;
+        throw error.response.statusText;
       } else {
         throw 'An unknown error has occurred';
       }
@@ -45,19 +45,19 @@ export class SharedOntologyService {
 
   }
 
-  static async share(programId: string, shareRequests: SharedProgramRequest[]): Promise<[SharedProgram[], Metadata]> {
+  static async share(programId: string, shareRequests: SharedOntologyRequest[]): Promise<[SharedOntology[], Metadata]> {
 
     try {
       const { result: { data }, metadata } = await SharedOntologyDAO.share(programId, shareRequests);
       // Parse into SharedPrograms
-      const sharedPrograms: SharedProgram[] = [];
+      const sharedPrograms: SharedOntology[] = [];
       for (const datum of data) {
-        sharedPrograms.push(new SharedProgram(datum));
+        sharedPrograms.push(new SharedOntology(datum));
       }
       return [sharedPrograms, metadata];
     } catch (error) {
       if (error.response && error.response.status === 404) {
-        throw error.response.message;
+        throw error.response.statusText;
       } else if (error.response && error.response.status == 422) {
         const parsedErrors: ValidationError | string =  ValidationErrorService.parseError(error);
         // Stringify and format msg
@@ -78,10 +78,69 @@ export class SharedOntologyService {
         await SharedOntologyDAO.revoke(programId, programToRemove);
       } catch (error) {
         if (error.response && error.response.status === 404) {
-          throw error.response.message;
+          throw error.response.statusText;
         } else {
           throw 'An unknown error has occurred';
         }
+      }
+    }
+  }
+
+  static async getSubscriptionOptions(programId: string): Promise<[SubscribedOntology[], Metadata]> {
+    if (!programId) throw 'Program ID required';
+
+    try {
+      const { result: { data }, metadata } = await SharedOntologyDAO.getSubscriptionOptions(programId);
+      const subscribedPrograms: SubscribedOntology[] = [];
+      for (const datum of data) {
+        subscribedPrograms.push(new SubscribedOntology(datum));
+      }
+      return [subscribedPrograms, metadata];
+    } catch (error) {
+      if (error.response && error.response.status === 404) {
+        throw error.response.statusText;
+      } else if (error.response && error.response.status === 403) {
+        throw 'You do not have permissions required to manage program configurations.';
+      } else {
+        throw 'An unknown error has occurred';
+      }
+    }
+  }
+
+  static async subscribeOntology(programId: string, subscribedProgramId: string) {
+    if (!programId) throw 'Program ID required';
+
+    try {
+      const { result: { data }, metadata } = await SharedOntologyDAO.subscribeOntology(programId, subscribedProgramId);
+      return;
+    } catch (error) {
+      if (error.response && error.response.status === 404) {
+        throw error.response.statusText;
+      } else if (error.response && error.response.status === 403) {
+        throw 'You do not have permissions required to manage program configurations.';
+      } else if (error.response && error.response.status == 422) {
+        throw error.response.statusText;
+      } else {
+        throw 'An unknown error has occurred';
+      }
+    }
+  }
+
+  static async unsubscribeOntology(programId: string, subscribedProgramId: string) {
+    if (!programId) throw 'Program ID required';
+
+    try {
+      await SharedOntologyDAO.unsubscribeOntology(programId, subscribedProgramId);
+      return;
+    } catch (error) {
+      if (error.response && error.response.status === 404) {
+        throw error.response.statusText;
+      } else if (error.response && error.response.status === 403) {
+        throw 'You do not have permissions required to manage program configurations.';
+      } else if (error.response && error.response.status == 422) {
+        throw error.response.statusText;
+      } else {
+        throw 'An unknown error has occurred';
       }
     }
   }

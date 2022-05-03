@@ -15,13 +15,16 @@
  * limitations under the License.
  */
 
-
-export class SharedProgramRequest {
+export class SubscribedOntology {
   programName: string;
   programId: string;
+  subscribed: boolean;
+  editable: boolean;
 
-  constructor({programName, programId}: SharedProgramRequest) {
+  constructor({programName, programId, subscribed, editable}: SubscribedOntology) {
     this.programName = programName;
     this.programId = programId;
+    this.subscribed = subscribed;
+    this.editable = editable;
   }
 }
