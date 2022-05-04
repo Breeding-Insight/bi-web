@@ -236,7 +236,7 @@
           <p v-if="active && $ability.can('create', 'Trait')">
             Create new ontology terms by clicking "New Term" or by navigating to "Import Ontology".
           </p>
-          <p v-if="!active && $ability.can('archive', 'Trait') && $ability.can('update', 'Trait')">
+          <p v-if="!active && !isSubscribed && $ability.can('archive', 'Trait') && $ability.can('update', 'Trait')">
             Archive an existing ontology term by clicking "Show details" > "Edit" > "Archive". <br>
             Create new archived ontology terms by clicking "New Term" or by navigating to "Import Ontology".
           </p>

@@ -71,7 +71,7 @@
                 with has not collected any observations on the traits within the shared ontology.
               </p>
 
-              <!-- Availabe shared programs -->
+              <!-- Available shared programs -->
               <div
                   v-if="editableMatchedPrograms.length > 0"
                   class="mb-6"

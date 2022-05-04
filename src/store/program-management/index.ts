@@ -21,7 +21,6 @@ import {mutations} from '@/store/program-management/mutations';
 import {actions} from '@/store/program-management/actions';
 import {RootState} from '@/store/types';
 import {ProgramManagementState} from "@/store/program-management/types";
-import {SubscribedProgram} from "@/breeding-insight/model/SubscribedProgram";
 
 export let state: ProgramManagementState;
 state = {

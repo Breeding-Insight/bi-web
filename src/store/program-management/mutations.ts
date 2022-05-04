@@ -20,12 +20,12 @@ import {
     UPDATE_SHARED_ONTOLOGY
 } from "@/store/program-management/mutation-types";
 import {ProgramManagementState} from "@/store/program-management/types";
-import {SubscribedProgram} from "@/breeding-insight/model/SubscribedProgram";
+import {SubscribedOntology} from "@/breeding-insight/model/SubscribedOntology";
 
 export const mutations: MutationTree<ProgramManagementState> = {
-    [UPDATE_SHARED_ONTOLOGY](state: ProgramManagementState, sharingPrograms: SubscribedProgram[]) {
+    [UPDATE_SHARED_ONTOLOGY](state: ProgramManagementState, sharingPrograms: SubscribedOntology[]) {
         state.subscribedOntology = undefined;
-        sharingPrograms.forEach((sharingProgram: SubscribedProgram) => {
+        sharingPrograms.forEach((sharingProgram: SubscribedOntology) => {
             if (sharingProgram.subscribed) {
                 state.subscribedOntology = sharingProgram;
             }

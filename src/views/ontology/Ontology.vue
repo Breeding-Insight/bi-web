@@ -62,7 +62,7 @@
   import OntologyBase from "@/components/ontology/OntologyBase.vue";
   import OntologyActiveTable from "@/components/ontology/OntologyActiveTable.vue";
   import OntologyArchivedTable from "@/components/ontology/OntologyArchivedTable.vue";
-  import {SubscribedProgram} from "@/breeding-insight/model/SubscribedProgram";
+  import {SubscribedOntology} from "@/breeding-insight/model/SubscribedOntology";
 
   @Component({
     components: {
@@ -81,7 +81,7 @@
 
     private activeProgram?: Program;
     private isSubscribed?: boolean;
-    private subscribedOntology?: SubscribedProgram;
+    private subscribedOntology?: SubscribedOntology;
 
   }
 </script>

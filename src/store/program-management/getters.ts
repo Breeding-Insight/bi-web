@@ -18,11 +18,11 @@
 import {GetterTree} from 'vuex';
 import {RootState} from "@/store/types";
 import {ProgramManagementState} from "@/store/program-management/types";
-import {SubscribedProgram} from "@/breeding-insight/model/SubscribedProgram";
+import {SubscribedOntology} from "@/breeding-insight/model/SubscribedOntology";
 
 export const getters: GetterTree<ProgramManagementState, RootState> = {
 
-    subscribedOntology(state: ProgramManagementState): SubscribedProgram | undefined {
+    subscribedOntology(state: ProgramManagementState): SubscribedOntology | undefined {
         return state.subscribedOntology;
     },
 
