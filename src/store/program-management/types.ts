@@ -15,10 +15,9 @@
  * limitations under the License.
  */
 
-import {SharedProgram} from "@/breeding-insight/model/SharedProgram";
-import {SubscribedProgram} from "@/breeding-insight/model/SubscribedProgram";
+import {SubscribedOntology} from "@/breeding-insight/model/SubscribedOntology";
 
 export interface ProgramManagementState {
 
-    subscribedOntology?: SubscribedProgram
+    subscribedOntology?: SubscribedOntology
 }
