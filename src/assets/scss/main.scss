@@ -655,3 +655,12 @@ th.activesort.sortcolumn, th.sortcolumn:hover {
 .descending {
   transform: rotate(180deg);
 }
+
+.left-confirm-column {
+  float: left;
+  padding-right: 70px
+}
+
+.right-confirm-column {
+  float: left;
+}
