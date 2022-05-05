@@ -48,8 +48,20 @@
                                  v-on:confirm="confirm"
                                  class="mb-4">
           <div>
+          <div class = "left-confirm-column">
             <p class="is-size-5 mb-2"><strong>Import Summary</strong></p>
-            <p>Total number of entries: {{ rows.length }}</p>
+            <p>Environments: {{ statistics.Environments.newObjectCount }}</p>
+            <p>Gerplasm: {{ statistics.GIDs.newObjectCount }}</p>
+            <p>Observation Units: {{ statistics.Observation_Units.newObjectCount }}</p>
+          </div>
+          <div id="experiment-summary" class ="right-confirm-column">
+            <p class="is-size-5 mb-2"><strong>Experiment</strong></p>
+            <p>Title: {{ rows[0].trial.brAPIObject.trialName }}</p>
+            <p>Description: {{ rows[0].trial.brAPIObject.trialDescription }}</p>
+            <p>Type: {{ rows[0].trial.brAPIObject.additionalInfo.experimentType }}</p>
+            <p>User: </p>
+            <p>Creation Date: </p>
+          </div>
           </div>
         </ConfirmImportMessageBox>
       </template>
@@ -63,11 +75,11 @@
         >
           <!-- Germplasm Name -->
           <b-table-column field="germplasmName" label="Germplasm Name" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-            TODO
+            {{ getField(props.row.data.germplasm, 'germplasmName') }}
           </b-table-column>
           <!-- Germplasm GID -->
           <b-table-column field="germplasmGID" label="Germplasm GID" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-            TODO
+            {{ getField(props.row.data.germplasm, 'accessionNumber') }}
           </b-table-column>
           <!-- Test or Check -->
           <b-table-column field="testOrCheck" label="Test (T) or Check (C)" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
@@ -111,7 +123,6 @@
           </b-table-column>
           <!-- Exp Block # -->
           <b-table-column field="expBlockNo" label="Exp Block #" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-<!--            {{ getField(props.row.data.observationUnit, 'observationUnitPosition.observationLevelRelationships') }}-->
             {{ getObservationLevelRelationships(props.row.data.observationUnit, 'block') }}
           </b-table-column>
           <!-- Row -->
