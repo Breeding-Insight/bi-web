@@ -71,8 +71,8 @@
               <a>Images</a>
             </router-link>
             <router-link
-                v-bind:to="{name: '', params: {programId: activeProgram.id}}"
-                tag="li"
+                v-bind:to="{name: 'germplasm-pedigrees', params: {programId: activeProgram.id, germplasm: germplasm}}"
+                tag="li" active-class="is-active"
             >
               <a>Pedigrees</a>
             </router-link>
