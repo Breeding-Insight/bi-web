@@ -46,7 +46,6 @@ import {
 import ProgramLocationsManagement from "@/views/program/ProgramLocationsManagement.vue";
 import ProgramUserManagement from "@/views/program/ProgramUsersManagement.vue";
 import Traits from '@/views/trait/Traits.vue'
-import TraitsList from "@/views/trait/TraitsList.vue";
 import TraitsImport from "@/views/trait/TraitsImport.vue";
 import TraitsArchived from "@/views/trait/TraitsArchived.vue";
 import ProgramSelection from "@/views/program/ProgramSelection.vue";
@@ -322,18 +321,9 @@ const routes = [
       layout: layouts.userSideBar
     },
     component: Traits,
-    redirect: {name: 'traits-list'},
+    redirect: {name: 'traits-import'},
     beforeEnter: processProgramNavigation,
     children: [
-      {
-        path: 'list',
-        name: 'traits-list',
-        meta: {
-          title: 'Trait List',
-          layout: layouts.userSideBar
-        },
-        component: TraitsList
-      },
       {
         path: 'import',
         name: 'traits-import',
