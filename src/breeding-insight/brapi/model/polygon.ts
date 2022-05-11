@@ -9,7 +9,7 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { LinearRing } from '@/breeding-insight/brapi/model/linearRing';
+import { LinearRing } from './linearRing';
 
 /**
  * An array of linear rings

@@ -20,8 +20,8 @@
     <div class="columns">
       <div class="column is-one-half">
         <BasicSelectField
-            v-model="selectedVariable"
-            v-bind:options="variables"
+            v-model="selectedVariableId"
+            v-bind:options="variableOptions"
             v-bind:field-name="'Variable'"
         />
       </div>
@@ -41,28 +41,101 @@
 import {Component, Prop, Vue, Watch} from 'vue-property-decorator';
 import { Plotly } from 'vue-plotly'
 import BasicSelectField from "@/components/forms/BasicSelectField.vue";
+import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
+import {VariableService} from "@/breeding-insight/service/VariableService";
+import {mapGetters} from "vuex";
+import {Program} from "@/breeding-insight/model/Program";
+import {VariableOption} from "@/components/observations/VariableOption";
+import {ObservationVariable} from "@/breeding-insight/brapi/model/observationVariable";
+import {Result} from "@/breeding-insight/model/Result";
+import {Observation} from "@/breeding-insight/model/Observation";
+import {Metadata} from "@/breeding-insight/model/BiResponse";
+import {ObservationService} from "@/breeding-insight/service/ObservationService";
 
 @Component({
-      components: {Plotly, BasicSelectField}
+      components: {Plotly, BasicSelectField},
+      computed: {
+        ...mapGetters([
+          'activeProgram'
+        ])
+      },
     }
 )
 
 export default class ObservationsPlot extends Vue {
 
-  private data = [{
-    x: [1,2,3,4],
-    y: [10,15,13,17],
-    type:"scatter"
-  }];
+  private data : Array<any> = [];
 
   private layout = {
-    title: "My graph"
   };
 
-  private variables = ["test1", "test2"];
+  private activeProgram?: Program;
+  private variables: Array<ObservationVariable> = [];
+  private variableOptions: Array<VariableOption> = [];
   private plotTypes = ["Scatter Plot", "Histogram"];
-  private selectedVariable : string | undefined;
-  private selectedPlotType : string | undefined;
+  private selectedVariable : string = '';
+  private selectedVariableId : string = '';
+  private selectedPlotType : string = '';
+
+  private studyId?: string = this.$route.params.studyId;
+  private observations: Observation[] = [];
+  private filteredObservations: Observation[] = [];
+
+  mounted() {
+    this.getVariables();
+    this.getObservations();
+  }
+
+  getVariables() {
+
+    let paginationQuery = new PaginationQuery(1, 100000, false);
+
+    VariableService.getByStudyDbId(this.activeProgram!.id!, this.studyId!, paginationQuery).then(([variables, metadata]) => {
+      this.variables = variables;
+      this.variableOptions = variables.map((variable: ObservationVariable) => {
+        return new VariableOption(variable.observationVariableDbId, variable.observationVariableName);
+      });
+      console.log(this.variableOptions);
+    }).catch((error) => {
+      this.$emit('show-error-notification', 'Error while trying to load variables');
+      throw error;
+    });
+  }
+
+  async getObservations() {
+
+    let paginationQuery = new PaginationQuery(1, 100000, false);
+
+    try {
+      const response: Result<Error, [Observation[], Metadata]> = await ObservationService.getByStudy(this.activeProgram!.id!, this.studyId!, paginationQuery);
+      if (response.isErr()) throw response.value;
+      let [observations, metadata] = response.value;
+
+      this.observations = observations;
+
+    } catch (err) {
+      this.$emit('show-error-notification', 'Error while trying to load observations');
+    }
+  }
+
+  //@Watch('selectedVariableId')
+  get filterObservations(): Observation[] {
+    return this.observations.filter(observation => {
+      return observation.observationVariableId === this.selectedVariableId
+    });
+  }
+
+  @Watch('filterObservations')
+  updateData(filterObservations: Observation[]) {
+    const observations : Array<number> = filterObservations.map((observation: Observation) => {
+      return observation.value;
+    });
+
+    this.data = [{
+      x: observations,
+      type: 'histogram'
+    }]
+  }
 
 }
 

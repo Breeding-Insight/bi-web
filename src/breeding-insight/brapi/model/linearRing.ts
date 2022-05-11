@@ -9,7 +9,7 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { Position } from '@/breeding-insight/brapi/model/position';
+import { Position } from './position';
 
 /**
  * An array of at least four positions where the first equals the last
