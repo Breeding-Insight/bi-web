@@ -112,6 +112,9 @@ import { titleCase } from "title-case";
 import {DataFormEventBusHandler} from "@/components/forms/DataFormEventBusHandler";
 import {ValidationErrorService} from "@/breeding-insight/service/ValidationErrorService";
 import {Pagination} from "@/breeding-insight/model/BiResponse";
+import {
+  DEACTIVATE_ALL_NOTIFICATIONS
+} from "@/store/mutation-types";
 
 enum ImportState {
   CHOOSE_FILE = "CHOOSE_FILE",
@@ -317,6 +320,8 @@ export default class ImportTemplate extends ProgramsBase {
   }
 
   async upload() {
+    //New button submit, clear prior notifications
+    this.$store.commit( DEACTIVATE_ALL_NOTIFICATIONS );
 
     try {
       await this.getSystemImportTemplateMapping();
@@ -360,6 +365,9 @@ export default class ImportTemplate extends ProgramsBase {
   }
 
   abort() {
+    //Clear prior notifications
+    this.$store.commit( DEACTIVATE_ALL_NOTIFICATIONS );
+
     // TODO: actually cancel request
     this.finish();
     this.showCancelledNotification();
@@ -390,6 +398,9 @@ export default class ImportTemplate extends ProgramsBase {
   }
 
   async confirm() {
+    //New button submit, clear prior notifications
+    this.$store.commit( DEACTIVATE_ALL_NOTIFICATIONS );
+
     const name = this.activeProgram && this.activeProgram.name ? this.activeProgram.name : 'the program';
     try {
       const response: ImportResponse = await this.updateDataUpload(this.currentImport!.importId!, true);
