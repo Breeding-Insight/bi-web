@@ -165,7 +165,7 @@
                    v-bind:estimated-time-text="'May take a few seconds'"
       />
 
-      <article v-if="!editable && !loadingEditable && $ability.can('update', 'Trait')" class="message is-info">
+      <article v-if="!editable && !loadingEditable && !fromImportTable && $ability.can('update', 'Trait')" class="message is-info">
         <div class="message-body">
           <div class="media">
             <figure class="media-left">
@@ -268,6 +268,8 @@
     private entityOptions?: string[];
     @Prop()
     private attributeOptions?: string[];
+    @Prop({default: false})
+    private fromImportTable!: boolean;
 
 
     private editTrait: Trait | null = null;
