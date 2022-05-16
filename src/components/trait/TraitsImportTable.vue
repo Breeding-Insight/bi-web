@@ -210,7 +210,7 @@ export default class TraitsImportTable extends Vue {
   private newSortColumn!: (field: OntologySortField) => void;
   private toggleSortOrder!: () => void;
 
-  //On import should not be editable and should not be loading editabilty status
+  //On import should not be editable and should not be loading editability status
   private loadingTraitEditable = false;
   private isImportTable = true;
 
