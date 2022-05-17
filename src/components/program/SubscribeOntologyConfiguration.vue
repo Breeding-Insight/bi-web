@@ -157,7 +157,7 @@ export default class SubscribeOntologyConfiguration extends ProgramsBase {
       this.subscribeProcessing = true;
       await SharedOntologyService.unsubscribeOntology(this.activeProgram!.id!, subscribedProgramId);
       this.subscribedOntology = undefined;
-      this.$emit('show-success-notification', `Successful unsubscribed to ontology`);
+      this.$emit('show-success-notification', `Successfully unsubscribed from ontology`);
       this.$emit('subscription-change');
     } catch (e) {
       // Check error statuses, show errors
