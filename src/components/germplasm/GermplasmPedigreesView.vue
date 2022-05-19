@@ -18,7 +18,7 @@
 <template>
   <div id="germplasm-pedigrees">
     <p>{{ "you can do this!" }} </p>
-    <div id="pdgv-wrap" style="border:solid thin #ddd;width:100%;"></div>
+    <div id="pdgv-wrap" style="border:solid thin #ddd;"></div>
   </div>
 </template>
 
@@ -27,12 +27,13 @@ import {Component, Prop, Vue, Watch} from 'vue-property-decorator'
 import GermplasmBase from "@/components/germplasm/GermplasmBase.vue";
 import {Program} from "@/breeding-insight/model/Program";
 import {Germplasm} from "@/breeding-insight/brapi/model/germplasm";
-import PedigreeViewer from "@solgenomics/brapi-pedigree-viewer";
+import PedigreeViewer from "@solgenomics/brapi-pedigree-viewer"; //todo change source
 import {mapGetters} from "vuex";
 import {Pedigree} from "@/breeding-insight/model/import/germplasm/Pedigree";
 import {GermplasmUtils} from "@/breeding-insight/utils/GermplasmUtils";
 import BrAPI from "@solgenomics/brapijs";
 import * as d3 from "d3";
+import * as pedigreeTree from "@solgenomics/d3-pedigree-tree";
 
 @Component({
   components: {GermplasmPedigreesView},
@@ -46,13 +47,22 @@ import * as d3 from "d3";
 export default class GermplasmPedigreesView extends GermplasmBase {
 
   private activeProgram?: Program;
-  private germplasm?: Germplasm;
   private pedigreeLoading: boolean = true; //todo add loading symbol when loading
 
+  @Prop()
+  private germplasmDbId: string;
+  //maybe need to make computed?
+
   mounted() {
+    window.d3 = Object.assign(
+        d3,
+        pedigreeTree
+    );
+    window.BrAPI = Object.assign(BrAPI);
+    //version = 2.0;
     this.getPedigreeView();
-    //window.d3 = d3; //for testing d3 dependency expectation
-    //console.log(d3.pedigreeTree);
+    console.log("pedigree stuff");
+    console.log(d3.pedigreeTree);
   }
 
   get germplasmUUID(): string {
@@ -68,7 +78,11 @@ export default class GermplasmPedigreesView extends GermplasmBase {
         console.log(PedigreeViewer);
         let pedigree = PedigreeViewer(
             //REQUIRED Server: BrAPI.js handle for target endpoint
-            BrAPI(this.activeProgram.brapiUrl+"brapi/v2"),
+            BrAPI(this.activeProgram.brapiUrl+"brapi/v1"), 'v1.3'
+            //TODO seems like there's dependencies other than version
+            //so keeping at 1 for now so i can do other fixes
+            //even though those fixes might be rendered null by other changes
+
             //OPTIONAL a function which returns a link to a germplasm information page, returning null will create a node without a link.
             //function(germplasmDbId){
             //  return "https://brapi.myserver.org/germ/"+germplasmDbId+".html"; //want germplasm details page, we use router link..
@@ -76,22 +90,17 @@ export default class GermplasmPedigreesView extends GermplasmBase {
             //}
         );
         console.log('hereA');
+        console.log(pedigree);
         pedigree.newTree(
             //REQUIRED root germplasmDbId of germplasm which should be displayed on start (highlighted in pink)
-            //this.germplasmUUID //need germplasm.dbid
-            42024
-
+            //need germplasm.germplasmDbId
+            //move to method?
+            //todo clean up other attempts to retrieve/pass dbid
+            this.$store.state.currentGermplasm.germplasmDbId
         )
         console.log('hereB');
-        pedigree.drawViewer(
-            "div#pdgv-wrap"
-            //REQUIRED selector for the parent node of the new viewer SVG element.
-            //"div#pdgv-wrap",
-            //OPTIONAL width of viewer
-            //800,
-            //OPTIONAL height of viewer
-            //400
-        );
+        console.log(pedigree);
+        pedigree.drawViewer("div#pdgv-wrap", 800, 400); //todo make more flexible for screen sizes?
         console.log('hereC');
 
       } catch (err) {
