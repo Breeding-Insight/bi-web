@@ -320,7 +320,8 @@ const routes = [
           title: 'Pedigrees',
           layout: layouts.userSideBar
         },
-        component: GermplasmPedigreesView
+        component: GermplasmPedigreesView,
+        props: true
       },
       {
         path: 'images',
