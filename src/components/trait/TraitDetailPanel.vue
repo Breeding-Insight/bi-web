@@ -24,21 +24,21 @@
       </p><br>
 
       <div v-if="data.traitDescription" class="columns is-multiline is-mobile pt-4 pl-3">
-        <div class="column is-narrow p-0">
-          <span class="is-pulled-left has-text-weight-bold mr-2">Description</span>
+        <div class="column is-one-quarter p-0">
+          <span class="is-pulled-right has-text-weight-bold">Description</span>
         </div>
-        <div class="column is-narrow p-0">
-          <span class="is-size-7 mb-0">{{data.traitDescription}}</span>
+        <div class="column is-three-quarters p-0">
+          <span class="is-size-7 ml-2 mb-0">{{data.traitDescription}}</span>
         </div>
       </div>
       <!-- just shows first abbreviation AKA main abbreviation and first synonym -->
       <template v-if="abbreviationsSynonymsString">
         <div class="columns is-multiline is-mobile pt-1 pl-3">
-          <div class="column is-narrow p-0">
-            <span class="is-pulled-left has-text-weight-bold mr-2">Synonyms</span>
+          <div class="column is-one-quarter p-0">
+            <span class="is-pulled-right has-text-weight-bold mr-2">Synonyms</span>
           </div>
-          <div class="column is-narrow p-0">
-            <span class="is-size-7 mb-0">{{ abbreviationsSynonymsString(2)}}</span>
+          <div class="column is-three-quarters p-0">
+            <span class="is-size-7 ml-2 mb-0">{{ abbreviationsSynonymsString(2)}}</span>
           </div>
         </div>
       </template>
@@ -48,8 +48,8 @@
 
       <template v-if="data.tags && data.tags.length > 0">
         <div class="columns is-multiline is-mobile pt-1 pl-3">
-          <div class="column is-narrow p-0">
-            <span class="is-pulled-left has-text-weight-bold mr-2">Tags</span>
+          <div class="column is-one-quarter p-0">
+            <span class="is-pulled-right has-text-weight-bold mr-2">Tags</span>
           </div>
           <template v-for="tag in data.tags">
             <div v-bind:key="tag" class="column is-narrow p-0">
@@ -61,50 +61,61 @@
 
       <div class="columns is-centered is-mobile is-variable is-multiline is-0 mt-5 my-0">
         <template v-if="data.entity && data.attribute">
-          <div class="column is-half p-0">
+          <div class="column is-one-quarter p-0">
             <span class="is-pulled-right has-text-weight-bold mr-2">Trait</span>
           </div>
-          <div class="column is-half p-0">
+          <div class="column is-three-quarters p-0">
             <span class="is-size-7 ml-2">{{data.entity}} {{data.attribute | capitalize}}</span>
           </div>
         </template>
         <template v-if="data.method && data.method.methodClass">
-          <div class="column is-half p-0">
+          <div class="column is-one-quarter p-0">
             <span class="is-pulled-right has-text-weight-bold mr-2">Method</span>
           </div>
-          <div class="column is-half p-0">
+          <div class="column is-three-quarters p-0">
             <span class="is-size-7 ml-2">{{(data.method.description ? StringFormatters.toStartCase(data.method.description) : "") }} {{ data.method.methodClass }}</span>
           </div>
         </template>
         <template v-if="data.scale && data.scale.dataType">
-          <div class="column is-half p-0">
+          <div class="column is-one-quarter p-0">
             <span class="is-pulled-right has-text-weight-bold mr-2">Scale</span>
           </div>
-          <div class="column is-half p-0">
+          <div class="column is-three-quarters p-0">
             <span class="is-size-7 ml-2">{{ scaleTypeString }}</span>
           </div>
         </template>
-        <template v-if="scaleType && Scale.dataTypeEquals(scaleType, DataType.Numerical)">
-          <div class="column is-half p-0">
-            <span class="is-pulled-right mr-2">Units</span>
+
+        <!-- if computation method, show formula as well -->
+        <template v-if="methodClass && Method.methodClassEquals(methodClass, MethodClass.Computation)">
+          <div class="column is-one-quarter p-0">
+            <span class="is-pulled-right has-text-weight-bold mr-2">Formula</span>
           </div>
-          <div class="column is-half p-0">
+          <div class="column is-three-quarters p-0">
+            <span class="is-size-7 ml-2">{{valueOrNA(data.method.formula)}}</span>
+          </div>
+        </template>
+
+        <template v-if="scaleType && Scale.dataTypeEquals(scaleType, DataType.Numerical)">
+          <div class="column is-one-quarter p-0">
+            <span class="is-pulled-right has-text-weight-bold mr-2">Units</span>
+          </div>
+          <div class="column is-three-quarters p-0">
             <span class="is-size-7 ml-2">{{ valueOrNA(data.scale.scaleName) | capitalize }}</span>
           </div>
           <div class="column is-half p-0">
-            <span class="is-pulled-right mr-2">Decimal Places</span>
+            <span class="is-pulled-right has-text-weight-bold mr-2">Decimal Places</span>
           </div>
           <div class="column is-half p-0">
             <span class="is-size-7 ml-2">{{ valueOrNA(data.scale.decimalPlaces) }}</span>
           </div>
           <div class="column is-half p-0">
-            <span class="is-pulled-right mr-2">Minimum Value</span>
+            <span class="is-pulled-right has-text-weight-bold mr-2">Minimum Value</span>
           </div>
           <div class="column is-half p-0">
             <span class="is-size-7 ml-2">{{ valueOrNA(data.scale.validValueMin) }}</span>
           </div>
           <div class="column is-half p-0">
-            <span class="is-pulled-right mr-2">Maximum Value</span>
+            <span class="is-pulled-right has-text-weight-bold mr-2">Maximum Value</span>
           </div>
           <div class="column is-half p-0">
             <span class="is-size-7 ml-2">{{ valueOrNA(data.scale.validValueMax) }}</span>
@@ -112,16 +123,6 @@
         </template>
         <template v-if="scaleType && Scale.dataTypeEquals(scaleType, DataType.Text)">
           <!-- TODO: Not showing anything for this now -->
-        </template>
-
-        <!-- if computation method, show formula as well -->
-        <template v-if="methodClass && Method.methodClassEquals(methodClass, MethodClass.Computation)">
-          <div class="column is-half p-0">
-            <span class="is-pulled-right mr-2">Formula</span>
-          </div>
-          <div class="column is-half p-0">
-            <span class="is-size-7 ml-2">{{valueOrNA(data.method.formula)}}</span>
-          </div>
         </template>
 
 <!--        nothing to show for date class now-->
@@ -136,11 +137,12 @@
         <div v-for="category in data.scale.categories"
              :key="category.label"
              class="columns is-centered is-mobile is-variable is-multiline is-0 my-0">
-          <div class="column is-half p-0">
-            <span class="is-pulled-right mr-2">{{ category.value }}</span>
+          <div class="column is-one-quarter p-0">
+            <span v-if="category.label" class="is-pulled-right mr-2">{{ category.value }}</span>
           </div>
-          <div class="column is-half p-0">
+          <div class="column is-three-quarters p-0">
             <span v-if="category.label" class="is-size-7 ml-2">{{ category.label }}</span>
+            <span v-else class="is-size-7 ml-2">{{ category.value }}</span>
           </div>
         </div>
       </template>
