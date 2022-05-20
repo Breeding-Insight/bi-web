@@ -35,7 +35,18 @@
       <li><b>Breeding Method: </b> {{ germplasm.additionalInfo.breedingMethod }}</li>
       <li><b>Source: </b> {{ germplasm.seedSource }}</li>
         <li><b>Pedigree: </b> {{ germplasm.additionalInfo.pedigreeByName }}</li>
-        <li><b>Pedigree GID(s): </b> {{ germplasm.pedigree }}</li>
+        <li><b>Pedigree GID(s): </b>
+          <GermplasmLink
+            v-if="germplasm.pedigree"
+            v-bind:germplasmUUID="Pedigree.parsePedigreeString(germplasm.additionalInfo.pedigreeByUUID).femaleParent"
+            v-bind:germplasmGID="Pedigree.parsePedigreeString(germplasm.pedigree).femaleParent"
+        > </GermplasmLink>
+          <template v-if="Pedigree.parsePedigreeString(germplasm.pedigree).maleParent">
+          / <GermplasmLink
+            v-bind:germplasmUUID="Pedigree.parsePedigreeString(germplasm.additionalInfo.pedigreeByUUID).maleParent"
+            v-bind:germplasmGID="Pedigree.parsePedigreeString(germplasm.pedigree).maleParent"
+          > </GermplasmLink></template>
+        </li>
       </ul>
     </section>
     </article>
@@ -93,29 +104,35 @@ import {Program} from "@/breeding-insight/model/Program";
 import GermplasmBase from "@/components/germplasm/GermplasmBase.vue";
 import {Germplasm} from "@/breeding-insight/brapi/model/germplasm";
 import {GermplasmService} from "@/breeding-insight/service/GermplasmService";
+import GermplasmLink from '@/components/germplasm/GermplasmLink.vue'
+import {Pedigree} from "@/breeding-insight/model/import/germplasm/Pedigree";
 import {GermplasmUtils} from '@/breeding-insight/utils/GermplasmUtils';
 import { Result } from '@/breeding-insight/model/Result';
 
 @Component({
-  components: {},
+  components: {GermplasmLink},
   computed: {
     ...mapGetters([
       'activeProgram'
     ])
   },
-  data: () => ({GermplasmUtils})
+  data: () => ({Pedigree, GermplasmUtils})
 })
 export default class GermplasmDetails extends GermplasmBase {
 
   private activeProgram?: Program;
   private germplasm?: Germplasm;
   private germplasmLoading: boolean = true;
-  private germplasmUUID: string = this.$route.params.germplasmId;
 
   mounted() {
     this.getGermplasm();
   }
 
+  get germplasmUUID(): string {
+    return this.$route.params.germplasmId;
+  }
+
+  @Watch('$route')
   async getGermplasm() {
     this.germplasmLoading = true;
     try {
