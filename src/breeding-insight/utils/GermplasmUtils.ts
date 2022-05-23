@@ -45,7 +45,7 @@ export class GermplasmUtils {
 
     static formatSynonyms(synonyms: any[]): string {
         if (!synonyms) return "";
-        return synonyms.map(synonym => synonym.synonym).join(";");
+        return synonyms.map(synonym => synonym.synonym).join("; ");
     }
 
 }
