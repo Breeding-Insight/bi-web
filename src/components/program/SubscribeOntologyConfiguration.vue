@@ -1,6 +1,6 @@
 <template>
   <section id="shared-ontology-section">
-    <h2 class="title is-5">Subscribe To Ontology</h2>
+    <h2 class="title is-5">Subscribe to Shared Ontology</h2>
 
     <!-- Loading wheel container -->
     <template v-if="sharedProgramLoading">
@@ -13,7 +13,7 @@
       <p>This program contains traits and therefore cannot subscribe to another program's ontology.</p>
     </template>
     <template v-else-if="shareOffers.length == 0">
-      <p>No ontologies are currently shared with your program at this time.</p>
+      <p>No ontologies have been shared with {{activeProgram.name}}.</p>
     </template>
     <template v-else-if="isSubscribed()">
       <p>This program is currently subscribed to the {{subscribedOntology.programName}} ontology</p>
@@ -40,7 +40,7 @@
       <BasicSelectField
           v-model="selectedOntology.id"
           v-bind:options="shareOffersOptions"
-          v-bind:field-name="'Select an Ontology to Subscribe to:'"
+          v-bind:field-name="'Choose ontology to subscribe to:'"
       />
       <!-- Button for selection -->
       <button
@@ -50,7 +50,7 @@
           v-bind:class="{'is-loading': subscribeProcessing}"
           v-bind:disabled="subscribeProcessing"
       >
-        Subscribe to Ontology
+        Save
       </button>
     </template>
   </section>
@@ -135,9 +135,11 @@ export default class SubscribeOntologyConfiguration extends ProgramsBase {
   async subscribeOntology() {
 
     try {
+      if (!this.selectedOntology.id) throw 'Please select an ontology to subscibe to.';
       // Loading wheel show
       this.subscribeProcessing = true;
       await SharedOntologyService.subscribeOntology(this.activeProgram!.id!, this.selectedOntology.id);
+      this.$emit('show-success-notification', `Successful subscribed to ontology`);
       this.$emit('subscription-change');
     } catch (e) {
       // Check error statuses, show errors
@@ -155,6 +157,7 @@ export default class SubscribeOntologyConfiguration extends ProgramsBase {
       this.subscribeProcessing = true;
       await SharedOntologyService.unsubscribeOntology(this.activeProgram!.id!, subscribedProgramId);
       this.subscribedOntology = undefined;
+      this.$emit('show-success-notification', `Successfully unsubscribed from ontology`);
       this.$emit('subscription-change');
     } catch (e) {
       // Check error statuses, show errors
