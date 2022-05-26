@@ -425,7 +425,7 @@ export default class OntologyTable extends Vue {
 
   updatePagination() {
     let paginationQuery: PaginationQuery = BackendPaginationController.getPaginationSelections(
-        this.paginationController.currentPage, this.paginationController.pageSize);
+        this.paginationController.currentPage, this.paginationController.pageSize, this.paginationController.showAll);
     this.paginationController.setCurrentCall(paginationQuery);
   }
 
@@ -435,6 +435,12 @@ export default class OntologyTable extends Vue {
     this.traitsLoading = true;
 
     TraitService.getFilteredTraits(this.activeProgram!.id!, this.paginationController.currentCall, true, filters, this.ontologySort).then(([traits, metadata]) => {
+      console.log('hello');
+      console.log(traits);
+      console.log(metadata);
+      console.log(this.paginationController.currentCall);
+      console.log(filters);
+      console.log(this.ontologySort);
       if (this.paginationController.matchesCurrentRequest(metadata.pagination)){
         this.traits = traits;
         this.traitsPagination = metadata.pagination;

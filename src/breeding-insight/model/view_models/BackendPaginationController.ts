@@ -63,9 +63,19 @@ export class BackendPaginationController {
     this.showAll = !this.showAll;
   }
 
-  static getPaginationSelections(currentPage: number, pageSize: number): PaginationQuery {
+  static getPaginationSelections(currentPage: number, pageSize: number, showAll: boolean): PaginationQuery {
+    /*
+    if (showAll==undefined) showAll = false; //todo possibly temporary if
     return new PaginationQuery(
-      currentPage, pageSize, false);
+      currentPage, pageSize, showAll); //HERE TODO
+     */
+    if (showAll) {
+      return new PaginationQuery(
+          1, pageSize, showAll); //0 or 1
+    } else {
+      return new PaginationQuery(
+          currentPage, pageSize, showAll);
+    }
   }
 
 }
