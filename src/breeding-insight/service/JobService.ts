@@ -29,7 +29,7 @@ export class JobService {
 
     try {
       const response: BiResponse = await JobDAO.getProgramJobs(programId);
-      const data: any = response.result;
+      const data: any = response.result.data;
       if(data) {
         return data.map((response: Job) => new Job(response));
       } else {
