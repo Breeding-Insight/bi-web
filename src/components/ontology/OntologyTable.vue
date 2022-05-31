@@ -118,7 +118,7 @@
       v-bind:loading="traitsLoading"
       v-on:paginate="paginationController.updatePage($event)"
       v-on:paginate-toggle-all="paginationController.toggleShowAll(traitsPagination.totalCount.valueOf())"
-      v-on:paginate-page-size="paginationController.updatePageSize(parseInt($event,10))"
+      v-on:paginate-page-size="paginationController.changePageSize(parseInt($event,10))"
     >
 
       <!-- 

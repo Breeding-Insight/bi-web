@@ -31,6 +31,14 @@ export class BackendPaginationController {
     if (currentCall) this.currentCall = currentCall;
   }
 
+  //todo Keep eye on currentCall, that might be issue here
+  //Wrapper to set showAll to false when user changes page size
+  //due to update page size being called on showAll toggle as well
+  changePageSize(pageSize: number) {
+    this.showAll = false;
+    this.updatePageSize(pageSize);
+  }
+
   updatePageSize(pageSize: number) {
     this.lastPageSize = this.pageSize;
     this.pageSize = pageSize;
@@ -63,15 +71,11 @@ export class BackendPaginationController {
     this.showAll = !this.showAll;
   }
 
+  //todo maybe need wrapper so when user manually changes page size showAll is set to false?
   static getPaginationSelections(currentPage: number, pageSize: number, showAll: boolean): PaginationQuery {
-    /*
-    if (showAll==undefined) showAll = false; //todo possibly temporary if
-    return new PaginationQuery(
-      currentPage, pageSize, showAll); //HERE TODO
-     */
     if (showAll) {
       return new PaginationQuery(
-          1, pageSize, showAll); //0 or 1
+          1, pageSize, showAll);
     } else {
       return new PaginationQuery(
           currentPage, pageSize, showAll);
