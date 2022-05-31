@@ -45,10 +45,6 @@ import {
 } from '@/store/mutation-types';
 import ProgramLocationsManagement from "@/views/program/ProgramLocationsManagement.vue";
 import ProgramUserManagement from "@/views/program/ProgramUsersManagement.vue";
-import Traits from '@/views/trait/Traits.vue'
-import TraitsList from "@/views/trait/TraitsList.vue";
-import TraitsImport from "@/views/trait/TraitsImport.vue";
-import TraitsArchived from "@/views/trait/TraitsArchived.vue";
 import ProgramSelection from "@/views/program/ProgramSelection.vue";
 import {UserService} from "@/breeding-insight/service/UserService";
 import {User} from "@/breeding-insight/model/User";
@@ -313,46 +309,6 @@ const routes = [
       layout: layouts.userSideBar
     },
     beforeEnter: processProgramNavigation
-  },
-  {
-    path: '/programs/:programId/traits',
-    name: 'traits',
-    meta: {
-      title: 'Traits',
-      layout: layouts.userSideBar
-    },
-    component: Traits,
-    redirect: {name: 'traits-list'},
-    beforeEnter: processProgramNavigation,
-    children: [
-      {
-        path: 'list',
-        name: 'traits-list',
-        meta: {
-          title: 'Trait List',
-          layout: layouts.userSideBar
-        },
-        component: TraitsList
-      },
-      {
-        path: 'import',
-        name: 'traits-import',
-        meta: {
-          title: 'Import Traits',
-          layout: layouts.userSideBar
-        },
-        component: TraitsImport
-      },
-      {
-        path: 'archived',
-        name: 'traits-archived',
-        meta: {
-          title: 'Archived Traits',
-          layout: layouts.userSideBar
-        },
-        component: TraitsArchived
-      }
-    ]
   },
   {
     path: '/programs/:programId/import',
