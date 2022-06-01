@@ -111,6 +111,7 @@
                     class="button"
                     v-on:click="showShareModal = false"
                     id="cancelSharedOntology"
+                    v-bind:disabled="shareProgramProcessing"
                 >
                   Cancel
                 </button>
