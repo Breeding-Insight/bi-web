@@ -655,3 +655,26 @@ th.activesort.sortcolumn, th.sortcolumn:hover {
 .descending {
   transform: rotate(180deg);
 }
+
+.trait-detail {
+  .scale-info {
+    border-left: 1px solid $info;
+    @include from($desktop) {
+      width: 85%;
+      margin-left: 20%;
+    }
+
+    .scale-categories {
+      &.columns {
+        &:not(:last-of-type) {
+          margin-bottom: 2em;
+        }
+      }
+    }
+
+    .column {
+      padding-top: 0;
+      padding-bottom: 0;
+    }
+  }
+}
