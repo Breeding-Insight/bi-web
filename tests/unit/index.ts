@@ -28,8 +28,6 @@ import {User} from "@/breeding-insight/model/User";
 import {ProgramUser} from "@/breeding-insight/model/ProgramUser";
 import {Role} from "@/breeding-insight/model/Role";
 import {sorting} from '@/store/sorting/index';
-import {SHOW_SUCCESS_NOTIFICATION} from "@/store/mutation-types";
-import {programManagement} from "@/store/program-management";
 
 const localVue = createLocalVue();
 localVue.use(VueRouter);
@@ -60,8 +58,7 @@ export const defaultStore = new Vuex.Store({
     showSidebarMobile: true
   },
   modules: {
-    sorting,
-    programManagement
+    sorting
   },
   getters: {
     activeProgram: () => fakeProgram
