@@ -450,6 +450,11 @@ router.beforeEach((to: Route, from: Route, next: Function) => {
   // If page is protected, check if they are logged in.
   const loginRedirectUrlCookieName = Vue.prototype.$cookieNames.loginRedirectUrl;
 
+  // Check if the login redirect is valid
+  if (Vue.$cookies.isKey(loginRedirectUrlCookieName) && to.name == 'page-does-not-exist') {
+    next({name: 'home', replace: true, params: {loginRedirect: false, sessionExpired: false}});
+  }
+
   // Remove the redirect url from the cookie
   Vue.$cookies.remove(loginRedirectUrlCookieName);
   Vue.$cookies.remove(Vue.prototype.$cookieNames.accountToken);
