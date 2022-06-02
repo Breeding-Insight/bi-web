@@ -118,7 +118,7 @@
       v-bind:loading="traitsLoading"
       v-on:paginate="paginationController.updatePage($event)"
       v-on:paginate-toggle-all="paginationController.toggleShowAll(traitsPagination.totalCount.valueOf())"
-      v-on:paginate-page-size="paginationController.changePageSize(parseInt($event,10))"
+      v-on:paginate-page-size="paginationController.updatePageSize(parseInt($event,10))"
     >
 
       <!-- 
@@ -435,12 +435,6 @@ export default class OntologyTable extends Vue {
     this.traitsLoading = true;
 
     TraitService.getFilteredTraits(this.activeProgram!.id!, this.paginationController.currentCall, true, filters, this.ontologySort).then(([traits, metadata]) => {
-      console.log('hello');
-      console.log(traits);
-      console.log(metadata);
-      console.log(this.paginationController.currentCall);
-      console.log(filters);
-      console.log(this.ontologySort);
       if (this.paginationController.matchesCurrentRequest(metadata.pagination)){
         this.traits = traits;
         this.traitsPagination = metadata.pagination;
@@ -543,6 +537,7 @@ export default class OntologyTable extends Vue {
         await TraitService.archiveTrait(this.activeProgram!.id!, savedTrait);
       }
       this.$emit('show-success-notification', 'Trait creation successful.');
+      this.updatePagination();
       this.getTraits();
       const levelPromise = this.getObservationLevels();
       const tagPromise = this.getTraitTags();
