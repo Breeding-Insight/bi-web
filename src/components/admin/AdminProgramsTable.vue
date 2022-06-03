@@ -207,7 +207,6 @@
   import {EventBus} from "@/util/event-bus";
   import {Metadata, Pagination} from "@/breeding-insight/model/BiResponse";
   import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
-  import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
   import { DataFormEventBusHandler } from '@/components/forms/DataFormEventBusHandler';
   import { helpers } from 'vuelidate/lib/validators'
   import { isWebUri } from 'valid-url'
@@ -403,6 +402,7 @@ export default class AdminProgramsTable extends Vue {
 
     ProgramService.create(this.newProgram).then((program: Program) => {
       this.paginationController.updatePage(1);
+      this.paginationController.updateOnAdd();
       this.getPrograms();
       this.$emit('show-success-notification', 'Success! ' + this.newProgram.name + ' added.');
       this.newProgramActive = false;
