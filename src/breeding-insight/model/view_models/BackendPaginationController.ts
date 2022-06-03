@@ -78,4 +78,12 @@ export class BackendPaginationController {
           currentPage, pageSize, showAll);
   }
 
+  //When show all active, increments page size by one on successful addition in order to keep entries on same page
+  //Don't want to update lastPageSize in this case
+  updateOnAdd(){
+    if (this.showAll){
+      this.pageSize += 1;
+    }
+  }
+
 }
