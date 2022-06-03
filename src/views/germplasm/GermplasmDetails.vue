@@ -72,7 +72,7 @@
               <a>Images</a>
             </router-link>
             <router-link
-                v-bind:to="{name: 'germplasm-pedigrees', params: {programId: activeProgram.id}, props: {germplasmDbId: 'pancake'}}"
+                v-bind:to="{name: 'germplasm-pedigrees', params: {programId: activeProgram.id, germplasmDbId: germplasm.germplasmDbId}}"
                 tag="li" active-class="is-active"
             >
               <a>Pedigrees</a>
@@ -139,13 +139,15 @@ export default class GermplasmDetails extends GermplasmBase {
     this.germplasmLoading = true;
     try {
       const response: Result<Error, Germplasm> = await GermplasmService.getSingleGermplasm(this.activeProgram!.id!, this.germplasmUUID);
-      if(response.isErr()) throw response.value;
+      if(response.isErr()) {
+        throw response.value;
+      }
       this.germplasm = response.value;
       console.log('germplasm hi here');
       console.log(response.value);
       console.log(response.value.germplasmDbId);
       //set to store
-      this.$store.commit(SET_CURRENT_GERMPLASM, this.germplasm);
+      // this.$store.commit(SET_CURRENT_GERMPLASM, this.germplasm);
     } catch (err) {
       // Display error that germplasm cannot be loaded
       this.$emit('show-error-notification', 'Error while trying to load germplasm');
