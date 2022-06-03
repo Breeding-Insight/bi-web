@@ -321,7 +321,12 @@ const routes = [
           layout: layouts.userSideBar
         },
         component: GermplasmPedigreesView,
-        props: true
+        props: (route: any) => {
+          console.log(route.params);
+          return ({
+            ...route.params
+          })
+        }
       },
       {
         path: 'images',
