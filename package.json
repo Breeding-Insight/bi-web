@@ -19,7 +19,7 @@
   "dependencies": {
     "@casl/ability": "~4.0.0",
     "@casl/vue": "^1.1.1",
-    "@solgenomics/brapi-pedigree-viewer": "github:Breeding-Insight/BrAPI-Pedigree-Viewer#4a342867f973b55e88f7f47f61d74fdf1572ccea",
+    "@solgenomics/brapi-pedigree-viewer": "github:Breeding-Insight/BrAPI-Pedigree-Viewer#02dbfa62ce7a1447ea07dd48716801fce7280fff",
     "@solgenomics/brapijs": "github:Breeding-Insight/BrAPI-js#b447b23dcf8ecbc14f5bce0e6547e92544e41e56",
     "@solgenomics/d3-pedigree-tree": "github:solgenomics/d3-pedigree-tree#f799b499c8019cfccd550d4297196e365c208d5c",
     "@types/flat": "^5.0.2",
