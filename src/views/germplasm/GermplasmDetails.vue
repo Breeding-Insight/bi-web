@@ -18,7 +18,7 @@
 <template>
   <div class="germplasm">
     <router-link v-bind:to="{name: 'germplasm-all', params: {programId: activeProgram.id}}">
-      All Germplasm
+      &lt; All Germplasm
     </router-link>
     <div class="mb-4"></div>
     <h1 class="title">
@@ -143,11 +143,6 @@ export default class GermplasmDetails extends GermplasmBase {
         throw response.value;
       }
       this.germplasm = response.value;
-      console.log('germplasm hi here');
-      console.log(response.value);
-      console.log(response.value.germplasmDbId);
-      //set to store
-      // this.$store.commit(SET_CURRENT_GERMPLASM, this.germplasm);
     } catch (err) {
       // Display error that germplasm cannot be loaded
       this.$emit('show-error-notification', 'Error while trying to load germplasm');
