@@ -15,35 +15,25 @@
  * limitations under the License.
  */
 
-import {ImportProgress} from "@/breeding-insight/model/import/ImportProgress";
-import {ImportPreview} from "@/breeding-insight/model/import/ImportPreview";
 import { User } from '@/breeding-insight/model/User';
 import { JobDetail } from '@/breeding-insight/model/job/JobDetail';
 
-export class ImportResponse extends JobDetail{
-  importId?: string;
-  progress?: ImportProgress;
-  preview?: ImportPreview;
-  uploadFileName?: string;
-  importMappingName?:string;
-  importType?:string;
-  createdByUser?: User;
-  updatedByUser?: User;
+export class Job {
+  statuscode?: number;
+  statusMessage?: string;
+  jobType?: string;
   createdAt?: Date;
   updatedAt?: Date;
+  createdByUser?: User;
+  jobDetail?: JobDetail;
 
-  constructor({importId, progress, preview, uploadFileName, importMappingName, importType, createdByUser, updatedByUser, createdAt, updatedAt, jobType}: ImportResponse) {
-    super();
-    this.importId = importId;
-    this.progress = progress;
-    this.preview = preview;
-    this.uploadFileName = uploadFileName;
-    this.importMappingName = importMappingName;
-    this.importType = importType;
-    this.createdByUser = createdByUser;
-    this.updatedByUser = updatedByUser;
+  constructor ({statuscode, statusMessage, jobType, createdAt, updatedAt, createdByUser, jobDetail}: Job) {
+    this.statuscode = statuscode;
+    this.statusMessage = statusMessage;
+    this.jobType = jobType;
     this.createdAt = createdAt;
     this.updatedAt = updatedAt;
-    this.jobType = jobType;
+    this.createdByUser = createdByUser;
+    this.jobDetail = jobDetail;
   }
 }

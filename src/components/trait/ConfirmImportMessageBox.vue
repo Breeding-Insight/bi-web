@@ -17,6 +17,11 @@
 
 <template>
   <div class="corfirm-import">
+    <article class="message is-warning" v-if="confirmImportState.saveStarted">
+      <div class="message-body">
+        Your import is being processed. You can view on its progress by going to the <router-link v-bind:to="{name: 'job-management', params:{programId: activeProgram.id}}">Jobs</router-link> page.
+      </div>
+    </article>
     <article class="message is-success">
       <div class="message-body">
         <nav class="columns">
@@ -59,11 +64,18 @@
   import {AlertTriangleIcon} from 'vue-feather-icons'
   import {StringFormatters} from '@/breeding-insight/utils/StringFormatters'
   import {DataFormEventBusHandler} from "@/components/forms/DataFormEventBusHandler";
+  import {mapGetters} from "vuex";
+  import { Program } from '@/breeding-insight/model/Program';
 
   @Component({
     components: {
       AlertTriangleIcon
-    }
+    },
+    computed: {
+      ...mapGetters([
+        'activeProgram',
+      ])
+    },
   })
   export default class ConfirmImportMessageBox extends Vue {
 
@@ -75,6 +87,8 @@
 
     @Prop()
     confirmImportState!: DataFormEventBusHandler;
+
+    private activeProgram?: Program;
 
     confirm() {
       this.$emit('confirm');

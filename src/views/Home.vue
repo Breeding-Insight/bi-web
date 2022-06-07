@@ -21,37 +21,6 @@
     <div class="columns">
       <div class="column is-three-fifths">
         <p class="title">Welcome, {{ activeUser.name }}!</p>
-        <div class="columns is-mobile">
-          <div class="column">
-            <p class="title is-6">Last activity:</p>
-             <div class="columns is-mobile">
-               <div class="column is-narrow">
-                  <p>Data entry for trial Y4-03-10</p>
-               </div>
-               <div class="column is-narrow">
-                 <b-button class="button is-primary">RESUME</b-button>
-               </div>
-             </div>
-          </div>
-          <div class="column">
-            <p class="title is-6">Most common tasks:</p>
-            <p>Inventory</p>
-            <p>Trial Y4--02-10</p>
-            <p>Trial Y4-01-01</p>
-            <p>Experiments</p>
-          </div>
-        </div>
-
-        <div class="columns is-mobile">
-          <div class="column">
-            <p class="title is-6">Program Activity Log</p>
-            <p>Username | Type of activity here, data changed, etc. | 2019-12-12 4:08pm</p>
-            <p>Username | Type of activity here, data changed, etc. | 2019-12-12 4:08pm</p>
-            <p>Username | Type of activity here, data changed, etc. | 2019-12-12 4:08pm</p>
-            <p>Username | Type of activity here, data changed, etc. | 2019-12-12 4:08pm</p>
-            <p>Username | Type of activity here, data changed, etc. | 2019-12-12 4:08pm</p>
-          </div>
-        </div>
       </div>
       <div class="column">
         <div class="card">
@@ -68,9 +37,9 @@
               </div>
             </div>
           </div>
-          <footer class="card-footer">
-            <a href="#" class="card-footer-item">Edit</a>
-          </footer>
+<!--          <footer class="card-footer">-->
+<!--            <a href="#" class="card-footer-item">Edit</a>-->
+<!--          </footer>-->
         </div>
       </div>
     </div>
