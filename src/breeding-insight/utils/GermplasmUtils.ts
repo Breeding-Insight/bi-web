@@ -33,7 +33,7 @@ export class GermplasmUtils {
     static getCreatedDate(germplasm: Germplasm): string | undefined {
         if (germplasm.additionalInfo && germplasm.additionalInfo.createdDate) {
             let dateTime = moment(germplasm.additionalInfo!.createdDate!, "DD/MM/YYYY h:mm:ss");
-            return dateTime.format("DD/MM/YYYY");
+            return dateTime.format("YYYY-MM-DD");
         }
         return "";
     }
