@@ -17,13 +17,11 @@
 
 import {User} from "@/breeding-insight/model/User";
 import {Program} from "@/breeding-insight/model/Program";
-import {Germplasm} from "@/breeding-insight/brapi/model/germplasm";
 
 export interface RootState {
   loggedIn: boolean;
   user?: User;
   program?: Program;
-  currentGermplasm?: Germplasm;
   apiError: boolean;
   apiUnavailable: boolean;
   loginServerError: boolean;

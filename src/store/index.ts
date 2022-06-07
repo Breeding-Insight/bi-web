@@ -35,7 +35,6 @@ const store: StoreOptions<RootState> = {
     requestedPath: undefined,
     user: undefined,
     program: undefined,
-    currentGermplasm: undefined,
     firstVisit: undefined,
     errorNotificationActive: false,
     errorNotificationMsg: '',
@@ -60,9 +59,6 @@ const store: StoreOptions<RootState> = {
     activeUser: state => {
       return state.user;
     },
-    currentGermplasm: state => {
-      return state.currentGermplasm;
-    },
     isErrorNotificationActive: state => {
       return state.errorNotificationActive;
     },
@@ -75,7 +71,6 @@ const store: StoreOptions<RootState> = {
     successNotificationMsg: state => {
       return state.successNotificationMsg;
     },
-
     isInfoNotificationActive: state => {
       return state.infoNotificationActive;
     },
