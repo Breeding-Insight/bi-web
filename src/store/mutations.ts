@@ -34,11 +34,10 @@ import {
   REQUESTED_PATH,
   RETURN_VISIT,
   SET_ACTIVE_PROGRAM,
-  SHOW_SIDEBAR_MOBILE, SET_CURRENT_GERMPLASM,
+  SHOW_SIDEBAR_MOBILE,
 } from '@/store/mutation-types';
 import {User} from "@/breeding-insight/model/User";
 import {Program} from "@/breeding-insight/model/Program";
-import {Germplasm} from "@/breeding-insight/brapi/model/germplasm";
 
 export const mutations: MutationTree<RootState> = {
   [LOGIN] (state, user: User) {
@@ -120,8 +119,5 @@ export const mutations: MutationTree<RootState> = {
   },
   [SHOW_SIDEBAR_MOBILE] (state, value: boolean) {
     state.showSidebarMobile = value;
-  },
-  [SET_CURRENT_GERMPLASM] (state, germplasm: Germplasm) {
-    state.currentGermplasm = germplasm;
   },
 };
