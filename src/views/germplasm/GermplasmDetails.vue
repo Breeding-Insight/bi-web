@@ -109,7 +109,6 @@ import GermplasmLink from '@/components/germplasm/GermplasmLink.vue'
 import {Pedigree} from "@/breeding-insight/model/import/germplasm/Pedigree";
 import {GermplasmUtils} from '@/breeding-insight/utils/GermplasmUtils';
 import { Result } from '@/breeding-insight/model/Result';
-import {SET_CURRENT_GERMPLASM, SHOW_ERROR_NOTIFICATION} from "@/store/mutation-types";
 
 @Component({
   components: {GermplasmLink},

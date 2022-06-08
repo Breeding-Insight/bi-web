@@ -322,7 +322,6 @@ const routes = [
         },
         component: GermplasmPedigreesView,
         props: (route: any) => {
-          console.log(route.params);
           return ({
             ...route.params
           })
