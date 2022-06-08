@@ -64,6 +64,10 @@ import { ArrowRightCircleIcon, MinusIcon, MoveIcon, ZoomInIcon } from 'vue-feath
   data: () => ({ Pedigree, GermplasmUtils })
 })
 export default class GermplasmPedigreesView extends GermplasmBase {
+  $refs!: {
+    pedigreeWrap: HTMLElement
+  }
+
   private pedigreeWrapId: String = 'pedigree-wrap';
 
   private activeProgram?: Program;
