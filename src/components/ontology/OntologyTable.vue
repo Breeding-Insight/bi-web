@@ -638,10 +638,9 @@ export default class OntologyTable extends Vue {
 
   async getAttributesEntitiesDescriptions() {
     try {
-      //Want to retrieve all for autocomplete not just on page
-      //TODO: right now totalCount is 0 when it hits this method, so relying on large number to retrieve all values
-      //TODO: when new entry added, something is going weird here and preventing new entity/attribute from being available for autocomplete until page refresh
-      let totalCount = this.traitsPagination.totalCount ? this.traitsPagination.totalCount.valueOf() : 10000;
+      //Want to retrieve all entries for autocomplete not just those on current page
+      //TODO: right now this.traitsPagination.totalCount is 0 when it hits this method, so relying on large number to retrieve all values
+      let totalCount = 10000;
       const response = await TraitService.getAttributesEntitiesDescriptions(this.activeProgram!.id!, totalCount);
       if (response) {
         const attributesEntitiesDescriptions: [string[], string[], string[]] = response;
