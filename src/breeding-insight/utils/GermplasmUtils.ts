@@ -43,4 +43,9 @@ export class GermplasmUtils {
         return val ? val.referenceID : "";
     }
 
+    static formatSynonyms(synonyms: any[]): string {
+        if (!synonyms) return "";
+        return synonyms.map(synonym => synonym.synonym).join("; ");
+    }
+
 }
