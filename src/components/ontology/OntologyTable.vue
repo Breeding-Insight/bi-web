@@ -640,7 +640,7 @@ export default class OntologyTable extends Vue {
     try {
       //Want to retrieve all entries for autocomplete not just those on current page
       //TODO: right now this.traitsPagination.totalCount is 0 when it hits this method, so relying on large number to retrieve all values
-      let totalCount = 10000;
+      let totalCount = 5000;
       const response = await TraitService.getAttributesEntitiesDescriptions(this.activeProgram!.id!, totalCount);
       if (response) {
         const attributesEntitiesDescriptions: [string[], string[], string[]] = response;
