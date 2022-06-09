@@ -148,8 +148,9 @@
           v-bind:sortOrder="ontologySort.order"
           v-on:newSortColumn="$emit('newSortColumn', $event)"
           v-on:toggleSortOrder="$emit('toggleSortOrder')"
+          class="display-case"
         >
-          {{ data.entity | capitalize }} {{data.attribute | capitalize }}
+          {{ data.entity }} {{data.attribute }}
         </TableColumn>
         <TableColumn
             name="method"
@@ -161,8 +162,9 @@
             v-bind:sortOrder="ontologySort.order"
             v-on:newSortColumn="$emit('newSortColumn', $event)"
             v-on:toggleSortOrder="$emit('toggleSortOrder')"
+            class="display-case"
         >
-          {{ (data.method.description ? data.method.description + " ": "") + StringFormatters.toStartCase(data.method.methodClass) }}
+          {{ (data.method.description ? data.method.description + " ": "") + data.method.methodClass }}
         </TableColumn>
         <TableColumn
             name="scaleClass"
@@ -297,12 +299,6 @@ import {Category} from "@/breeding-insight/model/Category";
     ...mapActions('programManagement', {
         getSubscribedOntology: 'getSubscribedOntology'
     })
-  },
-  filters: {
-    capitalize: function(value: string | undefined) : string | undefined {
-      if (value === undefined) value = '';
-      return StringFormatters.toStartCase(value);
-    }
   },
   data: () => ({Trait, StringFormatters, TraitStringFormatters})
 })
@@ -642,7 +638,11 @@ export default class OntologyTable extends Vue {
 
   async getAttributesEntitiesDescriptions() {
     try {
-      const response = await TraitService.getAttributesEntitiesDescriptions(this.activeProgram!.id!);
+      //Want to retrieve all for autocomplete not just on page
+      //TODO: right now totalCount is 0 when it hits this method, so relying on large number to retrieve all values
+      //TODO: when new entry added, something is going weird here and preventing new entity/attribute from being available for autocomplete until page refresh
+      let totalCount = this.traitsPagination.totalCount ? this.traitsPagination.totalCount.valueOf() : 10000;
+      const response = await TraitService.getAttributesEntitiesDescriptions(this.activeProgram!.id!, totalCount);
       if (response) {
         const attributesEntitiesDescriptions: [string[], string[], string[]] = response;
         [this.attributeOptions, this.entityOptions, this.descriptionOptions] = attributesEntitiesDescriptions;
