@@ -207,7 +207,7 @@ export default class ImportExperiment extends ProgramsBase {
   }
 
   getTreatment(importReturnObject: any){
-    const treatments: String[] = this.getField(importReturnObject, 'treatments');
+    const treatments: any[] = this.getField(importReturnObject, 'treatments');
     if( treatments && treatments.length > 0 ) {
       const treatment = treatments[0];
       const factor = treatment["factor"];
@@ -217,7 +217,7 @@ export default class ImportExperiment extends ProgramsBase {
   }
 
   getObservationLevelRelationships(importReturnObject: any, levelName: String) {
-    const relationships: String[] = this.getField(importReturnObject, 'observationUnitPosition.observationLevelRelationships');
+    const relationships: any[] = this.getField(importReturnObject, 'observationUnitPosition.observationLevelRelationships');
     if( relationships  ) {
       for(let rel of relationships){
         if (levelName == rel["levelName"]){
