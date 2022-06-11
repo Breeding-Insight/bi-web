@@ -87,10 +87,8 @@
     components: {
     },
     computed: {
-      displayPageSize: {
-        get(): number {
+      displayPageSize(): number {
           return this.showAllState ? -1 : this.pagination.pageSize;
-        }
       }
     }
   })
