@@ -67,7 +67,7 @@ export class BackendPaginationController {
     if (this.showAll) {
       this.updatePageSizeVals(this.lastPageSize);
     } else {
-      this.updatePageSizeVals(totalCount); //todo,need to get count updating when show all active
+      this.updatePageSizeVals(totalCount);
       this.updatePage(1);
     }
     this.showAll = !this.showAll;

@@ -42,7 +42,7 @@
             <label for="paginationSelect" class="is-sr-only">Results Per Page</label>
             <select
                 id="paginationSelect"
-                v-model="pagination.pageSize"
+                v-model="displayPageSize"
                 v-on:change="changePageSize($event)"
             >
               <option value="10">
@@ -85,6 +85,13 @@
 
   @Component({
     components: {
+    },
+    computed: {
+      displayPageSize: {
+        get() {
+          return this.showAllState ? -1 : this.pagination.pageSize;
+        }
+      }
     }
   })
   export default class PaginationControls extends Vue {
