@@ -88,7 +88,7 @@
     },
     computed: {
       displayPageSize: {
-        get() {
+        get(): number {
           return this.showAllState ? -1 : this.pagination.pageSize;
         }
       }
