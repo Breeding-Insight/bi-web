@@ -119,5 +119,5 @@ export const mutations: MutationTree<RootState> = {
   },
   [SHOW_SIDEBAR_MOBILE] (state, value: boolean) {
     state.showSidebarMobile = value;
-  },
+  }
 };

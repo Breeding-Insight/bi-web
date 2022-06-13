@@ -71,7 +71,7 @@ export default class GermplasmPedigreesView extends GermplasmBase {
   private pedigreeWrapId: String = 'pedigree-wrap';
 
   private activeProgram?: Program;
-  private pedigreeLoading: boolean = true; //todo add loading symbol when loading
+  private pedigreeLoading: boolean = true;
   private resolvedGermplasmDbId?: string;
 
   @Prop()
