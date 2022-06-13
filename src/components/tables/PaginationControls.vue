@@ -94,7 +94,7 @@
 
     private showAllState = false;
 
-    private displayPageSize = -1;
+    private displayPageSize: Number = -1;
 
     toggleShowAll() {
       this.showAllState = !this.showAllState;
