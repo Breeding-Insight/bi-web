@@ -85,11 +85,6 @@
 
   @Component({
     components: {
-    },
-    computed: {
-      displayPageSize(): number {
-          return this.showAllState ? -1 : this.pagination.pageSize;
-      }
     }
   })
   export default class PaginationControls extends Vue {
@@ -99,8 +94,11 @@
 
     private showAllState = false;
 
+    private displayPageSize = -1;
+
     toggleShowAll() {
       this.showAllState = !this.showAllState;
+      this.setDisplayPageSize();
       this.$emit('paginate-toggle-all');
     }
 
@@ -108,6 +106,11 @@
       this.pagination.pageSize = $event.target.value;
       this.$emit('paginate-page-size', $event.target.value)
       this.showAllState = false;
+      this.setDisplayPageSize();
+    }
+
+    setDisplayPageSize(){
+      this.displayPageSize = this.showAllState ? -1 : this.pagination.pageSize;
     }
 
   }
