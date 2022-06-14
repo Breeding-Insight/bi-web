@@ -9,7 +9,7 @@
     <template v-else-if="sharedPrograms.length > 0">
       <p>You cannot subscribe to another programs ontology when you have shared your own program's ontology.</p>
     </template>
-    <template v-else-if="hasTraits">
+    <template v-else-if="hasTraits && !isSubscribed()">
       <p>This program contains traits and therefore cannot subscribe to another program's ontology.</p>
     </template>
     <template v-else-if="shareOffers.length == 0">
