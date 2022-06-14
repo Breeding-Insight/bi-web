@@ -1,7 +1,10 @@
 <template>
   <div>
     <template v-if="importErrors !== undefined">
-      {{ importErrors }}
+      <MultipleErrors
+          v-bind:formatted-errors="formattedErrors"
+          v-bind:is-validation-error="true"
+      />
     </template>
     <template v-else>
       <ProgressBar
@@ -20,9 +23,10 @@ import {ImportResponse} from "@/breeding-insight/model/import/ImportResponse";
 import {ImportService} from "@/breeding-insight/service/ImportService";
 import {Program} from "@/breeding-insight/model/Program";
 import {ValidationError} from "@/breeding-insight/model/errors/ValidationError";
+import MultipleErrors from "@/components/file-import/MultipleErrors.vue";
 
 @Component({
-  components: {},
+  components: {MultipleErrors},
   computed: {
     ...mapGetters([
       'activeProgram',
@@ -35,6 +39,13 @@ export default class ImportProgress extends Vue {
   private currentImport!: ImportResponse;
   @Prop()
   private importErrors!: ValidationError | String;
+
+  private formattedErrors: string[] = [];
+
+  @Watch('importErrors')
+  async formatErrors() {
+    this.formattedErrors = ImportService.formatErrors(this.importErrors as ValidationError);
+  }
 }
 </script>
 

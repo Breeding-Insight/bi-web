@@ -44,7 +44,7 @@
             v-on:click="saveMapping()"
             class="button is-primary"
         >
-          Save Mapping
+          {{ selectedMapping == null ? 'Save Mapping' : 'Update Mapping'}}
         </button>
         <button
             v-on:click="stateService.send(ImportEvent.PREVIEW)"
@@ -178,6 +178,7 @@ export default class MappingImporter extends Vue {
   // Import response variables
   private currentImport?: ImportResponse = new ImportResponse({});
   private import_errors: ValidationError | String | null = null;
+  private formattedErrors: string[] = [];
   private previewData: any[] = [];
   private previewTotalRows: number = 0;
   private newObjectCounts: any = [];
@@ -303,6 +304,7 @@ export default class MappingImporter extends Vue {
         const response: ImportMapping = await this.updateMapping();
         this.selectedMapping = response;
         this.currentMapping = response;
+        this.$emit('show-success-notification', 'Mapping successfully updated.');
       } else {
         console.log('creating new');
         // If there is no mapping id, create a new mapping
@@ -373,6 +375,7 @@ export default class MappingImporter extends Vue {
     // TODO: Try to combine code from the ImportTemplate, all this code is the same
     // TODO: Loading wheel
     try {
+      this.import_errors = null;
       // Save the mapping if necessary before uploading
       if (this.selectedMapping && this.selectedMapping.id) {
         // TODO: Check if mapping has changed and ask the user if they want to update or do one time import
@@ -415,8 +418,8 @@ export default class MappingImporter extends Vue {
       if (e.progress) {
         this.import_errors = ImportService.parseError(e);
         if (commit) {
-          const formattedErrors = ImportService.formatErrors(this.import_errors as ValidationError).join(' ');
-          this.$emit('show-error-notification', formattedErrors);
+          this.formattedErrors = ImportService.formatErrors(this.import_errors as ValidationError);
+          this.$emit('show-error-notification', this.formattedErrors.join(' '));
         } else {
           this.$emit('show-error-notification', e.progress.message);
         }
