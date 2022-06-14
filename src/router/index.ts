@@ -64,6 +64,8 @@ import Germplasm from "@/views/germplasm/Germplasm.vue";
 import GermplasmLists from "@/views/germplasm/GermplasmLists.vue";
 import GermplasmDetails from "@/views/germplasm/GermplasmDetails.vue";
 import ProgramConfiguration from "@/views/program/ProgramConfiguration.vue";
+import JobManagement from '@/views/program/JobManagement.vue';
+import GermplasmPedigreesView from "@/components/germplasm/GermplasmPedigreesView.vue";
 
 Vue.use(VueRouter);
 
@@ -308,7 +310,42 @@ const routes = [
       title: 'Germplasm Details',
       layout: layouts.userSideBar
     },
-    beforeEnter: processProgramNavigation
+    redirect: {name: 'germplasm-pedigrees'},
+    beforeEnter: processProgramNavigation,
+    children: [
+      {
+        path: 'pedigrees',
+        name: 'germplasm-pedigrees',
+        meta: {
+          title: 'Pedigrees',
+          layout: layouts.userSideBar
+        },
+        component: GermplasmPedigreesView,
+        props: (route: any) => {
+          return ({
+            ...route.params
+          })
+        }
+      },
+      {
+        path: 'images',
+        name: 'germplasm-images',
+        meta: {
+          title: 'Images',
+          layout: layouts.userSideBar
+        },
+        component: GermplasmDetails
+      },
+      {
+        path: 'attributes',
+        name: 'germplasm-attributes',
+        meta: {
+          title: 'Attributes',
+          layout: layouts.userSideBar
+        },
+        component: GermplasmDetails
+      }
+      ]
   },
   {
     path: '/programs/:programId/import',
@@ -376,6 +413,16 @@ const routes = [
       layout: layouts.userSideBar
     },
     component: BrAPIInfo,
+    beforeEnter: processProgramNavigation
+  },
+  {
+    path: '/programs/:programId/jobs',
+    name: 'job-management',
+    meta: {
+      title: 'Jobs',
+      layout: layouts.userSideBar
+    },
+    component: JobManagement,
     beforeEnter: processProgramNavigation
   },
   {
@@ -449,6 +496,11 @@ router.beforeEach((to: Route, from: Route, next: Function) => {
   // TODO: Check if the page is a protected resource, if not, let them through
   // If page is protected, check if they are logged in.
   const loginRedirectUrlCookieName = Vue.prototype.$cookieNames.loginRedirectUrl;
+
+  // Check if the login redirect is valid
+  if (Vue.$cookies.isKey(loginRedirectUrlCookieName) && to.name == 'page-does-not-exist') {
+    next({name: 'home', replace: true, params: {loginRedirect: false, sessionExpired: false}});
+  }
 
   // Remove the redirect url from the cookie
   Vue.$cookies.remove(loginRedirectUrlCookieName);

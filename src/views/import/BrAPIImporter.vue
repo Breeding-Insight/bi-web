@@ -333,6 +333,11 @@
       <template v-slot:write-display>
         <!-- In Progress -->
         <template v-if="currentImport.progress.statuscode == 202">
+          <article class="message is-warning">
+            <div class="message-body">
+              Your import is being processed. You can view on its progress by going to the <router-link v-bind:to="{name: 'job-management', params:{programId: activeProgram.id}}">Jobs</router-link> page.
+            </div>
+          </article>
           <ProgressBar
               v-bind:max="currentImport.progress.total"
               v-bind:value="currentImport.progress.finished"

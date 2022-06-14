@@ -33,7 +33,7 @@ export class GermplasmUtils {
     static getCreatedDate(germplasm: Germplasm): string | undefined {
         if (germplasm.additionalInfo && germplasm.additionalInfo.createdDate) {
             let dateTime = moment(germplasm.additionalInfo!.createdDate!, "DD/MM/YYYY h:mm:ss");
-            return dateTime.format("DD/MM/YYYY");
+            return dateTime.format("YYYY-MM-DD");
         }
         return "";
     }
@@ -41,6 +41,11 @@ export class GermplasmUtils {
     static getGermplasmUUID(references: ExternalReferences): string | undefined {
         let val = references.find(ref => ref.referenceSource === process.env.VUE_APP_BI_REFERENCE_SOURCE);
         return val ? val.referenceID : "";
+    }
+
+    static formatSynonyms(synonyms: any[]): string {
+        if (!synonyms) return "";
+        return synonyms.map(synonym => synonym.synonym).join("; ");
     }
 
 }

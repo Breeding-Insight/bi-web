@@ -15,29 +15,17 @@
  * limitations under the License.
  */
 
-import Vue, { VNode } from 'vue'
+import * as api from '@/util/api';
+import { BiResponse, Response } from '@/breeding-insight/model/BiResponse';
 
-declare global {
+export class JobDAO {
 
-  namespace JSX {
-    // tslint:disable no-empty-interface
-    interface Element extends VNode {}
-    // tslint:disable no-empty-interface
-    interface ElementClass extends Vue {}
-    interface IntrinsicElements {
-      [elem: string]: any
-    }
+  static async getProgramJobs(programId: string) {
+    const {data} = await api.call({
+      url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/jobs`,
+      method: 'get'
+    }) as Response;
+
+    return new BiResponse(data);
   }
-
-  interface PromiseConstructor {
-    allSettled(arg0: Promise<any>[]): Promise<[]>;
-  }
-
-  interface Window {
-    ATL_JQ_PAGE_PROPS: any;
-    BrAPI: any;
-    d3: any;
-  }
-
 }
-
