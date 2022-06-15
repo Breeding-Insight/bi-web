@@ -22,7 +22,7 @@
       v-bind:loading="this.germplasmListsLoading"
       v-bind:pagination="germplasmListsPagination"
       v-on:paginate="paginationController.updatePage($event)"
-      v-on:paginate-toggle-all="paginationController.toggleShowAll()"
+      v-on:paginate-toggle-all="paginationController.toggleShowAll(germplasmListsPagination.totalCount.valueOf())"
       v-on:paginate-page-size="paginationController.updatePageSize($event)"
     >
       <b-table-column field="data.listName" label="Name" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
@@ -64,15 +64,11 @@ import {Program} from "@/breeding-insight/model/Program";
 import BasicInputField from "@/components/forms/BasicInputField.vue";
 import EmptyTableMessage from "@/components/tables/EmtpyTableMessage.vue";
 import TableColumn from "@/components/tables/TableColumn.vue";
-import {Metadata, Pagination} from "@/breeding-insight/model/BiResponse";
-import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
-import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
+import {Pagination} from "@/breeding-insight/model/BiResponse";
+import {BackendPaginationController} from "@/breeding-insight/model/view_models/BackendPaginationController";
 import BaseTraitForm from "@/components/trait/forms/BaseTraitForm.vue";
 import {GermplasmList} from "@/breeding-insight/model/GermplasmList";
 import {GermplasmService} from "@/breeding-insight/service/GermplasmService";
-import {
-  DEACTIVATE_ALL_NOTIFICATIONS,
-} from "@/store/mutation-types";
 import ExpandableTable from "@/components/tables/expandableTable/ExpandableTable.vue";
 import moment from "moment";
 
@@ -92,7 +88,7 @@ export default class GermplasmListsTable extends Vue {
 
   private activeProgram?: Program;
   private germplasmListsPagination?: Pagination = new Pagination();
-  private paginationController: PaginationController = new PaginationController();
+  private paginationController: BackendPaginationController = new BackendPaginationController();
   private germplasmLists: GermplasmList[] = [];
   private germplasmListsLoading = true;
 
@@ -102,14 +98,8 @@ export default class GermplasmListsTable extends Vue {
 
   @Watch('paginationController', { deep: true})
   getGermplasmLists() {
-    // TODO: Nice to have a cleaner solution in the future
-    let paginationQuery: PaginationQuery;
-    if (this.paginationController.showAll) {
-      paginationQuery = new PaginationQuery(1, this.germplasmListsPagination!.totalCount.valueOf(), false);
-    } else {
-      paginationQuery = PaginationController.getPaginationSelections(
+    let paginationQuery = BackendPaginationController.getPaginationSelections(
           this.paginationController.currentPage, this.paginationController.pageSize, this.paginationController.showAll);
-    }
 
     GermplasmService.getAll(this.activeProgram!.id!, paginationQuery).then(([germplasmLists, metadata]) => {
         this.germplasmLists = germplasmLists;

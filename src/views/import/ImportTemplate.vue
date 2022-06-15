@@ -496,7 +496,7 @@ export default class ImportTemplate extends ProgramsBase {
             this.pagination.totalCount = previewResponse.preview.rows.length;
             this.pagination.pageSize = 10;
             this.pagination.currentPage = 1;
-            this.pagination.totalPages = 1;
+            this.pagination.totalPages = this.pagination.totalCount.valueOf() / this.pagination.pageSize.valueOf();
           }
         }
         return previewResponse;

@@ -30,7 +30,7 @@
 
       <template v-slot:importInfoTemplateMessageBox>
         <ImportInfoTemplateMessageBox v-bind:import-type-name="'Germplasm'"
-                                      v-bind:template-url="'https://cornell.box.com/shared/static/kjocibgs3hhg05vclsidk7hce30eqpu4.xls'"
+                                      v-bind:template-url="'https://cornell.box.com/shared/static/lmv9gnzrvo73j6w1vhehq6wzfwy2p964.xls'"
                                       class="mb-5">
           <strong>Before You Import...</strong>
           <br/>
@@ -132,6 +132,9 @@
           <b-table-column field="externalUID" label="External UID" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
             {{ ExternalUID.getExternalUIDFromExternalReferences(props.row.data.brAPIObject.externalReferences, props.row.data.brAPIObject.seedSource) }}
           </b-table-column>
+          <b-table-column field="synonyms" label="Synonyms" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+            {{ GermplasmUtils.formatSynonyms(props.row.data.brAPIObject.synonyms) }}
+          </b-table-column>
 
           <template v-slot:emptyMessage>
             <p class="has-text-weight-bold">
@@ -158,12 +161,13 @@ import BasicInputField from "@/components/forms/BasicInputField.vue";
 import ExpandableTable from "@/components/tables/expandableTable/ExpandableTable.vue";
 import {ImportObjectState} from "@/breeding-insight/model/import/ImportObjectState";
 import {ExternalUID} from "@/breeding-insight/model/import/germplasm/ExternalUID";
+import {GermplasmUtils} from "@/breeding-insight/utils/GermplasmUtils";
 
 @Component({
   components: {
     ExpandableTable, ImportInfoTemplateMessageBox, ConfirmImportMessageBox, ImportTemplate, AlertTriangleIcon, BasicInputField
   },
-  data: () => ({ImportObjectState, ExternalUID})
+  data: () => ({ImportObjectState, ExternalUID, GermplasmUtils})
 })
 export default class ImportGermplasm extends ProgramsBase {
 

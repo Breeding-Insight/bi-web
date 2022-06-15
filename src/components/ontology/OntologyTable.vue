@@ -264,7 +264,6 @@ import {TraitService} from "@/breeding-insight/service/TraitService";
 import EmptyTableMessage from "@/components/tables/EmtpyTableMessage.vue";
 import TableColumn from "@/components/tables/TableColumn.vue";
 import {Metadata, Pagination} from "@/breeding-insight/model/BiResponse";
-import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
 import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
 import {StringFormatters} from '@/breeding-insight/utils/StringFormatters';
 import {TraitStringFormatters} from '@/breeding-insight/utils/TraitStringFormatters';
@@ -421,7 +420,7 @@ export default class OntologyTable extends Vue {
 
   updatePagination() {
     let paginationQuery: PaginationQuery = BackendPaginationController.getPaginationSelections(
-        this.paginationController.currentPage, this.paginationController.pageSize);
+        this.paginationController.currentPage, this.paginationController.pageSize, this.paginationController.showAll);
     this.paginationController.setCurrentCall(paginationQuery);
   }
 
@@ -533,6 +532,7 @@ export default class OntologyTable extends Vue {
         await TraitService.archiveTrait(this.activeProgram!.id!, savedTrait);
       }
       this.$emit('show-success-notification', 'Trait creation successful.');
+      this.paginationController.updateOnAdd();
       this.getTraits();
       const levelPromise = this.getObservationLevels();
       const tagPromise = this.getTraitTags();
