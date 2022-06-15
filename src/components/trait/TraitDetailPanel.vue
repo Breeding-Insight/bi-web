@@ -65,7 +65,7 @@
             <span class="has-text-weight-bold">Trait</span>
           </div>
           <div class="column pt-0 pb-0">
-            <span class="is-size-7">{{ data.entity }} {{ data.attribute | capitalize }}</span>
+            <span class="is-size-7 display-case">{{ data.entity }} {{ data.attribute }}</span>
           </div>
         </div>
       </template>
@@ -75,7 +75,7 @@
             <span class="has-text-weight-bold">Method</span>
           </div>
           <div class="column pt-0 pb-0">
-            <span class="is-size-7">{{ (data.method.description ? StringFormatters.toStartCase(data.method.description) : "") }} {{ data.method.methodClass }}</span>
+            <span class="is-size-7 display-case">{{ data.method.description }} {{ data.method.methodClass }}</span>
           </div>
         </div>
       </template>
