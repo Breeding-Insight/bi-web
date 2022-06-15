@@ -9,7 +9,7 @@
         v-bind:pagination="pagination"
         v-on:show-error-notification="$emit('show-error-notification', $event)"
         v-on:paginate="paginationController.updatePage($event)"
-        v-on:paginate-toggle-all="paginationController.toggleShowAll()"
+        v-on:paginate-toggle-all="paginationController.toggleShowAll(pagination.totalCount.valueOf())"
         v-on:paginate-page-size="paginationController.updatePageSize($event)"
         v-on:sort="paginationController.updateSort($event)"
     >
@@ -76,7 +76,7 @@ import {BrAPIService, BrAPIType} from "@/breeding-insight/service/BrAPIService";
 import {Germplasm} from "@/breeding-insight/brapi/model/germplasm";
 import {Pagination} from "@/breeding-insight/model/BiResponse";
 import ExpandableTable from "@/components/tables/expandableTable/ExpandableTable.vue";
-import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
+import {BackendPaginationController} from "@/breeding-insight/model/view_models/BackendPaginationController";
 import {Pedigree} from "@/breeding-insight/model/import/germplasm/Pedigree";
 import GermplasmLink from '@/components/germplasm/GermplasmLink.vue'
 import {GermplasmUtils} from '@/breeding-insight/utils/GermplasmUtils';
@@ -95,7 +95,7 @@ export default class GermplasmTable extends Vue {
 
   private activeProgram?: Program;
   private pagination?: Pagination = new Pagination();
-  private paginationController: PaginationController = new PaginationController();
+  private paginationController: BackendPaginationController = new BackendPaginationController();
   private germplasmLoading: Boolean = false;
   private germplasm: Germplasm[] = [];
 
@@ -108,11 +108,6 @@ export default class GermplasmTable extends Vue {
   async getGermplasm() {
     this.germplasmLoading = true;
     try {
-      if (this.paginationController.showAll) {
-        this.paginationController.pageSize = this.pagination!.totalCount.valueOf();
-        this.paginationController.currentPage = 1;
-        this.paginationController.showAll = false;
-      }
       const response = await BrAPIService.get(BrAPIType.GERMPLASM, {}, this.activeProgram!.id!,
           this.paginationController.pageSize, this.paginationController.currentPage - 1);
       this.pagination = new Pagination(response.metadata.pagination);

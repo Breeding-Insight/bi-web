@@ -141,7 +141,6 @@
   import {ProgramLocationService} from "@/breeding-insight/service/ProgramLocationService";
   import TableColumn from "@/components/tables/TableColumn.vue";
   import {Metadata, Pagination} from "@/breeding-insight/model/BiResponse";
-  import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
   import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
   import { DataFormEventBusHandler } from '@/components/forms/DataFormEventBusHandler';
   import ExpandableTable from '@/components/tables/expandableTable/ExpandableTable.vue';
@@ -219,7 +218,7 @@ export default class ProgramLocationsTable extends Vue {
 
   updatePagination() {
     let paginationQuery: PaginationQuery = BackendPaginationController.getPaginationSelections(
-        this.paginationController.currentPage, this.paginationController.pageSize);
+        this.paginationController.currentPage, this.paginationController.pageSize, this.paginationController.showAll);
     this.paginationController.setCurrentCall(paginationQuery);
   }
 
@@ -262,6 +261,7 @@ export default class ProgramLocationsTable extends Vue {
 
     ProgramLocationService.create(this.newLocation).then((location: ProgramLocation) => {
       this.paginationController.updatePage(1);
+      this.paginationController.updateOnAdd();
       this.getLocations();
       this.$emit('show-success-notification', 'Success! ' + this.newLocation.name + ' added.');
       this.newLocation = new ProgramLocation();
