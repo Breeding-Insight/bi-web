@@ -31,7 +31,16 @@ export class BackendPaginationController {
     if (currentCall) this.currentCall = currentCall;
   }
 
+  //Changed to wrapper for updatePageSizeVals
+  //So showAll set to false when user changes page size
+  //And not when called on showAll toggle
   updatePageSize(pageSize: number) {
+    this.showAll = false;
+    this.updatePageSizeVals(pageSize);
+  }
+
+  //This route taken to minimize disruption of all the pages that utilize BackendPaginationController
+  updatePageSizeVals(pageSize: number) {
     this.lastPageSize = this.pageSize;
     this.pageSize = pageSize;
   }
@@ -56,16 +65,25 @@ export class BackendPaginationController {
 
   toggleShowAll(totalCount: number) {
     if (this.showAll) {
-      this.updatePageSize(this.lastPageSize);
+      this.updatePageSizeVals(this.lastPageSize);
     } else {
-      this.updatePageSize(totalCount);
+      this.updatePageSizeVals(totalCount);
+      this.updatePage(1);
     }
     this.showAll = !this.showAll;
   }
 
-  static getPaginationSelections(currentPage: number, pageSize: number): PaginationQuery {
-    return new PaginationQuery(
-      currentPage, pageSize, false);
+  static getPaginationSelections(currentPage: number, pageSize: number, showAll: boolean): PaginationQuery {
+      return new PaginationQuery(
+          currentPage, pageSize, showAll);
+  }
+
+  //When show all active, increments page size by one on successful addition in order to keep entries on same page
+  //Don't want to update lastPageSize in this case
+  updateOnAdd(){
+    if (this.showAll){
+      this.pageSize += 1;
+    }
   }
 
 }
