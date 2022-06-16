@@ -12,6 +12,8 @@
         v-on:paginate-toggle-all="paginationController.toggleShowAll(pagination.totalCount.valueOf())"
         v-on:paginate-page-size="paginationController.updatePageSize($event)"
         v-on:sort="paginationController.updateSort($event)"
+        v-on:filters-change="searchColumn"
+        v-bind:search-debounce="100"
     >
       <b-table-column field="accessionNumber" label="GID" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
         <GermplasmLink
@@ -20,7 +22,7 @@
         >
         </GermplasmLink>
       </b-table-column>
-      <b-table-column field="defaultDisplayName" label="Name" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+      <b-table-column field="defaultDisplayName" label="Name" v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
         {{ props.row.data.defaultDisplayName }}
       </b-table-column>
       <b-table-column field="additionalInfo.breedingMethod" label="Breeding Method" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
@@ -80,6 +82,7 @@ import {BackendPaginationController} from "@/breeding-insight/model/view_models/
 import {Pedigree} from "@/breeding-insight/model/import/germplasm/Pedigree";
 import GermplasmLink from '@/components/germplasm/GermplasmLink.vue'
 import {GermplasmUtils} from '@/breeding-insight/utils/GermplasmUtils';
+import {CallStack} from "@/breeding-insight/utils/CallStack";
 
 @Component({
   mixins: [validationMixin],
@@ -98,28 +101,47 @@ export default class GermplasmTable extends Vue {
   private paginationController: BackendPaginationController = new BackendPaginationController();
   private germplasmLoading: Boolean = false;
   private germplasm: Germplasm[] = [];
+  private filters: any = {};
+
+  private germplasmCallStack: CallStack;
 
   mounted() {
+    this.germplasmCallStack = new CallStack((options) => BrAPIService.get(BrAPIType.GERMPLASM, options, this.activeProgram!.id!,
+        this.paginationController.pageSize, this.paginationController.currentPage - 1));
     this.paginationController.pageSize = 20;
-    this.getGermplasm();
   }
 
   @Watch('paginationController', { deep: true})
+  @Watch('filters', {deep: true})
   async getGermplasm() {
     this.germplasmLoading = true;
     try {
-      const response = await BrAPIService.get(BrAPIType.GERMPLASM, {}, this.activeProgram!.id!,
-          this.paginationController.pageSize, this.paginationController.currentPage - 1);
+      if (this.paginationController.showAll) {
+        this.paginationController.pageSize = this.pagination!.totalCount.valueOf();
+        this.paginationController.currentPage = 1;
+        this.paginationController.showAll = false;
+      }
+
+      // Only process the most recent call
+      const {call, callId} = this.germplasmCallStack.makeCall(this.filters);
+      const response = await call;
+      if (!this.germplasmCallStack.isCurrentCall(callId)) return;
+
       this.pagination = new Pagination(response.metadata.pagination);
       // Account for brapi 0 indexing of paging
       this.pagination.currentPage = this.pagination.currentPage.valueOf() + 1;
       this.germplasm = response.result.data;
       this.germplasmLoading = false;
     } catch (e) {
+      this.$log.error(e);
       this.$emit('show-error-notification', 'Error loading germplasm');
       this.germplasmLoading = false;
     }
 
+  }
+
+  async searchColumn(filters: any) {
+    this.filters = filters;
   }
 }
 </script>
