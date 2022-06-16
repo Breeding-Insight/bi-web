@@ -18,6 +18,7 @@
 <template>
   <div>
     <b-table
+        :class="{'loading-active': loading}"
         :data.sync="tableRows"
         narrowed
         :show-detail-icon="false"
@@ -40,6 +41,8 @@
         v-on="$listeners"
         v-bind:loading="loading"
         :row-class="calculateRowClass"
+        backend-filtering
+        :debounce-search="searchDebounce != null ? searchDebounce : 1000"
     >
 
       <slot></slot>
@@ -139,6 +142,8 @@ export default class ExpandableTable extends Mixins(ValidationMixin) {
   loading!: boolean;
   @Prop()
   details!: boolean;
+  @Prop()
+  searchDebounce!: number;
 
   private tableRows: Array<TableRow<any>> = new Array<TableRow<any>>();
   private openDetail: Array<TableRow<any>> = new Array<TableRow<any>>();
