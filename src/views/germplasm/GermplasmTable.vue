@@ -13,9 +13,9 @@
         v-on:paginate-page-size="paginationController.updatePageSize($event)"
         v-on:sort="paginationController.updateSort($event)"
         v-on:filters-change="searchColumn"
-        v-bind:search-debounce="100"
+        v-bind:search-debounce="750"
     >
-      <b-table-column field="accessionNumber" label="GID" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+      <b-table-column field="accessionNumber" label="GID" v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
         <GermplasmLink
             v-bind:germplasmUUID="GermplasmUtils.getGermplasmUUID(props.row.data.externalReferences)"
             v-bind:germplasmGID="props.row.data.accessionNumber"
@@ -25,28 +25,28 @@
       <b-table-column field="defaultDisplayName" label="Name" v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
         {{ props.row.data.defaultDisplayName }}
       </b-table-column>
-      <b-table-column field="additionalInfo.breedingMethod" label="Breeding Method" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+      <b-table-column field="breedingMethod" label="Breeding Method" v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
         {{ props.row.data.additionalInfo.breedingMethod }}
       </b-table-column>
-      <b-table-column field="seedSource" label="Source" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+      <b-table-column field="seedSource" label="Source" v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
         {{ props.row.data.seedSource }}
       </b-table-column>
-      <b-table-column field="pedigree" label="Female Parent GID" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+      <b-table-column field="femaleParentGID" label="Female Parent GID" v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
         <GermplasmLink
             v-bind:germplasmUUID="Pedigree.parsePedigreeString(props.row.data.additionalInfo.pedigreeByUUID).femaleParent"
             v-bind:germplasmGID="Pedigree.parsePedigreeString(props.row.data.pedigree).femaleParent"
         > </GermplasmLink>
       </b-table-column>
-      <b-table-column field="pedigree" label="Male Parent GID" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+      <b-table-column field="maleParentGID" label="Male Parent GID" v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
         <GermplasmLink
             v-bind:germplasmUUID="Pedigree.parsePedigreeString(props.row.data.additionalInfo.pedigreeByUUID).maleParent"
             v-bind:germplasmGID="Pedigree.parsePedigreeString(props.row.data.pedigree).maleParent"
         > </GermplasmLink>
       </b-table-column>
-      <b-table-column field="createdDate" label="Created Date" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+      <b-table-column field="createdDate" label="Created Date" v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
         {{ props.row.data.additionalInfo.createdDate }}
       </b-table-column>
-      <b-table-column field="createdBy.userName" label="Created By" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+      <b-table-column field="createdByUserName" label="Created By" v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
         {{ props.row.data.additionalInfo.createdBy.userName }}
       </b-table-column>
       <b-table-column v-slot="props" :th-attrs="(column) => ({scope:'col'})">
