@@ -42,7 +42,8 @@
         v-bind:loading="loading"
         :row-class="calculateRowClass"
         backend-filtering
-        :debounce-search="searchDebounce != null ? searchDebounce : 1000"
+        v-bind:debounce-search="searchDebounce"
+        v-on:filters-change="cloneFilters"
     >
 
       <slot></slot>
@@ -224,6 +225,11 @@ export default class ExpandableTable extends Mixins(ValidationMixin) {
   cancelEditClicked(row:any) {
     this.cancelEdit(row);
     this.openDetail = [];
+  }
+
+  // A patch so if we're listening the filters, we can still debounce
+  cloneFilters(event: any) {
+    this.$emit('search', JSON.parse(JSON.stringify(event)));
   }
 }
 </script>

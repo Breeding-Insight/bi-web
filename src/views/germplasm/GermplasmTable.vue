@@ -12,8 +12,8 @@
         v-on:paginate-toggle-all="paginationController.toggleShowAll(pagination.totalCount.valueOf())"
         v-on:paginate-page-size="paginationController.updatePageSize($event)"
         v-on:sort="paginationController.updateSort($event)"
-        v-on:filters-change="searchColumn"
-        v-bind:search-debounce="750"
+        v-on:search="filters = $event"
+        v-bind:search-debounce="400"
     >
       <b-table-column field="accessionNumber" label="GID" v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
         <GermplasmLink
@@ -138,10 +138,6 @@ export default class GermplasmTable extends Vue {
       this.germplasmLoading = false;
     }
 
-  }
-
-  async searchColumn(filters: any) {
-    this.filters = filters;
   }
 }
 </script>
