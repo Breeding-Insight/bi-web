@@ -38,19 +38,21 @@
         </section>
         <div class="control">
           <template v-for="option in options">
-            <label
+            <div v-bind:key="option.name">
+              <label
                 v-bind:key="option.name"
-                class="radio modal-radio"
-            >
-              <input
+                class="radio"
+              >
+                <input
                   type="radio"
                   v-bind:name="optionType"
                   v-bind:value="option.name"
                   v-model="checked"
                   v-on:change="$emit('select-change', checked)"
-              >
-              {{option.name}}
-            </label>
+                >
+                {{option.name}}
+              </label>
+            </div>
           </template>
         </div>
         <slot></slot>
