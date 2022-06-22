@@ -38,15 +38,15 @@
         </section>
         <div class="control">
           <template v-for="option in options">
-            <div v-bind:key="option.name">
+            <div v-bind:key="option.id">
               <label
-                v-bind:key="option.name"
+                v-bind:key="option.id"
                 class="radio"
               >
                 <input
                   type="radio"
                   v-bind:name="optionType"
-                  v-bind:value="option.name"
+                  v-bind:value="option.id"
                   v-model="checked"
                   v-on:change="$emit('select-change', checked)"
                 >
@@ -84,11 +84,9 @@ export default class SelectModal extends Vue {
   private modalHeaderClass: string = "modal-header";
 
   mounted(){
-    this.checked = this.options[0].name;
+    this.checked = this.options[0].id;
     this.$emit('select-change', this.checked);
   }
-
-  //TODO utilize id instead of name in places?
 }
 
 </script>

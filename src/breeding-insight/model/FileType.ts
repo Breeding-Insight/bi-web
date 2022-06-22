@@ -17,17 +17,19 @@
 
 export class FileType {
     //todo check if all properties needed
-    static xls = new FileType("xls", ".xls", "application/vnd.ms-excel");
-    static xlsx = new FileType("xlsx", ".xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-    static csv = new FileType("csv", ".csv", "text/csv");
+    static xls = new FileType("xls", ".xls", "application/vnd.ms-excel", "XLS");
+    static xlsx = new FileType("xlsx", ".xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "XLSX");
+    static csv = new FileType("csv", ".csv", "text/csv", "CSV");
 
     name: string;
     extension: string;
     mimeType: string;
+    id: string;
 
-    constructor(name: string, extension: string, mimeType: string) {
+    constructor(name: string, extension: string, mimeType: string, id: string) {
         this.name = name;
         this.extension = extension;
         this.mimeType = mimeType;
+        this.id = id;
     }
 }
