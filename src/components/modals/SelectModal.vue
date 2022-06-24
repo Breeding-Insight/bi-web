@@ -55,7 +55,7 @@
             </div>
           </template>
         </div>
-        <slot></slot>
+        <slot name="buttons"></slot>
       </div>
     </div>
   </BaseModal>
@@ -74,7 +74,7 @@ export default class SelectModal extends Vue {
   @Prop()
   title! : string;
   @Prop()
-  subtitle!: string;
+  subtitle: string;
   @Prop()
   options:string;
 

@@ -25,6 +25,7 @@
         v-on:deactivate="modalActive = false"
         @select-change="setFileExtension"
     >
+      <template #buttons>
       <div class="columns">
         <div class="column is-whole has-text-centered buttons">
           <button
@@ -41,6 +42,7 @@
           </button>
         </div>
       </div>
+      </template>
     </SelectModal>
 
 
