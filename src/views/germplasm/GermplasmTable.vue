@@ -116,12 +116,6 @@ export default class GermplasmTable extends Vue {
   async getGermplasm() {
     this.germplasmLoading = true;
     try {
-      if (this.paginationController.showAll) {
-        this.paginationController.pageSize = this.pagination!.totalCount.valueOf();
-        this.paginationController.currentPage = 1;
-        this.paginationController.showAll = false;
-      }
-
       // Only process the most recent call
       const {call, callId} = this.germplasmCallStack.makeCall(this.filters);
       const response = await call;
