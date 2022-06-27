@@ -34,10 +34,10 @@
       <b-table-column field="data.listSize" label="Total Entries" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
         {{ props.row.data.listSize }}
       </b-table-column>
-      <b-table-column field="data.dateCreated" label="Date Created" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+      <b-table-column field="data.dateCreated" label="Created Date" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
         {{ formatDate(props.row.data.dateCreated) }}
       </b-table-column>
-      <b-table-column field="data.listOwnerName" label="Creator" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+      <b-table-column field="data.listOwnerName" label="Created By" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
         {{ props.row.data.listOwnerName }}
       </b-table-column>
       <b-table-column  field="data.listDbId" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
