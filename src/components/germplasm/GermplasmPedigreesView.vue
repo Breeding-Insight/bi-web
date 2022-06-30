@@ -112,11 +112,13 @@ export default class GermplasmPedigreesView extends GermplasmBase {
       }
 
       try {
+
         let pedigree = PedigreeViewer(`${process.env.VUE_APP_BI_API_V1_PATH}/programs/${this.activeProgram!.id}/brapi/v2`, undefined, 'v2.0',
-            // function (dbId: any) {
-            //   return dbId;
-            // } //commenting this out for now, as it's not straight forward to create the URL given we use our own ID instead of the germplasmDbId for navigation
-            undefined,
+            function (dbId: any, nodeObject: any) {
+              const name = nodeObject.value.name;
+              // Get the germplasm by name
+              return null;
+            },
             {
               credentials: 'include',
               urlTarget: '_self',
@@ -127,7 +129,7 @@ export default class GermplasmPedigreesView extends GermplasmBase {
                 const keyGid = d.value.name.substring(leftBracket + 2, rightBracket);
                 const gid = keyGid.substring(keyGid.indexOf('-') + 1);
 
-                return name + ' [GID: ' + gid + ']';
+                return [name, `[GID: ${gid}]`];
               },
               arrowUp: function () {
                 return '&uarr;';
@@ -137,7 +139,8 @@ export default class GermplasmPedigreesView extends GermplasmBase {
               },
               arrowRight: function () {
                 return '&rarr;';
-              }
+              },
+              textSize: 20
             });
 
         //for now, this gets set on render,
