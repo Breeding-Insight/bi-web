@@ -656,6 +656,12 @@ th.activesort.sortcolumn, th.sortcolumn:hover {
   transform: rotate(180deg);
 }
 
+.above-tabs-button {
+  margin-bottom: 15px;
+  position: absolute;
+  right: 35px;
+}
+
 .trait-detail {
   .scale-info {
     border-left: 1px solid $info;
