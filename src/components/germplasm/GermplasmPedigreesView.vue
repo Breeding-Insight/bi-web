@@ -113,23 +113,27 @@ export default class GermplasmPedigreesView extends GermplasmBase {
 
       try {
 
+        const parseGermplasmName = (germplasmName: string) => {
+          const leftBracket = germplasmName.indexOf(' [');
+          const rightBracket = germplasmName.indexOf(']');
+          const name = germplasmName.substring(0, leftBracket);
+          const keyGid = germplasmName.substring(leftBracket + 2, rightBracket);
+          const gid = keyGid.substring(keyGid.indexOf('-') + 1);
+
+          return {name, gid};
+        }
+        const germplasmDetailsUrl = `/programs/${this.activeProgram!.id}/germplasm`;
         let pedigree = PedigreeViewer(`${process.env.VUE_APP_BI_API_V1_PATH}/programs/${this.activeProgram!.id}/brapi/v2`, undefined, 'v2.0',
-            function (dbId: any, nodeObject: any) {
-              const name = nodeObject.value.name;
-              // Get the germplasm by name
-              return null;
+            function (dbId: any, germplasm: any) {
+              const parsedName = parseGermplasmName(germplasm.value.name);
+              return `${germplasmDetailsUrl}/gid-${parsedName.gid}`;
             },
             {
               credentials: 'include',
               urlTarget: '_self',
               nodeNameFn: function (d: any) {
-                const leftBracket = d.value.name.indexOf(' [');
-                const rightBracket = d.value.name.indexOf(']');
-                const name = d.value.name.substring(0, leftBracket);
-                const keyGid = d.value.name.substring(leftBracket + 2, rightBracket);
-                const gid = keyGid.substring(keyGid.indexOf('-') + 1);
-
-                return [name, `[GID: ${gid}]`];
+                const parsedName = parseGermplasmName(d.value.name);
+                return [parsedName.name, `[GID: ${parsedName.gid}]`];
               },
               arrowUp: function () {
                 return '&uarr;';

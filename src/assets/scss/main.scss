@@ -729,6 +729,9 @@ th.activesort.sortcolumn, th.sortcolumn:hover {
     .node-name-wrapper {
       stroke: gray;
     }
+    a:hover {
+      text-decoration: underline;
+    }
   }
 }
 
