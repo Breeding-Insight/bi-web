@@ -18,7 +18,7 @@
 <template>
   <div class="germplasm">
     <router-link v-bind:to="{name: 'germplasm-all', params: {programId: activeProgram.id}}">
-      All Germplasm
+      &lt; All Germplasm
     </router-link>
     <div class="mb-4"></div>
     <h1 class="title">
@@ -72,8 +72,8 @@
               <a>Images</a>
             </router-link>
             <router-link
-                v-bind:to="{name: '', params: {programId: activeProgram.id}}"
-                tag="li"
+                v-bind:to="{name: 'germplasm-pedigrees', params: {programId: activeProgram.id, germplasmDbId: germplasm.germplasmDbId}}"
+                tag="li" active-class="is-active"
             >
               <a>Pedigrees</a>
             </router-link>
@@ -138,7 +138,9 @@ export default class GermplasmDetails extends GermplasmBase {
     this.germplasmLoading = true;
     try {
       const response: Result<Error, Germplasm> = await GermplasmService.getSingleGermplasm(this.activeProgram!.id!, this.germplasmUUID);
-      if(response.isErr()) throw response.value;
+      if(response.isErr()) {
+        throw response.value;
+      }
       this.germplasm = response.value;
     } catch (err) {
       // Display error that germplasm cannot be loaded

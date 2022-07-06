@@ -35,6 +35,8 @@ declare global {
 
   interface Window {
     ATL_JQ_PAGE_PROPS: any;
+    BrAPI: any;
+    d3: any;
   }
 
 }

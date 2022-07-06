@@ -65,6 +65,7 @@ import GermplasmLists from "@/views/germplasm/GermplasmLists.vue";
 import GermplasmDetails from "@/views/germplasm/GermplasmDetails.vue";
 import ProgramConfiguration from "@/views/program/ProgramConfiguration.vue";
 import JobManagement from '@/views/program/JobManagement.vue';
+import GermplasmPedigreesView from "@/components/germplasm/GermplasmPedigreesView.vue";
 
 Vue.use(VueRouter);
 
@@ -309,7 +310,42 @@ const routes = [
       title: 'Germplasm Details',
       layout: layouts.userSideBar
     },
-    beforeEnter: processProgramNavigation
+    redirect: {name: 'germplasm-pedigrees'},
+    beforeEnter: processProgramNavigation,
+    children: [
+      {
+        path: 'pedigrees',
+        name: 'germplasm-pedigrees',
+        meta: {
+          title: 'Pedigrees',
+          layout: layouts.userSideBar
+        },
+        component: GermplasmPedigreesView,
+        props: (route: any) => {
+          return ({
+            ...route.params
+          })
+        }
+      },
+      {
+        path: 'images',
+        name: 'germplasm-images',
+        meta: {
+          title: 'Images',
+          layout: layouts.userSideBar
+        },
+        component: GermplasmDetails
+      },
+      {
+        path: 'attributes',
+        name: 'germplasm-attributes',
+        meta: {
+          title: 'Attributes',
+          layout: layouts.userSideBar
+        },
+        component: GermplasmDetails
+      }
+      ]
   },
   {
     path: '/programs/:programId/import',
