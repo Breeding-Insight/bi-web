@@ -16,25 +16,34 @@
   -->
 
 <template>
-  <div class="traits-list">
-    <h1 class="title">Ontology</h1>
-    <TraitListsTable
-    v-on:show-success-notification="$emit('show-success-notification', $event)"
-    v-on:show-error-notification="$emit('show-error-notification', $event)"
-    >
-    </TraitListsTable>
-  </div>
+    <router-link v-if="this.germplasmUUID" v-bind:to="{name: 'germplasm-details', params: {programId: activeProgram.id, germplasmId: this.germplasmUUID}}">
+      {{ this.germplasmGID }}
+    </router-link>
+    <div v-else>
+      {{ this.germplasmGID }}
+    </div>
 </template>
 
 <script lang="ts">
-  import { Component } from 'vue-property-decorator'
-  import TraitListsTable from '@/components/trait/TraitListsTable.vue'
-  import ProgramsBase from "@/components/program/ProgramsBase.vue";
-  @Component({
-    components: {
-      TraitListsTable
-    }
-  })
-  export default class TraitsList extends ProgramsBase {
+import {Component, Prop, Vue} from 'vue-property-decorator'
+import { mapGetters } from 'vuex'
+import {Program} from "@/breeding-insight/model/Program";
+
+@Component({
+  computed: {
+    ...mapGetters([
+      'activeProgram'
+    ])
   }
+})
+export default class GermplasmLink extends Vue {
+
+  private activeProgram?: Program;
+  @Prop()
+  private germplasmUUID!: String;
+  @Prop()
+  private germplasmGID!: String;
+
+}
+
 </script>

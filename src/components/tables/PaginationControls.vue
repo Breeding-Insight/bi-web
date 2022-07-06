@@ -42,7 +42,7 @@
             <label for="paginationSelect" class="is-sr-only">Results Per Page</label>
             <select
                 id="paginationSelect"
-                v-model="pagination.pageSize"
+                v-model="displayPageSize"
                 v-on:change="changePageSize($event)"
             >
               <option value="10">
@@ -94,8 +94,11 @@
 
     private showAllState = false;
 
+    private displayPageSize: Number = -1;
+
     toggleShowAll() {
       this.showAllState = !this.showAllState;
+      this.setDisplayPageSize();
       this.$emit('paginate-toggle-all');
     }
 
@@ -103,6 +106,11 @@
       this.pagination.pageSize = $event.target.value;
       this.$emit('paginate-page-size', $event.target.value)
       this.showAllState = false;
+      this.setDisplayPageSize();
+    }
+
+    setDisplayPageSize(){
+      this.displayPageSize = this.showAllState ? -1 : this.pagination.pageSize;
     }
 
   }

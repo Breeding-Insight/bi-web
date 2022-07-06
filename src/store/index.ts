@@ -21,6 +21,7 @@ import { RootState } from './types';
 import { mutations } from './mutations';
 import {actions} from './actions';
 import {sorting} from '@/store/sorting/index';
+import {programManagement} from '@/store/program-management/index';
 
 Vue.use(Vuex);
 
@@ -46,7 +47,8 @@ const store: StoreOptions<RootState> = {
     showSidebarMobile: true
   },
   modules: {
-    sorting
+    sorting,
+    programManagement
   },
   mutations,
   actions,

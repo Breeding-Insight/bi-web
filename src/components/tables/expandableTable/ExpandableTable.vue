@@ -42,22 +42,24 @@
     >
 
       <slot></slot>
-      <b-table-column v-if="editable || archivable" v-slot="props" cell-class="has-text-right is-narrow" :th-attrs="(column) => ({scope:'col'})">
+      <b-table-column v-if="editable || details || archivable" v-slot="props" cell-class="has-text-right is-narrow" :th-attrs="(column) => ({scope:'col'})">
         <a
-            v-if="editable"
+            v-if="editable || details"
             data-testid="edit"
             v-on:click="props.toggleDetails(props.row)"
             v-on:keypress.enter.space="props.toggleDetails(props.row)"
             tabindex="0"
         >
-          Edit
+          <span v-if="editable">Edit</span>
+          <span v-if="details">Details</span>
+
+          <span v-if="(editable || details) && !isVisibleDetailRow(props.row)" class="icon is-small margin-right-2 has-vertical-align-middle">
+            <ChevronRightIcon size="1x" aria-hidden="true"></ChevronRightIcon>
+          </span>
+            <span v-if="(editable || details) && isVisibleDetailRow(props.row)" class="icon is-small margin-right-2 has-vertical-align-middle">
+            <ChevronDownIcon size="1x" aria-hidden="true"></ChevronDownIcon>
+          </span>
         </a>
-        <span v-if="editable && !isVisibleDetailRow(props.row)" class="icon is-small margin-right-2 has-vertical-align-middle">
-          <ChevronRightIcon size="1x" aria-hidden="true"></ChevronRightIcon>
-        </span>
-        <span v-if="editable && isVisibleDetailRow(props.row)" class="icon is-small margin-right-2 has-vertical-align-middle">
-          <ChevronDownIcon size="1x" aria-hidden="true"></ChevronDownIcon>
-        </span>
         <a
             v-if="archivable"
             v-on:click="$emit('remove', props.row.data)"
@@ -74,6 +76,7 @@
 
       <template v-slot:detail="props">
         <EditDataRowForm class="mb-0"
+                         v-if="editable"
                          v-bind:data-form-state="dataFormState"
                          v-on:submit="validateAndSubmit(props.row)"
                          v-on:cancel="cancelEditClicked(props.row)"
@@ -84,6 +87,12 @@
               name="edit"
           />
         </EditDataRowForm>
+
+        <slot
+            v-if="details"
+            v-bind:row="props.row.data"
+            name="detail"
+        />
       </template>
 
       <template v-slot:pagination>
@@ -125,6 +134,10 @@ export default class ExpandableTable extends Mixins(ValidationMixin) {
   defaultSort!: String[];
   @Prop()
   rowClasses: any;
+  @Prop()
+  loading!: boolean;
+  @Prop()
+  details!: boolean;
 
   private tableRows: Array<TableRow<any>> = new Array<TableRow<any>>();
   private openDetail: Array<TableRow<any>> = new Array<TableRow<any>>();

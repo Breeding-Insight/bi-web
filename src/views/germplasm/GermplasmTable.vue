@@ -9,12 +9,16 @@
         v-bind:pagination="pagination"
         v-on:show-error-notification="$emit('show-error-notification', $event)"
         v-on:paginate="paginationController.updatePage($event)"
-        v-on:paginate-toggle-all="paginationController.toggleShowAll()"
+        v-on:paginate-toggle-all="paginationController.toggleShowAll(pagination.totalCount.valueOf())"
         v-on:paginate-page-size="paginationController.updatePageSize($event)"
         v-on:sort="paginationController.updateSort($event)"
     >
       <b-table-column field="accessionNumber" label="GID" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-        {{ props.row.data.accessionNumber }}
+        <GermplasmLink
+            v-bind:germplasmUUID="GermplasmUtils.getGermplasmUUID(props.row.data.externalReferences)"
+            v-bind:germplasmGID="props.row.data.accessionNumber"
+        >
+        </GermplasmLink>
       </b-table-column>
       <b-table-column field="defaultDisplayName" label="Name" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
         {{ props.row.data.defaultDisplayName }}
@@ -26,16 +30,27 @@
         {{ props.row.data.seedSource }}
       </b-table-column>
       <b-table-column field="pedigree" label="Female Parent GID" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-        {{ Pedigree.parsePedigreeString(props.row.data.pedigree).femaleParent }}
+        <GermplasmLink
+            v-bind:germplasmUUID="Pedigree.parsePedigreeString(props.row.data.additionalInfo.pedigreeByUUID).femaleParent"
+            v-bind:germplasmGID="Pedigree.parsePedigreeString(props.row.data.pedigree).femaleParent"
+        > </GermplasmLink>
       </b-table-column>
       <b-table-column field="pedigree" label="Male Parent GID" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-        {{ Pedigree.parsePedigreeString(props.row.data.pedigree).maleParent }}
+        <GermplasmLink
+            v-bind:germplasmUUID="Pedigree.parsePedigreeString(props.row.data.additionalInfo.pedigreeByUUID).maleParent"
+            v-bind:germplasmGID="Pedigree.parsePedigreeString(props.row.data.pedigree).maleParent"
+        > </GermplasmLink>
       </b-table-column>
       <b-table-column field="createdDate" label="Created Date" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
         {{ props.row.data.additionalInfo.createdDate }}
       </b-table-column>
       <b-table-column field="createdBy.userName" label="Created By" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
         {{ props.row.data.additionalInfo.createdBy.userName }}
+      </b-table-column>
+      <b-table-column v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+        <router-link v-bind:to="{name: 'germplasm-details', params: {programId: activeProgram.id, germplasmId: GermplasmUtils.getGermplasmUUID(props.row.data.externalReferences)}}">
+          Show Details
+        </router-link>
       </b-table-column>
 
       <template v-slot:emptyMessage>
@@ -61,24 +76,26 @@ import {BrAPIService, BrAPIType} from "@/breeding-insight/service/BrAPIService";
 import {Germplasm} from "@/breeding-insight/brapi/model/germplasm";
 import {Pagination} from "@/breeding-insight/model/BiResponse";
 import ExpandableTable from "@/components/tables/expandableTable/ExpandableTable.vue";
-import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
+import {BackendPaginationController} from "@/breeding-insight/model/view_models/BackendPaginationController";
 import {Pedigree} from "@/breeding-insight/model/import/germplasm/Pedigree";
+import GermplasmLink from '@/components/germplasm/GermplasmLink.vue'
+import {GermplasmUtils} from '@/breeding-insight/utils/GermplasmUtils';
 
 @Component({
   mixins: [validationMixin],
-  components: {ReportTable, ExpandableTable},
+  components: {GermplasmLink, ReportTable, ExpandableTable},
   computed: {
     ...mapGetters([
       'activeProgram'
     ])
   },
-  data: () => ({Trait, StringFormatters, TraitStringFormatters, Pedigree})
+  data: () => ({Trait, StringFormatters, TraitStringFormatters, Pedigree, GermplasmUtils})
 })
 export default class GermplasmTable extends Vue {
 
   private activeProgram?: Program;
   private pagination?: Pagination = new Pagination();
-  private paginationController: PaginationController = new PaginationController();
+  private paginationController: BackendPaginationController = new BackendPaginationController();
   private germplasmLoading: Boolean = false;
   private germplasm: Germplasm[] = [];
 
@@ -91,11 +108,6 @@ export default class GermplasmTable extends Vue {
   async getGermplasm() {
     this.germplasmLoading = true;
     try {
-      if (this.paginationController.showAll) {
-        this.paginationController.pageSize = this.pagination!.totalCount.valueOf();
-        this.paginationController.currentPage = 1;
-        this.paginationController.showAll = false;
-      }
       const response = await BrAPIService.get(BrAPIType.GERMPLASM, {}, this.activeProgram!.id!,
           this.paginationController.pageSize, this.paginationController.currentPage - 1);
       this.pagination = new Pagination(response.metadata.pagination);
@@ -109,6 +121,5 @@ export default class GermplasmTable extends Vue {
     }
 
   }
-
 }
 </script>

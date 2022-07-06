@@ -282,7 +282,7 @@ export default class ProgramUsersTable extends Vue {
 
   updatePagination() {
     let paginationQuery: PaginationQuery = BackendPaginationController.getPaginationSelections(
-        this.paginationController.currentPage, this.paginationController.pageSize);
+        this.paginationController.currentPage, this.paginationController.pageSize, this.paginationController.showAll);
     this.paginationController.setCurrentCall(paginationQuery);
   }
 
@@ -352,6 +352,7 @@ export default class ProgramUsersTable extends Vue {
 
     ProgramUserService.create(this.newUser).then((user: ProgramUser) => {
       this.paginationController.updatePage(1);
+      this.paginationController.updateOnAdd();
       this.getUsers();
       this.getSystemUsers();
 

@@ -16,20 +16,32 @@
   -->
 
 <template>
-  <div class="traits-archived">
-    <h1 class="title">Archived Traits</h1>
-  </div>
+  <BaseModal
+      v-bind:active.sync="active"
+      v-on:deactivate="$emit('deactivate')"
+  >
+    <h3 class="is-5 title has-text-info">
+      {{msgTitle}}
+    </h3>
+    <slot></slot>
+  </BaseModal>
 </template>
 
 <script lang="ts">
-  import { Component, Prop, Vue } from 'vue-property-decorator'
-  import ProgramsBase from "@/components/program/ProgramsBase.vue";
+import { Component, Prop, Vue } from 'vue-property-decorator';
+import BaseModal from '@/components/modals/BaseModal.vue';
+import { AlertCircleIcon } from 'vue-feather-icons'
 
-  @Component({
-    components: {
-    }
-  })
-  export default class TraitsArchived extends ProgramsBase {
+@Component({
+  components: {BaseModal, AlertCircleIcon}
+})
+export default class GenericModal extends Vue {
+  @Prop()
+  active!: boolean;
+  @Prop()
+  bodyClass!: Object;
+  @Prop()
+  msgTitle!: string;
+}
 
-  }
 </script>

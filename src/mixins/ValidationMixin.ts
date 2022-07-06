@@ -18,12 +18,15 @@
 import { Component, Vue, Prop } from 'vue-property-decorator'
 import {Validations} from "vuelidate-property-decorators"
 import {TableRow} from "@/breeding-insight/model/view_models/TableRow"
+import {DataFormEventBusHandler} from "@/components/forms/DataFormEventBusHandler";
 
 @Component
 class ValidationMixin extends Vue {
 
   @Prop()
   private rowValidations!: Object;
+  @Prop()
+  dataFormState!: DataFormEventBusHandler;
 
   private currentValidationRow: TableRow<any> | undefined = undefined;
 
@@ -62,6 +65,7 @@ class ValidationMixin extends Vue {
     this.$v.currentValidationRow.editData!.$touch();
 
     if (this.$v.currentValidationRow.editData!.$anyError){
+      this.dataFormState.bus.$emit(DataFormEventBusHandler.SAVE_COMPLETE_EVENT);
       this.$emit('show-error-notification', 'Fix Invalid Fields');
       return;
     }

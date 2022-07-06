@@ -287,6 +287,41 @@
                 BrAPI
               </router-link>
             </li>
+            <li>
+              <router-link
+                  v-bind:to="{name: 'job-management', params: {programId: activeProgram.id}}"
+                  :id="jobManagementMenuId"
+              >
+                Jobs
+              </router-link>
+            </li>
+            <li>
+              <router-link
+                  v-bind:to="{name: 'trials-studies', params: {programId: activeProgram.id}}"
+              >
+                Trials and Studies <span class="ml-2 tag is-warning">Beta</span>
+              </router-link>
+            </li>
+          </ul>
+        </template>
+        <template v-if="$ability.can('access', 'AdminSection')">
+          <template v-if="activeProgram">
+            <hr style="margin:5px;">
+          </template>
+          <p class="menu-label">
+            System Administration
+          </p>
+          <ul class="menu-list">
+            <li>
+              <router-link to="/admin/user-management" :id="usersMenuId">
+                Users
+              </router-link>
+            </li>
+            <li>
+              <router-link to="/admin/program-management" :id="programsMenuId">
+                Programs
+              </router-link>
+            </li>
           </ul>
         </template>
       </nav>
@@ -340,6 +375,7 @@
     private importFileMenuId: string = "usersidebarlayout-import-file-menu";
     private ontologyMenuId: string = "usersidebarlayout-ontology-menu";
     private programManagementMenuId: string = "usersidebarlayout-program-management-menu";
+    private jobManagementMenuId: string = "usersidebarlayout-job-management-menu";
     private brAPIMenuId: string = "usersidebarlayout-brapi-menu";
     private germplasmMenuId: string = "usersidebarlayout-germplasm-menu";
 

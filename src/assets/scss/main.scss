@@ -635,3 +635,83 @@ th.activesort.sortcolumn, th.sortcolumn:hover {
 .descending {
   transform: rotate(180deg);
 }
+
+.display-case {
+  text-transform: capitalize;
+}
+
+.trait-detail {
+  .scale-info {
+    border-left: 1px solid $info;
+    @include from($desktop) {
+      width: 85%;
+      margin-left: 20%;
+    }
+
+    .scale-categories {
+      &.columns {
+        &:not(:last-of-type) {
+          margin-bottom: 2em;
+        }
+      }
+    }
+
+    .column {
+      padding-top: 0;
+      padding-bottom: 0;
+    }
+  }
+}
+
+#germplasm-pedigrees {
+  $ped-female: $red;
+  $ped-male: $blue;
+  $ped-sib: $purple;
+
+  .pedigree-legend {
+    span:not(:last-child) {
+      margin-right: 10px;
+    }
+    .female-parent {
+      color: $ped-female;
+      stroke-width: 5;
+    }
+    .male-parent {
+      color: $ped-male;
+      stroke-width: 5;
+    }
+    .expand-ped {
+      circle {
+        color:$purple;
+        fill:$purple;
+      }
+      polyline, line {
+        color: white;
+      }
+    }
+  }
+
+  #pedigree-wrap {
+    border: solid thin #ddd;
+    min-height: 200px;
+    [stroke="blue"] {
+      stroke: $ped-male;
+    }
+    [stroke="red"] {
+      stroke: $ped-female;
+    }
+    [stroke="purple"] {
+      stroke: $purple;
+    }
+    [fill="purple"] {
+      fill: $purple;
+    }
+    //leaving this here in case we want to change the color of the highlighted node in the future
+    //.node-name-highlight {
+    //  fill: red;
+    //}
+    .node-name-wrapper {
+      stroke: gray;
+    }
+  }
+}

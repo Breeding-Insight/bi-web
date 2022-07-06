@@ -28,6 +28,7 @@ ARG CONT_GROUPNAME="host"
 RUN groupadd -g ${HOST_GROUP_ID} ${CONT_GROUPNAME}
 RUN useradd -l -u ${HOST_USER_ID} -g ${CONT_GROUPNAME} ${CONT_USERNAME}
 RUN install -d -m 0755 -o ${CONT_USERNAME} -g ${CONT_GROUPNAME} /home/${CONT_USERNAME}
+RUN npm install -g npm@8.12.1
 
 # switch to host user
 USER ${CONT_USERNAME}
