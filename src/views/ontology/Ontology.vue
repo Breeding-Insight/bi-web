@@ -41,6 +41,21 @@
           >
             <a>Archived</a>
           </router-link>
+          <button
+              v-if="$ability.can('create', 'Trait') && !isSubscribed"
+              class="button is-primary is-pulled-right has-text-weight-bold above-tabs-button"
+              v-on:click="$router.push({name: 'import-ontology', params: {programId: activeProgram.id}})"
+          >
+        <span class="icon is-small">
+          <PlusCircleIcon
+              size="1.5x"
+              aria-hidden="true"
+          />
+        </span>
+            <span>
+          Import Batch File
+        </span>
+          </button>
         </ul>
       </nav>
     </section>
@@ -63,10 +78,11 @@
   import OntologyActiveTable from "@/components/ontology/OntologyActiveTable.vue";
   import OntologyArchivedTable from "@/components/ontology/OntologyArchivedTable.vue";
   import {SubscribedOntology} from "@/breeding-insight/model/SubscribedOntology";
+  import {PlusCircleIcon} from 'vue-feather-icons'
 
   @Component({
     components: {
-      OntologyArchivedTable, OntologyActiveTable
+      OntologyArchivedTable, OntologyActiveTable, PlusCircleIcon
     },
     computed: {
       ...mapGetters([
