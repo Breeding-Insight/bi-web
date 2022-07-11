@@ -662,6 +662,10 @@ th.activesort.sortcolumn, th.sortcolumn:hover {
   right: 35px;
 }
 
+.display-case {
+  text-transform: capitalize;
+}
+
 .trait-detail {
   .scale-info {
     border-left: 1px solid $info;
