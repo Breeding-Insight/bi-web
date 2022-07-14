@@ -144,7 +144,9 @@ export default class GermplasmPedigreesView extends GermplasmBase {
               arrowRight: function () {
                 return '&rarr;';
               },
-              textSize: 20
+              textSize: 20,
+              treeLevelPadding:200,
+              nodeIconGap: 30
             });
 
         //for now, this gets set on render,
