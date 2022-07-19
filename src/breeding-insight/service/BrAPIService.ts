@@ -26,15 +26,28 @@ export enum BrAPIType {
 export class BrAPIService {
 
   public static async get<T>(type: BrAPIType, programId: string, sort: { field: T, order: SortOrder },
-                          pagination: {pageSize: number, page: number}): Promise<BiResponse> {
+                          pagination: {pageSize: number, page: number}, filters?: any): Promise<BiResponse> {
     if (!programId) throw 'Program ID required';
 
     // Set sort and pagination
     let params: any = {};
-    if (sort.field) params['sortField'] = sort.field;
-    if (sort.order) params['sortOrder'] = sort.order;
-    if (pagination.page) params ['page'] = pagination.page;
-    if (pagination.pageSize) params['pageSize'] = pagination.pageSize;
+    if(filters) {
+      params = filters;
+    }
+
+    if (sort.field) {
+      params['sortField'] = sort.field;
+    }
+    if (sort.order) {
+      params['sortOrder'] = sort.order;
+    }
+    if (pagination.page) {
+      params ['page'] = pagination.page;
+    }
+    if (pagination.pageSize) {
+      params['pageSize'] = pagination.pageSize;
+    }
+
     // Make the GET call
     try {
       const { data } = await api.call({
