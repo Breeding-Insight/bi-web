@@ -17,38 +17,38 @@
         v-on:search="filters = $event"
         v-bind:search-debounce="400"
     >
-      <b-table-column field="data.accessionNumber" label="GID" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
+      <b-table-column field="accessionNumber" label="GID" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
         <GermplasmLink
             v-bind:germplasmUUID="GermplasmUtils.getGermplasmUUID(props.row.data.externalReferences)"
             v-bind:germplasmGID="props.row.data.accessionNumber"
         >
         </GermplasmLink>
       </b-table-column>
-      <b-table-column field="data.defaultDisplayName" label="Name" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
+      <b-table-column field="defaultDisplayName" label="Name" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
         {{ props.row.data.defaultDisplayName }}
       </b-table-column>
-      <b-table-column field="data.breedingMethod" label="Breeding Method" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
+      <b-table-column field="breedingMethod" label="Breeding Method" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
         {{ props.row.data.additionalInfo.breedingMethod }}
       </b-table-column>
-      <b-table-column field="data.seedSource" label="Source" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
+      <b-table-column field="seedSource" label="Source" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
         {{ props.row.data.seedSource }}
       </b-table-column>
-      <b-table-column field="data.femaleParent" label="Female Parent GID" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
+      <b-table-column field="femaleParentGID" label="Female Parent GID" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
         <GermplasmLink
             v-bind:germplasmUUID="Pedigree.parsePedigreeString(props.row.data.additionalInfo.pedigreeByUUID).femaleParent"
             v-bind:germplasmGID="Pedigree.parsePedigreeString(props.row.data.pedigree).femaleParent"
         > </GermplasmLink>
       </b-table-column>
-      <b-table-column field="data.maleParent" label="Male Parent GID" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
+      <b-table-column field="maleParentGID" label="Male Parent GID" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
         <GermplasmLink
             v-bind:germplasmUUID="Pedigree.parsePedigreeString(props.row.data.additionalInfo.pedigreeByUUID).maleParent"
             v-bind:germplasmGID="Pedigree.parsePedigreeString(props.row.data.pedigree).maleParent"
         > </GermplasmLink>
       </b-table-column>
-      <b-table-column field="data.createdDate" label="Created Date" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
+      <b-table-column field="createdDate" label="Created Date" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
         {{ props.row.data.additionalInfo.createdDate }}
       </b-table-column>
-      <b-table-column field="data.userName" label="Created By" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
+      <b-table-column field="createdByUserName" label="Created By" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
         {{ props.row.data.additionalInfo.createdBy.userName }}
       </b-table-column>
       <b-table-column v-slot="props" :th-attrs="(column) => ({scope:'col'})">
@@ -125,21 +125,21 @@ export default class GermplasmTable extends Vue {
   private germplasmSort!: GermplasmSort;
   private updateSort!: (sort: GermplasmSort) => void;
   private fieldMap: any = {
-    'data.accessionNumber': GermplasmSortField.AccessionNumber,
-    'data.defaultDisplayName' : GermplasmSortField.DefaultDisplayName,
-    'data.breedingMethod': GermplasmSortField.BreedingMethod,
-    'data.seedSource': GermplasmSortField.SeedSource,
-    'data.femaleParent': GermplasmSortField.FemaleParent,
-    'data.maleParent': GermplasmSortField.MaleParent,
-    'data.createdDate': GermplasmSortField.CreatedDate,
-    'data.userName': GermplasmSortField.UserName,
+    'accessionNumber': GermplasmSortField.AccessionNumber,
+    'defaultDisplayName' : GermplasmSortField.DefaultDisplayName,
+    'breedingMethod': GermplasmSortField.BreedingMethod,
+    'seedSource': GermplasmSortField.SeedSource,
+    'femaleParentGID': GermplasmSortField.FemaleParent,
+    'maleParentGID': GermplasmSortField.MaleParent,
+    'createdDate': GermplasmSortField.CreatedDate,
+    'createdByUserName': GermplasmSortField.UserName,
   };
   private buefyFieldMap: any = Object.keys(this.fieldMap)
       .reduce((obj, key) => Object.assign({}, obj, { [this.fieldMap[key]]: key }), {});
 
   mounted() {
-    this.germplasmCallStack = new CallStack((options) => BrAPIService.get<GermplasmSortField>(BrAPIType.GERMPLASM, this.activeProgram!.id!, this.germplasmSort,
-        { pageSize: this.paginationController.pageSize, page: this.paginationController.currentPage - 1 }));
+    this.germplasmCallStack = new CallStack((filters) => BrAPIService.get<GermplasmSortField>(BrAPIType.GERMPLASM, this.activeProgram!.id!, this.germplasmSort,
+        { pageSize: this.paginationController.pageSize, page: this.paginationController.currentPage - 1 }, filters));
     this.paginationController.pageSize = 20;
   }
 
