@@ -29,7 +29,7 @@
 
       <template v-slot:importInfoTemplateMessageBox>
         <ImportInfoTemplateMessageBox v-bind:import-type-name="'Experiments & Observations'"
-                                      v-bind:template-url="'https://cornell.box.com/shared/static/u0hv5a2664phiswhre64anx1oghvq32s.xls'"
+                                      v-bind:template-url="'https://cornell.box.com/shared/static/wp6tmlt0585ryid3csccj3q1w2fiyg9d.xls'"
                                       class="mb-5">
           <strong>Before You Import...</strong>
           <br/>
@@ -133,8 +133,8 @@
           <b-table-column field="column" label="Column" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
             {{ getField(props.row.data.observationUnit, 'observationUnitPosition.positionCoordinateY') }}
           </b-table-column>
-          <!-- Exp Treatment Factor Name -->
-          <b-table-column field="expTreatmentFactorName" label="Exp Treatment Factor Name" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+          <!-- Treatment Factors -->
+          <b-table-column field="expTreatmentFactorName" label="Treatment Factors" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
             {{ getTreatment(props.row.data.observationUnit) }}
           </b-table-column>
 
