@@ -222,6 +222,13 @@ img {
   }
 }
 
+#program-menu {
+  .dropdown-content {
+    max-height: 50vh;
+    overflow: scroll;
+  }
+}
+
 .sidebarlayout {
   display: flex;
   flex-direction: column;
@@ -738,6 +745,9 @@ th.activesort.sortcolumn, th.sortcolumn:hover {
     //}
     .node-name-wrapper {
       stroke: gray;
+    }
+    a:hover {
+      text-decoration: underline;
     }
   }
 }
