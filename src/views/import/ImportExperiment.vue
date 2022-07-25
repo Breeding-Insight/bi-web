@@ -51,7 +51,7 @@
           <div class = "left-confirm-column">
             <p class="is-size-5 mb-2"><strong>Import Summary</strong></p>
             <p>Environments: {{ statistics.Environments.newObjectCount }}</p>
-            <p>Gerplasm: {{ statistics.GIDs.newObjectCount }}</p>
+            <p>Germplasm: {{ statistics.GIDs.newObjectCount }}</p>
             <p>Observation Units: {{ statistics.Observation_Units.newObjectCount }}</p>
           </div>
           <div id="experiment-summary" class ="right-confirm-column">
