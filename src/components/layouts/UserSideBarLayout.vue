@@ -138,9 +138,9 @@
             </li>
             <li>
               <router-link
-                  v-bind:to="{name: 'trials-studies', params: {programId: activeProgram.id}}"
+                  v-bind:to="{name: 'experiments-observations', params: {programId: activeProgram.id}}"
               >
-                Trials and Studies <span class="ml-2 tag is-warning">Beta</span>
+                Experiments & Observations
               </router-link>
             </li>
           </ul>

@@ -315,6 +315,10 @@ table tr.is-edited + .detail {
   }
 }
 
+.table td.fixed-width-wrapped {
+    word-break: break-word;
+    width: 25%;
+}
 
 .table.is-striped tbody tr:not(.is-edited):nth-child(2n).is-new {
   background-color: $success-light;
