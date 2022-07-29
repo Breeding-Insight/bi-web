@@ -62,7 +62,6 @@ import TrialsAndStudiesBase from "@/components/trials/TrialsAndStudiesBase.vue";
   }
 })
 export default class ExperimentsAndObservations extends TrialsAndStudiesBase {
-  //todo check use of base
 
   private activeProgram?: Program;
 
