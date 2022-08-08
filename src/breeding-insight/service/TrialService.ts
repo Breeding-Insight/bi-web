@@ -24,7 +24,7 @@ import {Result, Err, Success, ResultGenerator } from "@/breeding-insight/model/R
 
 export class TrialService {
 
-  static async getAll(programId: string, paginationQuery?: PaginationQuery, full?: boolean): Promise<Result<Error, [Trial[], Metadata]>> {
+  static async getAll(programId: string, paginationQuery?: PaginationQuery, full?: boolean, metadata?:boolean): Promise<Result<Error, [Trial[], Metadata]>> {
 
     if (paginationQuery === undefined){
       paginationQuery = new PaginationQuery(0, 0, true);
@@ -34,10 +34,14 @@ export class TrialService {
       full = false;
     }
 
+    if (metadata === undefined) {
+      metadata = true;
+    }
+
     try {
       if(!programId) throw new Error('missing or invalid program id');
       
-      let response = await TrialDAO.getAll(programId, paginationQuery, full) as Result<Error, BiResponse>;      
+      let response = await TrialDAO.getAll(programId, paginationQuery, full, metadata) as Result<Error, BiResponse>;
       if(response.isErr()) throw response.value;
 
       const frontendModel = (res: BiResponse): [Trial[], Metadata] => {
@@ -46,7 +50,7 @@ export class TrialService {
         
         data = PaginationController.mockSortRecords(data);
         trials = data.map((trial: any) => {
-          return new Trial(trial.trialDbId, trial.trialName, trial.active);
+          return trial as Trial;
         });
 
         let newPagination;
