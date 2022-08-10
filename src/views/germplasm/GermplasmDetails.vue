@@ -130,7 +130,7 @@ import {BrAPIService, BrAPIType} from "@/breeding-insight/service/BrAPIService";
     // Find the id for that gid
     const gid = germplasmId.split('-')[1];
     const programId = to.params.programId;
-    BrAPIService.get(BrAPIType.GERMPLASM, {accessionNumber: gid}, programId, 1, 0).then((germplasmResult) => {
+    BrAPIService.get(BrAPIType.GERMPLASM, programId, 0, 1, {accessionNumber: gid}).then((germplasmResult) => {
       // Parse out the germplasm id
       const germplasm = germplasmResult.result.data[0];
       const germplasmUUID = GermplasmUtils.getGermplasmUUID(germplasm.externalReferences);
