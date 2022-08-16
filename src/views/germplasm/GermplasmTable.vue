@@ -46,7 +46,7 @@
         > </GermplasmLink>
       </b-table-column>
       <b-table-column field="createdDate" label="Created Date" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
-        {{ props.row.data.additionalInfo.createdDate }}
+        {{ GermplasmUtils.getCreatedDate(props.row.data) }}
       </b-table-column>
       <b-table-column field="createdByUserName" label="Created By" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
         {{ props.row.data.additionalInfo.createdBy.userName }}
