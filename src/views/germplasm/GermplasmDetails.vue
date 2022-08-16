@@ -111,6 +111,7 @@ import {GermplasmUtils} from '@/breeding-insight/utils/GermplasmUtils';
 import { Result } from '@/breeding-insight/model/Result';
 import {Route} from "vue-router";
 import {BrAPIService, BrAPIType} from "@/breeding-insight/service/BrAPIService";
+import {GermplasmSortField, SortOrder} from "@/breeding-insight/model/Sort";
 
 @Component({
   components: {GermplasmLink},
@@ -130,7 +131,7 @@ import {BrAPIService, BrAPIType} from "@/breeding-insight/service/BrAPIService";
     // Find the id for that gid
     const gid = germplasmId.split('-')[1];
     const programId = to.params.programId;
-    BrAPIService.get(BrAPIType.GERMPLASM, programId, 0, 1, {accessionNumber: gid}).then((germplasmResult) => {
+    BrAPIService.get(BrAPIType.GERMPLASM, programId, {field: GermplasmSortField.AccessionNumber, order: SortOrder.Ascending}, {pageSize: 1, page: 0}, {accessionNumber: gid}).then((germplasmResult) => {
       // Parse out the germplasm id
       const germplasm = germplasmResult.result.data[0];
       const germplasmUUID = GermplasmUtils.getGermplasmUUID(germplasm.externalReferences);
