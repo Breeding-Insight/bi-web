@@ -36,13 +36,13 @@
       <b-table-column field="femaleParentGID" label="Female Parent GID" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
         <GermplasmLink
             v-bind:germplasmUUID="Pedigree.parsePedigreeString(props.row.data.additionalInfo.pedigreeByUUID).femaleParent"
-            v-bind:germplasmGID="Pedigree.parsePedigreeString(props.row.data.pedigree).femaleParent"
+            v-bind:germplasmGID="Pedigree.parsePedigreeStringWithUnknowns(props.row.data.pedigree, props.row.data.additionalInfo.femaleParentUnknown, props.row.data.additionalInfo.maleParentUnknown).femaleParent"
         > </GermplasmLink>
       </b-table-column>
       <b-table-column field="maleParentGID" label="Male Parent GID" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
         <GermplasmLink
             v-bind:germplasmUUID="Pedigree.parsePedigreeString(props.row.data.additionalInfo.pedigreeByUUID).maleParent"
-            v-bind:germplasmGID="Pedigree.parsePedigreeString(props.row.data.pedigree).maleParent"
+            v-bind:germplasmGID="Pedigree.parsePedigreeStringWithUnknowns(props.row.data.pedigree,props.row.data.additionalInfo.femaleParentUnknown,props.row.data.additionalInfo.maleParentUnknown).maleParent"
         > </GermplasmLink>
       </b-table-column>
       <b-table-column field="createdDate" label="Created Date" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>

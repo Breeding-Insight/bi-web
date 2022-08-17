@@ -44,4 +44,18 @@ export class Pedigree {
     }
   }
 
+  /**
+   * Wrapper of parsePedigreeString that handles female/male parent unknown cases.
+   *
+   * @param pedigreeString
+   * @param femaleParentUnknown
+   * @param maleParentUnknown
+   */
+  public static parsePedigreeStringWithUnknowns(pedigreeString: string, femaleParentUnknown: string, maleParentUnknown: string) : Pedigree {
+    let parsedPedigree = this.parsePedigreeString(pedigreeString);
+    if (femaleParentUnknown) parsedPedigree.femaleParent = "0";
+    if (maleParentUnknown) parsedPedigree.maleParent = "0";
+    return parsedPedigree;
+  }
+
 }
