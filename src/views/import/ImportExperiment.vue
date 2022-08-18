@@ -58,6 +58,7 @@
             <p class="is-size-5 mb-2"><strong>Experiment</strong></p>
             <p>Title: {{ rows[0].trial.brAPIObject.trialName }}</p>
             <p>Description: {{ rows[0].trial.brAPIObject.trialDescription }}</p>
+            <p>Experimental Unit: {{ rows[0].trial.brAPIObject.additionalInfo.defaultObservationLevel }}</p>
             <p>Type: {{ rows[0].trial.brAPIObject.additionalInfo.experimentType }}</p>
             <p>User: </p>
             <p>Creation Date: </p>
@@ -84,22 +85,6 @@
           <!-- Test or Check -->
           <b-table-column field="testOrCheck" label="Test (T) or Check (C)" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
             {{ getField(props.row.data.observationUnit, 'observationUnitPosition.entryType') }}
-          </b-table-column>
-          <!-- Experiment Title -->
-          <b-table-column field="expTitle" label="Experiment Title" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-            {{ getField(props.row.data.trial, 'trialName') }}
-          </b-table-column>
-          <!-- Experiment Description -->
-          <b-table-column field="expDescription" label="Experiment Description" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-            {{ getField(props.row.data.trial, 'trialDescription') }}
-          </b-table-column>
-          <!-- Exp Unit -->
-          <b-table-column field="expUnit" label="Experiment Unit" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-            {{ getField(props.row.data.observationUnit, 'observationUnitPosition.observationLevel.levelName') }}
-          </b-table-column>
-          <!-- Exp Type -->
-          <b-table-column field="expType" label="Experiment Type" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-            {{ getField(props.row.data.study, 'studyType') }}
           </b-table-column>
           <!-- Env -->
           <b-table-column field="env" label="Env" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
