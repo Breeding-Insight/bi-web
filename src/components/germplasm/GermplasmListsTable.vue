@@ -154,7 +154,7 @@ export default class GermplasmListsTable extends Vue {
   }
 
   formatDate(date: Date) {
-    return moment(date).format('YYYY-M-D, h:mm:ss');
+    return moment(date).format('YYYY-MM-DD');
   }
 
   updatePageSize(pageSize: string) {
