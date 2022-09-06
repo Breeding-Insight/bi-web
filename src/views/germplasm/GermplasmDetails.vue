@@ -39,12 +39,12 @@
           <GermplasmLink
             v-if="germplasm.pedigree"
             v-bind:germplasmUUID="Pedigree.parsePedigreeString(germplasm.additionalInfo.pedigreeByUUID).femaleParent"
-            v-bind:germplasmGID="Pedigree.parsePedigreeStringWithUnknowns(germplasm.pedigree,germplasm.additionalInfo.femaleParentUnknown,germplasm.additionalInfo.maleParentUnknown).femaleParent"
+            v-bind:germplasmGID="Pedigree.parsePedigreeStringWithUnknowns(germplasm.pedigree,germplasm.additionalInfo.femaleParentUnknown,germplasm.additionalInfo.maleParentUnknown, germplasm.germplasmDbId).femaleParent"
         > </GermplasmLink>
           <template v-if="Pedigree.parsePedigreeString(germplasm.pedigree).maleParent">
           / <GermplasmLink
             v-bind:germplasmUUID="Pedigree.parsePedigreeString(germplasm.additionalInfo.pedigreeByUUID).maleParent"
-            v-bind:germplasmGID="Pedigree.parsePedigreeStringWithUnknowns(germplasm.pedigree,germplasm.additionalInfo.femaleParentUnknown,germplasm.additionalInfo.maleParentUnknown).maleParent"
+            v-bind:germplasmGID="Pedigree.parsePedigreeStringWithUnknowns(germplasm.pedigree,germplasm.additionalInfo.femaleParentUnknown,germplasm.additionalInfo.maleParentUnknown, germplasm.germplasmDbId).maleParent"
           > </GermplasmLink></template>
         </li>
         <li><b>Synonyms: </b> {{ GermplasmUtils.formatSynonyms(germplasm.synonyms) }}</li>

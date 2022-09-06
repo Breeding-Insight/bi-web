@@ -51,10 +51,10 @@ export class Pedigree {
    * @param femaleParentUnknown
    * @param maleParentUnknown
    */
-  public static parsePedigreeStringWithUnknowns(pedigreeString: string, femaleParentUnknown: string, maleParentUnknown: string) : Pedigree {
+  public static parsePedigreeStringWithUnknowns(pedigreeString: string, femaleParentUnknown: string, maleParentUnknown: string, gid: string) : Pedigree {
     let parsedPedigree = this.parsePedigreeString(pedigreeString);
-    if (femaleParentUnknown) parsedPedigree.femaleParent = "0";
-    if (maleParentUnknown) parsedPedigree.maleParent = "0";
+    if (femaleParentUnknown) parsedPedigree.femaleParent = "Unknown";
+    if (maleParentUnknown) parsedPedigree.maleParent = "Unknown";
     return parsedPedigree;
   }
 

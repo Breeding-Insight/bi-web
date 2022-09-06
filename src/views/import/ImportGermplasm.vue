@@ -221,27 +221,21 @@ export default class ImportGermplasm extends ProgramsBase {
 
   getPedigree(germplasm: Germplasm) {
     //return germplasm.pedigree;
-    console.log(germplasm);
-    console.log(germplasm.additionalInfo.femaleParentUnknown);
     let originalPedigree = germplasm.pedigree ? germplasm.pedigree.split('/') : [""];
     let displayPedigree = "";
-    if (germplasm.additionalInfo.femaleParentUnknown){
+    if (germplasm.additionalInfo && germplasm.additionalInfo.femaleParentUnknown){
       displayPedigree = "Unknown";
     } else {
       displayPedigree = originalPedigree[0];
     }
-    if (germplasm.additionalInfo.maleParentUnknown){
+    if (germplasm.additionalInfo && germplasm.additionalInfo.maleParentUnknown){
       displayPedigree += "/Unknown";
     } else if (originalPedigree.length == 2) {
       displayPedigree +=`/${originalPedigree[1]}`;
     }
-    /*else if (germplasm.additionalInfo.femaleParentUnknown && something) {
-      //Handle case with unknown female, known male, which currently has a null pedigree posted
+    //todo future card, handle case of unknown female/known male, which currently has null pedigree posted
 
-    }
-     */
     return displayPedigree;
-    //todo handle unknown f, known male
 
   }
 
