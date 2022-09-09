@@ -24,7 +24,7 @@
     v-bind:server-validations="serverValidations"
   >
     <input
-        v-bind:id="inputId ? inputId : fieldName.split(' ').join('-')"
+        v-bind:id="inputId ? inputId : fieldName.split(' ').join('-').replace(/[^a-zA-Z0-9\-]/gm, '')"
         v-bind:value="value"
         @input="$emit('input', $event.target.value)"
         class="input"
