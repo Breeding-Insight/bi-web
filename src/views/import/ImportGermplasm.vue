@@ -96,13 +96,18 @@
             v-bind:rowClasses="constructRowClasses(previewData.import)"
             v-on:show-error-notification="$emit('show-error-notification', $event)"
         >
-          <b-table-column field="defaultDisplayName" label="Name" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+          <b-table-column v-slot="props" :th-attrs="(column) => ({scope:'col'})">
             <AlertTriangleIcon
                 size="1x"
                 class="has-vertical-align-middle"
                 v-if="props.row.data.state === ImportObjectState.EXISTING"
             >
             </AlertTriangleIcon>
+          </b-table-column>
+          <b-table-column field="gid" label="GID" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+            {{ props.row.data.brAPIObject.gid }}
+          </b-table-column>
+          <b-table-column field="defaultDisplayName" label="Name" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
             {{ props.row.data.brAPIObject.defaultDisplayName }}
           </b-table-column>
           <b-table-column field="breedingMethod" label="Breeding Method" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
