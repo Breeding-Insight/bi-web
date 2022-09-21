@@ -149,12 +149,12 @@ export class ProgramSort {
 export enum GermplasmSortField {
   AccessionNumber = "accessionNumber",
   DefaultDisplayName = "defaultDisplayName",
-  BreedingMethod = "additionalInfo.breedingMethod",
+  BreedingMethod = "breedingMethod",
   SeedSource = "seedSource",
-  FemaleParent = "femaleParent",
-  MaleParent = "maleParent",
-  CreatedDate = "additionalInfo.createdDate",
-  UserName = "additionalInfo.createdBy.userName"
+  FemaleParent = "femaleParentGID",
+  MaleParent = "maleParentGID",
+  CreatedDate = "createdDate",
+  UserName = "createdByUserName"
 }
 
 export class GermplasmSort {
