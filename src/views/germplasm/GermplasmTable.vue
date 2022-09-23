@@ -33,6 +33,9 @@
       <b-table-column field="seedSource" label="Source" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
         {{ props.row.data.seedSource }}
       </b-table-column>
+      <b-table-column field="pedigree" label="Pedigree" v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
+        {{ props.row.data.additionalInfo.pedigreeByName }}
+      </b-table-column>
       <b-table-column field="femaleParentGID" label="Female Parent GID" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
         <GermplasmLink
             v-bind:germplasmUUID="Pedigree.parsePedigreeString(props.row.data.additionalInfo.pedigreeByUUID).femaleParent"
