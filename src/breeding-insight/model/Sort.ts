@@ -151,6 +151,7 @@ export enum GermplasmSortField {
   DefaultDisplayName = "defaultDisplayName",
   BreedingMethod = "breedingMethod",
   SeedSource = "seedSource",
+  Pedigree = "pedigree",
   FemaleParent = "femaleParentGID",
   MaleParent = "maleParentGID",
   CreatedDate = "createdDate",
