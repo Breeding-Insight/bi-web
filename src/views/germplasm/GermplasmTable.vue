@@ -33,16 +33,19 @@
       <b-table-column field="seedSource" label="Source" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
         {{ props.row.data.seedSource }}
       </b-table-column>
+      <b-table-column field="pedigree" label="Pedigree" v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
+        {{ props.row.data.additionalInfo.pedigreeByName }}
+      </b-table-column>
       <b-table-column field="femaleParentGID" label="Female Parent GID" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
         <GermplasmLink
             v-bind:germplasmUUID="Pedigree.parsePedigreeString(props.row.data.additionalInfo.pedigreeByUUID).femaleParent"
-            v-bind:germplasmGID="Pedigree.parsePedigreeString(props.row.data.pedigree).femaleParent"
+            v-bind:germplasmGID="Pedigree.parsePedigreeStringWithUnknowns(props.row.data.pedigree, props.row.data.additionalInfo.femaleParentUnknown, props.row.data.additionalInfo.maleParentUnknown, props.row.data.accessionNumber).femaleParent"
         > </GermplasmLink>
       </b-table-column>
       <b-table-column field="maleParentGID" label="Male Parent GID" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
         <GermplasmLink
             v-bind:germplasmUUID="Pedigree.parsePedigreeString(props.row.data.additionalInfo.pedigreeByUUID).maleParent"
-            v-bind:germplasmGID="Pedigree.parsePedigreeString(props.row.data.pedigree).maleParent"
+            v-bind:germplasmGID="Pedigree.parsePedigreeStringWithUnknowns(props.row.data.pedigree,props.row.data.additionalInfo.femaleParentUnknown,props.row.data.additionalInfo.maleParentUnknown, props.row.data.accessionNumber).maleParent"
         > </GermplasmLink>
       </b-table-column>
       <b-table-column field="createdDate" label="Created Date" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>

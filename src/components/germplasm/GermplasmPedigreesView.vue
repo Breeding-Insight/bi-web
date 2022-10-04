@@ -126,6 +126,9 @@ export default class GermplasmPedigreesView extends GermplasmBase {
         let pedigree = PedigreeViewer(`${process.env.VUE_APP_BI_API_V1_PATH}/programs/${this.activeProgram!.id}/brapi/v2`, undefined, 'v2.0',
             function (dbId: any, germplasm: any) {
               const parsedName = parseGermplasmName(germplasm.value.name);
+              if (parsedName.gid === "0") {
+                return null;
+              }
               return `${germplasmDetailsUrl}/gid-${parsedName.gid}`;
             },
             {
