@@ -20,7 +20,7 @@ const ora = require('ora');
 const fs = require('fs');
 
 // read from package.json which port to use for the dev server
-const port = JSON.parse(fs.readFileSync('package.json', 'utf8')).config.devport;
+const port = process.env.PORT || JSON.parse(fs.readFileSync('package.json', 'utf8')).config.devport;
 
 (async () => {
   let spinner = ora({prefixText: ' ', color: 'yellow'});
