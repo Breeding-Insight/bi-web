@@ -75,7 +75,8 @@
             v-on:show-error-notification="$emit('show-error-notification', $event)"
         >
           <!-- Germplasm Name -->
-          <b-table-column field="germplasmName" label="Germplasm Name" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+          <b-table-column field="germplasmName" label="Germplasm Name" v-slot="props" :th-attrs="(column) => ({scope:'col'})"
+          :td-attrs="(row, column) => ({class: 'db-filled'})">
             {{ getField(props.row.data.germplasm, 'germplasmName') }}
           </b-table-column>
           <!-- Germplasm GID -->
