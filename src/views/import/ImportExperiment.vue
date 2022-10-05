@@ -60,8 +60,8 @@
             <p>Description: {{ rows[0].trial.brAPIObject.trialDescription }}</p>
             <p>Experimental Unit: {{ rows[0].trial.brAPIObject.additionalInfo.defaultObservationLevel }}</p>
             <p>Type: {{ rows[0].trial.brAPIObject.additionalInfo.experimentType }}</p>
-            <p>User: </p>
-            <p>Creation Date: </p>
+            <p v-if="isExisting(rows[0].trial.state)">User: </p>
+            <p v-if="isExisting(rows[0].trial.state)">Creation Date: </p>
           </div>
           </div>
         </ConfirmImportMessageBox>
@@ -137,17 +137,17 @@
 </template>
 
 <script lang="ts">
-import { Component } from 'vue-property-decorator'
+import {Component} from 'vue-property-decorator'
 import ProgramsBase from "@/components/program/ProgramsBase.vue";
 import ImportInfoTemplateMessageBox from "@/components/file-import/ImportInfoTemplateMessageBox.vue";
 import ConfirmImportMessageBox from "@/components/trait/ConfirmImportMessageBox.vue";
 import ImportTemplate from "@/views/import/ImportTemplate.vue";
 import {DataFormEventBusHandler} from "@/components/forms/DataFormEventBusHandler";
 import {ImportFormatter} from "@/breeding-insight/model/report/ImportFormatter";
-import { AlertTriangleIcon } from 'vue-feather-icons';
-import {GermplasmList} from "@/breeding-insight/model/GermplasmList";
+import {AlertTriangleIcon} from 'vue-feather-icons';
 import BasicInputField from "@/components/forms/BasicInputField.vue";
 import ExpandableTable from "@/components/tables/expandableTable/ExpandableTable.vue";
+import {ImportObjectState} from "@/breeding-insight/model/import/ImportObjectState";
 
 @Component({
   components: {
@@ -215,6 +215,10 @@ export default class ImportExperiment extends ProgramsBase {
   }
 
   importFinished(){}
+
+  isExisting(state: ImportObjectState) {
+    return state === ImportObjectState.EXISTING;
+  }
 
 }
 </script>
