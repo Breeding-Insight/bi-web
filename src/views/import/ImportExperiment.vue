@@ -60,8 +60,9 @@
             <p>Description: {{ rows[0].trial.brAPIObject.trialDescription }}</p>
             <p>Experimental Unit: {{ rows[0].trial.brAPIObject.additionalInfo.defaultObservationLevel }}</p>
             <p>Type: {{ rows[0].trial.brAPIObject.additionalInfo.experimentType }}</p>
-            <p v-if="isExisting(rows[0].trial.state)">User: </p>
-            <p v-if="isExisting(rows[0].trial.state)">Creation Date: </p>
+            <p>Experimental Design: Externally generated</p>
+            <p v-if="isExisting(rows)">User: </p>
+            <p v-if="isExisting(rows)">Creation Date: </p>
           </div>
           </div>
         </ConfirmImportMessageBox>
@@ -216,8 +217,8 @@ export default class ImportExperiment extends ProgramsBase {
 
   importFinished(){}
 
-  isExisting(state: ImportObjectState) {
-    return state === ImportObjectState.EXISTING;
+  isExisting(rows: any[]) {
+    return rows.length && rows[0].trial.state === ImportObjectState.EXISTING && rows[0].observationUnit.state === ImportObjectState.EXISTING;
   }
 
 }
