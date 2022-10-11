@@ -67,6 +67,7 @@ import ProgramConfiguration from "@/views/program/ProgramConfiguration.vue";
 import JobManagement from '@/views/program/JobManagement.vue';
 import GermplasmPedigreesView from "@/components/germplasm/GermplasmPedigreesView.vue";
 import ImportExperiment from "@/views/import/ImportExperiment.vue";
+import ExperimentsAndObservations from "@/views/experiments-and-observations/ExperimentsAndObservations.vue";
 
 Vue.use(VueRouter);
 
@@ -171,35 +172,14 @@ const routes = [
     component: StudiesList
   },
   {
-    path: '/programs/:programId/trials-studies',
-    name: 'trials-studies',
+    path: '/programs/:programId/experiments-observations',
+    name: 'experiments-observations',
     meta: {
-      title: 'Trials and Studies',
+      title: 'Experiments & Observations',
       layout: layouts.userSideBar
     },
-    component: TrialsAndStudies,
-    redirect: {name: 'trials-list'},
-    beforeEnter: processProgramNavigation,
-    children: [
-     {
-        path: 'studies',
-        name: 'studies-list',
-        meta: {
-          title: 'Studies',
-          layout: layouts.userSideBar
-        },
-        component: StudiesList
-      },
-      {
-        path: 'trials',
-        name: 'trials-list',
-        meta: {
-          title: 'Trials',
-          layout: layouts.userSideBar
-        },
-        component: Trials
-      }
-    ]
+    component: ExperimentsAndObservations,
+    beforeEnter: processProgramNavigation
   },    
   {
     path: '/programs/:programId/program-management',
