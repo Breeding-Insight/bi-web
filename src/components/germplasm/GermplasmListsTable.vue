@@ -70,6 +70,9 @@
         {{ props.row.data.listOwnerName }}
       </b-table-column>
       <b-table-column  field="data.listDbId" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+        <router-link v-bind:to="{name: 'germplasm-by-list', params: {programId: activeProgram.id, listId: props.row.data.listDbId}}">
+          Details
+        </router-link>
         <a href="#" v-on:click="activateExtensionSelect(props.row.data.listDbId)">
           Download
         </a>
