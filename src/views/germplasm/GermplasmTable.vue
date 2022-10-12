@@ -1,8 +1,5 @@
 <template>
   <section id="germplasmTable">
-    <h1 class="title">
-      All Germplasm
-    </h1>
     <ExpandableTable
         v-bind:records.sync="germplasm"
         v-bind:loading="this.germplasmLoading"
