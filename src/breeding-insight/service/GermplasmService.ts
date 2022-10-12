@@ -22,8 +22,49 @@ import {PaginationController} from "@/breeding-insight/model/view_models/Paginat
 import {GermplasmDAO} from "@/breeding-insight/dao/GermplasmDAO";
 import {Germplasm} from "@/breeding-insight/brapi/model/germplasm";
 import {Result, ResultGenerator} from "@/breeding-insight/model/Result";
+import {SortOrder} from "@/breeding-insight/model/Sort";
+import * as api from "@/util/api";
 
 export class GermplasmService {
+
+    static async getAllInList<T>(programId: string,
+                         listId: string,
+                         sort: { field: T, order: SortOrder },
+                         pagination: { pageSize: number, page: number },
+                         filters?: any):
+        Promise<BiResponse> {
+        //Form the query with sorting, pagination, and filtering
+        let params: any = {};
+        if(filters) {
+            params = filters;
+        }
+
+        if (sort.field) {
+            params['sortField'] = sort.field;
+        }
+        if (sort.order) {
+            params['sortOrder'] = sort.order;
+        }
+        if (pagination.page || pagination.page == 0) { //have to account for 0-index pagination since 0 falsy
+            params ['page'] = pagination.page;
+        }
+        if (pagination.pageSize) {
+            params['pageSize'] = pagination.pageSize;
+        }
+
+        //Get the list germplasm
+        try {
+            const { data } = await api.call({
+                url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/germplasm/lists/${listId}/records`,
+                method: 'get',
+                params: params
+            }) as Response;
+
+            return new BiResponse(data);
+        } catch(error) {
+            throw error;
+        }
+    }
 
     static getAll(programId: string, paginationQuery: PaginationQuery = new PaginationQuery(0, 0, true)): Promise<[GermplasmList[], Metadata]> {
         return new Promise<[GermplasmList[], Metadata]>(((resolve, reject) => {
