@@ -61,6 +61,7 @@ export class GermplasmService {
             }) as Response;
 
             return new BiResponse(data);
+
         } catch(error) {
             throw error;
         }
