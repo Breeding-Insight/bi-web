@@ -21,6 +21,7 @@ import { RootState } from './types';
 import { mutations } from './mutations';
 import {actions} from './actions';
 import {sorting} from '@/store/sorting/index';
+import {filtering} from '@/store/filtering/index';
 import {programManagement} from '@/store/program-management/index';
 
 Vue.use(Vuex);
@@ -48,6 +49,7 @@ const store: StoreOptions<RootState> = {
   },
   modules: {
     sorting,
+    filtering,
     programManagement
   },
   mutations,
