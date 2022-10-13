@@ -20,11 +20,11 @@
 import {GermplasmSortField} from "@/breeding-insight/model/Sort";
 
 export enum GermplasmBIField {
-  List = "list",
+  ListName = "listName",
 }
 
 export class GermplasmFilter {
-  [GermplasmBIField.List]: string;
+  [GermplasmBIField.ListName]: string;
   [GermplasmSortField.AccessionNumber]: string;
   [GermplasmSortField.DefaultDisplayName]: string;
   [GermplasmSortField.BreedingMethod]: string;

@@ -24,20 +24,17 @@ import {Germplasm} from "@/breeding-insight/brapi/model/germplasm";
 import {Result, ResultGenerator} from "@/breeding-insight/model/Result";
 import {SortOrder} from "@/breeding-insight/model/Sort";
 import * as api from "@/util/api";
+import {GermplasmFilter} from "@/breeding-insight/model/Filter";
 
 export class GermplasmService {
 
     static async getAllInList<T>(programId: string,
-                         listId: string,
                          sort: { field: T, order: SortOrder },
                          pagination: { pageSize: number, page: number },
-                         filters?: any):
+                         { listName, ...brapiFilters  }: GermplasmFilter):
         Promise<BiResponse> {
-        //Form the query with sorting, pagination, and filtering
-        let params: any = {};
-        if(filters) {
-            params = filters;
-        }
+        //Form the query params including sorting, pagination, and filtering
+        let params: any = { ...brapiFilters };
 
         if (sort.field) {
             params['sortField'] = sort.field;
@@ -52,10 +49,17 @@ export class GermplasmService {
             params['pageSize'] = pagination.pageSize;
         }
 
-        //Get the list germplasm
         try {
+            //Get the list db id
+            const paginationQuery = new PaginationQuery(0,20,true);
+            const {result: { lists } } = await GermplasmDAO.getAllLists(programId, paginationQuery);
+            const matchingLists = lists.filter(list => list.name === listName);
+            if (matchingLists.length === 0) throw Error("List name is not valid for this program");
+            if (matchingLists.length > 1) throw Error("List name must be unique");
+
+            //Get the list germplasm
             const { data } = await api.call({
-                url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/germplasm/lists/${listId}/records`,
+                url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/germplasm/lists/${matchingLists[0].id}/records`,
                 method: 'get',
                 params: params
             }) as Response;
