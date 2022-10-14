@@ -20,7 +20,7 @@
     <ImportTemplate
         v-bind:abort-msg="'No records will be added, and the import in progress will be completely removed.'"
         v-bind:system-import-template-name="experimentImportTemplateName"
-        v-bind:confirm-msg="'Confirm New Experiments & Observations Records'"
+        v-bind:confirm-msg="'Preview Experimental Upload'"
         v-bind:import-type-name="'Experiments & Observations'"
         v-bind:confirm-import-state="confirmImportState"
         v-on="$listeners"
@@ -48,6 +48,7 @@
                                  v-on:confirm="confirm"
                                  class="mb-4">
           <div>
+            <p>Review your experimental data import before committing to the database.</p>
           <div class = "left-confirm-column">
             <p class="is-size-5 mb-2"><strong>Import Summary</strong></p>
             <p>Environments: {{ statistics.Environments.newObjectCount }}</p>
