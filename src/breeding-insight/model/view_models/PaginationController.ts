@@ -30,6 +30,7 @@ export class PaginationController {
     if (currentCall) this.currentCall = currentCall;
   }
 
+  //TODO currently not functioning, need logic to update page and pagesize
   toggleShowAll(){
     this.showAll = !this.showAll;
   }

@@ -24,6 +24,7 @@ import {ImportResponse} from "@/breeding-insight/model/import/ImportResponse";
 import {ValidationError} from "@/breeding-insight/model/errors/ValidationError";
 import {ImportProgress} from "@/breeding-insight/model/import/ImportProgress";
 import {AxiosResponse} from "axios";
+import {ImportError} from "@/breeding-insight/model/errors/ImportError";
 
 export class ImportService {
   static mappingNameExists : string = 'A mapping with that name already exists';
@@ -142,7 +143,7 @@ export class ImportService {
     return null;
   }
 
-  static formatErrors(errors: ValidationError | AxiosResponse | string): string[] {
+  static formatErrors(errors: ValidationError | AxiosResponse | string): ImportError[] {
     let formattedErrors = [];
     const isValidationError = errors instanceof ValidationError;
     if (isValidationError){
@@ -151,26 +152,26 @@ export class ImportService {
         for (const error of validationErrors.rowErrors){
           if (error.errors) {
             for (const fieldError of error.errors){
-              formattedErrors.push(`${fieldError.field}: ${fieldError.errorMessage} in row ${error.rowIndex}`);
+              formattedErrors.push(new ImportError(error.rowIndex,fieldError.field,fieldError.errorMessage));
             }
           }
         }
       }
       return formattedErrors;
     } else if (typeof errors == 'string') {
-      return [errors];
+      return [new ImportError(null, "", errors)];
     } else if (errors != null) {
       // Parse 400 responses and display the message if its not empty
       const apiResponse = errors as AxiosResponse;
       if (apiResponse.status && apiResponse.status === 400 &&
         apiResponse.data && apiResponse.data.message && apiResponse.data.message !== '') {
-        return [apiResponse.data.message] as string[];
+        return [new ImportError(null, "", apiResponse.data.message)];
       }
     }
 
     // A catch all for anything we haven't explicitly caught
     if (errors) {
-      return ["An unknown error has occurred"] as string[];
+      return [new ImportError(null, "", "An unknown error has occurred")];
     }
     return [];
   }
