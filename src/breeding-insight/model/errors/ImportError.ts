@@ -20,7 +20,7 @@ export class ImportError {
     field: string | null;
     message: string;
 
-    constructor(row: number | null, field: string, message: string){
+    constructor(row: number | null, field: string | null, message: string){
         this.row = row;
         this.field = field;
         this.message = message;
