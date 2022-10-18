@@ -62,8 +62,8 @@
             <p>Experimental Unit: {{ rows[0].trial.brAPIObject.additionalInfo.defaultObservationLevel }}</p>
             <p>Type: {{ rows[0].trial.brAPIObject.additionalInfo.experimentType }}</p>
             <p>Experimental Design: Externally generated</p>
-            <p v-if="isExisting(rows)">User: </p>
-            <p v-if="isExisting(rows)">Creation Date: </p>
+            <p v-if="isExisting(rows)">User: {{ rows[0].trial.brAPIObject.additionalInfo.createdBy.userName }}</p>
+            <p v-if="isExisting(rows)">Creation Date: {{ rows[0].trial.brAPIObject.additionalInfo.createdDate | dmy}}</p>
           </div>
           </div>
         </ConfirmImportMessageBox>
@@ -155,6 +155,11 @@ import {ImportObjectState} from "@/breeding-insight/model/import/ImportObjectSta
   components: {
     ImportInfoTemplateMessageBox, ConfirmImportMessageBox, ImportTemplate, AlertTriangleIcon, BasicInputField, ExpandableTable
   },
+  filters: {
+    dmy: function(dateTime: String): String {
+      return dateTime.split(' ')[0];
+    }
+  },
   data: () => ({ImportFormatter})
 })
 export default class ImportExperiment extends ProgramsBase {
@@ -219,7 +224,7 @@ export default class ImportExperiment extends ProgramsBase {
   importFinished(){}
 
   isExisting(rows: any[]) {
-    return rows.length && rows[0].trial.state === ImportObjectState.EXISTING && rows[0].observationUnit.state === ImportObjectState.EXISTING;
+    return rows.length && rows[0].trial.state === ImportObjectState.EXISTING;
   }
 
 }
