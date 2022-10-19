@@ -17,9 +17,24 @@
 
 <template>
   <div class="germplasm">
+    <router-link
+        v-bind:to="{name: 'germplasm-lists', params: {programId: activeProgram.id}}"
+    >
+      <a>&lt; Germplasm Lists</a>
+    </router-link>
     <h1 class="title">
-      View Germplasm List
+      {{ list.listName | toStartCase }}
     </h1>
+<div class="columns is-multiline">
+  <div class="column is-one-fifth is-flex is-justify-content-right">Description:</div>
+  <div class="column is-four-fifths is-flex is-justify-content-left">{{ list.listDescription }}</div>
+  <div class="column is-one-fifth is-flex is-justify-content-right">User:</div>
+  <div class="column is-four-fifths is-flex is-justify-content-left">{{ list.listOwnerName }}</div>
+  <div class="column is-one-fifth is-flex is-justify-content-right">Import Date:</div>
+  <div class="column is-four-fifths is-flex is-justify-content-left">{{ list.dateCreated }}</div>
+  <div class="column is-one-fifth is-flex is-justify-content-right">Total Entries:</div>
+  <div class="column is-four-fifths is-flex is-justify-content-left">{{ list.listSize }}</div>
+</div>
     <AccessionTable
         v-bind:germplasmFetch="germplasmFetch"
         v-bind:entryNumberVisible="true"
@@ -35,12 +50,28 @@ import AccessionTable from '@/components/germplasm/AccessionTable.vue';
 import { GermplasmService } from '@/breeding-insight/service/GermplasmService';
 import { GermplasmSort } from '@/breeding-insight/model/Sort';
 import { BiResponse } from '@/breeding-insight/model/BiResponse';
+import { GermplasmDAO } from '@/breeding-insight/dao/GermplasmDAO';
+import { PaginationQuery } from '@/breeding-insight/model/PaginationQuery';
+import { mapGetters } from 'vuex';
+import { Program } from '@/breeding-insight/model/Program';
+import {StringFormatters} from "@/breeding-insight/utils/StringFormatters";
+import {GermplasmList} from "@/breeding-insight/model/GermplasmList";
 
 @Component({
   components: { AccessionTable },
+  computed: {
+    ...mapGetters([
+      'activeProgram'
+    ])
+  },
+  filters: {
+    toStartCase: StringFormatters.toStartCase
+  }
 })
 export default class Germplasm extends GermplasmBase {
 
+  private activeProgram?: Program;
+  private list?: any = null;
   private germplasmFetch: (programId: string, sort: GermplasmSort, pageSize: number, page: number) => ((filters: any) => Promise<BiResponse>) =
       () => (() => Promise.resolve(new BiResponse(null)));
 
@@ -55,6 +86,16 @@ export default class Germplasm extends GermplasmBase {
             {listDbId: `${id}`, ...filters})
       };
     };
+
+    this.getListName();
+  }
+
+  async getListName() {
+    const paginationQuery = new PaginationQuery(0, 20, true);
+    const {result: {data: lists}} = await GermplasmDAO.getAllLists(this.activeProgram!.id!, paginationQuery);
+    const matchingLists: any[] = lists.filter(list => list.listDbId === this.$route.params.listId);
+    this.list = matchingLists[0];
+console.log(this.list)
   }
 
 }

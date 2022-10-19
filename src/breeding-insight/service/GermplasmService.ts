@@ -55,11 +55,11 @@ export class GermplasmService {
             if(listName && !listDbId) {
                 //Get the list db id
                 const paginationQuery = new PaginationQuery(0, 20, true);
-                const {result: {lists}} = await GermplasmDAO.getAllLists(programId, paginationQuery);
-                const matchingLists = lists.filter(list => list.name === listName);
+                const {result: {data: lists}} = await GermplasmDAO.getAllLists(programId, paginationQuery);
+                const matchingLists = lists.filter(list => list.listName === listName);
                 if (matchingLists.length === 0) throw Error("List name is not valid for this program");
                 if (matchingLists.length > 1) throw Error("List name must be unique");
-                listId = matchingLists[0].id;
+                listId = matchingLists[0].listDbId;
             } else if(listDbId) {
                 listId = listDbId;
             } else {
