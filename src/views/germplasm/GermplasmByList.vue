@@ -31,7 +31,7 @@
   <div class="column is-one-fifth is-flex is-justify-content-right">User:</div>
   <div class="column is-four-fifths is-flex is-justify-content-left">{{ list.listOwnerName }}</div>
   <div class="column is-one-fifth is-flex is-justify-content-right">Import Date:</div>
-  <div class="column is-four-fifths is-flex is-justify-content-left">{{ list.dateCreated }}</div>
+  <div class="column is-four-fifths is-flex is-justify-content-left">{{ list.dateCreated | toYMD }}</div>
   <div class="column is-one-fifth is-flex is-justify-content-right">Total Entries:</div>
   <div class="column is-four-fifths is-flex is-justify-content-left">{{ list.listSize }}</div>
 </div>
@@ -65,7 +65,8 @@ import {GermplasmList} from "@/breeding-insight/model/GermplasmList";
     ])
   },
   filters: {
-    toStartCase: StringFormatters.toStartCase
+    toStartCase: StringFormatters.toStartCase,
+    toYMD: (date) => date.split('T')[0]
   }
 })
 export default class Germplasm extends GermplasmBase {
