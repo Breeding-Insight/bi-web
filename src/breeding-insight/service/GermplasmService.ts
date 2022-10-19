@@ -31,7 +31,7 @@ export class GermplasmService {
     static async getAllInList<T>(programId: string,
                          sort: { field: T, order: SortOrder },
                          pagination: { pageSize: number, page: number },
-                         { listName, ...brapiFilters  }: GermplasmFilter):
+                         { listDbId, listName, ...brapiFilters  }: GermplasmFilter):
         Promise<BiResponse> {
         //Form the query params including sorting, pagination, and filtering
         let params: any = { ...brapiFilters };
@@ -50,16 +50,25 @@ export class GermplasmService {
         }
 
         try {
-            //Get the list db id
-            const paginationQuery = new PaginationQuery(0,20,true);
-            const {result: { lists } } = await GermplasmDAO.getAllLists(programId, paginationQuery);
-            const matchingLists = lists.filter(list => list.name === listName);
-            if (matchingLists.length === 0) throw Error("List name is not valid for this program");
-            if (matchingLists.length > 1) throw Error("List name must be unique");
+            let listId: String = '';
+
+            if(listName && !listDbId) {
+                //Get the list db id
+                const paginationQuery = new PaginationQuery(0, 20, true);
+                const {result: {lists}} = await GermplasmDAO.getAllLists(programId, paginationQuery);
+                const matchingLists = lists.filter(list => list.name === listName);
+                if (matchingLists.length === 0) throw Error("List name is not valid for this program");
+                if (matchingLists.length > 1) throw Error("List name must be unique");
+                listId = matchingLists[0].id;
+            } else if(listDbId) {
+                listId = listDbId;
+            } else {
+                throw Error("Missing list id and name");
+            }
 
             //Get the list germplasm
-            const { data } = await api.call({
-                url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/germplasm/lists/${matchingLists[0].id}/records`,
+            const {data} = await api.call({
+                url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/germplasm/lists/${listId}/records`,
                 method: 'get',
                 params: params
             }) as Response;
