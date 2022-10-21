@@ -33,7 +33,18 @@
   <div class="column is-one-fifth is-flex is-justify-content-right">Import Date:</div>
   <div class="column is-four-fifths is-flex is-justify-content-left">{{ list.dateCreated | toYMD }}</div>
   <div class="column is-one-fifth is-flex is-justify-content-right">Total Entries:</div>
-  <div class="column is-four-fifths is-flex is-justify-content-left">{{ list.listSize }}</div>
+  <div class="column is-three-fifths is-flex is-justify-content-left">{{ list.listSize }}</div>
+  <div class="column is-one-fifth has-text-centered buttons">
+    <GermplasmDownloadButton
+        v-bind:modal-title="`Download ${list.listName}`"
+        modal-subtitle="File Format"
+        v-bind:listDbId="list.listDbId"
+    >
+      <button class="button is-primary has-text-weight-bold">
+        <strong>Download</strong>
+      </button>
+    </GermplasmDownloadButton>
+  </div>
 </div>
     <AccessionTable
         v-bind:germplasmFetch="germplasmFetch"
@@ -55,10 +66,10 @@ import { PaginationQuery } from '@/breeding-insight/model/PaginationQuery';
 import { mapGetters } from 'vuex';
 import { Program } from '@/breeding-insight/model/Program';
 import {StringFormatters} from "@/breeding-insight/utils/StringFormatters";
-import {GermplasmList} from "@/breeding-insight/model/GermplasmList";
+import GermplasmDownloadButton from '@/components/germplasm/GermplasmDownloadButton';
 
 @Component({
-  components: { AccessionTable },
+  components: { AccessionTable, GermplasmDownloadButton },
   computed: {
     ...mapGetters([
       'activeProgram'
@@ -77,6 +88,7 @@ export default class Germplasm extends GermplasmBase {
       () => (() => Promise.resolve(new BiResponse(null)));
 
   mounted() {
+    // Set the method used to populate the germplasm table
     this.germplasmFetch = function (programId: string, sort: GermplasmSort, pageSize: number, page: number) {
       let id = this.$route.params.listId;
       return function (filters: any) {
@@ -88,15 +100,14 @@ export default class Germplasm extends GermplasmBase {
       };
     };
 
-    this.getListName();
+    this.getList();
   }
 
-  async getListName() {
+  async getList() {
     const paginationQuery = new PaginationQuery(0, 20, true);
     const {result: {data: lists}} = await GermplasmDAO.getAllLists(this.activeProgram!.id!, paginationQuery);
     const matchingLists: any[] = lists.filter(list => list.listDbId === this.$route.params.listId);
     this.list = matchingLists[0];
-console.log(this.list)
   }
 
 }

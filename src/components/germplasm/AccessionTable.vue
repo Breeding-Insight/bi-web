@@ -133,6 +133,7 @@ export default class AccessionTable extends Vue {
   private germplasmSort!: GermplasmSort;
   private updateSort!: (sort: GermplasmSort) => void;
   private fieldMap: any = {
+    'importEntryNumber': GermplasmSortField.ImportEntryNumber,
     'accessionNumber': GermplasmSortField.AccessionNumber,
     'defaultDisplayName' : GermplasmSortField.DefaultDisplayName,
     'breedingMethod': GermplasmSortField.BreedingMethod,
