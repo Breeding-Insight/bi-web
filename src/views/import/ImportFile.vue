@@ -25,14 +25,20 @@
       <nav class="tabs is-boxed">
         <ul>
           <router-link
+              v-bind:to="{name: 'germplasm-import', params: {programId: activeProgram.id}}"
+              tag="li" active-class="is-active">
+            <a>Germplasm</a>
+          </router-link>
+          <router-link
+              v-if="!isSubscribed"
               v-bind:to="{name: 'import-ontology', params: {programId: activeProgram.id}}"
               tag="li" active-class="is-active">
             <a>Ontology</a>
           </router-link>
           <router-link
-              v-bind:to="{name: 'germplasm-import', params: {programId: activeProgram.id}}"
+              v-bind:to="{name: 'experiment-import', params: {programId: activeProgram.id}}"
               tag="li" active-class="is-active">
-            <a>Germplasm</a>
+            <a>Experiments & Observations</a>
           </router-link>
           <router-link
               v-bind:to="{name: 'brapi-import', params: {programId: activeProgram.id}}"
@@ -56,22 +62,35 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator'
-import {mapGetters} from "vuex";
+import {mapGetters, mapActions} from "vuex";
 import {Program} from "@/breeding-insight/model/Program";
 import ProgramsBase from "@/components/program/ProgramsBase.vue";
 
 @Component({
   components: {
   },
+  methods: {
+    ...mapActions('programManagement', {
+      getSubscribedOntology: 'getSubscribedOntology'
+    })
+  },
   computed: {
     ...mapGetters([
       'activeProgram'
+    ]),
+    ...mapGetters('programManagement',[
+      'isSubscribed', 'subscribedOntology'
     ])
   }
 })
 export default class ImportFile extends ProgramsBase {
 
   private activeProgram?: Program;
+  private isSubscribed?: boolean;
+  private getSubscribedOntology!: () => any;
 
+  mounted() {
+    this.getSubscribedOntology();
+  }
 }
 </script>

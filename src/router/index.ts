@@ -45,10 +45,6 @@ import {
 } from '@/store/mutation-types';
 import ProgramLocationsManagement from "@/views/program/ProgramLocationsManagement.vue";
 import ProgramUserManagement from "@/views/program/ProgramUsersManagement.vue";
-import Traits from '@/views/trait/Traits.vue'
-import TraitsList from "@/views/trait/TraitsList.vue";
-import TraitsImport from "@/views/trait/TraitsImport.vue";
-import TraitsArchived from "@/views/trait/TraitsArchived.vue";
 import ProgramSelection from "@/views/program/ProgramSelection.vue";
 import {UserService} from "@/breeding-insight/service/UserService";
 import {User} from "@/breeding-insight/model/User";
@@ -68,6 +64,10 @@ import Germplasm from "@/views/germplasm/Germplasm.vue";
 import GermplasmLists from "@/views/germplasm/GermplasmLists.vue";
 import GermplasmDetails from "@/views/germplasm/GermplasmDetails.vue";
 import ProgramConfiguration from "@/views/program/ProgramConfiguration.vue";
+import JobManagement from '@/views/program/JobManagement.vue';
+import GermplasmPedigreesView from "@/components/germplasm/GermplasmPedigreesView.vue";
+import ImportExperiment from "@/views/import/ImportExperiment.vue";
+import ExperimentsAndObservations from "@/views/experiments-and-observations/ExperimentsAndObservations.vue";
 
 Vue.use(VueRouter);
 
@@ -172,35 +172,14 @@ const routes = [
     component: StudiesList
   },
   {
-    path: '/programs/:programId/trials-studies',
-    name: 'trials-studies',
+    path: '/programs/:programId/experiments-observations',
+    name: 'experiments-observations',
     meta: {
-      title: 'Trials and Studies',
+      title: 'Experiments & Observations',
       layout: layouts.userSideBar
     },
-    component: TrialsAndStudies,
-    redirect: {name: 'trials-list'},
-    beforeEnter: processProgramNavigation,
-    children: [
-     {
-        path: 'studies',
-        name: 'studies-list',
-        meta: {
-          title: 'Studies',
-          layout: layouts.userSideBar
-        },
-        component: StudiesList
-      },
-      {
-        path: 'trials',
-        name: 'trials-list',
-        meta: {
-          title: 'Trials',
-          layout: layouts.userSideBar
-        },
-        component: Trials
-      }
-    ]
+    component: ExperimentsAndObservations,
+    beforeEnter: processProgramNavigation
   },    
   {
     path: '/programs/:programId/program-management',
@@ -312,47 +291,42 @@ const routes = [
       title: 'Germplasm Details',
       layout: layouts.userSideBar
     },
-    beforeEnter: processProgramNavigation
-  },
-  {
-    path: '/programs/:programId/traits',
-    name: 'traits',
-    meta: {
-      title: 'Traits',
-      layout: layouts.userSideBar
-    },
-    component: Traits,
-    redirect: {name: 'traits-list'},
+    redirect: {name: 'germplasm-pedigrees'},
     beforeEnter: processProgramNavigation,
     children: [
       {
-        path: 'list',
-        name: 'traits-list',
+        path: 'pedigrees',
+        name: 'germplasm-pedigrees',
         meta: {
-          title: 'Trait List',
+          title: 'Pedigrees',
           layout: layouts.userSideBar
         },
-        component: TraitsList
+        component: GermplasmPedigreesView,
+        props: (route: any) => {
+          return ({
+            ...route.params
+          })
+        }
       },
       {
-        path: 'import',
-        name: 'traits-import',
+        path: 'images',
+        name: 'germplasm-images',
         meta: {
-          title: 'Import Traits',
+          title: 'Images',
           layout: layouts.userSideBar
         },
-        component: TraitsImport
+        component: GermplasmDetails
       },
       {
-        path: 'archived',
-        name: 'traits-archived',
+        path: 'attributes',
+        name: 'germplasm-attributes',
         meta: {
-          title: 'Archived Traits',
+          title: 'Attributes',
           layout: layouts.userSideBar
         },
-        component: TraitsArchived
+        component: GermplasmDetails
       }
-    ]
+      ]
   },
   {
     path: '/programs/:programId/import',
@@ -362,7 +336,7 @@ const routes = [
       layout: layouts.userSideBar
     },
     component: ImportFile,
-    redirect: {name: 'import-ontology'},
+    redirect: {name: 'germplasm-import'},
     beforeEnter: processProgramNavigation,
     children: [
       {
@@ -382,6 +356,15 @@ const routes = [
           layout: layouts.userSideBar
         },
         component: ImportGermplasm
+      },
+      {
+        path: 'experiment',
+        name: 'experiment-import',
+        meta: {
+          title: 'Experiments & Observations',
+          layout: layouts.userSideBar
+        },
+        component: ImportExperiment
       },
       {
         path: 'brapi-import',
@@ -420,6 +403,16 @@ const routes = [
       layout: layouts.userSideBar
     },
     component: BrAPIInfo,
+    beforeEnter: processProgramNavigation
+  },
+  {
+    path: '/programs/:programId/jobs',
+    name: 'job-management',
+    meta: {
+      title: 'Jobs',
+      layout: layouts.userSideBar
+    },
+    component: JobManagement,
     beforeEnter: processProgramNavigation
   },
   {
@@ -493,6 +486,11 @@ router.beforeEach((to: Route, from: Route, next: Function) => {
   // TODO: Check if the page is a protected resource, if not, let them through
   // If page is protected, check if they are logged in.
   const loginRedirectUrlCookieName = Vue.prototype.$cookieNames.loginRedirectUrl;
+
+  // Check if the login redirect is valid
+  if (Vue.$cookies.isKey(loginRedirectUrlCookieName) && to.name == 'page-does-not-exist') {
+    next({name: 'home', replace: true, params: {loginRedirect: false, sessionExpired: false}});
+  }
 
   // Remove the redirect url from the cookie
   Vue.$cookies.remove(loginRedirectUrlCookieName);

@@ -67,8 +67,8 @@
         <div
             class="column is-gapless pl-0"
             v-bind:class="{'is-narrow': !sidePanelState.panelOpen,
-              'is-one-third-desktop is-half-tablet is-half-mobile': (sidePanelState.panelOpen & !sidePanelState.editActive),
-              'is-one-half-desktop is-half-tablet is-half-mobile': (sidePanelState.panelOpen & sidePanelState.editActive)}"
+              'is-one-third-widescreen is-half-tablet is-half-mobile': (sidePanelState.panelOpen && !sidePanelState.editActive),
+              'is-one-half-desktop is-half-tablet is-half-mobile': (sidePanelState.panelOpen && sidePanelState.editActive)}"
         >
           <SidePanel
               v-bind:state="sidePanelState"

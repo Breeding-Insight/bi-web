@@ -222,6 +222,13 @@ img {
   }
 }
 
+#program-menu {
+  .dropdown-content {
+    max-height: 50vh;
+    overflow: scroll;
+  }
+}
+
 .sidebarlayout {
   display: flex;
   flex-direction: column;
@@ -315,6 +322,10 @@ table tr.is-edited + .detail {
   }
 }
 
+.table td.fixed-width-wrapped {
+    word-break: break-word;
+    width: 25%;
+}
 
 .table.is-striped tbody tr:not(.is-edited):nth-child(2n).is-new {
   background-color: $success-light;
@@ -654,4 +665,115 @@ th.activesort.sortcolumn, th.sortcolumn:hover {
 
 .descending {
   transform: rotate(180deg);
+}
+
+.above-tabs-button {
+  margin-bottom: 15px;
+  position: absolute;
+  right: 35px;
+}
+
+.display-case {
+  text-transform: capitalize;
+}
+
+.trait-detail {
+  .scale-info {
+    border-left: 1px solid $info;
+    @include from($desktop) {
+      width: 85%;
+      margin-left: 20%;
+    }
+
+    .scale-categories {
+      &.columns {
+        &:not(:last-of-type) {
+          margin-bottom: 2em;
+        }
+      }
+    }
+
+    .column {
+      padding-top: 0;
+      padding-bottom: 0;
+    }
+  }
+}
+
+#germplasm-pedigrees {
+  $ped-female: $red;
+  $ped-male: $blue;
+  $ped-sib: $purple;
+
+  .pedigree-legend {
+    span:not(:last-child) {
+      margin-right: 10px;
+    }
+    .female-parent {
+      color: $ped-female;
+      stroke-width: 5;
+    }
+    .male-parent {
+      color: $ped-male;
+      stroke-width: 5;
+    }
+    .expand-ped {
+      circle {
+        color:$purple;
+        fill:$purple;
+      }
+      polyline, line {
+        color: white;
+      }
+    }
+  }
+
+  #pedigree-wrap {
+    border: solid thin #ddd;
+    min-height: 200px;
+    [stroke="blue"] {
+      stroke: $ped-male;
+    }
+    [stroke="red"] {
+      stroke: $ped-female;
+    }
+    [stroke="purple"] {
+      stroke: $purple;
+    }
+    [fill="purple"] {
+      fill: $purple;
+    }
+    //leaving this here in case we want to change the color of the highlighted node in the future
+    //.node-name-highlight {
+    //  fill: red;
+    //}
+    .node-name-wrapper {
+      stroke: gray;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+// Some css to only overlay on tbody for tables instead of entire table like b-table
+div.b-table.loading-active tbody {
+  opacity: 0.25;
+  z-index: 1;
+  pointer-events: none;
+}
+.loading-overlay {
+  &, .loading-background {
+    pointer-events: none;
+    background: rgba(255, 255, 255, 0);
+  }
+}
+
+.left-confirm-column {
+  float: left;
+  padding-right: 70px
+}
+
+.right-confirm-column {
+  float: left;
 }

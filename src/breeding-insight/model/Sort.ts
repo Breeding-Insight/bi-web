@@ -25,12 +25,20 @@ export class Sort {
     'asc': SortOrder.Ascending,
     'desc': SortOrder.Descending
   };
+  static buefySortOrder: any = {
+    [SortOrder.Ascending]: 'asc',
+    [SortOrder.Descending]: 'desc'
+  }
 
   static orderAsBI(order: string) {
     if (order in this.orderMap) {
       return this.orderMap[order];
     }
     return SortOrder.Ascending;
+  }
+
+  static orderAsBuefy(order: SortOrder) {
+    return this.buefySortOrder[order];
   }
 }
 
@@ -132,6 +140,29 @@ export class ProgramSort {
   order: SortOrder;
 
   constructor(field: ProgramSortField, order: SortOrder) {
+    this.field = field;
+    this.order = order;
+  }
+}
+
+// germplasm
+export enum GermplasmSortField {
+  AccessionNumber = "accessionNumber",
+  DefaultDisplayName = "defaultDisplayName",
+  BreedingMethod = "breedingMethod",
+  SeedSource = "seedSource",
+  Pedigree = "pedigree",
+  FemaleParent = "femaleParentGID",
+  MaleParent = "maleParentGID",
+  CreatedDate = "createdDate",
+  UserName = "createdByUserName"
+}
+
+export class GermplasmSort {
+  field: GermplasmSortField;
+  order: SortOrder;
+
+  constructor(field: GermplasmSortField, order: SortOrder) {
     this.field = field;
     this.order = order;
   }

@@ -130,9 +130,17 @@
             </li>
             <li>
               <router-link
-                  v-bind:to="{name: 'trials-studies', params: {programId: activeProgram.id}}"
+                  v-bind:to="{name: 'job-management', params: {programId: activeProgram.id}}"
+                  :id="jobManagementMenuId"
               >
-                Trials and Studies - Beta
+                Jobs
+              </router-link>
+            </li>
+            <li>
+              <router-link
+                  v-bind:to="{name: 'experiments-observations', params: {programId: activeProgram.id}}"
+              >
+                Experiments & Observations
               </router-link>
             </li>
           </ul>
@@ -202,6 +210,7 @@
     private importFileMenuId: string = "usersidebarlayout-import-file-menu";
     private ontologyMenuId: string = "usersidebarlayout-ontology-menu";
     private programManagementMenuId: string = "usersidebarlayout-program-management-menu";
+    private jobManagementMenuId: string = "usersidebarlayout-job-management-menu";
     private brAPIMenuId: string = "usersidebarlayout-brapi-menu";
     private germplasmMenuId: string = "usersidebarlayout-germplasm-menu";
 

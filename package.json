@@ -1,6 +1,6 @@
 {
   "name": "bi-web",
-  "version": "v0.6.0+334",
+  "version": "v0.8.0+453",
   "private": true,
   "scripts": {
     "build": "node $npm_package_config_task_path/build.js --dev-audit-level=critical --prod-audit-level=none",
@@ -19,12 +19,16 @@
   "dependencies": {
     "@casl/ability": "~4.0.0",
     "@casl/vue": "^1.1.1",
+    "@solgenomics/brapi-pedigree-viewer": "git+https://github.com/Breeding-Insight/BrAPI-Pedigree-Viewer#v2.0.3",
+    "@solgenomics/brapijs": "git+https://github.com/Breeding-Insight/BrAPI-js#v2.0.2",
+    "@solgenomics/d3-pedigree-tree": "git+https://github.com/solgenomics/d3-pedigree-tree#f799b499c8019cfccd550d4297196e365c208d5c",
     "@types/flat": "^5.0.2",
     "@types/promise.allsettled": "^1.0.3",
     "@types/valid-url": "^1.0.3",
     "@types/vuelidate": "^0.7.10",
     "@xstate/fsm": "^1.4.0",
     "core-js": "^3.4.3",
+    "d3": "^4.11.0",
     "flat": "^5.0.2",
     "focus-trap": "^5.1.0",
     "focus-trap-vue": "0.0.6",
@@ -53,6 +57,7 @@
   "devDependencies": {
     "@creativebulma/bulma-divider": "^1.1.0",
     "@types/chai": "^4.2.7",
+    "@types/d3": "^7.1.0",
     "@types/jest": "^24.9.0",
     "@types/plotly.js": "^1.54.20",
     "@types/uuid": "^8.3.0",
@@ -91,5 +96,5 @@
     "vue-cli-plugin-axios": "0.0.4",
     "vue-template-compiler": "^2.6.10"
   },
-  "versionInfo": "https://github.com/Breeding-Insight/bi-web/commit/263abdd41645e1862f7d64cb27ef0b649e9f42ee"
+  "versionInfo": "https://github.com/Breeding-Insight/bi-web/commit/19ddd744d7d186688135224238f1717d7e0eede9"
 }

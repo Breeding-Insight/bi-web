@@ -117,6 +117,8 @@
       <template v-slot:side-panel="{tableRow}">
         <TraitDetailPanel
             v-bind:data="tableRow"
+            v-bind:loading-editable="loadingTraitEditable"
+            v-bind:from-import-table="isImportTable"
         />
       </template>
 
@@ -208,6 +210,10 @@ export default class TraitsImportTable extends Vue {
   private newSortColumn!: (field: OntologySortField) => void;
   private toggleSortOrder!: () => void;
 
+  //On import should not be editable and should not be loading editability status
+  private loadingTraitEditable = false;
+  private isImportTable = true;
+
   // table column sorting
   private nameSortLabel: string = OntologySortField.Name;
   private methodSortLabel: string = OntologySortField.MethodDescription;
@@ -229,7 +235,7 @@ export default class TraitsImportTable extends Vue {
 
   updatePagination() {
     let paginationQuery: PaginationQuery = BackendPaginationController.getPaginationSelections(
-        this.paginationController.currentPage, this.paginationController.pageSize);
+        this.paginationController.currentPage, this.paginationController.pageSize, this.paginationController.showAll);
     this.paginationController.setCurrentCall(paginationQuery);
   }
 

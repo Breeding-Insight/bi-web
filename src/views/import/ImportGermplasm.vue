@@ -30,7 +30,7 @@
 
       <template v-slot:importInfoTemplateMessageBox>
         <ImportInfoTemplateMessageBox v-bind:import-type-name="'Germplasm'"
-                                      v-bind:template-url="'https://cornell.box.com/shared/static/kjocibgs3hhg05vclsidk7hce30eqpu4.xls'"
+                                      v-bind:template-url="'https://cornell.box.com/shared/static/j69qww8j18aqcl2yns5y1yrwkg6ysbg9.xls'"
                                       class="mb-5">
           <strong>Before You Import...</strong>
           <br/>
@@ -112,7 +112,7 @@
             {{ props.row.data.brAPIObject.seedSource }}
           </b-table-column>
           <b-table-column field="pedigree" label="Pedigree" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-            {{ props.row.data.brAPIObject.pedigree }}
+            {{ getPedigree(props.row.data.brAPIObject) }}
           </b-table-column>
           <b-table-column field="femaleParentGid" label="Female Parent GID" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
             {{ props.row.data.brAPIObject.additionalInfo.femaleParentGid }}
@@ -131,6 +131,9 @@
           </b-table-column>
           <b-table-column field="externalUID" label="External UID" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
             {{ ExternalUID.getExternalUIDFromExternalReferences(props.row.data.brAPIObject.externalReferences, props.row.data.brAPIObject.seedSource) }}
+          </b-table-column>
+          <b-table-column field="synonyms" label="Synonyms" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+            {{ GermplasmUtils.formatSynonyms(props.row.data.brAPIObject.synonyms) }}
           </b-table-column>
 
           <template v-slot:emptyMessage>
@@ -158,12 +161,14 @@ import BasicInputField from "@/components/forms/BasicInputField.vue";
 import ExpandableTable from "@/components/tables/expandableTable/ExpandableTable.vue";
 import {ImportObjectState} from "@/breeding-insight/model/import/ImportObjectState";
 import {ExternalUID} from "@/breeding-insight/model/import/germplasm/ExternalUID";
+import {GermplasmUtils} from "@/breeding-insight/utils/GermplasmUtils";
+import {Germplasm} from "@/breeding-insight/brapi/model/germplasm";
 
 @Component({
   components: {
     ExpandableTable, ImportInfoTemplateMessageBox, ConfirmImportMessageBox, ImportTemplate, AlertTriangleIcon, BasicInputField
   },
-  data: () => ({ImportObjectState, ExternalUID})
+  data: () => ({ImportObjectState, ExternalUID, GermplasmUtils})
 })
 export default class ImportGermplasm extends ProgramsBase {
 
@@ -213,5 +218,26 @@ export default class ImportGermplasm extends ProgramsBase {
   importFinished() {
     this.germplasmList = new GermplasmList();
   }
+
+  getPedigree(germplasm: Germplasm) {
+    //return germplasm.pedigree;
+    let originalPedigree = germplasm.pedigree ? germplasm.pedigree.split('/') : [""];
+    let displayPedigree = "";
+    if (germplasm.additionalInfo && germplasm.additionalInfo.femaleParentUnknown){
+      displayPedigree = "Unknown";
+    } else {
+      displayPedigree = originalPedigree[0];
+    }
+    if (germplasm.additionalInfo && germplasm.additionalInfo.maleParentUnknown){
+      displayPedigree += "/Unknown";
+    } else if (originalPedigree.length == 2) {
+      displayPedigree +=`/${originalPedigree[1]}`;
+    }
+    //todo future card, handle case of unknown female/known male, which currently has null pedigree posted
+
+    return displayPedigree;
+
+  }
+
 }
 </script>

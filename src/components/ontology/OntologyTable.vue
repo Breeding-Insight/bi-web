@@ -48,23 +48,7 @@
     <div v-if="active" class="columns has-text-right mb-0 buttons">
       <div class="column">
         <button
-            v-if="$ability.can('create', 'Trait')"
-            v-show="!newTraitActive && traits.length > 0"
-            class="button is-primary is-pulled-right has-text-weight-bold"
-            v-on:click="$router.push({name: 'import-ontology', params: {programId: activeProgram.id}})"
-        >
-        <span class="icon is-small">
-          <PlusCircleIcon
-              size="1.5x"
-              aria-hidden="true"
-          />
-        </span>
-        <span>
-          Import Batch File
-        </span>
-        </button>
-        <button
-            v-if="$ability.can('create', 'Trait')"
+            v-if="$ability.can('create', 'Trait') && !isSubscribed"
             data-testid="newDataForm"
             v-show="!newTraitActive && traits.length > 0"
             class="button mx-2 is-primary is-pulled-right is-light has-text-weight-bold"
@@ -148,8 +132,9 @@
           v-bind:sortOrder="ontologySort.order"
           v-on:newSortColumn="$emit('newSortColumn', $event)"
           v-on:toggleSortOrder="$emit('toggleSortOrder')"
+          class="display-case"
         >
-          {{ data.entity | capitalize }} {{data.attribute | capitalize }}
+          {{ data.entity }} {{data.attribute }}
         </TableColumn>
         <TableColumn
             name="method"
@@ -161,8 +146,9 @@
             v-bind:sortOrder="ontologySort.order"
             v-on:newSortColumn="$emit('newSortColumn', $event)"
             v-on:toggleSortOrder="$emit('toggleSortOrder')"
+            class="display-case"
         >
-          {{ (data.method.description ? data.method.description + " ": "") + StringFormatters.toStartCase(data.method.methodClass) }}
+          {{ (data.method.description ? data.method.description + " ": "") + data.method.methodClass }}
         </TableColumn>
         <TableColumn
             name="scaleClass"
@@ -225,7 +211,7 @@
 
       <template v-slot:emptyMessage>
         <EmptyTableMessage
-            v-bind:button-view-toggle="!newTraitActive && active"
+            v-bind:button-view-toggle="!newTraitActive && active && !isSubscribed"
             v-bind:button-text="'New Term'"
             v-on:newClick="activateNewTraitForm"
             v-bind:create-enabled="$ability.can('create', 'Trait')"
@@ -236,7 +222,7 @@
           <p v-if="active && $ability.can('create', 'Trait')">
             Create new ontology terms by clicking "New Term" or by navigating to "Import Ontology".
           </p>
-          <p v-if="!active && $ability.can('archive', 'Trait') && $ability.can('update', 'Trait')">
+          <p v-if="!active && !isSubscribed && $ability.can('archive', 'Trait') && $ability.can('update', 'Trait')">
             Archive an existing ontology term by clicking "Show details" > "Edit" > "Archive". <br>
             Create new archived ontology terms by clicking "New Term" or by navigating to "Import Ontology".
           </p>
@@ -252,7 +238,7 @@ import WarningModal from '@/components/modals/WarningModal.vue'
 import {PlusCircleIcon} from 'vue-feather-icons'
 import {validationMixin} from 'vuelidate';
 import {Trait} from '@/breeding-insight/model/Trait'
-import {mapGetters} from 'vuex'
+import {mapGetters, mapActions} from 'vuex'
 import {Program} from "@/breeding-insight/model/Program";
 import NewDataForm from '@/components/forms/NewDataForm.vue'
 import BasicInputField from "@/components/forms/BasicInputField.vue";
@@ -262,7 +248,6 @@ import {TraitService} from "@/breeding-insight/service/TraitService";
 import EmptyTableMessage from "@/components/tables/EmtpyTableMessage.vue";
 import TableColumn from "@/components/tables/TableColumn.vue";
 import {Metadata, Pagination} from "@/breeding-insight/model/BiResponse";
-import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
 import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
 import {StringFormatters} from '@/breeding-insight/utils/StringFormatters';
 import {TraitStringFormatters} from '@/breeding-insight/utils/TraitStringFormatters';
@@ -288,13 +273,15 @@ import {Category} from "@/breeding-insight/model/Category";
   computed: {
     ...mapGetters([
       'activeProgram'
+    ]),
+    ...mapGetters('programManagement',[
+      'isSubscribed'
     ])
   },
-  filters: {
-    capitalize: function(value: string | undefined) : string | undefined {
-      if (value === undefined) value = '';
-      return StringFormatters.toStartCase(value);
-    }
+  methods: {
+    ...mapActions('programManagement', {
+        getSubscribedOntology: 'getSubscribedOntology'
+    })
   },
   data: () => ({Trait, StringFormatters, TraitStringFormatters})
 })
@@ -344,6 +331,10 @@ export default class OntologyTable extends Vue {
   private deactivateWarningTitle = 'Archive trait in this program?';
   private deactivateActive: boolean = false;
 
+  // Shared Ontology
+  private isSubscribed?: boolean;
+  private getSubscribedOntology!: () => any;
+
   // TODO: Move these into an event bus in the future
   private traitsPagination?: Pagination = new Pagination();
   private paginationController: BackendPaginationController = new BackendPaginationController();
@@ -374,6 +365,7 @@ export default class OntologyTable extends Vue {
   }
 
   mounted() {
+    this.getSubscribedOntology();
     this.updatePagination();
     this.getTraits();
     this.getObservationLevels();
@@ -412,7 +404,7 @@ export default class OntologyTable extends Vue {
 
   updatePagination() {
     let paginationQuery: PaginationQuery = BackendPaginationController.getPaginationSelections(
-        this.paginationController.currentPage, this.paginationController.pageSize);
+        this.paginationController.currentPage, this.paginationController.pageSize, this.paginationController.showAll);
     this.paginationController.setCurrentCall(paginationQuery);
   }
 
@@ -524,6 +516,7 @@ export default class OntologyTable extends Vue {
         await TraitService.archiveTrait(this.activeProgram!.id!, savedTrait);
       }
       this.$emit('show-success-notification', 'Trait creation successful.');
+      this.paginationController.updateOnAdd();
       this.getTraits();
       const levelPromise = this.getObservationLevels();
       const tagPromise = this.getTraitTags();
@@ -629,7 +622,10 @@ export default class OntologyTable extends Vue {
 
   async getAttributesEntitiesDescriptions() {
     try {
-      const response = await TraitService.getAttributesEntitiesDescriptions(this.activeProgram!.id!);
+      //Want to retrieve all entries for autocomplete not just those on current page
+      //TODO: right now this.traitsPagination.totalCount is 0 when it hits this method, so relying on large number to retrieve all values
+      let totalCount = 5000;
+      const response = await TraitService.getAttributesEntitiesDescriptions(this.activeProgram!.id!, totalCount);
       if (response) {
         const attributesEntitiesDescriptions: [string[], string[], string[]] = response;
         [this.attributeOptions, this.entityOptions, this.descriptionOptions] = attributesEntitiesDescriptions;

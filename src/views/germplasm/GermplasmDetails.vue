@@ -18,7 +18,7 @@
 <template>
   <div class="germplasm">
     <router-link v-bind:to="{name: 'germplasm-all', params: {programId: activeProgram.id}}">
-      All Germplasm
+      &lt; All Germplasm
     </router-link>
     <div class="mb-4"></div>
     <h1 class="title">
@@ -30,12 +30,24 @@
     <article class="column ">
     <section>
       <ul style="list-style-type: none;">
-      <li><b>Preferred Name: </b> {{germplasm.defaultDisplayName}}</li>
-      <li><b>GID: </b> {{ germplasm.accessionNumber }}</li>
-      <li><b>Breeding Method: </b> {{ germplasm.additionalInfo.breedingMethod }}</li>
-      <li><b>Source: </b> {{ germplasm.seedSource }}</li>
+        <li><b>Preferred Name: </b> {{germplasm.defaultDisplayName}}</li>
+        <li><b>GID: </b> {{ germplasm.accessionNumber }}</li>
+        <li><b>Breeding Method: </b> {{ germplasm.additionalInfo.breedingMethod }}</li>
+        <li><b>Source: </b> {{ germplasm.seedSource }}</li>
         <li><b>Pedigree: </b> {{ germplasm.additionalInfo.pedigreeByName }}</li>
-        <li><b>Pedigree GID(s): </b> {{ germplasm.pedigree }}</li>
+        <li><b>Pedigree GID(s): </b>
+          <GermplasmLink
+            v-if="germplasm.pedigree"
+            v-bind:germplasmUUID="Pedigree.parsePedigreeString(germplasm.additionalInfo.pedigreeByUUID).femaleParent"
+            v-bind:germplasmGID="Pedigree.parsePedigreeStringWithUnknowns(germplasm.pedigree,germplasm.additionalInfo.femaleParentUnknown,germplasm.additionalInfo.maleParentUnknown, germplasm.germplasmDbId).femaleParent"
+        > </GermplasmLink>
+          <template v-if="Pedigree.parsePedigreeString(germplasm.pedigree).maleParent">
+          / <GermplasmLink
+            v-bind:germplasmUUID="Pedigree.parsePedigreeString(germplasm.additionalInfo.pedigreeByUUID).maleParent"
+            v-bind:germplasmGID="Pedigree.parsePedigreeStringWithUnknowns(germplasm.pedigree,germplasm.additionalInfo.femaleParentUnknown,germplasm.additionalInfo.maleParentUnknown, germplasm.germplasmDbId).maleParent"
+          > </GermplasmLink></template>
+        </li>
+        <li><b>Synonyms: </b> {{ GermplasmUtils.formatSynonyms(germplasm.synonyms) }}</li>
       </ul>
     </section>
     </article>
@@ -60,8 +72,8 @@
               <a>Images</a>
             </router-link>
             <router-link
-                v-bind:to="{name: '', params: {programId: activeProgram.id}}"
-                tag="li"
+                v-bind:to="{name: 'germplasm-pedigrees', params: {programId: activeProgram.id, germplasmDbId: germplasm.germplasmDbId}}"
+                tag="li" active-class="is-active"
             >
               <a>Pedigrees</a>
             </router-link>
@@ -93,34 +105,63 @@ import {Program} from "@/breeding-insight/model/Program";
 import GermplasmBase from "@/components/germplasm/GermplasmBase.vue";
 import {Germplasm} from "@/breeding-insight/brapi/model/germplasm";
 import {GermplasmService} from "@/breeding-insight/service/GermplasmService";
+import GermplasmLink from '@/components/germplasm/GermplasmLink.vue'
+import {Pedigree} from "@/breeding-insight/model/import/germplasm/Pedigree";
 import {GermplasmUtils} from '@/breeding-insight/utils/GermplasmUtils';
 import { Result } from '@/breeding-insight/model/Result';
+import {Route} from "vue-router";
+import {BrAPIService, BrAPIType} from "@/breeding-insight/service/BrAPIService";
+import {GermplasmSortField, SortOrder} from "@/breeding-insight/model/Sort";
 
 @Component({
-  components: {},
+  components: {GermplasmLink},
   computed: {
     ...mapGetters([
       'activeProgram'
     ])
   },
-  data: () => ({GermplasmUtils})
+  data: () => ({Pedigree, GermplasmUtils}),
+  beforeRouteEnter: async (to, from, next) => {
+    const germplasmId = to.params.germplasmId;
+    if (!germplasmId.startsWith('gid-')) {
+      next();
+      return;
+    }
+
+    // Find the id for that gid
+    const gid = germplasmId.split('-')[1];
+    const programId = to.params.programId;
+    BrAPIService.get(BrAPIType.GERMPLASM, programId, {field: GermplasmSortField.AccessionNumber, order: SortOrder.Ascending}, {pageSize: 1, page: 0}, {accessionNumber: gid}).then((germplasmResult) => {
+      // Parse out the germplasm id
+      const germplasm = germplasmResult.result.data[0];
+      const germplasmUUID = GermplasmUtils.getGermplasmUUID(germplasm.externalReferences);
+      next({name: 'germplasm-details', params: {programId, germplasmId: germplasmUUID}});
+      return;
+    });
+  }
 })
 export default class GermplasmDetails extends GermplasmBase {
 
   private activeProgram?: Program;
   private germplasm?: Germplasm;
   private germplasmLoading: boolean = true;
-  private germplasmUUID: string = this.$route.params.germplasmId;
 
   mounted() {
     this.getGermplasm();
   }
 
+  get germplasmUUID(): string {
+    return this.$route.params.germplasmId;
+  }
+
+  @Watch('$route')
   async getGermplasm() {
     this.germplasmLoading = true;
     try {
       const response: Result<Error, Germplasm> = await GermplasmService.getSingleGermplasm(this.activeProgram!.id!, this.germplasmUUID);
-      if(response.isErr()) throw response.value;
+      if(response.isErr()) {
+        throw response.value;
+      }
       this.germplasm = response.value;
     } catch (err) {
       // Display error that germplasm cannot be loaded

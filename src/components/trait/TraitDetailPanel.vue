@@ -16,28 +16,28 @@
   -->
 
 <template>
-  <div class="is-full-length">
+  <div class="is-full-length trait-detail">
     <template v-if="data && !editActive">
       <p v-if="data.observationVariableName" class="is-size-5 has-text-weight-bold mb-0">
         {{data.observationVariableName}}
         <span v-if="!data.active" class="tag is-link is-normal ml-1">Archived</span>
       </p><br>
 
-      <div v-if="data.traitDescription" class="columns is-multiline is-mobile pt-4 pl-3">
-        <div class="column is-narrow p-0">
-          <span class="is-pulled-left has-text-weight-bold mr-2">Description</span>
+      <div v-if="data.traitDescription" class="columns is-desktop pt-1 pl-3">
+        <div class="column is-one-third pt-0 pb-0 has-text-right-desktop">
+          <span class="has-text-weight-bold">Description</span>
         </div>
-        <div class="column is-narrow p-0">
+        <div class="column pt-0 pb-0">
           <span class="is-size-7 mb-0">{{data.traitDescription}}</span>
         </div>
       </div>
       <!-- just shows first abbreviation AKA main abbreviation and first synonym -->
       <template v-if="abbreviationsSynonymsString">
-        <div class="columns is-multiline is-mobile pt-1 pl-3">
-          <div class="column is-narrow p-0">
-            <span class="is-pulled-left has-text-weight-bold mr-2">Synonyms</span>
+        <div class="columns is-desktop pt-1 pl-3">
+          <div class="column is-one-third pt-0 pb-0 has-text-right-desktop">
+            <span class="has-text-weight-bold">Synonyms</span>
           </div>
-          <div class="column is-narrow p-0">
+          <div class="column pt-0 pb-0">
             <span class="is-size-7 mb-0">{{ abbreviationsSynonymsString(2)}}</span>
           </div>
         </div>
@@ -47,106 +47,128 @@
       </template>
 
       <template v-if="data.tags && data.tags.length > 0">
-        <div class="columns is-multiline is-mobile pt-1 pl-3">
-          <div class="column is-narrow p-0">
-            <span class="is-pulled-left has-text-weight-bold mr-2">Tags</span>
+        <div class="columns is-desktop pt-1 pl-3">
+          <div class="column is-one-third pt-0 pb-0 has-text-right-desktop">
+            <span class="has-text-weight-bold">Tags</span>
           </div>
+          <div class="column pt-0 pb-0">
           <template v-for="tag in data.tags">
-            <div v-bind:key="tag" class="column is-narrow p-0">
-              <span class="tag is-info is-normal mr-1">{{ tag }}</span>
-            </div>
+              <span v-bind:key="tag" class="tag is-info is-normal mr-1">{{ tag }}</span>
           </template>
+          </div>
         </div>
       </template>
 
-      <div class="columns is-centered is-mobile is-variable is-multiline is-0 mt-5 my-0">
-        <template v-if="data.entity && data.attribute">
-          <div class="column is-half p-0">
-            <span class="is-pulled-right has-text-weight-bold mr-2">Trait</span>
+      <template v-if="data.entity && data.attribute">
+        <div class="columns is-desktop pt-1 pl-3">
+          <div class="column is-one-third pt-0 pb-0 has-text-right-desktop">
+            <span class="has-text-weight-bold">Trait</span>
           </div>
-          <div class="column is-half p-0">
-            <span class="is-size-7 ml-2">{{data.entity}} {{data.attribute | capitalize}}</span>
+          <div class="column pt-0 pb-0">
+            <span class="is-size-7 display-case">{{ data.entity }} {{ data.attribute }}</span>
           </div>
-        </template>
-        <template v-if="data.method && data.method.methodClass">
-          <div class="column is-half p-0">
-            <span class="is-pulled-right has-text-weight-bold mr-2">Method</span>
+        </div>
+      </template>
+      <template v-if="data.method && data.method.methodClass">
+        <div class="columns is-desktop is-multiline-mobile pt-1 pl-3">
+          <div class="column is-one-third pt-0 pb-0 has-text-right-desktop">
+            <span class="has-text-weight-bold">Method</span>
           </div>
-          <div class="column is-half p-0">
-            <span class="is-size-7 ml-2">{{(data.method.description ? StringFormatters.toStartCase(data.method.description) : "") }} {{ data.method.methodClass }}</span>
+          <div class="column pt-0 pb-0">
+            <span class="is-size-7 display-case">{{ data.method.description }} {{ data.method.methodClass }}</span>
           </div>
-        </template>
-        <template v-if="data.scale && data.scale.dataType">
-          <div class="column is-half p-0">
-            <span class="is-pulled-right has-text-weight-bold mr-2">Scale</span>
+        </div>
+      </template>
+
+      <!-- if computation method, show formula as well -->
+      <template v-if="methodClass && Method.methodClassEquals(methodClass, MethodClass.Computation)">
+        <div class="columns is-desktop pt-1 pl-3">
+          <div class="column is-one-third pt-0 pb-0 has-text-right-desktop">
+            <span class="has-text-weight-bold">Formula</span>
           </div>
-          <div class="column is-half p-0">
-            <span class="is-size-7 ml-2">{{ scaleTypeString }}</span>
+          <div class="column pt-0 pb-0">
+            <span class="is-size-7">{{ valueOrNA(data.method.formula) }}</span>
           </div>
-        </template>
+        </div>
+      </template>
+
+      <template v-if="data.scale && data.scale.dataType">
+        <div class="columns is-desktop pt-1 pl-3">
+          <div class="column is-one-third pt-0 pb-0 has-text-right-desktop">
+            <span class="has-text-weight-bold">Scale</span>
+          </div>
+          <div class="column pt-0 pb-0">
+            <span class="is-size-7">{{ scaleTypeString }}</span>
+          </div>
+        </div>
+      </template>
+
+      <div class="pt-3 pl-2 mb-6 scale-info" v-if="scaleType && (Scale.dataTypeEquals(scaleType, DataType.Ordinal) || Scale.dataTypeEquals(scaleType, DataType.Nominal) || Scale.dataTypeEquals(scaleType, DataType.Numerical))">
         <template v-if="scaleType && Scale.dataTypeEquals(scaleType, DataType.Numerical)">
-          <div class="column is-half p-0">
-            <span class="is-pulled-right mr-2">Units</span>
+          <div class="columns is-desktop">
+            <div class="column is-one-third">
+              <span class="has-text-weight-bold">Units</span>
+            </div>
+            <div class="column">
+              <span class="is-size-7">{{ valueOrNA(data.scale.scaleName) | capitalize }}</span>
+            </div>
           </div>
-          <div class="column is-half p-0">
-            <span class="is-size-7 ml-2">{{ valueOrNA(data.scale.scaleName) | capitalize }}</span>
+          <div class="columns is-desktop">
+            <div class="column is-one-third">
+              <span class="has-text-weight-bold">Decimals</span>
+            </div>
+            <div class="column">
+              <span class="is-size-7">{{ valueOrNA(data.scale.decimalPlaces) }}</span>
+            </div>
           </div>
-          <div class="column is-half p-0">
-            <span class="is-pulled-right mr-2">Decimal Places</span>
+          <div class="columns is-desktop">
+            <div class="column is-one-third">
+              <span class="has-text-weight-bold">Min</span>
+            </div>
+            <div class="column">
+              <span class="is-size-7">{{ valueOrNA(data.scale.validValueMin) }}</span>
+            </div>
           </div>
-          <div class="column is-half p-0">
-            <span class="is-size-7 ml-2">{{ valueOrNA(data.scale.decimalPlaces) }}</span>
-          </div>
-          <div class="column is-half p-0">
-            <span class="is-pulled-right mr-2">Minimum Value</span>
-          </div>
-          <div class="column is-half p-0">
-            <span class="is-size-7 ml-2">{{ valueOrNA(data.scale.validValueMin) }}</span>
-          </div>
-          <div class="column is-half p-0">
-            <span class="is-pulled-right mr-2">Maximum Value</span>
-          </div>
-          <div class="column is-half p-0">
-            <span class="is-size-7 ml-2">{{ valueOrNA(data.scale.validValueMax) }}</span>
+          <div class="columns is-desktop">
+            <div class="column is-one-third">
+              <span class="has-text-weight-bold">Max</span>
+            </div>
+            <div class="column">
+              <span class="is-size-7">{{ valueOrNA(data.scale.validValueMax) }}</span>
+            </div>
           </div>
         </template>
         <template v-if="scaleType && Scale.dataTypeEquals(scaleType, DataType.Text)">
           <!-- TODO: Not showing anything for this now -->
         </template>
 
-        <!-- if computation method, show formula as well -->
-        <template v-if="methodClass && Method.methodClassEquals(methodClass, MethodClass.Computation)">
-          <div class="column is-half p-0">
-            <span class="is-pulled-right mr-2">Formula</span>
-          </div>
-          <div class="column is-half p-0">
-            <span class="is-size-7 ml-2">{{valueOrNA(data.method.formula)}}</span>
-          </div>
-        </template>
-
-<!--        nothing to show for date class now-->
+        <!--        nothing to show for date class now-->
         <template v-if="scaleType && Scale.dataTypeEquals(scaleType, DataType.Date)">
         </template>
 
+
+        <!-- scale types hardcoded for now until we can get them from bi-api -->
+        <template
+            v-if="scaleType && (Scale.dataTypeEquals(scaleType, DataType.Ordinal) || Scale.dataTypeEquals(scaleType, DataType.Nominal))">
+          <div v-for="category in data.scale.categories"
+               :key="category.label"
+               class="columns is-mobile is-vcentered scale-categories">
+            <div class="column is-one-third-desktop is-one-quarter-mobile" v-if="Scale.dataTypeEquals(scaleType, DataType.Ordinal)">
+              <span>{{ category.value }}</span>
+            </div>
+            <div class="column is-narrow" v-if="Scale.dataTypeEquals(scaleType, DataType.Ordinal)">
+              <span>=</span>
+            </div>
+            <div class="column">
+              <span v-if="category.label">{{ category.label }}</span>
+              <span v-else>{{ category.value }}</span>
+            </div>
+          </div>
+        </template>
       </div>
 
-      <!-- scale types hardcoded for now until we can get them from bi-api -->
-      <template
-          v-if="scaleType && (Scale.dataTypeEquals(scaleType, DataType.Ordinal) || Scale.dataTypeEquals(scaleType, DataType.Nominal))">
-        <div v-for="category in data.scale.categories"
-             :key="category.label"
-             class="columns is-centered is-mobile is-variable is-multiline is-0 my-0">
-          <div class="column is-half p-0">
-            <span class="is-pulled-right mr-2">{{ category.value }}</span>
-          </div>
-          <div class="column is-half p-0">
-            <span v-if="category.label" class="is-size-7 ml-2">{{ category.label }}</span>
-          </div>
-        </div>
-      </template>
-
       <!-- maybe break out controls for reuse eventually -->
-      <div class="columns is-centered is-mobile is-variable is-multiline is-0 my-0">
+      <div v-if="!isSubscribed" class="columns is-centered is-mobile is-variable is-multiline is-0 my-0">
         <div class="column is-half p-0 mt-5">
           <a
               v-if="editable && !loadingEditable && !data.isDup"
@@ -165,7 +187,7 @@
                    v-bind:estimated-time-text="'May take a few seconds'"
       />
 
-      <article v-if="!editable && !loadingEditable && $ability.can('update', 'Trait')" class="message is-info">
+      <article v-if="!editable && !loadingEditable && !fromImportTable && $ability.can('update', 'Trait')" class="message is-info">
         <div class="message-body">
           <div class="media">
             <figure class="media-left">
@@ -218,6 +240,7 @@
 <script lang="ts">
 
   import {Component, Prop, Vue, Watch} from 'vue-property-decorator'
+  import {mapGetters} from 'vuex'
   import SidePanel from '@/components/tables/SidePanel.vue'
   import {Trait} from '@/breeding-insight/model/Trait'
   import {Scale, DataType} from '@/breeding-insight/model/Scale'
@@ -232,6 +255,11 @@
 
   @Component({
     components: {EditDataForm, SidePanel, BaseTraitForm, HelpCircleIcon, ProgressBar},
+    computed: {
+      ...mapGetters('programManagement',[
+        'isSubscribed'
+      ])
+    },
     data: () => ({DataType, MethodClass, Scale, Method, StringFormatters}),
     filters: {
       capitalize: function(value: string | undefined) : string | undefined {
@@ -268,6 +296,8 @@
     private entityOptions?: string[];
     @Prop()
     private attributeOptions?: string[];
+    @Prop({default: false})
+    private fromImportTable!: boolean;
 
 
     private editTrait: Trait | null = null;

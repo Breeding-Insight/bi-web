@@ -16,20 +16,34 @@
   -->
 
 <template>
-  <div class="traits-archived">
-    <h1 class="title">Archived Traits</h1>
-  </div>
+    <router-link v-if="this.germplasmUUID" v-bind:to="{name: 'germplasm-details', params: {programId: activeProgram.id, germplasmId: this.germplasmUUID}}">
+      {{ this.germplasmGID }}
+    </router-link>
+    <div v-else>
+      {{ this.germplasmGID }}
+    </div>
 </template>
 
 <script lang="ts">
-  import { Component, Prop, Vue } from 'vue-property-decorator'
-  import ProgramsBase from "@/components/program/ProgramsBase.vue";
+import {Component, Prop, Vue} from 'vue-property-decorator'
+import { mapGetters } from 'vuex'
+import {Program} from "@/breeding-insight/model/Program";
 
-  @Component({
-    components: {
-    }
-  })
-  export default class TraitsArchived extends ProgramsBase {
-
+@Component({
+  computed: {
+    ...mapGetters([
+      'activeProgram'
+    ])
   }
+})
+export default class GermplasmLink extends Vue {
+
+  private activeProgram?: Program;
+  @Prop()
+  private germplasmUUID!: String;
+  @Prop()
+  private germplasmGID!: String;
+
+}
+
 </script>

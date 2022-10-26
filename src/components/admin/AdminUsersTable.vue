@@ -229,7 +229,6 @@
   import {SystemRoleService} from "@/breeding-insight/service/SystemRoleService";
   import BasicSelectField from "@/components/forms/BasicSelectField.vue";
   import {PromiseHandler} from "@/breeding-insight/service/PromiseHandler";
-  import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
   import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
   import {Metadata, Pagination} from "@/breeding-insight/model/BiResponse";
   import {helpers} from "vuelidate/lib/validators";
@@ -341,7 +340,7 @@ export default class AdminUsersTable extends Vue {
 
     updatePagination() {
       let paginationQuery: PaginationQuery = BackendPaginationController.getPaginationSelections(
-          this.paginationController.currentPage, this.paginationController.pageSize);
+          this.paginationController.currentPage, this.paginationController.pageSize, this.paginationController.showAll);
       this.paginationController.setCurrentCall(paginationQuery);
     }
 
@@ -400,6 +399,7 @@ export default class AdminUsersTable extends Vue {
     try {
       user = await UserService.create(this.newUser);
       this.paginationController.updatePage(1);
+      this.paginationController.updateOnAdd();
       this.newUserActive = false;
       this.$emit('show-success-notification', this.newUser.name + ' successful created');
     } catch (error) {
