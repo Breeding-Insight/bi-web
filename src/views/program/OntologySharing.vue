@@ -16,18 +16,30 @@
   -->
 
 <template>
-  <div id="program-configuration">
-    <SharedOntologyConfiguration
-        v-on="$listeners"
-        class="mb-6"
-        v-bind:subscription-change="subscribeAction"
-        v-on:share-change="shareAction += 1"
-    />
-    <SubscribeOntologyConfiguration
-        v-on="$listeners"
-        v-on:subscription-change="subscribeAction += 1"
-        v-bind:share-change="shareAction"
-    />
+  <div id="ontolgoy-sharing">
+<!--    <ExpandableCard-->
+<!--        title="Ontology"-->
+<!--        :show="false"-->
+<!--    >-->
+      <SharedOntologyConfiguration
+          v-on="$listeners"
+          class="mb-6"
+          v-bind:subscription-change="subscribeAction"
+          v-on:share-change="shareAction += 1"
+      />
+      <SubscribeOntologyConfiguration
+          v-on="$listeners"
+          v-on:subscription-change="subscribeAction += 1"
+          v-bind:share-change="shareAction"
+      />
+<!--    </ExpandableCard>-->
+<!--    <ExpandableCard-->
+<!--      title="Breeding Methods"-->
+<!--      :show="false"-->
+<!--    >-->
+<!--      <BreedingMethods v-on="$listeners"/>-->
+<!--    </ExpandableCard>-->
+
   </div>
 </template>
 
@@ -37,11 +49,15 @@ import ProgramsBase from "@/components/program/ProgramsBase.vue";
 import {mapGetters} from "vuex";
 import SharedOntologyConfiguration from "@/components/program/SharedOntologyConfiguration.vue";
 import SubscribeOntologyConfiguration from "@/components/program/SubscribeOntologyConfiguration.vue";
+import BreedingMethods from "@/views/germplasm/BreedingMethods.vue";
+import ExpandableCard from '@/components/layouts/ExpandableCard.vue';
 
 @Component({
   components: {
+    ExpandableCard,
     SubscribeOntologyConfiguration,
-    SharedOntologyConfiguration
+    SharedOntologyConfiguration,
+    BreedingMethods
   },
   computed: {
     ...mapGetters([
@@ -49,7 +65,7 @@ import SubscribeOntologyConfiguration from "@/components/program/SubscribeOntolo
     ])
   }
 })
-export default class ProgramConfiguration extends ProgramsBase {
+export default class OntologySharing extends ProgramsBase {
   // Change tracker to pass to children for refresh
   private subscribeAction: number = 0;
   private shareAction: number = 0;

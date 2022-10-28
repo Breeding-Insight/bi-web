@@ -41,7 +41,6 @@
         v-on="$listeners"
         v-bind:loading="loading"
         :row-class="calculateRowClass"
-        backend-filtering
         v-bind:debounce-search="searchDebounce"
         v-on:filters-change="cloneFilters"
     >
@@ -49,19 +48,19 @@
       <slot></slot>
       <b-table-column v-if="editable || details || archivable" v-slot="props" cell-class="has-text-right is-narrow" :th-attrs="(column) => ({scope:'col'})">
         <a
-            v-if="editable || details"
+            v-if="isRowEditable(props.row) || details"
             data-testid="edit"
             v-on:click="props.toggleDetails(props.row)"
             v-on:keypress.enter.space="props.toggleDetails(props.row)"
             tabindex="0"
         >
-          <span v-if="editable">Edit</span>
+          <span v-if="isRowEditable(props.row)">Edit</span>
           <span v-if="details">Details</span>
 
-          <span v-if="(editable || details) && !isVisibleDetailRow(props.row)" class="icon is-small margin-right-2 has-vertical-align-middle">
+          <span v-if="(isRowEditable(props.row) || details) && !isVisibleDetailRow(props.row)" class="icon is-small margin-right-2 has-vertical-align-middle">
             <ChevronRightIcon size="1x" aria-hidden="true"></ChevronRightIcon>
           </span>
-            <span v-if="(editable || details) && isVisibleDetailRow(props.row)" class="icon is-small margin-right-2 has-vertical-align-middle">
+            <span v-if="(isRowEditable(props.row) || details) && isVisibleDetailRow(props.row)" class="icon is-small margin-right-2 has-vertical-align-middle">
             <ChevronDownIcon size="1x" aria-hidden="true"></ChevronDownIcon>
           </span>
         </a>
@@ -129,6 +128,8 @@ export default class ExpandableTable extends Mixins(ValidationMixin) {
   records!: Array<any>;
   @Prop()
   editable!: boolean;
+  @Prop()
+  rowEditable!: Function;
   @Prop()
   archivable!: boolean;
   @Prop()
@@ -230,6 +231,10 @@ export default class ExpandableTable extends Mixins(ValidationMixin) {
   // A patch so if we're listening the filters, we can still debounce
   cloneFilters(event: any) {
     this.$emit('search', JSON.parse(JSON.stringify(event)));
+  }
+
+  isRowEditable(row: any) {
+    return ((typeof this.rowEditable === "function") ? this.rowEditable(row) : true) && this.editable;
   }
 }
 </script>
