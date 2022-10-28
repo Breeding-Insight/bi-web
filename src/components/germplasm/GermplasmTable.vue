@@ -20,7 +20,7 @@
       </b-table-column>
       <b-table-column field="accessionNumber" label="GID" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
         <GermplasmLink
-            v-bind:germplasmUUID="GermplasmUtils.getGermplasmUUID(props.row.data.externalReferences)"
+            v-bind:germplasmUUID="GermplasmUtils.getBreedingInsightId(props.row.data.externalReferences)"
             v-bind:germplasmGID="props.row.data.accessionNumber"
         >
         </GermplasmLink>
@@ -56,7 +56,7 @@
         {{ props.row.data.additionalInfo.createdBy.userName }}
       </b-table-column>
       <b-table-column v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-        <router-link v-bind:to="{name: 'germplasm-details', params: {programId: activeProgram.id, germplasmId: GermplasmUtils.getGermplasmUUID(props.row.data.externalReferences)}}">
+        <router-link v-bind:to="{name: 'germplasm-details', params: {programId: activeProgram.id, germplasmId: GermplasmUtils.getBreedingInsightId(props.row.data.externalReferences)}}">
           Show Details
         </router-link>
       </b-table-column>

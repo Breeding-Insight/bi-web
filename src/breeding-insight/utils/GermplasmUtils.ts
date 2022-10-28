@@ -39,8 +39,8 @@ export class GermplasmUtils {
         return "";
     }
 
-    static getGermplasmUUID(references: ExternalReferences): string | undefined {
-        let val = references.find(ref => ref.referenceSource === process.env.VUE_APP_BI_REFERENCE_SOURCE);
+    static getBreedingInsightId(references: ExternalReferences, referenceSourcePath: string = ""): string | undefined {
+        let val = references.find(ref => ref.referenceSource === process.env.VUE_APP_BI_REFERENCE_SOURCE + referenceSourcePath);
         return val ? val.referenceID : "";
     }
 

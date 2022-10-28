@@ -796,6 +796,7 @@ div.b-table.loading-active tbody {
   float: left;
 }
 
+
 tr:nth-child(even) td.db-filled {
   background-color: mix($primary-light, $dark, 92%);
 }
@@ -833,5 +834,17 @@ tr:nth-child(odd) td.db-filled {
     li + li {
       margin-top: 0;
     }
+  }
+}
+
+#germplasm-genotype {
+  .metadata {
+    .abbreviation {
+      margin-right: 5px;
+    }
+  }
+
+  .alt-allele:not(:last-of-type) {
+    margin-right: 5px;
   }
 }

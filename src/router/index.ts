@@ -68,8 +68,10 @@ import GermplasmDetails from "@/views/germplasm/GermplasmDetails.vue";
 import OntologySharing from "@/views/program/OntologySharing.vue";
 import JobManagement from '@/views/program/JobManagement.vue';
 import GermplasmPedigreesView from "@/components/germplasm/GermplasmPedigreesView.vue";
+import GermplasmGenotypeView from "@/components/germplasm/GermplasmGenotypeView.vue";
 import ImportExperiment from "@/views/import/ImportExperiment.vue";
 import ExperimentsAndObservations from "@/views/experiments-and-observations/ExperimentsAndObservations.vue";
+import ImportGeno from "@/views/import/ImportGeno.vue";
 
 Vue.use(VueRouter);
 
@@ -345,6 +347,15 @@ const routes = [
           layout: layouts.userSideBar
         },
         component: GermplasmDetails
+      },
+      {
+        path: 'genotype',
+        name: 'germplasm-genotype',
+        meta: {
+          title: 'Genotype',
+          layout: layouts.userSideBar
+        },
+        component: GermplasmGenotypeView
       }
       ]
   },
@@ -385,6 +396,15 @@ const routes = [
           layout: layouts.userSideBar
         },
         component: ImportExperiment
+      },
+      {
+        path: 'geno',
+        name: 'geno-import',
+        meta: {
+          title: 'Genotypic Data',
+          layout: layouts.userSideBar
+        },
+        component: ImportGeno
       },
       {
         path: 'data-mapping',
