@@ -50,7 +50,7 @@ import {FileType} from "@/breeding-insight/model/FileType";
     ])
   }
 })
-export default class AccessionTable extends Vue {
+export default class GermplasmDownloadButton extends Vue {
 
   @Prop()
   listDbId!: string;
