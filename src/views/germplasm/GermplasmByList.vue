@@ -25,25 +25,36 @@
     <h1 class="title">
       {{ list.listName | toStartCase }}
     </h1>
-<div class="columns is-multiline">
-  <div class="column is-one-fifth is-flex is-justify-content-right">Description:</div>
-  <div class="column is-four-fifths is-flex is-justify-content-left">{{ list.listDescription }}</div>
-  <div class="column is-one-fifth is-flex is-justify-content-right">User:</div>
-  <div class="column is-four-fifths is-flex is-justify-content-left">{{ list.listOwnerName }}</div>
-  <div class="column is-one-fifth is-flex is-justify-content-right">Import Date:</div>
-  <div class="column is-four-fifths is-flex is-justify-content-left">{{ list.dateCreated | toYMD }}</div>
-  <div class="column is-one-fifth is-flex is-justify-content-right">Total Entries:</div>
-  <div class="column is-three-fifths is-flex is-justify-content-left">{{ list.listSize }}</div>
-  <div class="column is-one-fifth has-text-centered buttons">
-    <GermplasmDownloadButton
-        v-bind:modal-title="`Download ${list.listName}`"
-        modal-subtitle="File Format"
-        v-bind:listDbId="list.listDbId"
-    >
-      <button class="button is-primary has-text-weight-bold">
-        <strong>Download</strong>
-      </button>
-    </GermplasmDownloadButton>
+<div class="columns">
+  <div class="column is-8">
+    <div class="columns is-multiline">
+      <div class="column is-3 is-flex is-justify-content-right pr-1 py-1"><b>Description:</b></div>
+      <div class="column is-9 pl-1 py-1">{{ list.listDescription }}</div>
+      <div class="column is-3 is-flex is-justify-content-right pr-1 py-1"><b>User:</b></div>
+      <div class="column is-9 pl-1 py-1">{{ list.listOwnerName }}</div>
+      <div class="column is-3 is-flex is-justify-content-right pr-1 py-1"><b>Import Date:</b></div>
+      <div class="column is-9 pl-1 py-1">{{ list.dateCreated | toYMD }}</div>
+      <div class="column is-3 is-flex is-justify-content-right pr-1 py-1"><b>Total Entries:</b></div>
+      <div class="column is-9 pl-1 py-1">{{ list.listSize }}</div>
+    </div>
+  </div>
+  <div class="column is-2">
+    <div class="columns is-multiline">
+      <div class="column is-2"></div>
+      <div class="column is-2"></div>
+      <div class="column is-2"></div>
+      <div class="column is-2 has-text-centered buttons">
+        <GermplasmDownloadButton
+            v-bind:modal-title="`Download ${list.listName}`"
+            modal-subtitle="File Format"
+            v-bind:listDbId="list.listDbId"
+        >
+          <button class="button is-primary has-text-weight-bold">
+            <strong>Download</strong>
+          </button>
+        </GermplasmDownloadButton>
+      </div>
+    </div>
   </div>
 </div>
     <AccessionTable
