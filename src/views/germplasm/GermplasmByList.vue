@@ -26,24 +26,24 @@
       {{ list.listName | toStartCase }}
     </h1>
 <div class="columns">
-  <div class="column is-8">
+  <div class="column is-10">
     <div class="columns is-multiline">
-      <div class="column is-3 is-flex is-justify-content-right pr-1 py-1"><b>Description:</b></div>
-      <div class="column is-9 pl-1 py-1">{{ list.listDescription }}</div>
-      <div class="column is-3 is-flex is-justify-content-right pr-1 py-1"><b>User:</b></div>
-      <div class="column is-9 pl-1 py-1">{{ list.listOwnerName }}</div>
-      <div class="column is-3 is-flex is-justify-content-right pr-1 py-1"><b>Import Date:</b></div>
-      <div class="column is-9 pl-1 py-1">{{ list.dateCreated | toYMD }}</div>
-      <div class="column is-3 is-flex is-justify-content-right pr-1 py-1"><b>Total Entries:</b></div>
-      <div class="column is-9 pl-1 py-1">{{ list.listSize }}</div>
+      <div class="column germplasm-list-meta-field"><b>Description:</b></div>
+      <div class="column germplasm-list-meta-data">{{ list.listDescription }}</div>
+      <div class="column germplasm-list-meta-field"><b>User:</b></div>
+      <div class="column germplasm-list-meta-data">{{ list.listOwnerName }}</div>
+      <div class="column germplasm-list-meta-field"><b>Import Date:</b></div>
+      <div class="column germplasm-list-meta-data">{{ list.dateCreated | toYMD }}</div>
+      <div class="column germplasm-list-meta-field"><b>Total Entries:</b></div>
+      <div class="column germplasm-list-meta-data">{{ list.listSize }}</div>
     </div>
   </div>
   <div class="column is-2">
     <div class="columns is-multiline">
-      <div class="column is-2"></div>
-      <div class="column is-2"></div>
-      <div class="column is-2"></div>
-      <div class="column is-2 has-text-centered buttons">
+      <div class="column is-full"></div>
+      <div class="column is-full"></div>
+      <div class="column is-full"></div>
+      <div class="column is-is-full has-text-centered buttons">
         <GermplasmDownloadButton
             v-bind:modal-title="`Download ${list.listName}`"
             modal-subtitle="File Format"
