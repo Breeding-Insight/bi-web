@@ -20,7 +20,7 @@
     <ImportTemplate
         v-bind:abort-msg="'No records will be added, and the import in progress will be completely removed.'"
         v-bind:system-import-template-name="experimentImportTemplateName"
-        v-bind:confirm-msg="'Confirm New Experiments & Observations Records'"
+        v-bind:confirm-msg="'Preview Experimental Upload'"
         v-bind:import-type-name="'Experiments & Observations'"
         v-bind:confirm-import-state="confirmImportState"
         v-on="$listeners"
@@ -48,6 +48,7 @@
                                  v-on:confirm="confirm"
                                  class="mb-4">
           <div>
+            <p>Review your experimental data import before committing to the database.</p>
           <div class = "left-confirm-column">
             <p class="is-size-5 mb-2"><strong>Import Summary</strong></p>
             <p>Environments: {{ statistics.Environments.newObjectCount }}</p>
@@ -60,8 +61,9 @@
             <p>Description: {{ rows[0].trial.brAPIObject.trialDescription }}</p>
             <p>Experimental Unit: {{ rows[0].trial.brAPIObject.additionalInfo.defaultObservationLevel }}</p>
             <p>Type: {{ rows[0].trial.brAPIObject.additionalInfo.experimentType }}</p>
-            <p>User: </p>
-            <p>Creation Date: </p>
+            <p>Experimental Design: Externally generated</p>
+            <p v-if="isExisting(rows)">User: {{ rows[0].trial.brAPIObject.additionalInfo.createdBy.userName }}</p>
+            <p v-if="isExisting(rows)">Creation Date: {{ rows[0].trial.brAPIObject.additionalInfo.createdDate | dmy}}</p>
           </div>
           </div>
         </ConfirmImportMessageBox>
@@ -75,7 +77,8 @@
             v-on:show-error-notification="$emit('show-error-notification', $event)"
         >
           <!-- Germplasm Name -->
-          <b-table-column field="germplasmName" label="Germplasm Name" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+          <b-table-column field="germplasmName" label="Germplasm Name" v-slot="props" :th-attrs="(column) => ({scope:'col'})"
+          :td-attrs="(row, column) => ({class: 'db-filled'})">
             {{ getField(props.row.data.germplasm, 'germplasmName') }}
           </b-table-column>
           <!-- Germplasm GID -->
@@ -136,21 +139,26 @@
 </template>
 
 <script lang="ts">
-import { Component } from 'vue-property-decorator'
+import {Component} from 'vue-property-decorator'
 import ProgramsBase from "@/components/program/ProgramsBase.vue";
 import ImportInfoTemplateMessageBox from "@/components/file-import/ImportInfoTemplateMessageBox.vue";
 import ConfirmImportMessageBox from "@/components/trait/ConfirmImportMessageBox.vue";
 import ImportTemplate from "@/views/import/ImportTemplate.vue";
 import {DataFormEventBusHandler} from "@/components/forms/DataFormEventBusHandler";
 import {ImportFormatter} from "@/breeding-insight/model/report/ImportFormatter";
-import { AlertTriangleIcon } from 'vue-feather-icons';
-import {GermplasmList} from "@/breeding-insight/model/GermplasmList";
+import {AlertTriangleIcon} from 'vue-feather-icons';
 import BasicInputField from "@/components/forms/BasicInputField.vue";
 import ExpandableTable from "@/components/tables/expandableTable/ExpandableTable.vue";
+import {ImportObjectState} from "@/breeding-insight/model/import/ImportObjectState";
 
 @Component({
   components: {
     ImportInfoTemplateMessageBox, ConfirmImportMessageBox, ImportTemplate, AlertTriangleIcon, BasicInputField, ExpandableTable
+  },
+  filters: {
+    dmy: function(dateTime: String): String {
+      return dateTime.split(' ')[0];
+    }
   },
   data: () => ({ImportFormatter})
 })
@@ -214,6 +222,10 @@ export default class ImportExperiment extends ProgramsBase {
   }
 
   importFinished(){}
+
+  isExisting(rows: any[]) {
+    return rows.length && rows[0].trial.state === ImportObjectState.EXISTING;
+  }
 
 }
 </script>
