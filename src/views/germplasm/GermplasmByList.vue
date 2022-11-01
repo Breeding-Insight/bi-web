@@ -91,7 +91,7 @@ import GermplasmDownloadButton from '@/components/germplasm/GermplasmDownloadBut
     toYMD: (date) => date.split('T')[0]
   }
 })
-export default class Germplasm extends GermplasmBase {
+export default class GermplasmByList extends GermplasmBase {
 
   private activeProgram?: Program;
   private list?: any = null;

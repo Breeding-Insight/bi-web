@@ -118,7 +118,7 @@ export default class AccessionTable extends Vue {
 
   @Prop()
   germplasmFetch!: () => Promise<BiResponse>;
-  @Prop()
+  @Prop({default: false})
   entryNumberVisible?: Boolean;
 
   private activeProgram?: Program;

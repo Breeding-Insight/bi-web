@@ -62,10 +62,7 @@ export default class GermplasmDownloadButton extends Vue {
   private activeProgram?: Program;
   private modalActive: boolean = false;
   private fileExtension: string = "";
-  //private listDbId: string;
   private fileOptions = Object.values(FileType);
-  //private modalTitle?: string;
-  private modalSubTitle?: string;
 
   setFileExtension(value: string){
     this.fileExtension = value;
