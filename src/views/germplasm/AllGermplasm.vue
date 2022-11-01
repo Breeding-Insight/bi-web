@@ -7,29 +7,25 @@
 </template>
 
 <script lang="ts">
-import {Component, Vue, Watch} from "vue-property-decorator";
+import {Component, Vue} from "vue-property-decorator";
 import {validationMixin} from "vuelidate";
-import {mapGetters, mapMutations} from "vuex";
+import {mapGetters} from "vuex";
 import {Trait} from "@/breeding-insight/model/Trait";
 import {StringFormatters} from "@/breeding-insight/utils/StringFormatters";
 import {TraitStringFormatters} from "@/breeding-insight/utils/TraitStringFormatters";
 import ReportTable from "@/components/report/ReportTable.vue";
 import {Program} from "@/breeding-insight/model/Program";
 import {BrAPIService, BrAPIType} from "@/breeding-insight/service/BrAPIService";
-import {Germplasm} from "@/breeding-insight/brapi/model/germplasm";
-import {Pagination, BiResponse} from "@/breeding-insight/model/BiResponse";
+import {BiResponse} from "@/breeding-insight/model/BiResponse";
 import ExpandableTable from "@/components/tables/expandableTable/ExpandableTable.vue";
-import {BackendPaginationController} from "@/breeding-insight/model/view_models/BackendPaginationController";
 import {Pedigree} from "@/breeding-insight/model/import/germplasm/Pedigree";
 import GermplasmLink from '@/components/germplasm/GermplasmLink.vue'
 import {GermplasmUtils} from '@/breeding-insight/utils/GermplasmUtils';
-import {CallStack} from "@/breeding-insight/utils/CallStack";
 import {
   GermplasmSort,
   GermplasmSortField,
   Sort
 } from "@/breeding-insight/model/Sort";
-import {UPDATE_GERMPLASM_SORT} from "@/store/sorting/mutation-types";
 import GermplasmTable from "@/components/germplasm/GermplasmTable.vue";
 
 @Component({
