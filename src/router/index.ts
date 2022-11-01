@@ -31,7 +31,7 @@ import ObservationsList from '@/views/observations/ObservationsList.vue';
 import AdminProgramManagement from '@/views/admin/AdminProgramManagement.vue'
 import AdminUserManagement from '@/views/admin/AdminUserManagement.vue'
 import BrAPIImporter from '@/views/import/BrAPIImporter.vue'
-import GermplasmTable from '@/views/germplasm/GermplasmTable.vue';
+import AllGermplasm from '@/views/germplasm/AllGermplasm.vue';
 import store from '@/store/index.ts';
 import {
   LOGIN,
@@ -281,7 +281,7 @@ const routes = [
           title: 'All Germplasm',
           layout: layouts.userSideBar
         },
-        component: GermplasmTable
+        component: AllGermplasm
       },
       {
         path: 'germplasm-lists',

@@ -114,7 +114,7 @@ import {UPDATE_GERMPLASM_SORT} from "@/store/sorting/mutation-types";
   },
   data: () => ({Trait, StringFormatters, TraitStringFormatters, Pedigree, GermplasmUtils, Sort})
 })
-export default class AccessionTable extends Vue {
+export default class GermplasmTable extends Vue {
 
   @Prop()
   germplasmFetch!: () => Promise<BiResponse>;

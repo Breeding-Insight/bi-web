@@ -57,18 +57,18 @@
     </div>
   </div>
 </div>
-    <AccessionTable
+    <GermplasmTable
         v-bind:germplasmFetch="germplasmFetch"
         v-bind:entryNumberVisible="true"
     >
-    </AccessionTable>
+    </GermplasmTable>
   </div>
 </template>
 
 <script lang="ts">
 import { Component } from 'vue-property-decorator'
 import GermplasmBase from "@/components/germplasm/GermplasmBase.vue";
-import AccessionTable from '@/components/germplasm/AccessionTable.vue';
+import GermplasmTable from '@/components/germplasm/GermplasmTable.vue';
 import { GermplasmService } from '@/breeding-insight/service/GermplasmService';
 import { GermplasmSort } from '@/breeding-insight/model/Sort';
 import { BiResponse } from '@/breeding-insight/model/BiResponse';
@@ -80,7 +80,7 @@ import {StringFormatters} from "@/breeding-insight/utils/StringFormatters";
 import GermplasmDownloadButton from '@/components/germplasm/GermplasmDownloadButton';
 
 @Component({
-  components: { AccessionTable, GermplasmDownloadButton },
+  components: { GermplasmTable, GermplasmDownloadButton },
   computed: {
     ...mapGetters([
       'activeProgram'

@@ -1,8 +1,8 @@
 <template>
   <section id="germplasmTable">
-    <AccessionTable>
+    <GermplasmTable>
       v-bind:germplasmFetch="germplasmFetch"
-    </AccessionTable>
+    </GermplasmTable>
   </section>
 </template>
 
@@ -30,11 +30,11 @@ import {
   Sort
 } from "@/breeding-insight/model/Sort";
 import {UPDATE_GERMPLASM_SORT} from "@/store/sorting/mutation-types";
-import AccessionTable from "@/components/germplasm/AccessionTable.vue";
+import GermplasmTable from "@/components/germplasm/GermplasmTable.vue";
 
 @Component({
   mixins: [validationMixin],
-  components: {AccessionTable, GermplasmLink, ReportTable, ExpandableTable},
+  components: {GermplasmTable, GermplasmLink, ReportTable, ExpandableTable},
   computed: {
     ...mapGetters([
       'activeProgram'
@@ -42,7 +42,7 @@ import AccessionTable from "@/components/germplasm/AccessionTable.vue";
   },
   data: () => ({Trait, StringFormatters, TraitStringFormatters, Pedigree, GermplasmUtils, Sort})
 })
-export default class GermplasmTable extends Vue {
+export default class AllGermplasm extends Vue {
 
   private activeProgram?: Program;
   private germplasmFetch: (programId: string, sort: GermplasmSort, pageSize: number, page: number) => ((filters: any) => Promise<BiResponse>) =
