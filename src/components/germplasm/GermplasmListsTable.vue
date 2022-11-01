@@ -17,35 +17,6 @@
 
 <template>
   <section id="germplasmListTableLabel">
-    <SelectModal
-        v-bind:active.sync="modalActive"
-        v-bind:title="germplasmListDownloadTitle"
-        v-bind:subtitle="germplasmListDownloadSubtitle"
-        v-bind:options="fileOptions"
-        v-on:deactivate="modalActive = false"
-        @select-change="setFileExtension"
-    >
-      <template #buttons>
-      <div class="columns">
-        <div class="column is-whole has-text-centered buttons">
-          <button
-              class="button is-primary has-text-weight-bold"
-              v-on:click="downloadList"
-          >
-            <strong>Download</strong>
-          </button>
-          <button
-              class="button"
-              v-on:click="cancelDownload"
-          >
-            Cancel
-          </button>
-        </div>
-      </div>
-      </template>
-    </SelectModal>
-
-
     <ExpandableTable
       v-bind:records.sync="germplasmLists"
       v-bind:loading="this.germplasmListsLoading"
@@ -73,10 +44,15 @@
         <router-link v-bind:to="{name: 'germplasm-by-list', params: {programId: activeProgram.id, listId: props.row.data.listDbId}}">
           Details
         </router-link>
-        |
-        <a href="#" v-on:click="activateExtensionSelect(props.row.data.listDbId)">
-          Download
-        </a>
+        <GermplasmDownloadButton
+          v-bind:modal-title="`Download ${props.row.data.listName}`"
+          modal-subtitle="File Format"
+          v-bind:listDbId="props.row.data.listDbId"
+        >
+          <a href="#">
+            Download
+          </a>
+        </GermplasmDownloadButton>
       </b-table-column>
 
       <template v-slot:emptyMessage>
@@ -108,13 +84,14 @@ import ExpandableTable from "@/components/tables/expandableTable/ExpandableTable
 import moment from "moment";
 import SelectModal from "@/components/modals/SelectModal.vue";
 import {FileType} from "@/breeding-insight/model/FileType";
+import GermplasmDownloadButton from '@/components/germplasm/GermplasmDownloadButton';
 
 @Component({
   mixins: [validationMixin],
   components: {
     ExpandableTable,
     BaseTraitForm, BasicInputField, EmptyTableMessage, TableColumn,
-    SelectModal, DownloadIcon },
+    SelectModal, DownloadIcon, GermplasmDownloadButton },
   computed: {
     ...mapGetters([
       'activeProgram'
@@ -132,8 +109,6 @@ export default class GermplasmListsTable extends Vue {
   private germplasmListDownloadTitle = 'Download Germplasm List';
   private germplasmListDownloadSubtitle = 'File Format';
   private modalActive: boolean = false;
-  private fileExtension: string; //todo might change to Filetype
-  private selectedListDbId: string;
   private fileOptions = Object.values(FileType);
 
   mounted() {
@@ -164,29 +139,5 @@ export default class GermplasmListsTable extends Vue {
   updatePageSize(pageSize: string) {
     this.paginationController.updatePageSize(Number(pageSize).valueOf());
   }
-
-  downloadList() {
-    this.modalActive = false;
-    if (this.activeProgram) {
-      window.open(process.env.VUE_APP_BI_API_ROOT + '/v1/programs/' + this.activeProgram.id + '/germplasm/lists/' + this.selectedListDbId + '/export?fileExtension=' + this.fileExtension, '_blank');
-    }
-  }
-
-  activateExtensionSelect(listDbId: string){
-    this.modalActive = true;
-    this.selectedListDbId = listDbId;
-  }
-
-  cancelDownload(){
-    this.modalActive = false;
-    this.selectedList = "";
-    this.fileExtension = "";
-  }
-
-  setFileExtension(value){
-    this.fileExtension = value;
-  }
-
 }
-
 </script>
