@@ -19,12 +19,6 @@
   <div class="file-select">
     <div>
       <article>
-
-        <MultipleErrors
-          v-bind:formatted-errors="allErrors"
-          v-bind:is-validation-error="isValidationError"
-        />
-
         <!-- Select file -->
         <nav class="level">
           <div class="level-left">
@@ -51,6 +45,10 @@
             </div>
           </div>
         </nav>
+        <MultipleErrors
+            v-bind:formatted-errors="allErrors"
+            v-bind:is-validation-error="isValidationError"
+        />
       </article>
     </div>
   </div>
@@ -64,6 +62,7 @@
   import {AxiosResponse} from "axios";
   import {ImportService} from "@/breeding-insight/service/ImportService";
   import MultipleErrors from "@/components/file-import/MultipleErrors.vue";
+  import {ImportError} from "@/breeding-insight/model/errors/ImportError";
 
   @Component({
     components: {
@@ -102,7 +101,7 @@
       return this.errors instanceof ValidationError;
     }
 
-    get allErrors(): string[] {
+    get allErrors(): ImportError[] {
       if (this.errors != null) {
         return ImportService.formatErrors(this.errors);
       }
