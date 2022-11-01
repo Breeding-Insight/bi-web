@@ -218,7 +218,7 @@ img {
   min-height:100vh;
   flex-direction: column;
   &.has-navbar-fixed-top-touch {
-    @extend body.has-navbar-fixed-top-touch;
+    @extend body, .has-navbar-fixed-top-touch;
   }
 }
 
@@ -776,4 +776,11 @@ div.b-table.loading-active tbody {
 
 .right-confirm-column {
   float: left;
+}
+
+tr:nth-child(even) td.db-filled {
+  background-color: mix($primary-light, $dark, 92%);
+}
+tr:nth-child(odd) td.db-filled {
+  background-color: $primary-light;
 }

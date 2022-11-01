@@ -345,8 +345,10 @@ export default class ImportTemplate extends ProgramsBase {
         this.importService.send(ImportEvent.IMPORT_ERROR);
       } else if (e.response && e.response.status == 422 && e.response.statusText) {
         this.$log.error(e);
-
         this.$emit('show-error-notification', e.response.statusText);
+      } else if (e.response.status == 400 && e.response && e.response.data && e.response.data.message) {
+        this.$log.error(e);
+        this.$emit('show-error-notification', e.response.data.message);
       } else {
         this.$log.error(e);
         this.$emit('show-error-notification', 'An unknown error has occurred when uploading your import.');
