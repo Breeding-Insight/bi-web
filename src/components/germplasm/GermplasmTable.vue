@@ -9,7 +9,8 @@
         v-on:paginate-toggle-all="paginationController.toggleShowAll(pagination.totalCount.valueOf())"
         v-on:paginate-page-size="paginationController.updatePageSize($event)"
         backend-sorting
-        v-bind:default-sort="[buefyFieldMap[germplasmSort.field], Sort.orderAsBuefy(germplasmSort.order)]"
+        v-bind:default-sort="entryNumberVisible ? [fieldMap['importEntryNumber'], 'ASC'] :
+        [fieldMap['accessionNumber'], 'ASC']"
         v-on:sort="setSort"
         v-on:search="filters = $event"
         v-bind:search-debounce="400"
