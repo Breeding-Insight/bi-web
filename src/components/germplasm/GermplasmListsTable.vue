@@ -49,9 +49,7 @@
           modal-subtitle="File Format"
           v-bind:listDbId="props.row.data.listDbId"
         >
-          <a href="#">
-            Download
-          </a>
+          Download
         </GermplasmDownloadButton>
       </b-table-column>
 

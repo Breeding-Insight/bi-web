@@ -94,7 +94,7 @@ import GermplasmDownloadButton from '@/components/germplasm/GermplasmDownloadBut
 export default class GermplasmByList extends GermplasmBase {
 
   private activeProgram?: Program;
-  private list?: any = null;
+  private list: any = null;
   private germplasmFetch: (programId: string, sort: GermplasmSort, pageSize: number, page: number) => ((filters: any) => Promise<BiResponse>) =
       () => (() => Promise.resolve(new BiResponse(null)));
 
