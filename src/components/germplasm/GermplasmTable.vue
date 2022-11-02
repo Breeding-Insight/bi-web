@@ -118,7 +118,7 @@ import {UPDATE_GERMPLASM_SORT} from "@/store/sorting/mutation-types";
 export default class GermplasmTable extends Vue {
 
   @Prop()
-  germplasmFetch!: () => Promise<BiResponse>;
+  germplasmFetch!: (programId: string, sort: GermplasmSort, pageSize: number, page: number) => () => Promise<BiResponse>;
   @Prop({default: false})
   entryNumberVisible?: Boolean;
 
@@ -148,8 +148,15 @@ export default class GermplasmTable extends Vue {
       .reduce((obj, key) => Object.assign({}, obj, { [this.fieldMap[key]]: key }), {});
 
   mounted() {
-    this.germplasmCallStack = new CallStack((filters) => BrAPIService.get<GermplasmSortField>(BrAPIType.GERMPLASM, this.activeProgram!.id!, this.germplasmSort,
-        { pageSize: this.paginationController.pageSize, page: this.paginationController.currentPage - 1 }, filters));
+    this.germplasmCallStack = new CallStack(this.germplasmFetch(
+        this.activeProgram!.id!,
+        this.germplasmSort,
+        this.paginationController.pageSize,
+        this.paginationController.currentPage - 1
+    ));
+
+    // this.germplasmCallStack = new CallStack((filters) => BrAPIService.get<GermplasmSortField>(BrAPIType.GERMPLASM, this.activeProgram!.id!, this.germplasmSort,
+    //     { pageSize: this.paginationController.pageSize, page: this.paginationController.currentPage - 1 }, filters));
     this.paginationController.pageSize = 20;
   }
 

@@ -59,7 +59,7 @@
 </div>
     <GermplasmTable
         v-bind:germplasmFetch="germplasmFetch"
-        v-bind:entryNumberVisible="true"
+        entryNumberVisible="true"
     >
     </GermplasmTable>
   </div>
@@ -95,32 +95,29 @@ export default class GermplasmByList extends GermplasmBase {
 
   private activeProgram?: Program;
   private list: any = null;
+
+  // Set the method used to populate the germplasm table
   private germplasmFetch: (programId: string, sort: GermplasmSort, pageSize: number, page: number) => ((filters: any) => Promise<BiResponse>) =
-      () => (() => Promise.resolve(new BiResponse(null)));
+      function (programId: string, sort: GermplasmSort, pageSize: number, page: number) {
+        let id = this.$route.params.listId;
+        return function (filters: any) {
+          return GermplasmService.getAllInList(
+              programId,
+              sort,
+              {pageSize, page},
+              {listDbId: `${id}`, ...filters})
+        };
+      };
 
   mounted() {
-    // Set the method used to populate the germplasm table
-    this.germplasmFetch = function (programId: string, sort: GermplasmSort, pageSize: number, page: number) {
-      let id = this.$route.params.listId;
-      return function (filters: any) {
-        return GermplasmService.getAllInList(
-            programId,
-            sort,
-            {pageSize, page},
-            {listDbId: `${id}`, ...filters})
-      };
-    };
-
     this.getList();
   }
 
   async getList() {
-    const paginationQuery = new PaginationQuery(0, 20, true);
+    const paginationQuery = new PaginationQuery(0, 200, true);
     const {result: {data: lists}} = await GermplasmDAO.getAllLists(this.activeProgram!.id!, paginationQuery);
     const matchingLists: any[] = lists.filter(list => list.listDbId === this.$route.params.listId);
     this.list = matchingLists[0];
   }
-
 }
-
 </script>

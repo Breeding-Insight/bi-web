@@ -1,7 +1,8 @@
 <template>
   <section id="germplasmTable">
-    <GermplasmTable>
+    <GermplasmTable
       v-bind:germplasmFetch="germplasmFetch"
+      >
     </GermplasmTable>
   </section>
 </template>
@@ -41,22 +42,18 @@ import GermplasmTable from "@/components/germplasm/GermplasmTable.vue";
 export default class AllGermplasm extends Vue {
 
   private activeProgram?: Program;
-  private germplasmFetch: (programId: string, sort: GermplasmSort, pageSize: number, page: number) => ((filters: any) => Promise<BiResponse>) =
-      () => (() => Promise.resolve(new BiResponse(null)));
 
-  mounted() {
-    // Set the method used to populate the germplasm table
-    this.germplasmFetch = function (programId: string, sort: GermplasmSort, pageSize: number, page: number) {
-      let id = this.$route.params.listId;
-      return function (filters: any) {
-        return BrAPIService.get<GermplasmSortField>(
-            BrAPIType.GERMPLASM,
-            programId,
-            sort,
-            { pageSize, page },
-            filters)
+  // Set the method used to populate the germplasm table
+  private germplasmFetch: (programId: string, sort: GermplasmSort, pageSize: number, page: number) => ((filters: any) => Promise<BiResponse>) =
+      function (programId: string, sort: GermplasmSort, pageSize: number, page: number) {
+        return function (filters: any) {
+          return BrAPIService.get<GermplasmSortField>(
+              BrAPIType.GERMPLASM,
+              programId,
+              sort,
+              { pageSize, page },
+              filters)
+        };
       };
-    };
-  }
 }
 </script>

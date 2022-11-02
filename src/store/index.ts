@@ -21,7 +21,7 @@ import { RootState } from './types';
 import { mutations } from './mutations';
 import {actions} from './actions';
 import {sorting} from '@/store/sorting/index';
-import {filtering} from '@/store/filtering/index';
+import {filtering} from '@/store/filtering/';
 import {programManagement} from '@/store/program-management/index';
 
 Vue.use(Vuex);
