@@ -14,7 +14,7 @@
         backend-sorting
         v-bind:default-sort="[buefyFieldMap[germplasmSort.field], Sort.orderAsBuefy(germplasmSort.order)]"
         v-on:sort="setSort"
-        v-on:search="filters = $event"
+        v-on:search="initSearch"
         v-bind:search-debounce="400"
     >
       <b-table-column field="accessionNumber" label="GID" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
@@ -176,6 +176,10 @@ export default class GermplasmTable extends Vue {
       this.getGermplasm();
     }
   }
-
+  initSearch(filter: any){
+    this.filters = filter;
+    // When filtering the list, set the page to page-1
+    this.paginationController.updatePage(1);
+  }
 }
 </script>
