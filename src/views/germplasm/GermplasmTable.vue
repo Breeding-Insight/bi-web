@@ -178,7 +178,7 @@ export default class GermplasmTable extends Vue {
   }
   initSearch(filter: any){
     this.filters = filter;
-    // When filtering the list, set the page to page-1
+    // When filtering the list, set the page to the first page.
     this.paginationController.updatePage(1);
   }
 }
