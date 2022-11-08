@@ -28,6 +28,7 @@ import {
   Sort
 } from "@/breeding-insight/model/Sort";
 import GermplasmTable from "@/components/germplasm/GermplasmTable.vue";
+import {BackendPaginationController} from "@/breeding-insight/model/view_models/BackendPaginationController";
 
 @Component({
   mixins: [validationMixin],
@@ -44,14 +45,14 @@ export default class AllGermplasm extends Vue {
   private activeProgram?: Program;
 
   // Set the method used to populate the germplasm table
-  private germplasmFetch: (programId: string, sort: GermplasmSort, pageSize: number, page: number) => ((filters: any) => Promise<BiResponse>) =
-      function (programId: string, sort: GermplasmSort, pageSize: number, page: number) {
+  private germplasmFetch: (programId: string, sort: GermplasmSort, paginationController: BackendPaginationController) => ((filters: any) => Promise<BiResponse>) =
+      function (programId: string, sort: GermplasmSort, paginationController: BackendPaginationController) {
         return function (filters: any) {
           return BrAPIService.get<GermplasmSortField>(
               BrAPIType.GERMPLASM,
               programId,
               sort,
-              { pageSize, page },
+              { pageSize: paginationController.pageSize, page: paginationController.currentPage - 1 },
               filters)
         };
       };
