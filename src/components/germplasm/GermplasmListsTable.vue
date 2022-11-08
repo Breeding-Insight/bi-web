@@ -82,7 +82,7 @@ import ExpandableTable from "@/components/tables/expandableTable/ExpandableTable
 import moment from "moment";
 import SelectModal from "@/components/modals/SelectModal.vue";
 import {FileType} from "@/breeding-insight/model/FileType";
-import GermplasmDownloadButton from '@/components/germplasm/GermplasmDownloadButton';
+import GermplasmDownloadButton from '@/components/germplasm/GermplasmDownloadButton.vue';
 
 @Component({
   mixins: [validationMixin],

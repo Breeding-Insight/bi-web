@@ -23,19 +23,19 @@
       <a>&lt; Germplasm Lists</a>
     </router-link>
     <h1 class="title">
-      {{ list.listName | toStartCase }}
+      {{ list ? list.listName : "" | toStartCase }}
     </h1>
 <div class="columns">
   <div class="column is-10">
     <div class="columns is-multiline">
       <div class="column germplasm-list-meta-field"><b>Description:</b></div>
-      <div class="column germplasm-list-meta-data">{{ list.listDescription }}</div>
+      <div class="column germplasm-list-meta-data">{{ list ? list.listDescription : ""}}</div>
       <div class="column germplasm-list-meta-field"><b>User:</b></div>
-      <div class="column germplasm-list-meta-data">{{ list.listOwnerName }}</div>
+      <div class="column germplasm-list-meta-data">{{ list ? list.listOwnerName : ""}}</div>
       <div class="column germplasm-list-meta-field"><b>Import Date:</b></div>
-      <div class="column germplasm-list-meta-data">{{ list.dateCreated | toYMD }}</div>
+      <div class="column germplasm-list-meta-data">{{ list ? list.dateCreated : "" | toYMD }}</div>
       <div class="column germplasm-list-meta-field"><b>Total Entries:</b></div>
-      <div class="column germplasm-list-meta-data">{{ list.listSize }}</div>
+      <div class="column germplasm-list-meta-data">{{ list ? list.listSize : ""}}</div>
     </div>
   </div>
   <div class="column is-2">
@@ -45,9 +45,9 @@
       <div class="column is-full"></div>
       <div class="column is-full has-text-centered buttons">
         <GermplasmDownloadButton
-            v-bind:modal-title="`Download ${list.listName}`"
+            v-bind:modal-title="`Download ${list ? list.listName : ''}`"
             modal-subtitle="File Format"
-            v-bind:listDbId="list.listDbId"
+            v-bind:listDbId="list ? list.listDbId : '' "
         >
           <button class="button is-primary has-text-weight-bold">
             <strong>Download</strong>
@@ -77,7 +77,7 @@ import { PaginationQuery } from '@/breeding-insight/model/PaginationQuery';
 import { mapGetters } from 'vuex';
 import { Program } from '@/breeding-insight/model/Program';
 import {StringFormatters} from "@/breeding-insight/utils/StringFormatters";
-import GermplasmDownloadButton from '@/components/germplasm/GermplasmDownloadButton';
+import GermplasmDownloadButton from '@/components/germplasm/GermplasmDownloadButton.vue';
 
 @Component({
   components: { GermplasmTable, GermplasmDownloadButton },
@@ -101,6 +101,7 @@ export default class GermplasmByList extends GermplasmBase {
       function (programId: string, sort: GermplasmSort, pageSize: number, page: number) {
         let id = this.$route.params.listId;
         return function (filters: any) {
+          console.log("germplasmByList", page, pageSize);
           return GermplasmService.getAllInList(
               programId,
               sort,

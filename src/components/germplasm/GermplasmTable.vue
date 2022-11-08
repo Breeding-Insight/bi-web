@@ -118,7 +118,7 @@ import {UPDATE_GERMPLASM_SORT} from "@/store/sorting/mutation-types";
 export default class GermplasmTable extends Vue {
 
   @Prop()
-  germplasmFetch!: (programId: string, sort: GermplasmSort, pageSize: number, page: number) => () => Promise<BiResponse>;
+  germplasmFetch!: (programId: string, sort: GermplasmSort, pageSize: number, page: number) => (filters: any) => Promise<BiResponse>;
   @Prop({default: false})
   entryNumberVisible?: Boolean;
 
@@ -129,7 +129,7 @@ export default class GermplasmTable extends Vue {
   private germplasm: Germplasm[] = [];
   private filters: any = {};
 
-  private germplasmCallStack: CallStack;
+  private germplasmCallStack?: CallStack;
 
   private germplasmSort!: GermplasmSort;
   private updateSort!: (sort: GermplasmSort) => void;
@@ -155,8 +155,6 @@ export default class GermplasmTable extends Vue {
         this.paginationController.currentPage - 1
     ));
 
-    // this.germplasmCallStack = new CallStack((filters) => BrAPIService.get<GermplasmSortField>(BrAPIType.GERMPLASM, this.activeProgram!.id!, this.germplasmSort,
-    //     { pageSize: this.paginationController.pageSize, page: this.paginationController.currentPage - 1 }, filters));
     this.paginationController.pageSize = 20;
   }
 
@@ -170,7 +168,8 @@ export default class GermplasmTable extends Vue {
       const {call, callId} = this.germplasmCallStack.makeCall(this.filters);
       const response = await call;
       if (!this.germplasmCallStack.isCurrentCall(callId)) return;
-
+console.log("pagination controller",this.paginationController);
+console.log("call response",response.metadata.pagination);
       this.pagination = new Pagination(response.metadata.pagination);
       // Account for brapi 0 indexing of paging
       this.pagination.currentPage = this.pagination.currentPage.valueOf() + 1;
