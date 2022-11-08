@@ -48,7 +48,7 @@ export class GermplasmService {
         if (pagination.pageSize) {
             params['pageSize'] = pagination.pageSize;
         }
-console.log("getAllInList",pagination);
+
         try {
             let listId: String = '';
 
