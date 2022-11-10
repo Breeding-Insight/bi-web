@@ -232,9 +232,6 @@ export default class ImportExperiment extends ProgramsBase {
   importFinished(){}
 
   previewDataLoaded(data: any[]) {
-    console.log('PREVIEW DATA LOADED');
-    console.log(data);
-
     if (data.length > 0) {
       const firstRow = data[0];
       if (firstRow.observations && firstRow.observations.length > 0) {
@@ -244,8 +241,6 @@ export default class ImportExperiment extends ProgramsBase {
         });
       }
     }
-
-    console.log(this.phenotypeColumns);
   }
 
   isExisting(rows: any[]) {
