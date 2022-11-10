@@ -493,6 +493,7 @@ export default class ImportTemplate extends ProgramsBase {
             this.previewTotalRows = previewResponse.preview.rows.length;
             this.previewData = previewResponse.preview.rows as any[];
             this.newObjectCounts = previewResponse.preview.statistics;
+            this.$emit('preview-data-loaded', this.previewData);
             this.importService.send(ImportEvent.IMPORT_SUCCESS);
             // TODO: Temp pagination
             this.pagination.totalCount = previewResponse.preview.rows.length;
