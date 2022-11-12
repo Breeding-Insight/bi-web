@@ -17,39 +17,65 @@
 
 <template>
   <div id="import-geno">
-    <article class="message is-warning" v-if="importState.saveStarted">
-      <div class="message-body">
-        Your import is being processed. You can view on its progress by going to the <router-link v-bind:to="{name: 'job-management', params:{programId: activeProgram.id}}">Jobs</router-link> page.
-      </div>
-    </article>
-    <NewDataForm
-        v-bind:row-validations="uploadValidations"
-        v-bind:new-record.sync="upload"
-        v-bind:data-form-state="importState"
-        v-bind:save-button-label="'Import'"
-        v-bind:show-cancel-button="false"
-        v-on:submit="save"
-        v-on:cancel="cancel"
-        v-on:show-error-notification="$emit('show-error-notification', $event)"
-    >
-      <template v-slot="validations">
-        <div class="columns is-vcentered">
-          <div class="column is-one-third">
-            <BasicSelectField
-                v-model="upload.experimentId"
-                v-bind:validations="validations.experimentId"
-                v-bind:options="experimentOptions"
-                v-bind:field-name="'Experiment'"
-            />
-          </div>
-          <div class="column file-selector">
-            <FileSelector v-model="upload.file"
-                          v-bind:fileTypes="['.vcf']">
-            </FileSelector>
+    <div class="import-template">
+      <article class="message is-info">
+        <div class="message-body">
+          <div class="columns is-vcentered">
+            <div class="column">
+              <div class="has-text-dark">
+                <strong>Before You Import...</strong>
+                <br/>
+                &lt;something to go here&gt;
+              </div>
+            </div>
           </div>
         </div>
-      </template>
-    </NewDataForm>
+      </article>
+    </div>
+    <article class="message is-warning" v-if="importState.saveStarted">
+      <div class="message-body">
+        Your import is being processed. You can view its progress by going to the <router-link v-bind:to="{name: 'job-management', params:{programId: activeProgram.id}}">Jobs</router-link> page.
+      </div>
+    </article>
+    <div class="card import-form">
+      <div class="card-content">
+        <NewDataForm
+            v-bind:row-validations="uploadValidations"
+            v-bind:new-record.sync="upload"
+            v-bind:data-form-state="importState"
+            v-bind:save-button-label="'Import'"
+            v-bind:show-cancel-button="false"
+            v-on:submit="save"
+            v-on:cancel="cancel"
+            v-on:show-error-notification="$emit('show-error-notification', $event)"
+        >
+          <template v-slot="validations">
+            <div class="columns is-vcentered">
+              <div class="column">
+                <BasicSelectField
+                    v-model="upload.experimentId"
+                    v-bind:validations="validations.experimentId"
+                    v-bind:options="experimentOptions"
+                    v-bind:field-name="'Experiment'"
+                />
+              </div>
+            </div>
+            <div class="columns">
+              <div class="column file-selector">
+                <div v-if="upload.file">
+                  <div id="fileselectmessagebox-import-filename">
+                    {{upload.file.name}}
+                  </div>
+                </div>
+                <FileSelector v-model="upload.file"
+                              v-bind:fileTypes="['.vcf']">
+                </FileSelector>
+              </div>
+            </div>
+          </template>
+        </NewDataForm>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -71,6 +97,8 @@ import { required } from 'vuelidate/lib/validators';
 import { ImportResponse } from '@/breeding-insight/model/import/ImportResponse';
 import { GenoService } from '@/breeding-insight/service/GenoService';
 import { DEACTIVATE_ALL_NOTIFICATIONS } from '@/store/mutation-types';
+import { ImportMappingConfig } from '@/breeding-insight/model/import/ImportMapping';
+import { ImportService } from '@/breeding-insight/service/ImportService';
 
 @Component({
   components: {
@@ -87,6 +115,7 @@ export default class ImportExperiment extends ProgramsBase {
   private experimentOptions: Array<ExperimentOption> = [];
   private importState: DataFormEventBusHandler = new DataFormEventBusHandler();
   private currentImport?: ImportResponse = new ImportResponse({});
+  private systemImportTemplateId?: string;
 
   upload: Upload = new Upload({});
 
@@ -97,6 +126,7 @@ export default class ImportExperiment extends ProgramsBase {
 
   mounted() {
     this.loadExperiments();
+    this.getSystemImportTemplateMapping();
   }
 
   async loadExperiments () {
@@ -116,13 +146,14 @@ export default class ImportExperiment extends ProgramsBase {
   async save() {
     try {
       this.$store.commit( DEACTIVATE_ALL_NOTIFICATIONS );
-      const response: ImportResponse = await GenoService.uploadData(this.activeProgram!.id!, this.upload.experimentId!, this.upload.file!);
+      this.currentImport = await GenoService.uploadData(this.activeProgram!.id!, this.upload.experimentId!, this.upload.file!);
+      const response: ImportResponse = await this.getDataUpload();
       if (response.progress!.statuscode == 500) {
         this.$emit('show-error-notification', 'An unknown error has occurred when processing your import.');
-      } else if (response.progress!.statuscode != 200) {
+      } else if (response.progress!.statuscode !== 200) {
         this.$emit('show-error-notification', `Error: ${response.progress!.message}`);
       } else {
-        this.$emit('show-success-notification', `Genotypic data has been successfully imported.`);
+        this.$emit('show-success-notification', `Genotypic data has uploaded and is being processed.  Check the 'Jobs' page for processing status`);
       }
     } catch (e) {
       if (e.response && e.response.statusText && e.response.status != 500) {
@@ -137,6 +168,42 @@ export default class ImportExperiment extends ProgramsBase {
 
   cancel() {
     this.upload = new Upload({});
+  }
+
+  async getSystemImportTemplateMapping() {
+    let importMappings: ImportMappingConfig[];
+    try {
+      importMappings = await ImportService.getSystemMappings('GenotypicDataImport');
+    } catch (e) {
+      this.$log.error(e);
+      throw 'Unable to load system import mappings';
+    }
+
+    if (importMappings.length === 1) {
+      this.systemImportTemplateId = importMappings[0].id!;
+    } else {
+      throw 'Expected system import mapping named GenotypicDataImport';
+    }
+  }
+
+  async getDataUpload(): Promise<ImportResponse> {
+    try {
+      const previewResponse: ImportResponse = await ImportService.getDataUpload(this.activeProgram!.id!, this.systemImportTemplateId!, this.currentImport!.importId!, false);
+      this.currentImport = previewResponse;
+
+      if (!previewResponse.progress) {
+        this.$log.error('Progress object was not returned with progress response.')
+        throw 'Progress object not returned';
+      } else if (previewResponse.progress.statuscode === 202) {
+        // Wait a second, and call GET call again
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        return this.getDataUpload();
+      }
+
+      return previewResponse;
+    } catch (e) {
+      throw e;
+    }
   }
 
 }

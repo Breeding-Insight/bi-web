@@ -20,22 +20,27 @@
     <div v-if="loading">
       loading genotype data
     </div>
-    <div class="columns" v-if="!loading">
+    <div v-if="!loading && callsetOptions.length === 0">
+      No genotype data exists for this germplasm
+    </div>
+    <div class="columns" v-if="!loading && callsetOptions.length > 0">
       <div class="column">
         <label for="callsets">Callsets: </label>
-        <select class="select" name="callsets" v-model="currentCallSetId" v-on:change="switchCallset($event.target.value)">
-          <option v-for="callset in callsetOptions"
-                  v-bind:key="callset.callSetDbId"
-                  :value="callset.callSetDbId">
-            {{callset.callSetName}}
-          </option>
-        </select>
+        <div class="select">
+          <select name="callsets" v-model="currentCallSetId" v-on:change="switchCallset($event.target.value)">
+            <option v-for="callset in callsetOptions"
+                    v-bind:key="callset.callSetDbId"
+                    :value="callset.callSetDbId">
+              {{callset.callSetName}}
+            </option>
+          </select>
+        </div>
       </div>
     </div>
     <div class="columns metadata" v-if="!loading">
       <div class="column">
         <div v-for="metadata in currentMetadataColumns" :key="metadata.fieldAbbreviation">
-          <span class="abbreviation">{{ metadata.fieldAbbreviation }}:</span><span class="name">{{ metadata.fieldName }}</span>
+          <span class="abbreviation has-text-weight-bold">{{ metadata.fieldAbbreviation }}:</span><span class="name">{{ metadata.fieldName }}</span>
         </div>
       </div>
     </div>
@@ -46,6 +51,7 @@
         v-bind:default-sort="['variantName', 'asc']"
         v-bind:debounce-search="400"
         v-bind:details="true"
+        v-if="!loading && callsetOptions.length > 0"
     >
       <b-table-column field="variantName" label="Variant" sortable searchable :customSearch="filterByVariant" :customSort="sortVariantName" :th-attrs="(column) => ({scope:'col'})">
         <template v-slot="props">
@@ -63,8 +69,17 @@
           </div>
         </template>
       </b-table-column>
-      <b-table-column field="variantPosition"  label="Position" v-slot="props" :customSearch="filterVariantPosition" :customSort="sortVariantPosition" :th-attrs="(column) => ({scope:'col'})">
+      <b-table-column field="variantPosition"  label="Position" searchable :customSearch="(row, position) => filterVariantPosition(row, position)" :customSort="sortVariantPosition" :th-attrs="(column) => ({scope:'col'})">
+        <template v-slot="props">
           {{ getVariant(props.row.data.variantDbId).start }}
+        </template>
+        <template v-slot:searchable="props">
+          <MultiSelectDropdown
+              v-model="props.filters[props.column.field]"
+              v-bind:options="positionOptions"
+              v-bind:multiple="true"
+            />
+        </template>
       </b-table-column>
       <b-table-column label="Ref" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
         <span class="tag is-success">
@@ -124,10 +139,10 @@ import { CallSet } from '@/breeding-insight/brapi/model/geno/callSet';
 import ExpandableTable from '@/components/tables/expandableTable/ExpandableTable.vue';
 import { Variant } from '@/breeding-insight/brapi/model/geno/variant';
 import { TableRow } from '@/breeding-insight/model/view_models/TableRow';
-import { BreedingMethod } from '@/breeding-insight/model/BreedingMethod';
+import MultiSelectDropdown from '@/components/forms/MultiSelectDropdown.vue';
 
 @Component({
-  components: { ExpandableTable },
+  components: { ExpandableTable, MultiSelectDropdown },
   computed: {
     ...mapGetters([
       'activeProgram'
@@ -141,11 +156,13 @@ export default class GermplasmGenotypeView extends GermplasmBase {
   private loading: boolean = true;
   private callsetOptions?: Array<CallSet> = [];
   private variantOptions?: Array<string> = [];
+  private positionOptions?: Array<number> = [];
   private currentCallSetId?: string = "";
   private currentCallSet?: Array<Call> = []; //for displaying the calls
   private currentMetadataColumns?: Array<any> = []; //for displaying the dynamic columns
   private pagination: Pagination = new Pagination();
   private paginationController: PaginationController = new PaginationController();
+  private positionOptionSelectOpen: boolean = false;
 
   mounted () {
     this.fetchGenotypeData();
@@ -169,18 +186,14 @@ export default class GermplasmGenotypeView extends GermplasmBase {
 
     const metadataCols = new Map<string, any>();
     const variantOps = new Set<string>();
+    const positionOps = new Set<number>();
     let largestPloidy = 0;
 
     callSet!.forEach(call => {
-      if(call.additionalInfo) {
-        const metadataStr = call!.additionalInfo.genotypeMetadata;
-        if(metadataStr) {
-          const metadata = JSON.parse(metadataStr);
-          call.genotypeMetadata = metadata;
-          metadata.forEach((val: any) => {
+      if(call.genotypeMetadata) {
+          call.genotypeMetadata.forEach((val: any) => {
             metadataCols.set(val.fieldAbbreviation, val);
           });
-        }
       }
 
       if(call.genotypeValue) {
@@ -192,11 +205,13 @@ export default class GermplasmGenotypeView extends GermplasmBase {
       this.ploidy = largestPloidy;
 
       variantOps.add(this.getVariant(call.variantDbId!).referenceName!);
+      positionOps.add(this.getVariant(call.variantDbId!).start!);
     });
 
     this.currentMetadataColumns = Array.from(metadataCols.values());
 
     this.variantOptions = Array.from(variantOps).sort((a, b) => a.localeCompare(b, undefined, {numeric: true}));
+    this.positionOptions = Array.from(positionOps).sort((a, b) => this.compareNumber(a, b));
 
     this.currentCallSet = callSet;
 
@@ -234,6 +249,8 @@ export default class GermplasmGenotypeView extends GermplasmBase {
         console.log("callset options: " + JSON.stringify(this.callsetOptions));
 
         this.switchCallset(callsetId!, false);
+      } else {
+        this.loading = false;
       }
     } catch (e) {
       this.$log.error("An error occurred", e);
@@ -249,8 +266,17 @@ export default class GermplasmGenotypeView extends GermplasmBase {
     return this.genotypeData!.variants![row.data.variantDbId!].referenceName === variantName;
   }
 
-  filterVariantPosition(row: TableRow<Call>, position: string) {
-    return this.genotypeData!.variants![row.data.variantDbId!].start === parseInt(position);
+  filterVariantPosition(row: TableRow<Call>, position: Array<string>) {
+    if(position && position.length > 0) {
+      if(position.includes("Clear")) {
+        position = [];
+        return true;
+      }
+
+      return position.includes(this.genotypeData!.variants![row.data.variantDbId!].start);
+    } else {
+      return true;
+    }
   }
 
   alleleType(genotypeStr: string) {
@@ -277,7 +303,7 @@ export default class GermplasmGenotypeView extends GermplasmBase {
   }
 
   getGenotypes(call: Call) {
-    if(call.genotypeValue) {
+    if(call.genotypeValue && call.genotypeValue.trim().length > 0 && call.genotypeValue.trim() !== '.' ) {
       const vals = call.genotypeValue.split("/");
 
       if(vals.length == 1) {
@@ -322,6 +348,5 @@ export default class GermplasmGenotypeView extends GermplasmBase {
         return bVarName.localeCompare(aVarName, undefined, {numeric: true});
       }
   }
-
 }
 </script>
