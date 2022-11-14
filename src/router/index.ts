@@ -31,7 +31,7 @@ import ObservationsList from '@/views/observations/ObservationsList.vue';
 import AdminProgramManagement from '@/views/admin/AdminProgramManagement.vue'
 import AdminUserManagement from '@/views/admin/AdminUserManagement.vue'
 import BrAPIImporter from '@/views/import/BrAPIImporter.vue'
-import GermplasmTable from '@/views/germplasm/GermplasmTable.vue';
+import AllGermplasm from '@/views/germplasm/AllGermplasm.vue';
 import store from '@/store/index.ts';
 import {
   LOGIN,
@@ -61,6 +61,7 @@ import OntologyActiveTable from "@/components/ontology/OntologyActiveTable.vue";
 import OntologyArchivedTable from "@/components/ontology/OntologyArchivedTable.vue";
 import PageNotFound from "@/views/PageNotFound.vue";
 import Germplasm from "@/views/germplasm/Germplasm.vue";
+import GermplasmByList from "@/views/germplasm/GermplasmByList.vue";
 import GermplasmLists from "@/views/germplasm/GermplasmLists.vue";
 import GermplasmDetails from "@/views/germplasm/GermplasmDetails.vue";
 import ProgramConfiguration from "@/views/program/ProgramConfiguration.vue";
@@ -253,6 +254,16 @@ const routes = [
     ]
   },
   {
+    path: '/programs/:programId/germplasm/lists/:listId',
+    name: 'germplasm-by-list',
+    meta: {
+      title: 'View Germplasm List',
+      layout: layouts.userSideBar
+    },
+    component: GermplasmByList,
+    beforeEnter: processProgramNavigation
+  },
+  {
     path: '/programs/:programId/germplasm',
     name: 'germplasm',
     meta: {
@@ -270,7 +281,7 @@ const routes = [
           title: 'All Germplasm',
           layout: layouts.userSideBar
         },
-        component: GermplasmTable
+        component: AllGermplasm
       },
       {
         path: 'germplasm-lists',
