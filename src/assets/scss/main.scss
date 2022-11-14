@@ -235,6 +235,13 @@ img {
   }
 }
 
+.dropdown.multi-select {
+  .dropdown-content {
+    max-height: 20vh;
+    overflow: scroll;
+  }
+}
+
 .sidebarlayout {
   display: flex;
   flex-direction: column;
@@ -847,4 +854,21 @@ tr:nth-child(odd) td.db-filled {
   .alt-allele:not(:last-of-type) {
     margin-right: 5px;
   }
+}
+
+#import-geno {
+  .message.is-warning {
+    margin-top: 1em;
+  }
+  .card.import-form {
+    margin-top:1em;
+    .new-form {
+      background-color: inherit;
+      border-top: none;
+      border-bottom: none;
+      padding: 0;
+      margin-bottom: inherit;
+    }
+  }
+
 }

@@ -69,17 +69,18 @@
           </div>
         </template>
       </b-table-column>
-      <b-table-column field="variantPosition"  label="Position" searchable :customSearch="(row, position) => filterVariantPosition(row, position)" :customSort="sortVariantPosition" :th-attrs="(column) => ({scope:'col'})">
+      <b-table-column field="variantPosition"  label="Position" sortable :customSearch="(row, position) => filterVariantPosition(row, position)" :customSort="sortVariantPosition" :th-attrs="(column) => ({scope:'col'})">
         <template v-slot="props">
           {{ getVariant(props.row.data.variantDbId).start }}
         </template>
-        <template v-slot:searchable="props">
-          <MultiSelectDropdown
-              v-model="props.filters[props.column.field]"
-              v-bind:options="positionOptions"
-              v-bind:multiple="true"
-            />
-        </template>
+<!--        TODO plan for how to filter by position -->
+<!--        <template v-slot:searchable="props">-->
+<!--          <MultiSelectDropdown-->
+<!--              v-model="props.filters[props.column.field]"-->
+<!--              v-bind:options="positionOptions"-->
+<!--              v-bind:multiple="true"-->
+<!--            />-->
+<!--        </template>-->
       </b-table-column>
       <b-table-column label="Ref" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
         <span class="tag is-success">
@@ -87,7 +88,7 @@
         </span>
       </b-table-column>
       <b-table-column label="Alt(s)" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-        <span class="tag alt-allele is-warning" v-for="alt in getVariant(props.row.data.variantDbId).alternate_bases" :key="alt+'-'+props.index">
+        <span class="tag alt-allele is-warning" v-for="alt in getVariant(props.row.data.variantDbId).alternateBases" :key="alt+'-'+props.index">
             {{ alt }}
         </span>
       </b-table-column>
