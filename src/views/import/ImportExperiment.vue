@@ -78,6 +78,7 @@
             v-bind:loading="false"
             v-bind:pagination="previewData.pagination"
             v-on:show-error-notification="$emit('show-error-notification', $event)"
+            scrollable
         >
           <!-- Germplasm Name -->
           <b-table-column field="germplasmName" label="Germplasm Name" v-slot="props" :th-attrs="(column) => ({scope:'col'})"
@@ -130,7 +131,8 @@
           </b-table-column>
 
           <b-table-column v-for="variable in phenotypeColumns" :key="variable" :label="variable" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-            {{ props.row.data.observations.filter(observation => observation.brAPIObject.observationVariableName === variable)[0].brAPIObject.value }}
+            <p v-if="variable.startsWith('TS: ')">{{ props.row.data.observations.filter(observation => observation.brAPIObject.observationVariableName === variable.replace("TS: ",""))[0].brAPIObject.observationTimeStamp}}</p>
+            <p v-else>{{ props.row.data.observations.filter(observation => observation.brAPIObject.observationVariableName === variable)[0].brAPIObject.value }}</p>
           </b-table-column>
 
           <template v-slot:emptyMessage>
@@ -231,16 +233,17 @@ export default class ImportExperiment extends ProgramsBase {
 
   importFinished(){}
 
-  previewDataLoaded(data: any[]) {
+  //todo may streamline
+  previewDataLoaded(data: any[], dynamicColumns: String[]) {
     if (data.length > 0) {
       const firstRow = data[0];
       if (firstRow.observations && firstRow.observations.length > 0) {
-        this.phenotypeColumns = firstRow.observations.map((observation: any) =>
-        {
+        this.phenotypeColumns = firstRow.observations.map((observation: any) => {
           return observation.brAPIObject.observationVariableName;
         });
       }
     }
+    this.phenotypeColumns = dynamicColumns;
   }
 
   isExisting(rows: any[]) {

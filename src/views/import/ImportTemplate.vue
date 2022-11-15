@@ -192,6 +192,7 @@ export default class ImportTemplate extends ProgramsBase {
   private previewData: any[] = [];
   private previewTotalRows: number = 0;
   private newObjectCounts: any = [];
+  private dynamicColumns: string[] | undefined = [];
 
   private file : File | null = null;
   private import_errors: ValidationError | String | null = null;
@@ -493,7 +494,8 @@ export default class ImportTemplate extends ProgramsBase {
             this.previewTotalRows = previewResponse.preview.rows.length;
             this.previewData = previewResponse.preview.rows as any[];
             this.newObjectCounts = previewResponse.preview.statistics;
-            this.$emit('preview-data-loaded', this.previewData);
+            this.dynamicColumns = previewResponse.preview.dynamicColumnNames;
+            this.$emit('preview-data-loaded', this.previewData, this.dynamicColumns);
             this.importService.send(ImportEvent.IMPORT_SUCCESS);
             // TODO: Temp pagination
             this.pagination.totalCount = previewResponse.preview.rows.length;
