@@ -131,7 +131,7 @@
           </b-table-column>
 
           <b-table-column v-for="variable in phenotypeColumns" :key="variable" :label="variable" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-            <p v-if="variable.startsWith('TS: ')">{{ props.row.data.observations.filter(observation => observation.brAPIObject.observationVariableName === variable.replace("TS: ",""))[0].brAPIObject.observationTimeStamp}}</p>
+            <p v-if="variable.startsWith('TS:')">{{ props.row.data.observations.filter(observation => observation.brAPIObject.observationVariableName === variable.replace(/TS:\s*/,""))[0].brAPIObject.observationTimeStamp}}</p>
             <p v-else>{{ props.row.data.observations.filter(observation => observation.brAPIObject.observationVariableName === variable)[0].brAPIObject.value }}</p>
           </b-table-column>
 
