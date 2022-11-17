@@ -147,6 +147,7 @@ export class ProgramSort {
 
 // germplasm
 export enum GermplasmSortField {
+  ImportEntryNumber = "importEntryNumber",
   AccessionNumber = "accessionNumber",
   DefaultDisplayName = "defaultDisplayName",
   BreedingMethod = "breedingMethod",

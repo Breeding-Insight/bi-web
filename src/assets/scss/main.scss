@@ -781,6 +781,21 @@ div.b-table.loading-active tbody {
 tr:nth-child(even) td.db-filled {
   background-color: mix($primary-light, $dark, 92%);
 }
+
 tr:nth-child(odd) td.db-filled {
   background-color: $primary-light;
+}
+
+.germplasm-list-meta-field{
+  @extend .is-1;
+  @extend .is-flex;
+  @extend .is-justify-content-right;
+  @extend .pr-1;
+  @extend .py-1;
+}
+
+.germplasm-list-meta-data{
+  @extend .is-11;
+  @extend .pl-1;
+  @extend .py-1;
 }
