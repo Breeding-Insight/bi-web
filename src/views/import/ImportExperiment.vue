@@ -233,16 +233,7 @@ export default class ImportExperiment extends ProgramsBase {
 
   importFinished(){}
 
-  //todo may streamline
-  previewDataLoaded(data: any[], dynamicColumns: String[]) {
-    if (data.length > 0) {
-      const firstRow = data[0];
-      if (firstRow.observations && firstRow.observations.length > 0) {
-        this.phenotypeColumns = firstRow.observations.map((observation: any) => {
-          return observation.brAPIObject.observationVariableName;
-        });
-      }
-    }
+  previewDataLoaded(dynamicColumns: String[]) {
     this.phenotypeColumns = dynamicColumns;
   }
 

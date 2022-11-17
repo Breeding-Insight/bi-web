@@ -495,7 +495,7 @@ export default class ImportTemplate extends ProgramsBase {
             this.previewData = previewResponse.preview.rows as any[];
             this.newObjectCounts = previewResponse.preview.statistics;
             this.dynamicColumns = previewResponse.preview.dynamicColumnNames;
-            this.$emit('preview-data-loaded', this.previewData, this.dynamicColumns);
+            this.$emit('preview-data-loaded', this.dynamicColumns);
             this.importService.send(ImportEvent.IMPORT_SUCCESS);
             // TODO: Temp pagination
             this.pagination.totalCount = previewResponse.preview.rows.length;
