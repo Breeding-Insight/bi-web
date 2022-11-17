@@ -1,8 +1,5 @@
 <template>
   <section id="germplasmTable">
-    <h1 class="title">
-      All Germplasm
-    </h1>
     <ExpandableTable
         v-bind:records.sync="germplasm"
         v-bind:loading="this.germplasmLoading"
@@ -12,11 +9,15 @@
         v-on:paginate-toggle-all="paginationController.toggleShowAll(pagination.totalCount.valueOf())"
         v-on:paginate-page-size="paginationController.updatePageSize($event)"
         backend-sorting
-        v-bind:default-sort="[buefyFieldMap[germplasmSort.field], Sort.orderAsBuefy(germplasmSort.order)]"
+        v-bind:default-sort="entryNumberVisible ? [fieldMap['importEntryNumber'], 'ASC'] :
+        [fieldMap['accessionNumber'], 'ASC']"
         v-on:sort="setSort"
         v-on:search="filters = $event"
         v-bind:search-debounce="400"
     >
+      <b-table-column v-if="entryNumberVisible" field="importEntryNumber" label="Entry Number" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
+        {{ props.row.data.additionalInfo.importEntryNumber }}
+      </b-table-column>
       <b-table-column field="accessionNumber" label="GID" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
         <GermplasmLink
             v-bind:germplasmUUID="GermplasmUtils.getGermplasmUUID(props.row.data.externalReferences)"
@@ -71,7 +72,7 @@
 </template>
 
 <script lang="ts">
-import {Component, Vue, Watch} from "vue-property-decorator";
+import {Component, Vue, Watch, Prop} from "vue-property-decorator";
 import {validationMixin} from "vuelidate";
 import {mapGetters, mapMutations} from "vuex";
 import {Trait} from "@/breeding-insight/model/Trait";
@@ -81,7 +82,7 @@ import ReportTable from "@/components/report/ReportTable.vue";
 import {Program} from "@/breeding-insight/model/Program";
 import {BrAPIService, BrAPIType} from "@/breeding-insight/service/BrAPIService";
 import {Germplasm} from "@/breeding-insight/brapi/model/germplasm";
-import {Pagination} from "@/breeding-insight/model/BiResponse";
+import {BiResponse, Pagination} from "@/breeding-insight/model/BiResponse";
 import ExpandableTable from "@/components/tables/expandableTable/ExpandableTable.vue";
 import {BackendPaginationController} from "@/breeding-insight/model/view_models/BackendPaginationController";
 import {Pedigree} from "@/breeding-insight/model/import/germplasm/Pedigree";
@@ -116,6 +117,11 @@ import {UPDATE_GERMPLASM_SORT} from "@/store/sorting/mutation-types";
 })
 export default class GermplasmTable extends Vue {
 
+  @Prop()
+  germplasmFetch!: (programId: string, sort: GermplasmSort, paginationController: BackendPaginationController) => (filters: any) => Promise<BiResponse>;
+  @Prop({default: false})
+  entryNumberVisible?: Boolean;
+
   private activeProgram?: Program;
   private pagination?: Pagination = new Pagination();
   private paginationController: BackendPaginationController = new BackendPaginationController();
@@ -123,11 +129,12 @@ export default class GermplasmTable extends Vue {
   private germplasm: Germplasm[] = [];
   private filters: any = {};
 
-  private germplasmCallStack: CallStack;
+  private germplasmCallStack?: CallStack;
 
   private germplasmSort!: GermplasmSort;
   private updateSort!: (sort: GermplasmSort) => void;
   private fieldMap: any = {
+    'importEntryNumber': GermplasmSortField.ImportEntryNumber,
     'accessionNumber': GermplasmSortField.AccessionNumber,
     'defaultDisplayName' : GermplasmSortField.DefaultDisplayName,
     'breedingMethod': GermplasmSortField.BreedingMethod,
@@ -141,8 +148,12 @@ export default class GermplasmTable extends Vue {
       .reduce((obj, key) => Object.assign({}, obj, { [this.fieldMap[key]]: key }), {});
 
   mounted() {
-    this.germplasmCallStack = new CallStack((filters) => BrAPIService.get<GermplasmSortField>(BrAPIType.GERMPLASM, this.activeProgram!.id!, this.germplasmSort,
-        { pageSize: this.paginationController.pageSize, page: this.paginationController.currentPage - 1 }, filters));
+    this.germplasmCallStack = new CallStack(this.germplasmFetch(
+        this.activeProgram!.id!,
+        this.germplasmSort,
+        this.paginationController
+    ));
+
     this.paginationController.pageSize = 20;
   }
 
@@ -156,7 +167,6 @@ export default class GermplasmTable extends Vue {
       const {call, callId} = this.germplasmCallStack.makeCall(this.filters);
       const response = await call;
       if (!this.germplasmCallStack.isCurrentCall(callId)) return;
-
       this.pagination = new Pagination(response.metadata.pagination);
       // Account for brapi 0 indexing of paging
       this.pagination.currentPage = this.pagination.currentPage.valueOf() + 1;
@@ -167,7 +177,6 @@ export default class GermplasmTable extends Vue {
       this.$emit('show-error-notification', 'Error loading germplasm');
       this.germplasmLoading = false;
     }
-
   }
 
   setSort(field: string, order: string) {

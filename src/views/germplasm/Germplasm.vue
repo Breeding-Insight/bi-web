@@ -29,14 +29,14 @@
               tag="li"
               active-class="is-active"
           >
-            <a>All Germplasm</a>
+            <a>View</a>
           </router-link>
           <router-link
               v-bind:to="{name: 'germplasm-lists', params: {programId: activeProgram.id}}"
               tag="li"
               active-class="is-active"
           >
-            <a>Germplasm Lists</a>
+            <a>Lists</a>
           </router-link>
           <button
               v-if="$ability.can('create', 'Import')"
