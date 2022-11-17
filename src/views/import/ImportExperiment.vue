@@ -25,6 +25,7 @@
         v-bind:confirm-import-state="confirmImportState"
         v-on="$listeners"
         v-on:finished="importFinished"
+        v-on:preview-data-loaded="previewDataLoaded"
     >
 
       <template v-slot:importInfoTemplateMessageBox>
@@ -70,6 +71,8 @@
       </template>
 
       <template v-slot:importPreviewTable="previewData">
+
+
         <ExpandableTable
             v-bind:records="previewData.import"
             v-bind:loading="false"
@@ -126,6 +129,10 @@
             {{ getTreatment(props.row.data.observationUnit) }}
           </b-table-column>
 
+          <b-table-column v-for="variable in phenotypeColumns" :key="variable" :label="variable" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+            {{ props.row.data.observations.filter(observation => observation.brAPIObject.observationVariableName === variable)[0].brAPIObject.value }}
+          </b-table-column>
+
           <template v-slot:emptyMessage>
             <p class="has-text-weight-bold">
               No experiment data found in this import file.
@@ -166,7 +173,8 @@ export default class ImportExperiment extends ProgramsBase {
 
   private experimentImportTemplateName = 'ExperimentsTemplateMap';
   private confirmImportState: DataFormEventBusHandler = new DataFormEventBusHandler();
-  
+  private phenotypeColumns?: Array<String> = [];
+
   getNumNewExperimentRecords(statistics: any): number | undefined {
     return undefined;
   }
@@ -222,6 +230,18 @@ export default class ImportExperiment extends ProgramsBase {
   }
 
   importFinished(){}
+
+  previewDataLoaded(data: any[]) {
+    if (data.length > 0) {
+      const firstRow = data[0];
+      if (firstRow.observations && firstRow.observations.length > 0) {
+        this.phenotypeColumns = firstRow.observations.map((observation: any) =>
+        {
+          return observation.brAPIObject.observationVariableName;
+        });
+      }
+    }
+  }
 
   isExisting(rows: any[]) {
     return rows.length && rows[0].trial.state === ImportObjectState.EXISTING;
