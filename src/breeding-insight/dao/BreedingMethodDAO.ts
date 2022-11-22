@@ -21,10 +21,12 @@ import { BreedingMethod } from '@/breeding-insight/model/BreedingMethod';
 
 export class BreedingMethodDAO {
 
-  static async getProgramBreedingMethods(programId: string) {
+  static async getProgramBreedingMethods(programId: string, inUse?: boolean) {
+    const params = inUse !== undefined ? {'inUse': inUse} : undefined;
     const {data} = await api.call({
       url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/breeding-methods`,
-      method: 'get'
+      method: 'get',
+      params: params
     }) as Response;
 
     return new BiResponse(data);

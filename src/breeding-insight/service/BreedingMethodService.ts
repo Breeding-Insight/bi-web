@@ -29,13 +29,13 @@ export class BreedingMethodService {
   private static errorUpdatingMethod: string = 'Error updating program breeding method';
   private static unableToUpdateMethod: string = 'Unable to update program breeding method';
 
-  static async getProgramBreedingMethods(programId: string): Promise<BreedingMethod[]> {
+  static async getProgramBreedingMethods(programId: string, inUse?: boolean): Promise<BreedingMethod[]> {
     if (!programId) {
       throw 'Program ID not provided';
     }
 
     try {
-      const response: BiResponse = await BreedingMethodDAO.getProgramBreedingMethods(programId);
+      const response: BiResponse = await BreedingMethodDAO.getProgramBreedingMethods(programId, inUse);
       const data: any = response.result.data;
       if(data) {
         return data.map((response: BreedingMethod) => new BreedingMethod(response));

@@ -105,7 +105,7 @@
         v-on:submit="updateMethod($event)"
         v-on:show-error-notification="$emit('show-error-notification', $event)"
     >
-      <b-table-column field="data.programId" label="Scope" searchable :customSearch="filterByScope" :th-attrs="(column) => ({scope:'col'})">
+      <b-table-column field="scope" label="Scope" searchable :customSearch="filterByScope" :th-attrs="(column) => ({scope:'col'})">
         <template v-slot="props">
           <span class="tag" :class="progressTagType(props.row.data.programId)">
             {{ formatOwner(props.row.data.programId) }}
@@ -113,13 +113,13 @@
         </template>
         <template v-slot:searchable="props">
           <div class="select">
-          <select
-              v-model="props.filters[props.column.field]"
-            >
-            <option value=""></option>
-            <option value="SYSTEM">System</option>
-            <option value="PROGRAM">Program</option>
-          </select>
+            <select
+                v-model="props.filters[props.column.field]"
+              >
+              <option value=""></option>
+              <option value="SYSTEM">System</option>
+              <option value="PROGRAM">Program</option>
+            </select>
           </div>
         </template>
       </b-table-column>
@@ -132,11 +132,35 @@
       <b-table-column field="data.description" label="Description" sortable searchable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
         {{ props.row.data.description}}
       </b-table-column>
-      <b-table-column field="data.category" label="Category" sortable searchable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-        {{ props.row.data.category}}
+      <b-table-column field="data.category" label="Category" sortable searchable :th-attrs="(column) => ({scope:'col'})">
+        <template v-slot="props">
+          {{ props.row.data.category}}
+        </template>
+        <template v-slot:searchable="props">
+          <div class="select">
+            <select
+                v-model="props.filters[props.column.field]"
+            >
+              <option value=""></option>
+              <option v-for="cat in categories" :key="cat" :value="cat">{{ cat }}</option>
+            </select>
+          </div>
+        </template>
       </b-table-column>
-      <b-table-column field="data.geneticDiversity" label="Genetic Diversity" sortable searchable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-        {{ props.row.data.geneticDiversity}}
+      <b-table-column field="data.geneticDiversity" label="Genetic Diversity" sortable searchable :th-attrs="(column) => ({scope:'col'})">
+        <template v-slot="props">
+          {{ props.row.data.geneticDiversity}}
+        </template>
+        <template v-slot:searchable="props">
+          <div class="select">
+            <select
+                v-model="props.filters[props.column.field]"
+            >
+              <option value=""></option>
+              <option v-for="div in diversities" :key="div" :value="div">{{ div }}</option>
+            </select>
+          </div>
+        </template>
       </b-table-column>
 
       <template v-slot:edit="{editData, validations}">
@@ -209,6 +233,7 @@
           checkable
           :checkbox-position="'left'"
           :checkbox-type="'is-primary'"
+          :is-row-checkable="row => !isMethodInUse(row.data)"
       >
         <b-table-column field="data.name" label="Name" sortable searchable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
           {{ props.row.data.name}}
@@ -219,11 +244,35 @@
         <b-table-column field="data.description" label="Description" sortable searchable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
           {{ props.row.data.description}}
         </b-table-column>
-        <b-table-column field="data.category" label="Category" sortable searchable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-          {{ props.row.data.category}}
+        <b-table-column field="data.category" label="Category" sortable searchable :th-attrs="(column) => ({scope:'col'})">
+          <template v-slot="props">
+            {{ props.row.data.category}}
+          </template>
+          <template v-slot:searchable="props">
+            <div class="select">
+              <select
+                  v-model="props.filters[props.column.field]"
+              >
+                <option value=""></option>
+                <option v-for="cat in categories" :key="cat" :value="cat">{{ cat }}</option>
+              </select>
+            </div>
+          </template>
         </b-table-column>
-        <b-table-column field="data.geneticDiversity" label="Genetic Diversity" sortable searchable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-          {{ props.row.data.geneticDiversity}}
+        <b-table-column field="data.geneticDiversity" label="Genetic Diversity" sortable searchable :th-attrs="(column) => ({scope:'col'})">
+          <template v-slot="props">
+            {{ props.row.data.geneticDiversity}}
+          </template>
+          <template v-slot:searchable="props">
+            <div class="select">
+              <select
+                  v-model="props.filters[props.column.field]"
+              >
+                <option value=""></option>
+                <option v-for="div in diversities" :key="div" :value="div">{{ div }}</option>
+              </select>
+            </div>
+          </template>
         </b-table-column>
 
         <template v-slot:emptyMessage>
@@ -273,6 +322,7 @@ export default class BreedingMethods extends ProgramsBase {
   private activeProgram?: Program;
   private programBreedingMethods: BreedingMethod[] = [];
   private systemBreedingMethods: BreedingMethod[] = [];
+  private inUseBreedingMethods?: Array<string> = [];
   private pagination: Pagination = new Pagination();
   private paginationController: PaginationController = new PaginationController();
   private systemPagination: Pagination = new Pagination();
@@ -315,7 +365,11 @@ export default class BreedingMethods extends ProgramsBase {
       this.systemPagination.pageSize = this.systemBreedingMethods.length;
       this.systemPagination.currentPage = 1;
       this.systemPagination.totalPages = this.systemPagination.totalCount.valueOf() / this.systemPagination.pageSize.valueOf();
+
+      const inUseMethods: BreedingMethod[] = await BreedingMethodService.getProgramBreedingMethods(this.activeProgram!.id!, true);
+      this.inUseBreedingMethods = inUseMethods.map((value: BreedingMethod) => value.id);
     } catch(e) {
+      console.log(e);
       this.$emit('show-error-notification', 'Error while trying to fetch breeding methods');
     } finally {
       this.loading = false;
@@ -402,7 +456,14 @@ export default class BreedingMethods extends ProgramsBase {
   }
 
   isRowEditable(row: TableRow<BreedingMethod>) {
-    return row.data.programId !== undefined;
+    return row.data.programId !== undefined && !this.isMethodInUse(row.data);
+  }
+
+  isMethodInUse(method: BreedingMethod) {
+    if(this.inUseBreedingMethods) {
+      return this.inUseBreedingMethods.includes(method.id!);
+    }
+    return false;
   }
 
   filterByScope(row: TableRow<BreedingMethod>, input: string) {
