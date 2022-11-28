@@ -20,6 +20,8 @@ import {getters} from '@/store/sorting/getters';
 import {mutations} from '@/store/sorting/mutations';
 import {RootState} from '@/store/types';
 import {
+    ExperimentSort,
+    ExperimentSortField,
     GermplasmSort,
     GermplasmSortField,
     LocationSort,
@@ -28,7 +30,9 @@ import {
     OntologySortField,
     ProgramSort,
     ProgramSortField,
-    SortOrder, SystemUserSort, SystemUserSortField,
+    SortOrder,
+    SystemUserSort,
+    SystemUserSortField,
     UserSort,
     UserSortField
 } from "@/breeding-insight/model/Sort";
@@ -58,7 +62,11 @@ state = {
     programSort: new ProgramSort(ProgramSortField.Name, SortOrder.Ascending),
 
     // germplasm table
-    germplasmSort: new GermplasmSort(GermplasmSortField.AccessionNumber, SortOrder.Ascending)
+    germplasmSort: new GermplasmSort(GermplasmSortField.AccessionNumber, SortOrder.Ascending),
+
+    //experiment and observation table
+    experimentSort: new ExperimentSort(ExperimentSortField.Name, SortOrder.Ascending)
+
 };
 
 const namespaced: boolean = true
