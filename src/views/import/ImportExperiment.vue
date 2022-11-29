@@ -129,10 +129,9 @@
           <b-table-column field="expTreatmentFactorName" label="Treatment Factors" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
             {{ getTreatment(props.row.data.observationUnit) }}
           </b-table-column>
-
+          <!-- Dynamic Phenotype and Timestamp Columns -->
           <b-table-column v-for="variable in phenotypeColumns" :key="variable" :label="variable" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-            <p v-if="variable.startsWith('TS:')">{{ props.row.data.observations.filter(observation => observation.brAPIObject.observationVariableName === variable.replace(/TS:\s*/,""))[0].brAPIObject.observationTimeStamp}}</p>
-            <p v-else>{{ props.row.data.observations.filter(observation => observation.brAPIObject.observationVariableName === variable)[0].brAPIObject.value }}</p>
+            <p> {{ retrieveDynamicColVal(props.row.data.observations, variable) }}</p>
           </b-table-column>
 
           <template v-slot:emptyMessage>
@@ -241,5 +240,14 @@ export default class ImportExperiment extends ProgramsBase {
     return rows.length && rows[0].trial.state === ImportObjectState.EXISTING;
   }
 
+  retrieveDynamicColVal(importReturnObject: any, column: string){
+    if (column.startsWith('TS:')) {
+      //Is timestamp
+      return importReturnObject.filter((observation: { brAPIObject: { observationVariableName: string; }; }) => observation.brAPIObject.observationVariableName === column.replace(/TS:\s*/,""))[0].brAPIObject.observationTimeStamp;
+    } else {
+      //Is phenotype observation
+      return importReturnObject.filter((observation: { brAPIObject: { observationVariableName: string; }; }) => observation.brAPIObject.observationVariableName === column)[0].brAPIObject.value
+    }
+  }
 }
 </script>
