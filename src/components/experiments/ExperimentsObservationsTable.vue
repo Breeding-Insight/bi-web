@@ -37,7 +37,7 @@
       <b-table-column label="Title" field="name" cell-class="fixed-width-wrapped" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
           {{ props.row.data.trialName }}
       </b-table-column>
-      <b-table-column label="Status" field="active" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
+      <b-table-column label="Status" field="active" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" >
           {{ getStatus(props.row.data.active) }}
       </b-table-column>
       <b-table-column label="Date Created" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
