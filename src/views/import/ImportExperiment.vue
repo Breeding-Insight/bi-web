@@ -78,6 +78,7 @@
             v-bind:loading="false"
             v-bind:pagination="previewData.pagination"
             v-on:show-error-notification="$emit('show-error-notification', $event)"
+            scrollable
         >
           <!-- Germplasm Name -->
           <b-table-column field="germplasmName" label="Germplasm Name" v-slot="props" :th-attrs="(column) => ({scope:'col'})"
@@ -128,9 +129,9 @@
           <b-table-column field="expTreatmentFactorName" label="Treatment Factors" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
             {{ getTreatment(props.row.data.observationUnit) }}
           </b-table-column>
-
+          <!-- Dynamic Phenotype and Timestamp Columns -->
           <b-table-column v-for="variable in phenotypeColumns" :key="variable" :label="variable" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-            {{ props.row.data.observations.filter(observation => observation.brAPIObject.observationVariableName === variable)[0].brAPIObject.value }}
+            <p> {{ retrieveDynamicColVal(props.row.data.observations, variable) }}</p>
           </b-table-column>
 
           <template v-slot:emptyMessage>
@@ -231,21 +232,22 @@ export default class ImportExperiment extends ProgramsBase {
 
   importFinished(){}
 
-  previewDataLoaded(data: any[]) {
-    if (data.length > 0) {
-      const firstRow = data[0];
-      if (firstRow.observations && firstRow.observations.length > 0) {
-        this.phenotypeColumns = firstRow.observations.map((observation: any) =>
-        {
-          return observation.brAPIObject.observationVariableName;
-        });
-      }
-    }
+  previewDataLoaded(dynamicColumns: String[]) {
+    this.phenotypeColumns = dynamicColumns;
   }
 
   isExisting(rows: any[]) {
     return rows.length && rows[0].trial.state === ImportObjectState.EXISTING;
   }
 
+  retrieveDynamicColVal(importReturnObject: any, column: string){
+    if (column.startsWith('TS:')) {
+      //Is timestamp
+      return importReturnObject.filter((observation: { brAPIObject: { observationVariableName: string; }; }) => observation.brAPIObject.observationVariableName === column.replace(/TS:\s*/,""))[0].brAPIObject.observationTimeStamp;
+    } else {
+      //Is phenotype observation
+      return importReturnObject.filter((observation: { brAPIObject: { observationVariableName: string; }; }) => observation.brAPIObject.observationVariableName === column)[0].brAPIObject.value
+    }
+  }
 }
 </script>

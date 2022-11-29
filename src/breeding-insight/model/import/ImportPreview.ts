@@ -20,9 +20,12 @@ import {ImportPreviewStatistics} from "@/breeding-insight/model/import/ImportPre
 export class ImportPreview {
   statistics?: {[key: string]: ImportPreviewStatistics};
   rows?: any[];
+  dynamicColumnNames?: string[];
 
-  constructor({statistics, rows}: ImportPreview) {
+  constructor({statistics, rows, dynamicColumnNames}: ImportPreview) {
     this.statistics = statistics;
     this.rows = rows;
+    this.dynamicColumnNames = dynamicColumnNames;
+
   }
 }
