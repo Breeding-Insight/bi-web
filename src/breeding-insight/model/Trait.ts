@@ -18,11 +18,13 @@
 import {ProgramObservationLevel} from "@/breeding-insight/model/ProgramObservationLevel";
 import {Method} from "@/breeding-insight/model/Method";
 import {Scale} from "@/breeding-insight/model/Scale";
+import {TermType} from "@/breeding-insight/model/TraitSelector";
 
 export class Trait {
   id?: string;
   traitName?: string;
   observationVariableName?: string;
+  termType?: TermType;
   programObservationLevel?: ProgramObservationLevel;
   entity?: string;
   attribute?: string;
@@ -39,6 +41,7 @@ export class Trait {
   constructor(id?: string,
               traitName?: string,
               observationVariableName?: string,
+              termType?: TermType,
               programObservationLevel?: ProgramObservationLevel,
               entity?: string,
               attribute?: string,
@@ -49,7 +52,7 @@ export class Trait {
               active?: boolean,
               tags?: string[],
               fullName?: string,
-              isDup?: boolean,
+              isDup?: boolean
               ) {
     this.id = id;
     this.traitName = traitName;
@@ -89,7 +92,7 @@ export class Trait {
 
   static assign(trait: Trait): Trait {
     return new Trait(trait.id, trait.traitName, trait.observationVariableName, trait.programObservationLevel, trait.entity, trait.attribute,
-        trait.traitDescription, trait.method, trait.scale, trait.synonyms, trait.active, trait.tags, trait.fullName, trait.isDup);
+        trait.traitDescription, trait.method, trait.scale, trait.synonyms, trait.active, trait.tags, trait.fullName, trait.isDup, trait.termType);
   }
 
   checkStringListEquals(list: string[] | undefined, otherList: string[] | undefined): boolean {
@@ -111,6 +114,7 @@ export class Trait {
       (this.traitName === trait.traitName) &&
       (this.observationVariableName === trait.observationVariableName) &&
       (this.fullName === trait.fullName) &&
+      (this.termType === trait.termType) &&
       (this.checkStringListEquals(this.synonyms, trait.synonyms)) &&
       (this.mainAbbreviation === trait.mainAbbreviation) &&
         (this.entity === trait.entity) &&
