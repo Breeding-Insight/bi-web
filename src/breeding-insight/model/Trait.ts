@@ -24,7 +24,6 @@ export class Trait {
   id?: string;
   traitName?: string;
   observationVariableName?: string;
-  termType?: TermType;
   programObservationLevel?: ProgramObservationLevel;
   entity?: string;
   attribute?: string;
@@ -37,11 +36,11 @@ export class Trait {
   tags?: string[] = [];
   fullName?: string;
   isDup?: boolean;
+  termType?: TermType;
 
   constructor(id?: string,
               traitName?: string,
               observationVariableName?: string,
-              termType?: TermType,
               programObservationLevel?: ProgramObservationLevel,
               entity?: string,
               attribute?: string,
@@ -52,7 +51,8 @@ export class Trait {
               active?: boolean,
               tags?: string[],
               fullName?: string,
-              isDup?: boolean
+              isDup?: boolean,
+              termType?: TermType
               ) {
     this.id = id;
     this.traitName = traitName;
