@@ -88,6 +88,7 @@ export class Trait {
     }
     this.fullName = fullName;
     this.isDup = isDup;
+    this.termType = termType;
   }
 
   static assign(trait: Trait): Trait {

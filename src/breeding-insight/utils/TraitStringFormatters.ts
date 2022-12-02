@@ -17,6 +17,7 @@
 
 import {Scale, DataType} from "@/breeding-insight/model/Scale";
 import {StringFormatters} from "@/breeding-insight/utils/StringFormatters";
+import {TermType} from "@/breeding-insight/model/TraitSelector";
 
 export class TraitStringFormatters {
   
@@ -31,5 +32,10 @@ export class TraitStringFormatters {
     }
     return undefined;
   }
+
+  static getTermTypeString(termType: TermType): string | undefined {
+    return StringFormatters.toStartCase(termType);
+    //todo see if can be used to convert to more readable form
+    }
 
 }

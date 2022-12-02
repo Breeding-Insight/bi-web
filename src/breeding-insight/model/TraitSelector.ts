@@ -18,13 +18,14 @@ export enum TraitField {
   CREATED_BY_USER_ID = 'createdByUserId',
   CREATED_BY_USER_NAME = 'createdByUserName',
   UPDATED_BY_USER_ID = 'updatedByUserId',
-  UPDATED_BY_USER_NAME = 'updatedByUserName'
+  UPDATED_BY_USER_NAME = 'updatedByUserName',
+  TERM_TYPE = 'termType'
 }
 
 export enum TermType {
-  PHENOTYPE = 'Phenotype',
-  GERM_ATTRIBUTE = 'Germplasm Attribute',
-  GERM_PASSPORT = 'Germplasm Passport'
+  PHENOTYPE = 'PHENOTYPE',
+  GERM_ATTRIBUTE = 'GERM_ATTRIBUTE',
+  GERM_PASSPORT = 'GERM_PASSPORT'
 }
 
 export class TraitFilter {

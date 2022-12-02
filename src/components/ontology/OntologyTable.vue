@@ -132,7 +132,7 @@
             v-on:newSortColumn="$emit('newSortColumn', $event)"
             v-on:toggleSortOrder="$emit('toggleSortOrder')"
         >
-          {{ data.termType }}
+          {{ TraitStringFormatters.getTermTypeString(data.termType) }}
         </TableColumn>
         <TableColumn
           name="trait"
@@ -250,7 +250,7 @@ import WarningModal from '@/components/modals/WarningModal.vue'
 import {PlusCircleIcon} from 'vue-feather-icons'
 import {validationMixin} from 'vuelidate';
 import {Trait} from '@/breeding-insight/model/Trait'
-import {mapGetters, mapActions} from 'vuex'
+import {mapActions, mapGetters} from 'vuex'
 import {Program} from "@/breeding-insight/model/Program";
 import NewDataForm from '@/components/forms/NewDataForm.vue'
 import BasicInputField from "@/components/forms/BasicInputField.vue";
@@ -271,8 +271,8 @@ import {DataType, Scale} from "@/breeding-insight/model/Scale";
 import {SidePanelTableEventBusHandler} from "@/components/tables/SidePanelTableEventBus";
 import {DataFormEventBusHandler} from '@/components/forms/DataFormEventBusHandler';
 import {integer, maxLength} from "vuelidate/lib/validators";
-import {TraitField, TraitFilter} from "@/breeding-insight/model/TraitSelector";
-import {OntologySort, OntologySortField, SortOrder, TraitSortField} from "@/breeding-insight/model/Sort";
+import {TermType, TraitField, TraitFilter} from "@/breeding-insight/model/TraitSelector";
+import {OntologySort, OntologySortField} from "@/breeding-insight/model/Sort";
 import {BackendPaginationController} from "@/breeding-insight/model/view_models/BackendPaginationController";
 import {Category} from "@/breeding-insight/model/Category";
 
@@ -623,6 +623,7 @@ export default class OntologyTable extends Vue {
   }
 
   prepareScaleCategoriesForSave(inputTrait: Trait){
+    //todo investigate means to convert term type
     let traitToSave = JSON.parse(JSON.stringify(inputTrait));
     if ((traitToSave) && (traitToSave.scale) && (traitToSave.scale.dataType) && (Scale.dataTypeEquals(traitToSave.scale.dataType, DataType.Nominal)) && (traitToSave.scale.categories)) {
       traitToSave.scale.categories.forEach((category: Category) => {
