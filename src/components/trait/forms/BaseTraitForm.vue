@@ -296,6 +296,7 @@ import {Category} from "@/breeding-insight/model/Category";
 import TagField from "@/components/forms/TagField.vue";
 import BaseFieldWrapper from "@/components/forms/BaseFieldWrapper.vue";
 import {TermType} from "@/breeding-insight/model/TraitSelector";
+import {EnumUtils} from "@/breeding-insight/utils/EnumUtils";
 
 @Component({
   components: {
@@ -379,8 +380,9 @@ export default class BaseTraitForm extends Vue {
     if ((this.trait.scale) && (this.trait.scale.categories)) {
       this.categories = this.trait.scale.categories;
     }
-    if (!this.trait.termType) {
-      this.trait.termType = TermType.PHENOTYPE;
+    //If termType pulled from backend (rather than the default for new terms), set to display friendly version
+    if (this.trait.termType != TermType.PHENOTYPE) {
+      this.trait.termType = EnumUtils.enumKeyToValue(this.trait.termType, TermType);
     }
   }
 

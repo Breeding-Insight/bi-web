@@ -36,7 +36,7 @@ export class Trait {
   tags?: string[] = [];
   fullName?: string;
   isDup?: boolean;
-  termType?: TermType;
+  termType: TermType =  TermType.PHENOTYPE; //Phenotype is default
 
   constructor(id?: string,
               traitName?: string,
@@ -88,7 +88,9 @@ export class Trait {
     }
     this.fullName = fullName;
     this.isDup = isDup;
-    this.termType = termType;
+    if (termType) {
+      this.termType = termType;
+    }
   }
 
   static assign(trait: Trait): Trait {

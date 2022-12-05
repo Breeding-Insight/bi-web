@@ -23,9 +23,9 @@ export enum TraitField {
 }
 
 export enum TermType {
-  PHENOTYPE = 'PHENOTYPE',
-  GERM_ATTRIBUTE = 'GERM_ATTRIBUTE',
-  GERM_PASSPORT = 'GERM_PASSPORT'
+  PHENOTYPE = 'Phenotype',
+  GERM_ATTRIBUTE = 'Germplasm Attribute',
+  GERM_PASSPORT = 'Germplasm Passport'
 }
 
 export class TraitFilter {

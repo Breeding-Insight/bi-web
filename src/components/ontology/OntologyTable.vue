@@ -275,6 +275,7 @@ import {TermType, TraitField, TraitFilter} from "@/breeding-insight/model/TraitS
 import {OntologySort, OntologySortField} from "@/breeding-insight/model/Sort";
 import {BackendPaginationController} from "@/breeding-insight/model/view_models/BackendPaginationController";
 import {Category} from "@/breeding-insight/model/Category";
+import {EnumUtils} from "@/breeding-insight/utils/EnumUtils";
 
 @Component({
   mixins: [validationMixin],
@@ -623,7 +624,6 @@ export default class OntologyTable extends Vue {
   }
 
   prepareScaleCategoriesForSave(inputTrait: Trait){
-    //todo investigate means to convert term type
     let traitToSave = JSON.parse(JSON.stringify(inputTrait));
     if ((traitToSave) && (traitToSave.scale) && (traitToSave.scale.dataType) && (Scale.dataTypeEquals(traitToSave.scale.dataType, DataType.Nominal)) && (traitToSave.scale.categories)) {
       traitToSave.scale.categories.forEach((category: Category) => {
@@ -631,6 +631,8 @@ export default class OntologyTable extends Vue {
         category.label = undefined;
       });
     }
+    //Translate TermType from user readable to backend storage format
+    traitToSave.termType = EnumUtils.enumValueToKey(inputTrait.termType, TermType);
     return traitToSave;
   }
 
