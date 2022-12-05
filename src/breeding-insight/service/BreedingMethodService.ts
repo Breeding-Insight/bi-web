@@ -15,10 +15,9 @@
  * limitations under the License.
  */
 
-import { BiResponse, Metadata } from '@/breeding-insight/model/BiResponse';
+import { BiResponse } from '@/breeding-insight/model/BiResponse';
 import { BreedingMethod } from '@/breeding-insight/model/BreedingMethod';
 import { BreedingMethodDAO } from '@/breeding-insight/dao/BreedingMethodDAO';
-import { ValidationErrorService } from '@/breeding-insight/service/ValidationErrorService';
 
 export class BreedingMethodService {
   private static getBreedingMethodUnknown: string = 'An unknown error occurred while retrieving breeding methods';
@@ -133,5 +132,19 @@ export class BreedingMethodService {
     }
 
     throw this.unableToUpdateMethod;
+  }
+
+  static delete (programId: string, breedingMethodId: string) {
+    return new Promise<any>(((resolve, reject) => {
+
+      if (programId && breedingMethodId){
+        return BreedingMethodDAO.delete(programId, breedingMethodId)
+          .then(() => resolve())
+          .catch((error) => reject(error));
+      } else {
+        reject();
+      }
+
+    }));
   }
 }

@@ -17,6 +17,34 @@
 
 <template>
   <div class="breeding-methods">
+    <WarningModal
+        v-bind:active.sync="deleteActive"
+        v-bind:msg-title="'Remove Breeding Method?'"
+        v-on:deactivate="cancelDelete"
+    >
+      <section>
+        <p class="has-text-dark">
+          Are you sure you want to delete breeding method: {{ deleteBreedingMethod.name }}?
+        </p>
+      </section>
+      <div class="columns">
+        <div class="column is-whole has-text-centered buttons">
+          <button
+              class="button is-danger"
+              v-on:click="modalDeleteHandler()"
+          >
+            <strong>Yes, delete</strong>
+          </button>
+          <button
+              class="button"
+              v-on:click="cancelDelete"
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    </WarningModal>
+
     <div class="columns">
       <div class="column is-whole has-text-right buttons">
         <button
@@ -92,6 +120,23 @@
       </template>
     </NewDataForm>
 
+    <div v-if="inUseBreedingMethods.length > 0">
+      <article class="message is-warning">
+        <div class="message-body">
+          <div class="columns is-vcentered">
+            <div class="column">
+              <div class="has-text-dark">
+                <AlertTriangleIcon
+                    size="1x"
+                    class="has-vertical-align-middle"
+                /> Some breeding methods cannot be edited because there are germplasm records using those methods in {{activeProgram.name}}
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
+    </div>
+
     <ExpandableTable
         v-bind:records.sync="programBreedingMethods"
         v-bind:loading="loading"
@@ -102,8 +147,12 @@
         v-bind:row-editable="isRowEditable"
         v-bind:data-form-state="editMethodFormState"
         v-bind:row-validations="newMethodValidations"
+        v-bind:archivable="true"
+        v-bind:row-archivable="isRowArchivable"
+        v-bind:deactivate-link-text="'Delete'"
         v-on:submit="updateMethod($event)"
         v-on:show-error-notification="$emit('show-error-notification', $event)"
+        v-on:remove="displayWarning($event)"
     >
       <b-table-column field="scope" label="Scope" searchable :customSearch="filterByScope" :th-attrs="(column) => ({scope:'col'})">
         <template v-slot="props">
@@ -223,6 +272,22 @@
         v-on:deactivate="showEnableSystemMethods = false"
         v-bind:modalClass="'enable-system-methods'"
     >
+      <div v-if="inUseBreedingMethods.length > 0">
+        <article class="message is-warning">
+          <div class="message-body">
+            <div class="columns is-vcentered">
+              <div class="column">
+                <div class="has-text-dark">
+                  <AlertTriangleIcon
+                      size="1x"
+                      class="has-vertical-align-middle"
+                  /> Some breeding methods cannot be deactivated because there are germplasm records using those methods in {{activeProgram.name}}
+                </div>
+              </div>
+            </div>
+          </div>
+        </article>
+      </div>
       <ExpandableTable
           v-bind:records.sync="systemBreedingMethods"
           v-bind:pagination="systemPagination"
@@ -291,7 +356,7 @@
 </template>
 
 <script lang="ts">
-import { Component } from 'vue-property-decorator'
+import { Component, Vue } from 'vue-property-decorator';
 import ProgramsBase from "@/components/program/ProgramsBase.vue";
 import ExpandableTable from '@/components/tables/expandableTable/ExpandableTable.vue';
 import { Program } from '@/breeding-insight/model/Program';
@@ -308,9 +373,12 @@ import { DEACTIVATE_ALL_NOTIFICATIONS } from '@/store/mutation-types';
 import NewDataForm from '@/components/forms/NewDataForm.vue';
 import BasicInputField from "@/components/forms/BasicInputField.vue";
 import BasicSelectField from "@/components/forms/BasicSelectField.vue";
+import { AlertTriangleIcon } from 'vue-feather-icons';
+import WarningModal from '@/components/modals/WarningModal.vue'
+
 @Component({
   components: {
-    ExpandableTable, GenericModal, NewDataForm, BasicInputField, BasicSelectField
+    ExpandableTable, GenericModal, NewDataForm, BasicInputField, BasicSelectField, AlertTriangleIcon, WarningModal
   },
   computed: {
     ...mapGetters([
@@ -322,7 +390,7 @@ export default class BreedingMethods extends ProgramsBase {
   private activeProgram?: Program;
   private programBreedingMethods: BreedingMethod[] = [];
   private systemBreedingMethods: BreedingMethod[] = [];
-  private inUseBreedingMethods?: Array<string> = [];
+  private inUseBreedingMethods: Array<string> = [];
   private pagination: Pagination = new Pagination();
   private paginationController: PaginationController = new PaginationController();
   private systemPagination: Pagination = new Pagination();
@@ -335,6 +403,8 @@ export default class BreedingMethods extends ProgramsBase {
   private newMethod = new BreedingMethod({});
   private newMethodFormState: DataFormEventBusHandler = new DataFormEventBusHandler();
   private editMethodFormState: DataFormEventBusHandler = new DataFormEventBusHandler();
+  private deleteActive: boolean = false;
+  private deleteBreedingMethod = new BreedingMethod({});
 
   private categories: Array<string> = ["Acquisition", "Asexual", "Cross", "GM", "Increase", "Inventory", "OP", "Ploidy", "Selection", "Unknown"];
 
@@ -367,7 +437,7 @@ export default class BreedingMethods extends ProgramsBase {
       this.systemPagination.totalPages = this.systemPagination.totalCount.valueOf() / this.systemPagination.pageSize.valueOf();
 
       const inUseMethods: BreedingMethod[] = await BreedingMethodService.getProgramBreedingMethods(this.activeProgram!.id!, true);
-      this.inUseBreedingMethods = inUseMethods.map((value: BreedingMethod) => value.id);
+      this.inUseBreedingMethods = inUseMethods.map((value: BreedingMethod) => value.id!);
     } catch(e) {
       console.log(e);
       this.$emit('show-error-notification', 'Error while trying to fetch breeding methods');
@@ -456,6 +526,10 @@ export default class BreedingMethods extends ProgramsBase {
   }
 
   isRowEditable(row: TableRow<BreedingMethod>) {
+    return row.data.programId !== undefined;
+  }
+
+  isRowArchivable(row: TableRow<BreedingMethod>) {
     return row.data.programId !== undefined && !this.isMethodInUse(row.data);
   }
 
@@ -474,6 +548,40 @@ export default class BreedingMethods extends ProgramsBase {
     } else {
       return true;
     }
+  }
+
+  displayWarning(method: BreedingMethod) {
+
+    if (method){
+      this.deleteBreedingMethod = method;
+      this.deleteActive = true;
+    } else {
+      Vue.$log.error('Could not find object to delete')
+    }
+  }
+
+  modalDeleteHandler() {
+    this.deleteActive = false;
+
+    if (this.deleteBreedingMethod && this.deleteBreedingMethod.id && this.deleteBreedingMethod.name) {
+      const deleteId: string = this.deleteBreedingMethod.id;
+      const deleteName: string = this.deleteBreedingMethod.name;
+      BreedingMethodService.delete(this.activeProgram!.id!, deleteId).then(() => {
+        this.getBreedingMethods();
+        this.$emit('show-success-notification', `${deleteName} removed`);
+      }).catch(() => {
+        this.$emit('show-error-notification', `Unable to remove breeding method: ${deleteName}.`);
+      });
+      return;
+    }
+
+    this.$emit('show-error-notification', `Unable to remove breeding method`);
+
+  }
+
+  cancelDelete() {
+    this.deleteActive = false;
+    this.deleteBreedingMethod = new BreedingMethod({});
   }
 
 }

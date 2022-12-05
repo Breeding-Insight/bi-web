@@ -68,4 +68,8 @@ export class BreedingMethodDAO {
 
     return new BiResponse(data);
   }
+
+  static delete (programId: string, breedingMethodId: string) {
+    return api.call({ url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/breeding-methods/${breedingMethodId}`, method: 'delete'});
+  }
 }

@@ -46,7 +46,7 @@
     >
 
       <slot></slot>
-      <b-table-column v-if="editable || details || archivable" v-slot="props" cell-class="has-text-right is-narrow" :th-attrs="(column) => ({scope:'col'})">
+      <b-table-column v-if="editable || details || archivable" v-slot="props" cell-class="has-text-left is-narrow" :th-attrs="(column) => ({scope:'col'})">
         <a
             v-if="isRowEditable(props.row) || details"
             data-testid="edit"
@@ -65,12 +65,12 @@
           </span>
         </a>
         <a
-            v-if="archivable"
+            v-if="isRowArchivable(props.row)"
             v-on:click="$emit('remove', props.row.data)"
             v-on:keypress.enter.space="$emit('remove', props.row.data)"
             tabindex="0"
         >
-          Deactivate
+          {{ deactivateLinkText }}
         </a>
       </b-table-column>
 
@@ -131,6 +131,8 @@ export default class ExpandableTable extends Mixins(ValidationMixin) {
   @Prop()
   rowEditable!: Function;
   @Prop()
+  rowArchivable!: Function;
+  @Prop()
   archivable!: boolean;
   @Prop()
   pagination!: Pagination;
@@ -146,6 +148,8 @@ export default class ExpandableTable extends Mixins(ValidationMixin) {
   details!: boolean;
   @Prop()
   searchDebounce!: number;
+  @Prop({default: "Deactivate"})
+  deactivateLinkText?: string;
 
   private tableRows: Array<TableRow<any>> = new Array<TableRow<any>>();
   private openDetail: Array<TableRow<any>> = new Array<TableRow<any>>();
@@ -235,6 +239,10 @@ export default class ExpandableTable extends Mixins(ValidationMixin) {
 
   isRowEditable(row: any) {
     return ((typeof this.rowEditable === "function") ? this.rowEditable(row) : true) && this.editable;
+  }
+
+  isRowArchivable(row: any) {
+    return ((typeof this.rowArchivable === "function") ? this.rowArchivable(row) : true) && this.archivable;
   }
 }
 </script>
