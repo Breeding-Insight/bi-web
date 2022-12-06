@@ -39,7 +39,6 @@
         v-bind="$attrs"
         :default-sort="defaultSort"
         v-on="$listeners"
-        v-bind:loading="loading"
         :row-class="calculateRowClass"
         backend-filtering
         v-bind:debounce-search="searchDebounce"
@@ -75,7 +74,7 @@
         </a>
       </b-table-column>
 
-      <template v-slot:empty v-if="this.loading !== true">
+      <template v-slot:empty>
         <slot name="emptyMessage" />
       </template>
 
