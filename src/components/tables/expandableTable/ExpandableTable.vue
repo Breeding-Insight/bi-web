@@ -18,6 +18,7 @@
 <template>
   <div>
     <b-table
+        :class="{'loading-active': loading}"
         :data.sync="tableRows"
         narrowed
         :show-detail-icon="false"
@@ -39,6 +40,9 @@
         :default-sort="defaultSort"
         v-on="$listeners"
         :row-class="calculateRowClass"
+        backend-filtering
+        v-bind:debounce-search="searchDebounce"
+        v-on:filters-change="cloneFilters"
     >
 
       <slot></slot>
@@ -138,6 +142,8 @@ export default class ExpandableTable extends Mixins(ValidationMixin) {
   loading!: boolean;
   @Prop()
   details!: boolean;
+  @Prop()
+  searchDebounce!: number;
 
   private tableRows: Array<TableRow<any>> = new Array<TableRow<any>>();
   private openDetail: Array<TableRow<any>> = new Array<TableRow<any>>();
@@ -218,6 +224,11 @@ export default class ExpandableTable extends Mixins(ValidationMixin) {
   cancelEditClicked(row:any) {
     this.cancelEdit(row);
     this.openDetail = [];
+  }
+
+  // A patch so if we're listening the filters, we can still debounce
+  cloneFilters(event: any) {
+    this.$emit('search', JSON.parse(JSON.stringify(event)));
   }
 }
 </script>

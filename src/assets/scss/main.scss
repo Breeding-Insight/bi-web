@@ -222,6 +222,13 @@ img {
   }
 }
 
+#program-menu {
+  .dropdown-content {
+    max-height: 50vh;
+    overflow: scroll;
+  }
+}
+
 .sidebarlayout {
   display: flex;
   flex-direction: column;
@@ -636,6 +643,12 @@ th.activesort.sortcolumn, th.sortcolumn:hover {
   transform: rotate(180deg);
 }
 
+.above-tabs-button {
+  margin-bottom: 15px;
+  position: absolute;
+  right: 35px;
+}
+
 .display-case {
   text-transform: capitalize;
 }
@@ -713,5 +726,30 @@ th.activesort.sortcolumn, th.sortcolumn:hover {
     .node-name-wrapper {
       stroke: gray;
     }
+    a:hover {
+      text-decoration: underline;
+    }
   }
+}
+
+// Some css to only overlay on tbody for tables instead of entire table like b-table
+div.b-table.loading-active tbody {
+  opacity: 0.25;
+  z-index: 1;
+  pointer-events: none;
+}
+.loading-overlay {
+  &, .loading-background {
+    pointer-events: none;
+    background: rgba(255, 255, 255, 0);
+  }
+}
+
+.left-confirm-column {
+  float: left;
+  padding-right: 70px
+}
+
+.right-confirm-column {
+  float: left;
 }

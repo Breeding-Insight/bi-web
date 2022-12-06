@@ -39,12 +39,12 @@
           <GermplasmLink
             v-if="germplasm.pedigree"
             v-bind:germplasmUUID="Pedigree.parsePedigreeString(germplasm.additionalInfo.pedigreeByUUID).femaleParent"
-            v-bind:germplasmGID="Pedigree.parsePedigreeString(germplasm.pedigree).femaleParent"
+            v-bind:germplasmGID="Pedigree.parsePedigreeStringWithUnknowns(germplasm.pedigree,germplasm.additionalInfo.femaleParentUnknown,germplasm.additionalInfo.maleParentUnknown, germplasm.germplasmDbId).femaleParent"
         > </GermplasmLink>
           <template v-if="Pedigree.parsePedigreeString(germplasm.pedigree).maleParent">
           / <GermplasmLink
             v-bind:germplasmUUID="Pedigree.parsePedigreeString(germplasm.additionalInfo.pedigreeByUUID).maleParent"
-            v-bind:germplasmGID="Pedigree.parsePedigreeString(germplasm.pedigree).maleParent"
+            v-bind:germplasmGID="Pedigree.parsePedigreeStringWithUnknowns(germplasm.pedigree,germplasm.additionalInfo.femaleParentUnknown,germplasm.additionalInfo.maleParentUnknown, germplasm.germplasmDbId).maleParent"
           > </GermplasmLink></template>
         </li>
         <li><b>Synonyms: </b> {{ GermplasmUtils.formatSynonyms(germplasm.synonyms) }}</li>
@@ -109,6 +109,9 @@ import GermplasmLink from '@/components/germplasm/GermplasmLink.vue'
 import {Pedigree} from "@/breeding-insight/model/import/germplasm/Pedigree";
 import {GermplasmUtils} from '@/breeding-insight/utils/GermplasmUtils';
 import { Result } from '@/breeding-insight/model/Result';
+import {Route} from "vue-router";
+import {BrAPIService, BrAPIType} from "@/breeding-insight/service/BrAPIService";
+import {GermplasmSortField, SortOrder} from "@/breeding-insight/model/Sort";
 
 @Component({
   components: {GermplasmLink},
@@ -117,7 +120,25 @@ import { Result } from '@/breeding-insight/model/Result';
       'activeProgram'
     ])
   },
-  data: () => ({Pedigree, GermplasmUtils})
+  data: () => ({Pedigree, GermplasmUtils}),
+  beforeRouteEnter: async (to, from, next) => {
+    const germplasmId = to.params.germplasmId;
+    if (!germplasmId.startsWith('gid-')) {
+      next();
+      return;
+    }
+
+    // Find the id for that gid
+    const gid = germplasmId.split('-')[1];
+    const programId = to.params.programId;
+    BrAPIService.get(BrAPIType.GERMPLASM, programId, {field: GermplasmSortField.AccessionNumber, order: SortOrder.Ascending}, {pageSize: 1, page: 0}, {accessionNumber: gid}).then((germplasmResult) => {
+      // Parse out the germplasm id
+      const germplasm = germplasmResult.result.data[0];
+      const germplasmUUID = GermplasmUtils.getGermplasmUUID(germplasm.externalReferences);
+      next({name: 'germplasm-details', params: {programId, germplasmId: germplasmUUID}});
+      return;
+    });
+  }
 })
 export default class GermplasmDetails extends GermplasmBase {
 

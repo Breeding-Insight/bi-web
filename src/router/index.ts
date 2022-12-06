@@ -66,6 +66,7 @@ import GermplasmDetails from "@/views/germplasm/GermplasmDetails.vue";
 import ProgramConfiguration from "@/views/program/ProgramConfiguration.vue";
 import JobManagement from '@/views/program/JobManagement.vue';
 import GermplasmPedigreesView from "@/components/germplasm/GermplasmPedigreesView.vue";
+import ImportExperiment from "@/views/import/ImportExperiment.vue";
 
 Vue.use(VueRouter);
 
@@ -375,6 +376,15 @@ const routes = [
           layout: layouts.userSideBar
         },
         component: ImportGermplasm
+      },
+      {
+        path: 'experiment',
+        name: 'experiment-import',
+        meta: {
+          title: 'Experiments & Observations',
+          layout: layouts.userSideBar
+        },
+        component: ImportExperiment
       },
       {
         path: 'brapi-import',

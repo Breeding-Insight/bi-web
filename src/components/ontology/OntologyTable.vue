@@ -49,22 +49,6 @@
       <div class="column">
         <button
             v-if="$ability.can('create', 'Trait') && !isSubscribed"
-            v-show="!newTraitActive && traits.length > 0"
-            class="button is-primary is-pulled-right has-text-weight-bold"
-            v-on:click="$router.push({name: 'import-ontology', params: {programId: activeProgram.id}})"
-        >
-        <span class="icon is-small">
-          <PlusCircleIcon
-              size="1.5x"
-              aria-hidden="true"
-          />
-        </span>
-        <span>
-          Import Batch File
-        </span>
-        </button>
-        <button
-            v-if="$ability.can('create', 'Trait') && !isSubscribed"
             data-testid="newDataForm"
             v-show="!newTraitActive && traits.length > 0"
             class="button mx-2 is-primary is-pulled-right is-light has-text-weight-bold"

@@ -38,6 +38,21 @@
           >
             <a>Germplasm Lists</a>
           </router-link>
+          <button
+              v-if="$ability.can('create', 'Import')"
+              class="button is-primary is-pulled-right has-text-weight-bold above-tabs-button"
+              v-on:click="$router.push({name: 'germplasm-import', params: {programId: activeProgram.id}})"
+          >
+        <span class="icon is-small">
+          <PlusCircleIcon
+              size="1.5x"
+              aria-hidden="true"
+          />
+        </span>
+            <span>
+          Import Batch File
+        </span>
+          </button>
         </ul>
       </nav>
     </section>
@@ -57,9 +72,10 @@ import { Component } from 'vue-property-decorator'
 import {mapGetters} from "vuex";
 import {Program} from "@/breeding-insight/model/Program";
 import GermplasmBase from "@/components/germplasm/GermplasmBase.vue";
+import {PlusCircleIcon} from 'vue-feather-icons'
 
 @Component({
-  components: {},
+  components: { PlusCircleIcon },
   computed: {
     ...mapGetters([
       'activeProgram'
