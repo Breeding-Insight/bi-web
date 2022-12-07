@@ -55,6 +55,19 @@
           {{ data.observationVariableName }}
         </TableColumn>
         <TableColumn
+            name="termType"
+            v-bind:label="'Term Type'"
+            v-bind:visible="!collapseColumns"
+            v-bind:sortField="importPreviewOntologySort.field"
+            v-bind:sortFieldLabel="termTypeSortLabel"
+            v-bind:sortable="true"
+            v-bind:sortOrder="importPreviewOntologySort.order"
+            v-on:newSortColumn="newSortColumn"
+            v-on:toggleSortOrder="toggleSortOrder"
+        >
+          {{ TraitStringFormatters.getTermTypeString(data.termType) }}
+        </TableColumn>
+        <TableColumn
             name="trait"
             v-bind:label="'Trait'"
             v-bind:visible="!collapseColumns"
@@ -220,6 +233,7 @@ export default class TraitsImportTable extends Vue {
   private scaleClassSortLabel: string = OntologySortField.ScaleClass;
   private unitSortLabel: string = OntologySortField.ScaleName;
   private entityAttributeSortLabel: string = OntologySortField.entityAttributeSortLabel;
+  private termTypeSortLabel: string = OntologySortField.TermType;
 
   mounted() {
     this.updatePagination();
