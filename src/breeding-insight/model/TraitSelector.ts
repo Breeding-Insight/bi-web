@@ -21,6 +21,12 @@ export enum TraitField {
   UPDATED_BY_USER_NAME = 'updatedByUserName'
 }
 
+export enum TermType {
+  PHENOTYPE = 'Phenotype',
+  GERM_ATTRIBUTE = 'Germplasm Attribute',
+  GERM_PASSPORT = 'Germplasm Passport'
+}
+
 export class TraitFilter {
   field?: TraitField;
   value?: string | number | boolean;

@@ -123,6 +123,18 @@
           {{ data.observationVariableName }}
         </TableColumn>
         <TableColumn
+            name="termType"
+            v-bind:label="'Term Type'"
+            v-bind:sortField="ontologySort.field"
+            v-bind:sortFieldLabel="termTypeSortLabel"
+            v-bind:sortable="true"
+            v-bind:sortOrder="ontologySort.order"
+            v-on:newSortColumn="$emit('newSortColumn', $event)"
+            v-on:toggleSortOrder="$emit('toggleSortOrder')"
+        >
+          {{ data.termType }}
+        </TableColumn>
+        <TableColumn
           name="trait"
           v-bind:label="'Trait'"
           v-bind:visible="!traitSidePanelState.collapseColumns"
@@ -314,6 +326,7 @@ export default class OntologyTable extends Vue {
   private scaleClassSortLabel: string = OntologySortField.ScaleClass;
   private unitSortLabel: string = OntologySortField.ScaleName;
   private entityAttributeSortLabel: string = OntologySortField.entityAttributeSortLabel;
+  private termTypeSortLabel: string = OntologySortField.TermType;
 
   // New trait form
   private newTraitActive: boolean = false;
