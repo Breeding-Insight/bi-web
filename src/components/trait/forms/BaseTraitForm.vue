@@ -20,6 +20,7 @@
   </div>
   <div class="column new-term is-10">
     <BasicSelectField
+        id="termTypeField"
         class="pb-2"
         v-bind:selected-id="trait.termType"
         v-bind:options="termTypes"
@@ -165,6 +166,7 @@
     </div>
     <div class="column new-term is-10">
       <BasicSelectField
+          id="methodClass"
           class="pb-2"
           v-bind:selected-id="trait.method.methodClass"
           v-bind:options="methodOptions"
@@ -186,6 +188,7 @@
     </div>
     <div class="column new-term is-10">
       <BasicSelectField
+          id="scaleClass"
           v-bind:selected-id="StringFormatters.toStartCase(trait.scale.dataType)"
           v-bind:options="getScaleOptions()"
           v-bind:field-name="'Scale Class'"
