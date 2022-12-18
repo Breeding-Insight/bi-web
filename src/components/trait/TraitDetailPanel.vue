@@ -31,6 +31,16 @@
           <span class="is-size-7 mb-0">{{data.traitDescription}}</span>
         </div>
       </div>
+
+      <div v-if="data.termType" class="columns is-desktop pt-1 pl-3">
+        <div class="column is-one-third pt-0 pb-0 has-text-right-desktop">
+          <span class="has-text-weight-bold">Term Type</span>
+        </div>
+        <div class="column pt-0 pb-0">
+          <span class="is-size-7 mb-0">{{data.termType}}</span>
+        </div>
+      </div>
+
       <!-- just shows first abbreviation AKA main abbreviation and first synonym -->
       <template v-if="abbreviationsSynonymsString">
         <div class="columns is-desktop pt-1 pl-3">
