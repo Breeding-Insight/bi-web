@@ -52,7 +52,7 @@
             class="button is-primary"
             v-on:click="openModal"
         >
-          Activate System Methods
+          Choose Predefined Methods
         </button>
         <button
             v-if="$ability.can('create', 'ProgramConfiguration')"
@@ -268,7 +268,7 @@
     </ExpandableTable>
     <GenericModal
         v-bind:active.sync="showEnableSystemMethods"
-        v-bind:msg-title="'Enable/Disable System Breeding Methods'"
+        v-bind:msg-title="'Enable/Disable Predefined Breeding Methods'"
         v-on:deactivate="showEnableSystemMethods = false"
         v-bind:modalClass="'enable-system-methods'"
     >
