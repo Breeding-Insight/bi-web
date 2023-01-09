@@ -49,7 +49,7 @@ COPY --chown=host:host ["package.json", "/home/host/biweb/package.json"]
 COPY --chown=host:host ["package-lock.json", "/home/host/biweb/package-lock.json"]
 COPY --chown=host:host ./src ./src/
 COPY --chown=host:host ./task ./task/
-RUN ["npm", "ci"]
+RUN ["npm", "--verbose", "ci"]
 
 # start the web server
 ENTRYPOINT ["npm", "run", "serve"]
