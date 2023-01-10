@@ -16,11 +16,7 @@
   -->
 
 <template>
-  <div id="ontolgoy-sharing">
-<!--    <ExpandableCard-->
-<!--        title="Ontology"-->
-<!--        :show="false"-->
-<!--    >-->
+  <div id="ontology-sharing">
       <SharedOntologyConfiguration
           v-on="$listeners"
           class="mb-6"
@@ -32,14 +28,6 @@
           v-on:subscription-change="subscribeAction += 1"
           v-bind:share-change="shareAction"
       />
-<!--    </ExpandableCard>-->
-<!--    <ExpandableCard-->
-<!--      title="Breeding Methods"-->
-<!--      :show="false"-->
-<!--    >-->
-<!--      <BreedingMethods v-on="$listeners"/>-->
-<!--    </ExpandableCard>-->
-
   </div>
 </template>
 
@@ -50,11 +38,9 @@ import {mapGetters} from "vuex";
 import SharedOntologyConfiguration from "@/components/program/SharedOntologyConfiguration.vue";
 import SubscribeOntologyConfiguration from "@/components/program/SubscribeOntologyConfiguration.vue";
 import BreedingMethods from "@/views/germplasm/BreedingMethods.vue";
-import ExpandableCard from '@/components/layouts/ExpandableCard.vue';
 
 @Component({
   components: {
-    ExpandableCard,
     SubscribeOntologyConfiguration,
     SharedOntologyConfiguration,
     BreedingMethods
