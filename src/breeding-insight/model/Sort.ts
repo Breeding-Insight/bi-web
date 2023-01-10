@@ -185,3 +185,21 @@ export class ExperimentSort {
     this.order = order;
   }
 }
+
+export enum GermplasmListSortField {
+  Name = "name",
+  Description = "description",
+  TotalEntries = "size",
+  CreatedDate = "dateCreated",
+  CreatedBy = "ownerName"
+}
+
+export class GermplasmListSort {
+  field: GermplasmListSortField;
+  order: SortOrder;
+
+  constructor(field: GermplasmListSortField, order: SortOrder) {
+    this.field = field;
+    this.order = order;
+  }
+}

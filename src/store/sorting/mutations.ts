@@ -28,12 +28,14 @@ import {
     IMPORT_PREVIEW_ONT_TOGGLE_SORT_ORDER,
     IMPORT_PREVIEW_ONT_NEW_SORT_COLUMN,
     UPDATE_GERMPLASM_SORT,
+    UPDATE_GERMPLASM_LIST_SORT,
     UPDATE_EXPERIMENT_SORT
 } from "@/store/sorting/mutation-types";
 import {SortState} from "@/store/sorting/types";
 import {
     ExperimentSort,
     GermplasmSort,
+    GermplasmListSort,
     LocationSort, OntologySort, OntologySortField,
     ProgramSort, SortOrder, SystemUserSort,
     TraitSortField,
@@ -93,6 +95,12 @@ export const mutations: MutationTree<SortState> = {
     [UPDATE_GERMPLASM_SORT](state: SortState, sort: GermplasmSort) {
         state.germplasmSort.field = sort.field;
         state.germplasmSort.order = sort.order;
+    },
+
+    //germplasm list table
+    [UPDATE_GERMPLASM_LIST_SORT](state: SortState, sort: GermplasmListSort) {
+        state.germplasmListSort.field = sort.field;
+        state.germplasmListSort.order = sort.order;
     },
 
     //experiments and observations table

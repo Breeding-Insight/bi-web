@@ -22,6 +22,8 @@ import {RootState} from '@/store/types';
 import {
     ExperimentSort,
     ExperimentSortField,
+    GermplasmListSort,
+    GermplasmListSortField,
     GermplasmSort,
     GermplasmSortField,
     LocationSort,
@@ -63,6 +65,9 @@ state = {
 
     // germplasm table
     germplasmSort: new GermplasmSort(GermplasmSortField.AccessionNumber, SortOrder.Ascending),
+
+    // germplasm list table
+    germplasmListSort: new GermplasmListSort(GermplasmListSortField.Name, SortOrder.Ascending),
 
     //experiment and observation table
     experimentSort: new ExperimentSort(ExperimentSortField.Name, SortOrder.Ascending)

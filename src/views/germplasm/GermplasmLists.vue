@@ -20,6 +20,7 @@
     <GermplasmListsTable
         v-on:show-success-notification="$emit('show-success-notification', $event)"
         v-on:show-error-notification="$emit('show-error-notification', $event)"
+        v-bind:germplasm-list-fetch="germplasmListFetch"
     >
     </GermplasmListsTable>
   </div>
@@ -29,11 +30,28 @@
 import { Component } from 'vue-property-decorator'
 import ProgramsBase from "@/components/program/ProgramsBase.vue";
 import GermplasmListsTable from "@/components/germplasm/GermplasmListsTable.vue";
+import {GermplasmListSort, GermplasmListSortField} from "@/breeding-insight/model/Sort";
+import {BackendPaginationController} from "@/breeding-insight/model/view_models/BackendPaginationController";
+import {BiResponse} from "@/breeding-insight/model/BiResponse";
+import {BrAPIService, BrAPIType} from "@/breeding-insight/service/BrAPIService";
 @Component({
   components: {
     GermplasmListsTable
   }
 })
 export default class GermplasmLists extends ProgramsBase {
+
+  private germplasmListFetch: (programId: string, sort: GermplasmListSort, paginationController: BackendPaginationController) => ((filters: any) => Promise<BiResponse>) =
+      function (programId: string, sort: GermplasmListSort, paginationController: BackendPaginationController) {
+        return function (filters: any) {
+          return BrAPIService.get<GermplasmListSortField>(
+              BrAPIType.LIST,
+              programId,
+              sort,
+              { pageSize: paginationController.pageSize, page: paginationController.currentPage - 1 },
+              filters)
+        };
+      };
 }
+
 </script>
