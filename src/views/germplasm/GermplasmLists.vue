@@ -44,6 +44,7 @@ export default class GermplasmLists extends ProgramsBase {
   private germplasmListFetch: (programId: string, sort: GermplasmListSort, paginationController: BackendPaginationController) => ((filters: any) => Promise<BiResponse>) =
       function (programId: string, sort: GermplasmListSort, paginationController: BackendPaginationController) {
         return function (filters: any) {
+          filters.type='germplasm';
           return BrAPIService.get<GermplasmListSortField>(
               BrAPIType.LIST,
               programId,
