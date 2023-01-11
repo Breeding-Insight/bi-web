@@ -188,20 +188,6 @@ export default class GermplasmListsTable extends Vue {
     } finally {
       this.germplasmListsLoading = false;
     }
-
-    /*
-    GermplasmService.getAll(this.activeProgram!.id!, paginationQuery).then(([germplasmLists, metadata]) => {
-        this.germplasmLists = germplasmLists;
-        this.germplasmListsPagination = new Pagination(metadata.pagination);
-        // Account for brapi 0 indexing of paging
-        this.germplasmListsPagination.currentPage = this.germplasmListsPagination.currentPage.valueOf() + 1;
-    }).catch((error) => {
-      // Display error that germplasm lists cannot be loaded
-      this.$emit('show-error-notification', 'Error while trying to load germplasm lists');
-      throw error;
-    }).finally(() => this.germplasmListsLoading = false);
-     */
-
   }
 
   formatDate(date: Date) {
