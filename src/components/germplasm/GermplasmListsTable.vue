@@ -136,12 +136,9 @@ export default class GermplasmListsTable extends Vue {
   private fileOptions = Object.values(FileType);
 
   private germplasmListSort!: GermplasmListSort;
-
-
   private filters: any = {};
   private germplasmListCallStack?: CallStack;
-
-
+  
   private updateSort!: (sort: GermplasmListSort) => void;
   private fieldMap: any = {
     'name': GermplasmListSortField.Name,
