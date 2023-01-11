@@ -27,7 +27,7 @@
       backend-sorting
       v-bind:default-sort="[fieldMap['name'], 'ASC']"
       v-on:sort="setSort"
-      v-on:search="filters = $event"
+      v-on:search="initSearch"
       v-bind:search-debounce="400"
     >
       <b-table-column field="name" label="Name" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
@@ -151,7 +151,11 @@ export default class GermplasmListsTable extends Vue {
     'ownerName': GermplasmListSortField.CreatedBy
   };
 
-
+  initSearch(filter: any) {
+    this.filters = filter;
+    // When filtering the list, set the page to the first page.
+    this.paginationController.updatePage(1);
+  }
 
   mounted() {
     this.germplasmListCallStack = new CallStack(this.germplasmListFetch(
