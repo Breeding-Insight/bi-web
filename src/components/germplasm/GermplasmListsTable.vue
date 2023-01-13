@@ -61,7 +61,7 @@
       <template v-slot:emptyMessage>
         <EmptyTableMessage>
           <p class="has-text-weight-bold">
-            Germplasm lists not yet specified.
+            Germplasm lists not yet specified or no matching lists found.
           </p>
         </EmptyTableMessage>
       </template>
@@ -138,7 +138,7 @@ export default class GermplasmListsTable extends Vue {
   private germplasmListSort!: GermplasmListSort;
   private filters: any = {};
   private germplasmListCallStack?: CallStack;
-  
+
   private updateSort!: (sort: GermplasmListSort) => void;
   private fieldMap: any = {
     'name': GermplasmListSortField.Name,
