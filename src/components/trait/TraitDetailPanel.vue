@@ -37,7 +37,7 @@
           <span class="has-text-weight-bold">Term Type</span>
         </div>
         <div class="column pt-0 pb-0">
-          <span class="is-size-7 mb-0">{{data.termType}}</span>
+          <span class="is-size-7 mb-0">{{TraitStringFormatters.getTermTypeString(data.termType)}}</span>
         </div>
       </div>
 
@@ -262,6 +262,7 @@
   import { DataFormEventBusHandler } from '@/components/forms/DataFormEventBusHandler';
   import { HelpCircleIcon } from 'vue-feather-icons'
   import ProgressBar from '@/components/forms/ProgressBar.vue'
+  import {TraitStringFormatters} from '@/breeding-insight/utils/TraitStringFormatters';
 
   @Component({
     components: {EditDataForm, SidePanel, BaseTraitForm, HelpCircleIcon, ProgressBar},
@@ -270,7 +271,7 @@
         'isSubscribed'
       ])
     },
-    data: () => ({DataType, MethodClass, Scale, Method, StringFormatters}),
+    data: () => ({DataType, MethodClass, Scale, Method, StringFormatters, TraitStringFormatters}),
     filters: {
       capitalize: function(value: string | undefined) : string | undefined {
         if (value === undefined) value = '';
