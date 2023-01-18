@@ -20,7 +20,8 @@ import {BiResponse, Response} from "@/breeding-insight/model/BiResponse";
 import {SortOrder} from "@/breeding-insight/model/Sort";
 
 export enum BrAPIType {
-  GERMPLASM = "germplasm"
+  GERMPLASM = "germplasm",
+  EXPERIMENT = "trials"
 }
 
 export class BrAPIService {

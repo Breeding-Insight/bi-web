@@ -26,13 +26,18 @@
         v-bind:pagination="experimentsPagination"
         v-on:show-error-notification="$emit('show-error-notification', $event)"
         v-on:paginate="paginationController.updatePage($event)"
-        v-on:paginate-toggle-all="paginationController.toggleShowAll()"
+        v-on:paginate-toggle-all="paginationController.toggleShowAll(experimentsPagination.totalCount.valueOf())"
         v-on:paginate-page-size="paginationController.updatePageSize($event)"
+        backend-sorting
+        v-bind:default-sort="[fieldMap['name'], 'ASC']"
+        v-on:sort="setSort"
+        v-on:search="filters = $event"
+        v-bind:search-debounce="400"
     >
-      <b-table-column label="Title" cell-class="fixed-width-wrapped" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+      <b-table-column label="Title" field="name" cell-class="fixed-width-wrapped" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
           {{ props.row.data.trialName }}
       </b-table-column>
-      <b-table-column label="Status" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+      <b-table-column label="Status" field="active" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" >
           {{ getStatus(props.row.data.active) }}
       </b-table-column>
       <b-table-column label="Date Created" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
@@ -64,30 +69,49 @@
 <script lang="ts">
 import {Component, Prop, Vue, Watch} from 'vue-property-decorator'
 import {validationMixin} from 'vuelidate';
-import { mapGetters } from 'vuex'
+import {mapGetters, mapMutations} from 'vuex'
 import {Program} from "@/breeding-insight/model/Program";
-import {TrialService} from "@/breeding-insight/service/TrialService";
 import EmptyTableMessage from "@/components/tables/EmtpyTableMessage.vue";
 import TableColumn from "@/components/tables/TableColumn.vue";
-import {Metadata, Pagination} from "@/breeding-insight/model/BiResponse";
+import {BiResponse, Pagination} from "@/breeding-insight/model/BiResponse";
 import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
 import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
 import {Trial} from '@/breeding-insight/model/Trial'
-import {Result, Err, Success, ResultGenerator } from "@/breeding-insight/model/Result";
 import ExpandableTable from '@/components/tables/expandableTable/ExpandableTable.vue';
 import {FileType} from "@/breeding-insight/model/FileType";
 import SelectModal from "@/components/modals/SelectModal.vue";
+import {CallStack} from "@/breeding-insight/utils/CallStack";
+import {
+  ExperimentSort,
+  Sort,
+  ExperimentSortField
+} from "@/breeding-insight/model/Sort";
+import {BackendPaginationController} from "@/breeding-insight/model/view_models/BackendPaginationController";
+import {UPDATE_EXPERIMENT_SORT} from "@/store/sorting/mutation-types";
 
 @Component({
   mixins: [validationMixin],
-  components: { ExpandableTable, EmptyTableMessage, TableColumn, SelectModal},
+  components: {ExpandableTable, EmptyTableMessage, TableColumn, SelectModal},
   computed: {
     ...mapGetters([
       'activeProgram'
-    ])
-  }
+    ]),
+    ...mapGetters('sorting',
+        [
+          'experimentSort'
+        ])
+  },
+  methods: {
+    ...mapMutations('sorting', {
+      updateSort: UPDATE_EXPERIMENT_SORT
+    })
+  },
+  data: () => ({Sort})
 })
 export default class ExperimentsObservationsTable extends Vue {
+
+  @Prop()
+  experimentsFetch!: (programId: string, sort: ExperimentSort, paginationController: BackendPaginationController) => (filters: any) => Promise<BiResponse>;
 
   private activeProgram?: Program;
   private experiments: Trial[] = [];
@@ -96,7 +120,7 @@ export default class ExperimentsObservationsTable extends Vue {
 
   private experimentsLoading = true;
 
-  private paginationController: PaginationController = new PaginationController();
+  private paginationController: BackendPaginationController = new BackendPaginationController();
 
   private experimentDownloadTitle = 'Download Experiment';
   private experimentDownloadSubtitle = 'File Format';
@@ -104,12 +128,28 @@ export default class ExperimentsObservationsTable extends Vue {
   //private fileExtension: string;
   //private selectedExperimentDbId: string;
   private fileOptions = Object.values(FileType);
+  private filters: any = {};
+  private experimentCallStack?: CallStack;
+
+  private experimentSort!: ExperimentSort;
+  private updateSort!: (sort: ExperimentSort) => void;
+  private fieldMap: any = {
+    'name': ExperimentSortField.Name,
+    'active': ExperimentSortField.Active,
+  };
 
   mounted() {
-    this.getExperiments();
+    this.experimentCallStack = new CallStack(this.experimentsFetch(
+        this.activeProgram!.id!,
+        this.experimentSort,
+        this.paginationController
+    ));
+
+    this.paginationController.pageSize = 20;
   }
 
   @Watch('paginationController', { deep: true})
+  @Watch('filters', {deep: true})
   async getExperiments() {
     let paginationQuery: PaginationQuery = PaginationController.getPaginationSelections(
         this.paginationController.currentPage,
@@ -119,14 +159,16 @@ export default class ExperimentsObservationsTable extends Vue {
     this.paginationController.setCurrentCall(paginationQuery);
 
     try {
-      const response: Result<Error, [Trial[], Metadata]> = await TrialService.getAll(this.activeProgram!.id!, paginationQuery);
-      if(response.isErr()) throw response.value;
-      let [experiments, metadata] = response.value;
+      const {call, callId} = this.experimentCallStack.makeCall(this.filters);
 
-      if (this.paginationController.matchesCurrentRequest(metadata.pagination)) {
-        this.experiments = experiments;
-        this.experimentsPagination = metadata.pagination;
-      }
+      const response = await call;
+      if (!this.experimentCallStack.isCurrentCall(callId)) return;
+      this.experimentsPagination = new Pagination(response.metadata.pagination);
+      // Account for brapi 0 indexing of paging
+      this.experimentsPagination.currentPage = this.experimentsPagination.currentPage.valueOf() + 1;
+      this.experiments = response.result.data;
+      this.experimentsLoading = false;
+
     } catch (err) {
       // Display error that experiments cannot be loaded
       this.$emit('show-error-notification', 'Error while trying to load experiments');
@@ -150,11 +192,18 @@ export default class ExperimentsObservationsTable extends Vue {
     this.fileExtension = value;
   }
 
-  getStatus(active){
+  getStatus(active: boolean){
     if (active) {
       return "active";
     } else {
       return "archived";
+    }
+  }
+
+  setSort(field: string, order: string) {
+    if (field in this.fieldMap) {
+      this.updateSort(new ExperimentSort(this.fieldMap[field], Sort.orderAsBI(order)));
+      this.getExperiments();
     }
   }
 

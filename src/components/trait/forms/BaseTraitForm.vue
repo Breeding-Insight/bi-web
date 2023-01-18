@@ -477,8 +477,10 @@ export default class BaseTraitForm extends Vue {
     } else if (this.scaleHistory[value.toLowerCase()]) {
       this.trait.scale = this.scaleHistory[value.toLowerCase()];
       this.trait.scale.dataType = value;
-      this.trait!.scale!.scaleName = value;
 
+      if (!Scale.dataTypeEquals(value, DataType.Numerical)) {
+        this.trait!.scale!.scaleName = value;
+      }
     } else {
       // No history
       this.trait.scale = new Scale();
@@ -487,7 +489,6 @@ export default class BaseTraitForm extends Vue {
       // Allow for units in the numerical and duration traits
       if (Scale.dataTypeEquals(value, DataType.Numerical)) {
         this.trait!.scale!.scaleName = undefined;
-
       } else {
         this.trait!.scale!.scaleName = value;
       }
