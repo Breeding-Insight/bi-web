@@ -24,20 +24,25 @@
       v-on:paginate="paginationController.updatePage($event)"
       v-on:paginate-toggle-all="paginationController.toggleShowAll(germplasmListsPagination.totalCount.valueOf())"
       v-on:paginate-page-size="paginationController.updatePageSize($event)"
+      backend-sorting
+      v-bind:default-sort="[fieldMap['name'], 'ASC']"
+      v-on:sort="setSort"
+      v-on:search="initSearch"
+      v-bind:search-debounce="400"
     >
-      <b-table-column field="data.listName" label="Name" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+      <b-table-column field="name" label="Name" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
         {{ props.row.data.listName}}
       </b-table-column>
-      <b-table-column field="data.listDescription" label="Description" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+      <b-table-column field="description" label="Description" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
         {{ props.row.data.listDescription }}
       </b-table-column>
-      <b-table-column field="data.listSize" label="Total Entries" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+      <b-table-column field="size" label="Total Entries" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
         {{ props.row.data.listSize }}
       </b-table-column>
-      <b-table-column field="data.dateCreated" label="Created Date" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+      <b-table-column field="dateCreated" label="Created Date" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
         {{ formatDate(props.row.data.dateCreated) }}
       </b-table-column>
-      <b-table-column field="data.listOwnerName" label="Created By" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+      <b-table-column field="ownerName" label="Created By" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
         {{ props.row.data.listOwnerName }}
       </b-table-column>
       <b-table-column  field="data.listDbId" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
@@ -56,7 +61,7 @@
       <template v-slot:emptyMessage>
         <EmptyTableMessage>
           <p class="has-text-weight-bold">
-            Germplasm lists not yet specified.
+            Germplasm lists not yet specified or no matching lists found.
           </p>
         </EmptyTableMessage>
       </template>
@@ -65,15 +70,15 @@
 </template>
 
 <script lang="ts">
-import {Component, Vue, Watch} from 'vue-property-decorator'
+import {Component, Vue, Watch, Prop} from 'vue-property-decorator'
 import {DownloadIcon} from 'vue-feather-icons'
 import {validationMixin} from 'vuelidate';
-import { mapGetters } from 'vuex'
+import { mapGetters, mapMutations } from 'vuex'
 import {Program} from "@/breeding-insight/model/Program";
 import BasicInputField from "@/components/forms/BasicInputField.vue";
 import EmptyTableMessage from "@/components/tables/EmtpyTableMessage.vue";
 import TableColumn from "@/components/tables/TableColumn.vue";
-import {Pagination} from "@/breeding-insight/model/BiResponse";
+import {Pagination, BiResponse} from "@/breeding-insight/model/BiResponse";
 import {BackendPaginationController} from "@/breeding-insight/model/view_models/BackendPaginationController";
 import BaseTraitForm from "@/components/trait/forms/BaseTraitForm.vue";
 import {GermplasmList} from "@/breeding-insight/model/GermplasmList";
@@ -83,6 +88,14 @@ import moment from "moment";
 import SelectModal from "@/components/modals/SelectModal.vue";
 import {FileType} from "@/breeding-insight/model/FileType";
 import GermplasmDownloadButton from '@/components/germplasm/GermplasmDownloadButton.vue';
+import {UPDATE_GERMPLASM_LIST_SORT} from "@/store/sorting/mutation-types";
+import {CallStack} from "@/breeding-insight/utils/CallStack";
+import {
+  GermplasmListSort,
+  Sort,
+  GermplasmListSortField, GermplasmSort
+} from "@/breeding-insight/model/Sort";
+import {UPDATE_EXPERIMENT_SORT} from "@/store/sorting/mutation-types";
 
 @Component({
   mixins: [validationMixin],
@@ -93,10 +106,23 @@ import GermplasmDownloadButton from '@/components/germplasm/GermplasmDownloadBut
   computed: {
     ...mapGetters([
       'activeProgram'
-    ])
-  }
+    ]),
+    ...mapGetters('sorting',
+      [
+        'germplasmListSort'
+      ])
+  },
+  methods: {
+    ...mapMutations('sorting', {
+      updateSort: UPDATE_GERMPLASM_LIST_SORT
+    })
+  },
+  data: () => ({Sort})
 })
 export default class GermplasmListsTable extends Vue {
+
+  @Prop()
+  germplasmListFetch!: (programId: string, sort: GermplasmListSort, paginationController: BackendPaginationController) => (filters: any) => Promise<BiResponse>;
 
   private activeProgram?: Program;
   private germplasmListsPagination?: Pagination = new Pagination();
@@ -109,25 +135,56 @@ export default class GermplasmListsTable extends Vue {
   private modalActive: boolean = false;
   private fileOptions = Object.values(FileType);
 
+  private germplasmListSort!: GermplasmListSort;
+  private filters: any = {};
+  private germplasmListCallStack?: CallStack;
+
+  private updateSort!: (sort: GermplasmListSort) => void;
+  private fieldMap: any = {
+    'name': GermplasmListSortField.Name,
+    'description': GermplasmListSortField.Description,
+    'size': GermplasmListSortField.TotalEntries,
+    'dateCreated': GermplasmListSortField.CreatedDate,
+    'ownerName': GermplasmListSortField.CreatedBy
+  };
+
+  initSearch(filter: any) {
+    this.filters = filter;
+    // When filtering the list, set the page to the first page.
+    this.paginationController.updatePage(1);
+  }
+
   mounted() {
-    this.getGermplasmLists();
+    this.germplasmListCallStack = new CallStack(this.germplasmListFetch(
+        this.activeProgram!.id!,
+        this.germplasmListSort,
+        this.paginationController
+    ));
+    this.paginationController.pageSize = 20;
   }
 
   @Watch('paginationController', { deep: true})
-  getGermplasmLists() {
+  @Watch('filters', {deep: true})
+  async getGermplasmLists() {
     let paginationQuery = BackendPaginationController.getPaginationSelections(
           this.paginationController.currentPage, this.paginationController.pageSize, this.paginationController.showAll);
 
-    GermplasmService.getAll(this.activeProgram!.id!, paginationQuery).then(([germplasmLists, metadata]) => {
-        this.germplasmLists = germplasmLists;
-        this.germplasmListsPagination = new Pagination(metadata.pagination);
-        // Account for brapi 0 indexing of paging
-        this.germplasmListsPagination.currentPage = this.germplasmListsPagination.currentPage.valueOf() + 1;
-    }).catch((error) => {
-      // Display error that germplasm lists cannot be loaded
+    this.paginationController.setCurrentCall(paginationQuery);
+
+    try {
+      const {call, callId} = this.germplasmListCallStack.makeCall(this.filters);
+      const response = await call;
+      if (!this.germplasmListCallStack.isCurrentCall(callId)) return;
+      this.germplasmListsPagination = new Pagination(response.metadata.pagination);
+      // Account for brapi 0 indexing of paging
+      this.germplasmListsPagination.currentPage = this.germplasmListsPagination.currentPage.valueOf() + 1;
+      this.germplasmLists = response.result.data;
+      this.germplasmListsLoading = false;
+    } catch (err) {
       this.$emit('show-error-notification', 'Error while trying to load germplasm lists');
-      throw error;
-    }).finally(() => this.germplasmListsLoading = false);
+    } finally {
+      this.germplasmListsLoading = false;
+    }
   }
 
   formatDate(date: Date) {
@@ -136,6 +193,13 @@ export default class GermplasmListsTable extends Vue {
 
   updatePageSize(pageSize: string) {
     this.paginationController.updatePageSize(Number(pageSize).valueOf());
+  }
+
+  setSort(field: string, order: string) {
+    if (field in this.fieldMap) {
+      this.updateSort(new GermplasmListSort(this.fieldMap[field], Sort.orderAsBI(order)));
+      this.getGermplasmLists();
+    }
   }
 }
 </script>

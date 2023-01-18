@@ -43,5 +43,8 @@ export const UPDATE_PROGRAM_SORT = 'updateProgramSort';
 // germplasm table
 export const UPDATE_GERMPLASM_SORT = 'updateGermplasmSort';
 
+// germplasm list table
+export const UPDATE_GERMPLASM_LIST_SORT = 'updateGermplasmListSort';
+
 // experiment table
 export const UPDATE_EXPERIMENT_SORT = 'updateExperimentSort';

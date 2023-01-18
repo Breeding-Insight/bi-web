@@ -21,7 +21,8 @@ import {SortOrder} from "@/breeding-insight/model/Sort";
 
 export enum BrAPIType {
   GERMPLASM = "germplasm",
-  EXPERIMENT = "trials"
+  EXPERIMENT = "trials",
+  LIST = "lists"
 }
 
 export class BrAPIService {
