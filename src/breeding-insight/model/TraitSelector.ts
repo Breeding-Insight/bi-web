@@ -18,7 +18,8 @@ export enum TraitField {
   CREATED_BY_USER_ID = 'createdByUserId',
   CREATED_BY_USER_NAME = 'createdByUserName',
   UPDATED_BY_USER_ID = 'updatedByUserId',
-  UPDATED_BY_USER_NAME = 'updatedByUserName'
+  UPDATED_BY_USER_NAME = 'updatedByUserName',
+  TERM_TYPE = 'termType'
 }
 
 export enum TermType {
