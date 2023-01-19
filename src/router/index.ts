@@ -197,7 +197,7 @@ const routes = [
         path: 'locations',
         name: 'program-locations',
         meta: {
-          title: 'Program Location Management',
+          title: 'Program Locations',
           layout: layouts.userSideBar
         },
         component: ProgramLocationsManagement
@@ -206,7 +206,7 @@ const routes = [
         path: 'users',
         name: 'program-users',
         meta: {
-          title: 'Program User Management',
+          title: 'Program Users',
           layout: layouts.userSideBar
         },
         component: ProgramUserManagement
