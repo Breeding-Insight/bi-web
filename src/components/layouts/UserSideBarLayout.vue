@@ -92,6 +92,13 @@
             </li>
             <li>
               <router-link
+                  v-bind:to="{name: 'experiments-observations', params: {programId: activeProgram.id}}"
+              >
+                Experiments & Observations
+              </router-link>
+            </li>
+            <li>
+              <router-link
                   v-bind:to="{name: 'ontology', params: {programId: activeProgram.id}}"
                   :id="ontologyMenuId"
               >
@@ -134,13 +141,6 @@
                   :id="jobManagementMenuId"
               >
                 Jobs
-              </router-link>
-            </li>
-            <li>
-              <router-link
-                  v-bind:to="{name: 'experiments-observations', params: {programId: activeProgram.id}}"
-              >
-                Experiments & Observations
               </router-link>
             </li>
           </ul>
