@@ -183,10 +183,10 @@ const routes = [
     beforeEnter: processProgramNavigation
   },    
   {
-    path: '/programs/:programId/program-management',
-    name: 'program-management',
+    path: '/programs/:programId/program-administration',
+    name: 'program-administration',
     meta: {
-      title: 'Program Management',
+      title: 'Program Administration',
       layout: layouts.userSideBar
     },
     component: ProgramManagement,

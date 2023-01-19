@@ -124,10 +124,10 @@
             -->
             <li>
               <router-link
-                v-bind:to="{name: 'program-management', params: {programId: activeProgram.id}}"
+                v-bind:to="{name: 'program-administration', params: {programId: activeProgram.id}}"
                 :id="programManagementMenuId"
               >
-                Program Management
+                Program Administration
               </router-link>
             </li>
             <li>
