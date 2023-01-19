@@ -378,10 +378,10 @@ const routes = [
         component: ImportExperiment
       },
       {
-        path: 'brapi-import',
-        name: 'brapi-import',
+        path: 'data-mapping',
+        name: 'data-mapping',
         meta: {
-          title: 'BrAPI Import',
+          title: 'Data Mapping',
           layout: layouts.userSideBar
         },
         component: BrAPIImporter
