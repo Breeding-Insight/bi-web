@@ -154,12 +154,12 @@
           </p>
           <ul class="menu-list">
             <li>
-              <router-link to="/admin/user-management" :id="usersMenuId">
+              <router-link to="/admin/users" :id="usersMenuId">
                 Users
               </router-link>
             </li>
             <li>
-              <router-link to="/admin/program-management" :id="programsMenuId">
+              <router-link to="/admin/programs" :id="programsMenuId">
                 Programs
               </router-link>
             </li>

@@ -119,21 +119,21 @@ const routes = [
   },
   { path: '/admin',
     name: 'admin',
-    redirect: '/admin/program-management' },
+    redirect: '/admin/programs' },
   {
-    path: '/admin/program-management',
-    name: 'admin-program-management',
+    path: '/admin/programs',
+    name: 'admin-programs',
     meta: {
-      title: 'Admin Program Management',
+      title: 'Admin Programs',
       layout: layouts.userSideBar
     },
     component: AdminProgramManagement
   },
   {
-    path: '/admin/user-management',
-    name: 'admin-user-management',
+    path: '/admin/users',
+    name: 'admin-users',
     meta: {
-      title: 'Admin User Management',
+      title: 'Admin Users',
       layout: layouts.userSideBar
     },
     component: AdminUserManagement
