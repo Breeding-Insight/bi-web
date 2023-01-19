@@ -12,7 +12,7 @@
         v-bind:default-sort="entryNumberVisible ? [fieldMap['importEntryNumber'], 'ASC'] :
         [fieldMap['accessionNumber'], 'ASC']"
         v-on:sort="setSort"
-        v-on:search="filters = $event"
+        v-on:search="initSearch"
         v-bind:search-debounce="400"
     >
       <b-table-column v-if="entryNumberVisible" field="importEntryNumber" label="Entry Number" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
@@ -184,6 +184,13 @@ export default class GermplasmTable extends Vue {
       this.updateSort(new GermplasmSort(this.fieldMap[field], Sort.orderAsBI(order)));
       this.getGermplasm();
     }
+  }
+
+  initSearch(filters: any) {
+    this.filters = filters;
+
+    // When filtering the list, set a page to the first page.
+    this.paginationController.updatePage(1);
   }
 
 }
