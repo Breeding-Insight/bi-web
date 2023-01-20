@@ -41,10 +41,10 @@
           {{ getStatus(props.row.data.active) }}
       </b-table-column>
       <b-table-column label="Date Created" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-          {{  }}
+          {{ props.row.data.additionalInfo.createdDate }}
       </b-table-column>
       <b-table-column label="Created By" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-        {{  }}
+        {{ props.row.data.additionalInfo.createdBy.userName }}
       </b-table-column>
       <b-table-column label="Datasets" cell-class="fixed-width-wrapped" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
         <template v-for="dataset in props.row.data.additionalInfo.datasets">
