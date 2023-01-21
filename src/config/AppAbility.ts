@@ -17,7 +17,7 @@
 
 import {Ability, AbilityClass} from '@casl/ability';
 
-type Actions = 'manage' | 'create' | 'read' | 'update' | 'delete' | 'archive' | 'access';
+type Actions = 'manage' | 'create' | 'read' | 'update' | 'delete' | 'archive' | 'access' | 'curate';
 type Subjects = 'ProgramUser' | 'Location' | 'User' | 'AdminSection' | 'Trait' | 'Import' | 'ProgramConfiguration';
 
 export type AppAbility = Ability<[Actions, Subjects]>;

@@ -19,7 +19,7 @@
     <div class="columns is-marginless">
       <div
           class="column side-menu p-0 is-narrow"
-          :class="{ 'is-hidden-mobile': true, 'is-hidden-tablet-only': !showSidebar || !showSidebarMobile, 'is-hidden-desktop': !showSidebar}"
+          :class="{ 'is-hidden': !showSidebar}"
       >
         <div class="is-300px"></div>
       </div>
@@ -115,8 +115,10 @@ export default class Footer extends Vue {
   }
 
   get showSidebar() {
-    return this.$route.meta.layout == 'adminSideBar' || this.$route.meta.layout == 'userSideBar' ||
-           this.$route.meta.layout == 'infoSideBar' || this.$route.meta.layout == 'baseSideBar';
+    // return this.$route.meta.layout == 'adminSideBar' || this.$route.meta.layout == 'userSideBar' ||
+    //        this.$route.meta.layout == 'infoSideBar' || this.$route.meta.layout == 'baseSideBar';
+    return this.showSidebarMobile && (this.$route.meta.layout == 'adminSideBar' || this.$route.meta.layout == 'userSideBar' ||
+           this.$route.meta.layout == 'infoSideBar' || this.$route.meta.layout == 'baseSideBar');
   }
 }
 

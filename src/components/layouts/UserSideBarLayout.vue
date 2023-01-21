@@ -143,6 +143,13 @@
                 Experiments & Observations
               </router-link>
             </li>
+            <li>
+              <router-link
+                  v-bind:to="{name: 'pending-imports', params: {programId: activeProgram.id}}"
+              >
+                Pending Imports <span class="ml-2 tag is-warning">3</span>
+              </router-link>
+            </li>
           </ul>
         </template>
         <template v-if="$ability.can('access', 'AdminSection')">

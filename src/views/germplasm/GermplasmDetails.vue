@@ -135,7 +135,7 @@ import {GermplasmSortField, SortOrder} from "@/breeding-insight/model/Sort";
       // Parse out the germplasm id
       const germplasm = germplasmResult.result.data[0];
       const germplasmUUID = GermplasmUtils.getGermplasmUUID(germplasm.externalReferences);
-      next({name: 'germplasm-details', params: {programId, germplasmId: germplasmUUID}});
+      next({name: 'germplasm-details', params: {programId, germplasmId: germplasmUUID!}});
       return;
     });
   }

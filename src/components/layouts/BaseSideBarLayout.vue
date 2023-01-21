@@ -19,9 +19,9 @@
   <div class="sidebarlayout">
 
     <header class="main-header">
-      <div class="level header-title is-marginless is-mobile">
+      <div class="level header-title is-marginless">
         <div class="level-left">
-          <div class="level-item is-hidden-desktop is-pulled-left">
+          <div class="level-item is-pulled-left">
             <a role="button"
                class="navbar-hamburger has-text-dark"
                aria-label="Open Navigation Menu"
@@ -63,7 +63,7 @@
       </div>
     </header>
     <div class="columns is-marginless">
-      <div class="column is-narrow p-0" :class="{ 'is-hidden-touch': !showSidebarMobile }">
+      <div class="column is-narrow p-0" :class="{ 'is-hidden': !showSidebarMobile }">
         <div class="is-300px">
           <div id="sideMenu" class="menu mb-0 menu-test sidebar side-menu">
             <slot name="menu"></slot>
@@ -113,10 +113,10 @@ import UserStatusMenu from "@/components/layouts/menus/UserStatusMenu.vue";
     @Prop()
     username!: string;
 
-    @Watch('$route')
-    onUrlChange() {
-      store.commit(SHOW_SIDEBAR_MOBILE, false);
-    }
+    // @Watch('$route')
+    // onUrlChange() {
+    //   store.commit(SHOW_SIDEBAR_MOBILE, false);
+    // }
 
     toggleSidebar() {
       store.commit(SHOW_SIDEBAR_MOBILE, !this.showSidebarMobile);

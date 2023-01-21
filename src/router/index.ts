@@ -69,6 +69,8 @@ import JobManagement from '@/views/program/JobManagement.vue';
 import GermplasmPedigreesView from "@/components/germplasm/GermplasmPedigreesView.vue";
 import ImportExperiment from "@/views/import/ImportExperiment.vue";
 import ExperimentsAndObservations from "@/views/experiments-and-observations/ExperimentsAndObservations.vue";
+import PendingImports from "@/views/import/PendingImports.vue";
+import CurateImport from "@/views/import/CurateImport.vue";
 
 Vue.use(VueRouter);
 
@@ -181,7 +183,32 @@ const routes = [
     },
     component: ExperimentsAndObservations,
     beforeEnter: processProgramNavigation
-  },    
+  },
+  {
+    path: '/programs/:programId/pending-imports',
+    name: 'pending-imports',
+    meta: {
+      title: 'Pending Imports',
+      layout: layouts.userSideBar
+    },
+    component: PendingImports,
+    beforeEnter: processProgramNavigation
+  },
+  {
+    path: '/programs/:programId/pending-imports/curate',
+    name: 'curate-pending-imports',
+    meta: {
+      title: 'Curate Pending Imports',
+      layout: layouts.userSideBar
+    },
+    component: CurateImport,
+    props: (route: any) => {
+      return ({
+        ...route.params
+      })
+    },
+    beforeEnter: processProgramNavigation
+  },
   {
     path: '/programs/:programId/program-management',
     name: 'program-management',

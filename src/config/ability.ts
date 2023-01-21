@@ -38,6 +38,9 @@ const rolePermissions: Record<string, DefinePermissions> = {
     can('archive', 'Trait');
     can('create', 'Import');
     can('access', 'ProgramConfiguration');
+    can('create', 'ProgramConfiguration');
+    can('update', 'ProgramConfiguration');
+    can('curate', 'Import');
   },
   admin(user, { can }) {
     can('create', 'ProgramUser');

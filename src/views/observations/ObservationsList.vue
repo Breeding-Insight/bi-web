@@ -18,6 +18,7 @@
 <template>
   <div class="observations-list">
     <h1 class="title">{{title}}</h1>
+    <ObservationsPlot/>
     <ObservationsListTable
     v-on:show-success-notification="$emit('show-success-notification', $event)"
     v-on:show-error-notification="$emit('show-error-notification', $event)"
@@ -33,10 +34,11 @@
   import {Study} from '@/breeding-insight/model/Study';
   import {StudyService} from '@/breeding-insight/service/StudyService';
   import {Result} from '@/breeding-insight/model/Result';
+  import ObservationsPlot from "@/components/observations/ObservationsPlot.vue";
 
   @Component({
     components: {
-      ObservationsListTable
+      ObservationsListTable, ObservationsPlot
     }
   })
 
