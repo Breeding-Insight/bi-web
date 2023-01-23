@@ -130,7 +130,7 @@ export default class ImportExperiment extends ProgramsBase {
   }
 
   async loadExperiments () {
-    let expResponse = await BrAPIService.get(BrAPIType.TRIALS, this.activeProgram!.id!, { field: undefined, order: SortOrder.Ascending }, { page: 0, pageSize: 1000 }, {"metadata": false});
+    let expResponse = await BrAPIService.get(BrAPIType.EXPERIMENT, this.activeProgram!.id!, { field: undefined, order: SortOrder.Ascending }, { page: 0, pageSize: 1000 }, {"metadata": false});
     if (expResponse.result && expResponse.result.data) {
       this.experimentOptions = expResponse.result.data.map((exp: Trial) => {
         let breedingInsightId = GermplasmUtils.getBreedingInsightId(exp.externalReferences!, "/trials");
