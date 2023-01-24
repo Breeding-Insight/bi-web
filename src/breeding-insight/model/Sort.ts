@@ -173,7 +173,9 @@ export class GermplasmSort {
 // experiments
 export enum ExperimentSortField {
   Name = "name",
-  Active = "active"
+  Active = "active",
+  CreatedBy = "createdBy",
+  CreatedDate = "createdDate"
 }
 
 export class ExperimentSort {
