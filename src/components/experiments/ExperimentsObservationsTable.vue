@@ -40,10 +40,10 @@
       <b-table-column label="Status" field="active" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" >
           {{ getStatus(props.row.data.active) }}
       </b-table-column>
-      <b-table-column label="Date Created" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+      <b-table-column label="Date Created" field="createdDate" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
           {{ props.row.data.additionalInfo.createdDate }}
       </b-table-column>
-      <b-table-column label="Created By" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+      <b-table-column label="Created By" field="createdBy" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
         {{ props.row.data.additionalInfo.createdBy.userName }}
       </b-table-column>
       <b-table-column label="Datasets" cell-class="fixed-width-wrapped" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
@@ -136,6 +136,8 @@ export default class ExperimentsObservationsTable extends Vue {
   private fieldMap: any = {
     'name': ExperimentSortField.Name,
     'active': ExperimentSortField.Active,
+    'createdDate': ExperimentSortField.CreatedDate,
+    'createdBy': ExperimentSortField.CreatedBy
   };
 
   mounted() {
