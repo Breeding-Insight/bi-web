@@ -60,6 +60,7 @@
     <GermplasmTable
         v-bind:germplasmFetch="germplasmFetch"
         entryNumberVisible="true"
+        v-bind:reference-id="referenceId"
     >
     </GermplasmTable>
   </div>
@@ -96,6 +97,7 @@ export default class GermplasmByList extends GermplasmBase {
 
   private activeProgram?: Program;
   private list: any = null;
+  private referenceId?: string;
 
   // Set the method used to populate the germplasm table
   private germplasmFetch: (programId: string, sort: GermplasmSort, paginationController: BackendPaginationController) => ((filters: any) => Promise<BiResponse>) =
@@ -119,6 +121,9 @@ export default class GermplasmByList extends GermplasmBase {
     const {result: {data: lists}} = await GermplasmDAO.getAllLists(this.activeProgram!.id!, paginationQuery);
     const matchingLists: any[] = lists.filter(list => list.listDbId === this.$route.params.listId);
     this.list = matchingLists[0];
+    this.referenceId = matchingLists[0].externalReferences.reduce((result: string, ref: any) => {
+      return ref.referenceSource == "breeding-insight.net/lists" ? ref.referenceID : result;
+    },undefined);
   }
 }
 </script>
