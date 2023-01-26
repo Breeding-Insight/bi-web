@@ -55,7 +55,5 @@ export class GermplasmUtils {
                 germplasm.additionalInfo.importEntryMumber;
         }
         return "";
-        // return germplasm.additionalInfo ? germplasm.additionalInfo.importEntryNumber ||
-        //     germplasm.additionalInfo.listEntryNumbers[<any>referenceId] : "";
     }
 }
