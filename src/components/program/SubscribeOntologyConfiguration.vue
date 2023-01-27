@@ -135,7 +135,9 @@ export default class SubscribeOntologyConfiguration extends ProgramsBase {
   async subscribeOntology() {
 
     try {
-      if (!this.selectedOntology.id) throw 'Please select an ontology to subscibe to.';
+      if (!this.selectedOntology.id) {
+        throw 'Please select an ontology to subscribe to.';
+      }
       // Loading wheel show
       this.subscribeProcessing = true;
       await SharedOntologyService.subscribeOntology(this.activeProgram!.id!, this.selectedOntology.id);

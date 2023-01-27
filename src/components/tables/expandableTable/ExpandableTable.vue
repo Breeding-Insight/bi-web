@@ -41,37 +41,36 @@
         v-on="$listeners"
         v-bind:loading="loading"
         :row-class="calculateRowClass"
-        backend-filtering
         v-bind:debounce-search="searchDebounce"
         v-on:filters-change="cloneFilters"
     >
 
       <slot></slot>
-      <b-table-column v-if="editable || details || archivable" v-slot="props" cell-class="has-text-right is-narrow" :th-attrs="(column) => ({scope:'col'})">
+      <b-table-column v-if="editable || details || archivable" v-slot="props" cell-class="has-text-left is-narrow" :th-attrs="(column) => ({scope:'col'})">
         <a
-            v-if="editable || details"
+            v-if="isRowEditable(props.row) || details"
             data-testid="edit"
             v-on:click="props.toggleDetails(props.row)"
             v-on:keypress.enter.space="props.toggleDetails(props.row)"
             tabindex="0"
         >
-          <span v-if="editable">Edit</span>
+          <span v-if="isRowEditable(props.row)">Edit</span>
           <span v-if="details">Details</span>
 
-          <span v-if="(editable || details) && !isVisibleDetailRow(props.row)" class="icon is-small margin-right-2 has-vertical-align-middle">
+          <span v-if="(isRowEditable(props.row) || details) && !isVisibleDetailRow(props.row)" class="icon is-small margin-right-2 has-vertical-align-middle">
             <ChevronRightIcon size="1x" aria-hidden="true"></ChevronRightIcon>
           </span>
-            <span v-if="(editable || details) && isVisibleDetailRow(props.row)" class="icon is-small margin-right-2 has-vertical-align-middle">
+            <span v-if="(isRowEditable(props.row) || details) && isVisibleDetailRow(props.row)" class="icon is-small margin-right-2 has-vertical-align-middle">
             <ChevronDownIcon size="1x" aria-hidden="true"></ChevronDownIcon>
           </span>
         </a>
         <a
-            v-if="archivable"
+            v-if="isRowArchivable(props.row)"
             v-on:click="$emit('remove', props.row.data)"
             v-on:keypress.enter.space="$emit('remove', props.row.data)"
             tabindex="0"
         >
-          Deactivate
+          {{ deactivateLinkText }}
         </a>
       </b-table-column>
 
@@ -130,6 +129,10 @@ export default class ExpandableTable extends Mixins(ValidationMixin) {
   @Prop()
   editable!: boolean;
   @Prop()
+  rowEditable!: Function;
+  @Prop()
+  rowArchivable!: Function;
+  @Prop()
   archivable!: boolean;
   @Prop()
   pagination!: Pagination;
@@ -145,6 +148,8 @@ export default class ExpandableTable extends Mixins(ValidationMixin) {
   details!: boolean;
   @Prop()
   searchDebounce!: number;
+  @Prop({default: "Deactivate"})
+  deactivateLinkText?: string;
 
   private tableRows: Array<TableRow<any>> = new Array<TableRow<any>>();
   private openDetail: Array<TableRow<any>> = new Array<TableRow<any>>();
@@ -230,6 +235,14 @@ export default class ExpandableTable extends Mixins(ValidationMixin) {
   // A patch so if we're listening the filters, we can still debounce
   cloneFilters(event: any) {
     this.$emit('search', JSON.parse(JSON.stringify(event)));
+  }
+
+  isRowEditable(row: any) {
+    return ((typeof this.rowEditable === "function") ? this.rowEditable(row) : true) && this.editable;
+  }
+
+  isRowArchivable(row: any) {
+    return ((typeof this.rowArchivable === "function") ? this.rowArchivable(row) : true) && this.archivable;
   }
 }
 </script>
