@@ -19,6 +19,7 @@
   <ontology-table
       v-bind:active="true"
       v-bind:ontologySort="activeOntologySort"
+      v-bind:ontologyFetch="ontologyFetch"
       v-on:newSortColumn="newSortColumn"
       v-on:toggleSortOrder="toggleSortOrder"
       @show-success-notification="$emit('show-success-notification', $event)"
@@ -36,7 +37,11 @@ import {
   ACTIVE_ONT_NEW_SORT_COLUMN,
   ACTIVE_ONT_TOGGLE_SORT_ORDER
 } from "@/store/sorting/mutation-types";
-import {OntologySort, OntologySortField} from "@/breeding-insight/model/Sort";
+import {GermplasmSort, GermplasmSortField, OntologySort, OntologySortField} from "@/breeding-insight/model/Sort";
+import {BackendPaginationController} from "@/breeding-insight/model/view_models/BackendPaginationController";
+import {BiResponse} from "@/breeding-insight/model/BiResponse";
+import {BrAPIService, BrAPIType} from "@/breeding-insight/service/BrAPIService";
+import { TraitService } from '@/breeding-insight/service/TraitService';
 
 @Component({
   components: {OntologyTable},
@@ -58,5 +63,17 @@ export default class OntologyActiveTable extends Vue {
   private activeOntologySort!: OntologySort;
   private newSortColumn!: (field: OntologySortField) => void;
   private toggleSortOrder!: () => void;
+
+  // Set the method used to populate the germplasm table
+  private ontologyFetch: (programId: string, sort: OntologySort, paginationController: BackendPaginationController) => ((filters: any) => Promise<BiResponse>) =
+      function (programId: string, sort: OntologySort, paginationController: BackendPaginationController) {
+        return function (filters: any) {
+          return TraitService.getTraits(
+              programId,
+              sort,
+              { pageSize: paginationController.pageSize, page: paginationController.currentPage - 1 },
+              filters)
+        };
+      };
 }
 </script>

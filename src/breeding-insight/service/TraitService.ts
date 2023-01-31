@@ -17,11 +17,12 @@
 
 import {TraitDAO} from "@/breeding-insight/dao/TraitDAO";
 import {Trait} from "@/breeding-insight/model/Trait";
-import {Metadata} from "@/breeding-insight/model/BiResponse";
+import {BiResponse, Metadata, Response} from "@/breeding-insight/model/BiResponse";
 import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
 import {ValidationErrorService} from "@/breeding-insight/service/ValidationErrorService";
 import {TraitFilter} from "@/breeding-insight/model/TraitSelector";
 import {OntologySort, OntologySortField, SortOrder} from "@/breeding-insight/model/Sort";
+import * as api from "@/util/api";
 
 export class TraitService {
 
@@ -112,6 +113,46 @@ export class TraitService {
         reject();
       }
     }));
+  }
+
+  static async getTraits(programId: string,
+                   sort: OntologySort,
+                   pagination: {pageSize: number, page: number},
+                   filters?: any): Promise<BiResponse>{
+    if (!programId) throw 'Program ID required';
+
+    // Set sort, pagination, and filters
+    let params: any = {full: false};
+    if(filters) {
+      params = filters;
+    }
+
+    if (sort.field) {
+      params['sortField'] = sort.field;
+    }
+    if (sort.order) {
+      params['sortOrder'] = sort.order;
+    }
+    if (pagination.page || pagination.page == 0) { //have to account for 0-index pagination since 0 falsy
+      params ['page'] = pagination.page;
+    }
+    if (pagination.pageSize) {
+      params['pageSize'] = pagination.pageSize;
+    }
+
+    // Make the POST call
+    try {
+      const { data } = await api.call({
+        url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/traits/search`,
+        method: 'post',
+        params: params
+      }) as Response;
+
+      return new BiResponse(data);
+
+    } catch (error) {
+      throw error;
+    }
   }
 
   static getFilteredTraits(programId: string,

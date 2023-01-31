@@ -93,6 +93,59 @@
       </template>
     </NewDataForm>
 
+    <SidePanelTableNew
+        v-bind:records.sync="traits"
+        v-bind:loading="traitsLoading"
+        v-bind:pagination="traitsPagination"
+        v-on:show-error-notification="$emit('show-error-notification', $event)"
+        v-on:paginate="paginationController.updatePage($event)"
+        v-on:paginate-toggle-all="paginationController.toggleShowAll(traitsPagination.totalCount.valueOf())"
+        v-on:paginate-page-size="paginationController.updatePageSize(parseInt($event,10))"
+        backend-sorting
+        v-on:sort="setSort"
+        v-on:search="initSearch"
+        v-bind:search-debounce="400"
+    >
+      <b-table-column field="name" label="Name" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
+        {{ props.row.data.observationVariableName }}
+      </b-table-column>
+      <b-table-column field="termType" label="Term Type" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
+        {{ TraitStringFormatters.getTermTypeString(props.row.data.termType) }}
+      </b-table-column>
+      <b-table-column field="trait" label="Trait" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
+        {{ props.row.data.entity }} {{ props.row.data.attribute }}
+      </b-table-column>
+      <b-table-column field="method" label="Method" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
+        {{ (props.row.data.method.description ? props.row.data.method.description + " ": "") + props.row.data.method.methodClass }}
+      </b-table-column>
+      <b-table-column field="scaleClass" label="Scale Class" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
+        {{ TraitStringFormatters.getScaleTypeString(props.row.data.scale) }}
+      </b-table-column>
+      <b-table-column field="unit" label="Unit" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
+        <template v-if="props.row.data.scale.dataType === 'NUMERICAL'">
+          {{ props.row.data.scale.scaleName }}
+        </template>
+
+      </b-table-column>
+      <b-table-column v-slot="props" :th-attrs="(column) => ({scope:'col'})" :td-attrs="(column, row) => ({class:'has-text-right is-narrow'})">
+        <a v-if="!traitSidePanelState.openedRow && !checkIsOpen(props.row.data)"
+           data-testid="showDetails"
+           v-on:click.stop="traitSidePanelState.bus.$emit(traitSidePanelState.selectRowEvent, props.row.data)"
+           v-on:keypress.enter.space.stop="traitSidePanelState.bus.$emit(traitSidePanelState.selectRowEvent, props.row.data)"
+           tabindex="0"
+
+        >
+          Show details
+        </a>
+        <ChevronRightIcon
+            v-if="!traitSidePanelState.openedRow || checkIsOpen(props.row.data)"
+            class="has-vertical-align-middle has-text-link"
+            size="1x"
+            aria-hidden="true">
+        </ChevronRightIcon>
+      </b-table-column>
+    </SidePanelTableNew>
+
     <SidePanelTable
       ref="sidePanelTable"
       v-bind:records="traits"
@@ -259,7 +312,7 @@ import TraitDetailPanel from "@/components/trait/TraitDetailPanel.vue";
 import {TraitService} from "@/breeding-insight/service/TraitService";
 import EmptyTableMessage from "@/components/tables/EmtpyTableMessage.vue";
 import TableColumn from "@/components/tables/TableColumn.vue";
-import {Metadata, Pagination} from "@/breeding-insight/model/BiResponse";
+import {BiResponse, Metadata, Pagination} from "@/breeding-insight/model/BiResponse";
 import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
 import {StringFormatters} from '@/breeding-insight/utils/StringFormatters';
 import {TraitStringFormatters} from '@/breeding-insight/utils/TraitStringFormatters';
@@ -272,17 +325,21 @@ import {SidePanelTableEventBusHandler} from "@/components/tables/SidePanelTableE
 import {DataFormEventBusHandler} from '@/components/forms/DataFormEventBusHandler';
 import {integer, maxLength} from "vuelidate/lib/validators";
 import {TermType, TraitField, TraitFilter} from "@/breeding-insight/model/TraitSelector";
-import {OntologySort, OntologySortField} from "@/breeding-insight/model/Sort";
+import {GermplasmSort, GermplasmSortField, OntologySort, OntologySortField, Sort} from "@/breeding-insight/model/Sort";
 import {BackendPaginationController} from "@/breeding-insight/model/view_models/BackendPaginationController";
 import {Category} from "@/breeding-insight/model/Category";
 import {EnumUtils} from "@/breeding-insight/utils/EnumUtils";
+import SidePanelTableNew from "@/components/tables/SidePanelTableNew.vue";
+import Ontology from "@/views/ontology/Ontology.vue";
+import {CallStack} from "@/breeding-insight/utils/CallStack";
+import ChevronRightIcon from 'vue-feather-icons'
 
 @Component({
   mixins: [validationMixin],
   components: {
-    BaseTraitForm, NewDataForm, BasicInputField, SidePanelTable, EmptyTableMessage, TableColumn,
+    BaseTraitForm, NewDataForm, BasicInputField, SidePanelTable, SidePanelTableNew, EmptyTableMessage, TableColumn,
                 WarningModal, TraitDetailPanel,
-                PlusCircleIcon },
+                PlusCircleIcon, ChevronRightIcon },
   computed: {
     ...mapGetters([
       'activeProgram'
@@ -301,7 +358,8 @@ import {EnumUtils} from "@/breeding-insight/utils/EnumUtils";
 export default class OntologyTable extends Vue {
   @Prop({default: () => true})
   active?: boolean;
-
+  @Prop()
+  ontologyFetch!: (programId: string, sort: OntologySort, paginationController: BackendPaginationController) => (filters: any) => Promise<BiResponse>;
   @Prop()
   ontologySort!: OntologySort;
 
@@ -320,6 +378,7 @@ export default class OntologyTable extends Vue {
   private currentTraitEditable = false;
   private loadingTraitEditable = true;
   private traitsLoading = true;
+  private ontologyCallStack?: CallStack;
 
   // table column sorting
   private nameSortLabel: string = OntologySortField.Name;
@@ -328,6 +387,19 @@ export default class OntologyTable extends Vue {
   private unitSortLabel: string = OntologySortField.ScaleName;
   private entityAttributeSortLabel: string = OntologySortField.entityAttributeSortLabel;
   private termTypeSortLabel: string = OntologySortField.TermType;
+
+  private updateSort!: (sort: OntologySort) => void;
+  private fieldMap: any = {
+    'name': OntologySortField.Name,
+    'methodDescription': OntologySortField.MethodDescription,
+    'scaleClass': OntologySortField.ScaleClass,
+    'scaleName': OntologySortField.ScaleName,
+    'entityAttributeSortLabel': OntologySortField.entityAttributeSortLabel,
+    'termType': OntologySortField.TermType
+  };
+
+  // Table column filtering
+  private filters: any = {};
 
   // New trait form
   private newTraitActive: boolean = false;
@@ -385,6 +457,12 @@ export default class OntologyTable extends Vue {
     this.getObservationLevels();
     this.getAttributesEntitiesDescriptions();
     this.getTraitTags();
+
+    this.ontologyCallStack = new CallStack(this.ontologyFetch(
+        this.activeProgram!.id!,
+        this.ontologySort,
+        this.paginationController
+    ));
 
     // Events
     this.traitSidePanelState.bus.$on(this.traitSidePanelState.requestClosePanelEvent, (showWarningEvent: Function, confirmCloseEvent: Function) => {
@@ -680,6 +758,33 @@ export default class OntologyTable extends Vue {
     }
     this.$emit('show-error-notification', 'Unable to retrieve existing trait tags');
   }
+
+  setSort(field: string, order: string) {
+    if (field in this.fieldMap) {
+      this.updateSort(new OntologySort(this.fieldMap[field], Sort.orderAsBI(order)));
+      this.getTraits();
+    }
+  }
+
+  initSearch(filters: any) {
+    this.filters = filters;
+
+    // When filtering the list, set a page to the first page.
+    this.paginationController.updatePage(1);
+  }
+
+  checkIsOpen(rowData: any): boolean {
+    // A match is either the exact row for import confirmations
+    // or id match. This will have to be fixed in the future.
+    // TODO: Get this to match on table rows, but still work with the editing
+    if (this.traitSidePanelState.openedRow) {
+      return rowData === this.traitSidePanelState.openedRow ||
+          (rowData.id && rowData.id === this.traitSidePanelState.openedRow.id);
+    } else {
+      return false;
+    }
+  }
+
 
 }
 
