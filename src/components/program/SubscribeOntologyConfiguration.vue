@@ -141,7 +141,8 @@ export default class SubscribeOntologyConfiguration extends ProgramsBase {
       // Loading wheel show
       this.subscribeProcessing = true;
       await SharedOntologyService.subscribeOntology(this.activeProgram!.id!, this.selectedOntology.id);
-      this.$emit('show-success-notification', `Successful subscribed to ontology`);
+      await this.getSharedOntologyData();
+      this.$emit('show-success-notification', `Successfully subscribed to ` + this.subscribedOntology!.programName + `'s  ontology` );
       this.$emit('subscription-change');
     } catch (e) {
       // Check error statuses, show errors
@@ -149,7 +150,6 @@ export default class SubscribeOntologyConfiguration extends ProgramsBase {
     } finally {
       // Loading wheel hide
       this.subscribeProcessing = false;
-      this.getSharedOntologyData();
     }
   }
 
@@ -158,8 +158,9 @@ export default class SubscribeOntologyConfiguration extends ProgramsBase {
       // Loading wheel show
       this.subscribeProcessing = true;
       await SharedOntologyService.unsubscribeOntology(this.activeProgram!.id!, subscribedProgramId);
+      this.$emit('show-success-notification', `Successfully unsubscribed from ` + this.subscribedOntology!.programName + `'s  ontology`);
       this.subscribedOntology = undefined;
-      this.$emit('show-success-notification', `Successfully unsubscribed from ontology`);
+      await this.getSharedOntologyData();
       this.$emit('subscription-change');
     } catch (e) {
       // Check error statuses, show errors
@@ -167,7 +168,6 @@ export default class SubscribeOntologyConfiguration extends ProgramsBase {
     } finally {
       // Loading wheel hide
       this.subscribeProcessing = false;
-      this.getSharedOntologyData();
     }
   }
 
