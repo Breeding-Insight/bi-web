@@ -97,6 +97,7 @@
         v-bind:records.sync="traits"
         v-bind:loading="traitsLoading"
         v-bind:pagination="traitsPagination"
+        v-bind:side-panel-state="traitSidePanelState"
         v-on:show-error-notification="$emit('show-error-notification', $event)"
         v-on:paginate="paginationController.updatePage($event)"
         v-on:paginate-toggle-all="paginationController.toggleShowAll(traitsPagination.totalCount.valueOf())"
@@ -137,13 +138,32 @@
         >
           Show details
         </a>
-        <ChevronRightIcon
-            v-if="!traitSidePanelState.openedRow || checkIsOpen(props.row.data)"
-            class="has-vertical-align-middle has-text-link"
-            size="1x"
-            aria-hidden="true">
-        </ChevronRightIcon>
       </b-table-column>
+
+      <template v-slot:side-panel="{tableRow}">
+        <TraitDetailPanel
+            v-bind:data="traitSidePanelState.openedRow"
+            v-bind:tags="tagOptions"
+            v-bind:observation-level-options="observationLevelOptions"
+            v-bind:description-options="descriptionOptions"
+            v-bind:entity-options="entityOptions"
+            v-bind:attribute-options="attributeOptions"
+            v-bind:edit-active="traitSidePanelState.editActive"
+            v-bind:editable="$ability.can('update', 'Trait') && currentTraitEditable"
+            v-bind:loading-editable="loadingTraitEditable"
+            v-bind:edit-form-state="traitSidePanelState.dataFormState"
+            v-bind:client-validations="traitValidations"
+            v-bind:validation-handler="editValidationHandler"
+            v-bind:archivable="$ability.can('archive', 'Trait')"
+            v-on:activate-edit="activateEdit($event)"
+            v-on:deactivate-edit="traitSidePanelState.bus.$emit(traitSidePanelState.closePanelEvent)"
+            v-on:trait-change="changeTerm($event)"
+            v-on:submit="updateTerm"
+            v-on:archive="activateArchive($event)"
+            v-on:restore="activateArchive($event)"
+            v-on:show-error-notification="$emit('show-error-notification', $event)"
+        />
+      </template>
     </SidePanelTableNew>
 
     <SidePanelTable

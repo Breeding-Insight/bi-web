@@ -17,94 +17,121 @@
 
 <template>
   <div>
-    <b-table
-        :class="{'loading-active': loading}"
-        :data.sync="tableRows"
-        narrowed
-        :show-detail-icon="false"
-        :ref="tableRef"
-        paginated
-        :per-page.sync="pagination.pageSize"
-        :current-page.sync="pagination.currentPage"
-        striped
-        detailed
-        :mobile-cards="false"
-        :has-detailed-visible="detailsVisible"
-        :opened-detailed="openDetail"
-        v-on:details-open="detailsOpened"
-        aria-next-label="Next"
-        aria-previous-label="Previous"
-        aria-page-label="Page"
-        aria-current-label="Current"
-        v-bind="$attrs"
-        :default-sort="defaultSort"
-        v-on="$listeners"
-        v-bind:loading="loading"
-        :row-class="calculateRowClass"
-        v-bind:debounce-search="searchDebounce"
-        v-on:filters-change="cloneFilters"
-    >
+    <div class="side-panel-table table-min-height" >
+      <div class="columns is-mobile">
+        <div class="column pr-0">
+          <b-table
+              :class="{'loading-active': loading}"
+              :data.sync="tableRows"
+              narrowed
+              :show-detail-icon="false"
+              :ref="tableRef"
+              paginated
+              :per-page.sync="pagination.pageSize"
+              :current-page.sync="pagination.currentPage"
+              striped
+              detailed
+              :mobile-cards="false"
+              :has-detailed-visible="detailsVisible"
+              :opened-detailed="openDetail"
+              v-on:details-open="detailsOpened"
+              aria-next-label="Next"
+              aria-previous-label="Previous"
+              aria-page-label="Page"
+              aria-current-label="Current"
+              v-bind="$attrs"
+              :default-sort="defaultSort"
+              v-on="$listeners"
+              v-bind:loading="loading"
+              :row-class="calculateRowClass"
+              v-bind:debounce-search="searchDebounce"
+              v-on:filters-change="cloneFilters"
+          >
 
-      <slot></slot>
-      <b-table-column v-if="editable || details || archivable" v-slot="props" cell-class="has-text-left is-narrow" :th-attrs="(column) => ({scope:'col'})">
-        <a
-            v-if="isRowEditable(props.row) || details"
-            data-testid="edit"
-            v-on:click="props.toggleDetails(props.row)"
-            v-on:keypress.enter.space="props.toggleDetails(props.row)"
-            tabindex="0"
-        >
-          <span v-if="isRowEditable(props.row)">Edit</span>
-          <span v-if="details">Details</span>
+            <slot></slot>
+            <b-table-column v-if="editable || details || archivable" v-slot="props" cell-class="has-text-left is-narrow"
+                            :th-attrs="(column) => ({scope:'col'})">
+              <a
+                  v-if="isRowEditable(props.row) || details"
+                  data-testid="edit"
+                  v-on:click="props.toggleDetails(props.row)"
+                  v-on:keypress.enter.space="props.toggleDetails(props.row)"
+                  tabindex="0"
+              >
+                <span v-if="isRowEditable(props.row)">Edit</span>
+                <span v-if="details">Details</span>
 
-          <span v-if="(isRowEditable(props.row) || details) && !isVisibleDetailRow(props.row)" class="icon is-small margin-right-2 has-vertical-align-middle">
+                <span v-if="(isRowEditable(props.row) || details) && !isVisibleDetailRow(props.row)"
+                      class="icon is-small margin-right-2 has-vertical-align-middle">
             <ChevronRightIcon size="1x" aria-hidden="true"></ChevronRightIcon>
           </span>
-            <span v-if="(isRowEditable(props.row) || details) && isVisibleDetailRow(props.row)" class="icon is-small margin-right-2 has-vertical-align-middle">
+                <span v-if="(isRowEditable(props.row) || details) && isVisibleDetailRow(props.row)"
+                      class="icon is-small margin-right-2 has-vertical-align-middle">
             <ChevronDownIcon size="1x" aria-hidden="true"></ChevronDownIcon>
           </span>
-        </a>
-        <a
-            v-if="isRowArchivable(props.row)"
-            v-on:click="$emit('remove', props.row.data)"
-            v-on:keypress.enter.space="$emit('remove', props.row.data)"
-            tabindex="0"
+              </a>
+              <a
+                  v-if="isRowArchivable(props.row)"
+                  v-on:click="$emit('remove', props.row.data)"
+                  v-on:keypress.enter.space="$emit('remove', props.row.data)"
+                  tabindex="0"
+              >
+                {{ deactivateLinkText }}
+              </a>
+            </b-table-column>
+
+            <template v-slot:empty v-if="this.loading !== true">
+              <slot name="emptyMessage"/>
+            </template>
+
+            <template v-slot:detail="props">
+              <EditDataRowForm class="mb-0"
+                               v-if="editable"
+                               v-bind:data-form-state="dataFormState"
+                               v-on:submit="validateAndSubmit(props.row)"
+                               v-on:cancel="cancelEditClicked(props.row)"
+              >
+                <slot
+                    v-bind:editData="props.row.editData"
+                    v-bind:validations="getValidations()"
+                    name="edit"
+                />
+              </EditDataRowForm>
+
+              <slot
+                  v-if="details"
+                  v-bind:row="props.row.data"
+                  name="detail"
+              />
+            </template>
+
+            <template v-slot:pagination>
+              <pagination-controls v-show="records.length > 0" v-bind="$props" v-on="$listeners"/>
+            </template>
+
+          </b-table>
+        </div>
+        <div
+            class="column is-gapless pl-0"
+            v-bind:class="{'is-narrow': !sidePanelState.panelOpen,
+              'is-one-third-widescreen is-half-tablet is-half-mobile': (sidePanelState.panelOpen && !sidePanelState.editActive),
+              'is-one-half-desktop is-half-tablet is-half-mobile': (sidePanelState.panelOpen && sidePanelState.editActive)}"
         >
-          {{ deactivateLinkText }}
-        </a>
-      </b-table-column>
-
-      <template v-slot:empty v-if="this.loading !== true">
-        <slot name="emptyMessage" />
-      </template>
-
-      <template v-slot:detail="props">
-        <EditDataRowForm class="mb-0"
-                         v-if="editable"
-                         v-bind:data-form-state="dataFormState"
-                         v-on:submit="validateAndSubmit(props.row)"
-                         v-on:cancel="cancelEditClicked(props.row)"
-        >
-          <slot
-              v-bind:editData="props.row.editData"
-              v-bind:validations="getValidations()"
-              name="edit"
-          />
-        </EditDataRowForm>
-
-        <slot
-            v-if="details"
-            v-bind:row="props.row.data"
-            name="detail"
-        />
-      </template>
-
-      <template v-slot:pagination>
-        <pagination-controls v-show="records.length > 0" v-bind="$props" v-on="$listeners"/>
-      </template>
-
-    </b-table>
-
+          <SidePanel
+              v-bind:state="sidePanelState"
+              v-show="records.length > 0"
+              class="side-panel-scroll"
+              v-if="sidePanelState.panelOpen"
+              v-bind:background-color-class="sidePanelState.editActive ? 'has-background-primary-light' : 'has-background-info-light'"
+          >
+            <slot
+                v-bind:table-row="sidePanelState.openedRow"
+                name="side-panel"
+            />
+          </SidePanel>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -118,12 +145,17 @@ import ValidationMixin from '@/mixins/ValidationMixin'
 import { DataFormEventBusHandler } from '@/components/forms/DataFormEventBusHandler';
 import {ChevronRightIcon, ChevronDownIcon} from 'vue-feather-icons'
 import { TableRow } from '@/breeding-insight/model/view_models/TableRow';
+import SidePanel from "@/components/tables/SidePanel.vue";
+import {SidePanelTableEventBusHandler} from "@/components/tables/SidePanelTableEventBus";
+import TraitDetailPanel from "@/components/trait/TraitDetailPanel.vue";
 
 @Component({
-  components: { EditDataRowForm, PaginationControls, ChevronRightIcon, ChevronDownIcon }
+  components: { EditDataRowForm, PaginationControls, ChevronRightIcon, ChevronDownIcon, SidePanel, TraitDetailPanel }
 })
 export default class SidePanelTableNew extends Mixins(ValidationMixin) {
 
+  @Prop()
+  sidePanelState!: SidePanelTableEventBusHandler;
   @Prop()
   records!: Array<any>;
   @Prop()
