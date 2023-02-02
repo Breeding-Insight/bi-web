@@ -222,6 +222,12 @@ img {
   }
 }
 
+.program-management {
+  .tab-content {
+    margin-left: 1em;
+  }
+}
+
 #program-menu {
   .dropdown-content {
     max-height: 50vh;
@@ -267,6 +273,18 @@ nav.tabs li.is-active {
   }
 }
 
+.expandable-card {
+  .is-button-transparent {
+    background: transparent;
+    border: none;
+  }
+
+  header {
+    &:hover {
+      cursor: pointer;
+    }
+  }
+}
 .table.is-narrow {
   border-collapse: collapse;
 }
@@ -798,4 +816,22 @@ tr:nth-child(odd) td.db-filled {
   @extend .is-11;
   @extend .pl-1;
   @extend .py-1;
+}
+
+.breeding-methods {
+  .enable-system-methods {
+    .modal-card {
+      width: 90%;
+    }
+  }
+}
+
+.content {
+  .pagination-list {
+    margin-top: 0;
+
+    li + li {
+      margin-top: 0;
+    }
+  }
 }

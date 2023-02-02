@@ -19,11 +19,15 @@
   <BaseModal
       v-bind:active.sync="active"
       v-on:deactivate="$emit('deactivate')"
+      v-bind="$attrs"
   >
     <h3 class="is-5 title has-text-info">
       {{msgTitle}}
     </h3>
     <slot></slot>
+    <template v-slot:footer>
+      <slot name="footer"></slot>
+    </template>
   </BaseModal>
 </template>
 
@@ -38,8 +42,6 @@ import { AlertCircleIcon } from 'vue-feather-icons'
 export default class GenericModal extends Vue {
   @Prop()
   active!: boolean;
-  @Prop()
-  bodyClass!: Object;
   @Prop()
   msgTitle!: string;
 }

@@ -63,8 +63,9 @@ import PageNotFound from "@/views/PageNotFound.vue";
 import Germplasm from "@/views/germplasm/Germplasm.vue";
 import GermplasmByList from "@/views/germplasm/GermplasmByList.vue";
 import GermplasmLists from "@/views/germplasm/GermplasmLists.vue";
+import BreedingMethods from "@/views/germplasm/BreedingMethods.vue";
 import GermplasmDetails from "@/views/germplasm/GermplasmDetails.vue";
-import ProgramConfiguration from "@/views/program/ProgramConfiguration.vue";
+import OntologySharing from "@/views/program/OntologySharing.vue";
 import JobManagement from '@/views/program/JobManagement.vue';
 import GermplasmPedigreesView from "@/components/germplasm/GermplasmPedigreesView.vue";
 import ImportExperiment from "@/views/import/ImportExperiment.vue";
@@ -190,10 +191,18 @@ const routes = [
       layout: layouts.userSideBar
     },
     component: ProgramManagement,
-    redirect: {name: 'program-locations'},
+    redirect: {name: 'program-users'},
     beforeEnter: processProgramNavigation,
     children: [
       {
+        path: 'users',
+        name: 'program-users',
+        meta: {
+          title: 'Program Users',
+          layout: layouts.userSideBar
+        },
+        component: ProgramUserManagement
+      },{
         path: 'locations',
         name: 'program-locations',
         meta: {
@@ -203,22 +212,22 @@ const routes = [
         component: ProgramLocationsManagement
       },
       {
-        path: 'users',
-        name: 'program-users',
+        path: 'breeding-methods',
+        name: 'breeding-methods',
         meta: {
-          title: 'Program Users',
+          title: 'Breeding Methods',
           layout: layouts.userSideBar
         },
-        component: ProgramUserManagement
+        component: BreedingMethods
       },
       {
-        path: 'configure',
-        name: 'program-configuration',
+        path: 'ontology-sharing',
+        name: 'ontology-sharing',
         meta: {
-          title: 'Program Configuration',
+          title: 'Ontology Sharing',
           layout: layouts.userSideBar
         },
-        component: ProgramConfiguration
+        component: OntologySharing
       }
     ]
   },
