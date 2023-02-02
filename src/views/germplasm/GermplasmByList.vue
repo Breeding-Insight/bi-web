@@ -122,7 +122,7 @@ export default class GermplasmByList extends GermplasmBase {
     const matchingLists: any[] = lists.filter(list => list.listDbId === this.$route.params.listId);
     this.list = matchingLists[0];
     this.referenceId = matchingLists[0].externalReferences.reduce((result: string, ref: any) => {
-      return ref.referenceSource == "breeding-insight.net/lists" ? ref.referenceID : result;
+      return ref.referenceSource == `${process.env.VUE_APP_BI_REFERENCE_SOURCE}/lists` ? ref.referenceID : result;
     },undefined);
   }
 }
