@@ -31,7 +31,7 @@
         backend-sorting
         v-bind:default-sort="[fieldMap['name'], 'ASC']"
         v-on:sort="setSort"
-        v-on:search="filters = $event"
+        v-on:search="initSearch"
         v-bind:search-debounce="400"
     >
       <b-table-column label="Title" field="name" cell-class="fixed-width-wrapped" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
@@ -209,6 +209,12 @@ export default class ExperimentsObservationsTable extends Vue {
     }
   }
 
+  initSearch(filters: any) {
+    this.filters = filters;
+
+    // When filtering the list, set a page to the first page
+    this.paginationController.updatePage(1);
+  }
 }
 
 </script>
