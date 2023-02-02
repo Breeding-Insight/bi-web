@@ -41,9 +41,9 @@
             <a>Experiments & Observations</a>
           </router-link>
           <router-link
-              v-bind:to="{name: 'brapi-import', params: {programId: activeProgram.id}}"
+              v-bind:to="{name: 'data-mapping', params: {programId: activeProgram.id}}"
               tag="li" active-class="is-active">
-            <a>BrAPI Import<span class="ml-2 tag is-warning">Beta</span></a>
+            <a>Data Mapping<span class="ml-2 tag is-warning">Beta</span></a>
           </router-link>
         </ul>
       </nav>

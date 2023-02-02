@@ -18,7 +18,7 @@
 <template>
   <div class="program-management">
     <h1 class="title">
-      Program Management
+      Program Administration
     </h1>
 
     <section>

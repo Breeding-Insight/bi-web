@@ -120,21 +120,21 @@ const routes = [
   },
   { path: '/admin',
     name: 'admin',
-    redirect: '/admin/program-management' },
+    redirect: '/admin/programs' },
   {
-    path: '/admin/program-management',
-    name: 'admin-program-management',
+    path: '/admin/programs',
+    name: 'admin-programs',
     meta: {
-      title: 'Admin Program Management',
+      title: 'Admin Programs',
       layout: layouts.userSideBar
     },
     component: AdminProgramManagement
   },
   {
-    path: '/admin/user-management',
-    name: 'admin-user-management',
+    path: '/admin/users',
+    name: 'admin-users',
     meta: {
-      title: 'Admin User Management',
+      title: 'Admin Users',
       layout: layouts.userSideBar
     },
     component: AdminUserManagement
@@ -184,10 +184,10 @@ const routes = [
     beforeEnter: processProgramNavigation
   },    
   {
-    path: '/programs/:programId/program-management',
-    name: 'program-management',
+    path: '/programs/:programId/program-administration',
+    name: 'program-administration',
     meta: {
-      title: 'Program Management',
+      title: 'Program Administration',
       layout: layouts.userSideBar
     },
     component: ProgramManagement,
@@ -198,7 +198,7 @@ const routes = [
         path: 'users',
         name: 'program-users',
         meta: {
-          title: 'Program User Management',
+          title: 'Program Users',
           layout: layouts.userSideBar
         },
         component: ProgramUserManagement
@@ -206,7 +206,7 @@ const routes = [
         path: 'locations',
         name: 'program-locations',
         meta: {
-          title: 'Program Location Management',
+          title: 'Program Locations',
           layout: layouts.userSideBar
         },
         component: ProgramLocationsManagement
@@ -387,10 +387,10 @@ const routes = [
         component: ImportExperiment
       },
       {
-        path: 'brapi-import',
-        name: 'brapi-import',
+        path: 'data-mapping',
+        name: 'data-mapping',
         meta: {
-          title: 'BrAPI Import',
+          title: 'Data Mapping',
           layout: layouts.userSideBar
         },
         component: BrAPIImporter
