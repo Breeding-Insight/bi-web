@@ -25,6 +25,7 @@
       v-on:paginate-toggle-all="paginationController.toggleShowAll(germplasmListsPagination.totalCount.valueOf())"
       v-on:paginate-page-size="paginationController.updatePageSize($event)"
       backend-sorting
+      backend-filtering
       v-bind:default-sort="[fieldMap['name'], 'ASC']"
       v-on:sort="setSort"
       v-on:search="initSearch"
