@@ -97,12 +97,12 @@ export default class GermplasmByList extends GermplasmBase {
 
   private activeProgram?: Program;
   private list: any = null;
-  private referenceId?: string;
+  private referenceId?: string = '';
 
   // Set the method used to populate the germplasm table
   private germplasmFetch: (programId: string, sort: GermplasmSort, paginationController: BackendPaginationController) => ((filters: any) => Promise<BiResponse>) =
       function (programId: string, sort: GermplasmSort, paginationController: BackendPaginationController) {
-        let id = this.$route.params.listId;
+        let id: string = this.$route.params.listId;
         return function (filters: any) {
           return GermplasmService.getAllInList(
               programId,
@@ -121,9 +121,11 @@ export default class GermplasmByList extends GermplasmBase {
     const {result: {data: lists}} = await GermplasmDAO.getAllLists(this.activeProgram!.id!, paginationQuery);
     const matchingLists: any[] = lists.filter(list => list.listDbId === this.$route.params.listId);
     this.list = matchingLists[0];
+
+    // Find the key used, if any, for this list in the list entry numbers map
     this.referenceId = matchingLists[0].externalReferences.reduce((result: string, ref: any) => {
       return ref.referenceSource == `${process.env.VUE_APP_BI_REFERENCE_SOURCE}/lists` ? ref.referenceID : result;
-    },undefined);
+    },'');
   }
 }
 </script>
