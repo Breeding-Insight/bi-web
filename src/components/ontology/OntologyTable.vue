@@ -140,6 +140,7 @@
         </a>
       </b-table-column>
 
+      <!--ontology term details side-panel slot-->
       <template v-slot:side-panel="{tableRow}">
         <TraitDetailPanel
             v-bind:data="traitSidePanelState.openedRow"
@@ -164,6 +165,29 @@
             v-on:show-error-notification="$emit('show-error-notification', $event)"
         />
       </template>
+
+      <!--no-ontology-defined message slot-->
+      <template v-slot:emptyMessage>
+        <EmptyTableMessage
+            v-bind:button-view-toggle="!newTraitActive && active && !isSubscribed"
+            v-bind:button-text="'New Term'"
+            v-on:newClick="activateNewTraitForm"
+            v-bind:create-enabled="$ability.can('create', 'Trait')"
+        >
+          <p class="has-text-weight-bold">
+            No ontology terms are currently {{ active ? 'defined' : 'archived' }} for this program.
+          </p>
+          <p v-if="active && $ability.can('create', 'Trait')">
+            Create new ontology terms by clicking "New Term" or by navigating to "Import Ontology".
+          </p>
+          <p v-if="!active && !isSubscribed && $ability.can('archive', 'Trait') && $ability.can('update', 'Trait')">
+            Archive an existing ontology term by clicking "Show details" > "Edit" > "Archive". <br>
+            Create new archived ontology terms by clicking "New Term" or by navigating to "Import Ontology".
+          </p>
+        </EmptyTableMessage>
+      </template>
+
+
     </SidePanelTableNew>
 
     <SidePanelTable
