@@ -99,7 +99,7 @@
           </b-table-column>
           <!-- Env Location -->
           <b-table-column field="envLocation" label="Env Location" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-            {{ getField(props.row.data.location, 'locationName') }}
+            {{ getField(props.row.data.location, 'name') }}
           </b-table-column>
           <!-- Env year -->
           <b-table-column field="envYear" label="Env Year" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
@@ -111,7 +111,7 @@
           </b-table-column>
           <!-- Exp Replicate # -->
           <b-table-column field="expRepNo" label="Exp Replicate #" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-            {{ getObservationLevelRelationships(props.row.data.observationUnit, 'replicate') }}
+            {{ getObservationLevelRelationships(props.row.data.observationUnit, 'rep') }}
           </b-table-column>
           <!-- Exp Block # -->
           <b-table-column field="expBlockNo" label="Exp Block #" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
