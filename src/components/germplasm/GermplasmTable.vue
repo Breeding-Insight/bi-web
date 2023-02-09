@@ -16,7 +16,7 @@
         v-bind:search-debounce="400"
     >
       <b-table-column v-if="entryNumberVisible" field="importEntryNumber" label="Entry Number" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
-        {{ props.row.data.additionalInfo.importEntryNumber }}
+        {{ GermplasmUtils.getEntryNumber(props.row.data, referenceId) }}
       </b-table-column>
       <b-table-column field="accessionNumber" label="GID" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
         <GermplasmLink
@@ -95,6 +95,7 @@ import {
   Sort
 } from "@/breeding-insight/model/Sort";
 import {UPDATE_GERMPLASM_SORT} from "@/store/sorting/mutation-types";
+import {GermplasmService} from "@/breeding-insight/service/GermplasmService";
 
 @Component({
   mixins: [validationMixin],
@@ -121,6 +122,8 @@ export default class GermplasmTable extends Vue {
   germplasmFetch!: (programId: string, sort: GermplasmSort, paginationController: BackendPaginationController) => (filters: any) => Promise<BiResponse>;
   @Prop({default: false})
   entryNumberVisible?: Boolean;
+  @Prop()
+  referenceId?: string;
 
   private activeProgram?: Program;
   private pagination?: Pagination = new Pagination();
@@ -192,6 +195,5 @@ export default class GermplasmTable extends Vue {
     // When filtering the list, set a page to the first page.
     this.paginationController.updatePage(1);
   }
-
 }
 </script>
