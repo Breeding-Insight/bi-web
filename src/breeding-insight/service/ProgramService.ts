@@ -96,7 +96,8 @@ export class ProgramService {
     }));
   }
 
-  static getAll(paginationQuery: PaginationQuery = new PaginationQuery(1, 50, true),
+  // the PaginationQuery 'showAll' is not being honored by the ProgramDAO.getAll() method.  So, for now, the pageSize default is set to 1000 (instead of 50)
+  static getAll(paginationQuery: PaginationQuery = new PaginationQuery(1, 1000, true),
                 sort: ProgramSort = new ProgramSort(ProgramSortField.Name, SortOrder.Ascending)): Promise<[Program[], Metadata]> {
     return new Promise<[Program[], Metadata]>(((resolve, reject) => {
 
