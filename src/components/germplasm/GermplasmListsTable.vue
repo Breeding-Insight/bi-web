@@ -46,7 +46,7 @@
       <b-table-column field="ownerName" label="Created By" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
         {{ props.row.data.listOwnerName }}
       </b-table-column>
-      <b-table-column  field="data.listDbId" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+      <b-table-column  field="data.listDbId" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
         <router-link v-bind:to="{name: 'germplasm-by-list', params: {programId: activeProgram.id, listId: props.row.data.listDbId}}">
           Details
         </router-link>
