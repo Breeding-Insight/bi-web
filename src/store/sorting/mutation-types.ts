@@ -18,6 +18,7 @@
 // active ontology table
 export const ACTIVE_ONT_NEW_SORT_COLUMN = 'activeOntNewSortColumn';
 export const ACTIVE_ONT_TOGGLE_SORT_ORDER = 'activeOntToggleSortOrder';
+export const UPDATE_ACTIVE_ONT_SORT = 'updateActiveOntologySort';
 
 // archived ontology table
 export const UPDATE_ARCHIVED_ONT_SORT = 'updateArchivedOntologySort';

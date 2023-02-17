@@ -48,6 +48,7 @@ export default class AllGermplasm extends Vue {
   private germplasmFetch: (programId: string, sort: GermplasmSort, paginationController: BackendPaginationController) => ((filters: any) => Promise<BiResponse>) =
       function (programId: string, sort: GermplasmSort, paginationController: BackendPaginationController) {
         return function (filters: any) {
+          console.dir(filters);
           return BrAPIService.get<GermplasmSortField>(
               BrAPIType.GERMPLASM,
               programId,

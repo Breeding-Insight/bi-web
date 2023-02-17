@@ -190,6 +190,7 @@ export default class GermplasmTable extends Vue {
   }
 
   initSearch(filters: any) {
+    
     this.filters = filters;
 
     // When filtering the list, set a page to the first page.

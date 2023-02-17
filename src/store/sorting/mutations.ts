@@ -29,7 +29,7 @@ import {
     IMPORT_PREVIEW_ONT_NEW_SORT_COLUMN,
     UPDATE_GERMPLASM_SORT,
     UPDATE_GERMPLASM_LIST_SORT,
-    UPDATE_EXPERIMENT_SORT
+    UPDATE_EXPERIMENT_SORT, UPDATE_ACTIVE_ONT_SORT
 } from "@/store/sorting/mutation-types";
 import {SortState} from "@/store/sorting/types";
 import {
@@ -49,6 +49,10 @@ export const mutations: MutationTree<SortState> = {
     },
     [ACTIVE_ONT_NEW_SORT_COLUMN](state: SortState, field: OntologySortField) {
         state.activeOntologySort.field = field;
+    },
+    [UPDATE_ACTIVE_ONT_SORT](state: SortState, sort: OntologySort) {
+        state.activeOntologySort.field = sort.field;
+        state.activeOntologySort.order = sort.order;
     },
 
     // archived ontology table

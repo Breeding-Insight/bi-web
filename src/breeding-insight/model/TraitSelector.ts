@@ -1,3 +1,5 @@
+import {OntologySortField} from "@/breeding-insight/model/Sort";
+
 export enum TraitField {
   NAME = 'name',
   MAIN_ABBREVIATION = 'mainAbbreviation',
@@ -19,7 +21,8 @@ export enum TraitField {
   CREATED_BY_USER_NAME = 'createdByUserName',
   UPDATED_BY_USER_ID = 'updatedByUserId',
   UPDATED_BY_USER_NAME = 'updatedByUserName',
-  TERM_TYPE = 'termType'
+  TERM_TYPE = 'termType',
+  ENTITY_ATTRIBUTE = 'entityAttribute'
 }
 
 export enum TermType {
@@ -31,6 +34,13 @@ export enum TermType {
 export class TraitFilter {
   field?: TraitField;
   value?: string | number | boolean;
+
+  constructor(field: string, value: any) {
+    if (field in TraitField) {
+      this.field = field as TraitField;
+      this.value = value;
+    }
+  }
 }
 
 export class TraitSelector {
