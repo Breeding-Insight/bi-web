@@ -48,7 +48,7 @@
     <div class="columns">
       <div class="column is-whole has-text-right buttons">
         <button
-            v-if="$ability.can('create', 'ProgramConfiguration')"
+            v-if="$ability.can('update', 'ProgramConfiguration')"
             class="button is-primary"
             v-on:click="openModal"
         >
@@ -120,7 +120,7 @@
       </template>
     </NewDataForm>
 
-    <div v-if="inUseBreedingMethods.length > 0">
+    <div v-if="$ability.can('update', 'ProgramConfiguration') && inUseBreedingMethods.length > 0">
       <article class="message is-warning">
         <div class="message-body">
           <div class="columns is-vcentered">
@@ -147,7 +147,7 @@
         v-bind:row-editable="isRowEditable"
         v-bind:data-form-state="editMethodFormState"
         v-bind:row-validations="newMethodValidations"
-        v-bind:archivable="true"
+        v-bind:archivable="$ability.can('update', 'ProgramConfiguration')"
         v-bind:row-archivable="isRowArchivable"
         v-bind:deactivate-link-text="'Delete'"
         v-on:submit="updateMethod($event)"
