@@ -30,7 +30,7 @@ export class BrAPIService {
   public static async get<T>(type: BrAPIType, programId: string, sort: { field: T, order: SortOrder },
                           pagination: {pageSize: number, page: number}, filters?: any): Promise<BiResponse> {
     if (!programId) throw 'Program ID required';
-console.log(pagination.page);
+
     // Set sort and pagination
     let params: any = {};
     if(filters) {

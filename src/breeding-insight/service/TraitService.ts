@@ -137,9 +137,14 @@ export class TraitService {
     if (!programId) throw 'Program ID required';
 
     // Set filters
-    const brapiSearchFilters: TraitFilter[] = Object.entries(filters).map(entry => new TraitFilter(entry[0], entry[1]));
+    const brapiSearchFilters: TraitFilter[] = Object.entries(filters).map(entry => {
+    console.log(entry[0]);
+    console.log(entry[1]);
+      return new TraitFilter(entry[0], entry[1]);
+    });
+console.dir(brapiSearchFilters);
     const config: any = this.setFilterConfig(programId, brapiSearchFilters);
-console.log(pagination.page);
+
     // Set sort and pagination params
     let params: any = {};
 

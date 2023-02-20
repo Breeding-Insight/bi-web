@@ -36,10 +36,14 @@ export class TraitFilter {
   value?: string | number | boolean;
 
   constructor(field: string, value: any) {
-    if (field in TraitField) {
-      this.field = field as TraitField;
+    if (this.isTraitField(field)) {
+      this.field = field;
       this.value = value;
     }
+  }
+
+  private isTraitField(field: string): field is TraitField {
+    return Object.values<string>(TraitField).includes(field);
   }
 }
 
