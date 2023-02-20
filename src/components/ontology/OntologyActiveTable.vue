@@ -68,11 +68,10 @@ export default class OntologyActiveTable extends Vue {
   private ontologyFetch: (programId: string, sort: OntologySort, paginationController: BackendPaginationController) => ((filters: any) => Promise<BiResponse>) =
       function (programId: string, sort: OntologySort, paginationController: BackendPaginationController) {
         return function (filters: any) {
-          console.dir(filters);
           return TraitService.getTraits(
               programId,
               sort,
-              { pageSize: paginationController.pageSize, page: paginationController.currentPage - 1 },
+              { pageSize: paginationController.pageSize, page: paginationController.currentPage },
               filters)
         };
       };

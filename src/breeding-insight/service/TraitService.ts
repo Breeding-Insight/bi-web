@@ -139,10 +139,9 @@ export class TraitService {
     // Set filters
     const brapiSearchFilters: TraitFilter[] = Object.entries(filters).map(entry => new TraitFilter(entry[0], entry[1]));
     const config: any = this.setFilterConfig(programId, brapiSearchFilters);
-
-
+console.log(pagination.page);
     // Set sort and pagination params
-    let params: any = {full: false};
+    let params: any = {};
 
     if (sort.field) {
       params['sortField'] = sort.field;

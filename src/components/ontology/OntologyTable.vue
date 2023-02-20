@@ -384,7 +384,7 @@ export default class OntologyTable extends Vue {
       this.pagination = new Pagination(response.metadata.pagination);
 
       // Account for brapi 0 indexing of paging
-      this.pagination.currentPage = this.pagination.currentPage.valueOf() + 1;
+      this.pagination.currentPage = this.pagination.currentPage.valueOf();
       this.traits = response.result.data;
       this.traitsLoading = false;
     } catch (e) {
