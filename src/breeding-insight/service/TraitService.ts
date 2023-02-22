@@ -146,7 +146,7 @@ console.dir(brapiSearchFilters);
     const config: any = this.setFilterConfig(programId, brapiSearchFilters);
 
     // Set sort and pagination params
-    let params: any = {};
+    let params: any = { full: true };
 
     if (sort.field) {
       params['sortField'] = sort.field;

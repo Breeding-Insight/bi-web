@@ -349,9 +349,9 @@ export default class OntologyTable extends Vue {
     this.getSubscribedOntology();
     //this.updatePagination();
     // this.getTraits();
-    // this.getObservationLevels();
-    // this.getAttributesEntitiesDescriptions();
-    // this.getTraitTags();
+    this.getObservationLevels();
+    this.getAttributesEntitiesDescriptions();
+    this.getTraitTags();
 
     this.ontologyCallStack = new CallStack(this.ontologyFetch(
         this.activeProgram!.id!,
