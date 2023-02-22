@@ -362,7 +362,7 @@ export default class OntologyTable extends Vue {
     this.paginationController.pageSize = 20;
 
     // Events
-    this.registerTableEventHandlers()
+    this.registerSidePanelEventHandlers()
   }
 
   archiveWarning() {
@@ -394,7 +394,7 @@ export default class OntologyTable extends Vue {
     }
   }
 
-  registerTableEventHandlers() {
+  registerSidePanelEventHandlers() {
     this.traitSidePanelState.bus.$on(this.traitSidePanelState.requestClosePanelEvent, (showWarningEvent: Function, confirmCloseEvent: Function) => {
       if (this.editTrait && !this.editTrait.equals(this.originalTrait)) {
         showWarningEvent();

@@ -17,6 +17,35 @@
 
 <template>
   <div>
+    <WarningModal
+        v-bind:active.sync="sidePanelState.closeEditModalActive"
+        v-bind:msg-title="'Close edit panel?'"
+        v-on:deactivate="sidePanelState.bus.$emit(sidePanelState.cancelCloseEditEvent)"
+    >
+      <section>
+        <p class="has-text-dark" :class="this.$modalTextClass">
+          You will lose any edits you have made upon closing.
+        </p>
+      </section>
+      <div class="columns">
+        <div class="column is-whole has-text-centered buttons">
+          <button
+              class="button is-danger"
+              type="button"
+              v-on:click="sidePanelState.bus.$emit(sidePanelState.confirmCloseEditEvent)"
+          >
+            <strong>Yes, close</strong>
+          </button>
+          <button
+              class="button"
+              type="button"
+              v-on:click="sidePanelState.bus.$emit(sidePanelState.cancelCloseEditEvent)"
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    </WarningModal>
     <div class="side-panel-table table-min-height" >
       <div class="columns is-mobile">
         <div class="column pr-0">
@@ -148,9 +177,11 @@ import { TableRow } from '@/breeding-insight/model/view_models/TableRow';
 import SidePanel from "@/components/tables/SidePanel.vue";
 import {SidePanelTableEventBusHandler} from "@/components/tables/SidePanelTableEventBus";
 import TraitDetailPanel from "@/components/trait/TraitDetailPanel.vue";
+import WarningModal from "@/components/modals/WarningModal.vue";
 
 @Component({
-  components: { EditDataRowForm, PaginationControls, ChevronRightIcon, ChevronDownIcon, SidePanel, TraitDetailPanel }
+  components: { EditDataRowForm, PaginationControls, ChevronRightIcon, ChevronDownIcon, SidePanel, TraitDetailPanel,
+  WarningModal }
 })
 export default class SidePanelTableNew extends Mixins(ValidationMixin) {
 
@@ -186,7 +217,6 @@ export default class SidePanelTableNew extends Mixins(ValidationMixin) {
   private tableRows: Array<TableRow<any>> = new Array<TableRow<any>>();
   private openDetail: Array<TableRow<any>> = new Array<TableRow<any>>();
   private initialUpdate: boolean = false;
-
   private tableRef = "table-"+Math.random()*1000;
 
   detailsOpened(row: TableRow<any>) {
