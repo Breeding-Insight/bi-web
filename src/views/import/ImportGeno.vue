@@ -25,7 +25,7 @@
               <div class="has-text-dark">
                 <strong>Before You Import...</strong>
                 <br/>
-                &lt;something to go here&gt;
+                ensure that Sample IDs match to an Exp Unit ID within the chosen experiment
               </div>
             </div>
           </div>
