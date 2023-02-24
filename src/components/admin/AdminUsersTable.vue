@@ -159,8 +159,8 @@
         <b-table-column field="data.name" label="Name"  sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
           {{ props.row.data.name }}
         </b-table-column>
-         <b-table-column field="data.email" label="Email" v-bind:visible="!isMobile" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-           {{ props.row.data.email }}<!--
+         <b-table-column field="data.email" label="Email" v-bind:visible="!isMobile" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})"><!--
+        -->{{ props.row.data.email }}<!--
       --></b-table-column>
         <b-table-column field="data.roleName" label="Role" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
           <template v-if="rolesMap.size > 0">
