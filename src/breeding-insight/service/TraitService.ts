@@ -138,11 +138,9 @@ export class TraitService {
 
     // Set filters
     const brapiSearchFilters: TraitFilter[] = Object.entries(filters).map(entry => {
-    console.log(entry[0]);
-    console.log(entry[1]);
       return new TraitFilter(entry[0], entry[1]);
     });
-console.dir(brapiSearchFilters);
+
     const config: any = this.setFilterConfig(programId, brapiSearchFilters);
 
     // Set sort and pagination params

@@ -280,10 +280,10 @@ export default class OntologyTable extends Vue {
   private updateSort!: (sort: OntologySort) => void;
   private fieldMap: any = {
     'name': OntologySortField.Name,
-    'methodDescription': OntologySortField.MethodDescription,
+    'method': OntologySortField.MethodDescription,
     'scaleClass': OntologySortField.ScaleClass,
-    'scaleName': OntologySortField.ScaleName,
-    'entityAttributeSortLabel': OntologySortField.entityAttributeSortLabel,
+    'unit': OntologySortField.ScaleName,
+    'trait': OntologySortField.entityAttributeSortLabel,
     'termType': OntologySortField.TermType
   };
 
