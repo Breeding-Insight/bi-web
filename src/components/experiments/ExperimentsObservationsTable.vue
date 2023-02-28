@@ -23,11 +23,8 @@
     <ExpandableTable
         v-bind:records.sync="experiments"
         v-bind:loading="this.experimentsLoading"
-        v-bind:pagination="experimentsPagination"
+        v-bind:pagination="paginationController"
         v-on:show-error-notification="$emit('show-error-notification', $event)"
-        v-on:paginate="paginationController.updatePage($event)"
-        v-on:paginate-toggle-all="paginationController.toggleShowAll(experimentsPagination.totalCount.valueOf())"
-        v-on:paginate-page-size="paginationController.updatePageSize($event)"
         backend-sorting
         backend-filtering
         v-bind:default-sort="[fieldMap['name'], 'ASC']"
@@ -74,8 +71,7 @@ import {mapGetters, mapMutations} from 'vuex'
 import {Program} from "@/breeding-insight/model/Program";
 import EmptyTableMessage from "@/components/tables/EmtpyTableMessage.vue";
 import TableColumn from "@/components/tables/TableColumn.vue";
-import {BiResponse, Pagination} from "@/breeding-insight/model/BiResponse";
-import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
+import {BiResponse} from "@/breeding-insight/model/BiResponse";
 import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
 import {Trial} from '@/breeding-insight/model/Trial'
 import ExpandableTable from '@/components/tables/expandableTable/ExpandableTable.vue';
@@ -87,7 +83,7 @@ import {
   Sort,
   ExperimentSortField
 } from "@/breeding-insight/model/Sort";
-import {BackendPaginationController} from "@/breeding-insight/model/view_models/BackendPaginationController";
+import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
 import {UPDATE_EXPERIMENT_SORT} from "@/store/sorting/mutation-types";
 
 @Component({
@@ -112,16 +108,15 @@ import {UPDATE_EXPERIMENT_SORT} from "@/store/sorting/mutation-types";
 export default class ExperimentsObservationsTable extends Vue {
 
   @Prop()
-  experimentsFetch!: (programId: string, sort: ExperimentSort, paginationController: BackendPaginationController) => (filters: any) => Promise<BiResponse>;
+  experimentsFetch!: (programId: string, sort: ExperimentSort, paginationController: PaginationController) => (filters: any) => Promise<BiResponse>;
 
   private activeProgram?: Program;
   private experiments: Trial[] = [];
-  private experimentsPagination?: Pagination = new Pagination();
   private programName: string = "Program Name";
 
   private experimentsLoading = true;
 
-  private paginationController: BackendPaginationController = new BackendPaginationController();
+  private paginationController: PaginationController = new PaginationController();
 
   private experimentDownloadTitle = 'Download Experiment';
   private experimentDownloadSubtitle = 'File Format';
@@ -154,21 +149,18 @@ export default class ExperimentsObservationsTable extends Vue {
   @Watch('paginationController', { deep: true})
   @Watch('filters', {deep: true})
   async getExperiments() {
-    let paginationQuery: PaginationQuery = PaginationController.getPaginationSelections(
-        this.paginationController.currentPage,
-        this.paginationController.pageSize,
-        this.paginationController.showAll);
-
+    let paginationQuery: PaginationQuery = this.paginationController.getPaginationSelections();
     this.paginationController.setCurrentCall(paginationQuery);
 
     try {
       const {call, callId} = this.experimentCallStack.makeCall(this.filters);
 
       const response = await call;
-      if (!this.experimentCallStack.isCurrentCall(callId)) return;
-      this.experimentsPagination = new Pagination(response.metadata.pagination);
+      if (!this.experimentCallStack.isCurrentCall(callId))
+        return;
+      this.paginationController.setPaginationInfo(response.metadata.pagination);
       // Account for brapi 0 indexing of paging
-      this.experimentsPagination.currentPage = this.experimentsPagination.currentPage.valueOf() + 1;
+      this.paginationController.currentPage = this.paginationController.currentPage.valueOf() + 1;
       this.experiments = response.result.data;
       this.experimentsLoading = false;
 

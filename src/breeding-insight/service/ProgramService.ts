@@ -19,7 +19,6 @@ import {ProgramDAO} from "@/breeding-insight/dao/ProgramDAO";
 import {Program} from "@/breeding-insight/model/Program";
 import {Metadata} from "@/breeding-insight/model/BiResponse";
 import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
-import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
 import {ProgramObservationLevel} from "@/breeding-insight/model/ProgramObservationLevel";
 import {ProgramSort, ProgramSortField, SortOrder} from "@/breeding-insight/model/Sort";
 

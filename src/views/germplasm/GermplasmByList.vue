@@ -79,7 +79,7 @@ import { mapGetters } from 'vuex';
 import { Program } from '@/breeding-insight/model/Program';
 import {StringFormatters} from "@/breeding-insight/utils/StringFormatters";
 import GermplasmDownloadButton from '@/components/germplasm/GermplasmDownloadButton.vue';
-import {BackendPaginationController} from "@/breeding-insight/model/view_models/BackendPaginationController";
+import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
 
 @Component({
   components: { GermplasmTable, GermplasmDownloadButton },
@@ -100,8 +100,8 @@ export default class GermplasmByList extends GermplasmBase {
   private referenceId?: string = '';
 
   // Set the method used to populate the germplasm table
-  private germplasmFetch: (programId: string, sort: GermplasmSort, paginationController: BackendPaginationController) => ((filters: any) => Promise<BiResponse>) =
-      function (programId: string, sort: GermplasmSort, paginationController: BackendPaginationController) {
+  private germplasmFetch: (programId: string, sort: GermplasmSort, paginationController: PaginationController) => ((filters: any) => Promise<BiResponse>) =
+      function (programId: string, sort: GermplasmSort, paginationController: PaginationController) {
         let id: string = this.$route.params.listId;
         return function (filters: any) {
           return GermplasmService.getAllInList(

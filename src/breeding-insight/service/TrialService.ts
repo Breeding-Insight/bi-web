@@ -19,7 +19,7 @@ import {TrialDAO} from "@/breeding-insight/dao/TrialDAO";
 import {Trial} from "@/breeding-insight/model/Trial";
 import {BiResponse, Metadata} from "@/breeding-insight/model/BiResponse";
 import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
-import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
+import {PaginationUtilities} from "@/breeding-insight/model/view_models/PaginationUtilities";
 import {Result, Err, Success, ResultGenerator } from "@/breeding-insight/model/Result";
 
 export class TrialService {
@@ -48,13 +48,13 @@ export class TrialService {
         let trials: Trial[] = [];
         let { result: { data }, metadata } = res;
         
-        data = PaginationController.mockSortRecords(data);
+        data = PaginationUtilities.mockSortRecords(data);
         trials = data.map((trial: any) => {
           return trial as Trial;
         });
 
         let newPagination;
-        [trials, newPagination] = PaginationController.mockPagination(trials, paginationQuery!.page, paginationQuery!.pageSize, paginationQuery!.showAll);  
+        [trials, newPagination] = PaginationUtilities.mockPagination(trials, paginationQuery!.page, paginationQuery!.pageSize, paginationQuery!.showAll);
         metadata.pagination = newPagination;
 
         return [trials, metadata];

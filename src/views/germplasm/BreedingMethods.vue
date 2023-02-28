@@ -140,7 +140,7 @@
     <ExpandableTable
         v-bind:records.sync="programBreedingMethods"
         v-bind:loading="loading"
-        v-bind:pagination="pagination"
+        v-bind:pagination="paginationController"
         v-bind:default-sort="['data.name', 'asc']"
         v-bind:debounce-search="400"
         v-bind:editable="$ability.can('update', 'ProgramConfiguration')"
@@ -290,7 +290,7 @@
       </div>
       <ExpandableTable
           v-bind:records.sync="systemBreedingMethods"
-          v-bind:pagination="systemPagination"
+          v-bind:pagination="systemPaginationController"
           v-bind:default-sort="['data.name', 'asc']"
           v-bind:debounce-search="400"
           :checked-rows.sync="programEnabledSystemMethods"
@@ -361,8 +361,7 @@ import ProgramsBase from "@/components/program/ProgramsBase.vue";
 import ExpandableTable from '@/components/tables/expandableTable/ExpandableTable.vue';
 import { Program } from '@/breeding-insight/model/Program';
 import { BreedingMethod } from '@/breeding-insight/model/BreedingMethod';
-import { Pagination } from '@/breeding-insight/model/BiResponse';
-import { PaginationController } from '@/breeding-insight/model/view_models/PaginationController';
+import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
 import { BreedingMethodService } from '@/breeding-insight/service/BreedingMethodService';
 import GenericModal from "@/components/modals/GenericModal.vue";
 import { mapGetters } from 'vuex';
@@ -391,9 +390,7 @@ export default class BreedingMethods extends ProgramsBase {
   private programBreedingMethods: BreedingMethod[] = [];
   private systemBreedingMethods: BreedingMethod[] = [];
   private inUseBreedingMethods: Array<string> = [];
-  private pagination: Pagination = new Pagination();
   private paginationController: PaginationController = new PaginationController();
-  private systemPagination: Pagination = new Pagination();
   private systemPaginationController: PaginationController = new PaginationController();
   private loading = true;
   private showEnableSystemMethods = false;
@@ -425,16 +422,16 @@ export default class BreedingMethods extends ProgramsBase {
   async getBreedingMethods() {
     try {
       this.programBreedingMethods = await BreedingMethodService.getProgramBreedingMethods(this.activeProgram!.id!);
-      this.pagination.totalCount = this.programBreedingMethods.length;
-      this.pagination.pageSize = 20;
-      this.pagination.currentPage = 1;
-      this.pagination.totalPages = this.pagination.totalCount.valueOf() / this.pagination.pageSize.valueOf();
+      this.paginationController.totalCount = this.programBreedingMethods.length;
+      this.paginationController.currentPage = 1;
+      this.paginationController.totalPages = this.paginationController.totalCount.valueOf() / this.paginationController.pageSize.valueOf();
 
       this.systemBreedingMethods = await BreedingMethodService.getSystemBreedingMethods();
-      this.systemPagination.totalCount = this.systemBreedingMethods.length;
-      this.systemPagination.pageSize = this.systemBreedingMethods.length;
-      this.systemPagination.currentPage = 1;
-      this.systemPagination.totalPages = this.systemPagination.totalCount.valueOf() / this.systemPagination.pageSize.valueOf();
+      this.systemPaginationController.totalCount = this.systemBreedingMethods.length;
+      this.systemPaginationController.pageSize = this.systemBreedingMethods.length;
+      this.systemPaginationController.currentPage = 1;
+      this.systemPaginationController.totalPages = 1;
+      this.systemPaginationController.showAll = true;
 
       const inUseMethods: BreedingMethod[] = await BreedingMethodService.getProgramBreedingMethods(this.activeProgram!.id!, true);
       this.inUseBreedingMethods = inUseMethods.map((value: BreedingMethod) => value.id!);

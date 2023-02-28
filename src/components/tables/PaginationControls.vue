@@ -80,7 +80,7 @@
 </template>
 
 <script lang="ts">
-  import { Component, Prop, Vue } from 'vue-property-decorator'
+import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
   import {Pagination} from "@/breeding-insight/model/BiResponse";
 
   @Component({
@@ -96,10 +96,25 @@
 
     private displayPageSize: Number = -1;
 
+    mounted() {
+      this.displayPageSize = this.pagination.pageSize
+    }
+
+    @Watch('pagination.showAll', {immediate: true})
+    onShowAllChange(newVal: boolean) {
+      this.showAllState = newVal;
+      this.setDisplayPageSize();
+    }
+
+    @Watch('pagination.pageSize', {immediate: true})
+    onPageSizeChange(newVal: number) {
+      this.setDisplayPageSize();
+    }
+
     toggleShowAll() {
       this.showAllState = !this.showAllState;
-      this.setDisplayPageSize();
       this.$emit('paginate-toggle-all');
+      this.setDisplayPageSize();
     }
 
     changePageSize($event:any) {

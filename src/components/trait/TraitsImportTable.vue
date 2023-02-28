@@ -164,7 +164,6 @@
   import { mapGetters, mapMutations } from 'vuex'
   import {Program} from "@/breeding-insight/model/Program";
   import EmptyTableMessage from "@/components/tables/EmtpyTableMessage.vue";
-  import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
   import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
   import {Pagination} from "@/breeding-insight/model/BiResponse";
   import { TraitUploadService } from '@/breeding-insight/service/TraitUploadService';
@@ -179,7 +178,7 @@
     IMPORT_PREVIEW_ONT_TOGGLE_SORT_ORDER
   } from "@/store/sorting/mutation-types";
   import {OntologySort, OntologySortField} from "@/breeding-insight/model/Sort";
-  import {BackendPaginationController} from "@/breeding-insight/model/view_models/BackendPaginationController";
+  import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
 
   @Component({
     mixins: [validationMixin],
@@ -213,7 +212,7 @@ export default class TraitsImportTable extends Vue {
 
   private activeProgram?: Program;
   private traitsPagination?: Pagination = new Pagination();
-  private paginationController: BackendPaginationController = new BackendPaginationController();
+  private paginationController: PaginationController = new PaginationController();
   private traits : Trait[] = [];
   private upload?: ProgramUpload;
   private loaded = false;
@@ -248,8 +247,7 @@ export default class TraitsImportTable extends Vue {
   }
 
   updatePagination() {
-    let paginationQuery: PaginationQuery = BackendPaginationController.getPaginationSelections(
-        this.paginationController.currentPage, this.paginationController.pageSize, this.paginationController.showAll);
+    let paginationQuery: PaginationQuery = this.paginationController.getPaginationSelections();
     this.paginationController.setCurrentCall(paginationQuery);
   }
 
@@ -258,6 +256,7 @@ export default class TraitsImportTable extends Vue {
       if (this.paginationController.matchesCurrentRequest(metadata.pagination)){
         this.traits = upload.data || [];
         this.traitsPagination = metadata.pagination;
+        this.paginationController.setPaginationInfo(metadata.pagination);
       }
 
     }).catch((error) => {

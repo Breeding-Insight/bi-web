@@ -100,7 +100,7 @@
       </template>
 
       <template v-slot:pagination>
-        <pagination-controls v-show="records.length > 0" v-bind="$props" v-on="$listeners"/>
+        <pagination-controls v-show="records.length > 0" v-bind="$props" v-on:paginate="paginate" v-on:paginate-toggle-all="toggleShowAll" v-on:pagniate-page-size="updatePageSize" />
       </template>
 
     </b-table>
@@ -118,6 +118,7 @@ import ValidationMixin from '@/mixins/ValidationMixin'
 import { DataFormEventBusHandler } from '@/components/forms/DataFormEventBusHandler';
 import {ChevronRightIcon, ChevronDownIcon} from 'vue-feather-icons'
 import { TableRow } from '@/breeding-insight/model/view_models/TableRow';
+import { PaginationController } from '@/breeding-insight/model/view_models/PaginationController';
 
 @Component({
   components: { EditDataRowForm, PaginationControls, ChevronRightIcon, ChevronDownIcon }
@@ -135,7 +136,7 @@ export default class ExpandableTable extends Mixins(ValidationMixin) {
   @Prop()
   archivable!: boolean;
   @Prop()
-  pagination!: Pagination;
+  pagination!: PaginationController;
   @Prop()
   dataFormState!: DataFormEventBusHandler;
   @Prop()
@@ -243,6 +244,18 @@ export default class ExpandableTable extends Mixins(ValidationMixin) {
 
   isRowArchivable(row: any) {
     return ((typeof this.rowArchivable === "function") ? this.rowArchivable(row) : true) && this.archivable;
+  }
+
+  paginate(event: any) {
+    this.pagination.updatePage(event);
+  }
+
+  toggleShowAll(event: any) {
+    this.pagination.toggleShowAll()
+  }
+
+  updatePageSize(event: any) {
+    this.pagination.updatePageSize(event);
   }
 }
 </script>

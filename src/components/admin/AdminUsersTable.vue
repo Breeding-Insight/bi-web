@@ -143,14 +143,11 @@
       v-bind:row-validations="userValidations"
       v-bind:editable="true"
       v-bind:archivable="true"
-      v-bind:pagination="usersPagination"
+      v-bind:pagination="paginationController"
       v-bind:data-form-state="editUserFormState"
       v-on:submit="updateUser($event)"
       v-on:remove="displayWarning($event)"
       v-on:show-error-notification="$emit('show-error-notification', $event)"
-      v-on:paginate="paginationController.updatePage($event)"
-      v-on:paginate-toggle-all="paginationController.toggleShowAll(usersPagination.totalCount.valueOf())"
-      v-on:paginate-page-size="updatePageSize($event)"
       v-on:is-mobile="isMobile = $event"
       backend-sorting
       v-bind:default-sort="[systemUserSortFieldAsBuefy, systemUserSortOrderAsBuefy]"
@@ -230,7 +227,6 @@
   import BasicSelectField from "@/components/forms/BasicSelectField.vue";
   import {PromiseHandler} from "@/breeding-insight/service/PromiseHandler";
   import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
-  import {Metadata, Pagination} from "@/breeding-insight/model/BiResponse";
   import {helpers} from "vuelidate/lib/validators";
   import { DataFormEventBusHandler } from '@/components/forms/DataFormEventBusHandler';
   import {mapGetters, mapMutations} from "vuex";
@@ -247,7 +243,7 @@
     UserSort,
     UserSortField
   } from "@/breeding-insight/model/Sort";
-  import {BackendPaginationController} from "@/breeding-insight/model/view_models/BackendPaginationController";
+  import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
 
   @Component({
   components: {
@@ -288,13 +284,12 @@ export default class AdminUsersTable extends Vue {
     email: {required, email}
   }
 
-  private paginationController: BackendPaginationController = new BackendPaginationController();
+  private paginationController: PaginationController = new PaginationController();
 
   private newUserFormState: DataFormEventBusHandler = new DataFormEventBusHandler();
   private editUserFormState: DataFormEventBusHandler = new DataFormEventBusHandler();
 
   public users: User[] = [];
-  private usersPagination?: Pagination = new Pagination();
 
   private systemUserSort!: UserSort;
   private updateSort!: (sort: SystemUserSort) => void;
@@ -339,8 +334,7 @@ export default class AdminUsersTable extends Vue {
   }
 
     updatePagination() {
-      let paginationQuery: PaginationQuery = BackendPaginationController.getPaginationSelections(
-          this.paginationController.currentPage, this.paginationController.pageSize, this.paginationController.showAll);
+      let paginationQuery: PaginationQuery = this.paginationController.getPaginationSelections();
       this.paginationController.setCurrentCall(paginationQuery);
     }
 
@@ -348,7 +342,7 @@ export default class AdminUsersTable extends Vue {
     UserService.getAll(this.paginationController.currentCall, this.systemUserSort).then(([users, metadata]) => {
       if (this.paginationController.matchesCurrentRequest(metadata.pagination)){
         this.users = users;
-        this.usersPagination = metadata.pagination;
+        this.paginationController.setPaginationInfo(metadata.pagination);
       }
     }).catch((error) => {
       // Display error that users cannot be loaded
@@ -412,10 +406,6 @@ export default class AdminUsersTable extends Vue {
     this.newUser = new User();
     this.getUsers();
   }
-
-    updatePageSize(pageSize: string) {
-      this.paginationController.updatePageSize(Number(pageSize).valueOf());
-    }
 
     updateUser(user: User) {
 

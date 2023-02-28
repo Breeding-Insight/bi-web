@@ -85,14 +85,11 @@
       v-bind:row-validations="trialValidations"
       v-bind:editable="$ability.can('update', 'Trial')"
       v-bind:archivable="$ability.can('archive', 'Trial')"
-      v-bind:pagination="trialsPagination"
+      v-bind:pagination="paginationController"
       v-bind:data-form-state="editTrialFormState"
       v-on:submit="updateTrial($event)"
       v-on:remove="displayWarning($event)"
       v-on:show-error-notification="$emit('show-error-notification', $event)"
-      v-on:paginate="paginationController.updatePage($event)"
-      v-on:paginate-toggle-all="paginationController.toggleShowAll()"
-      v-on:paginate-page-size="paginationController.updatePageSize($event)"
     >
       <b-table-column :custom-sort="sortTrialName" label="Name" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
         <router-link
@@ -137,7 +134,7 @@
   import {TrialService} from "@/breeding-insight/service/TrialService";
   import EmptyTableMessage from "@/components/tables/EmtpyTableMessage.vue";
   import TableColumn from "@/components/tables/TableColumn.vue";
-  import {Metadata, Pagination} from "@/breeding-insight/model/BiResponse";
+  import {Metadata} from "@/breeding-insight/model/BiResponse";
   import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
   import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
   import { DataFormEventBusHandler } from '@/components/forms/DataFormEventBusHandler';
@@ -160,7 +157,6 @@ export default class TrialsTable extends Vue {
 
   private activeProgram?: Program;
   private trials: Trial[] = [];
-  private trialsPagination?: Pagination = new Pagination();
   private deactivateActive: boolean = false;
   private newTrialActive: boolean = false;
   private deactivateWarningTitle: string = "Remove location from Program name?";
@@ -185,11 +181,7 @@ export default class TrialsTable extends Vue {
 
   @Watch('paginationController', { deep: true})
   async getTrials() {
-    let paginationQuery: PaginationQuery = PaginationController.getPaginationSelections(
-      this.paginationController.currentPage,
-      this.paginationController.pageSize,
-      this.paginationController.showAll);
-
+    let paginationQuery: PaginationQuery = this.paginationController.getPaginationSelections();
     this.paginationController.setCurrentCall(paginationQuery);
 
     try {
@@ -199,7 +191,7 @@ export default class TrialsTable extends Vue {
 
       if (this.paginationController.matchesCurrentRequest(metadata.pagination)) {
         this.trials = trials;
-        this.trialsPagination = metadata.pagination;
+        this.paginationController.setPaginationInfo(metadata.pagination);
       }
     } catch (err) {
       // Display error that trials cannot be loaded

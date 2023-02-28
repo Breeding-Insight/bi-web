@@ -264,11 +264,7 @@ export default class StudyTable extends Vue {
   @Watch('paginationController', { deep: true})
   async getStudies() {
 
-    let paginationQuery: PaginationQuery = PaginationController.getPaginationSelections(
-      this.paginationController.currentPage,
-      this.paginationController.pageSize,
-      this.paginationController.showAll);
-
+    let paginationQuery: PaginationQuery = this.paginationController.getPaginationSelections();
     this.paginationController.setCurrentCall(paginationQuery);
 
     try {
@@ -278,7 +274,7 @@ export default class StudyTable extends Vue {
 
       if (this.paginationController.matchesCurrentRequest(metadata.pagination)) {
         this.studies = studies;
-        this.studiesPagination = metadata.pagination;
+        this.paginationController.setPaginationInfo(metadata.pagination);
       }
     } catch (error) {
       // Display error that studies cannot be loaded

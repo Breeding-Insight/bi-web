@@ -124,14 +124,11 @@
       v-bind:row-validations="programEditValidations"
       v-bind:editable="true"
       v-bind:archivable="true"
-      v-bind:pagination="programsPagination"
+      v-bind:pagination="paginationController"
       v-bind:data-form-state="editLocationFormState"
       v-on:submit="updateProgram($event)"
       v-on:remove="displayWarning($event)"
       v-on:show-error-notification="$emit('show-error-notification', $event)"
-      v-on:paginate="paginationController.updatePage($event)"
-      v-on:paginate-toggle-all="paginationController.toggleShowAll(programsPagination.totalCount.valueOf())"
-      v-on:paginate-page-size="updatePageSize($event)"
       backend-sorting
       v-bind:default-sort="[programSortFieldAsBuefy, programSortOrderAsBuefy]"
       v-on:sort="setSort"
@@ -205,7 +202,6 @@
   import NewDataForm from "@/components/forms/NewDataForm.vue";
   import EmtpyTableMessage from "@/components/tables/EmtpyTableMessage.vue";
   import {EventBus} from "@/util/event-bus";
-  import {Metadata, Pagination} from "@/breeding-insight/model/BiResponse";
   import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
   import { DataFormEventBusHandler } from '@/components/forms/DataFormEventBusHandler';
   import { helpers } from 'vuelidate/lib/validators'
@@ -217,7 +213,7 @@
   } from "@/store/mutation-types";
   import {UPDATE_PROGRAM_SORT} from "@/store/sorting/mutation-types";
   import {ProgramSort, ProgramSortField, Sort, SortOrder, UserSort, UserSortField} from "@/breeding-insight/model/Sort";
-  import {BackendPaginationController} from "@/breeding-insight/model/view_models/BackendPaginationController";
+  import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
 
   // create custom validation to handle cases default url validation doesn't
   const url = helpers.withParams(
@@ -248,7 +244,6 @@
 export default class AdminProgramsTable extends Vue {
 
   private programs: Array<Program> = [];
-  private programsPagination?: Pagination = new Pagination();
 
   private deactivateActive: boolean = false;
   private newProgramActive: boolean = false;
@@ -259,7 +254,7 @@ export default class AdminProgramsTable extends Vue {
   private speciesMap: Map<string, Species> = new Map();
   private deleteProgram: Program | undefined;
 
-  private paginationController: BackendPaginationController = new BackendPaginationController();
+  private paginationController: PaginationController = new PaginationController();
 
   private newLocationFormState: DataFormEventBusHandler = new DataFormEventBusHandler();
   private editLocationFormState: DataFormEventBusHandler = new DataFormEventBusHandler();
@@ -343,8 +338,7 @@ export default class AdminProgramsTable extends Vue {
   }
 
   updatePagination() {
-    let paginationQuery: PaginationQuery = BackendPaginationController.getPaginationSelections(
-        this.paginationController.currentPage, this.paginationController.pageSize, this.paginationController.showAll);
+    let paginationQuery: PaginationQuery = this.paginationController.getPaginationSelections();
     this.paginationController.setCurrentCall(paginationQuery);
   }
 
@@ -354,7 +348,7 @@ export default class AdminProgramsTable extends Vue {
       // Check that our most recent query is this one
       if (this.paginationController.matchesCurrentRequest(metadata.pagination)) {
         this.programs = programs;
-        this.programsPagination = metadata.pagination;
+        this.paginationController.setPaginationInfo(metadata.pagination);
       }
     }).catch((error) => {
       // Display error that programs cannot be loaded
@@ -378,10 +372,6 @@ export default class AdminProgramsTable extends Vue {
       throw error;
     }).finally(() => this.speciesLoading = false);
 
-  }
-
-  updatePageSize(pageSize: string) {
-    this.paginationController.updatePageSize(Number(pageSize).valueOf());
   }
 
   updateProgram(updatedProgram: Program) {

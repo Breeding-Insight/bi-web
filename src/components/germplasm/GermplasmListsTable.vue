@@ -20,10 +20,7 @@
     <ExpandableTable
       v-bind:records.sync="germplasmLists"
       v-bind:loading="this.germplasmListsLoading"
-      v-bind:pagination="germplasmListsPagination"
-      v-on:paginate="paginationController.updatePage($event)"
-      v-on:paginate-toggle-all="paginationController.toggleShowAll(germplasmListsPagination.totalCount.valueOf())"
-      v-on:paginate-page-size="paginationController.updatePageSize($event)"
+      v-bind:pagination="paginationController"
       backend-sorting
       backend-filtering
       v-bind:default-sort="[fieldMap['name'], 'ASC']"
@@ -79,8 +76,8 @@ import {Program} from "@/breeding-insight/model/Program";
 import BasicInputField from "@/components/forms/BasicInputField.vue";
 import EmptyTableMessage from "@/components/tables/EmtpyTableMessage.vue";
 import TableColumn from "@/components/tables/TableColumn.vue";
-import {Pagination, BiResponse} from "@/breeding-insight/model/BiResponse";
-import {BackendPaginationController} from "@/breeding-insight/model/view_models/BackendPaginationController";
+import {BiResponse} from "@/breeding-insight/model/BiResponse";
+import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
 import BaseTraitForm from "@/components/trait/forms/BaseTraitForm.vue";
 import {GermplasmList} from "@/breeding-insight/model/GermplasmList";
 import {GermplasmService} from "@/breeding-insight/service/GermplasmService";
@@ -123,11 +120,10 @@ import {UPDATE_EXPERIMENT_SORT} from "@/store/sorting/mutation-types";
 export default class GermplasmListsTable extends Vue {
 
   @Prop()
-  germplasmListFetch!: (programId: string, sort: GermplasmListSort, paginationController: BackendPaginationController) => (filters: any) => Promise<BiResponse>;
+  germplasmListFetch!: (programId: string, sort: GermplasmListSort, paginationController: PaginationController) => (filters: any) => Promise<BiResponse>;
 
   private activeProgram?: Program;
-  private germplasmListsPagination?: Pagination = new Pagination();
-  private paginationController: BackendPaginationController = new BackendPaginationController();
+  private paginationController: PaginationController = new PaginationController();
   private germplasmLists: GermplasmList[] = [];
   private germplasmListsLoading = true;
 
@@ -161,24 +157,24 @@ export default class GermplasmListsTable extends Vue {
         this.germplasmListSort,
         this.paginationController
     ));
-    this.paginationController.pageSize = 20;
+    this.getGermplasmLists();
   }
 
   @Watch('paginationController', { deep: true})
   @Watch('filters', {deep: true})
   async getGermplasmLists() {
-    let paginationQuery = BackendPaginationController.getPaginationSelections(
-          this.paginationController.currentPage, this.paginationController.pageSize, this.paginationController.showAll);
+    let paginationQuery = this.paginationController.getPaginationSelections();
 
     this.paginationController.setCurrentCall(paginationQuery);
 
     try {
       const {call, callId} = this.germplasmListCallStack.makeCall(this.filters);
       const response = await call;
-      if (!this.germplasmListCallStack.isCurrentCall(callId)) return;
-      this.germplasmListsPagination = new Pagination(response.metadata.pagination);
+      if (!this.germplasmListCallStack.isCurrentCall(callId))
+        return;
+      this.paginationController.setPaginationInfo(response.metadata.pagination);
       // Account for brapi 0 indexing of paging
-      this.germplasmListsPagination.currentPage = this.germplasmListsPagination.currentPage.valueOf() + 1;
+      this.paginationController.currentPage = this.paginationController.currentPage.valueOf() + 1;
       this.germplasmLists = response.result.data;
       this.germplasmListsLoading = false;
     } catch (err) {
@@ -190,10 +186,6 @@ export default class GermplasmListsTable extends Vue {
 
   formatDate(date: Date) {
     return moment(date).format('YYYY-MM-DD');
-  }
-
-  updatePageSize(pageSize: string) {
-    this.paginationController.updatePageSize(Number(pageSize).valueOf());
   }
 
   setSort(field: string, order: string) {
