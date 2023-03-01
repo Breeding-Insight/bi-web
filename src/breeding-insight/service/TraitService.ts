@@ -20,7 +20,7 @@ import {Trait} from "@/breeding-insight/model/Trait";
 import {BiResponse, Metadata, Response} from "@/breeding-insight/model/BiResponse";
 import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
 import {ValidationErrorService} from "@/breeding-insight/service/ValidationErrorService";
-import {TraitFilter, TraitSelector} from "@/breeding-insight/model/TraitSelector";
+import {TraitField, TraitFilter, TraitSelector} from "@/breeding-insight/model/TraitSelector";
 import {OntologySort, OntologySortField, SortOrder} from "@/breeding-insight/model/Sort";
 import * as api from "@/util/api";
 
@@ -132,6 +132,15 @@ export class TraitService {
   }
 
   private static mapBrAPIFilters(filters?: any): TraitFilter[] {
+    if (Object.hasOwn(filters,'trait')) {
+      filters[TraitField.ENTITY_ATTRIBUTE] = filters.trait;
+    }
+    if (Object.hasOwn(filters,'method')) {
+      filters[TraitField.METHOD_DESCRIPTION] = filters.method;
+    }
+    if (Object.hasOwn(filters,'unit')) {
+      filters[TraitField.SCALE_NAME] = filters.unit;
+    }
     console.dir(filters);
     return filters && Object.keys(filters).length !== 0 ? Object.entries(filters).map(entry => {
       return new TraitFilter(entry[0], entry[1]);
@@ -169,7 +178,6 @@ export class TraitService {
 
     config.params = this.makeSortAndPageParams(sort, pagination);
 
-    // Make the call
     try {
       const { data } = await api.call(config) as Response;
       return new BiResponse(data);

@@ -109,22 +109,22 @@
         v-on:search="initSearch"
         v-bind:search-debounce="400"
     >
-      <b-table-column field="name" label="Name" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
+      <b-table-column :field="traitField.NAME" label="Name" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
         {{ props.row.data.observationVariableName }}
       </b-table-column>
-      <b-table-column field="termType" label="Term Type" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
+      <b-table-column :field="traitField.TERM_TYPE" label="Term Type" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
         {{ TraitStringFormatters.getTermTypeString(props.row.data.termType) }}
       </b-table-column>
-      <b-table-column field="trait" label="Trait" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
+      <b-table-column :field="traitField.ENTITY_ATTRIBUTE" label="Trait" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
         {{ props.row.data.entity }} {{ props.row.data.attribute }}
       </b-table-column>
-      <b-table-column field="method" label="Method" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
+      <b-table-column :field="traitField.METHOD_DESCRIPTION" label="Method" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
         {{ (props.row.data.method.description ? props.row.data.method.description + " ": "") + props.row.data.method.methodClass }}
       </b-table-column>
-      <b-table-column field="scaleClass" label="Scale Class" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
+      <b-table-column :field="traitField.SCALE_CLASS" label="Scale Class" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
         {{ TraitStringFormatters.getScaleTypeString(props.row.data.scale) }}
       </b-table-column>
-      <b-table-column field="unit" label="Unit" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
+      <b-table-column :field="traitField.SCALE_NAME" label="Unit" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
         <template v-if="props.row.data.scale.dataType === 'NUMERICAL'">
           {{ props.row.data.scale.scaleName }}
         </template>
@@ -286,6 +286,7 @@ export default class OntologyTable extends Vue {
     'trait': OntologySortField.entityAttributeSortLabel,
     'termType': OntologySortField.TermType
   };
+  private traitField = TraitField;
 
   private methodClassOptions: string[] = Object.values(MethodClass);
   private observationLevelOptions?: string[];
@@ -657,10 +658,8 @@ export default class OntologyTable extends Vue {
   }
 
   setSort(field: string, order: string) {
-    if (field in this.fieldMap) {
-      this.updateSort(new OntologySort(this.fieldMap[field], Sort.orderAsBI(order)));
-      this.getTraits();
-    }
+    this.updateSort(new OntologySort(field, Sort.orderAsBI(order)));
+    this.getTraits();
   }
 
   initSearch(filters: any) {

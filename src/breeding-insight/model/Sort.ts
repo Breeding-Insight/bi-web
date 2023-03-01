@@ -15,6 +15,8 @@
  * limitations under the License.
  */
 
+import Ontology from "@/views/ontology/Ontology.vue";
+
 export enum SortOrder {
   Ascending = 'ASC',
   Descending = 'DESC'
@@ -60,12 +62,18 @@ export enum OntologySortField {
 }
 
 export class OntologySort {
-  field: OntologySortField;
-  order: SortOrder;
+  field?: OntologySortField;
+  order?: SortOrder;
 
-  constructor(field: OntologySortField, order: SortOrder) {
-    this.field = field;
-    this.order = order;
+  constructor(field: string, order: SortOrder) {
+    if (this.isSortField(field)) {
+      this.field = field;
+      this.order = order;
+    }
+  }
+
+  private isSortField(field: string): field is OntologySortField {
+    return Object.values<string>(OntologySortField).includes(field);
   }
 }
 
