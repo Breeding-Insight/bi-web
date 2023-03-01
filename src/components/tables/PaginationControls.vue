@@ -118,7 +118,7 @@ import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
     }
 
     changePageSize($event:any) {
-      this.pagination.pageSize = $event.target.value;
+      this.pagination.pageSize = Number.parseInt($event.target.value);
       this.$emit('paginate-page-size', $event.target.value)
       this.showAllState = false;
       this.setDisplayPageSize();
