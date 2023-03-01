@@ -115,7 +115,8 @@ export class TraitService {
     }));
   }
 
-  private static setFilterConfig(programId: string, filters: TraitFilter[]) {
+  private static makeTraitReqConfig(programId: string, filters: TraitFilter[]) {
+    console.dir(filters);
     let config: any = {
       url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/traits`,
       method: 'get'
@@ -130,20 +131,14 @@ export class TraitService {
     return config;
   }
 
-  static async getTraits(programId: string,
-                   sort: OntologySort,
-                   pagination: {pageSize: number, page: number},
-                   filters?: any): Promise<BiResponse>{
-    if (!programId) throw 'Program ID required';
-
-    // Set filters
-    const brapiSearchFilters: TraitFilter[] = Object.entries(filters).map(entry => {
+  private static mapBrAPIFilters(filters?: any): TraitFilter[] {
+    console.dir(filters);
+    return filters && Object.keys(filters).length !== 0 ? Object.entries(filters).map(entry => {
       return new TraitFilter(entry[0], entry[1]);
-    });
+    }) : [];
+  }
 
-    const config: any = this.setFilterConfig(programId, brapiSearchFilters);
-
-    // Set sort and pagination params
+  private static makeSortAndPageParams(sort: OntologySort, pagination: {pageSize: number, page: number}) {
     let params: any = { full: true };
 
     if (sort.field) {
@@ -159,7 +154,20 @@ export class TraitService {
       params['pageSize'] = pagination.pageSize;
     }
 
-    config.params = params;
+    return params;
+  }
+
+  static async getTraits(programId: string,
+                   sort: OntologySort,
+                   pagination: {pageSize: number, page: number},
+                   filters?: any): Promise<BiResponse>{
+    if (!programId) throw 'Program ID required';
+
+    const brapiSearchFilters: TraitFilter[] = this.mapBrAPIFilters(filters);
+
+    const config: any = this.makeTraitReqConfig(programId, brapiSearchFilters);
+
+    config.params = this.makeSortAndPageParams(sort, pagination);
 
     // Make the call
     try {
