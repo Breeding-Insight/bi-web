@@ -55,7 +55,9 @@ export class TraitSelector {
   }
 
   addFilter(filter: TraitFilter) {
-    this.filters.push(filter);
+    if (filter.field && filter.value) {
+      this.filters.push(filter);
+    }
   }
 
 }

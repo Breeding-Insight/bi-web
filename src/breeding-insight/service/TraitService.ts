@@ -115,36 +115,29 @@ export class TraitService {
     }));
   }
 
-  private static makeTraitReqConfig(programId: string, filters: TraitFilter[]) {
-    console.dir(filters);
+  private static makeTraitReqConfig(programId: string, selector: TraitSelector) {
     let config: any = {
       url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/traits`,
       method: 'get'
     };
 
-    if (0 !== filters.length) {
+    if (0 !== selector.filters.length) {
       config.url = `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/traits/search`;
       config.method = 'post';
-      config.data = new TraitSelector(filters);
+      config.data = selector.filters;
     }
 
     return config;
   }
 
-  private static mapBrAPIFilters(filters?: any): TraitFilter[] {
-    if (Object.hasOwn(filters,'trait')) {
-      filters[TraitField.ENTITY_ATTRIBUTE] = filters.trait;
+  private static mapBrAPIFilters(filters?: any): TraitSelector {
+    let selector = new TraitSelector();
+    if (filters && Object.keys(filters).length !== 0) {
+      Object.entries(filters).forEach(entry => {
+        selector.addFilter(new TraitFilter(entry[0], entry[1]));
+      });
     }
-    if (Object.hasOwn(filters,'method')) {
-      filters[TraitField.METHOD_DESCRIPTION] = filters.method;
-    }
-    if (Object.hasOwn(filters,'unit')) {
-      filters[TraitField.SCALE_NAME] = filters.unit;
-    }
-    console.dir(filters);
-    return filters && Object.keys(filters).length !== 0 ? Object.entries(filters).map(entry => {
-      return new TraitFilter(entry[0], entry[1]);
-    }) : [];
+    return selector;
   }
 
   private static makeSortAndPageParams(sort: OntologySort, pagination: {pageSize: number, page: number}) {
@@ -172,7 +165,7 @@ export class TraitService {
                    filters?: any): Promise<BiResponse>{
     if (!programId) throw 'Program ID required';
 
-    const brapiSearchFilters: TraitFilter[] = this.mapBrAPIFilters(filters);
+    const brapiSearchFilters: TraitSelector = this.mapBrAPIFilters(filters);
 
     const config: any = this.makeTraitReqConfig(programId, brapiSearchFilters);
 

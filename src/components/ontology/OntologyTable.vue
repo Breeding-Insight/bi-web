@@ -104,7 +104,7 @@
         v-on:paginate-page-size="paginationController.updatePageSize(parseInt($event,10))"
         backend-sorting
         backend-filtering
-        v-bind:default-sort="[fieldMap['name'], 'ASC']"
+        v-bind:default-sort="[ontologySortField.Name, 'ASC']"
         v-on:sort="setSort"
         v-on:search="initSearch"
         v-bind:search-debounce="400"
@@ -278,15 +278,8 @@ export default class OntologyTable extends Vue {
 
   private activeOntologySort!: OntologySort;
   private updateSort!: (sort: OntologySort) => void;
-  private fieldMap: any = {
-    'name': OntologySortField.Name,
-    'method': OntologySortField.MethodDescription,
-    'scaleClass': OntologySortField.ScaleClass,
-    'unit': OntologySortField.ScaleName,
-    'trait': OntologySortField.entityAttributeSortLabel,
-    'termType': OntologySortField.TermType
-  };
   private traitField = TraitField;
+  private ontologySortField = OntologySortField;
 
   private methodClassOptions: string[] = Object.values(MethodClass);
   private observationLevelOptions?: string[];
@@ -348,8 +341,6 @@ export default class OntologyTable extends Vue {
 
   mounted() {
     this.getSubscribedOntology();
-    //this.updatePagination();
-    // this.getTraits();
     this.getObservationLevels();
     this.getAttributesEntitiesDescriptions();
     this.getTraitTags();

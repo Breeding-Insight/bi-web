@@ -62,10 +62,12 @@ export enum OntologySortField {
 }
 
 export class OntologySort {
-  field?: OntologySortField;
-  order?: SortOrder;
+  field: OntologySortField;
+  order: SortOrder;
 
   constructor(field: string, order: SortOrder) {
+    this.field = OntologySortField.Name;
+    this.order = SortOrder.Ascending;
     if (this.isSortField(field)) {
       this.field = field;
       this.order = order;
