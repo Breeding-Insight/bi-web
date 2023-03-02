@@ -42,6 +42,7 @@ import {BackendPaginationController} from "@/breeding-insight/model/view_models/
 import {BiResponse} from "@/breeding-insight/model/BiResponse";
 import {BrAPIService, BrAPIType} from "@/breeding-insight/service/BrAPIService";
 import { TraitService } from '@/breeding-insight/service/TraitService';
+import { TraitField } from '@/breeding-insight/model/TraitSelector';
 
 @Component({
   components: {OntologyTable},
@@ -64,10 +65,13 @@ export default class OntologyActiveTable extends Vue {
   private newSortColumn!: (field: OntologySortField) => void;
   private toggleSortOrder!: () => void;
 
-  // Set the method used to populate the germplasm table
+  // Set the method used to populate the ontology table
   private ontologyFetch: (programId: string, sort: OntologySort, paginationController: BackendPaginationController) => ((filters: any) => Promise<BiResponse>) =
       function (programId: string, sort: OntologySort, paginationController: BackendPaginationController) {
         return function (filters: any) {
+
+          // only request active traits
+          filters[TraitField.STATUS] = true;
           return TraitService.getTraits(
               programId,
               sort,
