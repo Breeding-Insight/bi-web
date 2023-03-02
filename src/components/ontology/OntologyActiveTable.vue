@@ -20,8 +20,7 @@
       v-bind:active="true"
       v-bind:ontologySort="activeOntologySort"
       v-bind:ontologyFetch="ontologyFetch"
-      v-on:newSortColumn="newSortColumn"
-      v-on:toggleSortOrder="toggleSortOrder"
+      v-on:updateSort="updateSort"
       @show-success-notification="$emit('show-success-notification', $event)"
       @show-info-notification="$emit('show-info-notification', $event)"
       @show-error-notification="$emit('show-error-notification', $event)"
@@ -35,7 +34,7 @@ import OntologyTable from "@/components/ontology/OntologyTable.vue";
 import {mapGetters, mapMutations} from 'vuex'
 import {
   ACTIVE_ONT_NEW_SORT_COLUMN,
-  ACTIVE_ONT_TOGGLE_SORT_ORDER
+  ACTIVE_ONT_TOGGLE_SORT_ORDER, UPDATE_ACTIVE_ONT_SORT
 } from "@/store/sorting/mutation-types";
 import {GermplasmSort, GermplasmSortField, OntologySort, OntologySortField} from "@/breeding-insight/model/Sort";
 import {BackendPaginationController} from "@/breeding-insight/model/view_models/BackendPaginationController";
@@ -53,8 +52,7 @@ import { TraitField } from '@/breeding-insight/model/TraitSelector';
   },
   methods: {
     ...mapMutations('sorting', {
-      newSortColumn: ACTIVE_ONT_NEW_SORT_COLUMN,
-      toggleSortOrder: ACTIVE_ONT_TOGGLE_SORT_ORDER
+      updateSort: UPDATE_ACTIVE_ONT_SORT
     })
   }
 })
@@ -62,16 +60,12 @@ import { TraitField } from '@/breeding-insight/model/TraitSelector';
 export default class OntologyActiveTable extends Vue {
 
   private activeOntologySort!: OntologySort;
-  private newSortColumn!: (field: OntologySortField) => void;
-  private toggleSortOrder!: () => void;
 
-  // Set the method used to populate the ontology table
+  // Set the method used to populate the active ontology table
   private ontologyFetch: (programId: string, sort: OntologySort, paginationController: BackendPaginationController) => ((filters: any) => Promise<BiResponse>) =
       function (programId: string, sort: OntologySort, paginationController: BackendPaginationController) {
         return function (filters: any) {
-
-          // only request active traits
-          filters[TraitField.STATUS] = true;
+          filters[TraitField.STATUS] = true;  // only request active traits
           return TraitService.getTraits(
               programId,
               sort,

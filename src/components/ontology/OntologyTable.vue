@@ -246,10 +246,6 @@ import {UPDATE_ACTIVE_ONT_SORT, UPDATE_ARCHIVED_ONT_SORT} from "@/store/sorting/
     ]),
     ...mapGetters('programManagement',[
       'isSubscribed'
-    ]),
-    ...mapGetters('sorting',
-    [
-        'activeOntologySort'
     ])
   },
   methods: {
@@ -267,6 +263,8 @@ export default class OntologyTable extends Vue {
   active?: boolean;
   @Prop()
   ontologyFetch!: (programId: string, sort: OntologySort, paginationController: BackendPaginationController) => (filters: any) => Promise<BiResponse>;
+  @Prop()
+  ontologySort!: OntologySort;
 
   private activeProgram?: Program;
   private pagination?: Pagination = new Pagination();
@@ -347,7 +345,7 @@ export default class OntologyTable extends Vue {
 
     this.ontologyCallStack = new CallStack(this.ontologyFetch(
         this.activeProgram!.id!,
-        this.activeOntologySort,
+        this.ontologySort,
         this.paginationController
     ));
 
@@ -649,7 +647,7 @@ export default class OntologyTable extends Vue {
   }
 
   setSort(field: string, order: string) {
-    this.updateSort(new OntologySort(field, Sort.orderAsBI(order)));
+    this.$emit('updateSort',new OntologySort(field, Sort.orderAsBI(order)))
     this.getTraits();
   }
 

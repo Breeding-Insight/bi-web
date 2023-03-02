@@ -19,8 +19,8 @@
   <ontology-table
       v-bind:active="false"
       v-bind:ontologySort="archivedOntologySort"
-      v-on:newSortColumn="newSortColumn"
-      v-on:toggleSortOrder="toggleSortOrder"
+      v-bind:ontologyFetch="ontologyFetch"
+      v-on:updateSort="updateSort"
       @show-success-notification="$emit('show-success-notification', $event)"
       @show-info-notification="$emit('show-info-notification', $event)"
       @show-error-notification="$emit('show-error-notification', $event)"
@@ -34,9 +34,13 @@ import OntologyTable from "@/components/ontology/OntologyTable.vue";
 import {mapGetters, mapMutations} from 'vuex'
 import {
   ARCHIVED_ONT_NEW_SORT_COLUMN,
-  ARCHIVED_ONT_TOGGLE_SORT_ORDER
+  ARCHIVED_ONT_TOGGLE_SORT_ORDER, UPDATE_ARCHIVED_ONT_SORT
 } from "@/store/sorting/mutation-types";
 import {OntologySort, OntologySortField} from "@/breeding-insight/model/Sort";
+import {BackendPaginationController} from "@/breeding-insight/model/view_models/BackendPaginationController";
+import {BiResponse} from "@/breeding-insight/model/BiResponse";
+import {TraitField} from "@/breeding-insight/model/TraitSelector";
+import {TraitService} from "@/breeding-insight/service/TraitService";
 
 
 @Component({
@@ -48,15 +52,26 @@ import {OntologySort, OntologySortField} from "@/breeding-insight/model/Sort";
   },
   methods: {
     ...mapMutations('sorting', {
-      newSortColumn: ARCHIVED_ONT_NEW_SORT_COLUMN,
-      toggleSortOrder: ARCHIVED_ONT_TOGGLE_SORT_ORDER
+      updateSort: UPDATE_ARCHIVED_ONT_SORT
     })
   }
 })
 export default class OntologyArchivedTable extends Vue {
+
   private archivedOntologySort!: OntologySort;
-  private newSortColumn!: (field: OntologySortField) => void;
-  private toggleSortOrder!: () => void;
+
+  // Set the method used to populate the archived ontology table
+  private ontologyFetch: (programId: string, sort: OntologySort, paginationController: BackendPaginationController) => ((filters: any) => Promise<BiResponse>) =
+      function (programId: string, sort: OntologySort, paginationController: BackendPaginationController) {
+        return function (filters: any) {
+          filters[TraitField.STATUS] = false; // only request archived traits
+          return TraitService.getTraits(
+              programId,
+              sort,
+              { pageSize: paginationController.pageSize, page: paginationController.currentPage },
+              filters)
+        };
+      };
 
 }
 </script>
