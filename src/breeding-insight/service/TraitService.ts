@@ -124,7 +124,7 @@ export class TraitService {
     if (0 !== selector.filters.length) {
       config.url = `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/traits/search`;
       config.method = 'post';
-      config.data = selector.filters;
+      config.data = { filters: selector.filters };
     }
 
     return config;
