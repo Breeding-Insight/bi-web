@@ -119,11 +119,11 @@ export class TraitService {
                          sort: OntologySort,
                          pagination: {pageSize: number, page: number},
                          filters?: any): Promise<BiResponse>{
-    if (!programId) throw 'Program ID required';
-
-    const brapiSearchFilters: TraitSelector = this.mapBrAPIFilters(filters);
-    const config: any = this.makeTraitReqConfig(programId, brapiSearchFilters);
-    config.params = this.makeSortAndPageParams(sort, pagination);
+    if (!programId) {
+      throw 'Program ID required';
+    }
+    const config: any = this.makeTraitReqConfig(programId);
+    config.params = this.makeTraitParams(sort, pagination, filters);
 
     try {
       const { data } = await api.call(config) as Response;
@@ -178,34 +178,20 @@ export class TraitService {
     else throw 'Unable to get trait editable info';
   }
 
-  private static makeTraitReqConfig(programId: string, selector: TraitSelector) {
+  private static makeTraitReqConfig(programId: string) {
     let config: any = {
       url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/traits`,
       method: 'get'
     };
-
-    if (0 !== selector.filters.length) {
-      config.url = `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/traits/search`;
-      config.method = 'post';
-      config.data = { filters: selector.filters };
-    }
-
     return config;
   }
 
-  private static mapBrAPIFilters(filters?: any): TraitSelector {
-    let selector = new TraitSelector();
-    if (filters && Object.keys(filters).length !== 0) {
-      Object.entries(filters).forEach(entry => {
-        selector.addFilter(new TraitFilter(entry[0], entry[1]));
-      });
+  private static makeTraitParams(sort: OntologySort, pagination: {pageSize: number, page: number}, filters?: any) {
+    let params: any = {};
+
+    if (filters) {
+      params = filters;
     }
-    return selector;
-  }
-
-  private static makeSortAndPageParams(sort: OntologySort, pagination: {pageSize: number, page: number}) {
-    let params: any = { full: true };
-
     if (sort.field) {
       params['sortField'] = sort.field;
     }
@@ -218,6 +204,7 @@ export class TraitService {
     if (pagination.pageSize) {
       params['pageSize'] = pagination.pageSize;
     }
+    params.full = true;
 
     return params;
   }
