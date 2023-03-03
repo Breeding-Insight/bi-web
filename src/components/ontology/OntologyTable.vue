@@ -212,7 +212,6 @@ import {TraitService} from "@/breeding-insight/service/TraitService";
 import EmptyTableMessage from "@/components/tables/EmtpyTableMessage.vue";
 import TableColumn from "@/components/tables/TableColumn.vue";
 import {BiResponse, Metadata, Pagination} from "@/breeding-insight/model/BiResponse";
-import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
 import {StringFormatters} from '@/breeding-insight/utils/StringFormatters';
 import {TraitStringFormatters} from '@/breeding-insight/utils/TraitStringFormatters';
 import BaseTraitForm from "@/components/trait/forms/BaseTraitForm.vue";
@@ -223,16 +222,15 @@ import {DataType, Scale} from "@/breeding-insight/model/Scale";
 import {SidePanelTableEventBusHandler} from "@/components/tables/SidePanelTableEventBus";
 import {DataFormEventBusHandler} from '@/components/forms/DataFormEventBusHandler';
 import {integer, maxLength} from "vuelidate/lib/validators";
-import {TermType, TraitField, TraitFilter} from "@/breeding-insight/model/TraitSelector";
-import {GermplasmSort, GermplasmSortField, OntologySort, OntologySortField, Sort} from "@/breeding-insight/model/Sort";
+import {TermType, TraitField} from "@/breeding-insight/model/TraitSelector";
+import {OntologySort, OntologySortField, Sort} from "@/breeding-insight/model/Sort";
 import {BackendPaginationController} from "@/breeding-insight/model/view_models/BackendPaginationController";
 import {Category} from "@/breeding-insight/model/Category";
 import {EnumUtils} from "@/breeding-insight/utils/EnumUtils";
 import SidePanelTableNew from "@/components/tables/SidePanelTableNew.vue";
-import Ontology from "@/views/ontology/Ontology.vue";
 import {CallStack} from "@/breeding-insight/utils/CallStack";
 import ChevronRightIcon from 'vue-feather-icons'
-import {UPDATE_ACTIVE_ONT_SORT, UPDATE_ARCHIVED_ONT_SORT} from "@/store/sorting/mutation-types";
+import {UPDATE_ACTIVE_ONT_SORT} from "@/store/sorting/mutation-types";
 
 @Component({
   mixins: [validationMixin],
@@ -259,13 +257,6 @@ import {UPDATE_ACTIVE_ONT_SORT, UPDATE_ARCHIVED_ONT_SORT} from "@/store/sorting/
   data: () => ({Trait, StringFormatters, TraitStringFormatters, Sort})
 })
 export default class OntologyTable extends Vue {
-  @Prop({default: () => true})
-  active?: boolean;
-  @Prop()
-  ontologyFetch!: (programId: string, sort: OntologySort, paginationController: BackendPaginationController) => (filters: any) => Promise<BiResponse>;
-  @Prop()
-  ontologySort!: OntologySort;
-
   private activeProgram?: Program;
   private pagination?: Pagination = new Pagination();
   private paginationController: BackendPaginationController = new BackendPaginationController();
@@ -314,7 +305,6 @@ export default class OntologyTable extends Vue {
 
   shortCharLimit = 12;
   longCharLimit = 30;
-
   traitValidations = {
     observationVariableName: {
       maxLength: maxLength(this.shortCharLimit)
@@ -337,26 +327,25 @@ export default class OntologyTable extends Vue {
     }
   }
 
+  @Prop({default: () => true})
+  active?: boolean;
+  @Prop()
+  ontologyFetch!: (programId: string, sort: OntologySort, paginationController: BackendPaginationController) => (filters: any) => Promise<BiResponse>;
+  @Prop()
+  ontologySort!: OntologySort;
+
   mounted() {
     this.getSubscribedOntology();
     this.getObservationLevels();
     this.getAttributesEntitiesDescriptions();
     this.getTraitTags();
-
     this.ontologyCallStack = new CallStack(this.ontologyFetch(
         this.activeProgram!.id!,
         this.ontologySort,
         this.paginationController
     ));
-
     this.paginationController.pageSize = 20;
-
-    // Events
     this.registerSidePanelEventHandlers()
-  }
-
-  archiveWarning() {
-    return this.editTrait && this.editTrait.active ? 'restore' : 'archive';
   }
 
   @Watch('paginationController', { deep: true})
@@ -402,6 +391,10 @@ export default class OntologyTable extends Vue {
         this.editable(row);
       }
     });
+  }
+
+  archiveWarning() {
+    return this.editTrait && this.editTrait.active ? 'restore' : 'archive';
   }
 
   async editable(trait: Trait) {
