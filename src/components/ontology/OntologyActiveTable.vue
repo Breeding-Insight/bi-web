@@ -31,15 +31,11 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
 import OntologyTable from "@/components/ontology/OntologyTable.vue";
-import {mapGetters, mapMutations} from 'vuex'
-import {
-  ACTIVE_ONT_NEW_SORT_COLUMN,
-  ACTIVE_ONT_TOGGLE_SORT_ORDER, UPDATE_ACTIVE_ONT_SORT
-} from "@/store/sorting/mutation-types";
-import {GermplasmSort, GermplasmSortField, OntologySort, OntologySortField} from "@/breeding-insight/model/Sort";
-import {BackendPaginationController} from "@/breeding-insight/model/view_models/BackendPaginationController";
-import {BiResponse} from "@/breeding-insight/model/BiResponse";
-import {BrAPIService, BrAPIType} from "@/breeding-insight/service/BrAPIService";
+import { mapGetters, mapMutations } from 'vuex'
+import { UPDATE_ACTIVE_ONT_SORT } from "@/store/sorting/mutation-types";
+import { OntologySort } from "@/breeding-insight/model/Sort";
+import { BackendPaginationController } from "@/breeding-insight/model/view_models/BackendPaginationController";
+import { BiResponse  } from "@/breeding-insight/model/BiResponse";
 import { TraitService } from '@/breeding-insight/service/TraitService';
 import { TraitField } from '@/breeding-insight/model/TraitSelector';
 

@@ -29,18 +29,15 @@
 </template>
 
 <script lang="ts">
-import { Prop, Component, Vue } from 'vue-property-decorator'
+import { Component, Vue } from 'vue-property-decorator'
 import OntologyTable from "@/components/ontology/OntologyTable.vue";
-import {mapGetters, mapMutations} from 'vuex'
-import {
-  ARCHIVED_ONT_NEW_SORT_COLUMN,
-  ARCHIVED_ONT_TOGGLE_SORT_ORDER, UPDATE_ARCHIVED_ONT_SORT
-} from "@/store/sorting/mutation-types";
-import {OntologySort, OntologySortField} from "@/breeding-insight/model/Sort";
-import {BackendPaginationController} from "@/breeding-insight/model/view_models/BackendPaginationController";
-import {BiResponse} from "@/breeding-insight/model/BiResponse";
-import {TraitField} from "@/breeding-insight/model/TraitSelector";
-import {TraitService} from "@/breeding-insight/service/TraitService";
+import { mapGetters, mapMutations } from 'vuex'
+import { UPDATE_ARCHIVED_ONT_SORT } from "@/store/sorting/mutation-types";
+import { OntologySort } from "@/breeding-insight/model/Sort";
+import { BackendPaginationController } from "@/breeding-insight/model/view_models/BackendPaginationController";
+import { BiResponse } from "@/breeding-insight/model/BiResponse";
+import { TraitField } from "@/breeding-insight/model/TraitSelector";
+import {TraitService } from "@/breeding-insight/service/TraitService";
 
 
 @Component({

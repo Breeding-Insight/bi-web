@@ -115,60 +115,14 @@ export class TraitService {
     }));
   }
 
-  private static makeTraitReqConfig(programId: string, selector: TraitSelector) {
-    let config: any = {
-      url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/traits`,
-      method: 'get'
-    };
-
-    if (0 !== selector.filters.length) {
-      config.url = `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/traits/search`;
-      config.method = 'post';
-      config.data = { filters: selector.filters };
-    }
-
-    return config;
-  }
-
-  private static mapBrAPIFilters(filters?: any): TraitSelector {
-    let selector = new TraitSelector();
-    if (filters && Object.keys(filters).length !== 0) {
-      Object.entries(filters).forEach(entry => {
-        selector.addFilter(new TraitFilter(entry[0], entry[1]));
-      });
-    }
-    return selector;
-  }
-
-  private static makeSortAndPageParams(sort: OntologySort, pagination: {pageSize: number, page: number}) {
-    let params: any = { full: true };
-
-    if (sort.field) {
-      params['sortField'] = sort.field;
-    }
-    if (sort.order) {
-      params['sortOrder'] = sort.order;
-    }
-    if (pagination.page || pagination.page == 0) { //have to account for 0-index pagination since 0 falsy
-      params ['page'] = pagination.page;
-    }
-    if (pagination.pageSize) {
-      params['pageSize'] = pagination.pageSize;
-    }
-
-    return params;
-  }
-
   static async getTraits(programId: string,
-                   sort: OntologySort,
-                   pagination: {pageSize: number, page: number},
-                   filters?: any): Promise<BiResponse>{
+                         sort: OntologySort,
+                         pagination: {pageSize: number, page: number},
+                         filters?: any): Promise<BiResponse>{
     if (!programId) throw 'Program ID required';
 
     const brapiSearchFilters: TraitSelector = this.mapBrAPIFilters(filters);
-
     const config: any = this.makeTraitReqConfig(programId, brapiSearchFilters);
-
     config.params = this.makeSortAndPageParams(sort, pagination);
 
     try {
@@ -178,34 +132,6 @@ export class TraitService {
     } catch (error) {
       throw error;
     }
-  }
-
-  static getFilteredTraits(programId: string,
-                           paginationQuery: PaginationQuery = new PaginationQuery(1, 50, true),
-                           full: boolean = false,
-                           filters?: TraitFilter[],
-                           sort: OntologySort = new OntologySort(OntologySortField.Name, SortOrder.Ascending)): Promise<[Trait[], Metadata]> {
-    return new Promise<[Trait[], Metadata]>(((resolve, reject) => {
-
-      if (programId) {
-        TraitDAO.getFilteredTraits(programId, paginationQuery, full, sort, filters).then((biResponse) => {
-
-          let traits: Trait[] = [];
-
-          if (biResponse.result.data) {
-            traits = biResponse.result.data.map((trait: any) => {
-              return trait as Trait;
-            });
-          }
-
-          resolve([traits, biResponse.metadata]);
-
-        }).catch((error) => reject(error));
-
-      } else {
-        reject();
-      }
-    }));
   }
 
   static async getTraitEditable(programId: string, traitId: string): Promise<[boolean, Metadata]> {
@@ -250,5 +176,49 @@ export class TraitService {
       }
     }
     else throw 'Unable to get trait editable info';
+  }
+
+  private static makeTraitReqConfig(programId: string, selector: TraitSelector) {
+    let config: any = {
+      url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/traits`,
+      method: 'get'
+    };
+
+    if (0 !== selector.filters.length) {
+      config.url = `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/traits/search`;
+      config.method = 'post';
+      config.data = { filters: selector.filters };
+    }
+
+    return config;
+  }
+
+  private static mapBrAPIFilters(filters?: any): TraitSelector {
+    let selector = new TraitSelector();
+    if (filters && Object.keys(filters).length !== 0) {
+      Object.entries(filters).forEach(entry => {
+        selector.addFilter(new TraitFilter(entry[0], entry[1]));
+      });
+    }
+    return selector;
+  }
+
+  private static makeSortAndPageParams(sort: OntologySort, pagination: {pageSize: number, page: number}) {
+    let params: any = { full: true };
+
+    if (sort.field) {
+      params['sortField'] = sort.field;
+    }
+    if (sort.order) {
+      params['sortOrder'] = sort.order;
+    }
+    if (pagination.page || pagination.page == 0) { //have to account for 0-index pagination since 0 falsy
+      params ['page'] = pagination.page;
+    }
+    if (pagination.pageSize) {
+      params['pageSize'] = pagination.pageSize;
+    }
+
+    return params;
   }
 }
