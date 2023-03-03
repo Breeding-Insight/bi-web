@@ -227,7 +227,7 @@ import {OntologySort, OntologySortField, Sort} from "@/breeding-insight/model/So
 import {BackendPaginationController} from "@/breeding-insight/model/view_models/BackendPaginationController";
 import {Category} from "@/breeding-insight/model/Category";
 import {EnumUtils} from "@/breeding-insight/utils/EnumUtils";
-import SidePanelTableNew from "@/components/tables/SidePanelTableNew.vue";
+import SidePanelTableBuefy from "@/components/tables/SidePanelTableBuefy.vue";
 import {CallStack} from "@/breeding-insight/utils/CallStack";
 import ChevronRightIcon from 'vue-feather-icons'
 import {UPDATE_ACTIVE_ONT_SORT} from "@/store/sorting/mutation-types";
@@ -235,7 +235,7 @@ import {UPDATE_ACTIVE_ONT_SORT} from "@/store/sorting/mutation-types";
 @Component({
   mixins: [validationMixin],
   components: {
-    BaseTraitForm, NewDataForm, BasicInputField, SidePanelTable, SidePanelTableNew, EmptyTableMessage, TableColumn,
+    BaseTraitForm, NewDataForm, BasicInputField, SidePanelTable, SidePanelTableNew: SidePanelTableBuefy, EmptyTableMessage, TableColumn,
                 WarningModal, TraitDetailPanel,
                 PlusCircleIcon, ChevronRightIcon },
   computed: {

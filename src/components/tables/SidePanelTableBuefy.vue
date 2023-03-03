@@ -183,7 +183,7 @@ import WarningModal from "@/components/modals/WarningModal.vue";
   components: { EditDataRowForm, PaginationControls, ChevronRightIcon, ChevronDownIcon, SidePanel, TraitDetailPanel,
   WarningModal }
 })
-export default class SidePanelTableNew extends Mixins(ValidationMixin) {
+export default class SidePanelTableBuefy extends Mixins(ValidationMixin) {
 
   @Prop()
   sidePanelState!: SidePanelTableEventBusHandler;
@@ -218,34 +218,6 @@ export default class SidePanelTableNew extends Mixins(ValidationMixin) {
   private openDetail: Array<TableRow<any>> = new Array<TableRow<any>>();
   private initialUpdate: boolean = false;
   private tableRef = "table-"+Math.random()*1000;
-
-  detailsOpened(row: TableRow<any>) {
-    this.openDetail = [row]; //closes other opened row details
-    this.setValidationRow(row);
-  }
-
-  isVisibleDetailRow(row:any) {
-    // If data is passed in at same time as component loading, this ref won't be assigned yet. Check if assigned before referencing.
-    return this.$refs[this.tableRef] ? (this.$refs[this.tableRef] as Vue & { isVisibleDetailRow: (row:any) => boolean }).isVisibleDetailRow(row): false;
-  }
-
-  detailsVisible() {
-    return this.editable || this.archivable;
-  }
-
-  calculateRowClass(row: TableRow<any>, index: Number) {
-    if (this.isVisibleDetailRow(row)) {
-      return this.rowClasses && this.rowClasses[row.data.id] ? this.rowClasses[row.data.id] + " is-edited" : "is-edited";
-    } else if (row.new) {
-      return this.rowClasses && this.rowClasses[row.data.id] ? this.rowClasses[row.data.id] + " is-new" : "is-new";
-    }
-    
-    return this.rowClasses && this.rowClasses[row.data.id] ? this.rowClasses[row.data.id] : "";
-  }
-
-  updated() {
-    this.initialUpdate = true;
-  }
 
   @Watch('records', {immediate: true, deep:true})
   updateTableRows(newRecords: any, oldRecords: any) {
@@ -287,6 +259,34 @@ export default class SidePanelTableNew extends Mixins(ValidationMixin) {
       rowArray.push(newTableRow);
     }
     this.tableRows = rowArray;
+  }
+
+  detailsOpened(row: TableRow<any>) {
+    this.openDetail = [row]; //closes other opened row details
+    this.setValidationRow(row);
+  }
+
+  isVisibleDetailRow(row:any) {
+    // If data is passed in at same time as component loading, this ref won't be assigned yet. Check if assigned before referencing.
+    return this.$refs[this.tableRef] ? (this.$refs[this.tableRef] as Vue & { isVisibleDetailRow: (row:any) => boolean }).isVisibleDetailRow(row): false;
+  }
+
+  detailsVisible() {
+    return this.editable || this.archivable;
+  }
+
+  calculateRowClass(row: TableRow<any>, index: Number) {
+    if (this.isVisibleDetailRow(row)) {
+      return this.rowClasses && this.rowClasses[row.data.id] ? this.rowClasses[row.data.id] + " is-edited" : "is-edited";
+    } else if (row.new) {
+      return this.rowClasses && this.rowClasses[row.data.id] ? this.rowClasses[row.data.id] + " is-new" : "is-new";
+    }
+
+    return this.rowClasses && this.rowClasses[row.data.id] ? this.rowClasses[row.data.id] : "";
+  }
+
+  updated() {
+    this.initialUpdate = true;
   }
 
   cancelEditClicked(row:any) {
