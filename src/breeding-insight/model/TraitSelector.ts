@@ -44,7 +44,7 @@ export class TraitFilter {
   }
 
   private isTraitField(field: string): field is TraitField {
-    return Object.values<string>(TraitField).includes(field);
+    return Object.values(TraitField).includes(field);
   }
 }
 

@@ -75,7 +75,7 @@ export class OntologySort {
   }
 
   private isSortField(field: string): field is OntologySortField {
-    return Object.values<string>(OntologySortField).includes(field);
+    return Object.values(OntologySortField).includes(field);
   }
 }
 
