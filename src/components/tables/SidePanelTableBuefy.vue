@@ -76,62 +76,10 @@
               v-bind:debounce-search="searchDebounce"
               v-on:filters-change="cloneFilters"
           >
-
             <slot></slot>
-            <b-table-column v-if="editable || details || archivable" v-slot="props" cell-class="has-text-left is-narrow"
-                            :th-attrs="(column) => ({scope:'col'})">
-              <a
-                  v-if="isRowEditable(props.row) || details"
-                  data-testid="edit"
-                  v-on:click="props.toggleDetails(props.row)"
-                  v-on:keypress.enter.space="props.toggleDetails(props.row)"
-                  tabindex="0"
-              >
-                <span v-if="isRowEditable(props.row)">Edit</span>
-                <span v-if="details">Details</span>
-
-                <span v-if="(isRowEditable(props.row) || details) && !isVisibleDetailRow(props.row)"
-                      class="icon is-small margin-right-2 has-vertical-align-middle">
-            <ChevronRightIcon size="1x" aria-hidden="true"></ChevronRightIcon>
-          </span>
-                <span v-if="(isRowEditable(props.row) || details) && isVisibleDetailRow(props.row)"
-                      class="icon is-small margin-right-2 has-vertical-align-middle">
-            <ChevronDownIcon size="1x" aria-hidden="true"></ChevronDownIcon>
-          </span>
-              </a>
-              <a
-                  v-if="isRowArchivable(props.row)"
-                  v-on:click="$emit('remove', props.row.data)"
-                  v-on:keypress.enter.space="$emit('remove', props.row.data)"
-                  tabindex="0"
-              >
-                {{ deactivateLinkText }}
-              </a>
-            </b-table-column>
 
             <template v-slot:empty v-if="this.loading !== true">
               <slot name="emptyMessage"/>
-            </template>
-
-            <template v-slot:detail="props">
-              <EditDataRowForm class="mb-0"
-                               v-if="editable"
-                               v-bind:data-form-state="dataFormState"
-                               v-on:submit="validateAndSubmit(props.row)"
-                               v-on:cancel="cancelEditClicked(props.row)"
-              >
-                <slot
-                    v-bind:editData="props.row.editData"
-                    v-bind:validations="getValidations()"
-                    name="edit"
-                />
-              </EditDataRowForm>
-
-              <slot
-                  v-if="details"
-                  v-bind:row="props.row.data"
-                  name="detail"
-              />
             </template>
 
             <template v-slot:pagination>
