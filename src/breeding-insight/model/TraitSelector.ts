@@ -9,6 +9,7 @@ export enum TraitField {
   METHOD_DESCRIPTION = 'methodDescription',
   METHOD_CLASS = 'methodClass',
   METHOD_FORMULA = 'methodFormula',
+  METHOD_HANDLE = 'methodHandle',
   SCALE_NAME = 'scaleName',
   SCALE_CLASS = 'scaleClass',
   SCALE_DECIMAL_PLACES = 'scaleDecimalPlaces',

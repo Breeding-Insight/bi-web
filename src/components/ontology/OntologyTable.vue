@@ -118,7 +118,7 @@
       <b-table-column :field="traitField.ENTITY_ATTRIBUTE" label="Trait" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
         {{ props.row.data.entity }} {{ props.row.data.attribute }}
       </b-table-column>
-      <b-table-column :field="traitField.METHOD_DESCRIPTION" label="Method" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
+      <b-table-column :field="traitField.METHOD_HANDLE" label="Method" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
         {{ (props.row.data.method.description ? props.row.data.method.description + " ": "") + props.row.data.method.methodClass }}
       </b-table-column>
       <b-table-column :field="traitField.SCALE_CLASS" label="Scale Class" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
