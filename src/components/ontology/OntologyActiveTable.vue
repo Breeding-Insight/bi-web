@@ -38,6 +38,7 @@ import { BackendPaginationController } from "@/breeding-insight/model/view_model
 import { BiResponse  } from "@/breeding-insight/model/BiResponse";
 import { TraitService } from '@/breeding-insight/service/TraitService';
 import { TraitField } from '@/breeding-insight/model/TraitSelector';
+import { Result } from '@/breeding-insight/model/Result';
 
 @Component({
   components: {OntologyTable},
@@ -58,7 +59,7 @@ export default class OntologyActiveTable extends Vue {
   private activeOntologySort!: OntologySort;
 
   // Set the method used to populate the active ontology table
-  private ontologyFetch: (programId: string, sort: OntologySort, paginationController: BackendPaginationController) => ((filters: any) => Promise<BiResponse>) =
+  private ontologyFetch: (programId: string, sort: OntologySort, paginationController: BackendPaginationController) => (filters: any) => Promise<Result<Error, BiResponse>> =
       function (programId: string, sort: OntologySort, paginationController: BackendPaginationController) {
         return function (filters: any) {
           filters[TraitField.STATUS] = true;  // only request active traits

@@ -38,6 +38,7 @@ import { BackendPaginationController } from "@/breeding-insight/model/view_model
 import { BiResponse } from "@/breeding-insight/model/BiResponse";
 import { TraitField } from "@/breeding-insight/model/TraitSelector";
 import {TraitService } from "@/breeding-insight/service/TraitService";
+import { Result } from '@/breeding-insight/model/Result';
 
 
 @Component({
@@ -58,7 +59,7 @@ export default class OntologyArchivedTable extends Vue {
   private archivedOntologySort!: OntologySort;
 
   // Set the method used to populate the archived ontology table
-  private ontologyFetch: (programId: string, sort: OntologySort, paginationController: BackendPaginationController) => ((filters: any) => Promise<BiResponse>) =
+  private ontologyFetch: (programId: string, sort: OntologySort, paginationController: BackendPaginationController) => (filters: any) => Promise<Result<Error, BiResponse>> =
       function (programId: string, sort: OntologySort, paginationController: BackendPaginationController) {
         return function (filters: any) {
           filters[TraitField.STATUS] = false; // only request archived traits

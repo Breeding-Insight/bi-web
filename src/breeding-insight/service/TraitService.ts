@@ -23,6 +23,7 @@ import {ValidationErrorService} from "@/breeding-insight/service/ValidationError
 import {TraitField, TraitFilter, TraitSelector} from "@/breeding-insight/model/TraitSelector";
 import {OntologySort, OntologySortField, SortOrder} from "@/breeding-insight/model/Sort";
 import * as api from "@/util/api";
+import {Result, ResultGenerator} from "@/breeding-insight/model/Result";
 
 export class TraitService {
 
@@ -118,19 +119,25 @@ export class TraitService {
   static async getTraits(programId: string,
                          sort: OntologySort,
                          pagination: {pageSize: number, page: number},
-                         filters?: any): Promise<BiResponse>{
+                         filters?: any): Promise<Result<Error, BiResponse>>{
     if (!programId) {
       throw 'Program ID required';
     }
-    const config: any = this.makeTraitReqConfig(programId);
-    config.params = this.makeTraitParams(sort, pagination, filters);
 
     try {
-      const { data } = await api.call(config) as Response;
-      return new BiResponse(data);
+      let response: Result<Error, BiResponse> = await TraitDAO.getFilteredTraits(programId,
+          this.makeTraitParams(sort, pagination, filters));
+
+      if (response.isErr()) {
+        throw response.value;
+      }
+
+      return response.applyResult(biRes => {
+        return biRes;
+      });
 
     } catch (error) {
-      throw error;
+      return ResultGenerator.err(error);
     }
   }
 
@@ -177,7 +184,6 @@ export class TraitService {
     }
     else throw 'Unable to get trait editable info';
   }
-
   private static makeTraitReqConfig(programId: string) {
     let config: any = {
       url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/traits`,

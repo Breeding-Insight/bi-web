@@ -360,11 +360,14 @@ export default class OntologyTable extends Vue {
       if (!this.ontologyCallStack.isCurrentCall(callId)) {
         return;
       }
-      this.pagination = new Pagination(response.metadata.pagination);
+      if(response.isErr()) {
+        throw response.value;
+      }
+      this.pagination = new Pagination(response.value.metadata.pagination);
 
       // Account for brapi 0 indexing of paging
       this.pagination.currentPage = this.pagination.currentPage.valueOf();
-      this.traits = response.result.data;
+      this.traits = response.value.result.data;
       this.traitsLoading = false;
     } catch (e) {
       this.$log.error(e);
