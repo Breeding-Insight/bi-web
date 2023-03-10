@@ -53,7 +53,7 @@
         v-bind:details="true"
         v-if="!loading && callsetOptions.length > 0"
     >
-      <b-table-column field="variantName" label="Variant" sortable searchable :customSearch="filterByVariant" :customSort="sortVariantName" :th-attrs="(column) => ({scope:'col'})">
+      <b-table-column field="variantName" label="Chromosome" sortable searchable :customSearch="filterByVariant" :customSort="sortVariantName" :th-attrs="(column) => ({scope:'col'})">
         <template v-slot="props">
           {{ getVariant(props.row.data.variantDbId).referenceName }}
         </template>
@@ -94,7 +94,7 @@
       </b-table-column>
 
       <b-table-column label="Genotype(s)" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-        <span class="tag alt-allele" v-for="(allele, index) in getGenotypes(props.row.data)" :class="alleleType(allele)" :key="allele+'-'+index+'-'+props.index">
+        <span class="tag alt-allele" v-for="(allele, index) in getGenotypes(props.row.data)" :class="alleleType(allele, props.row.data.variantDbId)" :key="allele+'-'+index+'-'+props.index">
             {{ genotypeVal(allele, props.row.data.variantDbId) }}
         </span>
       </b-table-column>
@@ -280,9 +280,9 @@ export default class GermplasmGenotypeView extends GermplasmBase {
     }
   }
 
-  alleleType(genotypeStr: string) {
-    const genotype: number = parseInt(genotypeStr);
-    if(genotype === 0) {
+  alleleType(genotypeStr: string, variantId: string) {
+    const variant = this.genotypeData!.variants[variantId];
+    if(genotypeStr === variant.referenceBases) {
       return 'is-success';
     } else {
       return 'is-warning';
@@ -290,17 +290,7 @@ export default class GermplasmGenotypeView extends GermplasmBase {
   }
 
   genotypeVal(genotypeStr: string, variantId: string) {
-    const genotype: number = parseInt(genotypeStr);
-    const variant = this.genotypeData!.variants[variantId];
-
-    const ref: string = variant.referenceBases;
-    const alts: Array<string> = variant.alternate_bases;
-
-    if(genotype === 0) {
-      return ref;
-    } else if(genotype > 0) {
-      return alts[genotype-1];
-    }
+    return genotypeStr;
   }
 
   getGenotypes(call: Call) {
