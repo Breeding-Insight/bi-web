@@ -1,3 +1,5 @@
+import {OntologySortField} from "@/breeding-insight/model/Sort";
+
 export enum TraitField {
   NAME = 'name',
   MAIN_ABBREVIATION = 'mainAbbreviation',
@@ -7,6 +9,7 @@ export enum TraitField {
   METHOD_DESCRIPTION = 'methodDescription',
   METHOD_CLASS = 'methodClass',
   METHOD_FORMULA = 'methodFormula',
+  METHOD_HANDLE = 'methodHandle',
   SCALE_NAME = 'scaleName',
   SCALE_CLASS = 'scaleClass',
   SCALE_DECIMAL_PLACES = 'scaleDecimalPlaces',
@@ -19,7 +22,8 @@ export enum TraitField {
   CREATED_BY_USER_NAME = 'createdByUserName',
   UPDATED_BY_USER_ID = 'updatedByUserId',
   UPDATED_BY_USER_NAME = 'updatedByUserName',
-  TERM_TYPE = 'termType'
+  TERM_TYPE = 'termType',
+  ENTITY_ATTRIBUTE = 'entityAttribute'
 }
 
 export enum TermType {
@@ -31,6 +35,17 @@ export enum TermType {
 export class TraitFilter {
   field?: TraitField;
   value?: string | number | boolean;
+
+  constructor(field: string, value: any) {
+    if (this.isTraitField(field)) {
+      this.field = field;
+      this.value = value;
+    }
+  }
+
+  private isTraitField(field: string): field is TraitField {
+    return Object.values(TraitField).includes(field);
+  }
 }
 
 export class TraitSelector {
@@ -41,7 +56,9 @@ export class TraitSelector {
   }
 
   addFilter(filter: TraitFilter) {
-    this.filters.push(filter);
+    if (filter.field && filter.value !== '') {
+      this.filters.push(filter);
+    }
   }
 
 }
