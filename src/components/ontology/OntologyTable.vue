@@ -93,7 +93,7 @@
       </template>
     </NewDataForm>
 
-    <SidePanelTableNew
+    <SidePanelTableBuefy
         v-bind:records.sync="traits"
         v-bind:loading="traitsLoading"
         v-bind:pagination="pagination"
@@ -190,7 +190,7 @@
       </template>
 
 
-    </SidePanelTableNew>
+    </SidePanelTableBuefy>
 
 
   </section>
@@ -235,7 +235,7 @@ import {UPDATE_ACTIVE_ONT_SORT} from "@/store/sorting/mutation-types";
 @Component({
   mixins: [validationMixin],
   components: {
-    BaseTraitForm, NewDataForm, BasicInputField, SidePanelTable, SidePanelTableNew: SidePanelTableBuefy, EmptyTableMessage, TableColumn,
+    BaseTraitForm, NewDataForm, BasicInputField, SidePanelTable, SidePanelTableBuefy, EmptyTableMessage, TableColumn,
                 WarningModal, TraitDetailPanel,
                 PlusCircleIcon, ChevronRightIcon },
   computed: {

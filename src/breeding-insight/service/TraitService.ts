@@ -184,13 +184,6 @@ export class TraitService {
     }
     else throw 'Unable to get trait editable info';
   }
-  private static makeTraitReqConfig(programId: string) {
-    let config: any = {
-      url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/traits`,
-      method: 'get'
-    };
-    return config;
-  }
 
   private static makeTraitParams(sort: OntologySort, pagination: {pageSize: number, page: number}, filters?: any) {
     let params: any = {};
