@@ -329,14 +329,19 @@ export default class AdminUsersTable extends Vue {
 
   @Watch('paginationController', { deep: true})
   paginationChanged() {
+    let currentCall = this.paginationController.currentCall
+    let paginationQuery = this.paginationController.getPaginationSelections();
+    if(currentCall && currentCall!.page == paginationQuery.page && currentCall!.pageSize == paginationQuery.pageSize && currentCall!.showAll == paginationQuery.showAll) {
+      return;
+    }
     this.updatePagination();
     this.getUsers();
   }
 
-    updatePagination() {
-      let paginationQuery: PaginationQuery = this.paginationController.getPaginationSelections();
-      this.paginationController.setCurrentCall(paginationQuery);
-    }
+  updatePagination() {
+    let paginationQuery: PaginationQuery = this.paginationController.getPaginationSelections();
+    this.paginationController.setCurrentCall(paginationQuery);
+  }
 
   getUsers() {
     UserService.getAll(this.paginationController.currentCall, this.systemUserSort).then(([users, metadata]) => {

@@ -19,54 +19,6 @@ import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
 import {Pagination} from "@/breeding-insight/model/BiResponse";
 
 export class PaginationUtilities {
-  // public currentPage: number = 1;
-  // public pageSize: number = 50;
-  // public showAll: boolean = false;
-  // public currentCall?: PaginationQuery;
-  //
-  // constructor(currentPage?: number, pageSize?: number, currentCall?: PaginationQuery) {
-  //   super(currentPage, pageSize, currentCall);
-  // }
-
-  // toggleShowAll(){
-  //   this.showAll = !this.showAll;
-  // }
-
-  // updatePageSize(pageSize: number) {
-  //   this.pageSize = pageSize;
-  //   this.showAll = false;
-  // }
-  
-  // updatePage(page: number) {
-  //   this.currentPage = page;
-  //   this.showAll = false;
-  // }
-
-  // setCurrentCall(paginationQuery: PaginationQuery){
-  //   this.currentCall = paginationQuery;
-  // }
-
-  // matchesCurrentRequest(pagination: Pagination): boolean {
-  //   if (this.currentCall) {
-  //     if (this.showAll){
-  //       return pagination.currentPage == 1 && pagination.totalPages == 1;
-  //     } else {
-  //       return this.currentCall.page === pagination.currentPage &&
-  //         this.currentCall.pageSize === pagination.pageSize;
-  //     }
-  //   }
-  //   return false;
-  // }
-
-  // static getPaginationSelections(currentPage: number, pageSize: number, showAll: boolean): PaginationQuery {
-  //   if (showAll) {
-  //     return new PaginationQuery(0, pageSize, true);
-  //   } else {
-  //     return new PaginationQuery(
-  //       currentPage, pageSize, false);
-  //   }
-  // }
-
   //TODO: Remove when backend pagination is implemented
   static mockPagination(records: any[], page: number, pageSize: number, showAll: boolean): [any[], Pagination] {
 

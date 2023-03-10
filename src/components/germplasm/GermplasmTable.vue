@@ -159,7 +159,11 @@ export default class GermplasmTable extends Vue {
   @Watch('paginationController', { deep: true})
   @Watch('filters', {deep: true})
   async getGermplasm() {
+    let currentCall = this.paginationController.currentCall
     let paginationQuery = this.paginationController.getPaginationSelections();
+    if(currentCall && currentCall!.page == paginationQuery.page && currentCall!.pageSize == paginationQuery.pageSize && currentCall!.showAll == paginationQuery.showAll) {
+      return;
+    }
 
     this.paginationController.setCurrentCall(paginationQuery);
 

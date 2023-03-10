@@ -181,7 +181,11 @@ export default class TrialsTable extends Vue {
 
   @Watch('paginationController', { deep: true})
   async getTrials() {
+    let currentCall = this.paginationController.currentCall
     let paginationQuery: PaginationQuery = this.paginationController.getPaginationSelections();
+    if(currentCall && currentCall!.page == paginationQuery.page && currentCall!.pageSize == paginationQuery.pageSize && currentCall!.showAll == paginationQuery.showAll) {
+      return;
+    }
     this.paginationController.setCurrentCall(paginationQuery);
 
     try {

@@ -242,6 +242,11 @@ export default class TraitsImportTable extends Vue {
   @Watch('paginationController', { deep: true})
   @Watch('importPreviewOntologySort', {deep: true})
   paginationChanged() {
+    let currentCall = this.paginationController.currentCall
+    let paginationQuery = this.paginationController.getPaginationSelections();
+    if(currentCall && currentCall!.page == paginationQuery.page && currentCall!.pageSize == paginationQuery.pageSize && currentCall!.showAll == paginationQuery.showAll) {
+      return;
+    }
     this.updatePagination();
     this.getTraitUpload();
   }

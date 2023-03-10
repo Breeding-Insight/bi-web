@@ -149,7 +149,12 @@ export default class ExperimentsObservationsTable extends Vue {
   @Watch('paginationController', { deep: true})
   @Watch('filters', {deep: true})
   async getExperiments() {
+    let currentCall = this.paginationController.currentCall
     let paginationQuery: PaginationQuery = this.paginationController.getPaginationSelections();
+    if(currentCall && currentCall!.page == paginationQuery.page && currentCall!.pageSize == paginationQuery.pageSize && currentCall!.showAll == paginationQuery.showAll) {
+      return;
+    }
+
     this.paginationController.setCurrentCall(paginationQuery);
 
     try {
