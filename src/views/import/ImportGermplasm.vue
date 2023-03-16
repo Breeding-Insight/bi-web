@@ -105,7 +105,7 @@
             </AlertTriangleIcon>
           </b-table-column>
           <b-table-column field="gid" label="GID" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-            {{ props.row.data.brAPIObject.germplasmDbId }}
+            {{ props.row.data.brAPIObject.accessionNumber }}
           </b-table-column>
           <b-table-column field="defaultDisplayName" label="Name" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
             {{ props.row.data.brAPIObject.defaultDisplayName }}
