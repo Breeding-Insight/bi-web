@@ -111,10 +111,10 @@ import {ImportResponse} from "@/breeding-insight/model/import/ImportResponse";
 import { titleCase } from "title-case";
 import {DataFormEventBusHandler} from "@/components/forms/DataFormEventBusHandler";
 import {ValidationErrorService} from "@/breeding-insight/service/ValidationErrorService";
-import {Pagination} from "@/breeding-insight/model/BiResponse";
 import {
   DEACTIVATE_ALL_NOTIFICATIONS
 } from "@/store/mutation-types";
+import { PaginationController } from '@/breeding-insight/model/view_models/PaginationController';
 
 enum ImportState {
   CHOOSE_FILE = "CHOOSE_FILE",
@@ -199,7 +199,7 @@ export default class ImportTemplate extends ProgramsBase {
   private activeProgram?: Program;
   private tableLoaded = false;
   private showAbortModal = false;
-  private pagination = new Pagination();
+  private pagination = new PaginationController();
 
   private yesAbortId: string = "import-yes-abort";
 

@@ -31,7 +31,7 @@ import { Component } from 'vue-property-decorator'
 import ProgramsBase from "@/components/program/ProgramsBase.vue";
 import GermplasmListsTable from "@/components/germplasm/GermplasmListsTable.vue";
 import {GermplasmListSort, GermplasmListSortField} from "@/breeding-insight/model/Sort";
-import {BackendPaginationController} from "@/breeding-insight/model/view_models/BackendPaginationController";
+import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
 import {BiResponse} from "@/breeding-insight/model/BiResponse";
 import {BrAPIService, BrAPIType} from "@/breeding-insight/service/BrAPIService";
 @Component({
@@ -41,8 +41,8 @@ import {BrAPIService, BrAPIType} from "@/breeding-insight/service/BrAPIService";
 })
 export default class GermplasmLists extends ProgramsBase {
 
-  private germplasmListFetch: (programId: string, sort: GermplasmListSort, paginationController: BackendPaginationController) => ((filters: any) => Promise<BiResponse>) =
-      function (programId: string, sort: GermplasmListSort, paginationController: BackendPaginationController) {
+  private germplasmListFetch: (programId: string, sort: GermplasmListSort, paginationController: PaginationController) => ((filters: any) => Promise<BiResponse>) =
+      function (programId: string, sort: GermplasmListSort, paginationController: PaginationController) {
         return function (filters: any) {
           filters.type='germplasm';
           return BrAPIService.get<GermplasmListSortField>(

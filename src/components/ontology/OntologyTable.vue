@@ -224,7 +224,7 @@ import {DataFormEventBusHandler} from '@/components/forms/DataFormEventBusHandle
 import {integer, maxLength} from "vuelidate/lib/validators";
 import {TermType, TraitField} from "@/breeding-insight/model/TraitSelector";
 import {OntologySort, OntologySortField, Sort} from "@/breeding-insight/model/Sort";
-import {BackendPaginationController} from "@/breeding-insight/model/view_models/BackendPaginationController";
+import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
 import {Category} from "@/breeding-insight/model/Category";
 import {EnumUtils} from "@/breeding-insight/utils/EnumUtils";
 import SidePanelTableBuefy from "@/components/tables/SidePanelTableBuefy.vue";
@@ -259,7 +259,7 @@ import {UPDATE_ACTIVE_ONT_SORT} from "@/store/sorting/mutation-types";
 export default class OntologyTable extends Vue {
   private activeProgram?: Program;
   private pagination?: Pagination = new Pagination();
-  private paginationController: BackendPaginationController = new BackendPaginationController();
+  private paginationController: PaginationController = new PaginationController();
   private traitsLoading: Boolean = false;
   private traits: Trait[] = [];
   private filters: any = {};
@@ -330,7 +330,7 @@ export default class OntologyTable extends Vue {
   @Prop({default: () => true})
   active?: boolean;
   @Prop()
-  ontologyFetch!: (programId: string, sort: OntologySort, paginationController: BackendPaginationController) => (filters: any) => Promise<BiResponse>;
+  ontologyFetch!: (programId: string, sort: OntologySort, paginationController: PaginationController) => (filters: any) => Promise<BiResponse>;
   @Prop()
   ontologySort!: OntologySort;
 

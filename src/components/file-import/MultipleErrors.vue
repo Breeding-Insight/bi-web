@@ -11,11 +11,8 @@
         <ExpandableTable
             v-bind:records.sync="formattedErrors"
             v-bind:loading="this.errorsLoading"
-            v-bind:pagination="pagination"
+            v-bind:pagination="paginationController"
             v-bind:rowClasses="formattedErrors"
-            v-on:paginate-toggle-all="paginationController.toggleShowAll(pagination.totalCount.valueOf())"
-            v-on:paginate-page-size="paginationController.updatePageSize($event)"
-            v-on:paginate="paginationController.updatePage($event)"
         >
           <b-table-column field="data.row" label="Row"  sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
             {{ props.row.data.row }}
@@ -61,7 +58,6 @@ export default class MultipleErrors extends Vue {
   @Prop({default: () => 10})
   private numDisplayedErrors!: number;
 
-  private pagination: Pagination = new Pagination();
   private paginationController: PaginationController = new PaginationController();
   private errorsLoading: Boolean = false;
 
@@ -71,10 +67,10 @@ export default class MultipleErrors extends Vue {
 
   setPagination() {
     if (this.formattedErrors) {
-        this.pagination.totalCount = this.formattedErrors.length;
-        this.pagination.pageSize = this.formattedErrors.length; //todo until showAll fixed in another card, just display all errors
-        this.pagination.currentPage = 1;
-        this.pagination.totalPages = this.pagination.totalCount.valueOf() / this.pagination.pageSize.valueOf();
+        this.paginationController.totalCount = this.formattedErrors.length;
+        this.paginationController.pageSize = this.formattedErrors.length; //todo until showAll fixed in another card, just display all errors
+        this.paginationController.currentPage = 1;
+        this.paginationController.totalPages = this.paginationController.totalCount.valueOf() / this.paginationController.pageSize.valueOf();
       }
   }
 

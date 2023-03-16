@@ -3,11 +3,8 @@
     <ExpandableTable
         v-bind:records.sync="germplasm"
         v-bind:loading="this.germplasmLoading"
-        v-bind:pagination="pagination"
+        v-bind:pagination="paginationController"
         v-on:show-error-notification="$emit('show-error-notification', $event)"
-        v-on:paginate="paginationController.updatePage($event)"
-        v-on:paginate-toggle-all="paginationController.toggleShowAll(pagination.totalCount.valueOf())"
-        v-on:paginate-page-size="paginationController.updatePageSize($event)"
         backend-sorting
         backend-filtering
         v-bind:default-sort="entryNumberVisible ? [fieldMap['importEntryNumber'], 'ASC'] : [fieldMap['accessionNumber'], 'ASC']"
@@ -82,9 +79,9 @@ import ReportTable from "@/components/report/ReportTable.vue";
 import {Program} from "@/breeding-insight/model/Program";
 import {BrAPIService, BrAPIType} from "@/breeding-insight/service/BrAPIService";
 import {Germplasm} from "@/breeding-insight/brapi/model/germplasm";
-import {BiResponse, Pagination} from "@/breeding-insight/model/BiResponse";
+import {BiResponse} from "@/breeding-insight/model/BiResponse";
 import ExpandableTable from "@/components/tables/expandableTable/ExpandableTable.vue";
-import {BackendPaginationController} from "@/breeding-insight/model/view_models/BackendPaginationController";
+import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
 import {Pedigree} from "@/breeding-insight/model/import/germplasm/Pedigree";
 import GermplasmLink from '@/components/germplasm/GermplasmLink.vue'
 import {GermplasmUtils} from '@/breeding-insight/utils/GermplasmUtils';
@@ -119,16 +116,15 @@ import {GermplasmService} from "@/breeding-insight/service/GermplasmService";
 export default class GermplasmTable extends Vue {
 
   @Prop()
-  germplasmFetch!: (programId: string, sort: GermplasmSort, paginationController: BackendPaginationController) => (filters: any) => Promise<BiResponse>;
+  germplasmFetch!: (programId: string, sort: GermplasmSort, paginationController: PaginationController) => (filters: any) => Promise<BiResponse>;
   @Prop({default: false})
   entryNumberVisible?: Boolean;
   @Prop()
   referenceId?: string;
 
   private activeProgram?: Program;
-  private pagination?: Pagination = new Pagination();
-  private paginationController: BackendPaginationController = new BackendPaginationController();
-  private germplasmLoading: Boolean = false;
+  private paginationController: PaginationController = new PaginationController();
+  private germplasmLoading: Boolean = true;
   private germplasm: Germplasm[] = [];
   private filters: any = {};
 
@@ -157,27 +153,35 @@ export default class GermplasmTable extends Vue {
         this.paginationController
     ));
 
-    this.paginationController.pageSize = 20;
+    this.getGermplasm();
   }
 
   @Watch('paginationController', { deep: true})
   @Watch('filters', {deep: true})
   async getGermplasm() {
-    this.germplasmLoading = true;
+    let currentCall = this.paginationController.currentCall
+    let paginationQuery = this.paginationController.getPaginationSelections();
+    if(currentCall && currentCall!.page == paginationQuery.page && currentCall!.pageSize == paginationQuery.pageSize && currentCall!.showAll == paginationQuery.showAll) {
+      return;
+    }
+
+    this.paginationController.setCurrentCall(paginationQuery);
+
     try {
 
       // Only process the most recent call
       const {call, callId} = this.germplasmCallStack.makeCall(this.filters);
       const response = await call;
-      if (!this.germplasmCallStack.isCurrentCall(callId)) return;
-      this.pagination = new Pagination(response.metadata.pagination);
+      if (!this.germplasmCallStack.isCurrentCall(callId))
+        return;
+      this.paginationController.setPaginationInfo(response.metadata.pagination);
       // Account for brapi 0 indexing of paging
-      this.pagination.currentPage = this.pagination.currentPage.valueOf() + 1;
+      this.paginationController.currentPage = this.paginationController.currentPage.valueOf() + 1;
       this.germplasm = response.result.data;
-      this.germplasmLoading = false;
     } catch (e) {
       this.$log.error(e);
       this.$emit('show-error-notification', 'Error loading germplasm');
+    } finally {
       this.germplasmLoading = false;
     }
   }
