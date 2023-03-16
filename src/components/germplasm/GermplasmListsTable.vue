@@ -94,6 +94,7 @@ import {
   GermplasmListSortField, GermplasmSort
 } from "@/breeding-insight/model/Sort";
 import {UPDATE_EXPERIMENT_SORT} from "@/store/sorting/mutation-types";
+import { PaginationQuery } from '@/breeding-insight/model/PaginationQuery';
 
 @Component({
   mixins: [validationMixin],
@@ -161,16 +162,23 @@ export default class GermplasmListsTable extends Vue {
   }
 
   @Watch('paginationController', { deep: true})
-  @Watch('filters', {deep: true})
-  async getGermplasmLists() {
+  paginationChanged() {
     let currentCall = this.paginationController.currentCall
     let paginationQuery = this.paginationController.getPaginationSelections();
     if(currentCall && currentCall!.page == paginationQuery.page && currentCall!.pageSize == paginationQuery.pageSize && currentCall!.showAll == paginationQuery.showAll) {
       return;
     }
+    this.updatePagination();
+    this.getGermplasmLists();
+  }
 
+  updatePagination() {
+    let paginationQuery: PaginationQuery = this.paginationController.getPaginationSelections();
     this.paginationController.setCurrentCall(paginationQuery);
+  }
 
+  @Watch('filters', {deep: true})
+  async getGermplasmLists() {
     try {
       const {call, callId} = this.germplasmListCallStack.makeCall(this.filters);
       const response = await call;

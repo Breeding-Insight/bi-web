@@ -240,7 +240,6 @@ export default class TraitsImportTable extends Vue {
   }
 
   @Watch('paginationController', { deep: true})
-  @Watch('importPreviewOntologySort', {deep: true})
   paginationChanged() {
     let currentCall = this.paginationController.currentCall
     let paginationQuery = this.paginationController.getPaginationSelections();
@@ -256,6 +255,7 @@ export default class TraitsImportTable extends Vue {
     this.paginationController.setCurrentCall(paginationQuery);
   }
 
+  @Watch('importPreviewOntologySort', {deep: true})
   getTraitUpload() {
     TraitUploadService.getTraits(this.activeProgram!.id!, this.paginationController.currentCall, this.importPreviewOntologySort).then(([upload, metadata]) => {
       if (this.paginationController.matchesCurrentRequest(metadata.pagination)){
