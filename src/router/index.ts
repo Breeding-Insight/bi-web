@@ -72,6 +72,9 @@ import GermplasmGenotypeView from "@/components/germplasm/GermplasmGenotypeView.
 import ImportExperiment from "@/views/import/ImportExperiment.vue";
 import ExperimentsAndObservations from "@/views/experiments-and-observations/ExperimentsAndObservations.vue";
 import ImportGeno from "@/views/import/ImportGeno.vue";
+import BrapiPendingImports from "@/views/BrAPI/BrAPIPendingImports.vue";
+import BrAPIUrl from "@/views/BrAPI/BrAPIUrl.vue";
+import BrAPIPendingImports from "@/views/BrAPI/BrAPIPendingImports.vue";
 
 Vue.use(VueRouter);
 
@@ -184,7 +187,7 @@ const routes = [
     },
     component: ExperimentsAndObservations,
     beforeEnter: processProgramNavigation
-  },    
+  },
   {
     path: '/programs/:programId/program-administration',
     name: 'program-administration',
@@ -443,7 +446,57 @@ const routes = [
       layout: layouts.userSideBar
     },
     component: BrAPIInfo,
-    beforeEnter: processProgramNavigation
+    redirect: {name: 'brapi-url'},
+    beforeEnter: processProgramNavigation,
+    children: [
+      {
+        path: 'brapi-url',
+        name: 'brapi-url',
+        meta: {
+          title: 'BrAPI URL',
+          layout: layouts.userSideBar
+        },
+        component: BrAPIUrl
+      },{
+        path: 'pending-imports',
+        name: 'pending-imports',
+        meta: {
+          title: 'Pending Imports',
+          layout: layouts.userSideBar
+        },
+        component: BrAPIPendingImports
+      },{
+        path: 'trials-studies',
+        name: 'trials-studies',
+        meta: {
+          title: 'Trials & Studies',
+          layout: layouts.userSideBar
+        },
+        component: TrialsAndStudies,
+        redirect: {name: 'trials-list'},
+        beforeEnter: processProgramNavigation,
+        children: [
+          {
+            path: 'studies',
+            name: 'studies-list',
+            meta: {
+              title: 'Studies',
+              layout: layouts.userSideBar
+            },
+            component: StudiesList
+          },
+          {
+            path: 'trials',
+            name: 'trials-list',
+            meta: {
+              title: 'Trials',
+              layout: layouts.userSideBar
+            },
+            component: Trials
+          }
+        ]
+      }
+    ]
   },
   {
     path: '/programs/:programId/jobs',
