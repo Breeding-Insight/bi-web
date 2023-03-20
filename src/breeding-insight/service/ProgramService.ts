@@ -19,7 +19,6 @@ import {ProgramDAO} from "@/breeding-insight/dao/ProgramDAO";
 import {Program} from "@/breeding-insight/model/Program";
 import {Metadata} from "@/breeding-insight/model/BiResponse";
 import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
-import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
 import {ProgramObservationLevel} from "@/breeding-insight/model/ProgramObservationLevel";
 import {ProgramSort, ProgramSortField, SortOrder} from "@/breeding-insight/model/Sort";
 
@@ -96,7 +95,8 @@ export class ProgramService {
     }));
   }
 
-  static getAll(paginationQuery: PaginationQuery = new PaginationQuery(1, 50, true),
+  // the PaginationQuery 'showAll' is not being honored by the ProgramDAO.getAll() method.  So, for now, the pageSize default is set to 1000 (instead of 50)
+  static getAll(paginationQuery: PaginationQuery = new PaginationQuery(1, 1000, true),
                 sort: ProgramSort = new ProgramSort(ProgramSortField.Name, SortOrder.Ascending)): Promise<[Program[], Metadata]> {
     return new Promise<[Program[], Metadata]>(((resolve, reject) => {
 

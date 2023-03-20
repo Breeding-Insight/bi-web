@@ -218,13 +218,26 @@ img {
   min-height:100vh;
   flex-direction: column;
   &.has-navbar-fixed-top-touch {
-    @extend body.has-navbar-fixed-top-touch;
+    @extend body, .has-navbar-fixed-top-touch;
+  }
+}
+
+.program-management {
+  .tab-content {
+    margin-left: 1em;
   }
 }
 
 #program-menu {
   .dropdown-content {
     max-height: 50vh;
+    overflow: scroll;
+  }
+}
+
+.dropdown.multi-select {
+  .dropdown-content {
+    max-height: 20vh;
     overflow: scroll;
   }
 }
@@ -267,6 +280,18 @@ nav.tabs li.is-active {
   }
 }
 
+.expandable-card {
+  .is-button-transparent {
+    background: transparent;
+    border: none;
+  }
+
+  header {
+    &:hover {
+      cursor: pointer;
+    }
+  }
+}
 .table.is-narrow {
   border-collapse: collapse;
 }
@@ -776,4 +801,74 @@ div.b-table.loading-active tbody {
 
 .right-confirm-column {
   float: left;
+}
+
+
+tr:nth-child(even) td.db-filled {
+  background-color: mix($primary-light, $dark, 92%);
+}
+
+tr:nth-child(odd) td.db-filled {
+  background-color: $primary-light;
+}
+
+.germplasm-list-meta-field{
+  @extend .is-1;
+  @extend .is-flex;
+  @extend .is-justify-content-right;
+  @extend .pr-1;
+  @extend .py-1;
+}
+
+.germplasm-list-meta-data{
+  @extend .is-11;
+  @extend .pl-1;
+  @extend .py-1;
+}
+
+.breeding-methods {
+  .enable-system-methods {
+    .modal-card {
+      width: 90%;
+    }
+  }
+}
+
+.content {
+  .pagination-list {
+    margin-top: 0;
+
+    li + li {
+      margin-top: 0;
+    }
+  }
+}
+
+#germplasm-genotype {
+  .metadata {
+    .abbreviation {
+      margin-right: 5px;
+    }
+  }
+
+  .alt-allele:not(:last-of-type) {
+    margin-right: 5px;
+  }
+}
+
+#import-geno {
+  .message.is-warning {
+    margin-top: 1em;
+  }
+  .card.import-form {
+    margin-top:1em;
+    .new-form {
+      background-color: inherit;
+      border-top: none;
+      border-bottom: none;
+      padding: 0;
+      margin-bottom: inherit;
+    }
+  }
+
 }

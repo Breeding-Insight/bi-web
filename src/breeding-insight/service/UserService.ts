@@ -23,7 +23,6 @@ import {BiResponse, Metadata} from "@/breeding-insight/model/BiResponse";
 import {Program} from "@/breeding-insight/model/Program";
 import {ProgramUser} from "@/breeding-insight/model/ProgramUser";
 import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
-import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
 import {ProgramSort, SortOrder, UserSort, UserSortField} from "@/breeding-insight/model/Sort";
 
 export class UserService {

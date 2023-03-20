@@ -85,14 +85,11 @@
       v-bind:row-validations="locationValidations"
       v-bind:editable="$ability.can('update', 'Location')"
       v-bind:archivable="$ability.can('archive', 'Location')"
-      v-bind:pagination="locationsPagination"
+      v-bind:pagination="paginationController"
       v-bind:data-form-state="editLocationFormState"
       v-on:submit="updateLocation($event)"
       v-on:remove="displayWarning($event)"
       v-on:show-error-notification="$emit('show-error-notification', $event)"
-      v-on:paginate="paginationController.updatePage($event)"
-      v-on:paginate-toggle-all="paginationController.toggleShowAll(locationsPagination.totalCount.valueOf())"
-      v-on:paginate-page-size="updatePageSize($event)"
       :backend-sorting="true"
       v-bind:default-sort="['data.name', locationSortOrderAsBuefy]"
       v-on:sort="setSort"
@@ -140,7 +137,6 @@
   import BasicInputField from "@/components/forms/BasicInputField.vue";
   import {ProgramLocationService} from "@/breeding-insight/service/ProgramLocationService";
   import TableColumn from "@/components/tables/TableColumn.vue";
-  import {Metadata, Pagination} from "@/breeding-insight/model/BiResponse";
   import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
   import { DataFormEventBusHandler } from '@/components/forms/DataFormEventBusHandler';
   import ExpandableTable from '@/components/tables/expandableTable/ExpandableTable.vue';
@@ -149,7 +145,7 @@
   } from "@/store/mutation-types";
   import {UPDATE_LOCATION_SORT} from "@/store/sorting/mutation-types";
   import {LocationSort, LocationSortField, Sort, SortOrder, UserSort} from "@/breeding-insight/model/Sort";
-  import {BackendPaginationController} from "@/breeding-insight/model/view_models/BackendPaginationController";
+  import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
 
 @Component({
   mixins: [validationMixin],
@@ -175,7 +171,6 @@ export default class ProgramLocationsTable extends Vue {
 
   private activeProgram?: Program;
   private locations: ProgramLocation[] = [];
-  private locationsPagination?: Pagination = new Pagination();
   private deactivateActive: boolean = false;
   private newLocationActive: boolean = false;
   private deactivateWarningTitle: string = "Remove location from Program name?";
@@ -185,7 +180,7 @@ export default class ProgramLocationsTable extends Vue {
 
   private locationsLoading = true;
 
-  private paginationController: BackendPaginationController = new BackendPaginationController();
+  private paginationController: PaginationController = new PaginationController();
 
   private newLocationFormState: DataFormEventBusHandler = new DataFormEventBusHandler();
   private editLocationFormState: DataFormEventBusHandler = new DataFormEventBusHandler();
@@ -212,13 +207,17 @@ export default class ProgramLocationsTable extends Vue {
 
   @Watch('paginationController', { deep: true})
   paginationChanged() {
+    let currentCall = this.paginationController.currentCall
+    let paginationQuery = this.paginationController.getPaginationSelections();
+    if(currentCall && currentCall!.page == paginationQuery.page && currentCall!.pageSize == paginationQuery.pageSize && currentCall!.showAll == paginationQuery.showAll) {
+      return;
+    }
     this.updatePagination();
     this.getLocations();
   }
 
   updatePagination() {
-    let paginationQuery: PaginationQuery = BackendPaginationController.getPaginationSelections(
-        this.paginationController.currentPage, this.paginationController.pageSize, this.paginationController.showAll);
+    let paginationQuery: PaginationQuery = this.paginationController.getPaginationSelections();
     this.paginationController.setCurrentCall(paginationQuery);
   }
 
@@ -226,7 +225,7 @@ export default class ProgramLocationsTable extends Vue {
     ProgramLocationService.getAll(this.activeProgram!.id!, this.paginationController.currentCall, this.locationSort).then(([programLocations, metadata]) => {
       if (this.paginationController.matchesCurrentRequest(metadata.pagination)){
         this.locations = programLocations;
-        this.locationsPagination = metadata.pagination;
+        this.paginationController.setPaginationInfo(metadata.pagination);
       }
 
     }).catch((error) => {

@@ -26,7 +26,7 @@
   >
     <div
         class="modal"
-        v-bind:class="{ 'is-active': active }"
+        v-bind:class="[{ 'is-active': active }, modalClass]"
         tabindex="-1"
     >
         <div class="modal-background" v-on:click="() => $refs.focusTrap.deactivate()"/>
@@ -45,7 +45,9 @@
           >
             <slot></slot>
           </section>
-          <footer class="modal-card-foot"/>
+          <footer class="modal-card-foot">
+            <slot name="footer"></slot>
+          </footer>
         </div>
       </div>
     </focus-trap>
@@ -64,6 +66,8 @@
     active!: boolean;
     @Prop()
     bodyClass!: Object;
+    @Prop()
+    modalClass!: Object;
 
     mounted() {
     }

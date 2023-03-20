@@ -21,6 +21,7 @@ import * as api from "@/util/api";
 import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
 import {TraitFilter, TraitSelector} from "@/breeding-insight/model/TraitSelector";
 import {OntologySort, SortOrder} from "@/breeding-insight/model/Sort";
+import {Result, ResultGenerator} from "@/breeding-insight/model/Result";
 
 export class TraitDAO {
     private activeOntologySortOrder!: SortOrder;
@@ -47,43 +48,17 @@ export class TraitDAO {
         }))
     }
 
-    static getFilteredTraits(programId: string,
-                             {page, pageSize}: PaginationQuery,
-                             full: boolean,
-                             sort: OntologySort,
-                             filters?: TraitFilter[]): Promise<BiResponse> {
-        const config: any = {
-            params: {
-                full,
-                page,
-                pageSize,
-                sortField: sort.field,
-                sortOrder: sort.order
-            }
-        };
-
-        if (filters) {
-            //
-            // get filtered list of traits
-            config.url = `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/traits/search`;
-            config.method = 'post';
-            config.data = new TraitSelector(filters);
-        } else {
-            // get all traits
-            config.url = `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/traits`;
-            config.method = 'get';
-        }
-
-        return new Promise<BiResponse>(((resolve, reject) => {
-            api.call(config)
-                .then((response: any) => {
-                    const biResponse = new BiResponse(response.data);
-                    resolve(biResponse);
-                }).catch((error) => {
-                reject(error);
-            })
-
-        }))
+    static async getFilteredTraits(programId: string, params: object): Promise<Result<Error,BiResponse>> {
+       try {
+           const { data } = await api.call({
+               url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/traits`,
+               method: 'get',
+               params
+       }) as Response;
+           return ResultGenerator.success(new BiResponse(data));
+       } catch (error) {
+           return ResultGenerator.err(error);
+       }
     }
 
   static async createTraits(programId: string, newTraits: Trait[]): Promise<BiResponse> {
@@ -129,5 +104,4 @@ export class TraitDAO {
     }) as Response;
     return new BiResponse(data);
   }
-
 }

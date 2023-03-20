@@ -31,7 +31,7 @@ import ObservationsList from '@/views/observations/ObservationsList.vue';
 import AdminProgramManagement from '@/views/admin/AdminProgramManagement.vue'
 import AdminUserManagement from '@/views/admin/AdminUserManagement.vue'
 import BrAPIImporter from '@/views/import/BrAPIImporter.vue'
-import GermplasmTable from '@/views/germplasm/GermplasmTable.vue';
+import AllGermplasm from '@/views/germplasm/AllGermplasm.vue';
 import store from '@/store/index.ts';
 import {
   LOGIN,
@@ -61,13 +61,17 @@ import OntologyActiveTable from "@/components/ontology/OntologyActiveTable.vue";
 import OntologyArchivedTable from "@/components/ontology/OntologyArchivedTable.vue";
 import PageNotFound from "@/views/PageNotFound.vue";
 import Germplasm from "@/views/germplasm/Germplasm.vue";
+import GermplasmByList from "@/views/germplasm/GermplasmByList.vue";
 import GermplasmLists from "@/views/germplasm/GermplasmLists.vue";
+import BreedingMethods from "@/views/germplasm/BreedingMethods.vue";
 import GermplasmDetails from "@/views/germplasm/GermplasmDetails.vue";
-import ProgramConfiguration from "@/views/program/ProgramConfiguration.vue";
+import OntologySharing from "@/views/program/OntologySharing.vue";
 import JobManagement from '@/views/program/JobManagement.vue';
 import GermplasmPedigreesView from "@/components/germplasm/GermplasmPedigreesView.vue";
+import GermplasmGenotypeView from "@/components/germplasm/GermplasmGenotypeView.vue";
 import ImportExperiment from "@/views/import/ImportExperiment.vue";
 import ExperimentsAndObservations from "@/views/experiments-and-observations/ExperimentsAndObservations.vue";
+import ImportGeno from "@/views/import/ImportGeno.vue";
 
 Vue.use(VueRouter);
 
@@ -118,21 +122,21 @@ const routes = [
   },
   { path: '/admin',
     name: 'admin',
-    redirect: '/admin/program-management' },
+    redirect: '/admin/programs' },
   {
-    path: '/admin/program-management',
-    name: 'admin-program-management',
+    path: '/admin/programs',
+    name: 'admin-programs',
     meta: {
-      title: 'Admin Program Management',
+      title: 'Admin Programs',
       layout: layouts.userSideBar
     },
     component: AdminProgramManagement
   },
   {
-    path: '/admin/user-management',
-    name: 'admin-user-management',
+    path: '/admin/users',
+    name: 'admin-users',
     meta: {
-      title: 'Admin User Management',
+      title: 'Admin Users',
       layout: layouts.userSideBar
     },
     component: AdminUserManagement
@@ -182,42 +186,50 @@ const routes = [
     beforeEnter: processProgramNavigation
   },    
   {
-    path: '/programs/:programId/program-management',
-    name: 'program-management',
+    path: '/programs/:programId/program-administration',
+    name: 'program-administration',
     meta: {
-      title: 'Program Management',
+      title: 'Program Administration',
       layout: layouts.userSideBar
     },
     component: ProgramManagement,
-    redirect: {name: 'program-locations'},
+    redirect: {name: 'program-users'},
     beforeEnter: processProgramNavigation,
     children: [
       {
+        path: 'users',
+        name: 'program-users',
+        meta: {
+          title: 'Program Users',
+          layout: layouts.userSideBar
+        },
+        component: ProgramUserManagement
+      },{
         path: 'locations',
         name: 'program-locations',
         meta: {
-          title: 'Program Location Management',
+          title: 'Program Locations',
           layout: layouts.userSideBar
         },
         component: ProgramLocationsManagement
       },
       {
-        path: 'users',
-        name: 'program-users',
+        path: 'breeding-methods',
+        name: 'breeding-methods',
         meta: {
-          title: 'Program User Management',
+          title: 'Breeding Methods',
           layout: layouts.userSideBar
         },
-        component: ProgramUserManagement
+        component: BreedingMethods
       },
       {
-        path: 'configure',
-        name: 'program-configuration',
+        path: 'ontology-sharing',
+        name: 'ontology-sharing',
         meta: {
-          title: 'Program Configuration',
+          title: 'Ontology Sharing',
           layout: layouts.userSideBar
         },
-        component: ProgramConfiguration
+        component: OntologySharing
       }
     ]
   },
@@ -253,6 +265,16 @@ const routes = [
     ]
   },
   {
+    path: '/programs/:programId/germplasm/lists/:listId',
+    name: 'germplasm-by-list',
+    meta: {
+      title: 'View Germplasm List',
+      layout: layouts.userSideBar
+    },
+    component: GermplasmByList,
+    beforeEnter: processProgramNavigation
+  },
+  {
     path: '/programs/:programId/germplasm',
     name: 'germplasm',
     meta: {
@@ -270,7 +292,7 @@ const routes = [
           title: 'All Germplasm',
           layout: layouts.userSideBar
         },
-        component: GermplasmTable
+        component: AllGermplasm
       },
       {
         path: 'germplasm-lists',
@@ -325,6 +347,15 @@ const routes = [
           layout: layouts.userSideBar
         },
         component: GermplasmDetails
+      },
+      {
+        path: 'genotype',
+        name: 'germplasm-genotype',
+        meta: {
+          title: 'Genotype',
+          layout: layouts.userSideBar
+        },
+        component: GermplasmGenotypeView
       }
       ]
   },
@@ -367,10 +398,19 @@ const routes = [
         component: ImportExperiment
       },
       {
-        path: 'brapi-import',
-        name: 'brapi-import',
+        path: 'geno',
+        name: 'geno-import',
         meta: {
-          title: 'BrAPI Import',
+          title: 'Genotypic Data',
+          layout: layouts.userSideBar
+        },
+        component: ImportGeno
+      },
+      {
+        path: 'data-mapping',
+        name: 'data-mapping',
+        meta: {
+          title: 'Data Mapping',
           layout: layouts.userSideBar
         },
         component: BrAPIImporter

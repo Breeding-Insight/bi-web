@@ -38,6 +38,7 @@
     <ExperimentsObservationsTable
         v-on:show-success-notification="$emit('show-success-notification', $event)"
         v-on:show-error-notification="$emit('show-error-notification', $event)"
+        v-bind:experiments-fetch="experimentsFetch"
     >
     </ExperimentsObservationsTable>
   </div>
@@ -50,6 +51,10 @@ import {PlusCircleIcon} from 'vue-feather-icons'
 import {mapGetters} from "vuex";
 import {Program} from "@/breeding-insight/model/Program";
 import TrialsAndStudiesBase from "@/components/trials/TrialsAndStudiesBase.vue";
+import {ExperimentSort, ExperimentSortField} from "@/breeding-insight/model/Sort";
+import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
+import {BiResponse} from "@/breeding-insight/model/BiResponse";
+import {BrAPIService, BrAPIType} from "@/breeding-insight/service/BrAPIService";
 
 @Component({
   components: {
@@ -64,6 +69,19 @@ import TrialsAndStudiesBase from "@/components/trials/TrialsAndStudiesBase.vue";
 export default class ExperimentsAndObservations extends TrialsAndStudiesBase {
 
   private activeProgram?: Program;
+
+  // Set the method used to populate the experiment table
+  private experimentsFetch: (programId: string, sort: ExperimentSort, paginationController: PaginationController) => ((filters: any) => Promise<BiResponse>) =
+      function (programId: string, sort: ExperimentSort, paginationController: PaginationController) {
+        return function (filters: any) {
+          return BrAPIService.get<ExperimentSortField>(
+              BrAPIType.EXPERIMENT,
+              programId,
+              sort,
+              { pageSize: paginationController.pageSize, page: paginationController.currentPage - 1 },
+              filters)
+        };
+      };
 
 }
 </script>

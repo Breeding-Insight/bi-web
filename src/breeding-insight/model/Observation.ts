@@ -30,6 +30,7 @@ export class Observation {
   season?: Season;
   level?: string;
   value?: any;
+  observationTimeStamp?: string;
 
   constructor(id?: string,
               studyId?: string,
