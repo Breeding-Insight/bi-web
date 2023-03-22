@@ -457,19 +457,12 @@ const routes = [
           layout: layouts.userSideBar
         },
         component: BrAPIUrl
-      },{
-        path: 'pending-imports',
-        name: 'pending-imports',
+      },
+      {
+        path: 'phenotype-viewer',
+        name: 'phenotype-viewer',
         meta: {
-          title: 'Pending Imports',
-          layout: layouts.userSideBar
-        },
-        component: BrAPIPendingImports
-      },{
-        path: 'trials-studies',
-        name: 'trials-studies',
-        meta: {
-          title: 'Trials & Studies',
+          title: 'Phenotype Data Viewer',
           layout: layouts.userSideBar
         },
         component: TrialsAndStudies,

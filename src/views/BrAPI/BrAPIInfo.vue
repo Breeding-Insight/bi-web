@@ -29,14 +29,9 @@
               <a>BrAPI URL</a>
             </router-link>
             <router-link
-                v-bind:to="{name: 'pending-imports', params: {programId: activeProgram.id}}"
+                v-bind:to="{name: 'phenotype-viewer', params: {programId: activeProgram.id}}"
                 tag="li" active-class="is-active">
-              <a>Pending Imports</a>
-            </router-link>
-            <router-link
-                v-bind:to="{name: 'trials-studies', params: {programId: activeProgram.id}}"
-                tag="li" active-class="is-active">
-              <a>Trials & Studies</a>
+              <a>Phenotype Data Viewer</a>
             </router-link>
           </ul>
         </nav>

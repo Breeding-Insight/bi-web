@@ -33,7 +33,7 @@
         />
       </div>
     </div>
-    <Plotly :data="data" :layout="layout" :display-mode-bar="false"></Plotly>
+    <Plotly :data="data" :layout="layout" :display-mode-bar="true"></Plotly>
   </div>
 </template>
 
@@ -125,16 +125,44 @@ export default class ObservationsPlot extends Vue {
     });
   }
 
+  @Watch('selectedPlotType')
+  plotTypeSelected() {
+
+  }
+
   @Watch('filterObservations')
   updateData(filterObservations: Observation[]) {
     const observations : Array<number> = filterObservations.map((observation: Observation) => {
       return observation.value;
     });
 
-    this.data = [{
-      x: observations,
-      type: 'histogram'
-    }]
+    const timestamps : Array<string | null | undefined> = filterObservations.map((observation: Observation) => {
+      return observation.timeStamp!.toISOString();
+    });
+
+    console.log(this.selectedPlotType);
+    console.log(filterObservations);
+    console.log(observations);
+    console.log(timestamps);
+
+    if (this.selectedPlotType === 'Histogram') {
+      this.data = [{
+        x: observations,
+        type: 'histogram'
+      }]
+    }
+
+    if (this.selectedPlotType === 'Scatter Plot') {
+      console.log('SCATTER');
+      this.data = [{
+        x: timestamps,
+        y: observations,
+        mode: 'markers',
+        type: 'scatter'
+      }]
+    }
+
+
   }
 
 }
