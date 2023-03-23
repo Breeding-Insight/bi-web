@@ -465,29 +465,7 @@ const routes = [
           title: 'Phenotype Data Viewer',
           layout: layouts.userSideBar
         },
-        component: TrialsAndStudies,
-        redirect: {name: 'trials-list'},
-        beforeEnter: processProgramNavigation,
-        children: [
-          {
-            path: 'studies',
-            name: 'studies-list',
-            meta: {
-              title: 'Studies',
-              layout: layouts.userSideBar
-            },
-            component: StudiesList
-          },
-          {
-            path: 'trials',
-            name: 'trials-list',
-            meta: {
-              title: 'Trials',
-              layout: layouts.userSideBar
-            },
-            component: Trials
-          }
-        ]
+        component: ObservationsList,
       }
     ]
   },

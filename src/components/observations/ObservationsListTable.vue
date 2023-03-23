@@ -138,10 +138,16 @@
 })
 export default class ObservationsTable extends Vue {
 
+  @Prop()
+  private studyId? : string;
+
+  @Prop()
+  private observations: Observation[] = [];
+
   private activeProgram?: Program;
   private programId?: string = this.$route.params.programId;
-  private studyId?: string = this.$route.params.studyId;
-  private observations: Observation[] = [];
+  //private studyId?: string = this.$route.params.studyId;
+
   private deactivateActive: boolean = false;
   private newObservationActive: boolean = false;
   private deactivateWarningTitle: string = "Remove location from Program name?";
@@ -161,7 +167,12 @@ export default class ObservationsTable extends Vue {
   }
 
   mounted() {
-    this.getObservations();
+    //this.getObservations();
+  }
+
+  @Watch('studyId')
+  studyUpdated() {
+    this.getObservations()
   }
 
   @Watch('paginationController', { deep: true})

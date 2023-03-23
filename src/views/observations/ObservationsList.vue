@@ -17,9 +17,10 @@
 
 <template>
   <div class="observations-list">
-    <h1 class="title">{{title}}</h1>
+    <!--<h1 class="title">{{title}}</h1>-->
     <ObservationsPlot/>
     <ObservationsListTable
+        v-bind:observations="observations"
     v-on:show-success-notification="$emit('show-success-notification', $event)"
     v-on:show-error-notification="$emit('show-error-notification', $event)"
     >
@@ -47,6 +48,9 @@
     private programId?: string = this.$route.params.programId;
     private studyId?: string = this.$route.params.studyId;
     private title: string = 'All Observations';
+
+
+    private observations: Observation[] = [];
 
     mounted() {
       if (this.$route.params.studyId) this.getStudy();

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-export class VariableOption {
+export class SelectOption {
   id?: string;
   name?: string;
 
