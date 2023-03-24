@@ -204,6 +204,10 @@ export default class GermplasmTable extends Vue {
     
     this.filters = filters;
 
+    // Since displayed DateTime is formatted, tell the server to apply the same formatting before filtering.
+    // Note: the server interprets format strings differently than Moment.js.
+    this.filters['queryParamDateFormat'] = 'yyyy-MM-dd';
+
     // When filtering the list, set a page to the first page.
     this.paginationController.updatePage(1);
   }
