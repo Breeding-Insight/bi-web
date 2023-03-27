@@ -111,10 +111,10 @@ import {ImportResponse} from "@/breeding-insight/model/import/ImportResponse";
 import { titleCase } from "title-case";
 import {DataFormEventBusHandler} from "@/components/forms/DataFormEventBusHandler";
 import {ValidationErrorService} from "@/breeding-insight/service/ValidationErrorService";
-import {Pagination} from "@/breeding-insight/model/BiResponse";
 import {
   DEACTIVATE_ALL_NOTIFICATIONS
 } from "@/store/mutation-types";
+import { PaginationController } from '@/breeding-insight/model/view_models/PaginationController';
 
 enum ImportState {
   CHOOSE_FILE = "CHOOSE_FILE",
@@ -192,13 +192,14 @@ export default class ImportTemplate extends ProgramsBase {
   private previewData: any[] = [];
   private previewTotalRows: number = 0;
   private newObjectCounts: any = [];
+  private dynamicColumns: string[] | undefined = [];
 
   private file : File | null = null;
   private import_errors: ValidationError | String | null = null;
   private activeProgram?: Program;
   private tableLoaded = false;
   private showAbortModal = false;
-  private pagination = new Pagination();
+  private pagination = new PaginationController();
 
   private yesAbortId: string = "import-yes-abort";
 
@@ -345,8 +346,10 @@ export default class ImportTemplate extends ProgramsBase {
         this.importService.send(ImportEvent.IMPORT_ERROR);
       } else if (e.response && e.response.status == 422 && e.response.statusText) {
         this.$log.error(e);
-
         this.$emit('show-error-notification', e.response.statusText);
+      } else if (e.response.status == 400 && e.response && e.response.data && e.response.data.message) {
+        this.$log.error(e);
+        this.$emit('show-error-notification', e.response.data.message);
       } else {
         this.$log.error(e);
         this.$emit('show-error-notification', 'An unknown error has occurred when uploading your import.');
@@ -491,6 +494,8 @@ export default class ImportTemplate extends ProgramsBase {
             this.previewTotalRows = previewResponse.preview.rows.length;
             this.previewData = previewResponse.preview.rows as any[];
             this.newObjectCounts = previewResponse.preview.statistics;
+            this.dynamicColumns = previewResponse.preview.dynamicColumnNames;
+            this.$emit('preview-data-loaded', this.dynamicColumns);
             this.importService.send(ImportEvent.IMPORT_SUCCESS);
             // TODO: Temp pagination
             this.pagination.totalCount = previewResponse.preview.rows.length;

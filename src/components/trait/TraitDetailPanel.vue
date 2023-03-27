@@ -31,6 +31,16 @@
           <span class="is-size-7 mb-0">{{data.traitDescription}}</span>
         </div>
       </div>
+
+      <div v-if="data.termType" class="columns is-desktop pt-1 pl-3">
+        <div class="column is-one-third pt-0 pb-0 has-text-right-desktop">
+          <span class="has-text-weight-bold">Term Type</span>
+        </div>
+        <div class="column pt-0 pb-0">
+          <span class="is-size-7 mb-0">{{TraitStringFormatters.getTermTypeString(data.termType)}}</span>
+        </div>
+      </div>
+
       <!-- just shows first abbreviation AKA main abbreviation and first synonym -->
       <template v-if="abbreviationsSynonymsString">
         <div class="columns is-desktop pt-1 pl-3">
@@ -252,6 +262,7 @@
   import { DataFormEventBusHandler } from '@/components/forms/DataFormEventBusHandler';
   import { HelpCircleIcon } from 'vue-feather-icons'
   import ProgressBar from '@/components/forms/ProgressBar.vue'
+  import {TraitStringFormatters} from '@/breeding-insight/utils/TraitStringFormatters';
 
   @Component({
     components: {EditDataForm, SidePanel, BaseTraitForm, HelpCircleIcon, ProgressBar},
@@ -260,7 +271,7 @@
         'isSubscribed'
       ])
     },
-    data: () => ({DataType, MethodClass, Scale, Method, StringFormatters}),
+    data: () => ({DataType, MethodClass, Scale, Method, StringFormatters, TraitStringFormatters}),
     filters: {
       capitalize: function(value: string | undefined) : string | undefined {
         if (value === undefined) value = '';

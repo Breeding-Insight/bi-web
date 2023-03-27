@@ -36,10 +36,10 @@ export class Metadata {
 }
 
 export class Pagination {
-  totalPages: Number;
-  currentPage: Number;
-  totalCount: Number;
-  pageSize: Number;
+  totalPages: number;
+  currentPage: number;
+  totalCount: number;
+  pageSize: number;
 
   constructor(paginationResult?: any) {
     if (paginationResult){

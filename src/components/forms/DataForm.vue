@@ -36,10 +36,10 @@
             <span class="is-sr-only">Confirm Edits</span>
           </span>
           <span>
-            Save
+            {{ saveButtonLabel }}
           </span>
         </button>
-        <button data-testid="cancel" type="button" class="button" @click="checkCancel()">Cancel</button>
+        <button v-if="showCancelButton" data-testid="cancel" type="button" class="button" @click="checkCancel()">Cancel</button>
       </div>
     </div>
   </form>
@@ -62,6 +62,10 @@ export default class DataForm extends Vue {
   rowValidations!: Object;
   @Prop()
   dataFormState!: DataFormEventBusHandler;
+  @Prop({default: "Save"})
+  saveButtonLabel?: string
+  @Prop({default: true})
+  showCancelButton?: boolean
 
   protected record!: Object;
   protected formClass!: string;

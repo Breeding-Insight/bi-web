@@ -1,4 +1,5 @@
 import {
+    ExperimentSort, GermplasmListSort,
     GermplasmSort,
     LocationSort,
     OntologySort,
@@ -32,4 +33,10 @@ export interface SortState {
 
     // germplasm table
     germplasmSort: GermplasmSort
+
+    // germplasm list table
+    germplasmListSort: GermplasmListSort
+
+    // experiment and observation table
+    experimentSort: ExperimentSort
 }

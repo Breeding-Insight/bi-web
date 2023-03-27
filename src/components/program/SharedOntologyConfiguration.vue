@@ -170,9 +170,9 @@ export default class SharedOntologyConfiguration extends ProgramsBase {
   private editableMatchedPrograms: SharedOntology[] = [];
   private subscribedOntology?: SubscribedOntology;
 
-  async mounted() {
+  mounted() {
     // Get shared ontologies
-    await this.getSharedOntologyData();
+    this.getSharedOntologyData();
   }
 
   @Watch('subscriptionChange', {immediate: false})

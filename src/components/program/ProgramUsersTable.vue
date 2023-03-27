@@ -113,14 +113,11 @@
         v-bind:row-validations="editUserValidations"
         v-bind:editable="$ability.can('update', 'ProgramUser')"
         v-bind:archivable="$ability.can('archive', 'ProgramUser')"
-        v-bind:pagination="usersPagination"
+        v-bind:pagination="paginationController"
         v-bind:data-form-state="editUserFormState"
         v-on:submit="updateUser($event)"
         v-on:remove="displayWarning($event)"
         v-on:show-error-notification="$emit('show-error-notification', $event)"
-        v-on:paginate="paginationController.updatePage($event)"
-        v-on:paginate-toggle-all="paginationController.toggleShowAll(usersPagination.totalCount.valueOf())"
-        v-on:paginate-page-size="updatePageSize($event)"
         backend-sorting
         v-bind:default-sort="[programUserSortFieldAsBuefy, programUserSortOrderAsBuefy]"
         v-on:sort="setSort"
@@ -181,9 +178,8 @@
   import { mapGetters, mapMutations } from 'vuex'
   import {Program} from "@/breeding-insight/model/Program";
   import EmptyTableMessage from "@/components/tables/EmtpyTableMessage.vue";
-  import {BackendPaginationController} from "@/breeding-insight/model/view_models/BackendPaginationController";
+  import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
   import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
-  import {Pagination} from "@/breeding-insight/model/BiResponse";
   import { User } from '@/breeding-insight/model/User';
   import {UserService} from "@/breeding-insight/service/UserService";
   import { DataFormEventBusHandler } from '@/components/forms/DataFormEventBusHandler';
@@ -223,7 +219,6 @@ export default class ProgramUsersTable extends Vue {
   private activeUser?: User;
   public users: ProgramUser[] = [];
   public systemUsers: User[] = [];
-  private usersPagination?: Pagination = new Pagination();
 
   private deactivateActive: boolean = false;
   private newUserActive: boolean = false;
@@ -234,7 +229,7 @@ export default class ProgramUsersTable extends Vue {
   private deleteUser?: ProgramUser;
   private rolesMap: Map<string, Role> = new Map();
 
-  private paginationController: BackendPaginationController = new BackendPaginationController();
+  private paginationController: PaginationController = new PaginationController();
 
   private newUserFormState: DataFormEventBusHandler = new DataFormEventBusHandler();
   private editUserFormState: DataFormEventBusHandler = new DataFormEventBusHandler();
@@ -276,13 +271,17 @@ export default class ProgramUsersTable extends Vue {
 
   @Watch('paginationController', { deep: true})
   paginationChanged() {
+    let currentCall = this.paginationController.currentCall
+    let paginationQuery = this.paginationController.getPaginationSelections();
+    if(currentCall && currentCall!.page == paginationQuery.page && currentCall!.pageSize == paginationQuery.pageSize && currentCall!.showAll == paginationQuery.showAll) {
+      return;
+    }
     this.updatePagination();
     this.getUsers();
   }
 
   updatePagination() {
-    let paginationQuery: PaginationQuery = BackendPaginationController.getPaginationSelections(
-        this.paginationController.currentPage, this.paginationController.pageSize, this.paginationController.showAll);
+    let paginationQuery: PaginationQuery = this.paginationController.getPaginationSelections();
     this.paginationController.setCurrentCall(paginationQuery);
   }
 
@@ -290,7 +289,7 @@ export default class ProgramUsersTable extends Vue {
     ProgramUserService.getAll(this.activeProgram!.id!, this.paginationController.currentCall, this.programUserSort).then(([programUsers, metadata]) => {
       if (this.paginationController.matchesCurrentRequest(metadata.pagination)){
         this.users = programUsers;
-        this.usersPagination = metadata.pagination;
+        this.paginationController.setPaginationInfo(metadata.pagination);
       }
     }).catch((error) => {
       // Display error that users cannot be loaded
@@ -313,10 +312,6 @@ export default class ProgramUsersTable extends Vue {
       throw error;
     }).finally(() => this.rolesLoading = false);
 
-  }
-
-  updatePageSize(pageSize: string) {
-    this.paginationController.updatePageSize(Number(pageSize).valueOf());
   }
 
   updateUser(updatedUser: ProgramUser) {

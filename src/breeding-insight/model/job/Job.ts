@@ -19,6 +19,7 @@ import { User } from '@/breeding-insight/model/User';
 import { JobDetail } from '@/breeding-insight/model/job/JobDetail';
 
 export class Job {
+  id?: string;
   statuscode?: number;
   statusMessage?: string;
   jobType?: string;

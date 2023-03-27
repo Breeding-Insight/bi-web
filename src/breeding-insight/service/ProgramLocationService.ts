@@ -19,7 +19,6 @@ import {ProgramLocationDAO} from "@/breeding-insight/dao/ProgramLocationDAO";
 import {ProgramLocation} from "@/breeding-insight/model/ProgramLocation";
 import {Metadata} from "@/breeding-insight/model/BiResponse";
 import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
-import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
 import {LocationSort, LocationSortField, SortOrder} from "@/breeding-insight/model/Sort";
 
 export class ProgramLocationService {

@@ -19,7 +19,9 @@ import {GetterTree} from 'vuex';
 import {RootState} from "@/store/types";
 import {SortState} from "@/store/sorting/types";
 import {
+    ExperimentSort,
     GermplasmSort,
+    GermplasmListSort,
     LocationSort, OntologySort,
     ProgramSort,
     ProgramSortField,
@@ -119,5 +121,14 @@ export const getters: GetterTree<SortState, RootState> = {
     // germplasm
     germplasmSort(state: SortState): GermplasmSort {
         return state.germplasmSort;
+    },
+
+    germplasmListSort(state: SortState): GermplasmListSort {
+        return state.germplasmListSort;
+    },
+
+    // experiment
+    experimentSort(state: SortState): ExperimentSort {
+        return state.experimentSort;
     }
 };

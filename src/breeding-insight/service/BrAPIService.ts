@@ -20,7 +20,9 @@ import {BiResponse, Response} from "@/breeding-insight/model/BiResponse";
 import {SortOrder} from "@/breeding-insight/model/Sort";
 
 export enum BrAPIType {
-  GERMPLASM = "germplasm"
+  GERMPLASM = "germplasm",
+  EXPERIMENT = "trials",
+  LIST = "lists"
 }
 
 export class BrAPIService {
@@ -41,7 +43,7 @@ export class BrAPIService {
     if (sort.order) {
       params['sortOrder'] = sort.order;
     }
-    if (pagination.page) {
+    if (pagination.page || pagination.page == 0) { //have to account for 0-index pagination since 0 falsy
       params ['page'] = pagination.page;
     }
     if (pagination.pageSize) {

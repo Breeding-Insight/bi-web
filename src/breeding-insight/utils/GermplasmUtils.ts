@@ -18,6 +18,7 @@
 import moment from "moment";
 import {Germplasm} from "@/breeding-insight/brapi/model/germplasm";
 import {ExternalReferences} from "@/breeding-insight/brapi/model/externalReferences";
+import {GermplasmService} from "@/breeding-insight/service/GermplasmService";
 
 export class GermplasmUtils {
     static getExternalUID(germplasm: Germplasm): string | undefined {
@@ -38,8 +39,8 @@ export class GermplasmUtils {
         return "";
     }
 
-    static getGermplasmUUID(references: ExternalReferences): string | undefined {
-        let val = references.find(ref => ref.referenceSource === process.env.VUE_APP_BI_REFERENCE_SOURCE);
+    static getBreedingInsightId(references: ExternalReferences, referenceSourcePath: string = ""): string | undefined {
+        let val = references.find(ref => ref.referenceSource === process.env.VUE_APP_BI_REFERENCE_SOURCE + referenceSourcePath);
         return val ? val.referenceID : "";
     }
 
@@ -48,4 +49,11 @@ export class GermplasmUtils {
         return synonyms.map(synonym => synonym.synonym).join("; ");
     }
 
+    static getEntryNumber(germplasm: Germplasm, referenceId: string | undefined): string | undefined {
+        if (germplasm.additionalInfo) {
+            return referenceId ? germplasm.additionalInfo.listEntryNumbers[<any>referenceId] :
+                germplasm.additionalInfo.importEntryMumber;
+        }
+        return "";
+    }
 }

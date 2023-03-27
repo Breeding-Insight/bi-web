@@ -15,6 +15,8 @@
  * limitations under the License.
  */
 
+import Ontology from "@/views/ontology/Ontology.vue";
+
 export enum SortOrder {
   Ascending = 'ASC',
   Descending = 'DESC'
@@ -55,16 +57,25 @@ export enum OntologySortField {
   MethodDescription = 'methodDescription',
   ScaleClass = 'scaleClass',
   ScaleName = 'scaleName',
-  entityAttributeSortLabel = 'entityAttribute'
+  entityAttributeSortLabel = 'entityAttribute',
+  TermType = 'termType'
 }
 
 export class OntologySort {
   field: OntologySortField;
   order: SortOrder;
 
-  constructor(field: OntologySortField, order: SortOrder) {
-    this.field = field;
-    this.order = order;
+  constructor(field: string, order: SortOrder) {
+    this.field = OntologySortField.Name;
+    this.order = SortOrder.Ascending;
+    if (this.isSortField(field)) {
+      this.field = field;
+      this.order = order;
+    }
+  }
+
+  private isSortField(field: string): field is OntologySortField {
+    return Object.values(OntologySortField).includes(field);
   }
 }
 
@@ -147,14 +158,16 @@ export class ProgramSort {
 
 // germplasm
 export enum GermplasmSortField {
+  ImportEntryNumber = "importEntryNumber",
   AccessionNumber = "accessionNumber",
   DefaultDisplayName = "defaultDisplayName",
-  BreedingMethod = "additionalInfo.breedingMethod",
+  BreedingMethod = "breedingMethod",
   SeedSource = "seedSource",
-  FemaleParent = "femaleParent",
-  MaleParent = "maleParent",
-  CreatedDate = "additionalInfo.createdDate",
-  UserName = "additionalInfo.createdBy.userName"
+  Pedigree = "pedigree",
+  FemaleParent = "femaleParentGID",
+  MaleParent = "maleParentGID",
+  CreatedDate = "createdDate",
+  UserName = "createdByUserName"
 }
 
 export class GermplasmSort {
@@ -162,6 +175,42 @@ export class GermplasmSort {
   order: SortOrder;
 
   constructor(field: GermplasmSortField, order: SortOrder) {
+    this.field = field;
+    this.order = order;
+  }
+}
+
+// experiments
+export enum ExperimentSortField {
+  Name = "name",
+  Active = "active",
+  CreatedBy = "createdBy",
+  CreatedDate = "createdDate"
+}
+
+export class ExperimentSort {
+  field: ExperimentSortField;
+  order: SortOrder;
+
+  constructor(field: ExperimentSortField, order: SortOrder) {
+    this.field = field;
+    this.order = order;
+  }
+}
+
+export enum GermplasmListSortField {
+  Name = "name",
+  Description = "description",
+  TotalEntries = "size",
+  CreatedDate = "dateCreated",
+  CreatedBy = "ownerName"
+}
+
+export class GermplasmListSort {
+  field: GermplasmListSortField;
+  order: SortOrder;
+
+  constructor(field: GermplasmListSortField, order: SortOrder) {
     this.field = field;
     this.order = order;
   }

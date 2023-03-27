@@ -92,6 +92,13 @@
             </li>
             <li>
               <router-link
+                  v-bind:to="{name: 'experiments-observations', params: {programId: activeProgram.id}}"
+              >
+                Experiments & Observations
+              </router-link>
+            </li>
+            <li>
+              <router-link
                   v-bind:to="{name: 'ontology', params: {programId: activeProgram.id}}"
                   :id="ontologyMenuId"
               >
@@ -117,10 +124,10 @@
             -->
             <li>
               <router-link
-                v-bind:to="{name: 'program-management', params: {programId: activeProgram.id}}"
+                v-bind:to="{name: 'program-administration', params: {programId: activeProgram.id}}"
                 :id="programManagementMenuId"
               >
-                Program Management
+                Program Administration
               </router-link>
             </li>
             <li>
@@ -136,13 +143,6 @@
                 Jobs
               </router-link>
             </li>
-            <li>
-              <router-link
-                  v-bind:to="{name: 'trials-studies', params: {programId: activeProgram.id}}"
-              >
-                Trials and Studies <span class="ml-2 tag is-warning">Beta</span>
-              </router-link>
-            </li>
           </ul>
         </template>
         <template v-if="$ability.can('access', 'AdminSection')">
@@ -154,12 +154,12 @@
           </p>
           <ul class="menu-list">
             <li>
-              <router-link to="/admin/user-management" :id="usersMenuId">
+              <router-link to="/admin/users" :id="usersMenuId">
                 Users
               </router-link>
             </li>
             <li>
-              <router-link to="/admin/program-management" :id="programsMenuId">
+              <router-link to="/admin/programs" :id="programsMenuId">
                 Programs
               </router-link>
             </li>
