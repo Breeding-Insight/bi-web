@@ -18,13 +18,17 @@
 <template>
   <div class="observations-list">
     <!--<h1 class="title">{{title}}</h1>-->
-    <ObservationsPlot/>
+    <ObservationsPlot
+      v-on:study-changed="updateStudy"
+    />
+
     <ObservationsListTable
-        v-bind:observations="observations"
+        v-bind:study-id="studyId"
     v-on:show-success-notification="$emit('show-success-notification', $event)"
     v-on:show-error-notification="$emit('show-error-notification', $event)"
     >
     </ObservationsListTable>
+
   </div>
 </template>
 
@@ -36,6 +40,7 @@
   import {StudyService} from '@/breeding-insight/service/StudyService';
   import {Result} from '@/breeding-insight/model/Result';
   import ObservationsPlot from "@/components/observations/ObservationsPlot.vue";
+  import { Observation } from '@/breeding-insight/model/Observation';
 
   @Component({
     components: {
@@ -46,7 +51,7 @@
   export default class ObservationsList extends ProgramsBase {
     private study: Study =  new Study();
     private programId?: string = this.$route.params.programId;
-    private studyId?: string = this.$route.params.studyId;
+    private studyId?: string = 'test'; // = this.$route.params.studyId;
     private title: string = 'All Observations';
 
 
@@ -54,7 +59,11 @@
 
     mounted() {
       if (this.$route.params.studyId) this.getStudy();
-    } 
+    }
+
+    updateStudy(studyId: string) {
+      this.studyId = studyId;
+    }
 
     async getStudy() {
       try {

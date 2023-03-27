@@ -141,7 +141,11 @@ export default class ObservationsTable extends Vue {
   @Prop()
   private studyId? : string;
 
+  /*
   @Prop()
+  private observations: Observation[] = [];
+   */
+
   private observations: Observation[] = [];
 
   private activeProgram?: Program;
@@ -172,7 +176,9 @@ export default class ObservationsTable extends Vue {
 
   @Watch('studyId')
   studyUpdated() {
-    this.getObservations()
+    if (this.studyId !== undefined) {
+      this.getObservations()
+    }
   }
 
   @Watch('paginationController', { deep: true})

@@ -52,6 +52,7 @@
         <BasicSelectField
             v-model="selectedPlotType"
             v-bind:options="plotTypes"
+            v-bind:selectedId="'Histogram'"
             v-bind:field-name="'Plot Type'"
         />
       </div>
@@ -105,7 +106,7 @@ export default class ObservationsPlot extends Vue {
   private selectedVariable : string = '';
   private selectedVariableId : string = '';
   private selectedStudyId : string = '';
-  private selectedPlotType : string = '';
+  private selectedPlotType : string = 'Histogram';
 
   private observations: Observation[] = [];
   private filteredObservations: Observation[] = [];
@@ -113,6 +114,46 @@ export default class ObservationsPlot extends Vue {
   mounted() {
     this.getStudies();
   }
+
+/*
+  get plotOutput() : Array<any> {
+
+    if (this.filterObservations) {
+      const observations: Array<number> = filterObservations.map((observation: Observation) => {
+        return observation.value;
+      });
+
+      const timestamps: Array<string | null | undefined> = filterObservations.map((observation: Observation) => {
+        return observation.timeStamp!.toISOString();
+      });
+
+      console.log(this.selectedPlotType);
+      console.log(filterObservations);
+      console.log(observations);
+      console.log(timestamps);
+
+      if (this.selectedPlotType === 'Histogram') {
+        return [{
+          x: observations,
+          type: 'histogram'
+        }]
+      }
+
+      if (this.selectedPlotType === 'Scatter Plot') {
+        console.log('SCATTER');
+        return [{
+          x: timestamps,
+          y: observations,
+          mode: 'markers',
+          type: 'scatter'
+        }]
+      }
+    }
+
+    return [{}];
+  }
+
+ */
 
   async getStudies() {
 
@@ -171,35 +212,54 @@ export default class ObservationsPlot extends Vue {
   @Watch('selectedStudyId')
   updateStudyData() {
     console.log('studychanged');
+    this.$emit('study-changed', this.selectedStudyId)
     this.getVariables();
     this.getObservations();
   }
 
 
   //@Watch('selectedVariableId')
-  get filterObservations(): Observation[] {
-    return this.observations.filter(observation => {
-      return observation.observationVariableId === this.selectedVariableId
-    });
+  get filterObservations(): Observation[] | undefined {
+
+    if (this.observations) {
+      return this.observations.filter(observation => {
+        return observation.observationVariableId === this.selectedVariableId
+      });
+    }
+
+    return undefined;
+  }
+
+  /*
+  @Watch('selectedPlotType')
+  plotTypeSelected() {
+  }
+   */
+
+  @Watch('filterObservations')
+  updateData() {
+    this.updatePlot();
   }
 
   @Watch('selectedPlotType')
-  plotTypeSelected() {
-
+  updatePlotType() {
+    this.updatePlot();
   }
 
-  @Watch('filterObservations')
-  updateData(filterObservations: Observation[]) {
-    const observations : Array<number> = filterObservations.map((observation: Observation) => {
+  updatePlot() {
+    console.log('UPDATE');
+    console.log(this.selectedPlotType);
+
+    const observations: Array<number> = this.filterObservations.map((observation: Observation) => {
       return observation.value;
     });
 
-    const timestamps : Array<string | null | undefined> = filterObservations.map((observation: Observation) => {
+    const timestamps: Array<string | null | undefined> = this.filterObservations.map((observation: Observation) => {
       return observation.timeStamp!.toISOString();
     });
 
     console.log(this.selectedPlotType);
-    console.log(filterObservations);
+    console.log(this.filterObservations);
     console.log(observations);
     console.log(timestamps);
 
@@ -208,6 +268,19 @@ export default class ObservationsPlot extends Vue {
         x: observations,
         type: 'histogram'
       }]
+      this.layout = {
+        title: 'Observation values histogram',
+        xaxis: {
+          title: {
+            text: 'Value'
+          }
+        },
+        yaxis: {
+          title: {
+            text: 'Count'
+          }
+        }
+      }
     }
 
     if (this.selectedPlotType === 'Scatter Plot') {
@@ -218,9 +291,22 @@ export default class ObservationsPlot extends Vue {
         mode: 'markers',
         type: 'scatter'
       }]
+      this.layout = {
+        title: 'Observation values over time',
+        xaxis: {
+          title: {
+            text: 'Date'
+          }
+        },
+        yaxis: {
+          title: {
+            text: 'Value'
+          }
+        }
+      }
     }
-
   }
+
 
 }
 
