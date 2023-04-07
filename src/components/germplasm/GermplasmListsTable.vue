@@ -95,7 +95,8 @@ import {
 } from "@/breeding-insight/model/Sort";
 import {UPDATE_EXPERIMENT_SORT} from "@/store/sorting/mutation-types";
 import { PaginationQuery } from '@/breeding-insight/model/PaginationQuery';
-import {JAVA_BRAPI_DATE_FORMAT, MOMENT_BRAPI_DATE_FORMAT} from "@/breeding-insight/utils/BrAPIDateTime";
+import {BaseFilter} from "@/breeding-insight/model/BaseFilter";
+import {MOMENT_BRAPI_DATE_FORMAT} from "@/breeding-insight/utils/BrAPIDateTime";
 
 @Component({
   mixins: [validationMixin],
@@ -135,7 +136,7 @@ export default class GermplasmListsTable extends Vue {
   private fileOptions = Object.values(FileType);
 
   private germplasmListSort!: GermplasmListSort;
-  private filters: any = {};
+  private filters: BaseFilter = new BaseFilter();
   private germplasmListCallStack?: CallStack;
 
   private updateSort!: (sort: GermplasmListSort) => void;
@@ -148,13 +149,9 @@ export default class GermplasmListsTable extends Vue {
   };
 
   initSearch(filter: any) {
-    this.filters = filter;
 
-    // Since displayed dateCreated is formatted, tell the server to apply the same formatting before filtering.
-    // Note: the server interprets format strings differently than Moment.js,
-    // see https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html#patterns
-    // compared to https://momentjs.com/docs/#/displaying/format/.
-    this.filters['dateCreatedDisplayFormat'] = JAVA_BRAPI_DATE_FORMAT;
+    // Merge, overriding any properties of this.filters that exist in filter.
+    this.filters = {...this.filters, ...filter};
 
     // When filtering the list, set the page to the first page.
     this.paginationController.updatePage(1);

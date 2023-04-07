@@ -94,7 +94,7 @@ import {
 import {UPDATE_GERMPLASM_SORT} from "@/store/sorting/mutation-types";
 import {GermplasmService} from "@/breeding-insight/service/GermplasmService";
 import { PaginationQuery } from '@/breeding-insight/model/PaginationQuery';
-import {JAVA_BRAPI_DATE_FORMAT} from "@/breeding-insight/utils/BrAPIDateTime";
+import {GermplasmFilter} from "@/breeding-insight/model/GermplasmFilter";
 
 @Component({
   mixins: [validationMixin],
@@ -128,7 +128,7 @@ export default class GermplasmTable extends Vue {
   private paginationController: PaginationController = new PaginationController();
   private germplasmLoading: Boolean = true;
   private germplasm: Germplasm[] = [];
-  private filters: any = {};
+  private filters: GermplasmFilter = new GermplasmFilter();
 
   private germplasmCallStack?: CallStack;
 
@@ -202,14 +202,9 @@ export default class GermplasmTable extends Vue {
   }
 
   initSearch(filters: any) {
-    
-    this.filters = filters;
 
-    // Since displayed createdDate is formatted, tell the server to apply the same formatting before filtering.
-    // Note: the server interprets format strings differently than Moment.js,
-    // see https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html#patterns
-    // compared to https://momentjs.com/docs/#/displaying/format/.
-    this.filters['createdDateDisplayFormat'] = JAVA_BRAPI_DATE_FORMAT;
+    // Merge, overriding any properties of this.filters that exist in filters.
+    this.filters = {...this.filters, ...filters};
 
     // When filtering the list, set a page to the first page.
     this.paginationController.updatePage(1);
