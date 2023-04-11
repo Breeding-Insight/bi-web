@@ -15,24 +15,11 @@
  * limitations under the License.
  */
 
-import {Module} from 'vuex';
-import {getters} from '@/store/filtering/getters';
-import {mutations} from '@/store/filtering/mutations';
-import {RootState} from '@/store/types';
-import {FilterState} from "@/store/filtering/types";
-import {GermplasmFilter} from "@/breeding-insight/model/GermplasmFilter";
+// DateTime format strings based on the BrAPI spec,
+// see https://plant-breeding-api.readthedocs.io/en/latest/docs/best_practices/Dates_and_Times.html
+// for more information.
 
-export let state: FilterState;
-state = {
-    // germplasm table
-    germplasmFilter: new GermplasmFilter()
-};
-
-const namespaced: boolean = true
-
-export const filtering: Module<FilterState, RootState> = {
-    namespaced,
-    state,
-    getters,
-    mutations
-};
+// The Java BI API interpretable format for displayed Date values, e.g. 2023-03-31.
+export const JAVA_BRAPI_DATE_FORMAT = 'yyyy-MM-dd';
+// The moment.js interpretable format for displayed Date values, e.g. 2023-03-31.
+export const MOMENT_BRAPI_DATE_FORMAT = 'YYYY-MM-DD';

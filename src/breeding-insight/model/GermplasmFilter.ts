@@ -15,25 +15,24 @@
  * limitations under the License.
  */
 
-
-// germplasm
 import {GermplasmSortField} from "@/breeding-insight/model/Sort";
+import {BaseFilter} from "@/breeding-insight/model/BaseFilter";
 
 export enum GermplasmBIField {
-  ListDbId = "listDbId",
-  ListName = "listName",
+    ListDbId = "listDbId",
+    ListName = "listName",
 }
 
-export class GermplasmFilter {
-  [GermplasmBIField.ListDbId]: string;
-  [GermplasmBIField.ListName]: string;
-  [GermplasmSortField.AccessionNumber]: string;
-  [GermplasmSortField.DefaultDisplayName]: string;
-  [GermplasmSortField.BreedingMethod]: string;
-  [GermplasmSortField.SeedSource]: string;
-  [GermplasmSortField.Pedigree]: string;
-  [GermplasmSortField.FemaleParent]: string;
-  [GermplasmSortField.MaleParent]: string;
-  [GermplasmSortField.CreatedDate]: string;
-  [GermplasmSortField.UserName]: string;
+export class GermplasmFilter extends BaseFilter {
+    [GermplasmBIField.ListDbId]: string;
+    [GermplasmBIField.ListName]: string;
+    [GermplasmSortField.AccessionNumber]: string;
+    [GermplasmSortField.DefaultDisplayName]: string;
+    [GermplasmSortField.BreedingMethod]: string;
+    [GermplasmSortField.SeedSource]: string;
+    [GermplasmSortField.Pedigree]: string;
+    [GermplasmSortField.FemaleParent]: string;
+    [GermplasmSortField.MaleParent]: string;
+    [GermplasmSortField.CreatedDate]: string;
+    [GermplasmSortField.UserName]: string;
 }

@@ -24,7 +24,7 @@ import {Germplasm} from "@/breeding-insight/brapi/model/germplasm";
 import {Result, ResultGenerator} from "@/breeding-insight/model/Result";
 import {SortOrder} from "@/breeding-insight/model/Sort";
 import * as api from "@/util/api";
-import {GermplasmFilter} from "@/breeding-insight/model/Filter";
+import {GermplasmFilter} from "@/breeding-insight/model/GermplasmFilter";
 
 export class GermplasmService {
 

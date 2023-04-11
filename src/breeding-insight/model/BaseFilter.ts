@@ -15,24 +15,10 @@
  * limitations under the License.
  */
 
-import {Module} from 'vuex';
-import {getters} from '@/store/filtering/getters';
-import {mutations} from '@/store/filtering/mutations';
-import {RootState} from '@/store/types';
-import {FilterState} from "@/store/filtering/types";
-import {GermplasmFilter} from "@/breeding-insight/model/GermplasmFilter";
+export enum BaseField {
+  DateFormat = "dateDisplayFormat",
+}
 
-export let state: FilterState;
-state = {
-    // germplasm table
-    germplasmFilter: new GermplasmFilter()
-};
-
-const namespaced: boolean = true
-
-export const filtering: Module<FilterState, RootState> = {
-    namespaced,
-    state,
-    getters,
-    mutations
-};
+export class BaseFilter {
+  [BaseField.DateFormat]: string = "yyyy-MM-dd";
+}
