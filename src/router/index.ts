@@ -65,7 +65,7 @@ import GermplasmByList from "@/views/germplasm/GermplasmByList.vue";
 import GermplasmLists from "@/views/germplasm/GermplasmLists.vue";
 import BreedingMethods from "@/views/germplasm/BreedingMethods.vue";
 import GermplasmDetails from "@/views/germplasm/GermplasmDetails.vue";
-import OntologySharing from "@/views/program/OntologySharing.vue";
+import ProgramConfiguration from "@/views/program/ProgramConfiguration.vue";
 import JobManagement from '@/views/program/JobManagement.vue';
 import GermplasmPedigreesView from "@/components/germplasm/GermplasmPedigreesView.vue";
 import GermplasmGenotypeView from "@/components/germplasm/GermplasmGenotypeView.vue";
@@ -223,13 +223,13 @@ const routes = [
         component: BreedingMethods
       },
       {
-        path: 'ontology-sharing',
-        name: 'ontology-sharing',
+        path: 'configuration',
+        name: 'configuration',
         meta: {
-          title: 'Ontology Sharing',
+          title: 'Configuration',
           layout: layouts.userSideBar
         },
-        component: OntologySharing
+        component: ProgramConfiguration
       }
     ]
   },
