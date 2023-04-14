@@ -43,9 +43,9 @@
           </router-link>
           <router-link
               v-if="$ability.can('access', 'ProgramConfiguration')"
-              v-bind:to="{name: 'ontology-sharing', params: {programId: activeProgram.id}}"
+              v-bind:to="{name: 'configuration', params: {programId: activeProgram.id}}"
               tag="li" active-class="is-active">
-            <a>Ontology Sharing</a>
+            <a>Configuration</a>
           </router-link>
         </ul>
       </nav>
