@@ -30,7 +30,7 @@
         tabindex="-1"
     >
         <div class="modal-background" v-on:click="() => $refs.focusTrap.deactivate()"/>
-        <div class="modal-card">
+        <div class="modal-card" v-bind:class="cardClass">
           <header class="modal-card-head">
             <div class="modal-card-title" />
             <button
@@ -68,9 +68,20 @@
     bodyClass!: Object;
     @Prop()
     modalClass!: Object;
+    @Prop()
+    cardClass!: string;
 
     mounted() {
     }
   }
 
 </script>
+
+<style>
+.modal-card-lg {
+  width: 700px !important;
+}
+.modal-card-body-lg {
+  height: 250px !important;
+}
+</style>

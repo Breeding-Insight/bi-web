@@ -50,9 +50,12 @@
         </template>
       </b-table-column>
       <b-table-column  field="data.listDbId" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-        <a href="#" v-on:click="activateExtensionSelect(props.row.data.listDbId)">
+        <ExperimentObservationsDownloadButton
+            v-bind:modal-title="`Download ${props.row.data.trialName}`"
+            v-bind:trailDbId="props.row.data.trialDbId"
+        >
           Download
-        </a>
+        </ExperimentObservationsDownloadButton>
       </b-table-column>
 
       <template v-slot:emptyMessage>
@@ -85,10 +88,11 @@ import {
 } from "@/breeding-insight/model/Sort";
 import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
 import {UPDATE_EXPERIMENT_SORT} from "@/store/sorting/mutation-types";
+import ExperimentObservationsDownloadButton from "@/components/experiments/ExperimentObservationsDownloadButton.vue";
 
 @Component({
   mixins: [validationMixin],
-  components: {ExpandableTable, EmptyTableMessage, TableColumn, SelectModal},
+  components: {ExperimentObservationsDownloadButton, ExpandableTable, EmptyTableMessage, TableColumn, SelectModal},
   computed: {
     ...mapGetters([
       'activeProgram'
@@ -182,21 +186,6 @@ export default class ExperimentsObservationsTable extends Vue {
     } finally {
       this.experimentsLoading=false;
     }
-  }
-
-  activateExtensionSelect(experimentDbId: string){
-    this.modalActive = true;
-    this.selectedExperimentDbId = experimentDbId;
-  }
-
-  cancelDownload(){
-    this.modalActive = false;
-    this.selectedExperimentDbId = "";
-    this.fileExtension = "";
-  }
-
-  setFileExtension(value){
-    this.fileExtension = value;
   }
 
   getStatus(active: boolean){
