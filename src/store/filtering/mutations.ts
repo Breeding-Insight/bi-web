@@ -17,7 +17,7 @@
 
 import {MutationTree} from 'vuex';
 import {FilterState} from "@/store/filtering/types";
-import {GermplasmFilter} from "@/breeding-insight/model/Filter";
+import {GermplasmFilter} from "@/breeding-insight/model/GermplasmFilter";
 import {UPDATE_GERMPLASM_FILTER} from "@/store/filtering/mutation-types";
 
 export const mutations: MutationTree<FilterState> = {
