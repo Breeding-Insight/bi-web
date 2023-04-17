@@ -17,18 +17,21 @@
 
 <template>
   <BaseModal
-      v-bind:cardClass="cardClass"
-      v-bind:bodyClass="bodyClass"
-      v-bind:active.sync="active"
-      v-on:deactivate="$emit('deactivate')"
+    v-bind:card-class="cardClass"
+    v-bind:body-class="bodyClass"
+    v-bind:active.sync="active"
+    v-on:deactivate="$emit('deactivate')"
   >
     <div>
       <div>
         <article class="media">
           <div class="media-content">
             <div class="content">
-              <h3 class="is-5 title" :class="modalHeaderClass">
-                {{title}}
+              <h3
+                class="is-5 title"
+                :class="modalHeaderClass"
+              >
+                {{ title }}
               </h3>
             </div>
           </div>
@@ -39,11 +42,15 @@
             <template>
               <section>
                 <b-field label="Dataset">
-                  <b-select placeholder="Select a name">
+                  <b-select
+                    v-model="options.dataset"
+                    placeholder="Select a name"
+                  >
                     <option
-                        v-for="option in options.dataset"
-                        :value="option.id"
-                        :key="option.id">
+                      v-for="option in datasetOptions"
+                      :key="option.id"
+                      :value="option.id"
+                    >
                       {{ option.name }}
                     </option>
                   </b-select>
@@ -56,24 +63,15 @@
             <p class="has-text-dark has-text-weight-bold">
               Environment(s)
             </p>
-            <template>
-              <section>
-                <div class="block">
-                  <b-checkbox v-model="options.environments"
-                              native-value="all">
-                    All
-                  </b-checkbox>
-  <!--                <b-checkbox v-model="checkboxGroup"-->
-  <!--                            native-value="Flint">-->
-  <!--                  Environment Placeholder-->
-  <!--                </b-checkbox>-->
-
-                </div>
-                <p class="content">
-                  <b>Selection:</b>
-                  {{ options.environments }}
-                </p>
-              </section>
+            <template v-for="option in environmentOptions">
+              <b-field v-bind:key="option.id">
+                <b-checkbox
+                  v-model="options.environments"
+                  :native-value="option.id"
+                >
+                  {{ option.name }}
+                </b-checkbox>
+              </b-field>
             </template>
           </div>
           <!-- Timestamps Switch -->
@@ -83,9 +81,12 @@
             </p>
             <section>
               <b-field>
-                <b-switch disabled v-model="options.includeTimestamps"
-                          true-value="Yes"
-                          false-value="No">
+                <b-switch
+                  v-model="options.includeTimestamps"
+                  disabled="true"
+                  true-value="Yes"
+                  false-value="No"
+                >
                   {{ options.includeTimestamps }}
                 </b-switch>
               </b-field>
@@ -96,21 +97,14 @@
             <p class="has-text-dark has-text-weight-bold">
               File Format
             </p>
-            <template v-for="option in options.fileExtensionOptions">
+            <template v-for="option in fileExtensionOptions">
               <div v-bind:key="option.id">
-                <label
-                    v-bind:key="option.id"
-                    class="radio"
+                <b-radio
+                  v-model="options.fileExtension"
+                  :native-value="option.id"
                 >
-                  <input
-                      type="radio"
-                      v-bind:name="optionType"
-                      v-bind:value="option.id"
-                      v-model="checked"
-                      v-on:change="$emit('select-change', checked)"
-                  >
-                  {{option.name}}
-                </label>
+                  {{ option.name }}
+                </b-radio>
               </div>
             </template>
           </div>
@@ -124,6 +118,10 @@
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import BaseModal from '@/components/modals/BaseModal.vue';
+import {FileType} from "@/breeding-insight/model/FileType";
+import {ExperimentObservationsDataset} from "@/breeding-insight/model/ExperimentObservationsDataset";
+import {ExperimentEnvironment} from "@/breeding-insight/model/ExperimentEnvironment";
+import {ExperimentExportOptions} from "@/breeding-insight/model/ExperimentExportOptions";
 
 @Component({
   components: {BaseModal}
@@ -134,18 +132,17 @@ export default class ExperimentObservationsExportModal extends Vue {
   @Prop()
   title!: string;
   @Prop()
-  options!: object;  // Typed as string, but at runtime looks like: [{"name":".xls","id":"XLS"},{"name":".xlsx","id":"XLSX"},{"name":".csv","id":"CSV"}]
+  options!: ExperimentExportOptions;
 
-  private checked: string = "";
+  private fileExtensionOptions: object[] = Object.values(FileType);
+  private datasetOptions: object[] = Object.values(ExperimentObservationsDataset);
+  private environmentOptions: object[] = Object.values(ExperimentEnvironment);
 
   private optionType = "optionType";
   private modalHeaderClass: string = "modal-header";
   private cardClass: string = "modal-card-lg";
   private bodyClass: string = "modal-card-body-lg";
-  mounted(){
-    this.checked = this.options.fileExtensionOptions;
-    this.$emit('select-change', this.checked);
-  }
+
 }
 
 </script>
