@@ -21,8 +21,7 @@
         v-bind:active.sync="modalActive"
         v-bind:title="modalTitle"
         v-bind:options="fileOptions"
-        v-on:deactivate="modalActive = false"
-        v-on:select-change="setFileExtension"
+        v-on:deactivate="cancelDownload"
     >
       <template #buttons>
         <div class="columns">
@@ -43,7 +42,7 @@
         </div>
       </template>
     </ExperimentObservationsExportModal>
-    <a href="#" v-on:click="activateExtensionSelect">
+    <a href="#" v-on:click="openExportModal">
       <slot></slot>
     </a>
   </section>
@@ -56,10 +55,9 @@ import {validationMixin} from "vuelidate";
 import {mapGetters} from "vuex";
 import {Program} from "@/breeding-insight/model/Program";
 import SelectModal from "@/components/modals/SelectModal.vue";
-import {FileType} from "@/breeding-insight/model/FileType";
 import BaseModal from "@/components/modals/BaseModal.vue";
 import ExperimentObservationsExportModal from "@/components/modals/ExperimentObservationsExportModal.vue";
-import {ExperimentObservationsDataset} from "@/breeding-insight/model/ExperimentObservationsDataset";
+import {ExperimentExportOptions} from "@/breeding-insight/model/ExperimentExportOptions";
 
 @Component({
   mixins: [validationMixin],
@@ -79,39 +77,39 @@ export default class ExperimentObservationsDownloadButton extends Vue {
   @Prop()
   modalTitle?: string;
 
-  // @Prop()
-  // options:object[];  // Typed as string, but at runtime looks like: [{"name":".xls","id":"XLS"},{"name":".xlsx","id":"XLSX"},{"name":".csv","id":"CSV"}]
-  //
-  // private modalHeaderClass: string = "modal-header";
   private activeProgram?: Program;
   private modalActive: boolean = false;
-  private fileExtension: string = "";
-  private environments: string = "";
-  private dataset: string = "";
-  private includeTimestamps: boolean = false;
-  private fileOptions = {fileExtensionOptions: Object.values(FileType), dataset: Object.values(ExperimentObservationsDataset), environments: "all", includeTimestamps: false};
+  private fileOptions: ExperimentExportOptions = new ExperimentExportOptions();
 
-  setFileExtension(value: string){
-    this.fileExtension = value;
-  }
-
-  activateExtensionSelect(){
+  openExportModal(){
     this.modalActive = true;
   }
 
   downloadList() {
     this.modalActive = false;
     if (this.activeProgram) {
-      window.open(process.env.VUE_APP_BI_API_ROOT + '/v1/programs/' + this.activeProgram.id + '/experiments/' + this.trailDbId + '/export?fileExtension=' + this.fileExtension + '&dataset' + this.dataset + '&environments=' + this.environments + '&includeTimestamps=' + this.includeTimestamps, '_blank');
+      window.open(process.env.VUE_APP_BI_API_ROOT
+                  + '/v1/programs/'
+                  + this.activeProgram.id
+                  + '/experiments/'
+                  + this.trailDbId
+                  + '/export?fileExtension='
+                  + this.fileOptions.fileExtension
+                  + '&dataset='
+                  + this.fileOptions.dataset
+                  + '&environments='
+                  + this.fileOptions.environments
+                  + '&includeTimestamps='
+                  + this.fileOptions.timestampsTrueFalseString(),
+          '_blank');
     }
   }
 
   cancelDownload(){
+    // Close modal.
     this.modalActive = false;
-    this.fileExtension = "";
-    this.dataset = "";
-    this.environments = "";
-    this.includeTimestamps = false;
+    // Reset file export options.
+    this.fileOptions = new ExperimentExportOptions();
   }
 }
 </script>
