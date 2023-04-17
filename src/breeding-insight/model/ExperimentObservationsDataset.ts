@@ -16,7 +16,7 @@
  */
 
 export class ExperimentObservationsDataset {
-    static observations = new ExperimentObservationsDataset("Observations", "observations");
+    static observations = new ExperimentObservationsDataset("Observation Dataset", "observations");
 
     name: string;
     id: string;
