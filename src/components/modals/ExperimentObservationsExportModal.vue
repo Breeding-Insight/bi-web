@@ -83,7 +83,7 @@
               <b-field>
                 <b-switch
                   v-model="options.includeTimestamps"
-                  disabled="true"
+                  :disabled="true"
                   true-value="Yes"
                   false-value="No"
                 >

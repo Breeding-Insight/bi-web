@@ -86,22 +86,27 @@ export default class ExperimentObservationsDownloadButton extends Vue {
   }
 
   downloadList() {
-    this.modalActive = false;
-    if (this.activeProgram) {
-      window.open(process.env.VUE_APP_BI_API_ROOT
-                  + '/v1/programs/'
-                  + this.activeProgram.id
-                  + '/experiments/'
-                  + this.trailDbId
-                  + '/export?fileExtension='
-                  + this.fileOptions.fileExtension
-                  + '&dataset='
-                  + this.fileOptions.dataset
-                  + '&environments='
-                  + this.fileOptions.environments
-                  + '&includeTimestamps='
-                  + this.fileOptions.timestampsTrueFalseString(),
-          '_blank');
+    // Validate selected options.
+    if (this.validateOptions()) {
+      // Close modal.
+      this.modalActive = false;
+      // Open download URL in a new tab.
+      if (this.activeProgram) {
+        window.open(process.env.VUE_APP_BI_API_ROOT
+            + '/v1/programs/'
+            + this.activeProgram.id
+            + '/experiments/'
+            + this.trailDbId
+            + '/export?fileExtension='
+            + this.fileOptions.fileExtension
+            + '&dataset='
+            + this.fileOptions.dataset
+            + '&environments='
+            + this.fileOptions.environments
+            + '&includeTimestamps='
+            + this.fileOptions.timestampsTrueFalseString(),
+            '_blank');
+      }
     }
   }
 
@@ -110,6 +115,14 @@ export default class ExperimentObservationsDownloadButton extends Vue {
     this.modalActive = false;
     // Reset file export options.
     this.fileOptions = new ExperimentExportOptions();
+  }
+
+  validateOptions(): boolean {
+    if (this.fileOptions.environments.length === 0){
+      this.$emit('show-error-notification', 'One or more environments must be selected.');
+      return false;
+    }
+    return true;
   }
 }
 </script>
