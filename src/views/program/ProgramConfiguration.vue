@@ -16,7 +16,7 @@
   -->
 
 <template>
-  <div id="ontology-sharing">
+  <div id="program-configuration">
       <SharedOntologyConfiguration
           v-on="$listeners"
           class="mb-6"
@@ -51,7 +51,7 @@ import BreedingMethods from "@/views/germplasm/BreedingMethods.vue";
     ])
   }
 })
-export default class OntologySharing extends ProgramsBase {
+export default class ProgramConfiguration extends ProgramsBase {
   // Change tracker to pass to children for refresh
   private subscribeAction: number = 0;
   private shareAction: number = 0;
