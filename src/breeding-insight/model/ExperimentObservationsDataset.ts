@@ -15,7 +15,9 @@
  * limitations under the License.
  */
 
-export class ExperimentObservationsDataset {
+import {SelectOption} from "@/breeding-insight/model/SelectOption";
+
+export class ExperimentObservationsDataset implements SelectOption<string, string> {
     static observations = new ExperimentObservationsDataset("Observation Dataset", "observations");
 
     name: string;

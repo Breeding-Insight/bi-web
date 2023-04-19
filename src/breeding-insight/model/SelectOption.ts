@@ -15,16 +15,7 @@
  * limitations under the License.
  */
 
-import {SelectOption} from "@/breeding-insight/model/SelectOption";
-
-export class ExperimentEnvironment implements SelectOption<string, string> {
-    static all = new ExperimentEnvironment("All", "all");
-
-    name: string;
-    id: string;
-
-    constructor(name: string, id: string) {
-        this.name = name;
-        this.id = id;
-    }
+export interface SelectOption<T1, T2> {
+    name: T1;
+    id: T2;
 }

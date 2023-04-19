@@ -17,45 +17,48 @@
 
 <template>
   <BaseModal
-      v-bind:active.sync="active"
-      v-on:deactivate="$emit('deactivate')"
+    v-bind:active.sync="active"
+    v-on:deactivate="$emit('deactivate')"
   >
     <div>
       <div>
         <article class="media">
           <div class="media-content">
             <div class="content">
-              <h3 class="is-5 title" :class="modalHeaderClass">
-                {{title}}
-              </h3>
+              <h2
+                class="is-5 title"
+                :class="modalHeaderClass"
+              >
+                {{ title }}
+              </h2>
             </div>
           </div>
         </article>
-        <section>
-          <p class="has-text-dark has-text-weight-bold" :class="this.$modalTextClass">
-            {{ subtitle }}
-          </p>
-        </section>
         <div class="control">
-          <template v-for="option in options">
-            <div v-bind:key="option.id">
-              <label
+          <template>
+            <fieldset>
+              <legend class="label">
+                {{ fieldsetLegend }}
+              </legend>
+              <div
+                v-for="option in options"
                 v-bind:key="option.id"
-                class="radio"
               >
-                <input
-                  type="radio"
-                  v-bind:name="optionType"
-                  v-bind:value="option.id"
-                  v-model="checked"
-                  v-on:change="$emit('select-change', checked)"
-                >
-                {{option.name}}
-              </label>
-            </div>
+                <label class="b-radio radio">
+                  <input
+                    v-model="checked"
+                    type="radio"
+                    v-bind:name="optionType"
+                    v-bind:value="option.id"
+                    v-on:change="$emit('select-change', checked)"
+                  ><span class="check" />
+                  <span class="control-label"> {{ option.name }} </span>
+                </label>
+              </div>
+            </fieldset>
           </template>
         </div>
-        <slot name="buttons"></slot>
+        <slot name="buttons" />
       </div>
     </div>
   </BaseModal>
@@ -64,6 +67,7 @@
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import BaseModal from '@/components/modals/BaseModal.vue';
+import {SelectOption} from "@/breeding-insight/model/SelectOption";
 
 @Component({
   components: {BaseModal}
@@ -74,9 +78,9 @@ export default class SelectModal extends Vue {
   @Prop()
   title! : string;
   @Prop()
-  subtitle: string;
+  fieldsetLegend?: string;
   @Prop()
-  options:string;
+  options!: SelectOption<string, string>[];  // SelectOption<string, string>[];
 
   private checked: string = "";
 

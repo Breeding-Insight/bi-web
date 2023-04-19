@@ -15,7 +15,9 @@
  * limitations under the License.
  */
 
-export class FileType {
+import {SelectOption} from "@/breeding-insight/model/SelectOption";
+
+export class FileType implements SelectOption<string, string> {
     static xls = new FileType(".xls", "XLS");
     static xlsx = new FileType(".xlsx", "XLSX");
     static csv = new FileType(".csv", "CSV");

@@ -49,7 +49,7 @@
         </router-link>
         <GermplasmDownloadButton
           v-bind:modal-title="`Download ${props.row.data.listName}`"
-          modal-subtitle="File Format"
+          fieldset-legend="File Format"
           v-bind:listDbId="props.row.data.listDbId"
         >
           Download
@@ -83,7 +83,6 @@ import {GermplasmList} from "@/breeding-insight/model/GermplasmList";
 import {GermplasmService} from "@/breeding-insight/service/GermplasmService";
 import ExpandableTable from "@/components/tables/expandableTable/ExpandableTable.vue";
 import moment from "moment";
-import SelectModal from "@/components/modals/SelectModal.vue";
 import {FileType} from "@/breeding-insight/model/FileType";
 import GermplasmDownloadButton from '@/components/germplasm/GermplasmDownloadButton.vue';
 import {UPDATE_GERMPLASM_LIST_SORT} from "@/store/sorting/mutation-types";
@@ -103,7 +102,7 @@ import {MOMENT_BRAPI_DATE_FORMAT} from "@/breeding-insight/utils/BrAPIDateTime";
   components: {
     ExpandableTable,
     BaseTraitForm, BasicInputField, EmptyTableMessage, TableColumn,
-    SelectModal, DownloadIcon, GermplasmDownloadButton },
+    DownloadIcon, GermplasmDownloadButton },
   computed: {
     ...mapGetters([
       'activeProgram'

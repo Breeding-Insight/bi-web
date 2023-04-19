@@ -46,7 +46,7 @@
       <div class="column is-full has-text-centered buttons">
         <GermplasmDownloadButton
             v-bind:modal-title="`Download ${list ? list.listName : ''}`"
-            modal-subtitle="File Format"
+            fieldset-legend="File Format"
             v-bind:listDbId="list ? list.listDbId : '' "
         >
           <button class="button is-primary has-text-weight-bold">

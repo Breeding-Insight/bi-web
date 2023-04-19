@@ -3,7 +3,7 @@
     <SelectModal
         v-bind:active.sync="modalActive"
         v-bind:title="modalTitle"
-        v-bind:subtitle="modalSubtitle"
+        v-bind:fieldset-legend="fieldsetLegend"
         v-bind:options="fileOptions"
         v-on:deactivate="modalActive = false"
         v-on:select-change="setFileExtension"
@@ -57,7 +57,7 @@ export default class GermplasmDownloadButton extends Vue {
   @Prop()
   modalTitle?: string;
   @Prop()
-  modalSubtitle?: string;
+  fieldsetLegend?: string;
 
   private activeProgram?: Program;
   private modalActive: boolean = false;
