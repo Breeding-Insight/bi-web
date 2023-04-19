@@ -23,94 +23,103 @@
     v-on:deactivate="$emit('deactivate')"
   >
     <div>
-      <div>
-        <article class="media">
-          <div class="media-content">
-            <div class="content">
-              <h3
-                class="is-5 title"
-                :class="modalHeaderClass"
-              >
-                {{ title }}
-              </h3>
-            </div>
-          </div>
-        </article>
-        <div class="columns">
-          <!-- Dataset Select -->
-          <div class="column control">
-            <template>
-              <section>
-                <b-field label="Dataset">
-                  <b-select
-                    v-model="options.dataset"
-                    placeholder="Select a name"
-                  >
-                    <option
-                      v-for="option in datasetOptions"
-                      :key="option.id"
-                      :value="option.id"
-                    >
-                      {{ option.name }}
-                    </option>
-                  </b-select>
-                </b-field>
-              </section>
-            </template>
-          </div>
-          <!-- Environments Multi-select -->
-          <div class="column control">
-            <p class="has-text-dark has-text-weight-bold">
-              Environment(s)
-            </p>
-            <template v-for="option in environmentOptions">
-              <b-field v-bind:key="option.id">
-                <b-checkbox
-                  v-model="options.environments"
-                  :native-value="option.id"
-                >
-                  {{ option.name }}
-                </b-checkbox>
-              </b-field>
-            </template>
-          </div>
-          <!-- Timestamps Switch -->
-          <div class="column control">
-            <p class="has-text-dark has-text-weight-bold">
-              With Timestamps?
-            </p>
-            <section>
-              <b-field>
-                <b-switch
-                  v-model="options.includeTimestamps"
-                  :disabled="true"
-                  true-value="Yes"
-                  false-value="No"
-                >
-                  {{ options.includeTimestamps }}
-                </b-switch>
-              </b-field>
-            </section>
-          </div>
-          <!-- File Format Radio -->
-          <div class="column control">
-            <p class="has-text-dark has-text-weight-bold">
-              File Format
-            </p>
-            <template v-for="option in fileExtensionOptions">
-              <div v-bind:key="option.id">
-                <b-radio
-                  v-model="options.fileExtension"
-                  :native-value="option.id"
-                >
-                  {{ option.name }}
-                </b-radio>
-              </div>
-            </template>
+      <article class="media">
+        <div class="media-content">
+          <div class="content">
+            <h2
+              class="is-5 title"
+              :class="modalHeaderClass"
+            >
+              {{ title }}
+            </h2>
           </div>
         </div>
-        <slot name="buttons"></slot>
+      </article>
+      <div class="columns">
+        <!-- Dataset Select -->
+        <div class="column control">
+          <div class="field">
+            <label
+              class="label"
+              for="dataset"
+            >Dataset</label>
+            <div class="control">
+              <div class="select">
+                <select id="dataset">
+                  <option
+                    v-for="option in datasetOptions"
+                    v-bind:key="option.id"
+                    v-bind:value="option.id"
+                  >
+                    {{ option.name }}
+                  </option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Environments Multi-select -->
+        <div class="column control">
+          <fieldset class="field">
+            <legend class="label">
+              Environment(s)
+            </legend>
+            <div
+              v-for="option in environmentOptions"
+              v-bind:key="option.id"
+              class="control"
+            >
+              <b-checkbox
+                v-model="exportOptions.environments"
+                :native-value="option.id"
+              >
+                {{ option.name }}
+              </b-checkbox>
+            </div>
+          </fieldset>
+        </div>
+        <!-- Timestamps Switch -->
+        <div class="column control">
+          <label
+            class="label"
+            for="timestamps-switch"
+          >With{{ '\xa0' }}Timestamps?</label>
+          <div class="field">
+            <label
+              class="switch is-rounded"
+            ><input
+               id="timestamps-switch"
+               v-model="exportOptions.includeTimestamps"
+               aria-label="Include Timestamps?"
+               type="checkbox"
+               true-value="Yes"
+               false-value="No"
+             ><span class="check" />
+              <span class="control-label">{{ exportOptions.includeTimestamps }}</span>
+            </label>
+          </div>
+        </div>
+        <!-- File Format Radio -->
+        <div class="column control">
+          <fieldset>
+            <legend class="label">
+              File{{ '\xa0' }}Format
+            </legend>
+            <div
+              v-for="option in fileExtensionOptions"
+              v-bind:key="option.id"
+            >
+              <b-radio
+                v-model="exportOptions.fileExtension"
+                :native-value="option.id"
+              >
+                {{ option.name }}
+              </b-radio>
+            </div>
+          </fieldset>
+        </div>
       </div>
+      <slot name="buttons" />
     </div>
   </BaseModal>
 </template>
@@ -132,7 +141,7 @@ export default class ExperimentObservationsExportModal extends Vue {
   @Prop()
   title!: string;
   @Prop()
-  options!: ExperimentExportOptions;
+  exportOptions!: ExperimentExportOptions;
 
   private fileExtensionOptions: object[] = Object.values(FileType);
   private datasetOptions: object[] = Object.values(ExperimentObservationsDataset);

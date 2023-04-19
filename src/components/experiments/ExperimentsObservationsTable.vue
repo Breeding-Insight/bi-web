@@ -79,7 +79,6 @@ import {BiResponse} from "@/breeding-insight/model/BiResponse";
 import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
 import {Trial} from '@/breeding-insight/model/Trial'
 import ExpandableTable from '@/components/tables/expandableTable/ExpandableTable.vue';
-import SelectModal from "@/components/modals/SelectModal.vue";
 import {CallStack} from "@/breeding-insight/utils/CallStack";
 import {
   ExperimentSort,
@@ -92,7 +91,7 @@ import ExperimentObservationsDownloadButton from "@/components/experiments/Exper
 
 @Component({
   mixins: [validationMixin],
-  components: {ExperimentObservationsDownloadButton, ExpandableTable, EmptyTableMessage, TableColumn, SelectModal},
+  components: {ExperimentObservationsDownloadButton, ExpandableTable, EmptyTableMessage, TableColumn},
   computed: {
     ...mapGetters([
       'activeProgram'

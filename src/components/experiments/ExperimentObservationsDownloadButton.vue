@@ -18,23 +18,23 @@
 <template>
   <section id="experimentObservationsDownloadButton">
     <ExperimentObservationsExportModal
-        v-bind:active.sync="modalActive"
-        v-bind:title="modalTitle"
-        v-bind:options="fileOptions"
-        v-on:deactivate="cancelDownload"
+      v-bind:active.sync="modalActive"
+      v-bind:title="modalTitle"
+      v-bind:export-options="fileOptions"
+      v-on:deactivate="cancelDownload"
     >
       <template #buttons>
         <div class="columns">
           <div class="column is-whole has-text-centered buttons">
             <button
-                class="button is-primary has-text-weight-bold"
-                v-on:click="downloadList"
+              class="button is-primary has-text-weight-bold"
+              v-on:click="downloadList"
             >
               <strong>Download</strong>
             </button>
             <button
-                class="button"
-                v-on:click="cancelDownload"
+              class="button"
+              v-on:click="cancelDownload"
             >
               Cancel
             </button>
@@ -42,9 +42,13 @@
         </div>
       </template>
     </ExperimentObservationsExportModal>
-    <a href="#" v-on:click="openExportModal">
-      <slot></slot>
-    </a>
+    <button
+      class="button is-ghost"
+      :name="modalTitle"
+      v-on:click="openExportModal"
+    >
+      <slot />
+    </button>
   </section>
 </template>
 
@@ -54,14 +58,12 @@ import {Component, Vue, Prop} from "vue-property-decorator";
 import {validationMixin} from "vuelidate";
 import {mapGetters} from "vuex";
 import {Program} from "@/breeding-insight/model/Program";
-import SelectModal from "@/components/modals/SelectModal.vue";
-import BaseModal from "@/components/modals/BaseModal.vue";
 import ExperimentObservationsExportModal from "@/components/modals/ExperimentObservationsExportModal.vue";
 import {ExperimentExportOptions} from "@/breeding-insight/model/ExperimentExportOptions";
 
 @Component({
   mixins: [validationMixin],
-  components: {ExperimentObservationsExportModal, BaseModal, SelectModal },
+  components: {ExperimentObservationsExportModal},
   computed: {
     ...mapGetters([
       'activeProgram'
