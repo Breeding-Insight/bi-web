@@ -29,48 +29,48 @@
         v-bind:class="[{ 'is-active': active }, modalClass]"
         tabindex="-1"
     >
-        <div class="modal-background" v-on:click="() => $refs.focusTrap.deactivate()"/>
-        <div class="modal-card">
-          <header class="modal-card-head">
-            <div class="modal-card-title" />
-            <button
-                class="delete"
-                aria-label="close"
-                @click="() => $refs.focusTrap.deactivate()"
-            />
-          </header>
-          <section
+      <div class="modal-background" v-on:click="() => $refs.focusTrap.deactivate()"/>
+      <div class="modal-card">
+        <header class="modal-card-head">
+          <div class="modal-card-title" />
+          <button
+              class="delete"
+              aria-label="close"
+              @click="() => $refs.focusTrap.deactivate()"
+          />
+        </header>
+        <section
             class="modal-card-body"
             v-bind:class="bodyClass"
-          >
-            <slot></slot>
-          </section>
-          <footer class="modal-card-foot">
-            <slot name="footer"></slot>
-          </footer>
-        </div>
+        >
+          <slot></slot>
+        </section>
+        <footer class="modal-card-foot">
+          <slot name="footer"></slot>
+        </footer>
       </div>
-    </focus-trap>
+    </div>
+  </focus-trap>
 
 </template>
 
 <script lang="ts">
-  import { Component, Prop, Vue } from 'vue-property-decorator';
-  import { FocusTrap } from 'focus-trap-vue'
+import { Component, Prop, Vue } from 'vue-property-decorator';
+import { FocusTrap } from 'focus-trap-vue'
 
-  @Component({
-    components: { FocusTrap }
-  })
-  export default class BaseModal extends Vue {
-    @Prop()
-    active!: boolean;
-    @Prop()
-    bodyClass!: Object;
-    @Prop()
-    modalClass!: Object;
+@Component({
+  components: { FocusTrap }
+})
+export default class BaseModal extends Vue {
+  @Prop()
+  active!: boolean;
+  @Prop()
+  bodyClass!: Object;
+  @Prop()
+  modalClass!: Object;
 
-    mounted() {
-    }
+  mounted() {
   }
+}
 
 </script>
