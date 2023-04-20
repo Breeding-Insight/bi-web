@@ -16,7 +16,7 @@
 -->
 
 <template>
-  <section id="experimentObservationsDownloadButton">
+  <section class="experiment-observations-download-button">
     <ExperimentObservationsExportModal
       v-bind:active.sync="modalActive"
       v-bind:title="modalTitle"

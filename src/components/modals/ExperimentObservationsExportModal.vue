@@ -17,8 +17,6 @@
 
 <template>
   <BaseModal
-    v-bind:card-class="cardClass"
-    v-bind:body-class="bodyClass"
     v-bind:active.sync="active"
     v-on:deactivate="$emit('deactivate')"
   >
@@ -149,8 +147,6 @@ export default class ExperimentObservationsExportModal extends Vue {
 
   private optionType = "optionType";
   private modalHeaderClass: string = "modal-header";
-  private cardClass: string = "modal-card-lg";
-  private bodyClass: string = "modal-card-body-lg";
 
 }
 

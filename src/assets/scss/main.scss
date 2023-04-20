@@ -80,6 +80,10 @@ $modal-card-foot-border-top:none;
 $table-row-hover-background-color:$link-light;
 $table-striped-row-even-hover-background-color:$link-light;
 
+// Custom variables.
+$medium-modal-content-width: $modal-content-width * 1.4;
+$medium-modal-body-padding: 0 3em 2em 3em;
+
 //$margin-right: 2 rem;
 
 // Import buefy before bulma
@@ -830,6 +834,17 @@ tr:nth-child(odd) td.db-filled {
   .enable-system-methods {
     .modal-card {
       width: 90%;
+    }
+  }
+}
+
+.experiment-observations-download-button {
+  .modal {
+    .modal-card {
+      width: $medium-modal-content-width;
+      .modal-card-body {
+        padding: $medium-modal-body-padding;
+      }
     }
   }
 }
