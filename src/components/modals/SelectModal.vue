@@ -80,7 +80,7 @@ export default class SelectModal extends Vue {
   @Prop()
   fieldsetLegend?: string;
   @Prop()
-  options!: SelectOption<string, string>[];  // SelectOption<string, string>[];
+  options!: SelectOption<string, string>[];
 
   private checked: string = "";
 
