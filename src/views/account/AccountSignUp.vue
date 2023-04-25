@@ -22,7 +22,7 @@
         <h1
             class="is-size-5 has-text-primary"
         >
-          Welcome to Breeding Insight!
+          Welcome to DeltaBreed!
         </h1>
         <p>
           To activate your account, please log in.

@@ -593,7 +593,7 @@ router.beforeEach((to: Route, from: Route, next: Function) => {
     next();
   }
   // Set page title
-  document.title = to.meta.title + ' | Breeding Insight Platform' || 'Breeding Insight Platform'
+  document.title = to.meta.title + ' | DeltaBreed' || 'DeltaBreed'
 });
 
 export default router

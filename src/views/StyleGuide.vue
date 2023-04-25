@@ -24,7 +24,7 @@
         <a href="/">
           <img 
           src="../assets/img/bi-logo.svg" 
-          alt="Breeding Insight home" 
+          alt="DeltaBreed home"
           width="232" 
         >
         </a>
@@ -34,7 +34,7 @@
       <p class="is-marginless">Tagline goes here</p>
     </div>
     <h1 class="title">
-      Breeding Insight Style Guide
+      DeltaBreed Style Guide
     </h1>
     <p class="subtitle">
       Living documentation of best practices and style examples
