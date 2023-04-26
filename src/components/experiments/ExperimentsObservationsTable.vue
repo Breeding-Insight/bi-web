@@ -52,7 +52,7 @@
       <b-table-column field="data.listDbId" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
         <ExperimentObservationsDownloadButton
           v-bind:modal-title="`Download ${props.row.data.trialName}`"
-          v-bind:trail-db-id="props.row.data.trialDbId"
+          v-bind:trial-db-id="props.row.data.trialDbId"
           v-on:show-error-notification="$emit('show-error-notification', $event)"
         >
           Download

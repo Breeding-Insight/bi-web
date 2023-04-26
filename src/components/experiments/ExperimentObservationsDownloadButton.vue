@@ -75,7 +75,7 @@ export default class ExperimentObservationsDownloadButton extends Vue {
   @Prop()
   active!: boolean;
   @Prop()
-  trailDbId!: string;
+  trialDbId!: string;
   @Prop()
   modalTitle?: string;
 
@@ -98,7 +98,7 @@ export default class ExperimentObservationsDownloadButton extends Vue {
             + '/v1/programs/'
             + this.activeProgram.id
             + '/experiments/'
-            + this.trailDbId
+            + this.trialDbId
             + '/export?fileExtension='
             + this.fileOptions.fileExtension
             + '&dataset='
