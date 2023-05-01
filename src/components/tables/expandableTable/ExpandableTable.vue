@@ -100,7 +100,7 @@
       </template>
 
       <template v-slot:pagination>
-        <pagination-controls v-show="records.length > 0" v-bind="$props" v-on:paginate="paginate" v-on:paginate-toggle-all="toggleShowAll" v-on:pagniate-page-size="updatePageSize" />
+        <pagination-controls v-show="records.length > 0" v-bind="$props" v-on:paginate="paginate" v-on:paginate-toggle-all="toggleShowAll" v-on:paginate-page-size="updatePageSize" />
       </template>
 
     </b-table>
