@@ -17,8 +17,8 @@
 
 import {SelectOption} from "@/breeding-insight/model/SelectOption";
 
-export class ExperimentEnvironment implements SelectOption<string, string> {
-    static all = new ExperimentEnvironment("All", "all");
+export class EnvironmentOption implements SelectOption<string, string> {
+    static all = new EnvironmentOption("All", "all");
 
     name: string;
     id: string;
