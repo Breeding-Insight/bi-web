@@ -17,8 +17,8 @@
 
 import {SelectOption} from "@/breeding-insight/model/SelectOption";
 
-export class ExperimentObservationsDataset implements SelectOption<string, string> {
-    static observations = new ExperimentObservationsDataset("Observation Dataset", "observations");
+export class ExperimentDatasetOption implements SelectOption<string, string> {
+    static observations = new ExperimentDatasetOption("Observation Dataset", "observations");
 
     name: string;
     id: string;

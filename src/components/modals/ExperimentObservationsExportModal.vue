@@ -126,7 +126,7 @@
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import BaseModal from '@/components/modals/BaseModal.vue';
 import {FileType} from "@/breeding-insight/model/FileType";
-import {ExperimentObservationsDataset} from "@/breeding-insight/model/ExperimentObservationsDataset";
+import {ExperimentDatasetOption} from "@/breeding-insight/model/ExperimentDatasetOption";
 import {EnvironmentOption} from "@/breeding-insight/model/EnvironmentOption";
 import {ExperimentExportOptions} from "@/breeding-insight/model/ExperimentExportOptions";
 
@@ -142,7 +142,7 @@ export default class ExperimentObservationsExportModal extends Vue {
   exportOptions!: ExperimentExportOptions;
 
   private fileExtensionOptions: object[] = Object.values(FileType);
-  private datasetOptions: object[] = Object.values(ExperimentObservationsDataset);
+  private datasetOptions: object[] = Object.values(ExperimentDatasetOption);
   private environmentOptions: object[] = Object.values(EnvironmentOption);
 
   private optionType = "optionType";

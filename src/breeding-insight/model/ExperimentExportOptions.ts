@@ -16,14 +16,14 @@
  */
 
 import {FileType} from "@/breeding-insight/model/FileType";
-import {ExperimentObservationsDataset} from "@/breeding-insight/model/ExperimentObservationsDataset";
+import {ExperimentDatasetOption} from "@/breeding-insight/model/ExperimentDatasetOption";
 import {EnvironmentOption} from "@/breeding-insight/model/EnvironmentOption";
 
 // Stores the user selected options for Experiment Observation file export.
 export class ExperimentExportOptions {
 
     public fileExtension: string = FileType.xls.id;
-    public dataset: string = ExperimentObservationsDataset.observations.id;
+    public dataset: string = ExperimentDatasetOption.observations.id;
     public environments: string[] = [EnvironmentOption.all.id];
     public includeTimestamps: string = 'Yes';
 
