@@ -17,10 +17,10 @@
 
 import {SelectOption} from "@/breeding-insight/model/SelectOption";
 
-export class FileType implements SelectOption<string, string> {
-    static xls = new FileType(".xls", "XLS");
-    static xlsx = new FileType(".xlsx", "XLSX");
-    static csv = new FileType(".csv", "CSV");
+export class FileTypeOption implements SelectOption<string, string> {
+    static xls = new FileTypeOption(".xls", "XLS");
+    static xlsx = new FileTypeOption(".xlsx", "XLSX");
+    static csv = new FileTypeOption(".csv", "CSV");
 
     name: string;
     id: string;

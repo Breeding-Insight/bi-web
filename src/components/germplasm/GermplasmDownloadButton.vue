@@ -39,7 +39,7 @@ import {validationMixin} from "vuelidate";
 import {mapGetters} from "vuex";
 import {Program} from "@/breeding-insight/model/Program";
 import SelectModal from "@/components/modals/SelectModal.vue";
-import {FileType} from "@/breeding-insight/model/FileType";
+import {FileTypeOption} from "@/breeding-insight/model/FileTypeOption";
 
 @Component({
   mixins: [validationMixin],
@@ -62,7 +62,7 @@ export default class GermplasmDownloadButton extends Vue {
   private activeProgram?: Program;
   private modalActive: boolean = false;
   private fileExtension: string = "";
-  private fileOptions = Object.values(FileType);
+  private fileOptions = Object.values(FileTypeOption);
 
   setFileExtension(value: string){
     this.fileExtension = value;

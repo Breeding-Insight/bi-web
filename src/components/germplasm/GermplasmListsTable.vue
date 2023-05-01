@@ -83,7 +83,7 @@ import {GermplasmList} from "@/breeding-insight/model/GermplasmList";
 import {GermplasmService} from "@/breeding-insight/service/GermplasmService";
 import ExpandableTable from "@/components/tables/expandableTable/ExpandableTable.vue";
 import moment from "moment";
-import {FileType} from "@/breeding-insight/model/FileType";
+import {FileTypeOption} from "@/breeding-insight/model/FileTypeOption";
 import GermplasmDownloadButton from '@/components/germplasm/GermplasmDownloadButton.vue';
 import {UPDATE_GERMPLASM_LIST_SORT} from "@/store/sorting/mutation-types";
 import {CallStack} from "@/breeding-insight/utils/CallStack";
@@ -132,7 +132,7 @@ export default class GermplasmListsTable extends Vue {
   private germplasmListDownloadTitle = 'Download Germplasm List';
   private germplasmListDownloadSubtitle = 'File Format';
   private modalActive: boolean = false;
-  private fileOptions = Object.values(FileType);
+  private fileOptions = Object.values(FileTypeOption);
 
   private germplasmListSort!: GermplasmListSort;
   private filters: BaseFilter = new BaseFilter();
