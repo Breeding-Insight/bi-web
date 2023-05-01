@@ -1,5 +1,5 @@
 <template>
-  <section id="germplasmDownloadButton">
+  <section :id="'germplasmDownloadButton-' + listDbId">
     <SelectModal
         v-bind:active.sync="modalActive"
         v-bind:title="modalTitle"

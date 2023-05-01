@@ -16,7 +16,10 @@
 -->
 
 <template>
-  <section class="experiment-observations-download-button">
+  <section
+    :id="'experimentObservationsDownloadButton-' + trialDbId"
+    class="experiment-observations-download-button"
+  >
     <ExperimentObservationsExportModal
       v-bind:active.sync="modalActive"
       v-bind:title="modalTitle"
@@ -42,13 +45,12 @@
         </div>
       </template>
     </ExperimentObservationsExportModal>
-    <button
-      class="button is-ghost"
-      :name="modalTitle"
+    <a
+      href="javascript:void(0)"
       v-on:click="openExportModal"
     >
       <slot />
-    </button>
+    </a>
   </section>
 </template>
 
