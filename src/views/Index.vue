@@ -37,7 +37,7 @@
           <h1 class="title has-text-primary is-4">
             About the sandbox
           </h1>
-          <p>This site is a demo of current development for Breeding Insight's data management software. You can use one of the provided guest accounts to explore sample data.</p>
+          <p>This site is a demo of current development for DeltaBreed. You can use one of the provided guest accounts to explore sample data.</p>
           <p class="has-text-weight-bold">
             Please note:
           </p>

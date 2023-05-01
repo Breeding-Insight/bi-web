@@ -50,19 +50,25 @@
           <div
             class="dropdown-content"
           >
-            <template v-for="program of programs">
-              <router-link
-                v-if="activeProgram === undefined || program.id !== activeProgram.id"
-                v-bind:key="`programNav${program.id}`"
-                v-bind:to="{name: 'program', params: {programId: program.id}}"
-                v-on:click.native="programSelectActive = false"
-                class="dropdown-item"
-                active-class="is-active"
-                role="menuitem"
-              >
-                {{program.name}}
-              </router-link>
-            </template>
+            <div class="dropdown-item">
+              <input class="input" type="text" placeholder="Program Name" v-on:input="filterPrograms($event)" v-bind:value="programFilterValue">
+            </div>
+            <hr class="dropdown-divider">
+            <div class="programs">
+              <template v-for="program of filteredPrograms">
+                <router-link
+                    v-if="activeProgram === undefined || program.id !== activeProgram.id"
+                    v-bind:key="`programNav${program.id}`"
+                    v-bind:to="{name: 'program', params: {programId: program.id}}"
+                    v-on:click.native="beforeProgramNav()"
+                    class="dropdown-item"
+                    active-class="is-active"
+                    role="menuitem"
+                >
+                  {{program.name}}
+                </router-link>
+              </template>
+            </div>
           </div>
         </div>
       </div>
@@ -201,6 +207,8 @@
     private activeProgram?: Program;
     private activeUser?: User;
     private programs: Program[] = [];
+    private filteredPrograms: Program[] = [];
+    private programFilterValue: string = "";
     private programSelectActive: boolean = false;
 
     private usersMenuId: string = "usersidebarlayout-users-menu";
@@ -241,6 +249,7 @@
     getPrograms() {
       ProgramService.getAll().then(([programs, metadata]) => {
         this.programs = programs;
+        this.filteredPrograms = programs;
         // Clear the active program if its not in the list of programs anymore
         if (this.activeProgram){
           const foundActiveProgram: Program[] = programs.filter((program) => program.id === this.activeProgram!.id);
@@ -255,6 +264,20 @@
 
     hideProgramSelect() {
       this.programSelectActive = false;
+    }
+
+    filterPrograms($event: any) {
+      let filter = $event.target.value.toLowerCase();
+      if(filter.trim().length > 0) {
+        this.filteredPrograms = this.programs.filter(value => value.name!.toLowerCase().includes(filter));
+      } else {
+        this.filteredPrograms = this.programs;
+      }
+    }
+
+    beforeProgramNav() {
+      this.programSelectActive = false;
+      this.programFilterValue = "";
     }
   }
 </script>

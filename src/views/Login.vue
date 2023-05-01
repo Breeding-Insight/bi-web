@@ -21,7 +21,7 @@
       <div class="hero-body">
         <div class="container">
           <h1 class="title">
-            Welcome to the Breeding Insight Platform!
+            Welcome to the DeltaBreed!
           </h1>
           <p>To continue, please log in</p>
         </div>

@@ -63,7 +63,7 @@ import Footer from "@/components/layouts/Footer.vue";
 @Component({
   watch: {
     $route(to, from) {
-      document.title = to.meta.title + ' | Breeding Insight Platform' || 'Breeding Insight Platform';
+      document.title = to.meta.title + ' | DeltaBreed' || 'DeltaBreed';
     },
     loggedIn(isLoggedIn) {
       if(!isLoggedIn) {

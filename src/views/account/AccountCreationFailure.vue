@@ -32,7 +32,7 @@
                   <h3
                     v-if="error==='409'"
                     class="is-5 title has-text-danger">
-                    A Breeding Insight user with this ORCID iD already exists.
+                    A DeltaBreed user with this ORCID iD already exists.
                   </h3>
                   <h3
                     v-else

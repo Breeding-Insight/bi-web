@@ -229,7 +229,7 @@ img {
 }
 
 #program-menu {
-  .dropdown-content {
+  .dropdown-content .programs {
     max-height: 50vh;
     overflow: scroll;
   }
@@ -388,7 +388,7 @@ table tr.is-edited + .detail {
 
 .header-title {
   border-bottom: 1px #363636 solid;
-  padding: 0 2.5em 0 2.5em;
+  padding: 0 2.5em 0 1.5em;
   margin-bottom: 0;
   height: 65px;
   & .navbar-hamburger {
@@ -870,5 +870,18 @@ tr:nth-child(odd) td.db-filled {
       margin-bottom: inherit;
     }
   }
+}
 
+#program-job-management {
+  .table tbody td {
+    vertical-align: top;
+  }
+
+  .truncated {
+    overflow:hidden;
+    max-height: 5rem;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 5;
+    display: block;
+  }
 }
