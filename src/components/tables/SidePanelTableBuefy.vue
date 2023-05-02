@@ -83,7 +83,7 @@
             </template>
 
             <template v-slot:pagination>
-              <pagination-controls v-show="records.length > 0" v-bind="$props" v-on="$listeners"/>
+                <pagination-controls v-show="records.length > 0" v-bind="$props" v-on:paginate="paginate" v-on:paginate-toggle-all="toggleShowAll" v-on:paginate-page-size="updatePageSize" />
             </template>
 
           </b-table>
@@ -115,7 +115,6 @@
 <script lang="ts">
 
 import {Component, Prop, Vue, Watch, Mixins} from 'vue-property-decorator'
-import {Pagination} from "@/breeding-insight/model/BiResponse";
 import PaginationControls from '@/components/tables/PaginationControls.vue'
 import EditDataRowForm from '@/components/forms/EditDataRowForm.vue'
 import ValidationMixin from '@/mixins/ValidationMixin'
@@ -126,6 +125,7 @@ import SidePanel from "@/components/tables/SidePanel.vue";
 import {SidePanelTableEventBusHandler} from "@/components/tables/SidePanelTableEventBus";
 import TraitDetailPanel from "@/components/trait/TraitDetailPanel.vue";
 import WarningModal from "@/components/modals/WarningModal.vue";
+import { PaginationController } from '@/breeding-insight/model/view_models/PaginationController';
 
 @Component({
   components: { EditDataRowForm, PaginationControls, ChevronRightIcon, ChevronDownIcon, SidePanel, TraitDetailPanel,
@@ -146,7 +146,7 @@ export default class SidePanelTableBuefy extends Mixins(ValidationMixin) {
   @Prop()
   archivable!: boolean;
   @Prop()
-  pagination!: Pagination;
+  pagination!: PaginationController;
   @Prop()
   dataFormState!: DataFormEventBusHandler;
   @Prop()
@@ -253,6 +253,18 @@ export default class SidePanelTableBuefy extends Mixins(ValidationMixin) {
 
   isRowArchivable(row: any) {
     return ((typeof this.rowArchivable === "function") ? this.rowArchivable(row) : true) && this.archivable;
+  }
+
+  paginate(event: any) {
+    this.pagination.updatePage(event);
+  }
+
+  toggleShowAll(event: any) {
+    this.pagination.toggleShowAll()
+  }
+
+  updatePageSize(event: any) {
+    this.pagination.updatePageSize(event);
   }
 }
 </script>

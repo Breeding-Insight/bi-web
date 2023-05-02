@@ -96,12 +96,9 @@
     <SidePanelTableBuefy
         v-bind:records.sync="traits"
         v-bind:loading="traitsLoading"
-        v-bind:pagination="pagination"
+        v-bind:pagination="paginationController"
         v-bind:side-panel-state="traitSidePanelState"
         v-on:show-error-notification="$emit('show-error-notification', $event)"
-        v-on:paginate="paginationController.updatePage($event)"
-        v-on:paginate-toggle-all="paginationController.toggleShowAll(pagination.totalCount.valueOf())"
-        v-on:paginate-page-size="paginationController.updatePageSize(parseInt($event,10))"
         backend-sorting
         backend-filtering
         v-bind:default-sort="[ontologySortField.Name, 'ASC']"
@@ -211,7 +208,7 @@ import TraitDetailPanel from "@/components/trait/TraitDetailPanel.vue";
 import {TraitService} from "@/breeding-insight/service/TraitService";
 import EmptyTableMessage from "@/components/tables/EmtpyTableMessage.vue";
 import TableColumn from "@/components/tables/TableColumn.vue";
-import {BiResponse, Metadata, Pagination} from "@/breeding-insight/model/BiResponse";
+import {BiResponse, Metadata} from "@/breeding-insight/model/BiResponse";
 import {StringFormatters} from '@/breeding-insight/utils/StringFormatters';
 import {TraitStringFormatters} from '@/breeding-insight/utils/TraitStringFormatters';
 import BaseTraitForm from "@/components/trait/forms/BaseTraitForm.vue";
@@ -231,6 +228,7 @@ import SidePanelTableBuefy from "@/components/tables/SidePanelTableBuefy.vue";
 import {CallStack} from "@/breeding-insight/utils/CallStack";
 import ChevronRightIcon from 'vue-feather-icons'
 import {UPDATE_ACTIVE_ONT_SORT} from "@/store/sorting/mutation-types";
+import { PaginationQuery } from '@/breeding-insight/model/PaginationQuery';
 
 @Component({
   mixins: [validationMixin],
@@ -258,7 +256,6 @@ import {UPDATE_ACTIVE_ONT_SORT} from "@/store/sorting/mutation-types";
 })
 export default class OntologyTable extends Vue {
   private activeProgram?: Program;
-  private pagination?: Pagination = new Pagination();
   private paginationController: PaginationController = new PaginationController();
   private traitsLoading: Boolean = false;
   private traits: Trait[] = [];
@@ -344,11 +341,26 @@ export default class OntologyTable extends Vue {
         this.ontologySort,
         this.paginationController
     ));
-    this.paginationController.pageSize = 20;
-    this.registerSidePanelEventHandlers()
+    this.registerSidePanelEventHandlers();
+    this.getTraits();
   }
 
   @Watch('paginationController', { deep: true})
+  paginationChanged() {
+    let currentCall = this.paginationController.currentCall
+    let paginationQuery = this.paginationController.getPaginationSelections();
+    if(currentCall && currentCall!.page == paginationQuery.page && currentCall!.pageSize == paginationQuery.pageSize && currentCall!.showAll == paginationQuery.showAll) {
+      return;
+    }
+    this.updatePagination();
+    this.getTraits();
+  }
+
+  updatePagination() {
+    let paginationQuery: PaginationQuery = this.paginationController.getPaginationSelections();
+    this.paginationController.setCurrentCall(paginationQuery);
+  }
+
   @Watch('filters', {deep: true})
   async getTraits() {
     this.traitsLoading = true;
@@ -363,10 +375,9 @@ export default class OntologyTable extends Vue {
       if(response.isErr()) {
         throw response.value;
       }
-      this.pagination = new Pagination(response.value.metadata.pagination);
-
+      this.paginationController.setPaginationInfo(response.value.metadata.pagination);
       // Account for brapi 0 indexing of paging
-      this.pagination.currentPage = this.pagination.currentPage.valueOf();
+      this.paginationController.currentPage = this.paginationController.currentPage.valueOf();
       this.traits = response.value.result.data;
       this.traitsLoading = false;
     } catch (e) {
