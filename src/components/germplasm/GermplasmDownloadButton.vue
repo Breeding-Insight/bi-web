@@ -1,6 +1,6 @@
 <template>
   <DownloadButton
-    v-bind:key="listDbId"
+    v-bind:unique-id="listDbId"
     v-bind:modal-title="modalTitle"
     v-bind:download="downloadList"
     v-on:deactivate="cancelDownload"

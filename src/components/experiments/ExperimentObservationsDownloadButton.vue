@@ -17,7 +17,7 @@
 
 <template>
   <DownloadButton
-    v-bind:key="trialDbId"
+    v-bind:unique-id="trialDbId"
     v-bind:modal-title="modalTitle"
     v-bind:download="downloadList"
     modal-class="experiment-observations-download-button"

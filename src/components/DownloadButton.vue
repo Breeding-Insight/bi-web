@@ -17,7 +17,7 @@
 
 <template>
   <section
-    v-bind:id="'downloadButton-' + key"
+    v-bind:id="'downloadButton-' + uniqueId"
     v-bind:class="modalClass"
   >
     <FormModal
@@ -69,7 +69,7 @@ import FormModal from "@/components/modals/FormModal.vue";
 export default class DownloadButton extends Vue {
 
   @Prop()
-  key!: string;
+  uniqueId!: string;
   @Prop()
   modalTitle?: string;
   @Prop()
