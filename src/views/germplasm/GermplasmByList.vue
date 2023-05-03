@@ -43,7 +43,7 @@
       <div class="column is-full"></div>
       <div class="column is-full"></div>
       <div class="column is-full"></div>
-      <div class="column is-full has-text-centered buttons">
+      <div class="column is-full buttons">
         <GermplasmDownloadButton
             v-bind:modal-title="`Download ${list ? list.listName : ''}`"
             fieldset-legend="File Format"
