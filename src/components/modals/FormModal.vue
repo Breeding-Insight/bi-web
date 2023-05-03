@@ -34,30 +34,7 @@
             </div>
           </div>
         </article>
-        <div class="control">
-          <template>
-            <fieldset>
-              <legend class="label">
-                {{ fieldsetLegend }}
-              </legend>
-              <div
-                v-for="option in options"
-                v-bind:key="option.id"
-              >
-                <label class="b-radio radio">
-                  <input
-                    v-model="checked"
-                    type="radio"
-                    v-bind:name="optionType"
-                    v-bind:value="option.id"
-                    v-on:change="$emit('select-change', checked)"
-                  ><span class="check" />
-                  <span class="control-label"> {{ option.name }} </span>
-                </label>
-              </div>
-            </fieldset>
-          </template>
-        </div>
+        <slot name="form" />
         <slot name="buttons" />
       </div>
     </div>
@@ -67,30 +44,17 @@
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import BaseModal from '@/components/modals/BaseModal.vue';
-import {SelectOption} from "@/breeding-insight/model/SelectOption";
 
 @Component({
   components: {BaseModal}
 })
-export default class SelectModal extends Vue {
+export default class FormModal extends Vue {
   @Prop()
   active!: boolean;
   @Prop()
   title! : string;
-  @Prop()
-  fieldsetLegend?: string;
-  @Prop()
-  options!: SelectOption<string, string>[];
 
-  private checked: string = "";
-
-  private optionType = "optionType";
   private modalHeaderClass: string = "modal-header";
-
-  mounted(){
-    this.checked = this.options[0].id;
-    this.$emit('select-change', this.checked);
-  }
 }
 
 </script>

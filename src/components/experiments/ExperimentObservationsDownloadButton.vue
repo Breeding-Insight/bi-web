@@ -20,12 +20,120 @@
     :id="'experimentObservationsDownloadButton-' + trialDbId"
     class="experiment-observations-download-button"
   >
-    <ExperimentObservationsExportModal
+    <FormModal
       v-bind:active.sync="modalActive"
       v-bind:title="modalTitle"
-      v-bind:export-options="fileOptions"
       v-on:deactivate="cancelDownload"
     >
+      <template #form>
+        <div class="columns mb-4">
+          <!-- Dataset Select -->
+          <div class="column control">
+            <div class="field">
+              <label
+                class="label required"
+                for="dataset-select"
+              ><span class="required">Dataset</span></label>
+              <div class="control">
+                <div class="select">
+                  <select
+                    id="dataset-select"
+                    v-model="fileOptions.dataset"
+                  >
+                    <option
+                      v-for="option in datasetOptions"
+                      v-bind:key="option.id"
+                      v-bind:value="option.id"
+                    >
+                      {{ option.name }}
+                    </option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Environments Multi-select -->
+          <div class="column control">
+            <fieldset>
+              <legend class="label required">
+                <span class="required">Environment(s)</span>
+              </legend>
+              <div
+                v-for="option in environmentOptions"
+                v-bind:key="option.id"
+                class="control"
+              >
+                <label class="checkbox">
+                  <input
+                    v-model="fileOptions.environments"
+                    type="checkbox"
+                    v-bind:value="option.id"
+                  >
+                  {{ option.name }}
+                </label>
+              </div>
+            </fieldset>
+            <span
+              class="form-error has-text-danger"
+              :class="{ 'is-invisible': ( fileOptions.environments.length > 0 ) }"
+            >
+              <AlertTriangleIcon
+                size="1x"
+                aria-hidden="true"
+                class="has-vertical-align-middle mr-1"
+              />
+              Missing Environment(s)
+            </span>
+          </div>
+          <!-- Timestamps Switch -->
+          <div class="column control">
+            <fieldset>
+              <legend class="label">
+                <span>With{{ '\xa0' }}Timestamps?</span>
+              </legend>
+              <div class="field">
+                <input
+                  id="timestamps-switch"
+                  v-model="fileOptions.includeTimestamps"
+                  style="appearance: none; outline: auto;"
+                  type="checkbox"
+                  true-value="Yes"
+                  false-value="No"
+                  name="timestamps-switch"
+                  class="switch is-info is-rounded"
+                >
+                <label
+                  id="timestamps-label"
+                  for="timestamps-switch"
+                >{{ fileOptions.includeTimestamps }}</label>
+              </div>
+            </fieldset>
+          </div>
+          <!-- File Format Radio -->
+          <div class="column control">
+            <fieldset>
+              <legend class="label">
+                <span class="required">File{{ '\xa0' }}Format</span>
+              </legend>
+              <div
+                v-for="option in fileExtensionOptions"
+                v-bind:key="option.id"
+              >
+                <label
+                  class="radio"
+                >
+                  <input
+                    v-model="fileOptions.fileExtension"
+                    type="radio"
+                    v-bind:value="option.id"
+                  >
+                  {{ option.name }}
+                </label>
+              </div>
+            </fieldset>
+          </div>
+        </div>
+      </template>
       <template #buttons>
         <div class="columns">
           <div class="column is-whole has-text-centered buttons">
@@ -44,7 +152,7 @@
           </div>
         </div>
       </template>
-    </ExperimentObservationsExportModal>
+    </FormModal>
     <a
       href="javascript:void(0)"
       v-on:click="openExportModal"
@@ -60,12 +168,16 @@ import {Component, Vue, Prop} from "vue-property-decorator";
 import {validationMixin} from "vuelidate";
 import {mapGetters} from "vuex";
 import {Program} from "@/breeding-insight/model/Program";
-import ExperimentObservationsExportModal from "@/components/modals/ExperimentObservationsExportModal.vue";
 import {ExperimentExportOptions} from "@/breeding-insight/model/ExperimentExportOptions";
+import {FileTypeOption} from "@/breeding-insight/model/FileTypeOption";
+import {ExperimentDatasetOption} from "@/breeding-insight/model/ExperimentDatasetOption";
+import {EnvironmentOption} from "@/breeding-insight/model/EnvironmentOption";
+import FormModal from "@/components/modals/FormModal.vue";
+import {AlertTriangleIcon} from 'vue-feather-icons';
 
 @Component({
   mixins: [validationMixin],
-  components: {ExperimentObservationsExportModal},
+  components: {FormModal, AlertTriangleIcon},
   computed: {
     ...mapGetters([
       'activeProgram'
@@ -84,6 +196,10 @@ export default class ExperimentObservationsDownloadButton extends Vue {
   private activeProgram?: Program;
   private modalActive: boolean = false;
   private fileOptions: ExperimentExportOptions = new ExperimentExportOptions();
+
+  private fileExtensionOptions: object[] = Object.values(FileTypeOption);
+  private datasetOptions: object[] = Object.values(ExperimentDatasetOption);
+  private environmentOptions: object[] = Object.values(EnvironmentOption);
 
   openExportModal(){
     this.modalActive = true;
