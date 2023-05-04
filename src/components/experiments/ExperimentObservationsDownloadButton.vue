@@ -29,9 +29,9 @@
         <div class="column control">
           <div class="field">
             <label
-              class="label required"
+              class="label"
               for="dataset-select"
-            ><span class="required">Dataset</span></label>
+            ><span>Dataset</span></label>
             <div class="control">
               <div class="select">
                 <select
@@ -73,7 +73,7 @@
           </fieldset>
           <span
             class="form-error has-text-danger"
-            :class="{ 'is-invisible': ( fileOptions.environments.length > 0 ) }"
+            :class="{ 'is-invisible': ( !showEnvironmentsValidationError ) }"
           >
             <AlertTriangleIcon
               size="1x"
@@ -111,7 +111,7 @@
         <div class="column control">
           <fieldset>
             <legend class="label">
-              <span class="required">File{{ '\xa0' }}Format</span>
+              <span>File{{ '\xa0' }}Format</span>
             </legend>
             <div
               v-for="option in fileExtensionOptions"
@@ -169,7 +169,7 @@ export default class ExperimentObservationsDownloadButton extends Vue {
 
   private activeProgram?: Program;
   private fileOptions: ExperimentExportOptions = new ExperimentExportOptions();
-
+  private showEnvironmentsValidationError: boolean = false;
   private fileExtensionOptions: object[] = Object.values(FileTypeOption);
   private datasetOptions: object[] = Object.values(ExperimentDatasetOption);
   private environmentOptions: object[] = Object.values(EnvironmentOption);
@@ -202,11 +202,14 @@ export default class ExperimentObservationsDownloadButton extends Vue {
   resetExportOptions(){
     // Reset file export options.
     this.fileOptions = new ExperimentExportOptions();
+    // Reset validation state.
+    this.showEnvironmentsValidationError = false;
   }
 
   validateOptions(): boolean {
     if (this.fileOptions.environments.length === 0){
       this.$emit('show-error-notification', 'One or more environments must be selected.');
+      this.showEnvironmentsValidationError = true;
       return false;
     }
     return true;
