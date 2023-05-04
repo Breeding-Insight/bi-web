@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-export class FileType {
-    static xls = new FileType(".xls", "XLS");
-    static xlsx = new FileType(".xlsx", "XLSX");
-    static csv = new FileType(".csv", "CSV");
+import {SelectOption} from "@/breeding-insight/model/SelectOption";
+
+export class ExperimentDatasetOption implements SelectOption<string, string> {
+    static observations = new ExperimentDatasetOption("Observation Dataset", "observations");
 
     name: string;
     id: string;

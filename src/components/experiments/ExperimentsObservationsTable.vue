@@ -21,25 +21,25 @@
     <div class="is-clearfix"></div>
 
     <ExpandableTable
-        v-bind:records.sync="experiments"
-        v-bind:loading="this.experimentsLoading"
-        v-bind:pagination="paginationController"
-        v-on:show-error-notification="$emit('show-error-notification', $event)"
-        backend-sorting
-        backend-filtering
-        v-bind:default-sort="[fieldMap['name'], 'ASC']"
-        v-on:sort="setSort"
-        v-on:search="initSearch"
-        v-bind:search-debounce="400"
+      v-bind:records.sync="experiments"
+      v-bind:loading="this.experimentsLoading"
+      v-bind:pagination="paginationController"
+      backend-sorting
+      backend-filtering
+      v-bind:default-sort="[fieldMap['name'], 'ASC']"
+      v-bind:search-debounce="400"
+      v-on:show-error-notification="$emit('show-error-notification', $event)"
+      v-on:sort="setSort"
+      v-on:search="initSearch"
     >
       <b-table-column label="Title" field="name" cell-class="fixed-width-wrapped" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
-          {{ props.row.data.trialName }}
+        {{ props.row.data.trialName }}
       </b-table-column>
       <b-table-column label="Status" field="active" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" >
-          {{ getStatus(props.row.data.active) }}
+        {{ getStatus(props.row.data.active) }}
       </b-table-column>
       <b-table-column label="Date Created" field="createdDate" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
-          {{ props.row.data.additionalInfo.createdDate }}
+        {{ props.row.data.additionalInfo.createdDate }}
       </b-table-column>
       <b-table-column label="Created By" field="createdBy" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
         {{ props.row.data.additionalInfo.createdBy.userName }}
@@ -49,10 +49,14 @@
           <span v-bind:key="dataset" class="tag is-info is-normal mr-1">{{ dataset }}</span>
         </template>
       </b-table-column>
-      <b-table-column  field="data.listDbId" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-        <a href="#" v-on:click="activateExtensionSelect(props.row.data.listDbId)">
+      <b-table-column field="data.listDbId" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+        <ExperimentObservationsDownloadButton
+          v-bind:modal-title="`Download ${props.row.data.trialName}`"
+          v-bind:trial-db-id="props.row.data.trialDbId"
+          v-on:show-error-notification="$emit('show-error-notification', $event)"
+        >
           Download
-        </a>
+        </ExperimentObservationsDownloadButton>
       </b-table-column>
 
       <template v-slot:emptyMessage>
@@ -75,8 +79,6 @@ import {BiResponse} from "@/breeding-insight/model/BiResponse";
 import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
 import {Trial} from '@/breeding-insight/model/Trial'
 import ExpandableTable from '@/components/tables/expandableTable/ExpandableTable.vue';
-import {FileType} from "@/breeding-insight/model/FileType";
-import SelectModal from "@/components/modals/SelectModal.vue";
 import {CallStack} from "@/breeding-insight/utils/CallStack";
 import {
   ExperimentSort,
@@ -85,10 +87,11 @@ import {
 } from "@/breeding-insight/model/Sort";
 import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
 import {UPDATE_EXPERIMENT_SORT} from "@/store/sorting/mutation-types";
+import ExperimentObservationsDownloadButton from "@/components/experiments/ExperimentObservationsDownloadButton.vue";
 
 @Component({
   mixins: [validationMixin],
-  components: {ExpandableTable, EmptyTableMessage, TableColumn, SelectModal},
+  components: {ExperimentObservationsDownloadButton, ExpandableTable, EmptyTableMessage, TableColumn},
   computed: {
     ...mapGetters([
       'activeProgram'
@@ -112,18 +115,11 @@ export default class ExperimentsObservationsTable extends Vue {
 
   private activeProgram?: Program;
   private experiments: Trial[] = [];
-  private programName: string = "Program Name";
 
   private experimentsLoading = true;
 
   private paginationController: PaginationController = new PaginationController();
 
-  private experimentDownloadTitle = 'Download Experiment';
-  private experimentDownloadSubtitle = 'File Format';
-  private modalActive: boolean = false;
-  //private fileExtension: string;
-  //private selectedExperimentDbId: string;
-  private fileOptions = Object.values(FileType);
   private filters: any = {};
   private experimentCallStack?: CallStack;
 
@@ -182,21 +178,6 @@ export default class ExperimentsObservationsTable extends Vue {
     } finally {
       this.experimentsLoading=false;
     }
-  }
-
-  activateExtensionSelect(experimentDbId: string){
-    this.modalActive = true;
-    this.selectedExperimentDbId = experimentDbId;
-  }
-
-  cancelDownload(){
-    this.modalActive = false;
-    this.selectedExperimentDbId = "";
-    this.fileExtension = "";
-  }
-
-  setFileExtension(value){
-    this.fileExtension = value;
   }
 
   getStatus(active: boolean){
