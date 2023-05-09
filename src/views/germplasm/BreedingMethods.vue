@@ -47,13 +47,14 @@
 
     <div class="columns">
       <div class="column is-whole has-text-right buttons">
-        <button
-            v-if="$ability.can('update', 'ProgramConfiguration')"
-            class="button is-primary"
-            v-on:click="openModal"
-        >
-          Choose Predefined Methods
-        </button>
+<!-- BI-1779 - Removing the ability to choose predefined methods for a program until we make the germplasm import template dynamically generated -->
+<!--        <button-->
+<!--            v-if="$ability.can('update', 'ProgramConfiguration')"-->
+<!--            class="button is-primary"-->
+<!--            v-on:click="openModal"-->
+<!--        >-->
+<!--          Choose Predefined Methods-->
+<!--        </button>-->
         <button
             v-if="$ability.can('create', 'ProgramConfiguration')"
             class="button is-primary"
@@ -266,92 +267,93 @@
         </p>
       </template>
     </ExpandableTable>
-    <GenericModal
-        v-bind:active.sync="showEnableSystemMethods"
-        v-bind:msg-title="'Enable/Disable Predefined Breeding Methods'"
-        v-on:deactivate="showEnableSystemMethods = false"
-        v-bind:modalClass="'enable-system-methods'"
-    >
-      <div v-if="inUseBreedingMethods.length > 0">
-        <article class="message is-warning">
-          <div class="message-body">
-            <div class="columns is-vcentered">
-              <div class="column">
-                <div class="has-text-dark">
-                  <AlertTriangleIcon
-                      size="1x"
-                      class="has-vertical-align-middle"
-                  /> Some breeding methods cannot be deactivated because there are germplasm records using those methods in {{activeProgram.name}}
-                </div>
-              </div>
-            </div>
-          </div>
-        </article>
-      </div>
-      <ExpandableTable
-          v-bind:records.sync="systemBreedingMethods"
-          v-bind:pagination="systemPaginationController"
-          v-bind:default-sort="['data.name', 'asc']"
-          v-bind:debounce-search="400"
-          :checked-rows.sync="programEnabledSystemMethods"
-          :custom-is-checked="shouldCheck"
-          checkable
-          :checkbox-position="'left'"
-          :checkbox-type="'is-primary'"
-          :is-row-checkable="row => !isMethodInUse(row.data)"
-      >
-        <b-table-column field="data.name" label="Name" sortable searchable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-          {{ props.row.data.name}}
-        </b-table-column>
-        <b-table-column field="data.abbreviation" label="Abbreviation" sortable searchable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-          {{ props.row.data.abbreviation}}
-        </b-table-column>
-        <b-table-column field="data.description" label="Description" sortable searchable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-          {{ props.row.data.description}}
-        </b-table-column>
-        <b-table-column field="data.category" label="Category" sortable searchable :th-attrs="(column) => ({scope:'col'})">
-          <template v-slot="props">
-            {{ props.row.data.category}}
-          </template>
-          <template v-slot:searchable="props">
-            <div class="select">
-              <select
-                  v-model="props.filters[props.column.field]"
-              >
-                <option value=""></option>
-                <option v-for="cat in categories" :key="cat" :value="cat">{{ cat }}</option>
-              </select>
-            </div>
-          </template>
-        </b-table-column>
-        <b-table-column field="data.geneticDiversity" label="Genetic Diversity" sortable searchable :th-attrs="(column) => ({scope:'col'})">
-          <template v-slot="props">
-            {{ props.row.data.geneticDiversity}}
-          </template>
-          <template v-slot:searchable="props">
-            <div class="select">
-              <select
-                  v-model="props.filters[props.column.field]"
-              >
-                <option value=""></option>
-                <option v-for="div in diversities" :key="div" :value="div">{{ div }}</option>
-              </select>
-            </div>
-          </template>
-        </b-table-column>
+<!-- BI-1779 - Removing the ability to choose predefined methods for a program until we make the germplasm import template dynamically generated -->
+<!--    <GenericModal-->
+<!--        v-bind:active.sync="showEnableSystemMethods"-->
+<!--        v-bind:msg-title="'Enable/Disable Predefined Breeding Methods'"-->
+<!--        v-on:deactivate="showEnableSystemMethods = false"-->
+<!--        v-bind:modalClass="'enable-system-methods'"-->
+<!--    >-->
+<!--      <div v-if="inUseBreedingMethods.length > 0">-->
+<!--        <article class="message is-warning">-->
+<!--          <div class="message-body">-->
+<!--            <div class="columns is-vcentered">-->
+<!--              <div class="column">-->
+<!--                <div class="has-text-dark">-->
+<!--                  <AlertTriangleIcon-->
+<!--                      size="1x"-->
+<!--                      class="has-vertical-align-middle"-->
+<!--                  /> Some breeding methods cannot be deactivated because there are germplasm records using those methods in {{activeProgram.name}}-->
+<!--                </div>-->
+<!--              </div>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--        </article>-->
+<!--      </div>-->
+<!--      <ExpandableTable-->
+<!--          v-bind:records.sync="systemBreedingMethods"-->
+<!--          v-bind:pagination="systemPaginationController"-->
+<!--          v-bind:default-sort="['data.name', 'asc']"-->
+<!--          v-bind:debounce-search="400"-->
+<!--          :checked-rows.sync="programEnabledSystemMethods"-->
+<!--          :custom-is-checked="shouldCheck"-->
+<!--          checkable-->
+<!--          :checkbox-position="'left'"-->
+<!--          :checkbox-type="'is-primary'"-->
+<!--          :is-row-checkable="row => !isMethodInUse(row.data)"-->
+<!--      >-->
+<!--        <b-table-column field="data.name" label="Name" sortable searchable v-slot="props" :th-attrs="(column) => ({scope:'col'})">-->
+<!--          {{ props.row.data.name}}-->
+<!--        </b-table-column>-->
+<!--        <b-table-column field="data.abbreviation" label="Abbreviation" sortable searchable v-slot="props" :th-attrs="(column) => ({scope:'col'})">-->
+<!--          {{ props.row.data.abbreviation}}-->
+<!--        </b-table-column>-->
+<!--        <b-table-column field="data.description" label="Description" sortable searchable v-slot="props" :th-attrs="(column) => ({scope:'col'})">-->
+<!--          {{ props.row.data.description}}-->
+<!--        </b-table-column>-->
+<!--        <b-table-column field="data.category" label="Category" sortable searchable :th-attrs="(column) => ({scope:'col'})">-->
+<!--          <template v-slot="props">-->
+<!--            {{ props.row.data.category}}-->
+<!--          </template>-->
+<!--          <template v-slot:searchable="props">-->
+<!--            <div class="select">-->
+<!--              <select-->
+<!--                  v-model="props.filters[props.column.field]"-->
+<!--              >-->
+<!--                <option value=""></option>-->
+<!--                <option v-for="cat in categories" :key="cat" :value="cat">{{ cat }}</option>-->
+<!--              </select>-->
+<!--            </div>-->
+<!--          </template>-->
+<!--        </b-table-column>-->
+<!--        <b-table-column field="data.geneticDiversity" label="Genetic Diversity" sortable searchable :th-attrs="(column) => ({scope:'col'})">-->
+<!--          <template v-slot="props">-->
+<!--            {{ props.row.data.geneticDiversity}}-->
+<!--          </template>-->
+<!--          <template v-slot:searchable="props">-->
+<!--            <div class="select">-->
+<!--              <select-->
+<!--                  v-model="props.filters[props.column.field]"-->
+<!--              >-->
+<!--                <option value=""></option>-->
+<!--                <option v-for="div in diversities" :key="div" :value="div">{{ div }}</option>-->
+<!--              </select>-->
+<!--            </div>-->
+<!--          </template>-->
+<!--        </b-table-column>-->
 
-        <template v-slot:emptyMessage>
-          <p class="has-text-weight-bold">
-            No breeding methods exist
-          </p>
-        </template>
-      </ExpandableTable>
+<!--        <template v-slot:emptyMessage>-->
+<!--          <p class="has-text-weight-bold">-->
+<!--            No breeding methods exist-->
+<!--          </p>-->
+<!--        </template>-->
+<!--      </ExpandableTable>-->
 
-      <template v-slot:footer>
-        <button class="button is-success" :class="{'is-loading': savingSystemMethods}" v-on:click="saveEnabledMethods">Save changes</button>
-        <button class="button" v-on:click="showEnableSystemMethods = false">Cancel</button>
-      </template>
-    </GenericModal>
+<!--      <template v-slot:footer>-->
+<!--        <button class="button is-success" :class="{'is-loading': savingSystemMethods}" v-on:click="saveEnabledMethods">Save changes</button>-->
+<!--        <button class="button" v-on:click="showEnableSystemMethods = false">Cancel</button>-->
+<!--      </template>-->
+<!--    </GenericModal>-->
   </div>
 </template>
 
@@ -457,6 +459,8 @@ export default class BreedingMethods extends ProgramsBase {
     return "is-warning";
   }
 
+  /*
+   * BI-1779 - Removing the ability to choose predefined methods for a program until we make the germplasm import template dynamically generated
   openModal() {
     this.programEnabledSystemMethods = [];
     this.programBreedingMethods.forEach((value: BreedingMethod) => {
@@ -486,6 +490,7 @@ export default class BreedingMethods extends ProgramsBase {
       this.savingSystemMethods = false;
     }
   }
+*/
 
   async saveMethod() {
     try {
