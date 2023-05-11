@@ -228,7 +228,7 @@ export default class TraitsImportTable extends Vue {
 
   // table column sorting
   private nameSortLabel: string = OntologySortField.Name;
-  private methodSortLabel: string = OntologySortField.MethodDescription;
+  private methodSortLabel: string = OntologySortField.MethodHandle;
   private scaleClassSortLabel: string = OntologySortField.ScaleClass;
   private unitSortLabel: string = OntologySortField.ScaleName;
   private entityAttributeSortLabel: string = OntologySortField.entityAttributeSortLabel;
