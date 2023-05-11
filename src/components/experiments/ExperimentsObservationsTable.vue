@@ -57,6 +57,10 @@
         >
           Download
         </ExperimentObservationsDownloadButton>
+
+        <router-link v-bind:to="{name: 'experiment-details', params: {programId: activeProgram.id, germplasmId: 'HI'}}">
+          Show Details
+        </router-link>
       </b-table-column>
 
       <template v-slot:emptyMessage>

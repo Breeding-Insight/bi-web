@@ -17,7 +17,7 @@
 
 import { ExternalReferences } from '@/breeding-insight/brapi/model/externalReferences';
 
-export class Trial {
+export class Experiment {
   id?: string;
   trialName?: string;
   trialDescription?: string;
@@ -28,8 +28,7 @@ export class Trial {
               trialName?: string,
               active?: boolean,
               externalReferences?: ExternalReferences,
-              trialDescription?: string
-              ) {
+              trialDescription?: string) {
     this.id = id;
     this.trialName = trialName;
     this.trialDescription = trialDescription;
@@ -42,7 +41,7 @@ export class Trial {
   }
 
   static assign(trial: Trial): Trial {
-    return new Trial(trial.id, trial.trialName, trial.active, trial.externalReferences, trial.trialDescription);
+    return new Trial(trial.id, trial.trialName, trial.active, trial.externalReferences);
   }
 
   equals(trial?: Trial): boolean {
