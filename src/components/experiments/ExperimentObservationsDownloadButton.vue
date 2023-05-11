@@ -30,12 +30,12 @@
           <div class="field">
             <label
               class="label"
-              for="dataset-select"
+              v-bind:for="`dataset-select-${trialDbId}`"
             ><span>Dataset</span></label>
             <div class="control">
               <div class="select">
                 <select
-                  id="dataset-select"
+                  v-bind:id="`dataset-select-${trialDbId}`"
                   v-model="fileOptions.dataset"
                 >
                   <option
@@ -91,9 +91,8 @@
             </legend>
             <div class="field">
               <input
-                id="timestamps-switch"
+                v-bind:id="`timestamps-switch-${trialDbId}`"
                 v-model="fileOptions.includeTimestamps"
-                style="appearance: none; outline: auto;"
                 type="checkbox"
                 true-value="Yes"
                 false-value="No"
@@ -101,8 +100,8 @@
                 class="switch is-info is-rounded"
               >
               <label
-                id="timestamps-label"
-                for="timestamps-switch"
+                v-bind:id="`timestamps-label-${trialDbId}`"
+                v-bind:for="`timestamps-switch-${trialDbId}`"
               >{{ fileOptions.includeTimestamps }}</label>
             </div>
           </fieldset>
