@@ -16,173 +16,136 @@
   -->
 <template>
   <div class="experiment">
+    <router-link v-bind:to="{name: 'experiments-observations', params: {programId: activeProgram.id}}">
+      &lt; All Experiments
+    </router-link>
+    <div class="mb-4"></div>
     <h1 class="title">
       Experiments & Observations Details
     </h1>
+    <template v-if="!experimentLoading && experiment!=null">
+<!--      <p> {{ experimentUUID }} </p>-->
+<!--      <p> {{ activeProgram.id }} </p>-->
+
+      <button
+          v-if="$ability.can('create', 'Import')"
+          class="button is-primary is-pulled-right has-text-weight-bold"
+          v-on:click="$router.push({name: 'experiment-import', params: {programId: activeProgram.id}})"
+      >
+        <span class="icon is-small">
+          <PlusCircleIcon
+              size="1.5x"
+              aria-hidden="true"
+          />
+        </span>
+        <span>
+          Import Experiments & Observations
+        </span>
+      </button>
+      <br/>
+      <div class="columns is-multiline is-align-items-stretch mt-4">
+        <article class="column ">
+          <section>
+            <ul style="list-style-type: none;">
+              <li><b>Description: </b> {{experiment.trialDescription}}</li>
+              <li><b>Experimental unit: </b> {{ experimentalUnit }}</li>
+              <li><b>User: </b> {{ userName }}</li>
+              <li><b>Creation Date: </b> {{ createdDate }}</li>
+            </ul>
+          </section>
+        </article>
+        <article class="column px-2">
+          <section>
+            <ul style="list-style-type: none;">
+              <li><b>Experiments: </b> {{ environmentsCount }}</li>
+              <li><b>Germplasm: </b> {{ germplasmCount }}</li>
+            </ul>
+          </section>
+        </article>
+      </div>
+
+    </template>
   </div>
 </template>
 
-<!--<template>-->
-<!--  <div class="experiment">-->
-<!--&lt;!&ndash;    <router-link v-bind:to="{name: 'germplasm-all', params: {programId: activeProgram.id}}">&ndash;&gt;-->
-<!--&lt;!&ndash;      &lt; All Experiments & Observations&ndash;&gt;-->
-<!--&lt;!&ndash;    </router-link>&ndash;&gt;-->
-<!--    <div class="mb-4"></div>-->
-<!--    <h1 class="title">-->
-<!--      Experiments & Observations Details-->
-<!--    </h1>-->
+<script lang="ts">
+import {Component, Watch} from "vue-property-decorator";
+import GermplasmLink from "@/components/germplasm/GermplasmLink.vue";
+import {mapGetters} from "vuex";
+import {PlusCircleIcon} from 'vue-feather-icons'
+import TrialsAndStudiesBase from "@/components/trials/TrialsAndStudiesBase.vue";
+import {Program} from "@/breeding-insight/model/Program";
+import {Result} from "@/breeding-insight/model/Result";
+import {Germplasm} from "@/breeding-insight/brapi/model/germplasm";
+import {GermplasmService} from "@/breeding-insight/service/GermplasmService";
+import {ExperimentService} from "@/breeding-insight/service/ExperimentService";
+import ExperimentsObservationsTable from "@/components/experiments/ExperimentsObservationsTable.vue";
 
-<!--    <template v-if="!experimentLoading && germplasm!=null">-->
-<!--      <div class="columns is-multiline is-align-items-stretch mt-4">-->
-<!--        <article class="column ">-->
-<!--          <section>-->
-<!--            <ul style="list-style-type: none;">-->
-<!--              <li><b>Preferred Name: </b> {{ germplasm.defaultDisplayName }}</li>-->
-<!--              <li><b>GID: </b> {{ germplasm.accessionNumber }}</li>-->
-<!--              <li><b>Breeding Method: </b> {{ germplasm.additionalInfo.breedingMethod }}</li>-->
-<!--              <li><b>Source: </b> {{ germplasm.seedSource }}</li>-->
-<!--              <li><b>Pedigree: </b> {{ germplasm.additionalInfo.pedigreeByName }}</li>-->
-<!--              <li><b>Pedigree GID(s): </b>-->
-<!--                <GermplasmLink-->
-<!--                    v-if="germplasm.pedigree"-->
-<!--                    v-bind:germplasmUUID="Pedigree.parsePedigreeString(germplasm.additionalInfo.pedigreeByUUID).femaleParent"-->
-<!--                    v-bind:germplasmGID="Pedigree.parsePedigreeStringWithUnknowns(germplasm.pedigree,germplasm.additionalInfo.femaleParentUnknown,germplasm.additionalInfo.maleParentUnknown, germplasm.germplasmDbId).femaleParent"-->
-<!--                ></GermplasmLink>-->
-<!--                <template v-if="Pedigree.parsePedigreeString(germplasm.pedigree).maleParent">-->
-<!--                  /-->
-<!--                  <GermplasmLink-->
-<!--                      v-bind:germplasmUUID="Pedigree.parsePedigreeString(germplasm.additionalInfo.pedigreeByUUID).maleParent"-->
-<!--                      v-bind:germplasmGID="Pedigree.parsePedigreeStringWithUnknowns(germplasm.pedigree,germplasm.additionalInfo.femaleParentUnknown,germplasm.additionalInfo.maleParentUnknown, germplasm.germplasmDbId).maleParent"-->
-<!--                  ></GermplasmLink>-->
-<!--                </template>-->
-<!--              </li>-->
-<!--              <li><b>Synonyms: </b> {{ GermplasmUtils.formatSynonyms(germplasm.synonyms) }}</li>-->
-<!--            </ul>-->
-<!--          </section>-->
-<!--        </article>-->
-<!--        <article class="column px-2">-->
-<!--          <section>-->
-<!--            <ul style="list-style-type: none;">-->
-<!--              <li><b>External UID: </b> {{ GermplasmUtils.getExternalUID(germplasm) }}</li>-->
-<!--              <li><b>User: </b> {{ germplasm.additionalInfo.createdBy.userName }}</li>-->
-<!--              <li><b>Creation Date: </b> {{ GermplasmUtils.getCreatedDate(germplasm) }}</li>-->
-<!--            </ul>-->
-<!--          </section>-->
-<!--        </article>-->
-<!--      </div>-->
+@Component({
+  components: {
+    PlusCircleIcon
+  },
+  computed: {
+    ...mapGetters([
+      'activeProgram'
+    ])
+  }
+})
+export default class ExperimentDetails extends TrialsAndStudiesBase {
+  private activeProgram?: Program;
+  private experiment?: Trial;
+  private environmentsCount? : number;
+  private germplasmCount? : number;
+  private experimentLoading: boolean = true;
 
-<!--      <section>-->
-<!--        <nav class="tabs is-boxed">-->
-<!--          <ul>-->
-<!--            <router-link-->
-<!--                v-bind:to="{name: '', params: {programId: activeProgram.id}}"-->
-<!--                tag="li"-->
-<!--            >-->
-<!--              <a>Images</a>-->
-<!--            </router-link>-->
-<!--            <router-link-->
-<!--                v-bind:to="{name: 'germplasm-pedigrees', params: {programId: activeProgram.id, germplasmDbId: germplasm.germplasmDbId}}"-->
-<!--                tag="li" active-class="is-active"-->
-<!--            >-->
-<!--              <a>Pedigrees</a>-->
-<!--            </router-link>-->
-<!--            <router-link-->
-<!--                v-bind:to="{name: '', params: {programId: activeProgram.id}}"-->
-<!--                tag="li"-->
-<!--            >-->
-<!--              <a>Attributes</a>-->
-<!--            </router-link>-->
-<!--            <router-link-->
-<!--                v-bind:to="{name: 'germplasm-genotype', params: {programId: activeProgram.id}}"-->
-<!--                tag="li" active-class="is-active"-->
-<!--            >-->
-<!--              <a>Genotype</a>-->
-<!--            </router-link>-->
-<!--          </ul>-->
-<!--        </nav>-->
-<!--      </section>-->
 
-<!--      <div class="tab-content">-->
-<!--        <router-view-->
-<!--            @show-success-notification="$emit('show-success-notification', $event)"-->
-<!--            @show-info-notification="$emit('show-info-notification', $event)"-->
-<!--            @show-error-notification="$emit('show-error-notification', $event)"-->
-<!--        />-->
-<!--      </div>-->
-<!--    </template>-->
-<!--  </div>-->
-<!--</template>-->
+  mounted () {
+    console.log("-------mount----------");
+    this.getExperiment();
+  }
 
-<!--<script lang="ts">-->
-<!--import { Component, Watch } from 'vue-property-decorator';-->
-<!--import { mapGetters } from 'vuex';-->
-<!--import { Program } from '@/breeding-insight/model/Program';-->
-<!--import { Trial } from '@/breeding-insight/model/Trial';-->
-<!--import { ExperimentService } from '@/breeding-insight/service/ExperimentService';-->
-<!--// import GermplasmLink from '@/components/germplasm/GermplasmLink.vue';-->
-<!--// import { Pedigree } from '@/breeding-insight/model/import/germplasm/Pedigree';-->
-<!--// import { ExperimentUtils } from '@/breeding-insight/utils/ExperimentUtils';-->
-<!--import { Result } from '@/breeding-insight/model/Result';-->
-<!--import { Route } from 'vue-router';-->
-<!--import { BrAPIService, BrAPIType } from '@/breeding-insight/service/BrAPIService';-->
-<!--import { GermplasmSortField, SortOrder } from '@/breeding-insight/model/Sort';-->
 
-<!--@Component({-->
-<!--  computed: {-->
-<!--    ...mapGetters([-->
-<!--      'activeProgram'-->
-<!--    ])-->
-<!--  }-->
-<!--})-->
-<!--  // beforeRouteEnter: async (to, from, next) => {-->
-<!--  //   const germplasmId = to.params.germplasmId;-->
-<!--  //   if (!germplasmId.startsWith('gid-')) {-->
-<!--  //     next();-->
-<!--  //     return;-->
-<!--  //   }-->
+  get experimentUUID(): string {
+    return this.$route.params.experimentId;
+  }
 
-<!--    // // Find the id for that gid-->
-<!--    // const gid = germplasmId.split('-')[1];-->
-<!--//     const programId = to.params.programId;-->
-<!--//     BrAPIService.get(BrAPIType.EXPERIMENT, programId, { field: GermplasmSortField.AccessionNumber, order: SortOrder.Ascending }, { pageSize: 1, page: 0 }, { accessionNumber: gid }).then((germplasmResult) => {-->
-<!--//       // Parse out the germplasm id-->
-<!--//       const germplasm = germplasmResult.result.data[0];-->
-<!--      const experimentUUID = ExperimentUtils.getBreedingInsightId(experiment.externalReferences);-->
-<!--//       next({ name: 'germplasm-details', params: { programId, germplasmId: germplasmUUID } });-->
-<!--//       return;-->
-<!--//     });-->
-<!--//   }-->
-<!--// })-->
-<!--export default class ExperimentDetails extends Vue {-->
+  get userName(): string {
+    if( !this.experiment.additionalInfo ){return '';}
+    if( !this.experiment.additionalInfo.createdBy){return '';}
+    return this.experiment.additionalInfo.createdBy.userName;
+  }
+  get experimentalUnit(): string {
+    if( !this.experiment.additionalInfo ){return '';}
+    return this.experiment.additionalInfo.defaultObservationLevel;
+  }
+  get createdDate(): string {
+    if( !this.experiment.additionalInfo ){return '';}
+    return this.experiment.additionalInfo.createdDate;
+  }
 
-<!--  private activeProgram?: Program;-->
-<!--  private experiment?: Trial;-->
-<!--  private experimentLoading: boolean = true;-->
+  @Watch('$route')
+  async getExperiment () {
+    this.experimentLoading = true;
+    try {
+      const response: Result<Error, Trial> = await ExperimentService.getSingleExperiment(this.activeProgram!.id!, this.experimentUUID);
+      if (response.isErr()) {
+        throw response.value;
+      }
+      this.experiment = response.value["trialData"];
+      this.environmentsCount = response.value["environmentsCount"];
+      this.germplasmCount = response.value["germplasmCount"];
 
-<!--  mounted () {-->
-<!--    this.getExperiment();-->
-<!--  }-->
+      console.log(',.,,..,.,.,.,.,.,Experiment ,.,,.,...,.,.,.,');
+      console.log(this.experiment);
 
-<!--  get experimentUUID (): string {-->
-<!--    return this.$route.params.experimentId;-->
-<!--  }-->
+    } catch (err) {
+      // Display error that experiment cannot be loaded
+      this.$emit('show-error-notification', 'Error while trying to load experiment');
+      throw err;
+    } finally {
+      this.experimentLoading = false;
+    }
+  }
 
-<!--  @Watch('$route')-->
-<!--  async getExperiment () {-->
-<!--    this.experimentLoading = true;-->
-<!--    try {-->
-<!--      const response: Result<Error, Germplasm> = await ExperimentService.getSingleExperiment(this.activeProgram!.id!, this.germplasmUUID);-->
-<!--      if (response.isErr()) {-->
-<!--        throw response.value;-->
-<!--      }-->
-<!--      this.germplasm = response.value;-->
-<!--    } catch (err) {-->
-<!--      // Display error that germplasm cannot be loaded-->
-<!--      this.$emit('show-error-notification', 'Error while trying to load germplasm');-->
-<!--      throw err;-->
-<!--    } finally {-->
-<!--      this.experimentLoading = false;-->
-<!--    }-->
-<!--  }-->
-<!--}-->
-<!--</script>-->
+}
+</script>

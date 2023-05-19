@@ -19,23 +19,23 @@ import {BiResponse, Response} from "@/breeding-insight/model/BiResponse";
 import * as api from "@/util/api";
 import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
 import {Result, ResultGenerator} from "@/breeding-insight/model/Result";
-import {Germplasm} from "@/breeding-insight/brapi/model/germplasm";
+import {Trial} from "@/breeding-insight/model/Trial.ts";
 
 export class ExperimentDAO {
 
-      static async getSingleExperiment(programId: string, experimentId: string): Promise<Result<Error, Germplasm>> {
-        experimentId = '26b98605-b7dc-40aa-a8b9-2e3dc6664a7f'
+      static async getSingleExperiment(programId: string, experimentId: string): Promise<Result<Error, Trial>> {
         const config: any = {};
         config.url = `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/brapi/v2/trials/${experimentId}`;
         config.method = 'get';
         config.programId = programId;
         config.experimentId = experimentId;
         // TODO set boolean param for stats
-        config.params = {};
+        config.params = {stats: true};
 console.log(config.url);
         try {
             const res = await api.call(config) as Response;
             let { result } = res.data;
+            console.log('ExperimentDAO result');
             console.log(result);
             return ResultGenerator.success(result);
         } catch (error) {

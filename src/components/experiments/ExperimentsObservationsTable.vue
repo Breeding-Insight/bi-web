@@ -57,8 +57,7 @@
         >
           Download
         </ExperimentObservationsDownloadButton>
-
-        <router-link v-bind:to="{name: 'experiment-details', params: {programId: activeProgram.id, germplasmId: 'HI'}}">
+        <router-link v-bind:to="{name: 'experiment-details', params: {programId: activeProgram.id, experimentId: GermplasmUtils.getBreedingInsightId(props.row.data.externalReferences,'/trials')}}">
           Show Details
         </router-link>
       </b-table-column>
@@ -84,6 +83,7 @@ import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
 import {Trial} from '@/breeding-insight/model/Trial'
 import ExpandableTable from '@/components/tables/expandableTable/ExpandableTable.vue';
 import {CallStack} from "@/breeding-insight/utils/CallStack";
+import {GermplasmUtils} from "@/breeding-insight/utils/GermplasmUtils";
 import {
   ExperimentSort,
   Sort,
@@ -110,7 +110,7 @@ import ExperimentObservationsDownloadButton from "@/components/experiments/Exper
       updateSort: UPDATE_EXPERIMENT_SORT
     })
   },
-  data: () => ({Sort})
+  data: () => ({Sort, GermplasmUtils})
 })
 export default class ExperimentsObservationsTable extends Vue {
 
@@ -174,6 +174,7 @@ export default class ExperimentsObservationsTable extends Vue {
       // Account for brapi 0 indexing of paging
       this.paginationController.currentPage = this.paginationController.currentPage.valueOf() + 1;
       this.experiments = response.result.data;
+      console.log( this.experiments);
       this.experimentsLoading = false;
 
     } catch (err) {

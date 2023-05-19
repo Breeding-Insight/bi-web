@@ -18,21 +18,31 @@
 import { ExternalReferences } from '@/breeding-insight/brapi/model/externalReferences';
 
 export class Trial {
+  trialDbId?: string;
+
   id?: string;
   trialName?: string;
   trialDescription?: string;
   active?: boolean;
   externalReferences?: ExternalReferences;
+  commonCropName?: string;
+  // contacts?: Array<Contact>;
+  //datasetAuthorships?: Array<TrialNewRequestDatasetAuthorships>;
+  documentationURL?: string;
+  endDate?: string;
+  programDbId?: string;
+  programName?: string;
+  startDate?: string;
+  trialPUI?: string;
+  additionalInfo?: AdditionalInfo;
+
 
   constructor(id?: string,
               trialName?: string,
               active?: boolean,
-              externalReferences?: ExternalReferences,
-              trialDescription?: string
-              ) {
+              externalReferences?: ExternalReferences) {
     this.id = id;
     this.trialName = trialName;
-    this.trialDescription = trialDescription;
     if (active !== undefined) {
       this.active = active;
     } else {
@@ -42,7 +52,7 @@ export class Trial {
   }
 
   static assign(trial: Trial): Trial {
-    return new Trial(trial.id, trial.trialName, trial.active, trial.externalReferences, trial.trialDescription);
+    return new Trial(trial.id, trial.trialName, trial.active, trial.externalReferences);
   }
 
   equals(trial?: Trial): boolean {
@@ -50,4 +60,19 @@ export class Trial {
     return (this.id === trial.id) &&
       (this.trialName === trial.trialName)
   }
+
+}
+export class AdditionalInfo {
+  createdDate?: string;
+  defaultObservationLevel?: string;
+
+  experimentNumber?: string;
+  experimentType?: string;
+
+  createdBy?: AdditionalInfoCreateBy;
+}
+
+export class AdditionalInfoCreateBy {
+  userName?: string;
+  userId?: string;
 }

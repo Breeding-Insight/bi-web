@@ -20,7 +20,7 @@ import {BiResponse, Metadata} from "@/breeding-insight/model/BiResponse";
 import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
 import {PaginationUtilities} from "@/breeding-insight/model/view_models/PaginationUtilities";
 import {ExperimentDAO} from "@/breeding-insight/dao/ExperimentDAO";
-import {Germplasm} from "@/breeding-insight/brapi/model/germplasm";
+import {Trial} from "@/breeding-insight/model/Trial.ts";
 import {Result, ResultGenerator} from "@/breeding-insight/model/Result";
 import {SortOrder} from "@/breeding-insight/model/Sort";
 import * as api from "@/util/api";
@@ -28,10 +28,10 @@ import {GermplasmFilter} from "@/breeding-insight/model/GermplasmFilter";
 
 export class ExperimentService {
 
-    static async getSingleExperiment(programId: string, experimentId: string): Promise<Result<Error, Germplasm>> {
+    static async getSingleExperiment(programId: string, experimentId: string): Promise<Result<Error, Trial>> {
         try {
-              if (!programId) throw new Error('Missing or invalid program id');
-              let response: Result<Error, Germplasm> = await ExperimentDAO.getSingleExperiment(programId, experimentId);
+            if (!programId) throw new Error('Missing or invalid program id');
+              let response: Result<Error, Trial> = await ExperimentDAO.getSingleExperiment(programId, experimentId);
               return response;
           } catch(error) {
               return ResultGenerator.err(error);

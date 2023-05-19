@@ -130,6 +130,12 @@ import { GermplasmSortField, SortOrder } from '@/breeding-insight/model/Sort';
   },
   data: () => ({ Pedigree, GermplasmUtils }),
   beforeRouteEnter: async (to, from, next) => {
+    // console.log("TO");
+    // console.log(to);
+    // console.log("FROM");
+    // console.log(from);
+    // console.log("next");
+    // console.log(next);
     const germplasmId = to.params.germplasmId;
     if (!germplasmId.startsWith('gid-')) {
       next();
@@ -155,6 +161,7 @@ export default class GermplasmDetails extends GermplasmBase {
   private germplasmLoading: boolean = true;
 
   mounted () {
+    console.log("-------mount----------");
     this.getGermplasm();
   }
 
@@ -171,6 +178,10 @@ export default class GermplasmDetails extends GermplasmBase {
         throw response.value;
       }
       this.germplasm = response.value;
+
+      console.log(',.,,..,.,.,.,.,.,GERMPLASM ,.,,.,...,.,.,.,');
+      console.log(this.germplasm);
+
     } catch (err) {
       // Display error that germplasm cannot be loaded
       this.$emit('show-error-notification', 'Error while trying to load germplasm');
