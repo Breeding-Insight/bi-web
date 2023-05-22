@@ -24,24 +24,42 @@
       Experiments & Observations Details
     </h1>
     <template v-if="!experimentLoading && experiment!=null">
+
+      <div class="dropdown is-pulled-right"
+           v-bind:class="{'is-active': actionSelectActive}"
+      >
+        <div class="dropdown-trigger"
+             v-on:click.stop="actionSelectActive = !actionSelectActive">
+          <button class="button" aria-haspopup="true" aria-controls="dropdown-menu">
+            <span>Actions</span>
+            <span class="icon is-small">
+              <i class="fas fa-angle-down" aria-hidden="true"></i>
+            </span>
+          </button>
+        </div>
+        <div class="dropdown-menu" id="dropdown-menu" role="menu">
+          <div class="dropdown-content">
+            <router-link
+                v-bind:to="{name: 'experiment-import', params: {programId: activeProgram.id}}"
+                class="dropdown-item"
+                active-class="is-active"
+                role="menuitem"
+            >
+              Import file
+            </router-link>
+            <a class="dropdown-item"
+              v-on:click="downloadFile"
+            >
+              Download file
+            </a>
+          </div>
+        </div>
+      </div>
+    </template>
+    <template v-if="!experimentLoading && experiment!=null">
 <!--      <p> {{ experimentUUID }} </p>-->
 <!--      <p> {{ activeProgram.id }} </p>-->
 
-      <button
-          v-if="$ability.can('create', 'Import')"
-          class="button is-primary is-pulled-right has-text-weight-bold"
-          v-on:click="$router.push({name: 'experiment-import', params: {programId: activeProgram.id}})"
-      >
-        <span class="icon is-small">
-          <PlusCircleIcon
-              size="1.5x"
-              aria-hidden="true"
-          />
-        </span>
-        <span>
-          Import Experiments & Observations
-        </span>
-      </button>
       <br/>
       <div class="columns is-multiline is-align-items-stretch mt-4">
         <article class="column ">
@@ -97,6 +115,7 @@ export default class ExperimentDetails extends TrialsAndStudiesBase {
   private environmentsCount? : number;
   private germplasmCount? : number;
   private experimentLoading: boolean = true;
+  private actionSelectActive: boolean = false;
 
 
   mounted () {
@@ -145,6 +164,10 @@ export default class ExperimentDetails extends TrialsAndStudiesBase {
     } finally {
       this.experimentLoading = false;
     }
+  }
+
+  downloadFile(){
+    alert("'Download file' is not yet implemented.");
   }
 
 }
