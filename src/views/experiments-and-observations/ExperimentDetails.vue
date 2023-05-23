@@ -91,7 +91,6 @@
 
 <script lang="ts">
 import {Component, Watch} from "vue-property-decorator";
-import GermplasmLink from "@/components/germplasm/GermplasmLink.vue";
 import {mapGetters} from "vuex";
 import {PlusCircleIcon} from 'vue-feather-icons'
 import TrialsAndStudiesBase from "@/components/trials/TrialsAndStudiesBase.vue";

@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-import {BiResponse, Response} from "@/breeding-insight/model/BiResponse";
+import { Response} from "@/breeding-insight/model/BiResponse";
 import * as api from "@/util/api";
-import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
 import {Result, ResultGenerator} from "@/breeding-insight/model/Result";
 import {Trial} from "@/breeding-insight/model/Trial.ts";
 

@@ -15,16 +15,11 @@
  * limitations under the License.
  */
 
-import {ExperimentDAO} from "@/breeding-insight/dao/ExperimentDAO";
-import {Trial} from "@/breeding-insight/model/Trial.ts";
-import {Result, ResultGenerator} from "@/breeding-insight/model/Result";
+import {ExternalReferences} from "@/breeding-insight/brapi/model/externalReferences";
 
-export class ExperimentService {
-
-    static async getSingleExperiment(programId: string, experimentId: string): Promise<Result<Error, Trial>> {
-        if (!programId) {
-            return ResultGenerator.err(new Error('Missing or invalid program id'));
-        }
-        return await ExperimentDAO.getSingleExperiment(programId, experimentId);
+export class BrAPIUtils {
+    static getBreedingInsightId(references: ExternalReferences, referenceSourcePath: string = ""): string | undefined {
+        let val = references.find(ref => ref.referenceSource === process.env.VUE_APP_BI_REFERENCE_SOURCE + referenceSourcePath);
+        return val ? val.referenceID : "";
     }
 }

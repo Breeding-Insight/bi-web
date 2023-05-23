@@ -17,8 +17,6 @@
 
 import moment from "moment";
 import {Germplasm} from "@/breeding-insight/brapi/model/germplasm";
-import {ExternalReferences} from "@/breeding-insight/brapi/model/externalReferences";
-import {GermplasmService} from "@/breeding-insight/service/GermplasmService";
 import {MOMENT_BRAPI_DATE_FORMAT} from "@/breeding-insight/utils/BrAPIDateTime";
 
 // The moment.js interpretable format for Date values sent and received via the BI API.

@@ -118,7 +118,6 @@ import { Pedigree } from '@/breeding-insight/model/import/germplasm/Pedigree';
 import { GermplasmUtils } from '@/breeding-insight/utils/GermplasmUtils';
 import {BrAPIUtils} from "@/breeding-insight/utils/BrAPIUtils";
 import { Result } from '@/breeding-insight/model/Result';
-import { Route } from 'vue-router';
 import { BrAPIService, BrAPIType } from '@/breeding-insight/service/BrAPIService';
 import { GermplasmSortField, SortOrder } from '@/breeding-insight/model/Sort';
 
