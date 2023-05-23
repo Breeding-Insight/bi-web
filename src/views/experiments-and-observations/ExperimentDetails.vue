@@ -19,18 +19,21 @@
     <router-link v-bind:to="{name: 'experiments-observations', params: {programId: activeProgram.id}}">
       &lt; All Experiments
     </router-link>
-    <div class="mb-4"></div>
+    <div class="mb-4" />
     <h1 class="title">
       Experiments & Observations Details
     </h1>
     <template v-if="!experimentLoading && experiment!=null">
-
       <div class="dropdown is-pulled-right"
-           v-bind:class="{'is-active': actionSelectActive}"
+          v-bind:class="{'is-active': actionSelectActive}"
+           v-on:blur="actionSelectActive=false"
       >
         <div class="dropdown-trigger"
-             v-on:click.stop="actionSelectActive = !actionSelectActive">
-          <button class="button" aria-haspopup="true" aria-controls="dropdown-menu">
+             v-on:click.stop="actionSelectActive = !actionSelectActive"
+        >
+          <button class="button" aria-haspopup="true" aria-controls="dropdown-menu"
+                  v-click-outside="hideActionSelector"
+          >
             <span>Actions</span>
             <span class="icon is-small">
               <i class="fas fa-angle-down" aria-hidden="true"></i>
@@ -94,10 +97,8 @@ import {PlusCircleIcon} from 'vue-feather-icons'
 import TrialsAndStudiesBase from "@/components/trials/TrialsAndStudiesBase.vue";
 import {Program} from "@/breeding-insight/model/Program";
 import {Result} from "@/breeding-insight/model/Result";
-import {Germplasm} from "@/breeding-insight/brapi/model/germplasm";
-import {GermplasmService} from "@/breeding-insight/service/GermplasmService";
 import {ExperimentService} from "@/breeding-insight/service/ExperimentService";
-import ExperimentsObservationsTable from "@/components/experiments/ExperimentsObservationsTable.vue";
+import ClickOutside from 'vue-click-outside';
 
 @Component({
   components: {
@@ -107,6 +108,9 @@ import ExperimentsObservationsTable from "@/components/experiments/ExperimentsOb
     ...mapGetters([
       'activeProgram'
     ])
+  },
+  directives: {
+    ClickOutside
   }
 })
 export default class ExperimentDetails extends TrialsAndStudiesBase {
@@ -119,7 +123,6 @@ export default class ExperimentDetails extends TrialsAndStudiesBase {
 
 
   mounted () {
-    console.log("-------mount----------");
     this.getExperiment();
   }
 
@@ -153,10 +156,6 @@ export default class ExperimentDetails extends TrialsAndStudiesBase {
       this.experiment = response.value["trialData"];
       this.environmentsCount = response.value["environmentsCount"];
       this.germplasmCount = response.value["germplasmCount"];
-
-      console.log(',.,,..,.,.,.,.,.,Experiment ,.,,.,...,.,.,.,');
-      console.log(this.experiment);
-
     } catch (err) {
       // Display error that experiment cannot be loaded
       this.$emit('show-error-notification', 'Error while trying to load experiment');
@@ -168,6 +167,10 @@ export default class ExperimentDetails extends TrialsAndStudiesBase {
 
   downloadFile(){
     alert("'Download file' is not yet implemented.");
+    this.actionSelectActive = false;
+  }
+  hideActionSelector(){
+    this.actionSelectActive = false;
   }
 
 }

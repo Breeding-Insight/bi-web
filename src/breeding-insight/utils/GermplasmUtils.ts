@@ -43,11 +43,6 @@ export class GermplasmUtils {
         return "";
     }
 
-    static getBreedingInsightId(references: ExternalReferences, referenceSourcePath: string = ""): string | undefined {
-        let val = references.find(ref => ref.referenceSource === process.env.VUE_APP_BI_REFERENCE_SOURCE + referenceSourcePath);
-        return val ? val.referenceID : "";
-    }
-
     static formatSynonyms(synonyms: any[]): string {
         if (!synonyms) return "";
         return synonyms.map(synonym => synonym.synonym).join("; ");

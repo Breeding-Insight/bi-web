@@ -57,7 +57,7 @@
         >
           Download
         </ExperimentObservationsDownloadButton>
-        <router-link v-bind:to="{name: 'experiment-details', params: {programId: activeProgram.id, experimentId: GermplasmUtils.getBreedingInsightId(props.row.data.externalReferences,'/trials')}}">
+        <router-link v-bind:to="{name: 'experiment-details', params: {programId: activeProgram.id, experimentId: BrAPIUtils.getBreedingInsightId(props.row.data.externalReferences,'/trials')}}">
           Show Details
         </router-link>
       </b-table-column>
@@ -83,7 +83,7 @@ import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
 import {Trial} from '@/breeding-insight/model/Trial'
 import ExpandableTable from '@/components/tables/expandableTable/ExpandableTable.vue';
 import {CallStack} from "@/breeding-insight/utils/CallStack";
-import {GermplasmUtils} from "@/breeding-insight/utils/GermplasmUtils";
+import {BrAPIUtils} from "@/breeding-insight/utils/BrAPIUtils";
 import {
   ExperimentSort,
   Sort,
@@ -110,7 +110,7 @@ import ExperimentObservationsDownloadButton from "@/components/experiments/Exper
       updateSort: UPDATE_EXPERIMENT_SORT
     })
   },
-  data: () => ({Sort, GermplasmUtils})
+  data: () => ({Sort, BrAPIUtils})
 })
 export default class ExperimentsObservationsTable extends Vue {
 

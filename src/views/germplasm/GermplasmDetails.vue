@@ -116,6 +116,7 @@ import { GermplasmService } from '@/breeding-insight/service/GermplasmService';
 import GermplasmLink from '@/components/germplasm/GermplasmLink.vue';
 import { Pedigree } from '@/breeding-insight/model/import/germplasm/Pedigree';
 import { GermplasmUtils } from '@/breeding-insight/utils/GermplasmUtils';
+import {BrAPIUtils} from "@/breeding-insight/utils/BrAPIUtils";
 import { Result } from '@/breeding-insight/model/Result';
 import { Route } from 'vue-router';
 import { BrAPIService, BrAPIType } from '@/breeding-insight/service/BrAPIService';
@@ -128,7 +129,7 @@ import { GermplasmSortField, SortOrder } from '@/breeding-insight/model/Sort';
       'activeProgram'
     ])
   },
-  data: () => ({ Pedigree, GermplasmUtils }),
+  data: () => ({ Pedigree, GermplasmUtils, BrAPIUtils }),
   beforeRouteEnter: async (to, from, next) => {
     // console.log("TO");
     // console.log(to);
@@ -148,7 +149,7 @@ import { GermplasmSortField, SortOrder } from '@/breeding-insight/model/Sort';
     BrAPIService.get(BrAPIType.GERMPLASM, programId, { field: GermplasmSortField.AccessionNumber, order: SortOrder.Ascending }, { pageSize: 1, page: 0 }, { accessionNumber: gid }).then((germplasmResult) => {
       // Parse out the germplasm id
       const germplasm = germplasmResult.result.data[0];
-      const germplasmUUID = GermplasmUtils.getBreedingInsightId(germplasm.externalReferences);
+      const germplasmUUID = BrAPIUtils.getBreedingInsightId(germplasm.externalReferences);
       next({ name: 'germplasm-details', params: { programId, germplasmId: germplasmUUID } });
       return;
     });
