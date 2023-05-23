@@ -33,7 +33,10 @@
       v-on:search="initSearch"
     >
       <b-table-column label="Title" field="name" cell-class="fixed-width-wrapped" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
-        {{ props.row.data.trialName }}
+        <router-link v-bind:to="{name: 'experiment-details', params: {programId: activeProgram.id, experimentId: BrAPIUtils.getBreedingInsightId(props.row.data.externalReferences,'/trials')}}">
+          {{ props.row.data.trialName }}
+        </router-link>
+
       </b-table-column>
       <b-table-column label="Status" field="active" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" >
         {{ getStatus(props.row.data.active) }}
@@ -50,6 +53,10 @@
         </template>
       </b-table-column>
       <b-table-column field="data.listDbId" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+<!--   Per Shawn, remove this link in favor of wrapping the trial title in a link     -->
+<!--        <router-link v-bind:to="{name: 'experiment-details', params: {programId: activeProgram.id, experimentId: BrAPIUtils.getBreedingInsightId(props.row.data.externalReferences,'/trials')}}">-->
+<!--          Details-->
+<!--        </router-link>-->
         <ExperimentObservationsDownloadButton
           v-bind:modal-title="`Download ${props.row.data.trialName}`"
           v-bind:trial-db-id="props.row.data.trialDbId"
@@ -57,9 +64,7 @@
         >
           Download
         </ExperimentObservationsDownloadButton>
-        <router-link v-bind:to="{name: 'experiment-details', params: {programId: activeProgram.id, experimentId: BrAPIUtils.getBreedingInsightId(props.row.data.externalReferences,'/trials')}}">
-          Show Details
-        </router-link>
+
       </b-table-column>
 
       <template v-slot:emptyMessage>
