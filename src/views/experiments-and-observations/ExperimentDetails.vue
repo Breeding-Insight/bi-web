@@ -15,15 +15,15 @@
   - limitations under the License.
   -->
 <template>
-  <div class="experiment">
+  <div class="experiment" v-if="!experimentLoading && experiment!=null">
     <router-link v-bind:to="{name: 'experiments-observations', params: {programId: activeProgram.id}}">
       &lt; All Experiments
     </router-link>
     <div class="mb-4" />
     <h1 class="title">
-      Experiments & Observations Details
+      {{experiment.trialName}}
     </h1>
-    <template v-if="!experimentLoading && experiment!=null">
+    <template>
       <div class="dropdown is-pulled-right"
           v-bind:class="{'is-active': actionSelectActive}"
            v-on:blur="actionSelectActive=false"
@@ -60,9 +60,6 @@
       </div>
     </template>
     <template v-if="!experimentLoading && experiment!=null">
-<!--      <p> {{ experimentUUID }} </p>-->
-<!--      <p> {{ activeProgram.id }} </p>-->
-
       <br/>
       <div class="columns is-multiline is-align-items-stretch mt-4">
         <article class="column ">
@@ -72,14 +69,15 @@
               <li><b>Experimental unit: </b> {{ experimentalUnit }}</li>
               <li><b>User: </b> {{ userName }}</li>
               <li><b>Creation Date: </b> {{ createdDate }}</li>
+              <li><b>Experimental design: </b>Externally generated</li>
             </ul>
           </section>
         </article>
         <article class="column px-2">
           <section>
             <ul style="list-style-type: none;">
-              <li><b>Experiments: </b> {{ environmentsCount }}</li>
               <li><b>Germplasm: </b> {{ germplasmCount }}</li>
+              <li><b>Environments: </b> {{ environmentsCount }}</li>
             </ul>
           </section>
         </article>
