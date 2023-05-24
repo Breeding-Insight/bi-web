@@ -96,6 +96,7 @@ import {Program} from "@/breeding-insight/model/Program";
 import {Result} from "@/breeding-insight/model/Result";
 import {ExperimentService} from "@/breeding-insight/service/ExperimentService";
 import ClickOutside from 'vue-click-outside';
+import {Trial} from "@/breeding-insight/model/Trial";
 
 @Component({
   components: {
@@ -111,10 +112,8 @@ import ClickOutside from 'vue-click-outside';
   }
 })
 export default class ExperimentDetails extends TrialsAndStudiesBase {
-  private activeProgram?: Program;
-  private experiment?: Trial;
-  private environmentsCount? : number;
-  private germplasmCount? : number;
+  private activeProgram: Program;
+  private experiment: Trial;
   private experimentLoading: boolean = true;
   private actionSelectActive: boolean = false;
 
@@ -141,6 +140,14 @@ export default class ExperimentDetails extends TrialsAndStudiesBase {
     if( !this.experiment.additionalInfo ){return '';}
     return this.experiment.additionalInfo.createdDate;
   }
+  get germplasmCount(): string {
+    if( !this.experiment.additionalInfo ){return '';}
+    return this.experiment.additionalInfo.germplasmCount;
+  }
+  get environmentsCount(): string {
+    if( !this.experiment.additionalInfo ){return '';}
+    return this.experiment.additionalInfo.environmentsCount;
+  }
 
   @Watch('$route')
   async getExperiment () {
@@ -150,9 +157,7 @@ export default class ExperimentDetails extends TrialsAndStudiesBase {
       if (response.isErr()) {
         throw response.value;
       }
-      this.experiment = response.value["trialData"];
-      this.environmentsCount = response.value["environmentsCount"];
-      this.germplasmCount = response.value["germplasmCount"];
+      this.experiment = response.value;
     } catch (err) {
       // Display error that experiment cannot be loaded
       this.$emit('show-error-notification', 'Error while trying to load experiment');

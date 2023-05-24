@@ -65,6 +65,8 @@ export class Trial {
 export class AdditionalInfo {
   createdDate?: string;
   defaultObservationLevel?: string;
+  environmentsCount?: string;
+  germplasmCount?: number;
 
   experimentNumber?: string;
   experimentType?: string;

@@ -28,14 +28,10 @@ export class ExperimentDAO {
         config.method = 'get';
         config.programId = programId;
         config.experimentId = experimentId;
-        // TODO set boolean param for stats
         config.params = {stats: true};
-console.log(config.url);
         try {
             const res = await api.call(config) as Response;
             let { result } = res.data;
-            console.log('ExperimentDAO result');
-            console.log(result);
             return ResultGenerator.success(result);
         } catch (error) {
             return ResultGenerator.err(error);
