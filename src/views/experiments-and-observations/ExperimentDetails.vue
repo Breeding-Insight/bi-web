@@ -153,7 +153,7 @@ export default class ExperimentDetails extends TrialsAndStudiesBase {
   async getExperiment () {
     this.experimentLoading = true;
     try {
-      const response: Result<Error, Trial> = await ExperimentService.getSingleExperiment(this.activeProgram!.id!, this.experimentUUID);
+      const response: Result<Error, Trial> = await ExperimentService.getSingleExperiment(this.activeProgram!.id!, this.experimentUUID, true);
       if (response.isErr()) {
         throw response.value;
       }

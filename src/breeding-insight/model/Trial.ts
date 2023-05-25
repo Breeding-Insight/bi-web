@@ -34,7 +34,7 @@ export class Trial {
   programName?: string;
   startDate?: string;
   trialPUI?: string;
-  additionalInfo?: AdditionalInfo;
+  additionalInfo?: any;
 
 
   constructor(id?: string,
@@ -61,20 +61,4 @@ export class Trial {
       (this.trialName === trial.trialName)
   }
 
-}
-export class AdditionalInfo {
-  createdDate?: string;
-  defaultObservationLevel?: string;
-  environmentsCount?: string;
-  germplasmCount?: number;
-
-  experimentNumber?: string;
-  experimentType?: string;
-
-  createdBy?: AdditionalInfoCreateBy;
-}
-
-export class AdditionalInfoCreateBy {
-  userName?: string;
-  userId?: string;
 }

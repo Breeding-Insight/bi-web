@@ -53,10 +53,6 @@
         </template>
       </b-table-column>
       <b-table-column field="data.listDbId" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-<!--   Per Shawn, remove this link in favor of wrapping the trial title in a link     -->
-<!--        <router-link v-bind:to="{name: 'experiment-details', params: {programId: activeProgram.id, experimentId: BrAPIUtils.getBreedingInsightId(props.row.data.externalReferences,'/trials')}}">-->
-<!--          Details-->
-<!--        </router-link>-->
         <ExperimentObservationsDownloadButton
           v-bind:modal-title="`Download ${props.row.data.trialName}`"
           v-bind:trial-db-id="props.row.data.trialDbId"

@@ -22,13 +22,13 @@ import {Trial} from "@/breeding-insight/model/Trial.ts";
 
 export class ExperimentDAO {
 
-      static async getSingleExperiment(programId: string, experimentId: string): Promise<Result<Error, Trial>> {
+      static async getSingleExperiment(programId: string, experimentId: string, stats: boolean): Promise<Result<Error, Trial>> {
         const config: any = {};
         config.url = `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/brapi/v2/trials/${experimentId}`;
         config.method = 'get';
         config.programId = programId;
         config.experimentId = experimentId;
-        config.params = {stats: true};
+        config.params = {stats: stats};
         try {
             const res = await api.call(config) as Response;
             let { result } = res.data;

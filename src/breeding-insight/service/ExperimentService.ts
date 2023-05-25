@@ -21,10 +21,10 @@ import {Result, ResultGenerator} from "@/breeding-insight/model/Result";
 
 export class ExperimentService {
 
-    static async getSingleExperiment(programId: string, experimentId: string): Promise<Result<Error, Trial>> {
+    static async getSingleExperiment(programId: string, experimentId: string, stats: boolean): Promise<Result<Error, Trial>> {
         if (!programId) {
             return ResultGenerator.err(new Error('Missing or invalid program id'));
         }
-        return await ExperimentDAO.getSingleExperiment(programId, experimentId);
+        return await ExperimentDAO.getSingleExperiment(programId, experimentId, stats);
     }
 }
