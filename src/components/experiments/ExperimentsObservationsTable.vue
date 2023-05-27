@@ -55,7 +55,7 @@
       <b-table-column field="data.listDbId" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
         <ExperimentObservationsDownloadButton
           v-bind:modal-title="`Download ${props.row.data.trialName}`"
-          v-bind:trial-db-id="props.row.data.trialDbId"
+          v-bind:trial-db-id="props.row.data.externalReferences.filter(xref => xref.referenceSource == `breeding-insight.net/trials`)[0].referenceID"
           v-on:show-error-notification="$emit('show-error-notification', $event)"
         >
           Download
@@ -127,6 +127,7 @@ export default class ExperimentsObservationsTable extends Vue {
 
   private filters: any = {};
   private experimentCallStack?: CallStack;
+  private biReferenceSource?: String = process.env.BRAPI_REFERENCE_SOURCE;
 
   private experimentSort!: ExperimentSort;
   private updateSort!: (sort: ExperimentSort) => void;
