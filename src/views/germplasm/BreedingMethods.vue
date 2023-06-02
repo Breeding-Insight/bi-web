@@ -257,7 +257,7 @@
       <template v-slot:edit="{editData, validations}">
         <div v-if="isMethodInUse(editData)">
           <div class="columns is-vcentered">
-            <div class="column has-text-primary">
+            <div class="column has-text-grey-dark">
               <AlertTriangleIcon
                 size="1.2x"
                 class="has-vertical-align-middle"
