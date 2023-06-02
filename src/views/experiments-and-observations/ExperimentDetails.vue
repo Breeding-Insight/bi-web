@@ -23,43 +23,27 @@
     <h1 class="title">
       {{experiment.trialName}}
     </h1>
-    <template>
-      <div class="dropdown is-pulled-right"
-          v-bind:class="{'is-active': actionSelectActive}"
-           v-on:blur="actionSelectActive=false"
-      >
-        <div class="dropdown-trigger"
-             v-on:click.stop="actionSelectActive = !actionSelectActive"
+      <span class="is-pulled-right is-flex" >
+        <router-link
+            v-bind:to="{name: 'experiment-import', params: {programId: activeProgram.id}}"
+            role="menuitem"
+            class="button is-primary is-outlined mr-2"
         >
-          <button class="button" aria-haspopup="true" aria-controls="dropdown-menu"
-                  v-click-outside="hideActionSelector"
-          >
-            <span>Actions</span>
-            <span class="icon is-small">
-              <i class="fas fa-angle-down" aria-hidden="true"></i>
-            </span>
-          </button>
-        </div>
-        <div class="dropdown-menu" id="dropdown-menu" role="menu">
-          <div class="dropdown-content">
-            <router-link
-                v-bind:to="{name: 'experiment-import', params: {programId: activeProgram.id}}"
-                class="dropdown-item"
-                active-class="is-active"
-                role="menuitem"
-            >
-              Import file
-            </router-link>
-            <a class="dropdown-item"
-              v-on:click="downloadFile"
-            >
-              Download file
-            </a>
-          </div>
-        </div>
-      </div>
-    </template>
-    <template v-if="!experimentLoading && experiment!=null">
+          Import file
+        </router-link>
+
+        <ExperimentObservationsDownloadButton
+            v-bind:modal-title="`Download ${experiment.trialName}`"
+            v-bind:trial-db-id="experimentUUID"
+            v-on:show-error-notification ="$emit('show-error-notification', $event)"
+            anchor-class="button is-primary is-outlined"
+        >
+          Download file
+        </ExperimentObservationsDownloadButton>
+      </span>
+
+
+    <div v-if="!experimentLoading && experiment!=null">
       <br/>
       <div class="columns is-multiline is-align-items-stretch mt-4">
         <article class="column ">
@@ -83,7 +67,7 @@
         </article>
       </div>
 
-    </template>
+    </div>
   </div>
 </template>
 
@@ -97,10 +81,12 @@ import {Result} from "@/breeding-insight/model/Result";
 import {ExperimentService} from "@/breeding-insight/service/ExperimentService";
 import ClickOutside from 'vue-click-outside';
 import {Trial} from "@/breeding-insight/model/Trial";
+import ExperimentObservationsDownloadButton from "@/components/experiments/ExperimentObservationsDownloadButton.vue";
 
 @Component({
   components: {
-    PlusCircleIcon
+    PlusCircleIcon,
+    ExperimentObservationsDownloadButton
   },
   computed: {
     ...mapGetters([

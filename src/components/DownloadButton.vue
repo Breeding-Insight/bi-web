@@ -50,6 +50,7 @@
     <a
       href="javascript:void(0)"
       v-on:click="openDownloadModal"
+      v-bind:class="anchorClass"
     >
       <slot />
     </a>
@@ -76,6 +77,8 @@ export default class DownloadButton extends Vue {
   modalClass?: string;
   @Prop()
   download!: () => boolean;
+  @Prop()
+  anchorClass?: string;
 
   private modalActive: boolean = false;
 
