@@ -18,9 +18,9 @@
 <template>
   <div class="breeding-methods">
     <WarningModal
-        v-bind:active.sync="deleteActive"
-        v-bind:msg-title="'Remove Breeding Method?'"
-        v-on:deactivate="cancelDelete"
+      v-bind:active.sync="deleteActive"
+      v-bind:msg-title="'Remove Breeding Method?'"
+      v-on:deactivate="cancelDelete"
     >
       <section>
         <p class="has-text-dark">
@@ -30,14 +30,14 @@
       <div class="columns">
         <div class="column is-whole has-text-centered buttons">
           <button
-              class="button is-danger"
-              v-on:click="modalDeleteHandler()"
+            class="button is-danger"
+            v-on:click="modalDeleteHandler()"
           >
             <strong>Yes, delete</strong>
           </button>
           <button
-              class="button"
-              v-on:click="cancelDelete"
+            class="button"
+            v-on:click="cancelDelete"
           >
             Cancel
           </button>
@@ -47,18 +47,18 @@
 
     <div class="columns">
       <div class="column is-whole has-text-right buttons">
-<!-- BI-1779 - Removing the ability to choose predefined methods for a program until we make the germplasm import template dynamically generated -->
-<!--        <button-->
-<!--            v-if="$ability.can('update', 'ProgramConfiguration')"-->
-<!--            class="button is-primary"-->
-<!--            v-on:click="openModal"-->
-<!--        >-->
-<!--          Choose Predefined Methods-->
-<!--        </button>-->
+        <!-- BI-1779 - Removing the ability to choose predefined methods for a program until we make the germplasm import template dynamically generated -->
+        <!--        <button-->
+        <!--            v-if="$ability.can('update', 'ProgramConfiguration')"-->
+        <!--            class="button is-primary"-->
+        <!--            v-on:click="openModal"-->
+        <!--        >-->
+        <!--          Choose Predefined Methods-->
+        <!--        </button>-->
         <button
-            v-if="$ability.can('create', 'ProgramConfiguration')"
-            class="button is-primary"
-            v-on:click="showNewMethod"
+          v-if="$ability.can('create', 'ProgramConfiguration')"
+          class="button is-primary"
+          v-on:click="showNewMethod"
         >
           Create Breeding Method
         </button>
@@ -66,55 +66,55 @@
     </div>
 
     <NewDataForm
-        v-if="newMethodActive"
-        v-bind:row-validations="newMethodValidations"
-        v-bind:new-record.sync="newMethod"
-        v-bind:data-form-state="newMethodFormState"
-        v-on:submit="saveMethod"
-        v-on:cancel="cancelNewMethod"
-        v-on:show-error-notification="$emit('show-error-notification', $event)"
+      v-if="newMethodActive"
+      v-bind:row-validations="newMethodValidations"
+      v-bind:new-record.sync="newMethod"
+      v-bind:data-form-state="newMethodFormState"
+      v-on:submit="saveMethod"
+      v-on:cancel="cancelNewMethod"
+      v-on:show-error-notification="$emit('show-error-notification', $event)"
     >
       <template v-slot="validations">
         <div class="columns">
           <div class="column is-one-fourth">
             <BasicInputField
-                v-model="newMethod.name"
-                v-bind:validations="validations.name"
-                v-bind:field-name="'Name'"
-                v-bind:field-help="''"
+              v-model="newMethod.name"
+              v-bind:validations="validations.name"
+              v-bind:field-name="'Name'"
+              v-bind:field-help="''"
             />
           </div>
           <div class="column is-one-fourth">
             <BasicInputField
-                v-model="newMethod.abbreviation"
-                v-bind:validations="validations.abbreviation"
-                v-bind:field-name="'Abbreviation'"
-                v-bind:field-help="'No more than 3 characters'"
+              v-model="newMethod.abbreviation"
+              v-bind:validations="validations.abbreviation"
+              v-bind:field-name="'Abbreviation'"
+              v-bind:field-help="'No more than 3 characters'"
             />
           </div>
           <div class="column is-one-fourth">
             <BasicInputField
-                v-model="newMethod.description"
-                v-bind:validations="validations.description"
-                v-bind:field-name="'Description'"
+              v-model="newMethod.description"
+              v-bind:validations="validations.description"
+              v-bind:field-name="'Description'"
             />
           </div>
         </div>
         <div class="columns">
           <div class="column is-one-fourth">
             <BasicSelectField
-                v-model="newMethod.category"
-                v-bind:validations="validations.category"
-                v-bind:options="categories"
-                v-bind:field-name="'Category'"
+              v-model="newMethod.category"
+              v-bind:validations="validations.category"
+              v-bind:options="categories"
+              v-bind:field-name="'Category'"
             />
           </div>
           <div class="column is-one-fourth">
             <BasicSelectField
-                v-model="newMethod.geneticDiversity"
-                v-bind:validations="validations.geneticDiversity"
-                v-bind:options="diversities"
-                v-bind:field-name="'Genetic Diversity'"
+              v-model="newMethod.geneticDiversity"
+              v-bind:validations="validations.geneticDiversity"
+              v-bind:options="diversities"
+              v-bind:field-name="'Genetic Diversity'"
             />
           </div>
         </div>
@@ -122,135 +122,192 @@
     </NewDataForm>
 
     <ExpandableTable
-        v-bind:records.sync="programBreedingMethods"
-        v-bind:loading="loading"
-        v-bind:pagination="paginationController"
-        v-bind:default-sort="['data.name', 'asc']"
-        v-bind:debounce-search="400"
-        v-bind:editable="$ability.can('update', 'ProgramConfiguration')"
-        v-bind:row-editable="isRowEditable"
-        v-bind:data-form-state="editMethodFormState"
-        v-bind:row-validations="newMethodValidations"
-        v-bind:archivable="$ability.can('update', 'ProgramConfiguration')"
-        v-bind:row-archivable="isRowArchivable"
-        v-bind:deactivate-link-text="'Delete'"
-        v-on:submit="updateMethod($event)"
-        v-on:show-error-notification="$emit('show-error-notification', $event)"
-        v-on:remove="displayWarning($event)"
+      v-bind:records.sync="programBreedingMethods"
+      v-bind:loading="loading"
+      v-bind:pagination="paginationController"
+      v-bind:default-sort="['data.name', 'asc']"
+      v-bind:debounce-search="400"
+      v-bind:editable="$ability.can('update', 'ProgramConfiguration')"
+      v-bind:row-editable="isRowEditable"
+      v-bind:data-form-state="editMethodFormState"
+      v-bind:row-validations="newMethodValidations"
+      v-bind:archivable="$ability.can('update', 'ProgramConfiguration')"
+      v-bind:row-archivable="isRowArchivable"
+      v-bind:deactivate-link-text="'Delete'"
+      v-on:submit="updateMethod($event)"
+      v-on:show-error-notification="$emit('show-error-notification', $event)"
+      v-on:remove="displayWarning($event)"
     >
-      <b-table-column field="scope" label="Scope" searchable :customSearch="filterByScope" :th-attrs="(column) => ({scope:'col'})">
+      <b-table-column
+        field="scope"
+        label="Scope"
+        searchable
+        :custom-search="filterByScope"
+        :th-attrs="(column) => ({scope:'col'})"
+      >
         <template v-slot="props">
-          <span class="tag" :class="progressTagType(props.row.data.programId)">
+          <span
+            class="tag"
+            :class="progressTagType(props.row.data.programId)"
+          >
             {{ formatOwner(props.row.data.programId) }}
           </span>
         </template>
         <template v-slot:searchable="props">
           <div class="select">
             <select
-                v-model="props.filters[props.column.field]"
+              v-model="props.filters[props.column.field]"
+            >
+              <option value="" />
+              <option value="SYSTEM">
+                System
+              </option>
+              <option value="PROGRAM">
+                Program
+              </option>
+            </select>
+          </div>
+        </template>
+      </b-table-column>
+      <b-table-column
+        v-slot="props"
+        field="data.name"
+        label="Name"
+        sortable
+        searchable
+        :th-attrs="(column) => ({scope:'col'})"
+      >
+        {{ props.row.data.name }}
+      </b-table-column>
+      <b-table-column
+        v-slot="props"
+        field="data.abbreviation"
+        label="Abbreviation"
+        sortable
+        searchable
+        :th-attrs="(column) => ({scope:'col'})"
+      >
+        {{ props.row.data.abbreviation }}
+      </b-table-column>
+      <b-table-column
+        v-slot="props"
+        field="data.description"
+        label="Description"
+        sortable
+        searchable
+        :th-attrs="(column) => ({scope:'col'})"
+      >
+        {{ props.row.data.description }}
+      </b-table-column>
+      <b-table-column
+        field="data.category"
+        label="Category"
+        sortable
+        searchable
+        :th-attrs="(column) => ({scope:'col'})"
+      >
+        <template v-slot="props">
+          {{ props.row.data.category }}
+        </template>
+        <template v-slot:searchable="props">
+          <div class="select">
+            <select
+              v-model="props.filters[props.column.field]"
+            >
+              <option value="" />
+              <option
+                v-for="cat in categories"
+                :key="cat"
+                :value="cat"
               >
-              <option value=""></option>
-              <option value="SYSTEM">System</option>
-              <option value="PROGRAM">Program</option>
+                {{ cat }}
+              </option>
             </select>
           </div>
         </template>
       </b-table-column>
-      <b-table-column field="data.name" label="Name" sortable searchable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-        {{ props.row.data.name}}
-      </b-table-column>
-      <b-table-column field="data.abbreviation" label="Abbreviation" sortable searchable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-        {{ props.row.data.abbreviation}}
-      </b-table-column>
-      <b-table-column field="data.description" label="Description" sortable searchable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-        {{ props.row.data.description}}
-      </b-table-column>
-      <b-table-column field="data.category" label="Category" sortable searchable :th-attrs="(column) => ({scope:'col'})">
+      <b-table-column
+        field="data.geneticDiversity"
+        label="Genetic Diversity"
+        sortable
+        searchable
+        :th-attrs="(column) => ({scope:'col'})"
+      >
         <template v-slot="props">
-          {{ props.row.data.category}}
+          {{ props.row.data.geneticDiversity }}
         </template>
         <template v-slot:searchable="props">
           <div class="select">
             <select
-                v-model="props.filters[props.column.field]"
+              v-model="props.filters[props.column.field]"
             >
-              <option value=""></option>
-              <option v-for="cat in categories" :key="cat" :value="cat">{{ cat }}</option>
-            </select>
-          </div>
-        </template>
-      </b-table-column>
-      <b-table-column field="data.geneticDiversity" label="Genetic Diversity" sortable searchable :th-attrs="(column) => ({scope:'col'})">
-        <template v-slot="props">
-          {{ props.row.data.geneticDiversity}}
-        </template>
-        <template v-slot:searchable="props">
-          <div class="select">
-            <select
-                v-model="props.filters[props.column.field]"
-            >
-              <option value=""></option>
-              <option v-for="div in diversities" :key="div" :value="div">{{ div }}</option>
+              <option value="" />
+              <option
+                v-for="div in diversities"
+                :key="div"
+                :value="div"
+              >
+                {{ div }}
+              </option>
             </select>
           </div>
         </template>
       </b-table-column>
 
       <template v-slot:edit="{editData, validations}">
-
         <div v-if="isMethodInUse(editData)">
-              <div class="columns is-vcentered">
-                <div class="column has-text-primary">
-                    <AlertTriangleIcon
-                        size="1.2x"
-                        class="has-vertical-align-middle"
-                    /> Breeding method is in use. Deletion disabled.
-                </div>
-              </div>
+          <div class="columns is-vcentered">
+            <div class="column has-text-primary">
+              <AlertTriangleIcon
+                size="1.2x"
+                class="has-vertical-align-middle"
+              /> Breeding method is in use. Deletion disabled.
+            </div>
+          </div>
         </div>
 
         <div class="columns">
           <div class="column is-one-fourth">
             <BasicInputField
-                v-model="editData.name"
-                v-bind:validations="validations.name"
-                v-bind:field-name="'Name'"
-                v-bind:field-help="''"
+              v-model="editData.name"
+              v-bind:validations="validations.name"
+              v-bind:field-name="'Name'"
+              v-bind:field-help="''"
             />
           </div>
           <div class="column is-one-fourth">
             <BasicInputField
-                v-model="editData.abbreviation"
-                v-bind:validations="validations.abbreviation"
-                v-bind:field-name="'Abbreviation'"
-                v-bind:field-help="'No more than 3 characters'"
+              v-model="editData.abbreviation"
+              v-bind:validations="validations.abbreviation"
+              v-bind:field-name="'Abbreviation'"
+              v-bind:field-help="'No more than 3 characters'"
             />
           </div>
           <div class="column is-one-fourth">
             <BasicInputField
-                v-model="editData.description"
-                v-bind:validations="validations.description"
-                v-bind:field-name="'Description'"
+              v-model="editData.description"
+              v-bind:validations="validations.description"
+              v-bind:field-name="'Description'"
             />
           </div>
         </div>
         <div class="columns">
           <div class="column is-one-fourth">
             <BasicSelectField
-                v-model="editData.category"
-                v-bind:selected-id="editData.category"
-                v-bind:validations="validations.category"
-                v-bind:options="categories"
-                v-bind:field-name="'Category'"
+              v-model="editData.category"
+              v-bind:selected-id="editData.category"
+              v-bind:validations="validations.category"
+              v-bind:options="categories"
+              v-bind:field-name="'Category'"
             />
           </div>
           <div class="column is-one-fourth">
             <BasicSelectField
-                v-model="editData.geneticDiversity"
-                v-bind:selected-id="editData.geneticDiversity"
-                v-bind:validations="validations.geneticDiversity"
-                v-bind:options="diversities"
-                v-bind:field-name="'Genetic Diversity'"
+              v-model="editData.geneticDiversity"
+              v-bind:selected-id="editData.geneticDiversity"
+              v-bind:validations="validations.geneticDiversity"
+              v-bind:options="diversities"
+              v-bind:field-name="'Genetic Diversity'"
             />
           </div>
         </div>
@@ -262,93 +319,93 @@
         </p>
       </template>
     </ExpandableTable>
-<!-- BI-1779 - Removing the ability to choose predefined methods for a program until we make the germplasm import template dynamically generated -->
-<!--    <GenericModal-->
-<!--        v-bind:active.sync="showEnableSystemMethods"-->
-<!--        v-bind:msg-title="'Enable/Disable Predefined Breeding Methods'"-->
-<!--        v-on:deactivate="showEnableSystemMethods = false"-->
-<!--        v-bind:modalClass="'enable-system-methods'"-->
-<!--    >-->
-<!--      <div v-if="inUseBreedingMethods.length > 0">-->
-<!--        <article class="message is-warning">-->
-<!--          <div class="message-body">-->
-<!--            <div class="columns is-vcentered">-->
-<!--              <div class="column">-->
-<!--                <div class="has-text-dark">-->
-<!--                  <AlertTriangleIcon-->
-<!--                      size="1x"-->
-<!--                      class="has-vertical-align-middle"-->
-<!--                  /> Some breeding methods cannot be deactivated because there are germplasm records using those methods in {{activeProgram.name}}-->
-<!--                </div>-->
-<!--              </div>-->
-<!--            </div>-->
-<!--          </div>-->
-<!--        </article>-->
-<!--      </div>-->
-<!--      <ExpandableTable-->
-<!--          v-bind:records.sync="systemBreedingMethods"-->
-<!--          v-bind:pagination="systemPaginationController"-->
-<!--          v-bind:default-sort="['data.name', 'asc']"-->
-<!--          v-bind:debounce-search="400"-->
-<!--          :checked-rows.sync="programEnabledSystemMethods"-->
-<!--          :custom-is-checked="shouldCheck"-->
-<!--          checkable-->
-<!--          :checkbox-position="'left'"-->
-<!--          :checkbox-type="'is-primary'"-->
-<!--          :is-row-checkable="row => !isMethodInUse(row.data)"-->
-<!--      >-->
-<!--        <b-table-column field="data.name" label="Name" sortable searchable v-slot="props" :th-attrs="(column) => ({scope:'col'})">-->
-<!--          {{ props.row.data.name}}-->
-<!--        </b-table-column>-->
-<!--        <b-table-column field="data.abbreviation" label="Abbreviation" sortable searchable v-slot="props" :th-attrs="(column) => ({scope:'col'})">-->
-<!--          {{ props.row.data.abbreviation}}-->
-<!--        </b-table-column>-->
-<!--        <b-table-column field="data.description" label="Description" sortable searchable v-slot="props" :th-attrs="(column) => ({scope:'col'})">-->
-<!--          {{ props.row.data.description}}-->
-<!--        </b-table-column>-->
-<!--        <b-table-column field="data.category" label="Category" sortable searchable :th-attrs="(column) => ({scope:'col'})">-->
-<!--          <template v-slot="props">-->
-<!--            {{ props.row.data.category}}-->
-<!--          </template>-->
-<!--          <template v-slot:searchable="props">-->
-<!--            <div class="select">-->
-<!--              <select-->
-<!--                  v-model="props.filters[props.column.field]"-->
-<!--              >-->
-<!--                <option value=""></option>-->
-<!--                <option v-for="cat in categories" :key="cat" :value="cat">{{ cat }}</option>-->
-<!--              </select>-->
-<!--            </div>-->
-<!--          </template>-->
-<!--        </b-table-column>-->
-<!--        <b-table-column field="data.geneticDiversity" label="Genetic Diversity" sortable searchable :th-attrs="(column) => ({scope:'col'})">-->
-<!--          <template v-slot="props">-->
-<!--            {{ props.row.data.geneticDiversity}}-->
-<!--          </template>-->
-<!--          <template v-slot:searchable="props">-->
-<!--            <div class="select">-->
-<!--              <select-->
-<!--                  v-model="props.filters[props.column.field]"-->
-<!--              >-->
-<!--                <option value=""></option>-->
-<!--                <option v-for="div in diversities" :key="div" :value="div">{{ div }}</option>-->
-<!--              </select>-->
-<!--            </div>-->
-<!--          </template>-->
-<!--        </b-table-column>-->
+    <!-- BI-1779 - Removing the ability to choose predefined methods for a program until we make the germplasm import template dynamically generated -->
+    <!--    <GenericModal-->
+    <!--        v-bind:active.sync="showEnableSystemMethods"-->
+    <!--        v-bind:msg-title="'Enable/Disable Predefined Breeding Methods'"-->
+    <!--        v-on:deactivate="showEnableSystemMethods = false"-->
+    <!--        v-bind:modalClass="'enable-system-methods'"-->
+    <!--    >-->
+    <!--      <div v-if="inUseBreedingMethods.length > 0">-->
+    <!--        <article class="message is-warning">-->
+    <!--          <div class="message-body">-->
+    <!--            <div class="columns is-vcentered">-->
+    <!--              <div class="column">-->
+    <!--                <div class="has-text-dark">-->
+    <!--                  <AlertTriangleIcon-->
+    <!--                      size="1x"-->
+    <!--                      class="has-vertical-align-middle"-->
+    <!--                  /> Some breeding methods cannot be deactivated because there are germplasm records using those methods in {{activeProgram.name}}-->
+    <!--                </div>-->
+    <!--              </div>-->
+    <!--            </div>-->
+    <!--          </div>-->
+    <!--        </article>-->
+    <!--      </div>-->
+    <!--      <ExpandableTable-->
+    <!--          v-bind:records.sync="systemBreedingMethods"-->
+    <!--          v-bind:pagination="systemPaginationController"-->
+    <!--          v-bind:default-sort="['data.name', 'asc']"-->
+    <!--          v-bind:debounce-search="400"-->
+    <!--          :checked-rows.sync="programEnabledSystemMethods"-->
+    <!--          :custom-is-checked="shouldCheck"-->
+    <!--          checkable-->
+    <!--          :checkbox-position="'left'"-->
+    <!--          :checkbox-type="'is-primary'"-->
+    <!--          :is-row-checkable="row => !isMethodInUse(row.data)"-->
+    <!--      >-->
+    <!--        <b-table-column field="data.name" label="Name" sortable searchable v-slot="props" :th-attrs="(column) => ({scope:'col'})">-->
+    <!--          {{ props.row.data.name}}-->
+    <!--        </b-table-column>-->
+    <!--        <b-table-column field="data.abbreviation" label="Abbreviation" sortable searchable v-slot="props" :th-attrs="(column) => ({scope:'col'})">-->
+    <!--          {{ props.row.data.abbreviation}}-->
+    <!--        </b-table-column>-->
+    <!--        <b-table-column field="data.description" label="Description" sortable searchable v-slot="props" :th-attrs="(column) => ({scope:'col'})">-->
+    <!--          {{ props.row.data.description}}-->
+    <!--        </b-table-column>-->
+    <!--        <b-table-column field="data.category" label="Category" sortable searchable :th-attrs="(column) => ({scope:'col'})">-->
+    <!--          <template v-slot="props">-->
+    <!--            {{ props.row.data.category}}-->
+    <!--          </template>-->
+    <!--          <template v-slot:searchable="props">-->
+    <!--            <div class="select">-->
+    <!--              <select-->
+    <!--                  v-model="props.filters[props.column.field]"-->
+    <!--              >-->
+    <!--                <option value=""></option>-->
+    <!--                <option v-for="cat in categories" :key="cat" :value="cat">{{ cat }}</option>-->
+    <!--              </select>-->
+    <!--            </div>-->
+    <!--          </template>-->
+    <!--        </b-table-column>-->
+    <!--        <b-table-column field="data.geneticDiversity" label="Genetic Diversity" sortable searchable :th-attrs="(column) => ({scope:'col'})">-->
+    <!--          <template v-slot="props">-->
+    <!--            {{ props.row.data.geneticDiversity}}-->
+    <!--          </template>-->
+    <!--          <template v-slot:searchable="props">-->
+    <!--            <div class="select">-->
+    <!--              <select-->
+    <!--                  v-model="props.filters[props.column.field]"-->
+    <!--              >-->
+    <!--                <option value=""></option>-->
+    <!--                <option v-for="div in diversities" :key="div" :value="div">{{ div }}</option>-->
+    <!--              </select>-->
+    <!--            </div>-->
+    <!--          </template>-->
+    <!--        </b-table-column>-->
 
-<!--        <template v-slot:emptyMessage>-->
-<!--          <p class="has-text-weight-bold">-->
-<!--            No breeding methods exist-->
-<!--          </p>-->
-<!--        </template>-->
-<!--      </ExpandableTable>-->
+    <!--        <template v-slot:emptyMessage>-->
+    <!--          <p class="has-text-weight-bold">-->
+    <!--            No breeding methods exist-->
+    <!--          </p>-->
+    <!--        </template>-->
+    <!--      </ExpandableTable>-->
 
-<!--      <template v-slot:footer>-->
-<!--        <button class="button is-success" :class="{'is-loading': savingSystemMethods}" v-on:click="saveEnabledMethods">Save changes</button>-->
-<!--        <button class="button" v-on:click="showEnableSystemMethods = false">Cancel</button>-->
-<!--      </template>-->
-<!--    </GenericModal>-->
+    <!--      <template v-slot:footer>-->
+    <!--        <button class="button is-success" :class="{'is-loading': savingSystemMethods}" v-on:click="saveEnabledMethods">Save changes</button>-->
+    <!--        <button class="button" v-on:click="showEnableSystemMethods = false">Cancel</button>-->
+    <!--      </template>-->
+    <!--    </GenericModal>-->
   </div>
 </template>
 
