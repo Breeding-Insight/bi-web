@@ -121,23 +121,6 @@
       </template>
     </NewDataForm>
 
-    <div v-if="$ability.can('update', 'ProgramConfiguration') && inUseBreedingMethods.length > 0">
-      <article class="message is-warning">
-        <div class="message-body">
-          <div class="columns is-vcentered">
-            <div class="column">
-              <div class="has-text-dark">
-                <AlertTriangleIcon
-                    size="1x"
-                    class="has-vertical-align-middle"
-                /> Some breeding methods cannot be edited because there are germplasm records using those methods in {{activeProgram.name}}
-              </div>
-            </div>
-          </div>
-        </div>
-      </article>
-    </div>
-
     <ExpandableTable
         v-bind:records.sync="programBreedingMethods"
         v-bind:loading="loading"
@@ -214,6 +197,18 @@
       </b-table-column>
 
       <template v-slot:edit="{editData, validations}">
+
+        <div v-if="isMethodInUse(editData)">
+              <div class="columns is-vcentered">
+                <div class="column has-text-primary">
+                    <AlertTriangleIcon
+                        size="1.2x"
+                        class="has-vertical-align-middle"
+                    /> Breeding method is in use. Deletion disabled.
+                </div>
+              </div>
+        </div>
+
         <div class="columns">
           <div class="column is-one-fourth">
             <BasicInputField
