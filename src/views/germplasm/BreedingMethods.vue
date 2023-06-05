@@ -16,7 +16,7 @@
   -->
 
 <template>
-  <div class="breeding-methods">
+  <div id="breeding-methods">
     <WarningModal
       v-bind:active.sync="deleteActive"
       v-bind:msg-title="'Remove Breeding Method?'"
@@ -257,7 +257,10 @@
       <template v-slot:edit="{editData, validations}">
         <div v-if="isMethodInUse(editData)">
           <div class="columns is-vcentered">
-            <div class="column has-text-grey-dark">
+            <div
+              id="method-in-use-message"
+              class="column has-text-grey-dark"
+            >
               <AlertTriangleIcon
                 size="1.2x"
                 class="has-vertical-align-middle"
