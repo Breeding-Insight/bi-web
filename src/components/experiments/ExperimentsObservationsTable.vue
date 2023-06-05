@@ -33,7 +33,10 @@
       v-on:search="initSearch"
     >
       <b-table-column label="Title" field="name" cell-class="fixed-width-wrapped" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
-        {{ props.row.data.trialName }}
+        <router-link v-bind:to="{name: 'experiment-details', params: {programId: activeProgram.id, experimentId: BrAPIUtils.getBreedingInsightId(props.row.data.externalReferences,'/trials')}}">
+          {{ props.row.data.trialName }}
+        </router-link>
+
       </b-table-column>
       <b-table-column label="Status" field="active" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" >
         {{ getStatus(props.row.data.active) }}
@@ -57,6 +60,7 @@
         >
           Download
         </ExperimentObservationsDownloadButton>
+
       </b-table-column>
 
       <template v-slot:emptyMessage>
@@ -80,6 +84,7 @@ import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
 import {Trial} from '@/breeding-insight/model/Trial'
 import ExpandableTable from '@/components/tables/expandableTable/ExpandableTable.vue';
 import {CallStack} from "@/breeding-insight/utils/CallStack";
+import {BrAPIUtils} from "@/breeding-insight/utils/BrAPIUtils";
 import {
   ExperimentSort,
   Sort,
@@ -106,7 +111,7 @@ import ExperimentObservationsDownloadButton from "@/components/experiments/Exper
       updateSort: UPDATE_EXPERIMENT_SORT
     })
   },
-  data: () => ({Sort})
+  data: () => ({Sort, BrAPIUtils})
 })
 export default class ExperimentsObservationsTable extends Vue {
 
@@ -170,6 +175,7 @@ export default class ExperimentsObservationsTable extends Vue {
       // Account for brapi 0 indexing of paging
       this.paginationController.currentPage = this.paginationController.currentPage.valueOf() + 1;
       this.experiments = response.result.data;
+      console.log( this.experiments);
       this.experimentsLoading = false;
 
     } catch (err) {

@@ -92,7 +92,7 @@ import NewDataForm from '@/components/forms/NewDataForm.vue';
 import BasicInputField from '@/components/forms/BasicInputField.vue';
 import BasicSelectField from '@/components/forms/BasicSelectField.vue';
 import FileSelector from '@/components/file-import/FileSelector.vue';
-import { GermplasmUtils } from '@/breeding-insight/utils/GermplasmUtils';
+import { BrAPIUtils } from '@/breeding-insight/utils/BrAPIUtils';
 import { required } from 'vuelidate/lib/validators';
 import { ImportResponse } from '@/breeding-insight/model/import/ImportResponse';
 import { GenoService } from '@/breeding-insight/service/GenoService';
@@ -133,7 +133,7 @@ export default class ImportExperiment extends ProgramsBase {
     let expResponse = await BrAPIService.get(BrAPIType.EXPERIMENT, this.activeProgram!.id!, { field: undefined, order: SortOrder.Ascending }, { page: 0, pageSize: 1000 }, {"metadata": false});
     if (expResponse.result && expResponse.result.data) {
       this.experimentOptions = expResponse.result.data.map((exp: Trial) => {
-        let breedingInsightId = GermplasmUtils.getBreedingInsightId(exp.externalReferences!, "/trials");
+        let breedingInsightId = BrAPIUtils.getBreedingInsightId(exp.externalReferences!, "/trials");
         return new ExperimentOption({
           id: breedingInsightId!,
           name: exp.trialName!

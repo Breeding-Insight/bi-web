@@ -17,7 +17,7 @@
       </b-table-column>
       <b-table-column field="accessionNumber" label="GID" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
         <GermplasmLink
-            v-bind:germplasmUUID="GermplasmUtils.getBreedingInsightId(props.row.data.externalReferences)"
+            v-bind:germplasmUUID="BrAPIUtils.getBreedingInsightId(props.row.data.externalReferences)"
             v-bind:germplasmGID="props.row.data.accessionNumber"
         >
         </GermplasmLink>
@@ -53,7 +53,7 @@
         {{ props.row.data.additionalInfo.createdBy.userName }}
       </b-table-column>
       <b-table-column v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-        <router-link v-bind:to="{name: 'germplasm-details', params: {programId: activeProgram.id, germplasmId: GermplasmUtils.getBreedingInsightId(props.row.data.externalReferences)}}">
+        <router-link v-bind:to="{name: 'germplasm-details', params: {programId: activeProgram.id, germplasmId: BrAPIUtils.getBreedingInsightId(props.row.data.externalReferences)}}">
           Show Details
         </router-link>
       </b-table-column>
@@ -77,7 +77,6 @@ import {StringFormatters} from "@/breeding-insight/utils/StringFormatters";
 import {TraitStringFormatters} from "@/breeding-insight/utils/TraitStringFormatters";
 import ReportTable from "@/components/report/ReportTable.vue";
 import {Program} from "@/breeding-insight/model/Program";
-import {BrAPIService, BrAPIType} from "@/breeding-insight/service/BrAPIService";
 import {Germplasm} from "@/breeding-insight/brapi/model/germplasm";
 import {BiResponse} from "@/breeding-insight/model/BiResponse";
 import ExpandableTable from "@/components/tables/expandableTable/ExpandableTable.vue";
@@ -85,6 +84,7 @@ import {PaginationController} from "@/breeding-insight/model/view_models/Paginat
 import {Pedigree} from "@/breeding-insight/model/import/germplasm/Pedigree";
 import GermplasmLink from '@/components/germplasm/GermplasmLink.vue'
 import {GermplasmUtils} from '@/breeding-insight/utils/GermplasmUtils';
+import {BrAPIUtils} from "@/breeding-insight/utils/BrAPIUtils";
 import {CallStack} from "@/breeding-insight/utils/CallStack";
 import {
   GermplasmSort,
@@ -92,7 +92,6 @@ import {
   Sort
 } from "@/breeding-insight/model/Sort";
 import {UPDATE_GERMPLASM_SORT} from "@/store/sorting/mutation-types";
-import {GermplasmService} from "@/breeding-insight/service/GermplasmService";
 import { PaginationQuery } from '@/breeding-insight/model/PaginationQuery';
 import {GermplasmFilter} from "@/breeding-insight/model/GermplasmFilter";
 
@@ -113,7 +112,7 @@ import {GermplasmFilter} from "@/breeding-insight/model/GermplasmFilter";
       updateSort: UPDATE_GERMPLASM_SORT
     })
   },
-  data: () => ({Trait, StringFormatters, TraitStringFormatters, Pedigree, GermplasmUtils, Sort})
+  data: () => ({Trait, StringFormatters, TraitStringFormatters, Pedigree, GermplasmUtils, BrAPIUtils, Sort})
 })
 export default class GermplasmTable extends Vue {
 
