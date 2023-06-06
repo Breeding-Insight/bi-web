@@ -193,6 +193,7 @@ export default class ImportTemplate extends ProgramsBase {
   private previewTotalRows: number = 0;
   private newObjectCounts: any = [];
   private dynamicColumns: string[] | undefined = [];
+  private errorFileName: string = "BLANK";
 
   private file : File | null = null;
   private import_errors: ValidationError | String | null = null;
@@ -263,6 +264,7 @@ export default class ImportTemplate extends ProgramsBase {
             }
           },
           [ImportState.IMPORT_ERROR]: {
+            entry: ImportAction.RESET,
             on: {
               [ImportEvent.IMPORT_STARTED]: ImportState.IMPORTING
             }
@@ -311,8 +313,9 @@ export default class ImportTemplate extends ProgramsBase {
 
   @Watch('file')
   onFileChanged(value: string, oldValue: string) {
+    this.errorFileName = value.name;
     if (oldValue === null && value !== null) {
-      this.importService.send(ImportEvent.FILE_SELECTED);
+       this.importService.send(ImportEvent.FILE_SELECTED);
     }
   }
 
@@ -323,6 +326,7 @@ export default class ImportTemplate extends ProgramsBase {
   async upload() {
     //New button submit, clear prior notifications
     this.$store.commit( DEACTIVATE_ALL_NOTIFICATIONS );
+    console.log("I'm here,.,.,.,.,,.,.,.,.,.,.,.,.,.,.,.,.,.,.,1.");
 
     try {
       await this.getSystemImportTemplateMapping();
@@ -339,12 +343,17 @@ export default class ImportTemplate extends ProgramsBase {
         }
         this.importService.send(ImportEvent.IMPORT_ERROR);
       }
+      console.log("I'm here,.,.,.,.,,.,.,.,.,.,.,.,.,.,.,.,.,.,.,end.");
+
       // this.importService.send(ImportEvent.IMPORT_SUCCESS) is in getDataUpload()
     } catch(e) {
       if (e.response && e.response.status == 422 && e.response.data && e.response.data.rowErrors) {
+        console.log("I'm here,.,.,.,.,,.,.,.,.,.,.,.,.,.,.,.,.,.,.,2.");
         this.import_errors = ValidationErrorService.parseError(e);
         this.importService.send(ImportEvent.IMPORT_ERROR);
+        this.$emit('show-error-notification',"Multiple errors in file, "+this.errorFileName+".  See below....." );
       } else if (e.response && e.response.status == 422 && e.response.statusText) {
+        console.log("......show error......" + e.response.statusText);
         this.$log.error(e);
         this.$emit('show-error-notification', e.response.statusText);
       } else if (e.response.status == 400 && e.response && e.response.data && e.response.data.message) {
@@ -357,6 +366,7 @@ export default class ImportTemplate extends ProgramsBase {
 
       this.importService.send(ImportEvent.IMPORT_ERROR);
     }
+
   }
 
   handleAbortEvent() {

@@ -44,7 +44,9 @@
         </div>
       </div>
     </WarningModal>
-
+    HI........
+    {{state}}
+    there.......
     <template v-if="state === ImportState.CHOOSE_FILE || state === ImportState.FILE_CHOSEN">
       <h1 class="title" v-if="showTitle">Import Ontology</h1>
       <ImportInfoTemplateMessageBox v-bind:import-type-name="'Ontology'"
@@ -87,7 +89,7 @@
         <br/>Prepare ontology information for import using the provided template.
       </ImportInfoTemplateMessageBox>
         <div class="box">
-          <FileSelectMessageBox v-model="file"
+          <FileSelectMessageBox v-model="undefined"
                                 v-bind:fileTypes="'.csv, .xls, .xlsx'"
                                 v-bind:errors="import_errors"
                                 v-on:import="importService.send(ImportEvent.IMPORT_STARTED)"/>
