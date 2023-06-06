@@ -55,7 +55,7 @@
       <b-table-column field="data.listDbId" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
         <ExperimentObservationsDownloadButton
           v-bind:modal-title="`Download ${props.row.data.trialName}`"
-          v-bind:trial-db-id="props.row.data.externalReferences.filter(xref => xref.referenceSource == `breeding-insight.net/trials`)[0].referenceID"
+          v-bind:trial-db-id="GermplasmUtils.getBreedingInsightId(props.row.data.externalReferences, '/trials')"
           v-on:show-error-notification="$emit('show-error-notification', $event)"
         >
           Download
@@ -93,6 +93,7 @@ import {
 import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
 import {UPDATE_EXPERIMENT_SORT} from "@/store/sorting/mutation-types";
 import ExperimentObservationsDownloadButton from "@/components/experiments/ExperimentObservationsDownloadButton.vue";
+import {GermplasmUtils} from "@/breeding-insight/utils/GermplasmUtils";
 
 @Component({
   mixins: [validationMixin],
@@ -111,7 +112,7 @@ import ExperimentObservationsDownloadButton from "@/components/experiments/Exper
       updateSort: UPDATE_EXPERIMENT_SORT
     })
   },
-  data: () => ({Sort, BrAPIUtils})
+  data: () => ({Sort, GermplasmUtils})
 })
 export default class ExperimentsObservationsTable extends Vue {
 
