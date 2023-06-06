@@ -71,6 +71,9 @@ import GermplasmGenotypeView from "@/components/germplasm/GermplasmGenotypeView.
 import ImportExperiment from "@/views/import/ImportExperiment.vue";
 import ExperimentsAndObservations from "@/views/experiments-and-observations/ExperimentsAndObservations.vue";
 import ImportGeno from "@/views/import/ImportGeno.vue";
+import BrapiPendingImports from "@/views/BrAPI/BrAPIPendingImports.vue";
+import BrAPIUrl from "@/views/BrAPI/BrAPIUrl.vue";
+import BrAPIPendingImports from "@/views/BrAPI/BrAPIPendingImports.vue";
 
 Vue.use(VueRouter);
 
@@ -183,7 +186,7 @@ const routes = [
     },
     component: ExperimentsAndObservations,
     beforeEnter: processProgramNavigation
-  },    
+  },
   {
     path: '/programs/:programId/program-administration',
     name: 'program-administration',
@@ -452,7 +455,28 @@ const routes = [
       layout: layouts.userSideBar
     },
     component: BrAPIInfo,
-    beforeEnter: processProgramNavigation
+    redirect: {name: 'brapi-url'},
+    beforeEnter: processProgramNavigation,
+    children: [
+      {
+        path: 'brapi-url',
+        name: 'brapi-url',
+        meta: {
+          title: 'BrAPI URL',
+          layout: layouts.userSideBar
+        },
+        component: BrAPIUrl
+      },
+      {
+        path: 'phenotype-viewer',
+        name: 'phenotype-viewer',
+        meta: {
+          title: 'Phenotype Data Viewer',
+          layout: layouts.userSideBar
+        },
+        component: ObservationsList,
+      }
+    ]
   },
   {
     path: '/programs/:programId/jobs',

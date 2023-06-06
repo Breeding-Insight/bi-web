@@ -16,20 +16,39 @@
   -->
 
 <template>
-  <div class="container">
-    <div class="columns is-centered">
-      <div class="column">
-        <h1 class="title">BrAPI Information</h1>
-        <div>
-          <strong>BrAPI Base URL: </strong><span class="has-text-link">{{getBrAPIRootPath()}}</span>
-        </div>
-        <div class="mt-5">
-          <qr-code v-bind:text="getBrAPIRootPath()" v-bind:size="100" v-bind:error-level="'L'"/>
-        </div>
-      </div>
-    </div>
+  <div class="columns is-centered">
+    <div class="column">
+      <h1 class="title">BrAPI Information</h1>
 
+      <section>
+        <nav class="tabs is-boxed">
+          <ul>
+            <router-link
+                v-bind:to="{name: 'brapi-url', params: {programId: activeProgram.id}}"
+                tag="li" active-class="is-active">
+              <a>BrAPI URL</a>
+            </router-link>
+            <router-link
+                v-bind:to="{name: 'phenotype-viewer', params: {programId: activeProgram.id}}"
+                tag="li" active-class="is-active">
+              <a>Phenotype Data Viewer</a>
+            </router-link>
+          </ul>
+        </nav>
+      </section>
+
+      <div class="tab-content">
+        <router-view
+            @show-success-notification="$emit('show-success-notification', $event)"
+            @show-info-notification="$emit('show-info-notification', $event)"
+            @show-error-notification="$emit('show-error-notification', $event)"
+        ></router-view>
+      </div>
+
+    </div>
   </div>
+
+
 </template>
 
 <script lang="ts">
@@ -37,9 +56,10 @@
 import {Component, Vue} from 'vue-property-decorator'
 import {mapGetters} from "vuex";
 import { Program } from '@/breeding-insight/model/Program';
+import BrAPIUrl from "@/views/BrAPI/BrAPIUrl.vue";
 
 @Component({
-  components: { },
+  components: { BrAPIUrl },
   computed: {
     ...mapGetters([
       'activeProgram'
@@ -50,8 +70,5 @@ export default class BrapiInfo extends Vue {
 
   private activeProgram?: Program;
 
-  getBrAPIRootPath() {
-    return `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${this.activeProgram!.id}`;
-  }
 }
 </script>

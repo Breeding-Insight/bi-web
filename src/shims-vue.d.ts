@@ -84,6 +84,7 @@ declare module 'uuid';
 declare module 'vue-json-tree-view';
 declare module 'title-case';
 declare module 'flat';
+declare module 'vue-plotly';
 declare module '@solgenomics/brapi-pedigree-viewer';
 declare module '@solgenomics/brapijs';
 declare module '@solgenomics/d3-pedigree-tree';

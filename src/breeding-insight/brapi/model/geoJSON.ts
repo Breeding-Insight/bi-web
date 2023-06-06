@@ -9,8 +9,8 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { PointGeometry } from '@/breeding-insight/brapi/model/pointGeometry';
-import { PolygonGeometry } from '@/breeding-insight/brapi/model/polygonGeometry';
+import { PointGeometry } from './pointGeometry';
+import { PolygonGeometry } from './polygonGeometry';
 
 /**
  * One geometry as defined by GeoJSON (RFC 7946). All coordinates are decimal values on the WGS84 geographic coordinate reference system.  Copied from RFC 7946 Section 3.1.1  A position is an array of numbers. There MUST be two or more elements. The first two elements are longitude and latitude, or easting and northing, precisely in that order and using decimal numbers. Altitude or elevation MAY be included as an optional third element.

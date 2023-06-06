@@ -46,35 +46,35 @@
       v-on:show-error-notification="$emit('show-error-notification', $event)"
     >
       <b-table-column field="data.germplasmName" label="Germplasm" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-        <p>{{ props.row.data.germplasmName }}</p>
+        {{ props.row.data.germplasmName }}
       </b-table-column>
       <b-table-column field="data.observationUnitName" label="Observation Unit" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-        <p>{{ props.row.data.observationUnitName }}</p>
+        {{ props.row.data.observationUnitName }}
       </b-table-column>
       <b-table-column field="data.observationVariableName" label="Trait" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-        <p>{{ props.row.data.observationVariableName }}</p>
+        {{ props.row.data.observationVariableName }}
       </b-table-column>
       <b-table-column field="data.value" label="Value" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-        <p>{{ props.row.data.value }}</p>
+        {{ props.row.data.value }}
       </b-table-column>
       <b-table-column field="data.season" label="Season" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
         <template v-if="props.row.data.season.id">
           <template v-if="(props.row.data.season.name != props.row.data.season.year)" >
-            <p>{{ props.row.data.season.name + " - " + props.row.data.season.year }}</p>
+            {{ props.row.data.season.name + " - " + props.row.data.season.year }}
           </template>
           <template v-else>
-            <p>{{ props.row.data.season.name}}</p>
+            {{ props.row.data.season.name}}
           </template>
         </template>
       </b-table-column>
       <b-table-column :custom-sort="sortTimestamp" label="Timestamp" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-        <p>{{ props.row.data.timeStamp | dmyFormat}}</p>
+        {{ props.row.data.timeStamp | dmyFormat}}
       </b-table-column>
       <b-table-column field="data.collector" label="Collector" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-        <p>{{ props.row.data.collector }}</p>
+        {{ props.row.data.collector }}
       </b-table-column>
       <b-table-column field="data.uploadedBy" label="Uploaded By" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-        <p>{{ props.row.data.uploadedBy }}</p>
+        {{ props.row.data.uploadedBy }}
       </b-table-column>
       <template v-slot:edit="{editData, validations}">
         <div class="columns">
@@ -138,10 +138,20 @@
 })
 export default class ObservationsTable extends Vue {
 
+  @Prop()
+  private studyId? : string;
+
+  /*
+  @Prop()
+  private observations: Observation[] = [];
+   */
+
+  private observations: Observation[] = [];
+
   private activeProgram?: Program;
   private programId?: string = this.$route.params.programId;
-  private studyId?: string = this.$route.params.studyId;
-  private observations: Observation[] = [];
+  //private studyId?: string = this.$route.params.studyId;
+
   private deactivateActive: boolean = false;
   private newObservationActive: boolean = false;
   private deactivateWarningTitle: string = "Remove location from Program name?";
@@ -161,7 +171,14 @@ export default class ObservationsTable extends Vue {
   }
 
   mounted() {
-    this.getObservations();
+    //this.getObservations();
+  }
+
+  @Watch('studyId')
+  studyUpdated() {
+    if (this.studyId !== undefined) {
+      this.getObservations()
+    }
   }
 
   @Watch('paginationController', { deep: true})
