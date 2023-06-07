@@ -51,6 +51,7 @@
             <ul style="list-style-type: none;">
               <li><b>Description: </b> {{experiment.trialDescription}}</li>
               <li><b>Experimental unit: </b> {{ experimentalUnit }}</li>
+              <li><b>Type: </b> {{ experimentType }}</li>
               <li><b>User: </b> {{ userName }}</li>
               <li><b>Creation Date: </b> {{ createdDate }}</li>
               <li><b>Experimental design: </b>Externally generated</li>
@@ -121,6 +122,10 @@ export default class ExperimentDetails extends TrialsAndStudiesBase {
   get experimentalUnit(): string {
     if( !this.experiment.additionalInfo ){return '';}
     return this.experiment.additionalInfo.defaultObservationLevel;
+  }
+  get experimentType(): string {
+    if( !this.experiment.additionalInfo ){return '';}
+    return this.experiment.additionalInfo.experimentType;
   }
   get createdDate(): string {
     if( !this.experiment.additionalInfo ){return '';}
