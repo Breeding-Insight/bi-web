@@ -55,7 +55,7 @@
       <b-table-column field="data.listDbId" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
         <ExperimentObservationsDownloadButton
           v-bind:modal-title="`Download ${props.row.data.trialName}`"
-          v-bind:trial-db-id="props.row.data.trialDbId"
+          v-bind:trial-db-id="BrAPIUtils.getBreedingInsightId(props.row.data.externalReferences, '/trials')"
           v-on:show-error-notification="$emit('show-error-notification', $event)"
         >
           Download
@@ -84,7 +84,6 @@ import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
 import {Trial} from '@/breeding-insight/model/Trial'
 import ExpandableTable from '@/components/tables/expandableTable/ExpandableTable.vue';
 import {CallStack} from "@/breeding-insight/utils/CallStack";
-import {BrAPIUtils} from "@/breeding-insight/utils/BrAPIUtils";
 import {
   ExperimentSort,
   Sort,
@@ -93,6 +92,7 @@ import {
 import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
 import {UPDATE_EXPERIMENT_SORT} from "@/store/sorting/mutation-types";
 import ExperimentObservationsDownloadButton from "@/components/experiments/ExperimentObservationsDownloadButton.vue";
+import {BrAPIUtils} from "@/breeding-insight/utils/BrAPIUtils";
 
 @Component({
   mixins: [validationMixin],
