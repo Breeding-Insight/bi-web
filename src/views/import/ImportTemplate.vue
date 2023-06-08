@@ -313,7 +313,6 @@ export default class ImportTemplate extends ProgramsBase {
 
   @Watch('file')
   onFileChanged(value: string, oldValue: string) {
-    this.errorFileName = value.name;
     if (oldValue === null && value !== null) {
        this.importService.send(ImportEvent.FILE_SELECTED);
     }
@@ -333,13 +332,21 @@ export default class ImportTemplate extends ProgramsBase {
       this.import_errors=null;
       await this.uploadData();
       const response: ImportResponse = await this.updateDataUpload(this.currentImport!.importId!, false);
+      console.log("I'm here,.,.,.,.,,.,.,.,.,.,.,.,.,.,.,.,.,.,.,1.2");
+
       if (response.progress!.statuscode == 500) {
         this.$emit('show-error-notification', 'An unknown error has occurred when processing your import.');
         this.importService.send(ImportEvent.IMPORT_ERROR);
       } else if (response.progress!.statuscode != 200) {
+        console.log("I'm here,.,.,.,.,,.,.,.,.,.,.,.,.,.,.,.,.,.,.,1.3");
+        console.log(response);
         this.import_errors = ImportService.parseError(response);
-        if( this.import_errors==null) {
-          this.$emit('show-error-notification', `Errors: ${response!.progress!.message!}`);
+        console.log( this.import_errors );
+
+        console.log("I'm here,.,.,.,.,,.,.,.,.,.,.,.,.,.,.,.,.,.,.,1.4");
+
+        if (response!.progress!.message!) {
+          this.$emit('show-error-notification', `Errors in ${this.file.name}: ${response!.progress!.message!}`);
         }
         this.importService.send(ImportEvent.IMPORT_ERROR);
       }
@@ -349,9 +356,10 @@ export default class ImportTemplate extends ProgramsBase {
     } catch(e) {
       if (e.response && e.response.status == 422 && e.response.data && e.response.data.rowErrors) {
         console.log("I'm here,.,.,.,.,,.,.,.,.,.,.,.,.,.,.,.,.,.,.,2.");
+        console.log(e.response);
         this.import_errors = ValidationErrorService.parseError(e);
         this.importService.send(ImportEvent.IMPORT_ERROR);
-        this.$emit('show-error-notification',"Multiple errors in file, "+this.errorFileName+".  See below....." );
+        this.$emit('show-error-notification',"Multiple errors in file " +this.errorFileName+ ", See below....." );
       } else if (e.response && e.response.status == 422 && e.response.statusText) {
         console.log("......show error......" + e.response.statusText);
         this.$log.error(e);
@@ -439,6 +447,9 @@ export default class ImportTemplate extends ProgramsBase {
   }
 
   reset() {
+    console.log("file");
+    console.log(this.file);
+    this.errorFileName = this.file.name;
     this.file = null;
     this.tableLoaded = false;
   }
