@@ -345,9 +345,7 @@ export default class ImportTemplate extends ProgramsBase {
 
         console.log("I'm here,.,.,.,.,,.,.,.,.,.,.,.,.,.,.,.,.,.,.,1.4");
 
-        if (response!.progress!.message!) {
-          this.$emit('show-error-notification', `Errors in ${this.file.name}: ${response!.progress!.message!}`);
-        }
+        this.$emit('show-error-notification', `Error(s) detected in file, ${this.file.name}. (See details below.) Import cannot proceed.`);
         this.importService.send(ImportEvent.IMPORT_ERROR);
       }
       console.log("I'm here,.,.,.,.,,.,.,.,.,.,.,.,.,.,.,.,.,.,.,end.");
@@ -359,7 +357,7 @@ export default class ImportTemplate extends ProgramsBase {
         console.log(e.response);
         this.import_errors = ValidationErrorService.parseError(e);
         this.importService.send(ImportEvent.IMPORT_ERROR);
-        this.$emit('show-error-notification',"Multiple errors in file " +this.errorFileName+ ", See below....." );
+        this.$emit('show-error-notification',"Error(s) detected in file, " +this.errorFileName+ ". (See details below.) Import cannot proceed." );
       } else if (e.response && e.response.status == 422 && e.response.statusText) {
         console.log("......show error......" + e.response.statusText);
         this.$log.error(e);
