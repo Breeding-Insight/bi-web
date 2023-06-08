@@ -127,7 +127,6 @@ export default class ExperimentsObservationsTable extends Vue {
 
   private filters: any = {};
   private experimentCallStack?: CallStack;
-  private biReferenceSource?: String = process.env.BRAPI_REFERENCE_SOURCE;
 
   private experimentSort!: ExperimentSort;
   private updateSort!: (sort: ExperimentSort) => void;
