@@ -193,9 +193,9 @@ export default class ImportTemplate extends ProgramsBase {
   private previewTotalRows: number = 0;
   private newObjectCounts: any = [];
   private dynamicColumns: string[] | undefined = [];
-  private errorFileName: string = "BLANK";
 
   private file : File | null = null;
+  private errorFileName: string = ""; //This is used to hold the value of this.file.name if reset() is called.
   private import_errors: ValidationError | String | null = null;
   private activeProgram?: Program;
   private tableLoaded = false;
@@ -314,7 +314,7 @@ export default class ImportTemplate extends ProgramsBase {
   @Watch('file')
   onFileChanged(value: string, oldValue: string) {
     if (oldValue === null && value !== null) {
-       this.importService.send(ImportEvent.FILE_SELECTED);
+      this.importService.send(ImportEvent.FILE_SELECTED);
     }
   }
 
@@ -325,46 +325,34 @@ export default class ImportTemplate extends ProgramsBase {
   async upload() {
     //New button submit, clear prior notifications
     this.$store.commit( DEACTIVATE_ALL_NOTIFICATIONS );
-    console.log("I'm here,.,.,.,.,,.,.,.,.,.,.,.,.,.,.,.,.,.,.,1.");
-
     try {
       await this.getSystemImportTemplateMapping();
       this.import_errors=null;
       await this.uploadData();
       const response: ImportResponse = await this.updateDataUpload(this.currentImport!.importId!, false);
-      console.log("I'm here,.,.,.,.,,.,.,.,.,.,.,.,.,.,.,.,.,.,.,1.2");
-
       if (response.progress!.statuscode == 500) {
         this.$emit('show-error-notification', 'An unknown error has occurred when processing your import.');
         this.importService.send(ImportEvent.IMPORT_ERROR);
       } else if (response.progress!.statuscode != 200) {
-        console.log("I'm here,.,.,.,.,,.,.,.,.,.,.,.,.,.,.,.,.,.,.,1.3");
-        console.log(response);
         this.import_errors = ImportService.parseError(response);
-        console.log( this.import_errors );
-
-        console.log("I'm here,.,.,.,.,,.,.,.,.,.,.,.,.,.,.,.,.,.,.,1.4");
-
-        this.$emit('show-error-notification', `Error(s) detected in file, ${this.file.name}. (See details below.) Import cannot proceed.`);
+        if( this.import_errors==null) {
+          this.$emit('show-error-notification', `Error(s) detected in file, ${this.nameOfImportFileWithErrors()}. ${response!.progress!.message!}. Import cannot proceed.`);
+        }
+        this.$emit('show-error-notification', `Error(s) detected in file, ${this.nameOfImportFileWithErrors()}. (See details below.) Import cannot proceed.`);
         this.importService.send(ImportEvent.IMPORT_ERROR);
       }
-      console.log("I'm here,.,.,.,.,,.,.,.,.,.,.,.,.,.,.,.,.,.,.,end.");
-
       // this.importService.send(ImportEvent.IMPORT_SUCCESS) is in getDataUpload()
     } catch(e) {
       if (e.response && e.response.status == 422 && e.response.data && e.response.data.rowErrors) {
-        console.log("I'm here,.,.,.,.,,.,.,.,.,.,.,.,.,.,.,.,.,.,.,2.");
-        console.log(e.response);
         this.import_errors = ValidationErrorService.parseError(e);
         this.importService.send(ImportEvent.IMPORT_ERROR);
-        this.$emit('show-error-notification',"Error(s) detected in file, " +this.errorFileName+ ". (See details below.) Import cannot proceed." );
+        this.$emit('show-error-notification',`Error(s) detected in file, ${this.nameOfImportFileWithErrors()}. (See details below.) Import cannot proceed.` );
       } else if (e.response && e.response.status == 422 && e.response.statusText) {
-        console.log("......show error......" + e.response.statusText);
         this.$log.error(e);
-        this.$emit('show-error-notification', e.response.statusText);
+        this.$emit('show-error-notification', `Error detected in file, ${this.nameOfImportFileWithErrors()}. ${e.response.statusText}. Import cannot proceed.`);
       } else if (e.response.status == 400 && e.response && e.response.data && e.response.data.message) {
         this.$log.error(e);
-        this.$emit('show-error-notification', e.response.data.message);
+        this.$emit('show-error-notification', `Error detected in file, ${this.nameOfImportFileWithErrors()}. ${e.response.data.message}. Import cannot proceed.`);
       } else {
         this.$log.error(e);
         this.$emit('show-error-notification', 'An unknown error has occurred when uploading your import.');
@@ -372,7 +360,6 @@ export default class ImportTemplate extends ProgramsBase {
 
       this.importService.send(ImportEvent.IMPORT_ERROR);
     }
-
   }
 
   handleAbortEvent() {
@@ -445,8 +432,6 @@ export default class ImportTemplate extends ProgramsBase {
   }
 
   reset() {
-    console.log("file");
-    console.log(this.file);
     this.errorFileName = this.file.name;
     this.file = null;
     this.tableLoaded = false;
@@ -529,6 +514,28 @@ export default class ImportTemplate extends ProgramsBase {
     } catch (e) {
       throw e;
     }
+  }
+
+
+  /*
+  It is hard to know when the reset() method is triggered (which sets the
+  this.file object to null).  So this methods will get its value from
+  this.file.name if it can, and this.errorFileName if this.file is null.
+  */
+  nameOfImportFileWithErrors() : string {
+    let importFileName = null;
+    if(this.file) {
+      try{
+        importFileName = this.file.name;
+      }
+      catch (e){
+        importFileName = null;
+      }
+    }
+    if (importFileName==null) {
+      importFileName =  this.errorFileName;
+    }
+    return importFileName;
   }
 
   private finish() {

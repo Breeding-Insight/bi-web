@@ -48,7 +48,6 @@
         <MultipleErrors
             v-bind:formatted-errors="allErrors"
             v-bind:is-validation-error="isValidationError"
-            v-bind:file-name="fileName"
         />
       </article>
     </div>
@@ -100,14 +99,6 @@
 
     get isValidationError(): boolean {
       return this.errors instanceof ValidationError;
-    }
-
-    get fileName(): string{
-      if(this.file) {
-        return this.file.name;
-      }
-      else { return "FILE IS NULL";}
-
     }
 
     get allErrors(): ImportError[] {

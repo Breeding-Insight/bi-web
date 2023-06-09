@@ -57,8 +57,6 @@ export default class MultipleErrors extends Vue {
   private isValidationError!: boolean;
   @Prop({default: () => 10})
   private numDisplayedErrors!: number;
-  @Prop( {default: () => "dave"})
-  private fileName!:string;
 
   private paginationController: PaginationController = new PaginationController();
   private errorsLoading: Boolean = false;
