@@ -195,7 +195,6 @@ export default class ImportTemplate extends ProgramsBase {
   private dynamicColumns: string[] | undefined = [];
 
   private file : File | null = null;
-  private errorFileName: string = ""; //This is used to hold the value of this.file.name if reset() is called.
   private import_errors: ValidationError | String | null = null;
   private activeProgram?: Program;
   private tableLoaded = false;
@@ -336,29 +335,28 @@ export default class ImportTemplate extends ProgramsBase {
       } else if (response.progress!.statuscode != 200) {
         this.import_errors = ImportService.parseError(response);
         if( this.import_errors==null) {
-          this.$emit('show-error-notification', `Error(s) detected in file, ${this.nameOfImportFileWithErrors()}. ${response!.progress!.message!}. Import cannot proceed.`);
+          this.$emit('show-error-notification', `Error(s) detected in file, ${this.file.name}. ${response!.progress!.message!}. Import cannot proceed.`);
         }
-        this.$emit('show-error-notification', `Error(s) detected in file, ${this.nameOfImportFileWithErrors()}. (See details below.) Import cannot proceed.`);
+        this.$emit('show-error-notification', `Error(s) detected in file, ${this.file.name}. (See details below.) Import cannot proceed.`);
         this.importService.send(ImportEvent.IMPORT_ERROR);
       }
       // this.importService.send(ImportEvent.IMPORT_SUCCESS) is in getDataUpload()
     } catch(e) {
+      let fileName = this.file.name; //capture filename before this.file is set to null.
+      this.importService.send(ImportEvent.IMPORT_ERROR);
       if (e.response && e.response.status == 422 && e.response.data && e.response.data.rowErrors) {
         this.import_errors = ValidationErrorService.parseError(e);
-        this.importService.send(ImportEvent.IMPORT_ERROR);
-        this.$emit('show-error-notification',`Error(s) detected in file, ${this.nameOfImportFileWithErrors()}. (See details below.) Import cannot proceed.` );
+        this.$emit('show-error-notification',`Error(s) detected in file, ${fileName}. (See details below.) Import cannot proceed.` );
       } else if (e.response && e.response.status == 422 && e.response.statusText) {
         this.$log.error(e);
-        this.$emit('show-error-notification', `Error detected in file, ${this.nameOfImportFileWithErrors()}. ${e.response.statusText}. Import cannot proceed.`);
+        this.$emit('show-error-notification', `Error detected in file, ${fileName}. ${e.response.statusText}. Import cannot proceed.`);
       } else if (e.response.status == 400 && e.response && e.response.data && e.response.data.message) {
         this.$log.error(e);
-        this.$emit('show-error-notification', `Error detected in file, ${this.nameOfImportFileWithErrors()}. ${e.response.data.message}. Import cannot proceed.`);
+        this.$emit('show-error-notification', `Error detected in file, ${fileName}. ${e.response.data.message}. Import cannot proceed.`);
       } else {
         this.$log.error(e);
         this.$emit('show-error-notification', 'An unknown error has occurred when uploading your import.');
       }
-
-      this.importService.send(ImportEvent.IMPORT_ERROR);
     }
   }
 
@@ -432,7 +430,6 @@ export default class ImportTemplate extends ProgramsBase {
   }
 
   reset() {
-    this.errorFileName = this.file.name;
     this.file = null;
     this.tableLoaded = false;
   }
@@ -515,29 +512,6 @@ export default class ImportTemplate extends ProgramsBase {
       throw e;
     }
   }
-
-
-  /*
-  It is hard to know when the reset() method is triggered (which sets the
-  this.file object to null).  So this methods will get its value from
-  this.file.name if it can, and this.errorFileName if this.file is null.
-  */
-  nameOfImportFileWithErrors() : string {
-    let importFileName = null;
-    if(this.file) {
-      try{
-        importFileName = this.file.name;
-      }
-      catch (e){
-        importFileName = null;
-      }
-    }
-    if (importFileName==null) {
-      importFileName =  this.errorFileName;
-    }
-    return importFileName;
-  }
-
   private finish() {
     this.$emit('finished');
   }
