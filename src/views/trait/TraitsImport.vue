@@ -86,7 +86,7 @@
         <br/>Prepare ontology information for import using the provided template.
       </ImportInfoTemplateMessageBox>
         <div class="box">
-          <FileSelectMessageBox v-model="undefined"
+          <FileSelectMessageBox v-model="file"
                                 v-bind:fileTypes="'.csv, .xls, .xlsx'"
                                 v-bind:errors="import_errors"
                                 v-on:import="importService.send(ImportEvent.IMPORT_STARTED)"/>
@@ -236,6 +236,7 @@ export default class TraitsImport extends ProgramsBase {
         }
       },
       [ImportState.IMPORT_ERROR]: {
+        entry: ImportAction.RESET,
         on: {
           [ImportEvent.IMPORT_STARTED]: ImportState.IMPORTING
         }
@@ -305,6 +306,7 @@ export default class TraitsImport extends ProgramsBase {
       this.importService.send(ImportEvent.IMPORT_SUCCESS);
     }).catch((error: ValidationError | AxiosResponse) => {
       this.import_errors = error;
+      this.$emit('show-error-notification', `Error(s) detected in file, ${this.file.name} . (See details below.) Import cannot proceed.`);
       this.importService.send(ImportEvent.IMPORT_ERROR);
     });
   }
