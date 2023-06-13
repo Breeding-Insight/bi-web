@@ -190,8 +190,8 @@ export default class ExperimentObservationsDownloadButton extends Vue {
             + this.fileOptions.fileExtension
             + '&dataset='
             + this.fileOptions.dataset
-            + '&environments='
-            + this.fileOptions.environments
+            // + '&environments='
+            // + this.fileOptions.environments
             + '&includeTimestamps='
             + this.fileOptions.timestampsTrueFalseString(),
             '_blank');
