@@ -34,7 +34,7 @@
 
         <ExperimentObservationsDownloadButton
             v-bind:modal-title="`Download ${experiment.trialName}`"
-            v-bind:trial-db-id="experimentUUID"
+            v-bind:trial-id="experimentUUID"
             v-on:show-error-notification ="$emit('show-error-notification', $event)"
             anchor-class="button is-primary is-outlined"
         >

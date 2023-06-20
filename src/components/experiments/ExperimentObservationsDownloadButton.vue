@@ -17,7 +17,7 @@
 
 <template>
   <DownloadButton
-    v-bind:unique-id="trialDbId"
+    v-bind:unique-id="trialId"
     v-bind:modal-title="modalTitle"
     v-bind:download="downloadList"
     v-bind:anchor-class="anchorClass"
@@ -31,12 +31,12 @@
           <div class="field">
             <label
               class="label"
-              v-bind:for="`dataset-select-${trialDbId}`"
+              v-bind:for="`dataset-select-${trialId}`"
             ><span>Dataset</span></label>
             <div class="control">
               <div class="select">
                 <select
-                  v-bind:id="`dataset-select-${trialDbId}`"
+                  v-bind:id="`dataset-select-${trialId}`"
                   v-model="fileOptions.dataset"
                 >
                   <option
@@ -92,7 +92,7 @@
             </legend>
             <div class="field">
               <input
-                v-bind:id="`timestamps-switch-${trialDbId}`"
+                v-bind:id="`timestamps-switch-${trialId}`"
                 v-model="fileOptions.includeTimestamps"
                 type="checkbox"
                 true-value="Yes"
@@ -101,8 +101,8 @@
                 class="switch is-info is-rounded"
               >
               <label
-                v-bind:id="`timestamps-label-${trialDbId}`"
-                v-bind:for="`timestamps-switch-${trialDbId}`"
+                v-bind:id="`timestamps-label-${trialId}`"
+                v-bind:for="`timestamps-switch-${trialId}`"
               >{{ fileOptions.includeTimestamps }}</label>
             </div>
           </fieldset>
@@ -163,7 +163,7 @@ export default class ExperimentObservationsDownloadButton extends Vue {
   @Prop()
   active!: boolean;
   @Prop()
-  trialDbId!: string;
+  trialId!: string;
   @Prop()
   modalTitle?: string;
   @Prop()
@@ -185,7 +185,7 @@ export default class ExperimentObservationsDownloadButton extends Vue {
             + '/v1/programs/'
             + this.activeProgram.id
             + '/experiments/'
-            + this.trialDbId
+            + this.trialId
             + '/export?fileExtension='
             + this.fileOptions.fileExtension
             + '&dataset='

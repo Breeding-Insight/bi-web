@@ -55,7 +55,7 @@
       <b-table-column field="data.listDbId" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
         <ExperimentObservationsDownloadButton
           v-bind:modal-title="`Download ${props.row.data.trialName}`"
-          v-bind:trial-db-id="BrAPIUtils.getBreedingInsightId(props.row.data.externalReferences, '/trials')"
+          v-bind:trial-id="BrAPIUtils.getBreedingInsightId(props.row.data.externalReferences, '/trials')"
           v-on:show-error-notification="$emit('show-error-notification', $event)"
         >
           Download
