@@ -900,3 +900,9 @@ tr:nth-child(odd) td.db-filled {
     display: block;
   }
 }
+
+label.environment-option-label {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

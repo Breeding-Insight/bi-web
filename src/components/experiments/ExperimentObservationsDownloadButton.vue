@@ -57,16 +57,29 @@
             <legend class="label required">
               <span class="required">Environment(s)</span>
             </legend>
+            <div class="control">
+              <label
+                class="checkbox environment-option-label"
+              >
+                <input
+                  v-model="fileOptions.allEnvironments"
+                  type="checkbox"
+                  value="all"
+                >
+                All Environments
+              </label>
+            </div>
             <div
               v-for="option in environmentOptions"
               v-bind:key="option.id"
               class="control"
             >
-              <label class="checkbox">
+              <label class="checkbox environment-option-label">
                 <input
                   v-model="fileOptions.environments"
                   type="checkbox"
                   v-bind:value="option.id"
+                  v-bind:disabled="fileOptions.allEnvironments"
                 >
                 {{ option.name }}
               </label>
@@ -148,6 +161,12 @@ import {ExperimentDatasetOption} from "@/breeding-insight/model/ExperimentDatase
 import {EnvironmentOption} from "@/breeding-insight/model/EnvironmentOption";
 import {AlertTriangleIcon} from 'vue-feather-icons';
 import DownloadButton from "@/components/DownloadButton.vue";
+import {Trial} from "@/breeding-insight/model/Trial";
+import {Metadata} from "@/breeding-insight/model/BiResponse";
+import {Study} from "@/breeding-insight/model/Study";
+import {StudyService} from "@/breeding-insight/service/StudyService";
+import {Result} from "@/breeding-insight/model/Result";
+import {BrAPIUtils} from "@/breeding-insight/utils/BrAPIUtils";
 
 @Component({
   mixins: [validationMixin],
@@ -165,6 +184,8 @@ export default class ExperimentObservationsDownloadButton extends Vue {
   @Prop()
   trialId!: string;
   @Prop()
+  experiment!: Trial;
+  @Prop()
   modalTitle?: string;
   @Prop()
   anchorClass?: string;
@@ -174,7 +195,21 @@ export default class ExperimentObservationsDownloadButton extends Vue {
   private showEnvironmentsValidationError: boolean = false;
   private fileExtensionOptions: object[] = Object.values(FileTypeOption);
   private datasetOptions: object[] = Object.values(ExperimentDatasetOption);
-  private environmentOptions: object[] = Object.values(EnvironmentOption);
+  private environmentOptions: object[] = [];
+
+  async mounted() {
+    // Fetch all environments (studies) for this experiment.
+    try {
+      const response: Result<Error, [Study[], Metadata]> = await StudyService.getAll(this.activeProgram!.id!, this.experiment!.trialDbId);
+      if(response.isErr()) throw response.value;
+      let [studies, metadata] = response.value;
+      // Set environment options.
+      this.environmentOptions = studies.map((s) => ({id: BrAPIUtils.getBreedingInsightId(s.externalReferences!, '/studies'), name: s.name}));
+    } catch (error) {
+      // Display error that studies cannot be loaded
+      this.$emit('show-error-notification', 'Error while trying to load studies');
+    }
+  }
 
   downloadList(): boolean {
     // Validate selected options.
@@ -190,8 +225,7 @@ export default class ExperimentObservationsDownloadButton extends Vue {
             + this.fileOptions.fileExtension
             + '&dataset='
             + this.fileOptions.dataset
-            // + '&environments='
-            // + this.fileOptions.environments
+            + (this.fileOptions.allEnvironments ? '' : ('&environments=' + this.fileOptions.environments))
             + '&includeTimestamps='
             + this.fileOptions.timestampsTrueFalseString(),
             '_blank');
@@ -209,7 +243,8 @@ export default class ExperimentObservationsDownloadButton extends Vue {
   }
 
   validateOptions(): boolean {
-    if (this.fileOptions.environments.length === 0){
+    // Either "All environments" or one or more specific environments must be selected.
+    if (this.fileOptions.environments.length === 0 && !this.fileOptions.allEnvironments){
       this.$emit('show-error-notification', 'One or more environments must be selected.');
       this.showEnvironmentsValidationError = true;
       return false;

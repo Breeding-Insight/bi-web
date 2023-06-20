@@ -33,6 +33,7 @@
         </router-link>
 
         <ExperimentObservationsDownloadButton
+            v-bind:experiment="experiment"
             v-bind:modal-title="`Download ${experiment.trialName}`"
             v-bind:trial-id="experimentUUID"
             v-on:show-error-notification ="$emit('show-error-notification', $event)"
@@ -157,14 +158,5 @@ export default class ExperimentDetails extends TrialsAndStudiesBase {
       this.experimentLoading = false;
     }
   }
-
-  downloadFile(){
-    alert("'Download file' is not yet implemented.");
-    this.actionSelectActive = false;
-  }
-  hideActionSelector(){
-    this.actionSelectActive = false;
-  }
-
 }
 </script>

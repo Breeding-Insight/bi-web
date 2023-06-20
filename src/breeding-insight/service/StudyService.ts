@@ -23,7 +23,7 @@ import {PaginationUtilities} from "@/breeding-insight/model/view_models/Paginati
 import {Result, ResultGenerator } from "@/breeding-insight/model/Result";
 
 export class StudyService {
-  
+  // TODO: deprecated?
   static async getAll(programId: string, trialId?: string, paginationQuery?: PaginationQuery, full?: boolean): Promise<Result<Error, [Study[], Metadata]>> {
 
     if (paginationQuery === undefined){
@@ -52,7 +52,7 @@ export class StudyService {
         
         data = PaginationUtilities.mockSortRecords(data);
         studies = data.map((study: any) => {
-          return new Study(study.studyDbId, study.studyName, study.studyDescription, study.studyType, study.startDate, study.endDate, study.locationName, study.active);
+          return new Study(study.studyDbId, study.studyName, study.studyDescription, study.studyType, study.startDate, study.endDate, study.locationName, study.active, study.externalReferences);
         });
 
         let newPagination;

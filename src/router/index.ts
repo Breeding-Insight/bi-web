@@ -24,7 +24,7 @@ import NotAuthorized from '@/views/NotAuthorized.vue'
 import BrapiAuthorize from '@/views/BrAPI/BrapiAuthorize.vue'
 import BrAPIInfo from '@/views/BrAPI/BrAPIInfo.vue'
 import ProgramManagement from '@/views/program/ProgramManagement.vue'
-import ExperimentDetails from "@/views/experiments-and-observations/ExperimentDetails";
+import ExperimentDetails from "@/views/experiments-and-observations/ExperimentDetails.vue";
 import StudiesList from "@/views/trials-and-studies/StudiesList.vue";
 import ObservationsList from '@/views/observations/ObservationsList.vue';
 import AdminProgramManagement from '@/views/admin/AdminProgramManagement.vue'
