@@ -18,6 +18,9 @@
 import {ExperimentDAO} from "@/breeding-insight/dao/ExperimentDAO";
 import {Trial} from "@/breeding-insight/model/Trial.ts";
 import {Result, ResultGenerator} from "@/breeding-insight/model/Result";
+import {DataSet} from "@/breeding-insight/model/DataSet";
+import {BiResponse, Metadata} from "@/breeding-insight/model/BiResponse";
+import {ProgramLocationDAO} from "@/breeding-insight/dao/ProgramLocationDAO";
 
 export class ExperimentService {
 
@@ -27,4 +30,26 @@ export class ExperimentService {
         }
         return await ExperimentDAO.getSingleExperiment(programId, experimentId, stats);
     }
+
+    static async getDataSets(programId: string, experimentId: string): Promise<[DataSet[], Metadata]> {
+    return new Promise<[DataSet[], Metadata]>(((resolve, reject) => {
+
+    if (programId) {
+        ExperimentDAO.getAllDataSets(programId,experimentId).then((biResponse: BiResponse) => {
+
+            let dataSets: DataSet[] = [];
+
+            dataSets = biResponse.result.data.map((dataSet: any) => {
+                return DataSet.assign(dataSet);
+            });
+
+            resolve([dataSets, biResponse.metadata]);
+
+        }).catch((error) => reject(error));
+
+    } else {
+        reject();
+    }
+}));
+}
 }

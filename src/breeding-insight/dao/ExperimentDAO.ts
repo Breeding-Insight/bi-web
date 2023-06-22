@@ -15,10 +15,12 @@
  * limitations under the License.
  */
 
-import { Response} from "@/breeding-insight/model/BiResponse";
+import {BiResponse, Response} from "@/breeding-insight/model/BiResponse";
 import * as api from "@/util/api";
 import {Result, ResultGenerator} from "@/breeding-insight/model/Result";
 import {Trial} from "@/breeding-insight/model/Trial.ts";
+import * as UUID from "uuid";
+import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
 
 export class ExperimentDAO {
 
@@ -36,5 +38,27 @@ export class ExperimentDAO {
         } catch (error) {
             return ResultGenerator.err(error);
         }
+    }
+
+    static getAllDataSets(programId: string, experimentId: string): Promise<BiResponse> {
+          const config: any = {};
+          config.url = `${process.env.VUE_APP_BI_API_V1_PATH}/brapi/v2/lists`;
+          config.method = 'get';
+          config.programId = programId;
+          config.params = {
+              externalReferenceId : experimentId,
+              externalReferenceSource : "breedinginsight.net/trials",
+              listType : "observationVariables"
+
+          };
+          return new Promise<BiResponse>(((resolve, reject) => {
+            api.call(config)
+                .then((response: any) => {
+                    const biResponse = new BiResponse(response.data);
+                    resolve(biResponse);
+                }).catch((error) => {
+                reject(error);
+            })
+        }))
     }
 }

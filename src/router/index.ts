@@ -25,6 +25,7 @@ import BrapiAuthorize from '@/views/BrAPI/BrapiAuthorize.vue'
 import BrAPIInfo from '@/views/BrAPI/BrAPIInfo.vue'
 import ProgramManagement from '@/views/program/ProgramManagement.vue'
 import ExperimentDetails from "@/views/experiments-and-observations/ExperimentDetails";
+import DataSet from "@/views/import/DataSet.vue";
 import StudiesList from "@/views/trials-and-studies/StudiesList.vue";
 import ObservationsList from '@/views/observations/ObservationsList.vue';
 import AdminProgramManagement from '@/views/admin/AdminProgramManagement.vue'
@@ -358,6 +359,17 @@ const routes = [
       }
     ]
   },
+  //
+  // {
+  //   path: '/programs/:programId/experiment/:experimentId/dataset/:datasetId',
+  //   name: 'experiment_obs_dataset',
+  //   meta: {
+  //     title: 'Observation Dataset',
+  //     layout: layouts.userSideBar
+  //   },
+  //   component: DataSet,
+  //   beforeEnter: processProgramNavigation,
+  // },
   {
     path: '/programs/:programId/experiment/:experimentId',
     name: 'experiment-details',
@@ -366,7 +378,24 @@ const routes = [
       layout: layouts.userSideBar
     },
     component: ExperimentDetails,
-    beforeEnter: processProgramNavigation
+    redirect: (to: Route) => ({name: 'experiment_obs_dataset', params: {datasetId: 'observation', programId: to.params.programId, experimentId: to.params.experimentId}}),
+    beforeEnter: processProgramNavigation,
+    children: [
+      {
+        path: 'dataset/:datasetId',
+        name: 'experiment_obs_dataset',
+        meta: {
+          title: 'Observation Dataset',
+          layout: layouts.userSideBar
+        },
+        component: DataSet,
+        props: (route: any) => {
+          return ({
+            ...route.params
+          })
+        }
+      }
+    ]
   },
   {
     path: '/programs/:programId/import',
