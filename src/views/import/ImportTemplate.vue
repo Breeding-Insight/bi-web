@@ -263,6 +263,7 @@ export default class ImportTemplate extends ProgramsBase {
             }
           },
           [ImportState.IMPORT_ERROR]: {
+            entry: ImportAction.RESET,
             on: {
               [ImportEvent.IMPORT_STARTED]: ImportState.IMPORTING
             }
@@ -323,7 +324,6 @@ export default class ImportTemplate extends ProgramsBase {
   async upload() {
     //New button submit, clear prior notifications
     this.$store.commit( DEACTIVATE_ALL_NOTIFICATIONS );
-
     try {
       await this.getSystemImportTemplateMapping();
       this.import_errors=null;
@@ -335,27 +335,28 @@ export default class ImportTemplate extends ProgramsBase {
       } else if (response.progress!.statuscode != 200) {
         this.import_errors = ImportService.parseError(response);
         if( this.import_errors==null) {
-          this.$emit('show-error-notification', `Errors: ${response!.progress!.message!}`);
+          this.$emit('show-error-notification', `Error(s) detected in file, ${this.file.name}. ${response!.progress!.message!}. Import cannot proceed.`);
         }
+        this.$emit('show-error-notification', `Error(s) detected in file, ${this.file.name}. (See details below.) Import cannot proceed.`);
         this.importService.send(ImportEvent.IMPORT_ERROR);
       }
       // this.importService.send(ImportEvent.IMPORT_SUCCESS) is in getDataUpload()
     } catch(e) {
+      let fileName = this.file.name; //capture filename before this.file is set to null.
+      this.importService.send(ImportEvent.IMPORT_ERROR);
       if (e.response && e.response.status == 422 && e.response.data && e.response.data.rowErrors) {
         this.import_errors = ValidationErrorService.parseError(e);
-        this.importService.send(ImportEvent.IMPORT_ERROR);
+        this.$emit('show-error-notification',`Error(s) detected in file, ${fileName}. (See details below.) Import cannot proceed.` );
       } else if (e.response && e.response.status == 422 && e.response.statusText) {
         this.$log.error(e);
-        this.$emit('show-error-notification', e.response.statusText);
+        this.$emit('show-error-notification', `Error detected in file, ${fileName}. ${e.response.statusText}. Import cannot proceed.`);
       } else if (e.response.status == 400 && e.response && e.response.data && e.response.data.message) {
         this.$log.error(e);
-        this.$emit('show-error-notification', e.response.data.message);
+        this.$emit('show-error-notification', `Error detected in file, ${fileName}. ${e.response.data.message}. Import cannot proceed.`);
       } else {
         this.$log.error(e);
         this.$emit('show-error-notification', 'An unknown error has occurred when uploading your import.');
       }
-
-      this.importService.send(ImportEvent.IMPORT_ERROR);
     }
   }
 
@@ -511,7 +512,6 @@ export default class ImportTemplate extends ProgramsBase {
       throw e;
     }
   }
-
   private finish() {
     this.$emit('finished');
   }
