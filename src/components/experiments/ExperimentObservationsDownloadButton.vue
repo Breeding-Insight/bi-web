@@ -158,7 +158,6 @@ import {Program} from "@/breeding-insight/model/Program";
 import {ExperimentExportOptions} from "@/breeding-insight/model/ExperimentExportOptions";
 import {FileTypeOption} from "@/breeding-insight/model/FileTypeOption";
 import {ExperimentDatasetOption} from "@/breeding-insight/model/ExperimentDatasetOption";
-import {EnvironmentOption} from "@/breeding-insight/model/EnvironmentOption";
 import {AlertTriangleIcon} from 'vue-feather-icons';
 import DownloadButton from "@/components/DownloadButton.vue";
 import {Trial} from "@/breeding-insight/model/Trial";
