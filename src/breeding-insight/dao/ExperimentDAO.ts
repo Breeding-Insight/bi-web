@@ -21,6 +21,7 @@ import {Result, ResultGenerator} from "@/breeding-insight/model/Result";
 import {Trial} from "@/breeding-insight/model/Trial.ts";
 import * as UUID from "uuid";
 import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
+import {Dataset} from "@/breeding-insight/model/Dataset";
 
 export class ExperimentDAO {
 
@@ -39,26 +40,25 @@ export class ExperimentDAO {
             return ResultGenerator.err(error);
         }
     }
-
-    static getAllDataSets(programId: string, experimentId: string): Promise<BiResponse> {
-          const config: any = {};
-          config.url = `${process.env.VUE_APP_BI_API_V1_PATH}/brapi/v2/lists`;
-          config.method = 'get';
-          config.programId = programId;
-          config.params = {
-              externalReferenceId : experimentId,
-              externalReferenceSource : "breedinginsight.net/trials",
-              listType : "observationVariables"
-
-          };
-          return new Promise<BiResponse>(((resolve, reject) => {
+    static getDataSetById(programId: string, experimentId: string, datasetId: string, stats: boolean): Promise<Result<Error, Dataset>> {
+        const config: any = {};
+        config.url = `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/experiments/${experimentId}/dataset/${datasetId}`;
+        config.method = 'get';
+        config.programId = programId;
+        config.experimentId = experimentId;
+        config.datasetId = datasetId;
+        config.params = {
+            stat : stats,
+        };
+        return new Promise<Result<Error, Dataset>>(((resolve, reject) => {
             api.call(config)
                 .then((response: any) => {
                     const biResponse = new BiResponse(response.data);
                     resolve(biResponse);
                 }).catch((error) => {
-                reject(error);
-            })
+                    reject(error);
+                })
         }))
     }
+
 }

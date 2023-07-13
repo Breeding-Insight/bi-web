@@ -359,17 +359,6 @@ const routes = [
       }
     ]
   },
-  //
-  // {
-  //   path: '/programs/:programId/experiment/:experimentId/dataset/:datasetId',
-  //   name: 'experiment_obs_dataset',
-  //   meta: {
-  //     title: 'Observation Dataset',
-  //     layout: layouts.userSideBar
-  //   },
-  //   component: DataSet,
-  //   beforeEnter: processProgramNavigation,
-  // },
   {
     path: '/programs/:programId/experiment/:experimentId',
     name: 'experiment-details',
