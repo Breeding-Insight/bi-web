@@ -23,12 +23,13 @@ import {BrAPIDAOUtil} from "@/breeding-insight/dao/BrAPIDAOUtil";
 
 export class StudyDAO {
 
-  static async getAllForTrial(programId: string, trialId: string): Promise<Result<Error, BiResponse>> {
+  static async getAllForTrial(programId: string, trialDbId: string): Promise<Result<Error, BiResponse>> {
 
+    // Use GET endpoint rather than search endpoint, as we only ever have a single trialDbId.
     const { data } = await api.call({
       url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/brapi/v2/studies`,
       method: 'get',
-      params: { trialDbId: trialId, pageSize: 1000000 }
+      params: { trialDbId: trialDbId, pageSize: 1000000 }
     }) as Response;
 
     return ResultGenerator.success(new BiResponse(data));
