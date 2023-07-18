@@ -25,13 +25,13 @@ export class StudyDAO {
 
   static async getAllForTrial(programId: string, trialId: string): Promise<Result<Error, BiResponse>> {
 
-    const body = {
-      trialDbIds: [
-        trialId
-      ]
-    };
+    const { data } = await api.call({
+      url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/brapi/v2/studies`,
+      method: 'get',
+      params: { trialDbId: trialId, pageSize: 1000000 }
+    }) as Response;
 
-    return await BrAPIDAOUtil.search(`${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/brapi/v2/search/studies`, body);
+    return ResultGenerator.success(new BiResponse(data));
   }
 
   static async getAll(programId: string, paginationQuery: PaginationQuery, full : boolean): Promise<Result<Error, BiResponse>> {

@@ -77,13 +77,13 @@
 import {Component, Watch} from "vue-property-decorator";
 import {mapGetters} from "vuex";
 import {PlusCircleIcon} from 'vue-feather-icons'
-import TrialsAndStudiesBase from "@/components/trials/TrialsAndStudiesBase.vue";
 import {Program} from "@/breeding-insight/model/Program";
 import {Result} from "@/breeding-insight/model/Result";
 import {ExperimentService} from "@/breeding-insight/service/ExperimentService";
 import ClickOutside from 'vue-click-outside';
 import {Trial} from "@/breeding-insight/model/Trial";
 import ExperimentObservationsDownloadButton from "@/components/experiments/ExperimentObservationsDownloadButton.vue";
+import ProgramsBase from "@/components/program/ProgramsBase.vue";
 
 @Component({
   components: {
@@ -99,7 +99,7 @@ import ExperimentObservationsDownloadButton from "@/components/experiments/Exper
     ClickOutside
   }
 })
-export default class ExperimentDetails extends TrialsAndStudiesBase {
+export default class ExperimentDetails extends ProgramsBase {
   private activeProgram: Program;
   private experiment: Trial;
   private experimentLoading: boolean = true;

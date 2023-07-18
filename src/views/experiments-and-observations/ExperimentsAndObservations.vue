@@ -50,11 +50,11 @@ import ExperimentsObservationsTable from '@/components/experiments/ExperimentsOb
 import {PlusCircleIcon} from 'vue-feather-icons'
 import {mapGetters} from "vuex";
 import {Program} from "@/breeding-insight/model/Program";
-import TrialsAndStudiesBase from "@/components/trials/TrialsAndStudiesBase.vue";
 import {ExperimentSort, ExperimentSortField} from "@/breeding-insight/model/Sort";
 import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
 import {BiResponse} from "@/breeding-insight/model/BiResponse";
 import {BrAPIService, BrAPIType} from "@/breeding-insight/service/BrAPIService";
+import ProgramsBase from "@/components/program/ProgramsBase.vue";
 
 @Component({
   components: {
@@ -66,7 +66,7 @@ import {BrAPIService, BrAPIType} from "@/breeding-insight/service/BrAPIService";
     ])
   }
 })
-export default class ExperimentsAndObservations extends TrialsAndStudiesBase {
+export default class ExperimentsAndObservations extends ProgramsBase {
 
   private activeProgram?: Program;
 
