@@ -23,7 +23,6 @@ import {PaginationUtilities} from "@/breeding-insight/model/view_models/Paginati
 import {Result, ResultGenerator } from "@/breeding-insight/model/Result";
 
 export class StudyService {
-  // TODO: deprecated?
   static async getAll(programId: string, trialDbId?: string, paginationQuery?: PaginationQuery, full?: boolean): Promise<Result<Error, [Study[], Metadata]>> {
 
     if (paginationQuery === undefined){
