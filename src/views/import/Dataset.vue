@@ -16,26 +16,29 @@
   -->
 
 <template>
-
   <div id="data_set">
     <div v-if="loading">
       loading dataset...
+      <progress class="progress is-normal" max="80"></progress>
     </div>
-    <div v-if="!loading" class="detail">
-      <div class="columns is-multiline is-align-items-stretch mt-4">
-        <article class="column ">
-          <section>
-            <ul style="list-style-type: none;">
-              <li><b>Observation unit: </b> {{ observationUnit }}</li>
-              <li><b>phenotypes: </b> {{ phenotypesCount }}</li>
-              <li><b>Total observations: </b> {{ totalObservationsCount }}</li>
-              <li><b>Observations with data: </b> {{ observationsWithData }}</li>
-              <li><b>Observations without data: </b> {{ observationsWithoutData }}</li>
-            </ul>
-          </section>
-        </article>
+    <article
+      v-if="!loading"
+      class="message is-success"
+    >
+      <div class="message-body">
+        <div class="columns is-multiline">
+          <div class="column is-one-fifth">
+            <div class="has-text-right">
+              <b>Observation unit: </b> <span style="width: 30px;" class="is-inline-block has-text-left">{{ observationUnit }}</span><br>
+              <b>Phenotypes: </b> <span style="width: 30px;" class="is-inline-block has-text-left">{{ phenotypesCount }}</span><br>
+              <b>Total observations: </b> <span style="width: 30px;" class="is-inline-block has-text-left">{{ totalObservationsCount }}</span><br>
+              <b>Observations with data: </b> <span style="width: 30px;" class="is-inline-block has-text-left">{{ observationsWithData }}</span><br>
+              <b>Observations without data: </b> <span style="width: 30px;" class="is-inline-block has-text-left">{{ observationsWithoutData }}</span><br>
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
+    </article>
   </div>
 </template>
 
@@ -43,7 +46,7 @@
 import {Component, Prop, Vue, Watch} from 'vue-property-decorator'
 import ProgramsBase from "@/components/program/ProgramsBase.vue";
 import {Result} from "@/breeding-insight/model/Result";
-import {Dataset} from "@/breeding-insight/model/Dataset";
+import {DatasetModel} from "@/breeding-insight/model/DatasetModel";
 import {ExperimentService} from "@/breeding-insight/service/ExperimentService";
 import {Program} from "@/breeding-insight/model/Program";
 import {mapGetters} from "vuex";
@@ -55,16 +58,16 @@ import {mapGetters} from "vuex";
     ])
   }
 })
-export default class DataSet extends ProgramsBase {
+export default class Dataset extends ProgramsBase {
   private activeProgram: Program;
-  private dataSet: Dataset;
+  private datasetModel: DatasetModel;
   private experiment: Experiment;
   private loading: boolean = true;
   private resultDatasetId: string;
 
 
   mounted () {
-    this.getDataSetAndExperiment();
+    this.getDatasetModelAndExperiment();
   }
 
   @Prop()
@@ -82,62 +85,42 @@ export default class DataSet extends ProgramsBase {
     return ou;
   }
 
-  get phenotypesCount(): string{
-    let count = 'N/A';
+  get phenotypesCount(): number{
+    let count = 0;
 
-    if(this.dataSet && this.dataSet.observationVariables){
-      let nCount = this.dataSet.observationVariables.length;
-      count = String(nCount);
+    if(this.datasetModel && this.datasetModel.observationVariables){
+      count = this.datasetModel.observationVariables.length;
     }
     return count
   }
 
   // Total observations
-  get totalObservationsCount(): string {
-    let count = 'N/A';
+  get totalObservationsCount(): number {
+    let count = 0;
 
-    if(this.dataSet && this.dataSet.observationUnits){
-      let ouCount = this.dataSet.observationUnits.length;
-      if(this.dataSet && this.dataSet.observationVariables){
-        let oVarCount = this.dataSet.observationVariables.length;
-        count = String(ouCount * oVarCount);
-      }
+    if(this.datasetModel && this.datasetModel.observationUnits){
+      let ouCount = this.datasetModel.observationUnits.length;
+      count = ouCount * this.phenotypesCount;
     }
     return count
   }
 
   // Observations with data
-  get observationsWithData(): string {
-    let count = 'N/A';
-
-    if(this.dataSet && this.dataSet.data){
-      let nCount = this.dataSet.data.length;
-      count = String(nCount);
+  get observationsWithData(): number {
+    let count = 0;
+    if(this.datasetModel && this.datasetModel.data){
+      count = this.datasetModel.data.length;
     }
     return count
   }
 
   // Observations without data
-  get observationsWithoutData(): string {
-    let count = 'N/A';
-
-    if(this.dataSet && this.dataSet.observationUnits){
-      let ouCount = this.dataSet.observationUnits.length;
-      if(this.dataSet && this.dataSet.observationVariables){
-        let oVarCount = this.dataSet.observationVariables.length;
-        let totalObs = (ouCount * oVarCount);
-        if(this.dataSet && this.dataSet.data){
-          let obsWithData = this.dataSet.data.length;
-          count = String(totalObs-obsWithData);
-        }
-      }
-    }
-
-    return count
+  get observationsWithoutData(): number {
+    return this.totalObservationsCount-this.observationsWithData
   }
 
   @Watch('$route')
-  async getDataSetAndExperiment () {
+  async getDatasetModelAndExperiment () {
     this.loading = true;
     let experimentResult =  await ExperimentService.getSingleExperiment(this.activeProgram!.id!, this.experimentUUID,false);
     this.experiment = experimentResult.value;
@@ -149,8 +132,8 @@ export default class DataSet extends ProgramsBase {
       this.resultDatasetId = this.datasetId;
     }
     try {
-      const response: Result<Error, DataSet> = await ExperimentService.getDataSet(this.activeProgram!.id!, this.experimentUUID, this.resultDatasetId);
-      this.dataSet = response.result;
+      const response: Result<Error, DatasetModel> = await ExperimentService.getDatasetModel(this.activeProgram!.id!, this.experimentUUID, this.resultDatasetId);
+      this.datasetModel = response.result;
     } catch (err) {
       // Display error that experiment cannot be loaded
       this.$emit('show-error-notification', 'Error while trying to load data set' + err.message());

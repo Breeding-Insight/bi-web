@@ -19,7 +19,7 @@ import {Observation} from "@/breeding-insight/model/Observation";
 import {ObservationUnit} from "@/breeding-insight/model/ObservationUnit";
 import {ObservationVariable} from "@/breeding-insight/model/ObservationVariable";
 
-export class Dataset {
+export class DatasetModel {
   id?: string;
   experimentId?: string;
   additionalInfo?: any;
@@ -43,19 +43,19 @@ export class Dataset {
     this.observationVariables = observationVariables;
   }
 
-  static assign(dataSet: Dataset): Dataset {
+  static assign(dataset: DatasetModel): DatasetModel {
 
-    return new Dataset(
-        dataSet.id,
-        dataSet.experimentId,
-        dataSet.additionalInfo,
-        dataSet.data,
-        dataSet.observationUnits
+    return new DatasetModel(
+        dataset.id,
+        dataset.experimentId,
+        dataset.additionalInfo,
+        dataset.data,
+        dataset.observationUnits
         );
   }
 
-  equals(dataSet?: Dataset): boolean {
-    if (!dataSet) {return false;}
-    return (this.id === dataSet.id)
+  equals(dataset?: DatasetModel): boolean {
+    if (!dataset) {return false;}
+    return (this.id === dataset.id)
   }
 }

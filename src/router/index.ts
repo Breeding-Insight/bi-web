@@ -25,7 +25,7 @@ import BrapiAuthorize from '@/views/BrAPI/BrapiAuthorize.vue'
 import BrAPIInfo from '@/views/BrAPI/BrAPIInfo.vue'
 import ProgramManagement from '@/views/program/ProgramManagement.vue'
 import ExperimentDetails from "@/views/experiments-and-observations/ExperimentDetails";
-import DataSet from "@/views/import/DataSet.vue";
+import Dataset from "@/views/import/Dataset.vue";
 import StudiesList from "@/views/trials-and-studies/StudiesList.vue";
 import ObservationsList from '@/views/observations/ObservationsList.vue';
 import AdminProgramManagement from '@/views/admin/AdminProgramManagement.vue'
@@ -377,7 +377,7 @@ const routes = [
           title: 'Observation Dataset',
           layout: layouts.userSideBar
         },
-        component: DataSet,
+        component: Dataset,
         props: (route: any) => {
           return ({
             ...route.params

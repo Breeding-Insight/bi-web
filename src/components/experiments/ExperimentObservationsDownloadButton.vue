@@ -26,13 +26,13 @@
   >
     <template #form>
       <div class="columns mb-4">
-        <!-- Dataset Select -->
+        <!-- DatasetModel Select -->
         <div class="column control">
           <div class="field">
             <label
               class="label"
               v-bind:for="`dataset-select-${trialDbId}`"
-            ><span>Dataset</span></label>
+            ><span>DatasetModel</span></label>
             <div class="control">
               <div class="select">
                 <select

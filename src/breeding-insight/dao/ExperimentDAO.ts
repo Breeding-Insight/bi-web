@@ -21,7 +21,7 @@ import {Result, ResultGenerator} from "@/breeding-insight/model/Result";
 import {Trial} from "@/breeding-insight/model/Trial.ts";
 import * as UUID from "uuid";
 import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
-import {Dataset} from "@/breeding-insight/model/Dataset";
+import {DatasetModel} from "@/breeding-insight/model/DatasetModel";
 
 export class ExperimentDAO {
 
@@ -40,7 +40,7 @@ export class ExperimentDAO {
             return ResultGenerator.err(error);
         }
     }
-    static getDataSetById(programId: string, experimentId: string, datasetId: string, stats: boolean): Promise<Result<Error, Dataset>> {
+    static getDatasetById(programId: string, experimentId: string, datasetId: string, stats: boolean): Promise<Result<Error, DatasetModel>> {
         const config: any = {};
         config.url = `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/experiments/${experimentId}/dataset/${datasetId}`;
         config.method = 'get';
@@ -50,7 +50,7 @@ export class ExperimentDAO {
         config.params = {
             stat : stats,
         };
-        return new Promise<Result<Error, Dataset>>(((resolve, reject) => {
+        return new Promise<Result<Error, DatasetModel>>(((resolve, reject) => {
             api.call(config)
                 .then((response: any) => {
                     const biResponse = new BiResponse(response.data);

@@ -18,7 +18,7 @@
 import {ExperimentDAO} from "@/breeding-insight/dao/ExperimentDAO";
 import {Trial} from "@/breeding-insight/model/Trial.ts";
 import {Result, ResultGenerator} from "@/breeding-insight/model/Result";
-import {Dataset} from "@/breeding-insight/model/Dataset";
+import {DatasetModel} from "@/breeding-insight/model/DatasetModel";
 
 export class ExperimentService {
 
@@ -29,11 +29,11 @@ export class ExperimentService {
         return await ExperimentDAO.getSingleExperiment(programId, experimentId, stats);
     }
 
-    static async getDataSet(programId: string, experimentId: string, datasetId: string): Promise<Result<Error, Dataset>> {
+    static async getDatasetModel(programId: string, experimentId: string, datasetId: string): Promise<Result<Error, DatasetModel>> {
         if (!programId) {
             return ResultGenerator.err(new Error('Missing or invalid program id'));
         }
-        return await ExperimentDAO.getDataSetById(programId,experimentId, datasetId, true);
+        return await ExperimentDAO.getDatasetById(programId,experimentId, datasetId, true);
     }
 
 }
