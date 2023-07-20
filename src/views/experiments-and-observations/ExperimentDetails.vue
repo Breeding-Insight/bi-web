@@ -69,6 +69,25 @@
       </div>
 
     </div>
+    <section>
+      <nav class="tabs is-boxed">
+        <ul>
+          <router-link
+              v-bind:to="{name: 'experiment_obs_dataset', params: {programId: activeProgram.id, experimentId: experimentUUID, datasetId: 'observation'}}"
+              tag="li" active-class="is-active">
+            <a>Observation DatasetModel</a>
+          </router-link>
+          <!--TODO: Will need to loop through a list of datasets and add a tab for each.-->
+        </ul>
+      </nav>
+    </section>
+    <div class="tab-content">
+      <router-view
+          @show-success-notification="$emit('show-success-notification', $event)"
+          @show-info-notification="$emit('show-info-notification', $event)"
+          @show-error-notification="$emit('show-error-notification', $event)"
+      />
+    </div>
   </div>
 </template>
 
