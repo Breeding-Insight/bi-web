@@ -39,8 +39,75 @@
         </div>
       </div>
     </article>
+    <ExpandableTable
+        v-bind:records.sync="observationUnits"
+        v-bind:loading="false"
+        v-bind:pagination="paginationController"
+        v-bind:default-sort="['observationUnits.germplasmName', 'asc']"
+        v-bind:debounce-search="400"
+        v-on:show-error-notification="$emit('show-error-notification', $event)"
+    >
+      <b-table-column
+          v-slot="props"
+          field="data.germplasmName"
+          label="Germplasm Name"
+          sortable
+          searchable
+          :th-attrs="(column) => ({scope:'col'})"
+      >
+        {{ props.row.data.germplasmName }}
+      </b-table-column>
+      <b-table-column
+          v-slot="props"
+          field="data.studyName"
+          label="Env"
+          sortable
+          searchable
+          :th-attrs="(column) => ({scope:'col'})"
+      >
+        {{ props.row.data.studyName }}
+      </b-table-column>
+      <b-table-column
+          v-slot="props"
+          field="data.locationName"
+          label="Env Location"
+          sortable
+          searchable
+          :th-attrs="(column) => ({scope:'col'})"
+      >
+        {{ props.row.data.locationName }}
+      </b-table-column>
+      <b-table-column
+          v-slot="props"
+          field="data.observationUnitName"
+          label="Exp Unit ID"
+          sortable
+          searchable
+          :th-attrs="(column) => ({scope:'col'})"
+      >
+        {{ props.row.data.observationUnitName }}
+      </b-table-column>
+      <b-table-column
+        v-slot="props"
+        field="data.observationUnitName"
+        label="Exp Unit ID"
+        sortable
+        searchable
+        :th-attrs="(column) => ({scope:'col'})"
+    >
+      {{ props.row.data.observationUnitName }}
+    </b-table-column>
+
+
+      <template v-slot:emptyMessage>
+        <p class="has-text-weight-bold">
+          No datasets exist.
+        </p>
+      </template>
+    </ExpandableTable>
   </div>
 </template>
+
 
 <script lang="ts">
 import {Component, Prop, Vue, Watch} from 'vue-property-decorator'
@@ -50,9 +117,14 @@ import {DatasetModel} from "@/breeding-insight/model/DatasetModel";
 import {ExperimentService} from "@/breeding-insight/service/ExperimentService";
 import {Program} from "@/breeding-insight/model/Program";
 import {mapGetters} from "vuex";
-import {Trial} from "@/breeding-insight/model/Trial";
+import {ObservationUnit} from "@/breeding-insight/model/ObservationUnit";
+import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
+import ExpandableTable from "@/components/tables/expandableTable/ExpandableTable.vue";
 
 @Component({
+  components: {
+    ExpandableTable
+  },
   computed: {
     ...mapGetters([
       'activeProgram'
@@ -62,9 +134,11 @@ import {Trial} from "@/breeding-insight/model/Trial";
 export default class Dataset extends ProgramsBase {
   private activeProgram: Program;
   private datasetModel: DatasetModel;
-  private experiment: Trial;
+  private experiment: Experiment;
+  private observationUnits: ObservationUnit[] = [];
   private loading: boolean = true;
   private resultDatasetId: string;
+  private paginationController: PaginationController = new PaginationController();
 
 
   mounted () {
@@ -123,6 +197,8 @@ export default class Dataset extends ProgramsBase {
   @Watch('$route')
   async getDatasetModelAndExperiment () {
     this.loading = true;
+
+
     let experimentResult =  await ExperimentService.getSingleExperiment(this.activeProgram!.id!, this.experimentUUID,false);
     this.experiment = experimentResult.value;
 
@@ -135,6 +211,13 @@ export default class Dataset extends ProgramsBase {
     try {
       const response: Result<Error, DatasetModel> = await ExperimentService.getDatasetModel(this.activeProgram!.id!, this.experimentUUID, this.resultDatasetId);
       this.datasetModel = response.result;
+      this.observationUnits = this.datasetModel.observationUnits;
+console.log("wwwwwwwwwwwwwwwwwww");
+console.log(this.observationUnits.length);
+      console.log("wwwwwwwwwwwwwwwwwww");
+      this.paginationController.totalCount = this.observationUnits.length;
+      this.paginationController.currentPage = 1;
+      this.paginationController.totalPages = this.paginationController.totalCount.valueOf() / this.paginationController.pageSize.valueOf();
     } catch (err) {
       // Display error that experiment cannot be loaded
       this.$emit('show-error-notification', 'Error while trying to load data set' + err.message());
