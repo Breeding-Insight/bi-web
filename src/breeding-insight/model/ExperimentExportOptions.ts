@@ -25,7 +25,7 @@ export class ExperimentExportOptions {
     public dataset: string = ExperimentDatasetOption.observations.id;
     public environments: string[] = [];
     public allEnvironments: boolean = false;
-    public includeTimestamps: string = 'Yes';
+    public includeTimestamps: string = 'No';
 
     public timestampsTrueFalseString(): string {
         if (this.includeTimestamps.toLowerCase() === 'yes')
