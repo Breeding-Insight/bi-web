@@ -199,7 +199,7 @@ export default class ExperimentObservationsDownloadButton extends Vue {
   async mounted() {
     // Fetch all environments (studies) for this experiment.
     try {
-      const response: Result<Error, [Study[], Metadata]> = await StudyService.getAll(this.activeProgram!.id!, this.experiment!.trialDbId);
+      const response: Result<Error, [Study[], Metadata]> = await StudyService.getAll(this.activeProgram!.id!, this.experiment);
       if(response.isErr()) throw response.value;
       let [studies, metadata] = response.value;
       // Set environment options.

@@ -21,9 +21,11 @@ import {BiResponse, Metadata} from "@/breeding-insight/model/BiResponse";
 import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
 import {PaginationUtilities} from "@/breeding-insight/model/view_models/PaginationUtilities";
 import {Result, ResultGenerator } from "@/breeding-insight/model/Result";
+import {Trial} from "@/breeding-insight/model/Trial";
+import {BrAPIUtils} from "@/breeding-insight/utils/BrAPIUtils";
 
 export class StudyService {
-  static async getAll(programId: string, trialDbId?: string, paginationQuery?: PaginationQuery, full?: boolean): Promise<Result<Error, [Study[], Metadata]>> {
+  static async getAll(programId: string, trial?: Trial, paginationQuery?: PaginationQuery, full?: boolean): Promise<Result<Error, [Study[], Metadata]>> {
 
     if (paginationQuery === undefined){
       paginationQuery = new PaginationQuery(0, 0, true);
@@ -37,8 +39,11 @@ export class StudyService {
       if(!programId) throw new Error('missing or invalid program id');
       
       let response: Result<Error, BiResponse>;
-      if (trialDbId) {
-        response = await StudyDAO.getAllForTrial(programId, trialDbId) as Result<Error, BiResponse>;
+      if (trial !== undefined && trial.externalReferences !== undefined) {
+        let externalReferenceId = BrAPIUtils.getBreedingInsightId(trial.externalReferences, '/trials');
+        // Throw if trial is missing ExternalReferenceId.
+        if (externalReferenceId === undefined) throw new Error("Trial is missing external reference.");
+        response = await StudyDAO.getAllForTrial(programId, externalReferenceId) as Result<Error, BiResponse>;
       } else {
         response = await StudyDAO.getAll(programId, paginationQuery, full) as Result<Error, BiResponse>;
       }
