@@ -19,16 +19,25 @@
   <div id="data_set">
     <div v-if="loading">
       loading dataset...
-      <progress class="progress is-normal" max="80"></progress>
+      <progress
+        class="progress is-normal"
+        max="80"
+      />
     </div>
     <article
       v-if="!loading"
       class="message is-success"
     >
-      <div class="message-body">
-        <div class="columns is-multiline">
+      <div
+          class="message-body"
+      >
+        <div
+            class="columns is-multiline"
+        >
           <div class="column is-one-fifth">
-            <div class="has-text-right">
+            <div
+              class="has-text-right"
+            >
               <b>Observation unit: </b> <span style="width: 30px;" class="is-inline-block has-text-left">{{ observationUnit }}</span><br>
               <b>Phenotypes: </b> <span style="width: 30px;" class="is-inline-block has-text-left">{{ phenotypesCount }}</span><br>
               <b>Total observations: </b> <span style="width: 30px;" class="is-inline-block has-text-left">{{ totalObservationsCount }}</span><br>
@@ -55,7 +64,7 @@
           searchable
           :th-attrs="(column) => ({scope:'col'})"
       >
-        {{ props.row.data.germplasmName }}
+        {{ removeUnique(props.row.data.germplasmName) }}
       </b-table-column>
       <b-table-column
           v-slot="props"
@@ -65,7 +74,7 @@
           searchable
           :th-attrs="(column) => ({scope:'col'})"
       >
-        {{ props.row.data.studyName }}
+        {{ removeUnique( props.row.data.studyName ) }}
       </b-table-column>
       <b-table-column
           v-slot="props"
@@ -75,7 +84,7 @@
           searchable
           :th-attrs="(column) => ({scope:'col'})"
       >
-        {{ props.row.data.locationName }}
+        {{ removeUnique( props.row.data.locationName ) }}
       </b-table-column>
       <b-table-column
           v-slot="props"
@@ -85,20 +94,29 @@
           searchable
           :th-attrs="(column) => ({scope:'col'})"
       >
-        {{ props.row.data.observationUnitName }}
+        {{ removeUnique( props.row.data.observationUnitName ) }}
       </b-table-column>
       <b-table-column
         v-slot="props"
-        field="data.observationUnitName"
-        label="Exp Unit ID"
+        field="data.observationUnitID"
+        label="ObsUnitID"
         sortable
         searchable
         :th-attrs="(column) => ({scope:'col'})"
-    >
-      {{ props.row.data.observationUnitName }}
-    </b-table-column>
-
-
+      >
+        {{ getBreedingInsightId(props.row.data.externalReferences, "/observationunits") }}
+      </b-table-column>
+      <b-table-column
+          v-for="( {trait} ) in this.datasetModel.observationVariables" :key="trait.traitName"
+          v-slot="props"
+          field="data.observationUnitID"
+          :label="removeUnique( trait.traitName )"
+          sortable
+          searchable
+          :th-attrs="(column) => ({scope:'col'})"
+      >
+        {{ `"X";` }}
+      </b-table-column>
       <template v-slot:emptyMessage>
         <p class="has-text-weight-bold">
           No datasets exist.
@@ -120,6 +138,9 @@ import {mapGetters} from "vuex";
 import {ObservationUnit} from "@/breeding-insight/model/ObservationUnit";
 import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
 import ExpandableTable from "@/components/tables/expandableTable/ExpandableTable.vue";
+import {BrAPIUtils} from "@/breeding-insight/utils/BrAPIUtils";
+import {ExternalReferences} from "@/breeding-insight/brapi/model/externalReferences";
+import {DatasetTableRow} from "@/breeding-insight/model/DatasetTableRow";
 
 @Component({
   components: {
@@ -133,12 +154,13 @@ import ExpandableTable from "@/components/tables/expandableTable/ExpandableTable
 })
 export default class Dataset extends ProgramsBase {
   private activeProgram: Program;
-  private datasetModel: DatasetModel;
+  private datasetModel: DatasetModel = [];
   private experiment: Experiment;
   private observationUnits: ObservationUnit[] = [];
   private loading: boolean = true;
   private resultDatasetId: string;
   private paginationController: PaginationController = new PaginationController();
+  private datasetTableRows: DatasetTableRow[] = [];
 
 
   mounted () {
@@ -193,6 +215,16 @@ export default class Dataset extends ProgramsBase {
   get observationsWithoutData(): number {
     return this.totalObservationsCount-this.observationsWithData
   }
+  getBreedingInsightId(refs: ExternalReferences, source: string): string{
+    return BrAPIUtils.getBreedingInsightId(refs, source);
+  }
+
+  removeUnique(str: string): string{
+    str = str.trim();
+    const reg = /\[[^\]]*\]$/;
+    return str.replace(reg, '').trim();
+  }
+
 
   @Watch('$route')
   async getDatasetModelAndExperiment () {
@@ -212,9 +244,7 @@ export default class Dataset extends ProgramsBase {
       const response: Result<Error, DatasetModel> = await ExperimentService.getDatasetModel(this.activeProgram!.id!, this.experimentUUID, this.resultDatasetId);
       this.datasetModel = response.result;
       this.observationUnits = this.datasetModel.observationUnits;
-console.log("wwwwwwwwwwwwwwwwwww");
-console.log(this.observationUnits.length);
-      console.log("wwwwwwwwwwwwwwwwwww");
+
       this.paginationController.totalCount = this.observationUnits.length;
       this.paginationController.currentPage = 1;
       this.paginationController.totalPages = this.paginationController.totalCount.valueOf() / this.paginationController.pageSize.valueOf();

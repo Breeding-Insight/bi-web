@@ -15,15 +15,19 @@
  * limitations under the License.
  */
 
+import {ExternalReferences} from "@/breeding-insight/brapi/model/externalReferences";
+
 export class ObservationUnit {
   id?: string;
   name?: string;
   position?: ObservationUnitPosition;
+  externalReferences?: ExternalReferences;
   
-  constructor(id?:string, name?:string, position?:ObservationUnitPosition) {
+  constructor(id?:string, name?:string, position?:ObservationUnitPosition, externalReferences?: ExternalReferences) {
     this.id = id;
     this.name = name;
     this.position = position;
+    this.externalReferences = externalReferences;
   }
 }
 
