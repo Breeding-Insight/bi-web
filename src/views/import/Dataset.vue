@@ -75,16 +75,18 @@
           :th-attrs="(column) => ({scope:'col'})"
       >
         {{ removeUnique( props.row.data.studyName ) }}
+<!--        {{ removeUnique( props.row.data.env ) }}-->
       </b-table-column>
       <b-table-column
           v-slot="props"
-          field="data.locationName"
+          field="data.envLocation"
           label="Env Location"
           sortable
           searchable
           :th-attrs="(column) => ({scope:'col'})"
       >
         {{ removeUnique( props.row.data.locationName ) }}
+<!--        {{ removeUnique( props.row.data.envLocation ) }}-->
       </b-table-column>
       <b-table-column
           v-slot="props"
@@ -105,6 +107,7 @@
         :th-attrs="(column) => ({scope:'col'})"
       >
         {{ getBreedingInsightId(props.row.data.externalReferences, "/observationunits") }}
+<!--        {{ props.row.data.obsUnitId }}-->
       </b-table-column>
       <b-table-column
           v-for="( {trait} ) in this.datasetModel.observationVariables" :key="trait.traitName"
@@ -225,6 +228,19 @@ export default class Dataset extends ProgramsBase {
     return str.replace(reg, '').trim();
   }
 
+  getDatasetTableRows (){
+    let observationUnits = this.datasetModel.observationUnits;
+    for (let unit in observationUnits){
+      let datasetTableRow: DatasetTableRow = new DatasetTableRow();
+      datasetTableRow.germplasmName = unit.germplasmName;
+      datasetTableRow.env = unit.studyName;
+      datasetTableRow.envLocation = unit.locationName;
+      datasetTableRow.expUnitId = unit.observationUnitName;
+      datasetTableRow.obsUnitId = getBreedingInsightId(unit.externalReferences, "/observationunits");
+
+      this.datasetTableRows.push(datasetTableRow);
+    }
+  }
 
   @Watch('$route')
   async getDatasetModelAndExperiment () {
@@ -244,6 +260,7 @@ export default class Dataset extends ProgramsBase {
       const response: Result<Error, DatasetModel> = await ExperimentService.getDatasetModel(this.activeProgram!.id!, this.experimentUUID, this.resultDatasetId);
       this.datasetModel = response.result;
       this.observationUnits = this.datasetModel.observationUnits;
+      // this.getDatasetTableRows();
 
       this.paginationController.totalCount = this.observationUnits.length;
       this.paginationController.currentPage = 1;
