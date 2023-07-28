@@ -28,16 +28,10 @@
       v-if="!loading"
       class="message is-success"
     >
-      <div
-          class="message-body"
-      >
-        <div
-            class="columns is-multiline"
-        >
+      <div class="message-body">
+        <div class="columns is-multiline">
           <div class="column is-one-fifth">
-            <div
-              class="has-text-right"
-            >
+            <div class="has-text-right">
               <b>Observation unit: </b> <span style="width: 30px;" class="is-inline-block has-text-left">{{ observationUnit }}</span><br>
               <b>Phenotypes: </b> <span style="width: 30px;" class="is-inline-block has-text-left">{{ phenotypesCount }}</span><br>
               <b>Total observations: </b> <span style="width: 30px;" class="is-inline-block has-text-left">{{ totalObservationsCount }}</span><br>
@@ -49,7 +43,7 @@
       </div>
     </article>
     <ExpandableTable
-        v-bind:records.sync="observationUnits"
+        v-bind:records.sync="datasetTableRows"
         v-bind:loading="false"
         v-bind:pagination="paginationController"
         v-bind:default-sort="['observationUnits.germplasmName', 'asc']"
@@ -64,7 +58,7 @@
           searchable
           :th-attrs="(column) => ({scope:'col'})"
       >
-        {{ removeUnique(props.row.data.germplasmName) }}
+        {{ props.row.data.germplasmName }}
       </b-table-column>
       <b-table-column
           v-slot="props"
@@ -74,8 +68,7 @@
           searchable
           :th-attrs="(column) => ({scope:'col'})"
       >
-        {{ removeUnique( props.row.data.studyName ) }}
-<!--        {{ removeUnique( props.row.data.env ) }}-->
+        {{ props.row.data.env }}
       </b-table-column>
       <b-table-column
           v-slot="props"
@@ -85,8 +78,7 @@
           searchable
           :th-attrs="(column) => ({scope:'col'})"
       >
-        {{ removeUnique( props.row.data.locationName ) }}
-<!--        {{ removeUnique( props.row.data.envLocation ) }}-->
+        {{ props.row.data.envLocation }}
       </b-table-column>
       <b-table-column
           v-slot="props"
@@ -96,7 +88,7 @@
           searchable
           :th-attrs="(column) => ({scope:'col'})"
       >
-        {{ removeUnique( props.row.data.observationUnitName ) }}
+        {{ props.row.data.expUnitId }}
       </b-table-column>
       <b-table-column
         v-slot="props"
@@ -106,11 +98,10 @@
         searchable
         :th-attrs="(column) => ({scope:'col'})"
       >
-        {{ getBreedingInsightId(props.row.data.externalReferences, "/observationunits") }}
-<!--        {{ props.row.data.obsUnitId }}-->
+        {{ props.row.data.obsUnitId }}
       </b-table-column>
       <b-table-column
-          v-for="( {trait} ) in this.datasetModel.observationVariables" :key="trait.traitName"
+          v-for="( {trait}, index ) in this.datasetModel.observationVariables" :key="trait.traitName"
           v-slot="props"
           field="data.observationUnitID"
           :label="removeUnique( trait.traitName )"
@@ -118,7 +109,7 @@
           searchable
           :th-attrs="(column) => ({scope:'col'})"
       >
-        {{ `"X";` }}
+        {{ props.row.data.traitValues[index] }}
       </b-table-column>
       <template v-slot:emptyMessage>
         <p class="has-text-weight-bold">
@@ -165,9 +156,10 @@ export default class Dataset extends ProgramsBase {
   private paginationController: PaginationController = new PaginationController();
   private datasetTableRows: DatasetTableRow[] = [];
 
+  private unitDbId_to_traitValues = {};
 
   mounted () {
-    this.getDatasetModelAndExperiment();
+    this.load();
   }
 
   @Prop()
@@ -228,25 +220,55 @@ export default class Dataset extends ProgramsBase {
     return str.replace(reg, '').trim();
   }
 
-  getDatasetTableRows (){
-    let observationUnits = this.datasetModel.observationUnits;
-    for (let unit in observationUnits){
+  createDatasetTableRows (){
+    for (let unit of this.datasetModel.observationUnits) {
       let datasetTableRow: DatasetTableRow = new DatasetTableRow();
-      datasetTableRow.germplasmName = unit.germplasmName;
-      datasetTableRow.env = unit.studyName;
-      datasetTableRow.envLocation = unit.locationName;
-      datasetTableRow.expUnitId = unit.observationUnitName;
-      datasetTableRow.obsUnitId = getBreedingInsightId(unit.externalReferences, "/observationunits");
+      datasetTableRow.germplasmName = this.removeUnique(unit.germplasmName);
 
+      datasetTableRow.env = this.removeUnique(unit.studyName);
+      datasetTableRow.envLocation = this.removeUnique(unit.locationName);
+      datasetTableRow.expUnitId = this.removeUnique(unit.observationUnitName);
+      datasetTableRow.obsUnitId = BrAPIUtils.getBreedingInsightId(unit.externalReferences, "/observationunits");
+      datasetTableRow.traitValues = this.unitDbId_to_traitValues[ unit.observationUnitDbId ];
       this.datasetTableRows.push(datasetTableRow);
     }
   }
 
+  createUnitDbId_to_traitValues(): {} {
+    let unitDbId_to_traitValues = {};
+    let arrayLength:number = this.phenotypesCount;
+
+    let units: [ObservationUnit] = this.datasetModel.observationUnits;
+    for (let unit of units) {
+      unitDbId_to_traitValues[unit.observationUnitDbId] = new Array<string>(arrayLength);
+    }
+    for (let observation of this.datasetModel.data) {
+      let variableDbId_to_index = this.createVariableDbId_to_index();
+      let obsVar_index = variableDbId_to_index[observation.observationVariableDbId];
+      let obs_value = observation.value;
+      let unitDbId = observation.observationUnitDbId;
+      let traitValueArray = unitDbId_to_traitValues[unitDbId];
+      traitValueArray[obsVar_index] = obs_value;
+      }
+    return unitDbId_to_traitValues;
+  }
+
+
+  createVariableDbId_to_index(): {}{
+    let variableDbId_to_index = {}
+    for (let index = 0; index < this.datasetModel.observationVariables.length; index++) {
+      variableDbId_to_index[ this.datasetModel.observationVariables[index].observationVariableDbId ] = index;
+    }
+    return variableDbId_to_index;
+  }
+
+
+
   @Watch('$route')
-  async getDatasetModelAndExperiment () {
+  async load () {
     this.loading = true;
 
-
+    //Set this.experiment
     let experimentResult =  await ExperimentService.getSingleExperiment(this.activeProgram!.id!, this.experimentUUID,false);
     this.experiment = experimentResult.value;
 
@@ -256,15 +278,23 @@ export default class Dataset extends ProgramsBase {
     else{
       this.resultDatasetId = this.datasetId;
     }
+
     try {
+      // Set this.datasetModel
       const response: Result<Error, DatasetModel> = await ExperimentService.getDatasetModel(this.activeProgram!.id!, this.experimentUUID, this.resultDatasetId);
       this.datasetModel = response.result;
-      this.observationUnits = this.datasetModel.observationUnits;
-      // this.getDatasetTableRows();
 
+      // Use this.datasetModel to initialize this.unitDbId_to_traitValues
+      this.unitDbId_to_traitValues = this.createUnitDbId_to_traitValues();
+
+      // Use this.datasetModel to initialize this.datasetTableRows
+      this.createDatasetTableRows();
+
+      //Initialize the paginationController
       this.paginationController.totalCount = this.observationUnits.length;
       this.paginationController.currentPage = 1;
       this.paginationController.totalPages = this.paginationController.totalCount.valueOf() / this.paginationController.pageSize.valueOf();
+
     } catch (err) {
       // Display error that experiment cannot be loaded
       this.$emit('show-error-notification', 'Error while trying to load data set' + err.message());

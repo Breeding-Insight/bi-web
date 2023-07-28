@@ -28,7 +28,7 @@ export class DatasetTableRow {
   row?: string;
   column?: string;
   obsUnitId?: string;
-  traits?: string[] = [];
+  traitValues?: string[] = [];
 
 
   constructor(germplasmName?: string,
@@ -43,7 +43,7 @@ export class DatasetTableRow {
               row?: string,
               column?: string,
               obsUnitId?: string,
-              traits?: string[]) {
+              traitValues?: string[]) {
     this.germplasmName = germplasmName;
     this.gid = gid;
     this.tOrC = tOrC;
@@ -56,7 +56,7 @@ export class DatasetTableRow {
     this.row = row;
     this.column = column;
     this.obsUnitId = obsUnitId;
-    this.traits = traits;
+    this.traitValues = traitValues;
 
   }
 
@@ -75,7 +75,7 @@ export class DatasetTableRow {
         dataset.row,
         dataset.column,
         dataset.obsUnitId,
-        dataset.traits
+        dataset.traitValues
         );
   }
 

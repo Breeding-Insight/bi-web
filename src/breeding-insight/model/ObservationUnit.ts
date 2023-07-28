@@ -18,15 +18,15 @@
 import {ExternalReferences} from "@/breeding-insight/brapi/model/externalReferences";
 
 export class ObservationUnit {
-  id?: string;
-  name?: string;
-  position?: ObservationUnitPosition;
+  observationUnitDbId?: string;
+  observationUnitName?: string;
+  observationUnitPosition?: ObservationUnitPosition;
   externalReferences?: ExternalReferences;
   
-  constructor(id?:string, name?:string, position?:ObservationUnitPosition, externalReferences?: ExternalReferences) {
-    this.id = id;
-    this.name = name;
-    this.position = position;
+  constructor(observationUnitDbId?:string, observationUnitName?:string, observationUnitPosition?:ObservationUnitPosition, externalReferences?: ExternalReferences) {
+    this.observationUnitDbId = observationUnitDbId;
+    this.observationUnitName = observationUnitName;
+    this.observationUnitPosition = observationUnitPosition;
     this.externalReferences = externalReferences;
   }
 }

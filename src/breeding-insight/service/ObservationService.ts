@@ -64,7 +64,7 @@ export class ObservationService {
                                  observation.observationUnitDbId,
                                  observation.observationVariableDbId,
                                  observation.germplasmName,
-                                 observation.observationUnitName,
+                                 observation.name,
                                  observation.observationVariableName,
                                  observation.collector,
                                  observation.uploadedBy,

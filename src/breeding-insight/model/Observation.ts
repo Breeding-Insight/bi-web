@@ -19,8 +19,8 @@ export class Observation {
   id?: string;
   studyId?: string;
   germplasmId?: string;
-  observationUnitId?: string;
-  observationVariableId?: string;
+  observationUnitDbId?: string;
+  observationVariableDbId?: string;
   germplasmName?: string;
   observationUnitName?: string;
   observationVariableName?: string;
@@ -35,8 +35,8 @@ export class Observation {
   constructor(id?: string,
               studyId?: string,
               germplasmId?: string,
-              observationUnitId?: string,
-              observationVariableId?: string,
+              observationUnitDbId?: string,
+              observationVariableDbId?: string,
               germplasmName?: string,
               observationUnitName?: string,
               observationVariableName?: string,
@@ -50,8 +50,8 @@ export class Observation {
     this.id = id;
     this.studyId = studyId;
     this.germplasmId = germplasmId;
-    this.observationUnitId = observationUnitId;
-    this.observationVariableId = observationVariableId;
+    this.observationUnitDbId = observationUnitDbId;
+    this.observationVariableDbId = observationVariableDbId;
     this.germplasmName = germplasmName;
     this.observationUnitName = observationUnitName;
     this.observationVariableName = observationVariableName;
@@ -74,8 +74,8 @@ export class Observation {
     return new Observation(observation.id,
                            observation.studyId,
                            observation.germplasmId,
-                           observation.observationUnitId,
-                           observation.observationVariableId,
+                           observation.observationUnitDbId,
+                           observation.observationVariableDbId,
                            observation.germplasmName,
                            observation.observationUnitName,
                            observation.observationVariableName,
@@ -92,8 +92,8 @@ export class Observation {
     return (this.id === observation.id) &&
       (this.studyId === observation.studyId) &&
       (this.germplasmId === observation.germplasmId) &&
-      (this.observationUnitId === observation.observationUnitId) &&
-      (this.observationVariableId === observation.observationVariableId) &&
+      (this.observationUnitDbId === observation.observationUnitDbId) &&
+      (this.observationVariableDbId === observation.observationVariableDbId) &&
       (this.germplasmName === observation.germplasmName) &&
       (this.observationUnitName === observation.observationUnitName) &&
       (this.observationVariableName === observation.observationVariableName) &&
