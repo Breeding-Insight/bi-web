@@ -50,6 +50,7 @@ import {DatasetModel} from "@/breeding-insight/model/DatasetModel";
 import {ExperimentService} from "@/breeding-insight/service/ExperimentService";
 import {Program} from "@/breeding-insight/model/Program";
 import {mapGetters} from "vuex";
+import {Trial} from '@/breeding-insight/model/Trial';
 
 @Component({
   computed: {
@@ -61,7 +62,7 @@ import {mapGetters} from "vuex";
 export default class Dataset extends ProgramsBase {
   private activeProgram: Program;
   private datasetModel: DatasetModel;
-  private experiment: Experiment;
+  private experiment: Trial;
   private loading: boolean = true;
   private resultDatasetId: string;
 
