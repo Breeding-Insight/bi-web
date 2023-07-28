@@ -50,7 +50,7 @@ import {DatasetModel} from "@/breeding-insight/model/DatasetModel";
 import {ExperimentService} from "@/breeding-insight/service/ExperimentService";
 import {Program} from "@/breeding-insight/model/Program";
 import {mapGetters} from "vuex";
-import {Trial} from '@/breeding-insight/model/Trial';
+import {Trial} from "@/breeding-insight/model/Trial";
 
 @Component({
   computed: {

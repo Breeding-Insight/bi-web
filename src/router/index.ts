@@ -24,10 +24,8 @@ import NotAuthorized from '@/views/NotAuthorized.vue'
 import BrapiAuthorize from '@/views/BrAPI/BrapiAuthorize.vue'
 import BrAPIInfo from '@/views/BrAPI/BrAPIInfo.vue'
 import ProgramManagement from '@/views/program/ProgramManagement.vue'
-import ExperimentDetails from "@/views/experiments-and-observations/ExperimentDetails";
+import ExperimentDetails from "@/views/experiments-and-observations/ExperimentDetails.vue";
 import Dataset from "@/views/import/Dataset.vue";
-import StudiesList from "@/views/trials-and-studies/StudiesList.vue";
-import ObservationsList from '@/views/observations/ObservationsList.vue';
 import AdminProgramManagement from '@/views/admin/AdminProgramManagement.vue'
 import AdminUserManagement from '@/views/admin/AdminUserManagement.vue'
 import BrAPIImporter from '@/views/import/BrAPIImporter.vue'
@@ -120,9 +118,11 @@ const routes = [
     // which is lazy-loaded when the route is visited.
     component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
   },
-  { path: '/admin',
+  {
+    path: '/admin',
     name: 'admin',
-    redirect: '/admin/programs' },
+    redirect: '/admin/programs'
+  },
   {
     path: '/admin/programs',
     name: 'admin-programs',
@@ -155,25 +155,6 @@ const routes = [
     },
     component: Home,
     beforeEnter: processProgramNavigation,
-  },
-  {
-    path: '/programs/:programId/study/:studyId/observations',
-    name: 'observations',
-    component: ObservationsList,
-    meta: {
-      title: 'Observations',
-      layout: layouts.userSideBar
-    },
-    beforeEnter: processProgramNavigation
-  },
-  {
-    path: '/programs/:programId/trial/:trialId/studies',
-    name: 'studies',
-    meta: {
-      title: 'Studies',
-      layout: layouts.userSideBar
-    },
-    component: StudiesList
   },
   {
     path: '/programs/:programId/experiments-observations',

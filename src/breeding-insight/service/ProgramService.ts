@@ -38,7 +38,7 @@ export class ProgramService {
       if (program.id === undefined) {
         ProgramDAO.create(program).then((biResponse) => {
           const result: any = biResponse.result;
-          const newProgram = new Program(result.id, result.name, result.species.id, result.numUsers, result.brapiUrl);
+          const newProgram = new Program(result.id, result.name, result.species.id, result.numUsers, result.brapiUrl, result.key);
           resolve(newProgram);
 
         }).catch((error) => {
@@ -68,7 +68,7 @@ export class ProgramService {
       if (program.id) {
         ProgramDAO.update(program.id, program).then((biResponse) => {
           const result: any = biResponse.result;
-          const newProgram = new Program(result.id, result.name, result.species.id, result.numUsers, result.brapiUrl);
+          const newProgram = new Program(result.id, result.name, result.species.id, result.numUsers, result.brapiUrl, result.key);
           resolve(newProgram);
 
         }).catch((error) => reject(error));
@@ -125,7 +125,7 @@ export class ProgramService {
 
       ProgramDAO.getOne(programId).then((biResponse) => {
         const result = biResponse.result;
-        const program = new Program(result.id, result.name, result.species.id, result.numUsers, result.brapiUrl);
+        const program = new Program(result.id, result.name, result.species.id, result.numUsers, result.brapiUrl, result.key);
         resolve(program);
       }).catch((error) => reject(error));
 

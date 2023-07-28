@@ -73,7 +73,6 @@ const store: StoreOptions<RootState> = {
     successNotificationMsg: state => {
       return state.successNotificationMsg;
     },
-
     isInfoNotificationActive: state => {
       return state.infoNotificationActive;
     },

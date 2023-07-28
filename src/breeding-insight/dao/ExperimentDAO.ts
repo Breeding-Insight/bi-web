@@ -19,8 +19,6 @@ import {BiResponse, Response} from "@/breeding-insight/model/BiResponse";
 import * as api from "@/util/api";
 import {Result, ResultGenerator} from "@/breeding-insight/model/Result";
 import {Trial} from "@/breeding-insight/model/Trial.ts";
-import * as UUID from "uuid";
-import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
 import {DatasetModel} from "@/breeding-insight/model/DatasetModel";
 
 export class ExperimentDAO {

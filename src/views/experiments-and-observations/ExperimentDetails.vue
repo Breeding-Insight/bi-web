@@ -33,8 +33,9 @@
         </router-link>
 
         <ExperimentObservationsDownloadButton
+            v-bind:experiment="experiment"
             v-bind:modal-title="`Download ${experiment.trialName}`"
-            v-bind:trial-db-id="experimentUUID"
+            v-bind:trial-id="experimentUUID"
             v-on:show-error-notification ="$emit('show-error-notification', $event)"
             anchor-class="button is-primary is-outlined"
         >
@@ -75,7 +76,7 @@
           <router-link
               v-bind:to="{name: 'experiment_obs_dataset', params: {programId: activeProgram.id, experimentId: experimentUUID, datasetId: 'observation'}}"
               tag="li" active-class="is-active">
-            <a>Observation DatasetModel</a>
+            <a>Observation Dataset</a>
           </router-link>
           <!--TODO: Will need to loop through a list of datasets and add a tab for each.-->
         </ul>
@@ -95,13 +96,13 @@
 import {Component, Watch} from "vue-property-decorator";
 import {mapGetters} from "vuex";
 import {PlusCircleIcon} from 'vue-feather-icons'
-import TrialsAndStudiesBase from "@/components/trials/TrialsAndStudiesBase.vue";
 import {Program} from "@/breeding-insight/model/Program";
 import {Result} from "@/breeding-insight/model/Result";
 import {ExperimentService} from "@/breeding-insight/service/ExperimentService";
 import ClickOutside from 'vue-click-outside';
 import {Trial} from "@/breeding-insight/model/Trial";
 import ExperimentObservationsDownloadButton from "@/components/experiments/ExperimentObservationsDownloadButton.vue";
+import ProgramsBase from "@/components/program/ProgramsBase.vue";
 
 @Component({
   components: {
@@ -117,7 +118,7 @@ import ExperimentObservationsDownloadButton from "@/components/experiments/Exper
     ClickOutside
   }
 })
-export default class ExperimentDetails extends TrialsAndStudiesBase {
+export default class ExperimentDetails extends ProgramsBase {
   private activeProgram: Program;
   private experiment: Trial;
   private experimentLoading: boolean = true;
@@ -176,14 +177,5 @@ export default class ExperimentDetails extends TrialsAndStudiesBase {
       this.experimentLoading = false;
     }
   }
-
-  downloadFile(){
-    alert("'Download file' is not yet implemented.");
-    this.actionSelectActive = false;
-  }
-  hideActionSelector(){
-    this.actionSelectActive = false;
-  }
-
 }
 </script>
