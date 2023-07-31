@@ -82,7 +82,7 @@
       </b-table-column>
       <b-table-column
           v-slot="props"
-          field="data.observationUnitName"
+          field="data.expUnitId"
           label="Exp Unit ID"
           sortable
           searchable
@@ -92,18 +92,58 @@
       </b-table-column>
       <b-table-column
         v-slot="props"
-        field="data.observationUnitID"
-        label="ObsUnitID"
+        field="data.expReplicate"
+        label="Exp Replicate #"
         sortable
         searchable
         :th-attrs="(column) => ({scope:'col'})"
+    >
+      {{ props.row.data.expReplicate }}
+    </b-table-column>
+      <b-table-column
+          v-slot="props"
+          field="data.expBlock"
+          label="Exp Block #"
+          sortable
+          searchable
+          :th-attrs="(column) => ({scope:'col'})"
+      >
+        {{ props.row.data.expBlock }}
+      </b-table-column>
+      <b-table-column
+          v-slot="props"
+          field="data.row"
+          label="Row"
+          sortable
+          searchable
+          :th-attrs="(column) => ({scope:'col'})"
+      >
+        {{ props.row.data.row }}
+      </b-table-column>
+      <b-table-column
+          v-slot="props"
+          field="data.column"
+          label="Column #"
+          sortable
+          searchable
+          :th-attrs="(column) => ({scope:'col'})"
+      >
+        {{ props.row.data.column }}
+      </b-table-column>
+      <b-table-column
+          v-slot="props"
+          field="data.obsUnitId"
+          label="ObsUnitID"
+          sortable
+          searchable
+          :th-attrs="(column) => ({scope:'col'})"
       >
         {{ props.row.data.obsUnitId }}
       </b-table-column>
       <b-table-column
           v-for="( {trait}, index ) in this.datasetModel.observationVariables" :key="trait.traitName"
           v-slot="props"
-          field="data.observationUnitID"
+          field="data.traitValues"
           :label="removeUnique( trait.traitName )"
           sortable
           searchable
@@ -229,6 +269,36 @@ export default class Dataset extends ProgramsBase {
       datasetTableRow.envLocation = this.removeUnique(unit.locationName);
       datasetTableRow.expUnitId = this.removeUnique(unit.observationUnitName);
       datasetTableRow.obsUnitId = BrAPIUtils.getBreedingInsightId(unit.externalReferences, "/observationunits");
+      datasetTableRow.expReplicate = "";
+      datasetTableRow.expBlock = "";
+      if( unit.observationUnitPosition && unit.observationUnitPosition.observationLevelRelationships ){
+        for( const relationship of unit.observationUnitPosition.observationLevelRelationships){
+          if (relationship.levelName === 'replicate'){
+            datasetTableRow.expReplicate = relationship.levelOrder;
+          }
+          if (relationship.levelName === 'block'){
+            datasetTableRow.expBlock = relationship.levelOrder;
+          }
+        }
+      }
+
+      datasetTableRow.row = "";
+      datasetTableRow.column = "";
+      if( unit.observationUnitPosition ){
+        if(unit.observationUnitPosition.positionCoordinateXType && unit.observationUnitPosition.positionCoordinateXType==='GRID_COL'){
+          datasetTableRow.column = unit.observationUnitPosition.positionCoordinateX;
+        }
+        else if(unit.observationUnitPosition.positionCoordinateYType && unit.observationUnitPosition.positionCoordinateYType==='GRID_COL'){
+          datasetTableRow.column = unit.observationUnitPosition.positionCoordinateY;
+        }
+
+        if(unit.observationUnitPosition.positionCoordinateXType && unit.observationUnitPosition.positionCoordinateXType==='GRID_ROW'){
+          datasetTableRow.row = unit.observationUnitPosition.positionCoordinateX;
+        }
+        else if(unit.observationUnitPosition.positionCoordinateYType && unit.observationUnitPosition.positionCoordinateYType==='GRID_ROW'){
+          datasetTableRow.row = unit.observationUnitPosition.positionCoordinateY;
+        }
+      }
       datasetTableRow.traitValues = this.unitDbId_to_traitValues[ unit.observationUnitDbId ];
       this.datasetTableRows.push(datasetTableRow);
     }

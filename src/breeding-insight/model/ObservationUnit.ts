@@ -33,8 +33,23 @@ export class ObservationUnit {
 
 export class ObservationUnitPosition {
   level?: string;
+  observationLevelRelationships?: ObservationLevelRelationship[];
 
-  constructor(level?:string) {
+  constructor(level?:string, observationLevelRelationships?: ObservationLevelRelationship[]) {
     this.level = level;
+    this.observationLevelRelationships = observationLevelRelationships;
+  }
+}
+
+
+export class ObservationLevelRelationship {
+  levelName?: string;
+  levelOrder?: number;
+  levelCode?: string;
+
+  constructor(levelName?: string, levelOrder?: number, levelCode?: string) {
+    this.levelName = levelName;
+    this.levelOrder = levelOrder;
+    this.levelCode = levelCode;
   }
 }
