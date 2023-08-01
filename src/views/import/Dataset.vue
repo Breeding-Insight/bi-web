@@ -24,6 +24,7 @@
         max="80"
       />
     </div>
+    <div v-if="!loading">
     <article
       v-if="!loading"
       class="message is-success"
@@ -62,7 +63,17 @@
       </b-table-column>
       <b-table-column
           v-slot="props"
-          field="data.studyName"
+          field="data.gid"
+          label="GID"
+          sortable
+          searchable
+          :th-attrs="(column) => ({scope:'col'})"
+      >
+        {{ props.row.data.gid }}
+      </b-table-column>
+      <b-table-column
+          v-slot="props"
+          field="data.env"
           label="Env"
           sortable
           searchable
@@ -159,6 +170,7 @@
         </p>
       </template>
     </ExpandableTable>
+    </div>
   </div>
 </template>
 
@@ -276,6 +288,10 @@ export default class Dataset extends ProgramsBase {
       return second.localeCompare(first);
     }
   }
+
+  /*
+  * remove the '[....]' found at the end of the string
+  * */
   removeUnique(str: string): string{
     str = str.trim();
     const reg = /\[[^\]]*\]$/;
@@ -287,10 +303,18 @@ export default class Dataset extends ProgramsBase {
       let datasetTableRow: DatasetTableRow = new DatasetTableRow();
       datasetTableRow.germplasmName = this.removeUnique(unit.germplasmName);
 
+      // GID
+      datasetTableRow.gid = "";
+      if(unit.additionalInfo){
+        datasetTableRow.gid = unit.additionalInfo.gid;
+      }
+
       datasetTableRow.env = this.removeUnique(unit.studyName);
       datasetTableRow.envLocation = this.removeUnique(unit.locationName);
       datasetTableRow.expUnitId = this.removeUnique(unit.observationUnitName);
       datasetTableRow.obsUnitId = BrAPIUtils.getBreedingInsightId(unit.externalReferences, "/observationunits");
+
+      //Exp Replicate # and Exp Block #
       datasetTableRow.expReplicate = "";
       datasetTableRow.expBlock = "";
       if( unit.observationUnitPosition && unit.observationUnitPosition.observationLevelRelationships ){
@@ -304,9 +328,10 @@ export default class Dataset extends ProgramsBase {
         }
       }
 
-      datasetTableRow.row = "";
-      datasetTableRow.column = "";
+      // Column and Row
       if( unit.observationUnitPosition ){
+        // Column
+        datasetTableRow.column = "";
         if(unit.observationUnitPosition.positionCoordinateXType && unit.observationUnitPosition.positionCoordinateXType==='GRID_COL'){
           datasetTableRow.column = unit.observationUnitPosition.positionCoordinateX;
         }
@@ -314,6 +339,8 @@ export default class Dataset extends ProgramsBase {
           datasetTableRow.column = unit.observationUnitPosition.positionCoordinateY;
         }
 
+        // Row
+        datasetTableRow.row = "";
         if(unit.observationUnitPosition.positionCoordinateXType && unit.observationUnitPosition.positionCoordinateXType==='GRID_ROW'){
           datasetTableRow.row = unit.observationUnitPosition.positionCoordinateX;
         }
@@ -321,6 +348,7 @@ export default class Dataset extends ProgramsBase {
           datasetTableRow.row = unit.observationUnitPosition.positionCoordinateY;
         }
       }
+
       datasetTableRow.traitValues = this.unitDbId_to_traitValues[ unit.observationUnitDbId ];
       this.datasetTableRows.push(datasetTableRow);
     }
