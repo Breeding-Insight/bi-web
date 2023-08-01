@@ -97,9 +97,9 @@
         sortable
         searchable
         :th-attrs="(column) => ({scope:'col'})"
-    >
+      >
       {{ props.row.data.expReplicate }}
-    </b-table-column>
+      </b-table-column>
       <b-table-column
           v-slot="props"
           field="data.expBlock"
@@ -123,7 +123,7 @@
       <b-table-column
           v-slot="props"
           field="data.column"
-          label="Column #"
+          label="Column"
           sortable
           searchable
           :th-attrs="(column) => ({scope:'col'})"
@@ -143,7 +143,9 @@
       <b-table-column
           v-for="( {trait}, index ) in this.datasetModel.observationVariables" :key="trait.traitName"
           v-slot="props"
-          field="data.traitValues"
+          :custom-sort="(a,b,isAsc) => sortObservations(index, a, b, isAsc)"
+          :custom-search="(propsRow, filterString) => filterByObservations(index, propsRow, filterString)"
+          :field="trait.traitName"
           :label="removeUnique( trait.traitName )"
           sortable
           searchable
@@ -175,6 +177,7 @@ import ExpandableTable from "@/components/tables/expandableTable/ExpandableTable
 import {BrAPIUtils} from "@/breeding-insight/utils/BrAPIUtils";
 import {ExternalReferences} from "@/breeding-insight/brapi/model/externalReferences";
 import {DatasetTableRow} from "@/breeding-insight/model/DatasetTableRow";
+import {dmyFormat} from "@/breeding-insight/utils/filters";
 
 @Component({
   components: {
@@ -228,32 +231,51 @@ export default class Dataset extends ProgramsBase {
 
   // Total observations
   get totalObservationsCount(): number {
-    let count = 0;
-
-    if(this.datasetModel && this.datasetModel.observationUnits){
-      let ouCount = this.datasetModel.observationUnits.length;
-      count = ouCount * this.phenotypesCount;
+    let count = "0";
+    if(this.datasetModel && this.datasetModel.additionalInfo){
+      count = this.datasetModel.additionalInfo.observations;
     }
     return count
   }
 
   // Observations with data
   get observationsWithData(): number {
-    let count = 0;
-    if(this.datasetModel && this.datasetModel.data){
-      count = this.datasetModel.data.length;
+    let count = "0";
+    if(this.datasetModel && this.datasetModel.additionalInfo){
+      count = this.datasetModel.additionalInfo.observationsWithData;
     }
     return count
   }
 
   // Observations without data
   get observationsWithoutData(): number {
-    return this.totalObservationsCount-this.observationsWithData
+    let count = "0";
+    if(this.datasetModel && this.datasetModel.additionalInfo){
+      count = this.datasetModel.additionalInfo.observationsWithoutData;
+    }
+    return count
   }
   getBreedingInsightId(refs: ExternalReferences, source: string): string{
     return BrAPIUtils.getBreedingInsightId(refs, source);
   }
 
+  filterByObservations(index:number, propsRow, input){
+    let obsValue = propsRow.data.traitValues[index];
+    obsValue = obsValue? obsValue: "";  //convert null or undefined to an empty string
+    return obsValue.includes(input);
+  }
+
+  sortObservations(index: number, a: any, b: any, isAsc: boolean) {
+    let first = a.data.traitValues[index];
+    first = first? first: "";  //convert null or undefined to an empty string
+    let second = b.data.traitValues[index];
+    second = second? second: "";  //convert null or undefined to an empty string
+    if(isAsc) {
+      return first.localeCompare(second);
+    } else {
+      return second.localeCompare(first);
+    }
+  }
   removeUnique(str: string): string{
     str = str.trim();
     const reg = /\[[^\]]*\]$/;
