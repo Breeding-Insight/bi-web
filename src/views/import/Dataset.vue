@@ -20,156 +20,165 @@
     <div v-if="loading">
       loading dataset...
       <progress
-        class="progress is-normal"
-        max="80"
+          class="progress is-normal"
+          max="80"
       />
     </div>
     <div v-if="!loading">
-    <article
-      v-if="!loading"
-      class="message is-success"
-    >
-      <div class="message-body">
-        <div class="columns is-multiline">
-          <div class="column is-one-fifth">
-            <div class="has-text-right">
-              <b>Observation unit: </b> <span style="width: 30px;" class="is-inline-block has-text-left">{{ observationUnit }}</span><br>
-              <b>Phenotypes: </b> <span style="width: 30px;" class="is-inline-block has-text-left">{{ phenotypesCount }}</span><br>
-              <b>Total observations: </b> <span style="width: 30px;" class="is-inline-block has-text-left">{{ totalObservationsCount }}</span><br>
-              <b>Observations with data: </b> <span style="width: 30px;" class="is-inline-block has-text-left">{{ observationsWithData }}</span><br>
-              <b>Observations without data: </b> <span style="width: 30px;" class="is-inline-block has-text-left">{{ observationsWithoutData }}</span><br>
+      <article
+          v-if="!loading"
+          class="message is-success"
+      >
+        <div class="message-body">
+          <div class="columns is-multiline">
+            <div class="column is-one-fifth">
+              <div class="has-text-right">
+                <b>Observation unit: </b> <span style="width: 30px;"
+                                                class="is-inline-block has-text-left">{{ observationUnit }}</span><br>
+                <b>Phenotypes: </b> <span style="width: 30px;" class="is-inline-block has-text-left">{{
+                  phenotypesCount
+                }}</span><br>
+                <b>Total observations: </b> <span style="width: 30px;" class="is-inline-block has-text-left">{{
+                  totalObservationsCount
+                }}</span><br>
+                <b>Observations with data: </b> <span style="width: 30px;" class="is-inline-block has-text-left">{{
+                  observationsWithData
+                }}</span><br>
+                <b>Observations without data: </b> <span style="width: 30px;" class="is-inline-block has-text-left">{{
+                  observationsWithoutData
+                }}</span><br>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </article>
-    <ExpandableTable
-        v-bind:records.sync="datasetTableRows"
-        v-bind:loading="false"
-        v-bind:pagination="paginationController"
-        v-bind:default-sort="['observationUnits.germplasmName', 'asc']"
-        v-bind:debounce-search="400"
-        v-on:show-error-notification="$emit('show-error-notification', $event)"
-    >
-      <b-table-column
-          v-slot="props"
-          field="data.germplasmName"
-          label="Germplasm Name"
-          sortable
-          searchable
-          :th-attrs="(column) => ({scope:'col'})"
+      </article>
+      <ExpandableTable
+          v-bind:records.sync="datasetTableRows"
+          v-bind:loading="false"
+          v-bind:pagination="paginationController"
+          v-bind:default-sort="['observationUnits.germplasmName', 'asc']"
+          v-bind:debounce-search="400"
+          v-on:show-error-notification="$emit('show-error-notification', $event)"
       >
-        {{ props.row.data.germplasmName }}
-      </b-table-column>
-      <b-table-column
-          v-slot="props"
-          field="data.gid"
-          label="GID"
-          sortable
-          searchable
-          :th-attrs="(column) => ({scope:'col'})"
-      >
-        {{ props.row.data.gid }}
-      </b-table-column>
-      <b-table-column
-          v-slot="props"
-          field="data.env"
-          label="Env"
-          sortable
-          searchable
-          :th-attrs="(column) => ({scope:'col'})"
-      >
-        {{ props.row.data.env }}
-      </b-table-column>
-      <b-table-column
-          v-slot="props"
-          field="data.envLocation"
-          label="Env Location"
-          sortable
-          searchable
-          :th-attrs="(column) => ({scope:'col'})"
-      >
-        {{ props.row.data.envLocation }}
-      </b-table-column>
-      <b-table-column
-          v-slot="props"
-          field="data.expUnitId"
-          label="Exp Unit ID"
-          sortable
-          searchable
-          :th-attrs="(column) => ({scope:'col'})"
-      >
-        {{ props.row.data.expUnitId }}
-      </b-table-column>
-      <b-table-column
-        v-slot="props"
-        field="data.expReplicate"
-        label="Exp Replicate #"
-        sortable
-        searchable
-        :th-attrs="(column) => ({scope:'col'})"
-      >
-      {{ props.row.data.expReplicate }}
-      </b-table-column>
-      <b-table-column
-          v-slot="props"
-          field="data.expBlock"
-          label="Exp Block #"
-          sortable
-          searchable
-          :th-attrs="(column) => ({scope:'col'})"
-      >
-        {{ props.row.data.expBlock }}
-      </b-table-column>
-      <b-table-column
-          v-slot="props"
-          field="data.row"
-          label="Row"
-          sortable
-          searchable
-          :th-attrs="(column) => ({scope:'col'})"
-      >
-        {{ props.row.data.row }}
-      </b-table-column>
-      <b-table-column
-          v-slot="props"
-          field="data.column"
-          label="Column"
-          sortable
-          searchable
-          :th-attrs="(column) => ({scope:'col'})"
-      >
-        {{ props.row.data.column }}
-      </b-table-column>
-      <b-table-column
-          v-slot="props"
-          field="data.obsUnitId"
-          label="ObsUnitID"
-          sortable
-          searchable
-          :th-attrs="(column) => ({scope:'col'})"
-      >
-        {{ props.row.data.obsUnitId }}
-      </b-table-column>
-      <b-table-column
-          v-for="( {trait}, index ) in this.datasetModel.observationVariables" :key="trait.traitName"
-          v-slot="props"
-          :custom-sort="(a,b,isAsc) => sortObservations(index, a, b, isAsc)"
-          :custom-search="(propsRow, filterString) => filterByObservations(index, propsRow, filterString)"
-          :field="trait.traitName"
-          :label="removeUnique( trait.traitName )"
-          sortable
-          searchable
-          :th-attrs="(column) => ({scope:'col'})"
-      >
-        {{ props.row.data.traitValues[index] }}
-      </b-table-column>
-      <template v-slot:emptyMessage>
-        <p class="has-text-weight-bold">
-          No datasets exist.
-        </p>
-      </template>
-    </ExpandableTable>
+        <b-table-column
+            v-slot="props"
+            field="data.germplasmName"
+            label="Germplasm Name"
+            sortable
+            searchable
+            :th-attrs="(column) => ({scope:'col'})"
+        >
+          {{ props.row.data.germplasmName }}
+        </b-table-column>
+        <b-table-column
+            v-slot="props"
+            field="data.gid"
+            label="GID"
+            sortable
+            searchable
+            :th-attrs="(column) => ({scope:'col'})"
+        >
+          {{ props.row.data.gid }}
+        </b-table-column>
+        <b-table-column
+            v-slot="props"
+            field="data.env"
+            label="Env"
+            sortable
+            searchable
+            :th-attrs="(column) => ({scope:'col'})"
+        >
+          {{ props.row.data.env }}
+        </b-table-column>
+        <b-table-column
+            v-slot="props"
+            field="data.envLocation"
+            label="Env Location"
+            sortable
+            searchable
+            :th-attrs="(column) => ({scope:'col'})"
+        >
+          {{ props.row.data.envLocation }}
+        </b-table-column>
+        <b-table-column
+            v-slot="props"
+            field="data.expUnitId"
+            label="Exp Unit ID"
+            sortable
+            searchable
+            :th-attrs="(column) => ({scope:'col'})"
+        >
+          {{ props.row.data.expUnitId }}
+        </b-table-column>
+        <b-table-column
+            v-slot="props"
+            field="data.expReplicate"
+            label="Exp Replicate #"
+            sortable
+            searchable
+            :th-attrs="(column) => ({scope:'col'})"
+        >
+          {{ props.row.data.expReplicate }}
+        </b-table-column>
+        <b-table-column
+            v-slot="props"
+            field="data.expBlock"
+            label="Exp Block #"
+            sortable
+            searchable
+            :th-attrs="(column) => ({scope:'col'})"
+        >
+          {{ props.row.data.expBlock }}
+        </b-table-column>
+        <b-table-column
+            v-slot="props"
+            field="data.row"
+            label="Row"
+            sortable
+            searchable
+            :th-attrs="(column) => ({scope:'col'})"
+        >
+          {{ props.row.data.row }}
+        </b-table-column>
+        <b-table-column
+            v-slot="props"
+            field="data.column"
+            label="Column"
+            sortable
+            searchable
+            :th-attrs="(column) => ({scope:'col'})"
+        >
+          {{ props.row.data.column }}
+        </b-table-column>
+        <b-table-column
+            v-slot="props"
+            field="data.obsUnitId"
+            label="ObsUnitID"
+            sortable
+            searchable
+            :th-attrs="(column) => ({scope:'col'})"
+        >
+          {{ props.row.data.obsUnitId }}
+        </b-table-column>
+        <b-table-column
+            v-for="( {trait}, index ) in this.datasetModel.observationVariables" :key="trait.traitName"
+            v-slot="props"
+            :custom-sort="(a,b,isAsc) => sortObservations(index, a, b, isAsc)"
+            :custom-search="(propsRow, filterString) => filterByObservations(index, propsRow, filterString)"
+            :field="trait.traitName"
+            :label="removeUnique( trait.traitName )"
+            sortable
+            searchable
+            :th-attrs="(column) => ({scope:'col'})"
+        >
+          {{ props.row.data.traitValues[index] }}
+        </b-table-column>
+        <template v-slot:emptyMessage>
+          <p class="has-text-weight-bold">
+            No datasets exist.
+          </p>
+        </template>
+      </ExpandableTable>
     </div>
   </div>
 </template>
@@ -213,7 +222,7 @@ export default class Dataset extends ProgramsBase {
 
   private unitDbId_to_traitValues = {};
 
-  mounted () {
+  mounted() {
     this.load();
   }
 
@@ -224,18 +233,18 @@ export default class Dataset extends ProgramsBase {
     return this.$route.params.experimentId;
   }
 
-  get observationUnit(): string{
+  get observationUnit(): string {
     let ou = "NA"
-    if(this.experiment && this.experiment.additionalInfo && this.experiment.additionalInfo.defaultObservationLevel){
+    if (this.experiment && this.experiment.additionalInfo && this.experiment.additionalInfo.defaultObservationLevel) {
       ou = this.experiment.additionalInfo.defaultObservationLevel;
     }
     return ou;
   }
 
-  get phenotypesCount(): number{
+  get phenotypesCount(): number {
     let count = 0;
 
-    if(this.datasetModel && this.datasetModel.observationVariables){
+    if (this.datasetModel && this.datasetModel.observationVariables) {
       count = this.datasetModel.observationVariables.length;
     }
     return count
@@ -244,7 +253,7 @@ export default class Dataset extends ProgramsBase {
   // Total observations
   get totalObservationsCount(): number {
     let count = "0";
-    if(this.datasetModel && this.datasetModel.additionalInfo){
+    if (this.datasetModel && this.datasetModel.additionalInfo) {
       count = this.datasetModel.additionalInfo.observations;
     }
     return count
@@ -253,7 +262,7 @@ export default class Dataset extends ProgramsBase {
   // Observations with data
   get observationsWithData(): number {
     let count = "0";
-    if(this.datasetModel && this.datasetModel.additionalInfo){
+    if (this.datasetModel && this.datasetModel.additionalInfo) {
       count = this.datasetModel.additionalInfo.observationsWithData;
     }
     return count
@@ -262,27 +271,28 @@ export default class Dataset extends ProgramsBase {
   // Observations without data
   get observationsWithoutData(): number {
     let count = "0";
-    if(this.datasetModel && this.datasetModel.additionalInfo){
+    if (this.datasetModel && this.datasetModel.additionalInfo) {
       count = this.datasetModel.additionalInfo.observationsWithoutData;
     }
     return count
   }
-  getBreedingInsightId(refs: ExternalReferences, source: string): string{
+
+  getBreedingInsightId(refs: ExternalReferences, source: string): string {
     return BrAPIUtils.getBreedingInsightId(refs, source);
   }
 
-  filterByObservations(index:number, propsRow, input){
+  filterByObservations(index: number, propsRow, input) {
     let obsValue = propsRow.data.traitValues[index];
-    obsValue = obsValue? obsValue: "";  //convert null or undefined to an empty string
+    obsValue = obsValue ? obsValue : "";  //convert null or undefined to an empty string
     return obsValue.includes(input);
   }
 
   sortObservations(index: number, a: any, b: any, isAsc: boolean) {
     let first = a.data.traitValues[index];
-    first = first? first: "";  //convert null or undefined to an empty string
+    first = first ? first : "";  //convert null or undefined to an empty string
     let second = b.data.traitValues[index];
-    second = second? second: "";  //convert null or undefined to an empty string
-    if(isAsc) {
+    second = second ? second : "";  //convert null or undefined to an empty string
+    if (isAsc) {
       return first.localeCompare(second);
     } else {
       return second.localeCompare(first);
@@ -292,20 +302,20 @@ export default class Dataset extends ProgramsBase {
   /*
   * remove the '[....]' found at the end of the string
   * */
-  removeUnique(str: string): string{
+  removeUnique(str: string): string {
     str = str.trim();
     const reg = /\[[^\]]*\]$/;
     return str.replace(reg, '').trim();
   }
 
-  createDatasetTableRows (){
+  createDatasetTableRows() {
     for (let unit of this.datasetModel.observationUnits) {
       let datasetTableRow: DatasetTableRow = new DatasetTableRow();
       datasetTableRow.germplasmName = this.removeUnique(unit.germplasmName);
 
       // GID
       datasetTableRow.gid = "";
-      if(unit.additionalInfo){
+      if (unit.additionalInfo) {
         datasetTableRow.gid = unit.additionalInfo.gid;
       }
 
@@ -317,46 +327,44 @@ export default class Dataset extends ProgramsBase {
       //Exp Replicate # and Exp Block #
       datasetTableRow.expReplicate = "";
       datasetTableRow.expBlock = "";
-      if( unit.observationUnitPosition && unit.observationUnitPosition.observationLevelRelationships ){
-        for( const relationship of unit.observationUnitPosition.observationLevelRelationships){
-          if (relationship.levelName === 'replicate'){
+      if (unit.observationUnitPosition && unit.observationUnitPosition.observationLevelRelationships) {
+        for (const relationship of unit.observationUnitPosition.observationLevelRelationships) {
+          if (relationship.levelName === 'replicate') {
             datasetTableRow.expReplicate = relationship.levelOrder;
           }
-          if (relationship.levelName === 'block'){
+          if (relationship.levelName === 'block') {
             datasetTableRow.expBlock = relationship.levelOrder;
           }
         }
       }
 
       // Column and Row
-      if( unit.observationUnitPosition ){
+      if (unit.observationUnitPosition) {
         // Column
         datasetTableRow.column = "";
-        if(unit.observationUnitPosition.positionCoordinateXType && unit.observationUnitPosition.positionCoordinateXType==='GRID_COL'){
+        if (unit.observationUnitPosition.positionCoordinateXType && unit.observationUnitPosition.positionCoordinateXType === 'GRID_COL') {
           datasetTableRow.column = unit.observationUnitPosition.positionCoordinateX;
-        }
-        else if(unit.observationUnitPosition.positionCoordinateYType && unit.observationUnitPosition.positionCoordinateYType==='GRID_COL'){
+        } else if (unit.observationUnitPosition.positionCoordinateYType && unit.observationUnitPosition.positionCoordinateYType === 'GRID_COL') {
           datasetTableRow.column = unit.observationUnitPosition.positionCoordinateY;
         }
 
         // Row
         datasetTableRow.row = "";
-        if(unit.observationUnitPosition.positionCoordinateXType && unit.observationUnitPosition.positionCoordinateXType==='GRID_ROW'){
+        if (unit.observationUnitPosition.positionCoordinateXType && unit.observationUnitPosition.positionCoordinateXType === 'GRID_ROW') {
           datasetTableRow.row = unit.observationUnitPosition.positionCoordinateX;
-        }
-        else if(unit.observationUnitPosition.positionCoordinateYType && unit.observationUnitPosition.positionCoordinateYType==='GRID_ROW'){
+        } else if (unit.observationUnitPosition.positionCoordinateYType && unit.observationUnitPosition.positionCoordinateYType === 'GRID_ROW') {
           datasetTableRow.row = unit.observationUnitPosition.positionCoordinateY;
         }
       }
 
-      datasetTableRow.traitValues = this.unitDbId_to_traitValues[ unit.observationUnitDbId ];
+      datasetTableRow.traitValues = this.unitDbId_to_traitValues[unit.observationUnitDbId];
       this.datasetTableRows.push(datasetTableRow);
     }
   }
 
   createUnitDbId_to_traitValues(): {} {
     let unitDbId_to_traitValues = {};
-    let arrayLength:number = this.phenotypesCount;
+    let arrayLength: number = this.phenotypesCount;
 
     let units: [ObservationUnit] = this.datasetModel.observationUnits;
     for (let unit of units) {
@@ -369,33 +377,31 @@ export default class Dataset extends ProgramsBase {
       let unitDbId = observation.observationUnitDbId;
       let traitValueArray = unitDbId_to_traitValues[unitDbId];
       traitValueArray[obsVar_index] = obs_value;
-      }
+    }
     return unitDbId_to_traitValues;
   }
 
 
-  createVariableDbId_to_index(): {}{
+  createVariableDbId_to_index(): {} {
     let variableDbId_to_index = {}
     for (let index = 0; index < this.datasetModel.observationVariables.length; index++) {
-      variableDbId_to_index[ this.datasetModel.observationVariables[index].observationVariableDbId ] = index;
+      variableDbId_to_index[this.datasetModel.observationVariables[index].observationVariableDbId] = index;
     }
     return variableDbId_to_index;
   }
 
 
-
   @Watch('$route')
-  async load () {
+  async load() {
     this.loading = true;
 
     //Set this.experiment
-    let experimentResult =  await ExperimentService.getSingleExperiment(this.activeProgram!.id!, this.experimentUUID,false);
+    let experimentResult = await ExperimentService.getSingleExperiment(this.activeProgram!.id!, this.experimentUUID, false);
     this.experiment = experimentResult.value;
 
-    if( this.datasetId==='observation'){
+    if (this.datasetId === 'observation') {
       this.resultDatasetId = this.experiment.additionalInfo.observationDatasetId;
-    }
-    else{
+    } else {
       this.resultDatasetId = this.datasetId;
     }
 
