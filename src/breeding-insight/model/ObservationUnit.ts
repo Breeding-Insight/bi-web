@@ -18,12 +18,26 @@
 import {ExternalReferences} from "@/breeding-insight/brapi/model/externalReferences";
 
 export class ObservationUnit {
-  observationUnitDbId?: string;
+  observationUnitDbId: string;
+  germplasmDbId?: string;
+  germplasmName: string;
+  locationDbI?: string;
+  locationName: string;
   observationUnitName?: string;
+  observationUnitPUI?: string;
+  programDbId?: string;
+  programName?: string;
+  studyDbId?: string;
+  studyName: string;
+  trialDbId?: string;
+  trialName?: string;
   observationUnitPosition?: ObservationUnitPosition;
   externalReferences?: ExternalReferences;
-  
-  constructor(observationUnitDbId?:string, observationUnitName?:string, observationUnitPosition?:ObservationUnitPosition, externalReferences?: ExternalReferences) {
+  additionalInfo?: any;
+  treatments?: any;
+
+
+  constructor(observationUnitDbId:string, observationUnitName?:string, observationUnitPosition?:ObservationUnitPosition, externalReferences?: ExternalReferences) {
     this.observationUnitDbId = observationUnitDbId;
     this.observationUnitName = observationUnitName;
     this.observationUnitPosition = observationUnitPosition;
@@ -34,20 +48,34 @@ export class ObservationUnit {
 export class ObservationUnitPosition {
   level?: string;
   observationLevelRelationships?: ObservationLevelRelationship[];
+  positionCoordinateXType?: string;
+  positionCoordinateX?: string;
+  positionCoordinateYType?: string;
+  positionCoordinateY?: string;
 
-  constructor(level?:string, observationLevelRelationships?: ObservationLevelRelationship[]) {
+  constructor(level?:string,
+              observationLevelRelationships?: ObservationLevelRelationship[],
+              positionCoordinateXType?: string,
+              positionCoordinateX?: string,
+              positionCoordinateYType?: string,
+              positionCoordinateY?: string,
+              ) {
     this.level = level;
     this.observationLevelRelationships = observationLevelRelationships;
+    this.positionCoordinateXType = positionCoordinateXType;
+    this.positionCoordinateX = positionCoordinateX;
+    this.positionCoordinateYType = positionCoordinateYType;
+    this.positionCoordinateY = positionCoordinateY;
   }
 }
 
 
 export class ObservationLevelRelationship {
   levelName?: string;
-  levelOrder?: number;
+  levelOrder?: string;
   levelCode?: string;
 
-  constructor(levelName?: string, levelOrder?: number, levelCode?: string) {
+  constructor(levelName?: string, levelOrder?: string, levelCode?: string) {
     this.levelName = levelName;
     this.levelOrder = levelOrder;
     this.levelCode = levelCode;

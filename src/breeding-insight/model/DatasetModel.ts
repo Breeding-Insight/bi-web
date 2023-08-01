@@ -20,21 +20,22 @@ import {ObservationUnit} from "@/breeding-insight/model/ObservationUnit";
 import {ObservationVariable} from "@/breeding-insight/model/ObservationVariable";
 
 export class DatasetModel {
-  id?: string;
-  experimentId?: string;
+  id: string;
+  experimentId: string;
+  data: Observation[];
+  observationUnits: ObservationUnit[];
+  observationVariables: ObservationVariable[];
   additionalInfo?: any;
-  data?: Observation[];
-  observationUnits?: ObservationUnit[];
-  observationVariables?: ObservationVariable[];
 
 
-  constructor(id?: string,
-              experimentId?: string,
-              additionalInfo?: any,
-              data?: Observation[],
-              observationUnits?: ObservationUnit[],
-              observationVariables?: ObservationVariable[]
-              ) {
+
+  constructor(id: string,
+              experimentId: string,
+              data: Observation[],
+              observationUnits: ObservationUnit[],
+              observationVariables: ObservationVariable[],
+              additionalInfo?: any
+  ) {
     this.id = id;
     this.experimentId = experimentId;
     this.additionalInfo = additionalInfo;
@@ -48,10 +49,10 @@ export class DatasetModel {
     return new DatasetModel(
         dataset.id,
         dataset.experimentId,
-        dataset.additionalInfo,
         dataset.data,
-        dataset.observationUnits
-        );
+        dataset.observationUnits,
+        dataset.additionalInfo
+    );
   }
 
   equals(dataset?: DatasetModel): boolean {

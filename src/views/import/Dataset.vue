@@ -198,6 +198,7 @@ import ExpandableTable from "@/components/tables/expandableTable/ExpandableTable
 import {BrAPIUtils} from "@/breeding-insight/utils/BrAPIUtils";
 import {ExternalReferences} from "@/breeding-insight/brapi/model/externalReferences";
 import {DatasetTableRow} from "@/breeding-insight/model/DatasetTableRow";
+import {Experiment} from "@/breeding-insight/model/Experiment";
 import {dmyFormat} from "@/breeding-insight/utils/filters";
 
 @Component({
@@ -212,11 +213,11 @@ import {dmyFormat} from "@/breeding-insight/utils/filters";
 })
 export default class Dataset extends ProgramsBase {
   private activeProgram: Program;
-  private datasetModel: DatasetModel = [];
+  private datasetModel: DatasetModel;
   private experiment: Experiment;
   private observationUnits: ObservationUnit[] = [];
   private loading: boolean = true;
-  private resultDatasetId: string;
+  private resultDatasetId: string | undefined;
   private paginationController: PaginationController = new PaginationController();
   private datasetTableRows: DatasetTableRow[] = [];
 
@@ -251,7 +252,7 @@ export default class Dataset extends ProgramsBase {
   }
 
   // Total observations
-  get totalObservationsCount(): number {
+  get totalObservationsCount(): string {
     let count = "0";
     if (this.datasetModel && this.datasetModel.additionalInfo) {
       count = this.datasetModel.additionalInfo.observations;
@@ -260,7 +261,7 @@ export default class Dataset extends ProgramsBase {
   }
 
   // Observations with data
-  get observationsWithData(): number {
+  get observationsWithData(): string {
     let count = "0";
     if (this.datasetModel && this.datasetModel.additionalInfo) {
       count = this.datasetModel.additionalInfo.observationsWithData;
@@ -269,7 +270,7 @@ export default class Dataset extends ProgramsBase {
   }
 
   // Observations without data
-  get observationsWithoutData(): number {
+  get observationsWithoutData(): string {
     let count = "0";
     if (this.datasetModel && this.datasetModel.additionalInfo) {
       count = this.datasetModel.additionalInfo.observationsWithoutData;
@@ -277,11 +278,12 @@ export default class Dataset extends ProgramsBase {
     return count
   }
 
-  getBreedingInsightId(refs: ExternalReferences, source: string): string {
+  getBreedingInsightId(refs: ExternalReferences, source: string): string | undefined {
     return BrAPIUtils.getBreedingInsightId(refs, source);
   }
 
-  filterByObservations(index: number, propsRow, input) {
+  filterByObservations(index: number, propsRow: any, input: string) {
+    console.log(Object.prototype.toString.call(propsRow) );
     let obsValue = propsRow.data.traitValues[index];
     obsValue = obsValue ? obsValue : "";  //convert null or undefined to an empty string
     return obsValue.includes(input);
@@ -302,7 +304,8 @@ export default class Dataset extends ProgramsBase {
   /*
   * remove the '[....]' found at the end of the string
   * */
-  removeUnique(str: string): string {
+  removeUnique(str: string|undefined): string {
+    if(!str){ return "";}
     str = str.trim();
     const reg = /\[[^\]]*\]$/;
     return str.replace(reg, '').trim();
@@ -366,7 +369,7 @@ export default class Dataset extends ProgramsBase {
     let unitDbId_to_traitValues = {};
     let arrayLength: number = this.phenotypesCount;
 
-    let units: [ObservationUnit] = this.datasetModel.observationUnits;
+    let units: ObservationUnit[] = this.datasetModel.observationUnits;
     for (let unit of units) {
       unitDbId_to_traitValues[unit.observationUnitDbId] = new Array<string>(arrayLength);
     }
