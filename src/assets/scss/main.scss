@@ -901,6 +901,19 @@ tr:nth-child(odd) td.db-filled {
   }
 }
 
+.brapi-info {
+  .access-token {
+    @extend .mb-5;
+    font-family: monospace;
+    word-wrap: break-word;
+    overflow-x: auto;
+    white-space: pre-wrap;
+    white-space: -moz-pre-wrap;
+    white-space: -pre-wrap;
+    white-space: -o-pre-wrap;
+  }
+}
+
 label.environment-option-label {
   white-space: nowrap;
   overflow: hidden;
