@@ -54,7 +54,7 @@
       </article>
       <ExpandableTable
           v-bind:records.sync="datasetTableRows"
-          v-bind:loading="false"
+          v-bind:loading=false
           v-bind:pagination="paginationController"
           v-bind:default-sort="['observationUnits.germplasmName', 'asc']"
           v-bind:debounce-search="400"
@@ -227,7 +227,7 @@ export default class Dataset extends ProgramsBase {
   private datasetModel: DatasetModel;
   private experiment: Experiment;
   private observationUnits: ObservationUnit[] = [];
-  private loading: boolean = true;
+  private loading = true;
   private resultDatasetId: string | undefined;
   private paginationController: PaginationController = new PaginationController();
   private datasetTableRows: DatasetTableRow[] = [];
@@ -332,9 +332,9 @@ export default class Dataset extends ProgramsBase {
       if (unit.additionalInfo) {
         datasetTableRow.gid = unit.additionalInfo.gid;
       }
-
-      datasetTableRow.tOrC = 'T';
-
+      if(unit.observationUnitPosition && unit.observationUnitPosition.entryType) {
+        datasetTableRow.tOrC = unit.observationUnitPosition.entryType;
+      }
       datasetTableRow.env = this.removeUnique(unit.studyName);
       datasetTableRow.envLocation = this.removeUnique(unit.locationName);
       datasetTableRow.expUnitId = this.removeUnique(unit.observationUnitName);
@@ -346,10 +346,10 @@ export default class Dataset extends ProgramsBase {
       if (unit.observationUnitPosition && unit.observationUnitPosition.observationLevelRelationships) {
         for (const relationship of unit.observationUnitPosition.observationLevelRelationships) {
           if (relationship.levelName === 'replicate') {
-            datasetTableRow.expReplicate = relationship.levelOrder;
+            datasetTableRow.expReplicate = relationship.levelCode;
           }
           if (relationship.levelName === 'block') {
-            datasetTableRow.expBlock = relationship.levelOrder;
+            datasetTableRow.expBlock = relationship.levelCode;
           }
         }
       }

@@ -52,6 +52,7 @@ export class ObservationUnitPosition {
   positionCoordinateX?: string;
   positionCoordinateYType?: string;
   positionCoordinateY?: string;
+  entryType?: string;
 
   constructor(level?:string,
               observationLevelRelationships?: ObservationLevelRelationship[],
@@ -59,6 +60,7 @@ export class ObservationUnitPosition {
               positionCoordinateX?: string,
               positionCoordinateYType?: string,
               positionCoordinateY?: string,
+              entryType?: string,
               ) {
     this.level = level;
     this.observationLevelRelationships = observationLevelRelationships;
@@ -66,6 +68,7 @@ export class ObservationUnitPosition {
     this.positionCoordinateX = positionCoordinateX;
     this.positionCoordinateYType = positionCoordinateYType;
     this.positionCoordinateY = positionCoordinateY;
+    this.entryType = entryType
   }
 }
 
@@ -73,9 +76,9 @@ export class ObservationUnitPosition {
 export class ObservationLevelRelationship {
   levelName?: string;
   levelOrder?: string;
-  levelCode?: string;
+  levelCode?: number;
 
-  constructor(levelName?: string, levelOrder?: string, levelCode?: string) {
+  constructor(levelName?: string, levelOrder?: string, levelCode?: number) {
     this.levelName = levelName;
     this.levelOrder = levelOrder;
     this.levelCode = levelCode;

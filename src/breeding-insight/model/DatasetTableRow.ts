@@ -23,8 +23,8 @@ export class DatasetTableRow {
   envLocation?: string;
   envYear?: string;
   expUnitId?: string;
-  expReplicate?: string;
-  expBlock?: string;
+  expReplicate?: number;
+  expBlock?: number;
   row?: string;
   column?: string;
   obsUnitId?: string;
@@ -38,8 +38,8 @@ export class DatasetTableRow {
               envLocation?: string,
               envYear?: string,
               expUnitId?: string,
-              expReplicate?: string,
-              expBlock?: string,
+              expReplicate?: number,
+              expBlock?: number,
               row?: string,
               column?: string,
               obsUnitId?: string,
