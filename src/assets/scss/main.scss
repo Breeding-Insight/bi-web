@@ -869,6 +869,23 @@ tr:nth-child(odd) td.db-filled {
   .alt-allele:not(:last-of-type) {
     margin-right: 5px;
   }
+
+  .haplotypes {
+    h6 {
+      padding-top: 1rem;
+    }
+    .columns {
+      padding-left: .5rem;
+      .column {
+        padding-top: 0.25rem;
+        padding-bottom: 0.25rem;
+
+        &.sequence {
+          font-family: monospace;
+        }
+      }
+    }
+  }
 }
 
 #import-geno {

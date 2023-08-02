@@ -51,6 +51,7 @@
         v-bind:default-sort="['variantName', 'asc']"
         v-bind:debounce-search="400"
         v-bind:details="true"
+        v-bind:scrollable="true"
         v-if="!loading && callsetOptions.length > 0"
     >
       <b-table-column field="variantName" label="Chromosome" sortable searchable :customSearch="filterByVariant" :customSort="sortVariantName" :th-attrs="(column) => ({scope:'col'})">
@@ -84,11 +85,11 @@
       </b-table-column>
       <b-table-column label="Ref" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
         <span class="tag is-success">
-            {{ getVariant(props.row.data.variantDbId).referenceBases }}
+            {{ getRef(getVariant(props.row.data.variantDbId)) }}
         </span>
       </b-table-column>
       <b-table-column label="Alt(s)" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-        <span class="tag alt-allele is-warning" v-for="alt in getVariant(props.row.data.variantDbId).alternateBases" :key="alt+'-'+props.index">
+        <span class="tag alt-allele is-warning" v-for="alt in getAlts(getVariant(props.row.data.variantDbId))" :key="alt+'-'+props.index">
             {{ alt }}
         </span>
       </b-table-column>
@@ -113,6 +114,17 @@
           </div>
           <div>
             <span class="has-text-weight-bold">End: </span>{{ getVariant(row.variantDbId).end }}
+          </div>
+          <div v-if="getVariant(row.variantDbId).additionalInfo && getVariant(row.variantDbId).additionalInfo.hapID" class="haplotypes">
+            <h6 class="title is-6">Haplotypes</h6>
+            <div v-for="(hap, index) in getVariant(row.variantDbId).additionalInfo.hapID.split(',')" :key="row.variantDbId + hap" class="columns">
+              <div class="column is-one-quarter">
+                <span class="has-text-weight-bold">{{hap}}: </span>
+              </div>
+              <div class="column sequence">
+                {{ getHapSequence(getVariant(row.variantDbId), index) }}
+              </div>
+            </div>
           </div>
         </div>
       </template>
@@ -263,6 +275,35 @@ export default class GermplasmGenotypeView extends GermplasmBase {
     return this.genotypeData!.variants![variantDbId] as Variant;
   }
 
+  getRef(variant: Variant): string {
+    if(variant.additionalInfo && variant.additionalInfo.hapID) {
+      const haps = variant.additionalInfo.hapID.split(",");
+      return haps[0];
+    } else {
+      return variant.referenceBases!;
+    }
+  }
+
+  getAlts(variant: Variant): Array<string> {
+    if(variant.additionalInfo && variant.additionalInfo.hapID) {
+      const haps = variant.additionalInfo.hapID.split(",");
+
+      return haps.slice(1);
+    } else {
+      return variant.alternateBases!;
+    }
+  }
+
+  getHapSequence(variant: Variant, index: number): string {
+    if(index == 0) {
+      return variant.referenceBases!;
+    } else if(variant.alternateBases) {
+      return variant.alternateBases[index-1];
+    } else {
+      return "";
+    }
+  }
+
   filterByVariant(row: TableRow<Call>, variantName: string) {
     return this.genotypeData!.variants![row.data.variantDbId!].referenceName === variantName;
   }
@@ -290,7 +331,25 @@ export default class GermplasmGenotypeView extends GermplasmBase {
   }
 
   genotypeVal(genotypeStr: string, variantId: string) {
-    return genotypeStr;
+    const variant = this.getVariant(variantId);
+
+    if(variant.additionalInfo && variant.additionalInfo.hapID) {
+      const haps = variant.additionalInfo.hapID.split(",");
+
+      if(genotypeStr === variant.referenceBases) {
+        return haps[0];
+      } else {
+        for (let i = 0; i < variant.alternateBases!.length; i++) {
+          const alt = variant.alternateBases![i];
+          if(genotypeStr === alt) {
+            return haps[i+1];
+          }
+        }
+      }
+
+    } else {
+      return genotypeStr;
+    }
   }
 
   getGenotypes(call: Call) {
