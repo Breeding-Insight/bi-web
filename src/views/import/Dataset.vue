@@ -81,6 +81,17 @@
           {{ props.row.data.gid }}
         </b-table-column>
         <b-table-column
+          v-slot="props"
+          field="data.tOrC"
+          label="Test(T) or Check (C)
+"
+          sortable
+          searchable
+          :th-attrs="(column) => ({scope:'col'})"
+      >
+        {{ props.row.data.tOrC }}
+      </b-table-column>
+        <b-table-column
             v-slot="props"
             field="data.env"
             label="Env"
@@ -321,6 +332,8 @@ export default class Dataset extends ProgramsBase {
       if (unit.additionalInfo) {
         datasetTableRow.gid = unit.additionalInfo.gid;
       }
+
+      datasetTableRow.tOrC = 'T';
 
       datasetTableRow.env = this.removeUnique(unit.studyName);
       datasetTableRow.envLocation = this.removeUnique(unit.locationName);
