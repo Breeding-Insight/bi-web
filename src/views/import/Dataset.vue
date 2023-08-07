@@ -56,7 +56,7 @@
           v-bind:records.sync="datasetTableRows"
           v-bind:loading=false
           v-bind:pagination="paginationController"
-          v-bind:default-sort="['observationUnits.germplasmName', 'asc']"
+          v-bind:default-sort="['data.germplasmName', 'asc']"
           v-bind:debounce-search="400"
           v-on:show-error-notification="$emit('show-error-notification', $event)"
       >
@@ -181,8 +181,10 @@
             sortable
             searchable
             :th-attrs="(column) => ({scope:'col'})"
+            :td-attrs="cellClassIfEmpty"
+            :meta="{'index': index}"
         >
-          {{ props.row.data.traitValues[index] }}
+            {{ props.row.data.traitValues[index] }}
         </b-table-column>
         <template v-slot:emptyMessage>
           <p class="has-text-weight-bold">
@@ -226,7 +228,6 @@ export default class Dataset extends ProgramsBase {
   private activeProgram: Program;
   private datasetModel: DatasetModel;
   private experiment: Experiment;
-  private observationUnits: ObservationUnit[] = [];
   private loading = true;
   private resultDatasetId: string | undefined;
   private paginationController: PaginationController = new PaginationController();
@@ -332,9 +333,13 @@ export default class Dataset extends ProgramsBase {
       if (unit.additionalInfo) {
         datasetTableRow.gid = unit.additionalInfo.gid;
       }
+      // T or C
+      datasetTableRow.tOrC='T'; // default to 'T'
       if(unit.observationUnitPosition && unit.observationUnitPosition.entryType) {
         datasetTableRow.tOrC = unit.observationUnitPosition.entryType;
       }
+
+
       datasetTableRow.env = this.removeUnique(unit.studyName);
       datasetTableRow.envLocation = this.removeUnique(unit.locationName);
       datasetTableRow.expUnitId = this.removeUnique(unit.observationUnitName);
@@ -406,6 +411,14 @@ export default class Dataset extends ProgramsBase {
     return variableDbId_to_index;
   }
 
+  cellClassIfEmpty(row: any, column: any) {
+    let index = column.meta.index
+    if(row.data.traitValues[index]) {
+      return {};
+    } else {
+      return {'class': 'has-background-grey-light'};
+    }
+  }
 
   @Watch('$route')
   async load() {
@@ -433,10 +446,11 @@ export default class Dataset extends ProgramsBase {
       this.createDatasetTableRows();
 
       //Initialize the paginationController
-      this.paginationController.totalCount = this.observationUnits.length;
+      this.paginationController.totalCount = this.datasetModel.observationUnits.length;
       this.paginationController.currentPage = 1;
+      this.paginationController.pageSize = 200;
       this.paginationController.totalPages = this.paginationController.totalCount.valueOf() / this.paginationController.pageSize.valueOf();
-
+      console.log(JSON.stringify(this.paginationController));
     } catch (err) {
       // Display error that experiment cannot be loaded
       this.$emit('show-error-notification', 'Error while trying to load data set' + err.message());
