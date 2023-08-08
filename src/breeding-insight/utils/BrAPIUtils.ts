@@ -19,7 +19,9 @@ import {ExternalReferences} from "@/breeding-insight/brapi/model/externalReferen
 
 export class BrAPIUtils {
     static getBreedingInsightId(references: ExternalReferences|undefined, referenceSourcePath: string = ""): string | undefined {
-        if(!references){ return undefined; }
+        if(!references){
+            return undefined;
+        }
         let val = references.find(ref => ref.referenceSource === process.env.VUE_APP_BI_REFERENCE_SOURCE + referenceSourcePath);
         return val ? val.referenceID : "";
     }

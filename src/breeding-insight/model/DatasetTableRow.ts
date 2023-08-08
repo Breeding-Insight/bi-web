@@ -18,7 +18,7 @@
 export class DatasetTableRow {
   germplasmName?: string;
   gid?: string;
-  tOrC?: string;
+  testOrCheck?: string;
   env?: string;
   envLocation?: string;
   envYear?: string;
@@ -33,7 +33,7 @@ export class DatasetTableRow {
 
   constructor(germplasmName?: string,
               gid?: string,
-              tOrC?: string,
+              testOrCheck?: string,
               env?: string,
               envLocation?: string,
               envYear?: string,
@@ -46,7 +46,7 @@ export class DatasetTableRow {
               traitValues?: string[]) {
     this.germplasmName = germplasmName;
     this.gid = gid;
-    this.tOrC = tOrC;
+    this.testOrCheck = testOrCheck;
     this.env = env;
     this.envLocation = envLocation;
     this.envYear = envYear;
@@ -65,7 +65,7 @@ export class DatasetTableRow {
     return new DatasetTableRow(
         dataset.germplasmName,
         dataset.gid,
-        dataset.tOrC,
+        dataset.testOrCheck,
         dataset.env,
         dataset.envLocation,
         dataset.envYear,

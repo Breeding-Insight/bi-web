@@ -33,6 +33,8 @@ export class ExperimentDAO {
         try {
             const res = await api.call(config) as Response;
             let { result } = res.data;
+            console.log('xcxcxxcxxcccxcxxcxxcxcx');
+            console.log(ResultGenerator.success(result));
             return ResultGenerator.success(result);
         } catch (error) {
             return ResultGenerator.err(error);

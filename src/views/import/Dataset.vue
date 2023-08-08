@@ -53,6 +53,7 @@
         </div>
       </article>
       <ExpandableTable
+          class="scroll_auto"
           v-bind:records.sync="datasetTableRows"
           v-bind:loading=false
           v-bind:pagination="paginationController"
@@ -82,14 +83,14 @@
         </b-table-column>
         <b-table-column
           v-slot="props"
-          field="data.tOrC"
+          field="data.testOrCheck"
           label="Test(T) or Check (C)
 "
           sortable
           searchable
           :th-attrs="(column) => ({scope:'col'})"
       >
-        {{ props.row.data.tOrC }}
+        {{ props.row.data.testOrCheck }}
       </b-table-column>
         <b-table-column
             v-slot="props"
@@ -211,8 +212,7 @@ import ExpandableTable from "@/components/tables/expandableTable/ExpandableTable
 import {BrAPIUtils} from "@/breeding-insight/utils/BrAPIUtils";
 import {ExternalReferences} from "@/breeding-insight/brapi/model/externalReferences";
 import {DatasetTableRow} from "@/breeding-insight/model/DatasetTableRow";
-import {Experiment} from "@/breeding-insight/model/Experiment";
-import {dmyFormat} from "@/breeding-insight/utils/filters";
+import {Trial} from "@/breeding-insight/model/Trial";
 
 @Component({
   components: {
@@ -227,7 +227,7 @@ import {dmyFormat} from "@/breeding-insight/utils/filters";
 export default class Dataset extends ProgramsBase {
   private activeProgram: Program;
   private datasetModel: DatasetModel;
-  private experiment: Experiment;
+  private experiment: Trial;
   private loading = true;
   private resultDatasetId: string | undefined;
   private paginationController: PaginationController = new PaginationController();
@@ -334,9 +334,9 @@ export default class Dataset extends ProgramsBase {
         datasetTableRow.gid = unit.additionalInfo.gid;
       }
       // T or C
-      datasetTableRow.tOrC='T'; // default to 'T'
+      datasetTableRow.testOrCheck='T'; // default to 'T'
       if(unit.observationUnitPosition && unit.observationUnitPosition.entryType) {
-        datasetTableRow.tOrC = unit.observationUnitPosition.entryType;
+        datasetTableRow.testOrCheck = unit.observationUnitPosition.entryType;
       }
 
 
@@ -450,7 +450,6 @@ export default class Dataset extends ProgramsBase {
       this.paginationController.currentPage = 1;
       this.paginationController.pageSize = 200;
       this.paginationController.totalPages = this.paginationController.totalCount.valueOf() / this.paginationController.pageSize.valueOf();
-      console.log(JSON.stringify(this.paginationController));
     } catch (err) {
       // Display error that experiment cannot be loaded
       this.$emit('show-error-notification', 'Error while trying to load data set' + err.message());

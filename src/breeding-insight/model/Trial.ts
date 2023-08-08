@@ -41,6 +41,8 @@ export class Trial {
               trialName?: string,
               active?: boolean,
               externalReferences?: ExternalReferences) {
+    console.log('xxxxxxxxxxxxxxxxxxxxxxxxxxxxx');
+    console.log(this);
     this.id = id;
     this.trialName = trialName;
     if (active !== undefined) {
