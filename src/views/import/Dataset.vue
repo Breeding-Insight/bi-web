@@ -73,6 +73,7 @@
         <b-table-column
             v-slot="props"
             field="data.gid"
+            :custom-sort="sortGID"
             label="GID"
             sortable
             searchable
@@ -308,6 +309,21 @@ export default class Dataset extends ProgramsBase {
       return first.localeCompare(second);
     } else {
       return second.localeCompare(first);
+    }
+  }
+
+  //sort GIDs numerically
+  sortGID(a: any, b: any, isAsc: boolean){
+    let first :number = parseInt(a.data.gid);
+    let second :number = parseInt(b.data.gid);
+    if (isAsc) {
+      if( first > second){ return 1; }
+      else if (first < second){ return -1;}
+      else return 0;
+    } else {
+      if( second > first ){ return 1; }
+      else if ( second < first){ return -1;}
+      else return 0;
     }
   }
 
