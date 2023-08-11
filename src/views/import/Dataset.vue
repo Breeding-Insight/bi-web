@@ -26,12 +26,11 @@
     </div>
     <div v-if="!loading">
       <article
-          v-if="!loading"
           class="message is-success"
       >
         <div class="message-body">
           <div class="columns is-multiline">
-            <div class="column is-one-fifth">
+            <div class="column is-one-third">
               <div class="has-text-right">
                 <b>Observation unit: </b> <span style="width: 30px;"
                                                 class="is-inline-block has-text-left">{{ observationUnit }}</span><br>
@@ -53,7 +52,7 @@
         </div>
       </article>
       <ExpandableTable
-          class="scroll_auto"
+          scrollable
           v-bind:records.sync="datasetTableRows"
           v-bind:loading=false
           v-bind:pagination="paginationController"
@@ -173,12 +172,12 @@
           {{ props.row.data.obsUnitId }}
         </b-table-column>
         <b-table-column
-            v-for="( {trait}, index ) in this.datasetModel.observationVariables" :key="trait.traitName"
+            v-for="( observationVariable, index ) in this.datasetModel.observationVariables" :key="observationVariable.observationVariableName"
             v-slot="props"
             :custom-sort="(a,b,isAsc) => sortObservations(index, a, b, isAsc)"
             :custom-search="(propsRow, filterString) => filterByObservations(index, propsRow, filterString)"
-            :field="trait.traitName"
-            :label="removeUnique( trait.traitName )"
+            :field="observationVariable.observationVariableName"
+            :label="removeUnique( observationVariable.observationVariableName )"
             sortable
             searchable
             :th-attrs="(column) => ({scope:'col'})"
@@ -295,7 +294,6 @@ export default class Dataset extends ProgramsBase {
   }
 
   filterByObservations(index: number, propsRow: any, input: string) {
-    console.log(Object.prototype.toString.call(propsRow) );
     let obsValue = propsRow.data.traitValues[index];
     obsValue = obsValue ? obsValue : "";  //convert null or undefined to an empty string
     return obsValue.includes(input);
@@ -388,16 +386,26 @@ export default class Dataset extends ProgramsBase {
     let arrayLength: number = this.phenotypesCount;
 
     let units: ObservationUnit[] = this.datasetModel.observationUnits;
+
+    // create a Hash Table with the key being each observationUnit's DbId
+    // and the value being an (initially) empty array of observation values.
     for (let unit of units) {
       unitDbId_to_traitValues[unit.observationUnitDbId] = new Array<string>(arrayLength);
     }
+
+    let variableDbId_to_index = this.createVariableDbId_to_index();
+
+    // populate each array of observation values found in the unitDbId_to_traitValues Hash Table
     for (let observation of this.datasetModel.data) {
-      let variableDbId_to_index = this.createVariableDbId_to_index();
+      // find the index (ie table column) of each observation
+      // NOTE: the first observation column will have an index of 0.
       let obsVar_index = variableDbId_to_index[observation.observationVariableDbId];
+
       let obs_value = observation.value;
       let unitDbId = observation.observationUnitDbId;
       let traitValueArray = unitDbId_to_traitValues[unitDbId];
       traitValueArray[obsVar_index] = obs_value;
+
     }
     return unitDbId_to_traitValues;
   }
@@ -416,7 +424,7 @@ export default class Dataset extends ProgramsBase {
     if(row.data.traitValues[index]) {
       return {};
     } else {
-      return {'class': 'has-background-grey-light'};
+      return {'class': 'missing-data'};
     }
   }
 
@@ -438,7 +446,6 @@ export default class Dataset extends ProgramsBase {
       // Set this.datasetModel
       const response: Result<Error, DatasetModel> = await ExperimentService.getDatasetModel(this.activeProgram!.id!, this.experimentUUID, this.resultDatasetId);
       this.datasetModel = response.result;
-
       // Use this.datasetModel to initialize this.unitDbId_to_traitValues
       this.unitDbId_to_traitValues = this.createUnitDbId_to_traitValues();
 

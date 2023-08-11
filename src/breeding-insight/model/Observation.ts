@@ -17,8 +17,8 @@
 
 export class Observation {
   id?: string;
-  studyId?: string;
-  germplasmId?: string;
+  studyDbId?: string;
+  germplasmDbId?: string;
   observationUnitDbId?: string;
   observationVariableDbId?: string;
   germplasmName?: string;
@@ -33,8 +33,8 @@ export class Observation {
   observationTimeStamp?: string;
 
   constructor(id?: string,
-              studyId?: string,
-              germplasmId?: string,
+              studyDbId?: string,
+              germplasmDbId?: string,
               observationUnitDbId?: string,
               observationVariableDbId?: string,
               germplasmName?: string,
@@ -48,8 +48,8 @@ export class Observation {
               value?: any
               ) {
     this.id = id;
-    this.studyId = studyId;
-    this.germplasmId = germplasmId;
+    this.studyDbId = studyDbId;
+    this.germplasmDbId = germplasmDbId;
     this.observationUnitDbId = observationUnitDbId;
     this.observationVariableDbId = observationVariableDbId;
     this.germplasmName = germplasmName;
@@ -72,8 +72,8 @@ export class Observation {
     const stamp: string | undefined = observation.timeStamp ? observation.timeStamp.toISOString() : undefined;
 
     return new Observation(observation.id,
-                           observation.studyId,
-                           observation.germplasmId,
+                           observation.studyDbId,
+                           observation.germplasmDbId,
                            observation.observationUnitDbId,
                            observation.observationVariableDbId,
                            observation.germplasmName,
@@ -90,8 +90,8 @@ export class Observation {
   equals(observation?: Observation): boolean {
     if (!observation) {return false;}
     return (this.id === observation.id) &&
-      (this.studyId === observation.studyId) &&
-      (this.germplasmId === observation.germplasmId) &&
+      (this.studyDbId === observation.studyDbId) &&
+      (this.germplasmDbId === observation.germplasmDbId) &&
       (this.observationUnitDbId === observation.observationUnitDbId) &&
       (this.observationVariableDbId === observation.observationVariableDbId) &&
       (this.germplasmName === observation.germplasmName) &&
