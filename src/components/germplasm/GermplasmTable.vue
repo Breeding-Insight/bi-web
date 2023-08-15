@@ -148,6 +148,7 @@ export default class GermplasmTable extends Vue {
       .reduce((obj, key) => Object.assign({}, obj, { [this.fieldMap[key]]: key }), {});
 
   mounted() {
+    this.paginationController.pageSize = 200
     this.germplasmCallStack = new CallStack(this.germplasmFetch(
         this.activeProgram!.id!,
         this.germplasmSort,
