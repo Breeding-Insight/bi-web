@@ -11,6 +11,7 @@
         v-on:sort="setSort"
         v-on:search="initSearch"
         v-bind:search-debounce="400"
+        v-bind:is-show-all-enabled="false"
     >
       <b-table-column v-if="entryNumberVisible" field="importEntryNumber" label="Entry Number" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
         {{ GermplasmUtils.getEntryNumber(props.row.data, referenceId) }}
