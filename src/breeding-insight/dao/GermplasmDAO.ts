@@ -29,7 +29,8 @@ export class GermplasmDAO {
         config.url = `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/brapi/v2/lists`;
         config.method = 'get';
         config.programId = programId;
-        config.params = {};
+        // TODO: make listType enum in ../utils folder.
+        config.params = {listType: 'germplasm'};
         if (paginationQuery.page) config.params.page = paginationQuery.page - 1;
         if (paginationQuery.pageSize) config.params.pageSize = paginationQuery.pageSize;
 
