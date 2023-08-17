@@ -20,6 +20,7 @@ import * as api from "@/util/api";
 import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
 import {Result, ResultGenerator} from "@/breeding-insight/model/Result";
 import {Germplasm} from "@/breeding-insight/brapi/model/germplasm";
+import {ListType} from "@/util/ListType";
 
 export class GermplasmDAO {
 
@@ -29,8 +30,7 @@ export class GermplasmDAO {
         config.url = `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/brapi/v2/lists`;
         config.method = 'get';
         config.programId = programId;
-        // TODO: make listType enum in ../utils folder.
-        config.params = {listType: 'germplasm'};
+        config.params = {listType: ListType.Germplasm};
         if (paginationQuery.page) config.params.page = paginationQuery.page - 1;
         if (paginationQuery.pageSize) config.params.pageSize = paginationQuery.pageSize;
 
