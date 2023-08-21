@@ -18,10 +18,8 @@
 <template>
   <div id="data_set">
     <div v-if="loading">
-      loading dataset...
-      <progress
-          class="progress is-normal"
-          max="80"
+      <ProgressBar
+          v-bind:label="'loading dataset'"
       />
     </div>
     <div v-if="!loading">
@@ -213,10 +211,12 @@ import {BrAPIUtils} from "@/breeding-insight/utils/BrAPIUtils";
 import {ExternalReferences} from "@/breeding-insight/brapi/model/externalReferences";
 import {DatasetTableRow} from "@/breeding-insight/model/DatasetTableRow";
 import {Trial} from "@/breeding-insight/model/Trial";
+import ProgressBar from '@/components/forms/ProgressBar.vue'
 
 @Component({
   components: {
-    ExpandableTable
+    ExpandableTable,
+    ProgressBar
   },
   computed: {
     ...mapGetters([
