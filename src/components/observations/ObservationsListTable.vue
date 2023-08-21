@@ -190,37 +190,6 @@ export default class ObservationsTable extends Vue {
     }
   }
 
-  createObservation() {
-    this.newObservationActive = true;
-  }
-
-//   updateObservation(updatedObservation: Observation) {
-
-//     ObservationService.update(updatedObservation).then(() => {
-//       this.getObservations();
-//       this.$emit('show-success-notification', 'Success! ' + updatedObservation.observationName + ' updated.');
-// }).catch((error: any) => {
-//       this.$emit('show-error-notification', error['errorMessage']);
-//     }).finally(() => this.editObservationFormState.bus.$emit(DataFormEventBusHandler.SAVE_COMPLETE_EVENT));
-
-//   }
-
-  saveObservation() {
-
-    // this.newObservation.id = this.activeProgram!.id;
-
-    // ObservationService.create(this.newObservation).then((observation: Observation) => {
-    //   this.paginationController.updatePage(1);
-    //   this.getObservations();
-    //   this.$emit('show-success-notification', 'Success! ' + this.newObservation.observationName + ' added.');
-    //   this.newObservation = new Observation();
-    //   this.newObservationActive = false;
-    // }).catch((error) => {
-    //   this.$emit('show-error-notification', error['errorMessage']);
-    // }).finally(() => this.newObservationFormState.bus.$emit(DataFormEventBusHandler.SAVE_COMPLETE_EVENT))
-
-  }
-
   cancelNewObservation() {
     this.newObservation = new Observation();
     this.newObservationActive = false;
