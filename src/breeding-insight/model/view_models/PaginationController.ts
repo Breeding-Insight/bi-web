@@ -21,93 +21,83 @@ import {Pagination} from "@/breeding-insight/model/BiResponse";
 export class PaginationController {
   public currentPage: number = 1;
   public pageSize: number = 50;
+  public totalPages: number = 1;
+  public totalCount: number = 0;
+  public lastPageSize : number = 50;
   public showAll: boolean = false;
   public currentCall?: PaginationQuery;
 
-  constructor(currentPage?: number, pageSize?: number, currentCall?: PaginationQuery) {
+  constructor(currentPage?: number, pageSize?: number, totalPages?: number, totalCount?: number, currentCall?: PaginationQuery) {
     if (currentPage) this.currentPage = currentPage;
     if (pageSize) this.pageSize = pageSize;
+    if (totalPages) this.totalPages = totalPages;
+    if (totalCount) this.totalCount = totalCount;
     if (currentCall) this.currentCall = currentCall;
   }
 
-  toggleShowAll(){
-    this.showAll = !this.showAll;
+  //Changed to wrapper for updatePageSizeVals
+  //So showAll set to false when user changes page size
+  //And not when called on showAll toggle
+  updatePageSize(pageSize: number) {
+    this.showAll = false;
+    this.updatePageSizeVals(pageSize);
   }
 
-  updatePageSize(pageSize: number) {
+  //This route taken to minimize disruption of all the pages that utilize BackendPaginationController
+  updatePageSizeVals(pageSize: number) {
+    this.lastPageSize = this.pageSize;
     this.pageSize = pageSize;
-    this.showAll = false;
   }
-  
+
   updatePage(page: number) {
     this.currentPage = page;
-    this.showAll = false;
   }
 
   setCurrentCall(paginationQuery: PaginationQuery){
     this.currentCall = paginationQuery;
   }
 
+  setPaginationInfo(pagination: Pagination) {
+    this.currentPage = pagination.currentPage;
+    this.pageSize = pagination.pageSize;
+    this.totalCount = pagination.totalCount;
+    this.totalPages = pagination.totalPages;
+  }
+
   matchesCurrentRequest(pagination: Pagination): boolean {
+
     if (this.currentCall) {
-      if (this.showAll){
-        return pagination.currentPage == 1 && pagination.totalPages == 1;
-      } else {
-        return this.currentCall.page === pagination.currentPage &&
-          this.currentCall.pageSize === pagination.pageSize;
-      }
+      return this.currentCall.page === pagination.currentPage &&
+        this.currentCall.pageSize === pagination.pageSize;
     }
+
     return false;
   }
 
-  static getPaginationSelections(currentPage: number, pageSize: number, showAll: boolean): PaginationQuery {
-    if (showAll) {
-      return new PaginationQuery(0, pageSize, true);
+  toggleShowAll() {
+    if (this.showAll) {
+      this.updatePageSize(this.lastPageSize);
     } else {
-      return new PaginationQuery(
-        currentPage, pageSize, false);
+      this.updatePageSizeVals(this.totalCount);
+      this.updatePage(1);
+      this.showAll = true;
     }
   }
 
-  //TODO: Remove when backend pagination is implemented
-  static mockPagination(records: any[], page: number, pageSize: number, showAll: boolean): [any[], Pagination] {
-
-    if (showAll){
-      const newPagination: Pagination = new Pagination({
-        totalCount: records.length,
-        pageSize: records.length,
-        totalPages: 1,
-        currentPage: 1
-      });
-      return [records, newPagination];
-    } else if (records.length === 0){
-      const newPagination: Pagination = new Pagination({
-        totalCount: 0,
-        pageSize: pageSize,
-        totalPages: 1,
-        currentPage: page
-      });
-      return [[], newPagination];
+  getPaginationSelections(): PaginationQuery {
+    if(this.showAll) {
+      return new PaginationQuery(1, this.totalCount, this.showAll);
     } else {
-      const newPagination: Pagination = new Pagination({
-        totalCount: records.length,
-        pageSize: pageSize,
-        totalPages: Math.ceil(records.length / pageSize),
-        currentPage: page
-      });
-      return [records.slice((page * pageSize - pageSize), (page * pageSize > records.length ? records.length : page * pageSize)), newPagination];
+      return new PaginationQuery(this.currentPage, this.pageSize, this.showAll);
     }
   }
 
-  //TODO: Remove when backend pagination is implemented
-  static mockSortRecords(records: any[]){
-    // Imitates sql sorting by created date
-    if (records && records.length > 0){
-      if (records[0].createdAt){
-        records = records.sort((record1, record2) => record1.createdAt > record2.createdAt ? -1: 1);
-      }
+  //When show all active, increments page size by one on successful addition in order to keep entries on same page
+  //Don't want to update lastPageSize in this case
+  updateOnAdd(){
+    if (this.showAll){
+      this.pageSize += 1;
     }
-    return records;
   }
 
 }

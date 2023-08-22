@@ -17,68 +17,49 @@
 
 <template>
   <section id="germplasmListTableLabel">
-    <SelectModal
-        v-bind:active.sync="modalActive"
-        v-bind:title="germplasmListDownloadTitle"
-        v-bind:subtitle="germplasmListDownloadSubtitle"
-        v-bind:options="fileOptions"
-        v-on:deactivate="modalActive = false"
-        @select-change="setFileExtension"
-    >
-      <template #buttons>
-      <div class="columns">
-        <div class="column is-whole has-text-centered buttons">
-          <button
-              class="button is-primary has-text-weight-bold"
-              v-on:click="downloadList"
-          >
-            <strong>Download</strong>
-          </button>
-          <button
-              class="button"
-              v-on:click="cancelDownload"
-          >
-            Cancel
-          </button>
-        </div>
-      </div>
-      </template>
-    </SelectModal>
-
-
     <ExpandableTable
       v-bind:records.sync="germplasmLists"
       v-bind:loading="this.germplasmListsLoading"
-      v-bind:pagination="germplasmListsPagination"
-      v-on:paginate="paginationController.updatePage($event)"
-      v-on:paginate-toggle-all="paginationController.toggleShowAll(germplasmListsPagination.totalCount.valueOf())"
-      v-on:paginate-page-size="paginationController.updatePageSize($event)"
+      v-bind:pagination="paginationController"
+      backend-sorting
+      backend-filtering
+      v-bind:default-sort="[fieldMap['name'], 'ASC']"
+      v-on:sort="setSort"
+      v-on:search="initSearch"
+      v-bind:search-debounce="400"
     >
-      <b-table-column field="data.listName" label="Name" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+      <b-table-column field="name" label="Name" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
         {{ props.row.data.listName}}
       </b-table-column>
-      <b-table-column field="data.listDescription" label="Description" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+      <b-table-column field="description" label="Description" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
         {{ props.row.data.listDescription }}
       </b-table-column>
-      <b-table-column field="data.listSize" label="Total Entries" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+      <b-table-column field="size" label="Total Entries" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
         {{ props.row.data.listSize }}
       </b-table-column>
-      <b-table-column field="data.dateCreated" label="Created Date" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+      <b-table-column field="dateCreated" label="Created Date" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
         {{ formatDate(props.row.data.dateCreated) }}
       </b-table-column>
-      <b-table-column field="data.listOwnerName" label="Created By" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+      <b-table-column field="ownerName" label="Created By" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
         {{ props.row.data.listOwnerName }}
       </b-table-column>
-      <b-table-column  field="data.listDbId" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-        <a href="#" v-on:click="activateExtensionSelect(props.row.data.listDbId)">
+      <b-table-column  field="data.listDbId" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+        <router-link v-bind:to="{name: 'germplasm-by-list', params: {programId: activeProgram.id, listId: props.row.data.listDbId}}">
+          Details
+        </router-link>
+        <GermplasmDownloadButton
+          v-bind:modal-title="`Download ${props.row.data.listName}`"
+          fieldset-legend="File Format"
+          v-bind:listDbId="props.row.data.listDbId"
+        >
           Download
-        </a>
+        </GermplasmDownloadButton>
       </b-table-column>
 
       <template v-slot:emptyMessage>
         <EmptyTableMessage>
           <p class="has-text-weight-bold">
-            Germplasm lists not yet specified.
+            Germplasm lists not yet specified or no matching lists found.
           </p>
         </EmptyTableMessage>
       </template>
@@ -87,102 +68,147 @@
 </template>
 
 <script lang="ts">
-import {Component, Vue, Watch} from 'vue-property-decorator'
+import {Component, Vue, Watch, Prop} from 'vue-property-decorator'
 import {DownloadIcon} from 'vue-feather-icons'
 import {validationMixin} from 'vuelidate';
-import { mapGetters } from 'vuex'
+import { mapGetters, mapMutations } from 'vuex'
 import {Program} from "@/breeding-insight/model/Program";
 import BasicInputField from "@/components/forms/BasicInputField.vue";
 import EmptyTableMessage from "@/components/tables/EmtpyTableMessage.vue";
 import TableColumn from "@/components/tables/TableColumn.vue";
-import {Pagination} from "@/breeding-insight/model/BiResponse";
-import {BackendPaginationController} from "@/breeding-insight/model/view_models/BackendPaginationController";
+import {BiResponse} from "@/breeding-insight/model/BiResponse";
+import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
 import BaseTraitForm from "@/components/trait/forms/BaseTraitForm.vue";
 import {GermplasmList} from "@/breeding-insight/model/GermplasmList";
 import {GermplasmService} from "@/breeding-insight/service/GermplasmService";
 import ExpandableTable from "@/components/tables/expandableTable/ExpandableTable.vue";
 import moment from "moment";
-import SelectModal from "@/components/modals/SelectModal.vue";
-import {FileType} from "@/breeding-insight/model/FileType";
+import {FileTypeOption} from "@/breeding-insight/model/FileTypeOption";
+import GermplasmDownloadButton from '@/components/germplasm/GermplasmDownloadButton.vue';
+import {UPDATE_GERMPLASM_LIST_SORT} from "@/store/sorting/mutation-types";
+import {CallStack} from "@/breeding-insight/utils/CallStack";
+import {
+  GermplasmListSort,
+  Sort,
+  GermplasmListSortField, GermplasmSort
+} from "@/breeding-insight/model/Sort";
+import {UPDATE_EXPERIMENT_SORT} from "@/store/sorting/mutation-types";
+import { PaginationQuery } from '@/breeding-insight/model/PaginationQuery';
+import {BaseFilter} from "@/breeding-insight/model/BaseFilter";
+import {MOMENT_BRAPI_DATE_FORMAT} from "@/breeding-insight/utils/BrAPIDateTime";
 
 @Component({
   mixins: [validationMixin],
   components: {
     ExpandableTable,
     BaseTraitForm, BasicInputField, EmptyTableMessage, TableColumn,
-    SelectModal, DownloadIcon },
+    DownloadIcon, GermplasmDownloadButton },
   computed: {
     ...mapGetters([
       'activeProgram'
-    ])
-  }
+    ]),
+    ...mapGetters('sorting',
+      [
+        'germplasmListSort'
+      ])
+  },
+  methods: {
+    ...mapMutations('sorting', {
+      updateSort: UPDATE_GERMPLASM_LIST_SORT
+    })
+  },
+  data: () => ({Sort})
 })
 export default class GermplasmListsTable extends Vue {
 
+  @Prop()
+  germplasmListFetch!: (programId: string, sort: GermplasmListSort, paginationController: PaginationController) => (filters: any) => Promise<BiResponse>;
+
   private activeProgram?: Program;
-  private germplasmListsPagination?: Pagination = new Pagination();
-  private paginationController: BackendPaginationController = new BackendPaginationController();
+  private paginationController: PaginationController = new PaginationController();
   private germplasmLists: GermplasmList[] = [];
   private germplasmListsLoading = true;
 
   private germplasmListDownloadTitle = 'Download Germplasm List';
   private germplasmListDownloadSubtitle = 'File Format';
   private modalActive: boolean = false;
-  private fileExtension: string; //todo might change to Filetype
-  private selectedListDbId: string;
-  private fileOptions = Object.values(FileType);
+  private fileOptions = Object.values(FileTypeOption);
+
+  private germplasmListSort!: GermplasmListSort;
+  private filters: BaseFilter = new BaseFilter();
+  private germplasmListCallStack?: CallStack;
+
+  private updateSort!: (sort: GermplasmListSort) => void;
+  private fieldMap: any = {
+    'name': GermplasmListSortField.Name,
+    'description': GermplasmListSortField.Description,
+    'size': GermplasmListSortField.TotalEntries,
+    'dateCreated': GermplasmListSortField.CreatedDate,
+    'ownerName': GermplasmListSortField.CreatedBy
+  };
+
+  initSearch(filter: any) {
+
+    // Merge, overriding any properties of this.filters that exist in filter.
+    this.filters = {...this.filters, ...filter};
+
+    // When filtering the list, set the page to the first page.
+    this.paginationController.updatePage(1);
+  }
 
   mounted() {
+    this.germplasmListCallStack = new CallStack(this.germplasmListFetch(
+        this.activeProgram!.id!,
+        this.germplasmListSort,
+        this.paginationController
+    ));
     this.getGermplasmLists();
   }
 
   @Watch('paginationController', { deep: true})
-  getGermplasmLists() {
-    let paginationQuery = BackendPaginationController.getPaginationSelections(
-          this.paginationController.currentPage, this.paginationController.pageSize, this.paginationController.showAll);
+  paginationChanged() {
+    let currentCall = this.paginationController.currentCall
+    let paginationQuery = this.paginationController.getPaginationSelections();
+    if(currentCall && currentCall!.page == paginationQuery.page && currentCall!.pageSize == paginationQuery.pageSize && currentCall!.showAll == paginationQuery.showAll) {
+      return;
+    }
+    this.updatePagination();
+    this.getGermplasmLists();
+  }
 
-    GermplasmService.getAll(this.activeProgram!.id!, paginationQuery).then(([germplasmLists, metadata]) => {
-        this.germplasmLists = germplasmLists;
-        this.germplasmListsPagination = new Pagination(metadata.pagination);
-        // Account for brapi 0 indexing of paging
-        this.germplasmListsPagination.currentPage = this.germplasmListsPagination.currentPage.valueOf() + 1;
-    }).catch((error) => {
-      // Display error that germplasm lists cannot be loaded
+  updatePagination() {
+    let paginationQuery: PaginationQuery = this.paginationController.getPaginationSelections();
+    this.paginationController.setCurrentCall(paginationQuery);
+  }
+
+  @Watch('filters', {deep: true})
+  async getGermplasmLists() {
+    try {
+      const {call, callId} = this.germplasmListCallStack.makeCall(this.filters);
+      const response = await call;
+      if (!this.germplasmListCallStack.isCurrentCall(callId))
+        return;
+      this.paginationController.setPaginationInfo(response.metadata.pagination);
+      // Account for brapi 0 indexing of paging
+      this.paginationController.currentPage = this.paginationController.currentPage.valueOf() + 1;
+      this.germplasmLists = response.result.data;
+      this.germplasmListsLoading = false;
+    } catch (err) {
       this.$emit('show-error-notification', 'Error while trying to load germplasm lists');
-      throw error;
-    }).finally(() => this.germplasmListsLoading = false);
-  }
-
-  formatDate(date: Date) {
-    return moment(date).format('YYYY-MM-DD');
-  }
-
-  updatePageSize(pageSize: string) {
-    this.paginationController.updatePageSize(Number(pageSize).valueOf());
-  }
-
-  downloadList() {
-    this.modalActive = false;
-    if (this.activeProgram) {
-      window.open(process.env.VUE_APP_BI_API_ROOT + '/v1/programs/' + this.activeProgram.id + '/germplasm/lists/' + this.selectedListDbId + '/export?fileExtension=' + this.fileExtension, '_blank');
+    } finally {
+      this.germplasmListsLoading = false;
     }
   }
 
-  activateExtensionSelect(listDbId: string){
-    this.modalActive = true;
-    this.selectedListDbId = listDbId;
+  formatDate(date: Date) {
+    return moment(date).format(MOMENT_BRAPI_DATE_FORMAT);
   }
 
-  cancelDownload(){
-    this.modalActive = false;
-    this.selectedList = "";
-    this.fileExtension = "";
+  setSort(field: string, order: string) {
+    if (field in this.fieldMap) {
+      this.updateSort(new GermplasmListSort(this.fieldMap[field], Sort.orderAsBI(order)));
+      this.getGermplasmLists();
+    }
   }
-
-  setFileExtension(value){
-    this.fileExtension = value;
-  }
-
 }
-
 </script>

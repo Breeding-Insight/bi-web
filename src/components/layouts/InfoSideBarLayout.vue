@@ -18,7 +18,7 @@
 <template>
   <div class="sidebarlayout">
   <!-- the redundant sidebarlayout div here fixes the vertical height issue, don't remove -->
-    <BaseSideBarLayout>
+    <BaseSideBarLayout v-bind:show-menu-toggle="false" v-bind:show-menu="sandboxConfig !== ''">
       <template v-slot:title>
         <div class="level-item">
           <b-button
@@ -167,7 +167,7 @@
           v-else
           class="is-size-5 has-text-primary"
         >
-          Welcome back to Breeding Insight!
+          Welcome back to DeltaBreed!
         </h1>
         <p>
           To access to your breeding program, please log in.

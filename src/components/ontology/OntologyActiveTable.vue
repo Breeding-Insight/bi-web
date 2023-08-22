@@ -19,8 +19,8 @@
   <ontology-table
       v-bind:active="true"
       v-bind:ontologySort="activeOntologySort"
-      v-on:newSortColumn="newSortColumn"
-      v-on:toggleSortOrder="toggleSortOrder"
+      v-bind:ontologyFetch="ontologyFetch"
+      v-on:updateSort="updateSort"
       @show-success-notification="$emit('show-success-notification', $event)"
       @show-info-notification="$emit('show-info-notification', $event)"
       @show-error-notification="$emit('show-error-notification', $event)"
@@ -31,12 +31,14 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
 import OntologyTable from "@/components/ontology/OntologyTable.vue";
-import {mapGetters, mapMutations} from 'vuex'
-import {
-  ACTIVE_ONT_NEW_SORT_COLUMN,
-  ACTIVE_ONT_TOGGLE_SORT_ORDER
-} from "@/store/sorting/mutation-types";
-import {OntologySort, OntologySortField} from "@/breeding-insight/model/Sort";
+import { mapGetters, mapMutations } from 'vuex'
+import { UPDATE_ACTIVE_ONT_SORT } from "@/store/sorting/mutation-types";
+import { OntologySort } from "@/breeding-insight/model/Sort";
+import { BackendPaginationController } from "@/breeding-insight/model/view_models/BackendPaginationController";
+import { BiResponse  } from "@/breeding-insight/model/BiResponse";
+import { TraitService } from '@/breeding-insight/service/TraitService';
+import { TraitField } from '@/breeding-insight/model/TraitSelector';
+import { Result } from '@/breeding-insight/model/Result';
 
 @Component({
   components: {OntologyTable},
@@ -47,8 +49,7 @@ import {OntologySort, OntologySortField} from "@/breeding-insight/model/Sort";
   },
   methods: {
     ...mapMutations('sorting', {
-      newSortColumn: ACTIVE_ONT_NEW_SORT_COLUMN,
-      toggleSortOrder: ACTIVE_ONT_TOGGLE_SORT_ORDER
+      updateSort: UPDATE_ACTIVE_ONT_SORT
     })
   }
 })
@@ -56,7 +57,18 @@ import {OntologySort, OntologySortField} from "@/breeding-insight/model/Sort";
 export default class OntologyActiveTable extends Vue {
 
   private activeOntologySort!: OntologySort;
-  private newSortColumn!: (field: OntologySortField) => void;
-  private toggleSortOrder!: () => void;
+
+  // Set the method used to populate the active ontology table
+  private ontologyFetch: (programId: string, sort: OntologySort, paginationController: BackendPaginationController) => (filters: any) => Promise<Result<Error, BiResponse>> =
+      function (programId: string, sort: OntologySort, paginationController: BackendPaginationController) {
+        return function (filters: any) {
+          filters[TraitField.STATUS] = true;  // only request active traits
+          return TraitService.getTraits(
+              programId,
+              sort,
+              { pageSize: paginationController.pageSize, page: paginationController.currentPage },
+              filters)
+        };
+      };
 }
 </script>

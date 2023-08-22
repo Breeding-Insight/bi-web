@@ -7,33 +7,30 @@
       <template v-if="isValidationError">
         <AlertTriangleIcon size="1x" aria-hidden="true" class="has-vertical-align-middle"></AlertTriangleIcon>
         <span class="has-text-weight-bold ml-1">File contains data errors</span>
-        <ul>
-          <template v-if="displayAllErrors">
-            <li v-for="(errorMessage, rowIndex) of formattedErrors" v-bind:key="rowIndex">{{errorMessage}}</li>
-          </template>
-          <template v-else>
-            <li v-for="(errorMessage, rowIndex) of formattedErrors.slice(0, numDisplayedErrors)" v-bind:key="rowIndex">{{errorMessage}}</li>
-          </template>
-        </ul>
-        <div v-if="formattedErrors.length > this.numDisplayedErrors">
-          <template v-if="displayAllErrors">
-            <a href="#" v-on:click="displayAllErrors = false" class="is-underlined">
-              &lt; Show Less Errors
-            </a>
-          </template>
-          <template v-else>
-            <span>... and {{formattedErrors.length - numDisplayedErrors}} more.</span>
-            <a href="#" v-on:click="displayAllErrors = true" class="is-underlined ml-3">
-              View All Errors &gt;
-            </a>
-          </template>
-        </div>
+
+        <ExpandableTable
+            v-bind:records.sync="formattedErrors"
+            v-bind:loading="this.errorsLoading"
+            v-bind:pagination="paginationController"
+            v-bind:rowClasses="formattedErrors"
+        >
+          <b-table-column field="data.row" label="Row"  sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+            {{ props.row.data.row }}
+          </b-table-column>
+          <b-table-column field="data.field" label="Field"  sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+            {{ props.row.data.field }}
+          </b-table-column>
+          <b-table-column field="data.message" label="Error" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+            {{ props.row.data.message }}
+          </b-table-column>
+        </ExpandableTable>
+
       </template>
 
       <!-- Single Error -->
       <template v-else>
         <AlertTriangleIcon size="1x" aria-hidden="true" class="has-vertical-align-middle"></AlertTriangleIcon>
-        <span class="has-text-weight-bold ml-1">{{formattedErrors[0]}}</span>
+        <span class="has-text-weight-bold ml-1">{{formattedErrors[0].message}}</span>
       </template>
 
     </div>
@@ -43,19 +40,40 @@
 <script lang="ts">
 import {Component, Prop, Vue} from "vue-property-decorator";
 import { AlertTriangleIcon } from 'vue-feather-icons';
+import { ImportError } from '@/breeding-insight/model/errors/ImportError';
+import {Pagination} from "@/breeding-insight/model/BiResponse";
+import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
+import ExpandableTable from "@/components/tables/expandableTable/ExpandableTable.vue";
+import {mapGetters} from "vuex";
+
 
 @Component({
-  components: {AlertTriangleIcon}
+  components: {AlertTriangleIcon, ExpandableTable},
 })
 export default class MultipleErrors extends Vue {
   @Prop({default: () => []})
-  private formattedErrors!: string[];
+  private formattedErrors!: ImportError[];
   @Prop({default: () => false})
   private isValidationError!: boolean;
   @Prop({default: () => 10})
   private numDisplayedErrors!: number;
 
-  private displayAllErrors = false;
+  private paginationController: PaginationController = new PaginationController();
+  private errorsLoading: Boolean = false;
+
+  mounted() {
+    this.setPagination();
+  }
+
+  setPagination() {
+    if (this.formattedErrors) {
+        this.paginationController.totalCount = this.formattedErrors.length;
+        this.paginationController.pageSize = this.formattedErrors.length; //todo until showAll fixed in another card, just display all errors
+        this.paginationController.currentPage = 1;
+        this.paginationController.totalPages = this.paginationController.totalCount.valueOf() / this.paginationController.pageSize.valueOf();
+      }
+  }
+
 }
 
 </script>

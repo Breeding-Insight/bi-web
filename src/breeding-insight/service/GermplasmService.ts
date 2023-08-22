@@ -18,12 +18,67 @@
 import {GermplasmList} from "@/breeding-insight/model/GermplasmList";
 import {BiResponse, Metadata} from "@/breeding-insight/model/BiResponse";
 import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
-import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
+import {PaginationUtilities} from "@/breeding-insight/model/view_models/PaginationUtilities";
 import {GermplasmDAO} from "@/breeding-insight/dao/GermplasmDAO";
 import {Germplasm} from "@/breeding-insight/brapi/model/germplasm";
 import {Result, ResultGenerator} from "@/breeding-insight/model/Result";
+import {SortOrder} from "@/breeding-insight/model/Sort";
+import * as api from "@/util/api";
+import {GermplasmFilter} from "@/breeding-insight/model/GermplasmFilter";
 
 export class GermplasmService {
+
+    static async getAllInList<T>(programId: string,
+                         sort: { field: T, order: SortOrder },
+                         pagination: { pageSize: number, page: number },
+                         { listDbId, listName, ...brapiFilters  }: GermplasmFilter):
+        Promise<BiResponse> {
+        //Form the query params including sorting, pagination, and filtering
+        let params: any = { ...brapiFilters };
+
+        if (sort.field) {
+            params['sortField'] = sort.field;
+        }
+        if (sort.order) {
+            params['sortOrder'] = sort.order;
+        }
+        if (pagination.page || pagination.page == 0) { //have to account for 0-index pagination since 0 falsy
+            params['page'] = pagination.page;
+        }
+        if (pagination.pageSize) {
+            params['pageSize'] = pagination.pageSize;
+        }
+
+        try {
+            let listId: String = '';
+
+            if(listName && !listDbId) {
+                //Get the list db id
+                const paginationQuery = new PaginationQuery(0, 20, true);
+                const {result: {data: lists}} = await GermplasmDAO.getAllLists(programId, paginationQuery);
+                const matchingLists = lists.filter((list: any) => list.listName === listName);
+                if (matchingLists.length === 0) throw Error("List name is not valid for this program");
+                if (matchingLists.length > 1) throw Error("List name must be unique");
+                listId = matchingLists[0].listDbId;
+            } else if(listDbId) {
+                listId = listDbId;
+            } else {
+                throw Error("Missing list id and name");
+            }
+
+            //Get the list germplasm
+            const {data} = await api.call({
+                url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/germplasm/lists/${listId}/records`,
+                method: 'get',
+                params: params
+            }) as Response;
+
+            return new BiResponse(data);
+
+        } catch(error) {
+            throw error;
+        }
+    }
 
     static getAll(programId: string, paginationQuery: PaginationQuery = new PaginationQuery(0, 0, true)): Promise<[GermplasmList[], Metadata]> {
         return new Promise<[GermplasmList[], Metadata]>(((resolve, reject) => {
@@ -34,7 +89,7 @@ export class GermplasmService {
                 GermplasmDAO.getAllLists(programId, paginationQuery).then((biResponse: BiResponse) => {
                     if (biResponse.result.data) {
                         //TODO: Remove when backend default sorting is implemented
-                        biResponse.result.data = PaginationController.mockSortRecords(biResponse.result.data);
+                        biResponse.result.data = PaginationUtilities.mockSortRecords(biResponse.result.data);
                         germplasmLists = biResponse.result.data.map((germplasmList: any) => {
                             return germplasmList as GermplasmList;
                         });

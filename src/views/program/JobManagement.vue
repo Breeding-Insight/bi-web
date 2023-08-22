@@ -34,7 +34,7 @@
     <ExpandableTable
         v-bind:records.sync="jobs"
         v-bind:loading="loading"
-        v-bind:pagination="pagination"
+        v-bind:pagination="paginationController"
         v-bind:details="true"
         v-bind:default-sort="['data.createdAt', 'desc']"
     >
@@ -55,8 +55,8 @@
       <b-table-column field="data.updatedAt" label="Last Updated" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
         {{ formatDate(props.row.data.updatedAt) }}
       </b-table-column>
-      <b-table-column field="data.statusMessage" label="Status Message" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-        {{ props.row.data.statusMessage }}
+      <b-table-column field="data.statusMessage" label="Status Message" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" :width="50">
+        <span class="truncated">{{ props.row.data.statusMessage }}</span>
       </b-table-column>
 
       <template v-slot:detail="{row}">
@@ -105,12 +105,11 @@ import ExpandableTable from '@/components/tables/expandableTable/ExpandableTable
 import { ImportService } from '@/breeding-insight/service/ImportService';
 import { mapGetters } from 'vuex';
 import { Program } from '@/breeding-insight/model/Program';
-import { Pagination } from '@/breeding-insight/model/BiResponse';
-import { PaginationController } from '@/breeding-insight/model/view_models/PaginationController';
 import { ImportProgress } from '@/breeding-insight/model/import/ImportProgress';
 import moment from 'moment';
 import { JobService } from '@/breeding-insight/service/JobService';
 import { Job } from '@/breeding-insight/model/job/Job';
+import { PaginationController } from '@/breeding-insight/model/view_models/PaginationController';
 
 @Component({
   components: {
@@ -128,7 +127,6 @@ export default class JobManagement extends Vue {
 
   private activeProgram?: Program;
   private jobs?: Job[] = [];
-  private pagination: Pagination = new Pagination();
   private paginationController: PaginationController = new PaginationController();
   private loading = true;
 
@@ -168,10 +166,10 @@ export default class JobManagement extends Vue {
   async getJobs() {
     try {
       this.jobs = await JobService.getProgramJobs(this.activeProgram!.id!);
-      this.pagination.totalCount = this.jobs.length;
-      this.pagination.pageSize = 10;
-      this.pagination.currentPage = 1;
-      this.pagination.totalPages = this.pagination.totalCount.valueOf() / this.pagination.pageSize.valueOf();
+      this.paginationController.totalCount = this.jobs.length;
+      this.paginationController.pageSize = 10;
+      this.paginationController.currentPage = 1;
+      this.paginationController.totalPages = this.paginationController.totalCount.valueOf() / this.paginationController.pageSize.valueOf();
     } catch(e) {
       this.$emit('show-error-notification', 'Error while trying to fetch process statuses');
       throw e;

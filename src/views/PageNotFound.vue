@@ -21,7 +21,7 @@
       <div class="card-content">
         <h1 class="title has-text-danger">Page Does Not Exist</h1>
         <router-link v-bind:to="{name:redirectPage}" v-bind:replace="true">
-          Return to Breeding Insight
+          Return to DeltaBreed
         </router-link>
       </div>
     </div>

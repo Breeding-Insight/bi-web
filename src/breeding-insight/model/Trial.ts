@@ -15,15 +15,32 @@
  * limitations under the License.
  */
 
+import { ExternalReferences } from '@/breeding-insight/brapi/model/externalReferences';
+
 export class Trial {
+  trialDbId?: string;
+
   id?: string;
   trialName?: string;
+  trialDescription?: string;
   active?: boolean;
+  externalReferences?: ExternalReferences;
+  commonCropName?: string;
+  // contacts?: Array<Contact>;
+  //datasetAuthorships?: Array<TrialNewRequestDatasetAuthorships>;
+  documentationURL?: string;
+  endDate?: string;
+  programDbId?: string;
+  programName?: string;
+  startDate?: string;
+  trialPUI?: string;
+  additionalInfo?: any;
+
 
   constructor(id?: string,
               trialName?: string,
-              active?: boolean
-              ) {
+              active?: boolean,
+              externalReferences?: ExternalReferences) {
     this.id = id;
     this.trialName = trialName;
     if (active !== undefined) {
@@ -31,10 +48,11 @@ export class Trial {
     } else {
       this.active = true;
     }
+    this.externalReferences = externalReferences;
   }
 
   static assign(trial: Trial): Trial {
-    return new Trial(trial.id, trial.trialName, trial.active);
+    return new Trial(trial.id, trial.trialName, trial.active, trial.externalReferences);
   }
 
   equals(trial?: Trial): boolean {
@@ -42,4 +60,5 @@ export class Trial {
     return (this.id === trial.id) &&
       (this.trialName === trial.trialName)
   }
+
 }

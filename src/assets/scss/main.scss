@@ -80,6 +80,10 @@ $modal-card-foot-border-top:none;
 $table-row-hover-background-color:$link-light;
 $table-striped-row-even-hover-background-color:$link-light;
 
+// Custom variables.
+$medium-modal-content-width: $modal-content-width * 1.4;
+$medium-modal-body-padding: 0 3em 2em 3em;
+
 //$margin-right: 2 rem;
 
 // Import buefy before bulma
@@ -218,13 +222,26 @@ img {
   min-height:100vh;
   flex-direction: column;
   &.has-navbar-fixed-top-touch {
-    @extend body.has-navbar-fixed-top-touch;
+    @extend body, .has-navbar-fixed-top-touch;
+  }
+}
+
+.program-management {
+  .tab-content {
+    margin-left: 1em;
   }
 }
 
 #program-menu {
-  .dropdown-content {
+  .dropdown-content .programs {
     max-height: 50vh;
+    overflow: scroll;
+  }
+}
+
+.dropdown.multi-select {
+  .dropdown-content {
+    max-height: 20vh;
     overflow: scroll;
   }
 }
@@ -267,6 +284,18 @@ nav.tabs li.is-active {
   }
 }
 
+.expandable-card {
+  .is-button-transparent {
+    background: transparent;
+    border: none;
+  }
+
+  header {
+    &:hover {
+      cursor: pointer;
+    }
+  }
+}
 .table.is-narrow {
   border-collapse: collapse;
 }
@@ -322,6 +351,10 @@ table tr.is-edited + .detail {
   }
 }
 
+.table td.fixed-width-wrapped {
+    word-break: break-word;
+    width: 25%;
+}
 
 .table.is-striped tbody tr:not(.is-edited):nth-child(2n).is-new {
   background-color: $success-light;
@@ -359,7 +392,7 @@ table tr.is-edited + .detail {
 
 .header-title {
   border-bottom: 1px #363636 solid;
-  padding: 0 2.5em 0 2.5em;
+  padding: 0 2.5em 0 1.5em;
   margin-bottom: 0;
   height: 65px;
   & .navbar-hamburger {
@@ -400,6 +433,26 @@ table tr.is-edited + .detail {
       margin-left:2.5em;
     }
   }
+}
+
+// adapted from https://github.com/jgthms/bulma/issues/847
+.loading-indicator {
+  position: relative;
+  pointer-events: none;
+  opacity: 0.5;
+  &:after {
+    @include loader;
+    position: absolute;
+    top: calc(50% - 2.5em);
+    left: calc(50% - 2.5em);
+    width: 5em;
+    height: 5em;
+    border-width: 0.25em;
+  }
+}
+
+.table-min-height {
+  min-height: 100px;
 }
 
 .menu-scroll {
@@ -752,4 +805,98 @@ div.b-table.loading-active tbody {
 
 .right-confirm-column {
   float: left;
+}
+
+
+tr:nth-child(even) td.db-filled {
+  background-color: mix($primary-light, $dark, 92%);
+}
+
+tr:nth-child(odd) td.db-filled {
+  background-color: $primary-light;
+}
+
+.germplasm-list-meta-field{
+  @extend .is-1;
+  @extend .is-flex;
+  @extend .is-justify-content-right;
+  @extend .pr-1;
+  @extend .py-1;
+}
+
+.germplasm-list-meta-data{
+  @extend .is-11;
+  @extend .pl-1;
+  @extend .py-1;
+}
+
+.breeding-methods {
+  .enable-system-methods {
+    .modal-card {
+      width: 90%;
+    }
+  }
+}
+
+.experiment-observations-download-button {
+  .modal {
+    .modal-card {
+      width: $medium-modal-content-width;
+      .modal-card-body {
+        padding: $medium-modal-body-padding;
+      }
+    }
+  }
+}
+
+.content {
+  .pagination-list {
+    margin-top: 0;
+
+    li + li {
+      margin-top: 0;
+    }
+  }
+}
+
+#germplasm-genotype {
+  .metadata {
+    .abbreviation {
+      margin-right: 5px;
+    }
+  }
+
+  .alt-allele:not(:last-of-type) {
+    margin-right: 5px;
+  }
+}
+
+#import-geno {
+  .message.is-warning {
+    margin-top: 1em;
+  }
+  .card.import-form {
+    margin-top:1em;
+    .new-form {
+      background-color: inherit;
+      border-top: none;
+      border-bottom: none;
+      padding: 0;
+      margin-bottom: inherit;
+    }
+  }
+}
+
+#program-job-management {
+  .table tbody td {
+    vertical-align: top;
+  }
+
+  .truncated {
+    overflow:hidden;
+    max-height: 5rem;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 5;
+    display: block;
+  }
 }

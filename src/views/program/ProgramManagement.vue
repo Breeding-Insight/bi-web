@@ -18,25 +18,32 @@
 <template>
   <div class="program-management">
     <h1 class="title">
-      Program Management
+      Program Administration
     </h1>
 
     <section>
       <nav class="tabs is-boxed">
         <ul>
           <router-link
-              v-bind:to="{name: 'program-locations', params: {programId: activeProgram.id}}"
-              tag="li" active-class="is-active">
-            <a>Locations</a>
-          </router-link>
-          <router-link
               v-bind:to="{name: 'program-users', params: {programId: activeProgram.id}}"
               tag="li" active-class="is-active">
             <a>Users</a>
           </router-link>
           <router-link
+              v-bind:to="{name: 'program-locations', params: {programId: activeProgram.id}}"
+              tag="li" active-class="is-active">
+            <a>Locations</a>
+          </router-link>
+          <router-link
+              v-bind:to="{name: 'breeding-methods', params: {programId: activeProgram.id}}"
+              tag="li"
+              active-class="is-active"
+          >
+            <a>Breeding Methods</a>
+          </router-link>
+          <router-link
               v-if="$ability.can('access', 'ProgramConfiguration')"
-              v-bind:to="{name: 'program-configuration', params: {programId: activeProgram.id}}"
+              v-bind:to="{name: 'configuration', params: {programId: activeProgram.id}}"
               tag="li" active-class="is-active">
             <a>Configuration</a>
           </router-link>

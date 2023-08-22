@@ -19,7 +19,7 @@ import {StudyDAO} from "@/breeding-insight/dao/StudyDAO";
 import {Study} from "@/breeding-insight/model/Study";
 import {BiResponse, Metadata} from "@/breeding-insight/model/BiResponse";
 import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
-import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
+import {PaginationUtilities} from "@/breeding-insight/model/view_models/PaginationUtilities";
 import {Result, ResultGenerator } from "@/breeding-insight/model/Result";
 
 export class StudyService {
@@ -50,13 +50,13 @@ export class StudyService {
         let studies: Study[] = [];
         let { result: { data },  metadata } = res;
         
-        data = PaginationController.mockSortRecords(data);
+        data = PaginationUtilities.mockSortRecords(data);
         studies = data.map((study: any) => {
           return new Study(study.studyDbId, study.studyName, study.studyDescription, study.studyType, study.startDate, study.endDate, study.locationName, study.active);
         });
 
         let newPagination;
-        [studies, newPagination] = PaginationController.mockPagination(studies, paginationQuery!.page, paginationQuery!.pageSize, paginationQuery!.showAll);
+        [studies, newPagination] = PaginationUtilities.mockPagination(studies, paginationQuery!.page, paginationQuery!.pageSize, paginationQuery!.showAll);
         metadata.pagination = newPagination;
 
         return [studies, metadata];

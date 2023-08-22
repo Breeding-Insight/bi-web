@@ -21,7 +21,7 @@ import {Observation, Season} from "@/breeding-insight/model/Observation";
 import {ObservationUnit, ObservationUnitPosition} from '@/breeding-insight/model/ObservationUnit';
 import {BiResponse, Metadata} from "@/breeding-insight/model/BiResponse";
 import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
-import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
+import {PaginationUtilities} from "@/breeding-insight/model/view_models/PaginationUtilities";
 import {Result, Err, Success, ResultGenerator } from "@/breeding-insight/model/Result";
 
 export class ObservationService {
@@ -47,7 +47,7 @@ export class ObservationService {
         let observations: Observation[] = [];
         let { result: { data },  metadata } = res;
 
-        data = PaginationController.mockSortRecords(data);
+        data = PaginationUtilities.mockSortRecords(data);
                 
         observations = data.map((observation: any) => {
           let season: Season | undefined = undefined;
@@ -75,7 +75,7 @@ export class ObservationService {
         });
 
         let newPagination;
-        [observations, newPagination] = PaginationController.mockPagination(observations, paginationQuery!.page, paginationQuery!.pageSize, paginationQuery!.showAll);
+        [observations, newPagination] = PaginationUtilities.mockPagination(observations, paginationQuery!.page, paginationQuery!.pageSize, paginationQuery!.showAll);
         metadata.pagination = newPagination;
 
         return [observations, metadata];

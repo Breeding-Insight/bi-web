@@ -23,7 +23,7 @@
         <p class="has-text-dark">
           You are not authorized to access this resource. Verify your login credentials, and if the issue persists
           <a href="#!">contact your breeding program leader</a> or
-          <a href="#!">Breeding Insight support</a>.
+          <a href="#!">DeltaBreed support</a>.
         </p>
         <router-link v-bind:to="{name:'home'}" v-bind:replace="true">
           Return to Home Page

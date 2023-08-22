@@ -19,7 +19,7 @@
     <div class="columns is-marginless">
       <div
           class="column side-menu p-0 is-narrow"
-          :class="{ 'is-hidden-mobile': true, 'is-hidden-tablet-only': !showSidebar || !showSidebarMobile, 'is-hidden-desktop': !showSidebar}"
+          :class="{ 'is-hidden': !showSidebar}"
       >
         <div class="is-300px"></div>
       </div>
@@ -36,10 +36,10 @@
                 <a href="/">Privacy Policy</a>
               </div>
               <div class="level-item">
-                <a href="/">Contact Us</a>
+                <a href="https://breedinginsight.org/contact-us/">Contact Us</a>
               </div>
               <div class="level-item">
-                <a href="/">About</a>
+                <a href="https://breedinginsight.org/about-bi/">About</a>
               </div>
             </div>
           </nav>
@@ -115,8 +115,9 @@ export default class Footer extends Vue {
   }
 
   get showSidebar() {
-    return this.$route.meta.layout == 'adminSideBar' || this.$route.meta.layout == 'userSideBar' ||
-           this.$route.meta.layout == 'infoSideBar' || this.$route.meta.layout == 'baseSideBar';
+    return this.showSidebarMobile && (this.$route.meta.layout == 'adminSideBar' || this.$route.meta.layout == 'userSideBar' ||
+        (this.$route.meta.layout == 'infoSideBar' && process.env.VUE_APP_SANDBOX !== '') || this.$route.meta.layout == 'baseSideBar');
+
   }
 }
 

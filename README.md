@@ -96,8 +96,8 @@ npx npm-check -u
 See [Configuration Reference](https://cli.vuejs.org/config/).
 
 ## Style and layout
-A guide to visual design conventions and writing style can be found at `/styleguide` after authentication.
-For example, if you are running the app locally on port 8080, the style guide URL would be [http://localhost:8080/styleguide].
+A guide to visual design conventions and writing style can be found at `/style-guide` after authentication.
+For example, if you are running the app locally on port 8080, the style guide URL would be [http://localhost:8080/style-guide](http://localhost:8080/style-guide).
 
 ## Layout template usage standards
 General guidance for using each of the layout templates in `/components/layouts`:

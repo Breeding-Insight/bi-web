@@ -24,7 +24,7 @@
             <a href="/">
               <img
                   src="../../assets/img/bi-logo.svg"
-                  alt="Breeding Insight home"
+                  alt="DeltaBreed home"
                   width="160"
               >
             </a>

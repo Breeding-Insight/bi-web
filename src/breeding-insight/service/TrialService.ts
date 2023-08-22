@@ -19,12 +19,12 @@ import {TrialDAO} from "@/breeding-insight/dao/TrialDAO";
 import {Trial} from "@/breeding-insight/model/Trial";
 import {BiResponse, Metadata} from "@/breeding-insight/model/BiResponse";
 import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
-import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
+import {PaginationUtilities} from "@/breeding-insight/model/view_models/PaginationUtilities";
 import {Result, Err, Success, ResultGenerator } from "@/breeding-insight/model/Result";
 
 export class TrialService {
 
-  static async getAll(programId: string, paginationQuery?: PaginationQuery, full?: boolean): Promise<Result<Error, [Trial[], Metadata]>> {
+  static async getAll(programId: string, paginationQuery?: PaginationQuery, full?: boolean, metadata?:boolean): Promise<Result<Error, [Trial[], Metadata]>> {
 
     if (paginationQuery === undefined){
       paginationQuery = new PaginationQuery(0, 0, true);
@@ -34,23 +34,27 @@ export class TrialService {
       full = false;
     }
 
+    if (metadata === undefined) {
+      metadata = true;
+    }
+
     try {
       if(!programId) throw new Error('missing or invalid program id');
       
-      let response = await TrialDAO.getAll(programId, paginationQuery, full) as Result<Error, BiResponse>;      
+      let response = await TrialDAO.getAll(programId, paginationQuery, full, metadata) as Result<Error, BiResponse>;
       if(response.isErr()) throw response.value;
 
       const frontendModel = (res: BiResponse): [Trial[], Metadata] => {
         let trials: Trial[] = [];
         let { result: { data }, metadata } = res;
         
-        data = PaginationController.mockSortRecords(data);
+        data = PaginationUtilities.mockSortRecords(data);
         trials = data.map((trial: any) => {
-          return new Trial(trial.trialDbId, trial.trialName, trial.active);
+          return trial as Trial;
         });
 
         let newPagination;
-        [trials, newPagination] = PaginationController.mockPagination(trials, paginationQuery!.page, paginationQuery!.pageSize, paginationQuery!.showAll);  
+        [trials, newPagination] = PaginationUtilities.mockPagination(trials, paginationQuery!.page, paginationQuery!.pageSize, paginationQuery!.showAll);
         metadata.pagination = newPagination;
 
         return [trials, metadata];

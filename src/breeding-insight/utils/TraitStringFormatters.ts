@@ -17,6 +17,8 @@
 
 import {Scale, DataType} from "@/breeding-insight/model/Scale";
 import {StringFormatters} from "@/breeding-insight/utils/StringFormatters";
+import {TermType} from "@/breeding-insight/model/TraitSelector";
+import {EnumUtils} from "@/breeding-insight/utils/EnumUtils";
 
 export class TraitStringFormatters {
   
@@ -31,5 +33,9 @@ export class TraitStringFormatters {
     }
     return undefined;
   }
+
+  static getTermTypeString(termType: TermType): string | undefined {
+    return EnumUtils.enumKeyToValue(termType,TermType);
+    }
 
 }

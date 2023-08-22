@@ -17,7 +17,10 @@
 
 import moment from "moment";
 import {Germplasm} from "@/breeding-insight/brapi/model/germplasm";
-import {ExternalReferences} from "@/breeding-insight/brapi/model/externalReferences";
+import {MOMENT_BRAPI_DATE_FORMAT} from "@/breeding-insight/utils/BrAPIDateTime";
+
+// The moment.js interpretable format for Date values sent and received via the BI API.
+export const MOMENT_DATE_PERSISTED_FORMAT = 'DD/MM/YYYY h:mm:ss';
 
 export class GermplasmUtils {
     static getExternalUID(germplasm: Germplasm): string | undefined {
@@ -32,15 +35,10 @@ export class GermplasmUtils {
 
     static getCreatedDate(germplasm: Germplasm): string | undefined {
         if (germplasm.additionalInfo && germplasm.additionalInfo.createdDate) {
-            let dateTime = moment(germplasm.additionalInfo!.createdDate!, "DD/MM/YYYY h:mm:ss");
-            return dateTime.format("YYYY-MM-DD");
+            let dateTime = moment(germplasm.additionalInfo!.createdDate!, MOMENT_DATE_PERSISTED_FORMAT);
+            return dateTime.format(MOMENT_BRAPI_DATE_FORMAT);
         }
         return "";
-    }
-
-    static getGermplasmUUID(references: ExternalReferences): string | undefined {
-        let val = references.find(ref => ref.referenceSource === process.env.VUE_APP_BI_REFERENCE_SOURCE);
-        return val ? val.referenceID : "";
     }
 
     static formatSynonyms(synonyms: any[]): string {
@@ -48,4 +46,11 @@ export class GermplasmUtils {
         return synonyms.map(synonym => synonym.synonym).join("; ");
     }
 
+    static getEntryNumber(germplasm: Germplasm, referenceId: string | undefined): string | undefined {
+        if (germplasm.additionalInfo) {
+            return referenceId ? germplasm.additionalInfo.listEntryNumbers[<any>referenceId] :
+                germplasm.additionalInfo.importEntryMumber;
+        }
+        return "";
+    }
 }

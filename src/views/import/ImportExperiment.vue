@@ -20,16 +20,17 @@
     <ImportTemplate
         v-bind:abort-msg="'No records will be added, and the import in progress will be completely removed.'"
         v-bind:system-import-template-name="experimentImportTemplateName"
-        v-bind:confirm-msg="'Confirm New Experiments & Observations Records'"
+        v-bind:confirm-msg="'Preview Experimental Upload'"
         v-bind:import-type-name="'Experiments & Observations'"
         v-bind:confirm-import-state="confirmImportState"
         v-on="$listeners"
         v-on:finished="importFinished"
+        v-on:preview-data-loaded="previewDataLoaded"
     >
 
       <template v-slot:importInfoTemplateMessageBox>
         <ImportInfoTemplateMessageBox v-bind:import-type-name="'Experiments & Observations'"
-                                      v-bind:template-url="'https://cornell.box.com/shared/static/wp6tmlt0585ryid3csccj3q1w2fiyg9d.xls'"
+                                      v-bind:template-url="'https://cornell.box.com/shared/static/28k65fg3mrrcv5s8hm86ap9qijbbi06b.xls'"
                                       class="mb-5">
           <strong>Before You Import...</strong>
           <br/>
@@ -48,6 +49,7 @@
                                  v-on:confirm="confirm"
                                  class="mb-4">
           <div>
+            <p>Review your experimental data import before committing to the database.</p>
           <div class = "left-confirm-column">
             <p class="is-size-5 mb-2"><strong>Import Summary</strong></p>
             <p>Environments: {{ statistics.Environments.newObjectCount }}</p>
@@ -60,22 +62,27 @@
             <p>Description: {{ rows[0].trial.brAPIObject.trialDescription }}</p>
             <p>Experimental Unit: {{ rows[0].trial.brAPIObject.additionalInfo.defaultObservationLevel }}</p>
             <p>Type: {{ rows[0].trial.brAPIObject.additionalInfo.experimentType }}</p>
-            <p>User: </p>
-            <p>Creation Date: </p>
+            <p>Experimental Design: Externally generated</p>
+            <p v-if="isExisting(rows)">User: {{ rows[0].trial.brAPIObject.additionalInfo.createdBy.userName }}</p>
+            <p v-if="isExisting(rows)">Creation Date: {{ rows[0].trial.brAPIObject.additionalInfo.createdDate | dmy}}</p>
           </div>
           </div>
         </ConfirmImportMessageBox>
       </template>
 
       <template v-slot:importPreviewTable="previewData">
+
+
         <ExpandableTable
             v-bind:records="previewData.import"
             v-bind:loading="false"
             v-bind:pagination="previewData.pagination"
             v-on:show-error-notification="$emit('show-error-notification', $event)"
+            scrollable
         >
           <!-- Germplasm Name -->
-          <b-table-column field="germplasmName" label="Germplasm Name" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+          <b-table-column field="germplasmName" label="Germplasm Name" v-slot="props" :th-attrs="(column) => ({scope:'col'})"
+          :td-attrs="(row, column) => ({class: 'db-filled'})">
             {{ getField(props.row.data.germplasm, 'germplasmName') }}
           </b-table-column>
           <!-- Germplasm GID -->
@@ -92,7 +99,7 @@
           </b-table-column>
           <!-- Env Location -->
           <b-table-column field="envLocation" label="Env Location" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-            {{ getField(props.row.data.location, 'locationName') }}
+            {{ getField(props.row.data.location, 'name') }}
           </b-table-column>
           <!-- Env year -->
           <b-table-column field="envYear" label="Env Year" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
@@ -104,7 +111,7 @@
           </b-table-column>
           <!-- Exp Replicate # -->
           <b-table-column field="expRepNo" label="Exp Replicate #" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-            {{ getObservationLevelRelationships(props.row.data.observationUnit, 'replicate') }}
+            {{ getObservationLevelRelationships(props.row.data.observationUnit, 'rep') }}
           </b-table-column>
           <!-- Exp Block # -->
           <b-table-column field="expBlockNo" label="Exp Block #" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
@@ -122,6 +129,10 @@
           <b-table-column field="expTreatmentFactorName" label="Treatment Factors" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
             {{ getTreatment(props.row.data.observationUnit) }}
           </b-table-column>
+          <!-- Dynamic Phenotype and Timestamp Columns -->
+          <b-table-column v-for="variable in phenotypeColumns" :key="variable" :label="variable" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+            <p> {{ retrieveDynamicColVal(props.row.data.observations, variable) }}</p>
+          </b-table-column>
 
           <template v-slot:emptyMessage>
             <p class="has-text-weight-bold">
@@ -136,21 +147,26 @@
 </template>
 
 <script lang="ts">
-import { Component } from 'vue-property-decorator'
+import {Component} from 'vue-property-decorator'
 import ProgramsBase from "@/components/program/ProgramsBase.vue";
 import ImportInfoTemplateMessageBox from "@/components/file-import/ImportInfoTemplateMessageBox.vue";
 import ConfirmImportMessageBox from "@/components/trait/ConfirmImportMessageBox.vue";
 import ImportTemplate from "@/views/import/ImportTemplate.vue";
 import {DataFormEventBusHandler} from "@/components/forms/DataFormEventBusHandler";
 import {ImportFormatter} from "@/breeding-insight/model/report/ImportFormatter";
-import { AlertTriangleIcon } from 'vue-feather-icons';
-import {GermplasmList} from "@/breeding-insight/model/GermplasmList";
+import {AlertTriangleIcon} from 'vue-feather-icons';
 import BasicInputField from "@/components/forms/BasicInputField.vue";
 import ExpandableTable from "@/components/tables/expandableTable/ExpandableTable.vue";
+import {ImportObjectState} from "@/breeding-insight/model/import/ImportObjectState";
 
 @Component({
   components: {
     ImportInfoTemplateMessageBox, ConfirmImportMessageBox, ImportTemplate, AlertTriangleIcon, BasicInputField, ExpandableTable
+  },
+  filters: {
+    dmy: function(dateTime: String): String {
+      return dateTime.split(' ')[0];
+    }
   },
   data: () => ({ImportFormatter})
 })
@@ -158,7 +174,8 @@ export default class ImportExperiment extends ProgramsBase {
 
   private experimentImportTemplateName = 'ExperimentsTemplateMap';
   private confirmImportState: DataFormEventBusHandler = new DataFormEventBusHandler();
-  
+  private phenotypeColumns?: Array<String> = [];
+
   getNumNewExperimentRecords(statistics: any): number | undefined {
     return undefined;
   }
@@ -215,5 +232,22 @@ export default class ImportExperiment extends ProgramsBase {
 
   importFinished(){}
 
+  previewDataLoaded(dynamicColumns: String[]) {
+    this.phenotypeColumns = dynamicColumns;
+  }
+
+  isExisting(rows: any[]) {
+    return rows.length && rows[0].trial.state === ImportObjectState.EXISTING;
+  }
+
+  retrieveDynamicColVal(importReturnObject: any, column: string){
+    if (column.startsWith('TS:')) {
+      //Is timestamp
+      return importReturnObject.filter((observation: { brAPIObject: { observationVariableName: string; }; }) => observation.brAPIObject.observationVariableName === column.replace(/TS:\s*/,""))[0].brAPIObject.observationTimeStamp;
+    } else {
+      //Is phenotype observation
+      return importReturnObject.filter((observation: { brAPIObject: { observationVariableName: string; }; }) => observation.brAPIObject.observationVariableName === column)[0].brAPIObject.value
+    }
+  }
 }
 </script>

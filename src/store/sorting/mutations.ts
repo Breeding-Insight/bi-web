@@ -17,20 +17,21 @@
 
 import {MutationTree} from 'vuex';
 import {
-    ARCHIVED_ONT_NEW_SORT_COLUMN,
-    ACTIVE_ONT_NEW_SORT_COLUMN,
     UPDATE_PROGRAM_USER_SORT,
     UPDATE_LOCATION_SORT,
     UPDATE_SYSTEM_USER_SORT,
     UPDATE_PROGRAM_SORT,
-    ACTIVE_ONT_TOGGLE_SORT_ORDER,
-    ARCHIVED_ONT_TOGGLE_SORT_ORDER,
     IMPORT_PREVIEW_ONT_TOGGLE_SORT_ORDER,
-    IMPORT_PREVIEW_ONT_NEW_SORT_COLUMN, UPDATE_GERMPLASM_SORT
+    IMPORT_PREVIEW_ONT_NEW_SORT_COLUMN,
+    UPDATE_GERMPLASM_SORT,
+    UPDATE_GERMPLASM_LIST_SORT,
+    UPDATE_EXPERIMENT_SORT, UPDATE_ACTIVE_ONT_SORT, UPDATE_ARCHIVED_ONT_SORT
 } from "@/store/sorting/mutation-types";
 import {SortState} from "@/store/sorting/types";
 import {
+    ExperimentSort,
     GermplasmSort,
+    GermplasmListSort,
     LocationSort, OntologySort, OntologySortField,
     ProgramSort, SortOrder, SystemUserSort,
     TraitSortField,
@@ -39,19 +40,15 @@ import {
 
 export const mutations: MutationTree<SortState> = {
     // active ontology table
-    [ACTIVE_ONT_TOGGLE_SORT_ORDER](state: SortState) {
-        state.activeOntologySort.order = state.activeOntologySort.order === SortOrder.Ascending ? SortOrder.Descending : SortOrder.Ascending;
-    },
-    [ACTIVE_ONT_NEW_SORT_COLUMN](state: SortState, field: OntologySortField) {
-        state.activeOntologySort.field = field;
+    [UPDATE_ACTIVE_ONT_SORT](state: SortState, sort: OntologySort) {
+        state.activeOntologySort.field = sort.field;
+        state.activeOntologySort.order = sort.order;
     },
 
     // archived ontology table
-    [ARCHIVED_ONT_TOGGLE_SORT_ORDER](state: SortState) {
-        state.archivedOntologySort.order = state.archivedOntologySort.order === SortOrder.Ascending ? SortOrder.Descending : SortOrder.Ascending;
-    },
-    [ARCHIVED_ONT_NEW_SORT_COLUMN](state: SortState, field: OntologySortField) {
-        state.archivedOntologySort.field = field;
+    [UPDATE_ARCHIVED_ONT_SORT](state: SortState, sort: OntologySort) {
+        state.archivedOntologySort.field = sort.field;
+        state.archivedOntologySort.order = sort.order;
     },
 
     // importPreview ontology table
@@ -90,5 +87,17 @@ export const mutations: MutationTree<SortState> = {
     [UPDATE_GERMPLASM_SORT](state: SortState, sort: GermplasmSort) {
         state.germplasmSort.field = sort.field;
         state.germplasmSort.order = sort.order;
+    },
+
+    //germplasm list table
+    [UPDATE_GERMPLASM_LIST_SORT](state: SortState, sort: GermplasmListSort) {
+        state.germplasmListSort.field = sort.field;
+        state.germplasmListSort.order = sort.order;
+    },
+
+    //experiments and observations table
+    [UPDATE_EXPERIMENT_SORT](state: SortState, sort: ExperimentSort) {
+        state.experimentSort.field = sort.field;
+        state.experimentSort.order = sort.order;
     }
 };

@@ -14,6 +14,22 @@
       <label for="newTermActiveToggle" class="is-pulled-right">{{trait.active ? 'Active' : 'Archived'}}</label>
     </div>
 
+<!-- term type -->
+  <div class="column is-2">
+    <span class="is-pulled-right required new-term pb-2 pr-3">Term Type</span>
+  </div>
+  <div class="column new-term is-10">
+    <BasicSelectField
+        id="termTypeField"
+        class="pb-2"
+        v-bind:selected-id="trait.termType"
+        v-bind:options="termTypes"
+        v-bind:field-name="'Term Type'"
+        v-bind:show-label="false"
+        v-on:input="setTermType($event)"
+    />
+  </div>
+
 <!--    term name-->
     <div class="column is-2">
       <span class="is-pulled-right required new-term pb-2 pr-3">Name</span>
@@ -150,6 +166,7 @@
     </div>
     <div class="column new-term is-10">
       <BasicSelectField
+          id="methodClass"
           class="pb-2"
           v-bind:selected-id="trait.method.methodClass"
           v-bind:options="methodOptions"
@@ -171,6 +188,7 @@
     </div>
     <div class="column new-term is-10">
       <BasicSelectField
+          id="scaleClass"
           v-bind:selected-id="StringFormatters.toStartCase(trait.scale.dataType)"
           v-bind:options="getScaleOptions()"
           v-bind:field-name="'Scale Class'"
@@ -265,22 +283,23 @@ import BasicInputField from "@/components/forms/BasicInputField.vue";
 import BasicSelectField from "@/components/forms/BasicSelectField.vue";
 import {Trait} from "@/breeding-insight/model/Trait";
 import {Method, MethodClass} from "@/breeding-insight/model/Method";
-import { Scale, DataType } from '@/breeding-insight/model/Scale';
-import { ProgramObservationLevel } from '@/breeding-insight/model/ProgramObservationLevel';
+import {DataType, Scale} from '@/breeding-insight/model/Scale';
+import {ProgramObservationLevel} from '@/breeding-insight/model/ProgramObservationLevel';
 import OrdinalTraitForm from "@/components/trait/forms/CategoryTraitForm.vue";
+import CategoryTraitForm from "@/components/trait/forms/CategoryTraitForm.vue";
 import TextTraitForm from "@/components/trait/forms/TextTraitForm.vue";
 import DateTraitForm from "@/components/trait/forms/DateTraitForm.vue";
 import DurationTraitForm from "@/components/trait/forms/DurationTraitForm.vue";
 import NumericalTraitForm from "@/components/trait/forms/NumericalTraitForm.vue";
-import CategoryTraitForm from "@/components/trait/forms/CategoryTraitForm.vue";
 import {TraitError} from "@/breeding-insight/model/errors/TraitError";
 import {ValidationError} from "@/breeding-insight/model/errors/ValidationError";
 import AutoCompleteField from "@/components/forms/AutoCompleteField.vue";
-import { StringFormatters } from '@/breeding-insight/utils/StringFormatters';
+import {StringFormatters} from '@/breeding-insight/utils/StringFormatters';
 import {Category} from "@/breeding-insight/model/Category";
-import {integer} from "vuelidate/lib/validators";
 import TagField from "@/components/forms/TagField.vue";
 import BaseFieldWrapper from "@/components/forms/BaseFieldWrapper.vue";
+import {TermType} from "@/breeding-insight/model/TraitSelector";
+import {EnumUtils} from "@/breeding-insight/utils/EnumUtils";
 
 @Component({
   components: {
@@ -323,6 +342,8 @@ export default class BaseTraitForm extends Vue {
   @Prop()
   tags?: string[];
 
+  private termTypes: TermType[] = Object.values(TermType);
+
   private methodHistory: {[key: string]: Method} = {};
   private scaleHistory: {[key: string]: Scale} = {};
   private lastCategoryType: string = '';
@@ -361,6 +382,10 @@ export default class BaseTraitForm extends Vue {
     }
     if ((this.trait.scale) && (this.trait.scale.categories)) {
       this.categories = this.trait.scale.categories;
+    }
+    //If termType pulled from backend (rather than the default for new terms), set to display friendly version
+    if (this.trait.termType != TermType.PHENOTYPE) {
+      this.trait.termType = EnumUtils.enumKeyToValue(this.trait.termType, TermType);
     }
   }
 
@@ -528,6 +553,10 @@ export default class BaseTraitForm extends Vue {
     } else {
       this.trait.synonyms[0] = value;
     }
+  }
+
+  setTermType(value: TermType) {
+    this.trait.termType = value;
   }
 
   setFullName(value: string) {

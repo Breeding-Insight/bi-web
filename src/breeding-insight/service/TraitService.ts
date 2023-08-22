@@ -17,11 +17,13 @@
 
 import {TraitDAO} from "@/breeding-insight/dao/TraitDAO";
 import {Trait} from "@/breeding-insight/model/Trait";
-import {Metadata} from "@/breeding-insight/model/BiResponse";
+import {BiResponse, Metadata, Response} from "@/breeding-insight/model/BiResponse";
 import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
 import {ValidationErrorService} from "@/breeding-insight/service/ValidationErrorService";
-import {TraitFilter} from "@/breeding-insight/model/TraitSelector";
+import {TraitField, TraitFilter, TraitSelector} from "@/breeding-insight/model/TraitSelector";
 import {OntologySort, OntologySortField, SortOrder} from "@/breeding-insight/model/Sort";
+import * as api from "@/util/api";
+import {Result, ResultGenerator} from "@/breeding-insight/model/Result";
 
 export class TraitService {
 
@@ -114,32 +116,29 @@ export class TraitService {
     }));
   }
 
-  static getFilteredTraits(programId: string,
-                           paginationQuery: PaginationQuery = new PaginationQuery(1, 50, true),
-                           full: boolean = false,
-                           filters?: TraitFilter[],
-                           sort: OntologySort = new OntologySort(OntologySortField.Name, SortOrder.Ascending)): Promise<[Trait[], Metadata]> {
-    return new Promise<[Trait[], Metadata]>(((resolve, reject) => {
+  static async getTraits(programId: string,
+                         sort: OntologySort,
+                         pagination: {pageSize: number, page: number},
+                         filters?: any): Promise<Result<Error, BiResponse>>{
+    if (!programId) {
+      throw 'Program ID required';
+    }
 
-      if (programId) {
-        TraitDAO.getFilteredTraits(programId, paginationQuery, full, sort, filters).then((biResponse) => {
+    try {
+      let response: Result<Error, BiResponse> = await TraitDAO.getFilteredTraits(programId,
+          this.makeTraitParams(sort, pagination, filters));
 
-          let traits: Trait[] = [];
-
-          if (biResponse.result.data) {
-            traits = biResponse.result.data.map((trait: any) => {
-              return trait as Trait;
-            });
-          }
-
-          resolve([traits, biResponse.metadata]);
-
-        }).catch((error) => reject(error));
-
-      } else {
-        reject();
+      if (response.isErr()) {
+        throw response.value;
       }
-    }));
+
+      return response.applyResult(biRes => {
+        return biRes;
+      });
+
+    } catch (error) {
+      return ResultGenerator.err(error);
+    }
   }
 
   static async getTraitEditable(programId: string, traitId: string): Promise<[boolean, Metadata]> {
@@ -184,5 +183,28 @@ export class TraitService {
       }
     }
     else throw 'Unable to get trait editable info';
+  }
+
+  private static makeTraitParams(sort: OntologySort, pagination: {pageSize: number, page: number}, filters?: any) {
+    let params: any = {};
+
+    if (filters) {
+      params = filters;
+    }
+    if (sort.field) {
+      params['sortField'] = sort.field;
+    }
+    if (sort.order) {
+      params['sortOrder'] = sort.order;
+    }
+    if (pagination.page || pagination.page == 0) { //have to account for 0-index pagination since 0 falsy
+      params ['page'] = pagination.page;
+    }
+    if (pagination.pageSize) {
+      params['pageSize'] = pagination.pageSize;
+    }
+    params.full = true;
+
+    return params;
   }
 }
