@@ -16,11 +16,12 @@
 -->
 
 <template>
-  <DownloadButton
+  <DownloadModal
     v-bind:unique-id="trialId"
     v-bind:modal-title="modalTitle"
     v-bind:download="downloadList"
     v-bind:anchor-class="anchorClass"
+    v-bind:active="active"
     modal-class="experiment-observations-download-button"
     v-on:deactivate="resetExportOptions"
   >
@@ -146,7 +147,7 @@
       </div>
     </template>
     <slot />
-  </DownloadButton>
+  </DownloadModal>
 </template>
 
 
@@ -159,24 +160,24 @@ import {ExperimentExportOptions} from "@/breeding-insight/model/ExperimentExport
 import {FileTypeOption} from "@/breeding-insight/model/FileTypeOption";
 import {ExperimentDatasetOption} from "@/breeding-insight/model/ExperimentDatasetOption";
 import {AlertTriangleIcon} from 'vue-feather-icons';
-import DownloadButton from "@/components/DownloadButton.vue";
 import {Trial} from "@/breeding-insight/model/Trial";
 import {Metadata} from "@/breeding-insight/model/BiResponse";
 import {Study} from "@/breeding-insight/model/Study";
 import {StudyService} from "@/breeding-insight/service/StudyService";
 import {Result} from "@/breeding-insight/model/Result";
 import {BrAPIUtils} from "@/breeding-insight/utils/BrAPIUtils";
+import DownloadModal from "@/components/DownloadModal.vue";
 
 @Component({
   mixins: [validationMixin],
-  components: {DownloadButton, AlertTriangleIcon},
+  components: {DownloadModal, AlertTriangleIcon},
   computed: {
     ...mapGetters([
       'activeProgram'
     ])
   }
 })
-export default class ExperimentObservationsDownloadButton extends Vue {
+export default class ExperimentObservationsDownloadModal extends Vue {
 
   @Prop()
   active!: boolean;
@@ -188,6 +189,7 @@ export default class ExperimentObservationsDownloadButton extends Vue {
   modalTitle?: string;
   @Prop()
   anchorClass?: string;
+
 
   private activeProgram?: Program;
   private fileOptions: ExperimentExportOptions = new ExperimentExportOptions();
@@ -235,6 +237,8 @@ export default class ExperimentObservationsDownloadButton extends Vue {
   }
 
   resetExportOptions(){
+    // Notify parent when deactivated to close modal
+    this.$emit('deactivate');
     // Reset file export options.
     this.fileOptions = new ExperimentExportOptions();
     // Reset validation state.
