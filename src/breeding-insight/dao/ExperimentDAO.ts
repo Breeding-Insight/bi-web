@@ -46,7 +46,7 @@ export class ExperimentDAO {
         config.experimentId = experimentId;
         config.datasetId = datasetId;
         config.params = {
-            stat : stats,
+            stats : stats,
         };
         return new Promise<Result<Error, DatasetModel>>(((resolve, reject) => {
             api.call(config)
