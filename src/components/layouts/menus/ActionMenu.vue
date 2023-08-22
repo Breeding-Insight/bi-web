@@ -15,7 +15,6 @@
   -->
 
 <template>
-  <!-- v-if="username !== undefined" -->
   <b-dropdown
               position="is-bottom-left"
               append-to-body
@@ -25,18 +24,10 @@
           class="button is-primary has-text-weight-bold"
           v-bind:id="dropDownId"
       >
-        <!--<b-icon icon="user" class="mr-0"></b-icon>-->
         Actions
         <b-icon icon="chevron-down" class="ml-1"></b-icon>
       </button>
     </template>
-    <!--
-    <b-dropdown-item custom aria-role="menuitem" v-bind:id="userNameId">
-      Logged in as <strong>{{username}}</strong>
-    </b-dropdown-item>
-    <hr class="dropdown-divider">
-    :id="logoutId"
-    -->
     <b-dropdown-item v-for="menuItem in actionMenuItems" v-bind:key="menuItem.id" aria-role="menuitem" @click="$emit(menuItem.event)">
       {{menuItem.label}}
     </b-dropdown-item>
@@ -55,9 +46,7 @@ export default class ActionMenu extends Vue {
   @Prop()
   actionMenuItems!: ActionMenuItem[];
 
-  //private logoutId: string = "userstatusmenu-logout-button";
   private dropDownId: string = "actionmenu-dropdown-button";
-  //private userNameId: string = "userstatusmenu-username";
 }
 
 </script>

@@ -23,22 +23,18 @@
     <h1 class="title">
       {{experiment.trialName}}
     </h1>
-      <span class="is-pulled-right is-flex" >
 
-        <ExperimentObservationsDownloadModal
-            v-bind:experiment="experiment"
-            v-bind:modal-title="`Download ${experiment.trialName}`"
-            v-bind:trial-id="experimentUUID"
-            v-bind:active="downloadModalActive"
-            v-on:show-error-notification ="$emit('show-error-notification', $event)"
-            v-on:deactivate="downloadModalActive = false"
-        />
-
-
-      </span>
+    <ExperimentObservationsDownloadModal
+        v-bind:experiment="experiment"
+        v-bind:modal-title="`Download ${experiment.trialName}`"
+        v-bind:trial-id="experimentUUID"
+        v-bind:active="downloadModalActive"
+        v-on:show-error-notification ="$emit('show-error-notification', $event)"
+        v-on:deactivate="downloadModalActive = false"
+    />
 
     <div v-if="!experimentLoading && experiment!=null">
-    
+
       <div class="columns is-multiline is-align-items-stretch mt-4">
         <article class="column ">
           <section>
