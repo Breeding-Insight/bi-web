@@ -34,14 +34,11 @@
             v-on:deactivate="downloadModalActive = false"
         />
 
-        <ActionMenu v-bind:action-menu-items=actions
-                    v-on:import-file="importFile()"
-                    v-on:download-file="downloadFile()"
-        />
+
       </span>
 
     <div v-if="!experimentLoading && experiment!=null">
-      <br/>
+    
       <div class="columns is-multiline is-align-items-stretch mt-4">
         <article class="column ">
           <section>
@@ -62,6 +59,12 @@
               <li><b>Environments: </b> {{ environmentsCount }}</li>
             </ul>
           </section>
+        </article>
+        <article class="column is-narrow">
+          <ActionMenu v-bind:action-menu-items=actions
+                      v-on:import-file="importFile()"
+                      v-on:download-file="downloadFile()"
+          />
         </article>
       </div>
 
