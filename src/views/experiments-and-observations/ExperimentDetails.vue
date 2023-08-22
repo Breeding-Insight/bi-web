@@ -32,7 +32,6 @@
             v-bind:active="downloadModalActive"
             v-on:show-error-notification ="$emit('show-error-notification', $event)"
             v-on:deactivate="downloadModalActive = false"
-            anchor-class="button is-primary is-outlined"
         />
 
         <ActionMenu v-bind:action-menu-items=actions

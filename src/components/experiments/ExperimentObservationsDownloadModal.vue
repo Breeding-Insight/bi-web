@@ -20,7 +20,6 @@
     v-bind:unique-id="trialId"
     v-bind:modal-title="modalTitle"
     v-bind:download="downloadList"
-    v-bind:anchor-class="anchorClass"
     v-bind:active="active && loadingStudyOptionsComplete"
     modal-class="experiment-observations-download-button"
     v-on:deactivate="resetExportOptions"
@@ -187,9 +186,6 @@ export default class ExperimentObservationsDownloadModal extends Vue {
   experiment!: Trial;
   @Prop()
   modalTitle?: string;
-  @Prop()
-  anchorClass?: string;
-
 
   private activeProgram?: Program;
   private fileOptions: ExperimentExportOptions = new ExperimentExportOptions();

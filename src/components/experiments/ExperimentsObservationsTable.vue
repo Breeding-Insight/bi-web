@@ -25,7 +25,6 @@
         v-bind:active="downloadModalActive"
         v-on:show-error-notification ="$emit('show-error-notification', $event)"
         v-on:deactivate="downloadModalActive = false"
-        anchor-class="button is-primary is-outlined"
     />
 
     <div class="is-clearfix"></div>

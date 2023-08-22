@@ -71,8 +71,6 @@ export default class DownloadModal extends Vue {
   @Prop()
   download!: () => boolean;
   @Prop()
-  anchorClass?: string;
-  @Prop()
   active!: boolean;
 
   closeDownloadModal(){
