@@ -21,7 +21,7 @@
     v-bind:modal-title="modalTitle"
     v-bind:download="downloadList"
     v-bind:anchor-class="anchorClass"
-    v-bind:active="active"
+    v-bind:active="active && loadingStudyOptionsComplete"
     modal-class="experiment-observations-download-button"
     v-on:deactivate="resetExportOptions"
   >
@@ -152,7 +152,7 @@
 
 
 <script lang="ts">
-import {Component, Vue, Prop} from "vue-property-decorator";
+import {Component, Vue, Prop, Watch} from "vue-property-decorator";
 import {validationMixin} from "vuelidate";
 import {mapGetters} from "vuex";
 import {Program} from "@/breeding-insight/model/Program";
@@ -197,8 +197,17 @@ export default class ExperimentObservationsDownloadModal extends Vue {
   private fileExtensionOptions: object[] = Object.values(FileTypeOption);
   private datasetOptions: object[] = Object.values(ExperimentDatasetOption);
   private environmentOptions: object[] = [];
+  private loadingStudyOptionsComplete: boolean = false;
 
-  async mounted() {
+  @Watch('experiment', {immediate: true})
+  onExperimentChanged() {
+    console.log('experiment changed');
+    // reset loading flag
+    this.loadingStudyOptionsComplete = false;
+    this.getStudyOptions();
+  }
+
+  async getStudyOptions() {
     // Fetch all environments (studies) for this experiment.
     try {
       const response: Result<Error, [Study[], Metadata]> = await StudyService.getAll(this.activeProgram!.id!, this.experiment);
@@ -206,6 +215,7 @@ export default class ExperimentObservationsDownloadModal extends Vue {
       let [studies, metadata] = response.value;
       // Set environment options.
       this.environmentOptions = studies.map((s) => ({id: BrAPIUtils.getBreedingInsightId(s.externalReferences!, '/studies'), name: s.name}));
+      this.loadingStudyOptionsComplete = true;
     } catch (error) {
       // Display error that studies cannot be loaded
       this.$emit('show-error-notification', 'Error while trying to load studies');

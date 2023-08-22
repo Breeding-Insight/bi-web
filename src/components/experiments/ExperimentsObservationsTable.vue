@@ -152,9 +152,9 @@ export default class ExperimentsObservationsTable extends Vue {
   };
 
   private downloadModalActive: boolean = false;
-  private downloadExperiment?: Trial;
-  private downloadModalTitle?: string;
-  private downloadTrialId?: string;
+  private downloadExperiment?: Trial = new Trial();
+  private downloadModalTitle?: string = 'undefined';
+  private downloadTrialId?: string = 'undefined';
 
   mounted() {
     this.experimentCallStack = new CallStack(this.experimentsFetch(
@@ -218,6 +218,7 @@ export default class ExperimentsObservationsTable extends Vue {
     this.downloadExperiment = experiment;
     this.downloadModalTitle = "Download " + experiment.trialName;
     this.downloadTrialId = BrAPIUtils.getBreedingInsightId(experiment.externalReferences!, '/trials');
+    console.log(this.downloadTrialId);
   }
 
   setSort(field: string, order: string) {
