@@ -22,13 +22,16 @@
     <template #trigger>
       <button
           class="button is-primary has-text-weight-bold"
-          v-bind:id="dropDownId"
+          v-bind:id="id"
       >
-        Actions
+        {{ buttonText }}
         <b-icon icon="chevron-down" class="ml-1"></b-icon>
       </button>
     </template>
-    <b-dropdown-item v-for="menuItem in actionMenuItems" v-bind:key="menuItem.id" aria-role="menuitem" @click="$emit(menuItem.event)">
+    <b-dropdown-item v-for="menuItem in actionMenuItems"
+                     v-bind:key="menuItem.id" aria-role="menuitem"
+                     v-bind:id="menuItem.id"
+                     @click="$emit(menuItem.event)">
       {{menuItem.label}}
     </b-dropdown-item>
 
@@ -44,9 +47,13 @@ import {ActionMenuItem} from "@/breeding-insight/model/ActionMenuItem";
 })
 export default class ActionMenu extends Vue {
   @Prop()
+  buttonText!: string;
+  @Prop()
   actionMenuItems!: ActionMenuItem[];
+  @Prop()
+  id!: string;
 
-  private dropDownId: string = "actionmenu-dropdown-button";
+
 }
 
 </script>

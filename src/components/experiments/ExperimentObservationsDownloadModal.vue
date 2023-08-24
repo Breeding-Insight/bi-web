@@ -197,7 +197,6 @@ export default class ExperimentObservationsDownloadModal extends Vue {
 
   @Watch('experiment', {immediate: true})
   onExperimentChanged() {
-    console.log('experiment changed');
     // reset loading flag
     this.loadingStudyOptionsComplete = false;
     this.getStudyOptions();

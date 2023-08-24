@@ -57,7 +57,9 @@
           </section>
         </article>
         <article class="column is-narrow">
-          <ActionMenu v-bind:action-menu-items=actions
+          <ActionMenu v-bind:id="'manage-experiment-dropdown-button'"
+                      v-bind:button-text="'Manage Experiment'"
+                      v-bind:action-menu-items=actions
                       v-on:import-file="importFile()"
                       v-on:download-file="downloadFile()"
           />
@@ -123,8 +125,8 @@ export default class ExperimentDetails extends ProgramsBase {
   private downloadModalActive: boolean = false;
 
   private actions: ActionMenuItem[] = [
-      new ActionMenuItem('importFileId', 'import-file', 'Import file'),
-      new ActionMenuItem('downloadFileId', 'download-file', 'Download file')
+      new ActionMenuItem('experiment-import-file', 'import-file', 'Import file'),
+      new ActionMenuItem('experiment-download-file', 'download-file', 'Download file')
   ];
 
   mounted () {
