@@ -21,7 +21,8 @@
               aria-role="menu">
     <template #trigger>
       <button
-          class="button is-primary has-text-weight-bold"
+          class="button has-text-weight-bold"
+          :class="[isPrimary ? 'is-primary' : 'is-primary is-light']"
           v-bind:id="id"
       >
         {{ buttonText }}
@@ -52,6 +53,8 @@ export default class ActionMenu extends Vue {
   actionMenuItems!: ActionMenuItem[];
   @Prop()
   id!: string;
+  @Prop()
+  isPrimary!: boolean;
 
 
 }

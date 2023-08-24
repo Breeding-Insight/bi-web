@@ -57,7 +57,8 @@
           </section>
         </article>
         <article class="column is-narrow">
-          <ActionMenu v-bind:id="'manage-experiment-dropdown-button'"
+          <ActionMenu v-bind:is-primary="true"
+                      v-bind:id="'manage-experiment-dropdown-button'"
                       v-bind:button-text="'Manage Experiment'"
                       v-bind:action-menu-items=actions
                       v-on:import-file="importFile()"
