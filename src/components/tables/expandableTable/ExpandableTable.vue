@@ -151,6 +151,8 @@ export default class ExpandableTable extends Mixins(ValidationMixin) {
   searchDebounce!: number;
   @Prop({default: "Deactivate"})
   deactivateLinkText?: string;
+  @Prop({default: true})
+  isShowAllEnabled!: boolean;
 
   private tableRows: Array<TableRow<any>> = new Array<TableRow<any>>();
   private openDetail: Array<TableRow<any>> = new Array<TableRow<any>>();

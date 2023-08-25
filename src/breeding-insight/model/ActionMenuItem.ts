@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-import {ExternalReferences} from "@/breeding-insight/brapi/model/externalReferences";
+export class ActionMenuItem {
+    id?: string;
+    event?: string;
+    label?: string;
 
-export class BrAPIUtils {
-    static getBreedingInsightId(references: ExternalReferences|undefined, referenceSourcePath: string = ""): string | undefined {
-        if(!references){
-            return undefined;
-        }
-        let val = references.find(ref => ref.referenceSource === process.env.VUE_APP_BI_REFERENCE_SOURCE + referenceSourcePath);
-        return val ? val.referenceID : "";
+    constructor(id?:string, event?:string, label?:string) {
+        this.id = id;
+        this.event = event;
+        this.label = label;
     }
 }

@@ -16,11 +16,11 @@
 -->
 
 <template>
-  <DownloadButton
+  <DownloadModal
     v-bind:unique-id="trialId"
     v-bind:modal-title="modalTitle"
     v-bind:download="downloadList"
-    v-bind:anchor-class="anchorClass"
+    v-bind:active="active && loadingStudyOptionsComplete"
     modal-class="experiment-observations-download-button"
     v-on:deactivate="resetExportOptions"
   >
@@ -146,12 +146,12 @@
       </div>
     </template>
     <slot />
-  </DownloadButton>
+  </DownloadModal>
 </template>
 
 
 <script lang="ts">
-import {Component, Vue, Prop} from "vue-property-decorator";
+import {Component, Vue, Prop, Watch} from "vue-property-decorator";
 import {validationMixin} from "vuelidate";
 import {mapGetters} from "vuex";
 import {Program} from "@/breeding-insight/model/Program";
@@ -159,24 +159,24 @@ import {ExperimentExportOptions} from "@/breeding-insight/model/ExperimentExport
 import {FileTypeOption} from "@/breeding-insight/model/FileTypeOption";
 import {ExperimentDatasetOption} from "@/breeding-insight/model/ExperimentDatasetOption";
 import {AlertTriangleIcon} from 'vue-feather-icons';
-import DownloadButton from "@/components/DownloadButton.vue";
 import {Trial} from "@/breeding-insight/model/Trial";
 import {Metadata} from "@/breeding-insight/model/BiResponse";
 import {Study} from "@/breeding-insight/model/Study";
 import {StudyService} from "@/breeding-insight/service/StudyService";
 import {Result} from "@/breeding-insight/model/Result";
 import {BrAPIUtils} from "@/breeding-insight/utils/BrAPIUtils";
+import DownloadModal from "@/components/DownloadModal.vue";
 
 @Component({
   mixins: [validationMixin],
-  components: {DownloadButton, AlertTriangleIcon},
+  components: {DownloadModal, AlertTriangleIcon},
   computed: {
     ...mapGetters([
       'activeProgram'
     ])
   }
 })
-export default class ExperimentObservationsDownloadButton extends Vue {
+export default class ExperimentObservationsDownloadModal extends Vue {
 
   @Prop()
   active!: boolean;
@@ -186,8 +186,6 @@ export default class ExperimentObservationsDownloadButton extends Vue {
   experiment!: Trial;
   @Prop()
   modalTitle?: string;
-  @Prop()
-  anchorClass?: string;
 
   private activeProgram?: Program;
   private fileOptions: ExperimentExportOptions = new ExperimentExportOptions();
@@ -195,8 +193,16 @@ export default class ExperimentObservationsDownloadButton extends Vue {
   private fileExtensionOptions: object[] = Object.values(FileTypeOption);
   private datasetOptions: object[] = Object.values(ExperimentDatasetOption);
   private environmentOptions: object[] = [];
+  private loadingStudyOptionsComplete: boolean = false;
 
-  async mounted() {
+  @Watch('experiment', {immediate: true})
+  onExperimentChanged() {
+    // reset loading flag
+    this.loadingStudyOptionsComplete = false;
+    this.getStudyOptions();
+  }
+
+  async getStudyOptions() {
     // Fetch all environments (studies) for this experiment.
     try {
       const response: Result<Error, [Study[], Metadata]> = await StudyService.getAll(this.activeProgram!.id!, this.experiment);
@@ -204,6 +210,7 @@ export default class ExperimentObservationsDownloadButton extends Vue {
       let [studies, metadata] = response.value;
       // Set environment options.
       this.environmentOptions = studies.map((s) => ({id: BrAPIUtils.getBreedingInsightId(s.externalReferences!, '/studies'), name: s.name}));
+      this.loadingStudyOptionsComplete = true;
     } catch (error) {
       // Display error that studies cannot be loaded
       this.$emit('show-error-notification', 'Error while trying to load studies');
@@ -235,6 +242,8 @@ export default class ExperimentObservationsDownloadButton extends Vue {
   }
 
   resetExportOptions(){
+    // Notify parent when deactivated to close modal
+    this.$emit('deactivate');
     // Reset file export options.
     this.fileOptions = new ExperimentExportOptions();
     // Reset validation state.
