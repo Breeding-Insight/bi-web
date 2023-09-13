@@ -337,7 +337,9 @@ export default class ImportTemplate extends ProgramsBase {
         if( this.import_errors==null) {
           this.$emit('show-error-notification', `Error(s) detected in file, ${this.file.name}. ${response!.progress!.message!}. Import cannot proceed.`);
         }
-        this.$emit('show-error-notification', `Error(s) detected in file, ${this.file.name}. (See details below.) Import cannot proceed.`);
+        else {
+          this.$emit('show-error-notification', `Error(s) detected in file, ${this.file.name}. (See details below.) Import cannot proceed.`);
+        }
         this.importService.send(ImportEvent.IMPORT_ERROR);
       }
       // this.importService.send(ImportEvent.IMPORT_SUCCESS) is in getDataUpload()
