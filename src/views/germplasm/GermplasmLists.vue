@@ -34,6 +34,7 @@ import {GermplasmListSort, GermplasmListSortField} from "@/breeding-insight/mode
 import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
 import {BiResponse} from "@/breeding-insight/model/BiResponse";
 import {BrAPIService, BrAPIType} from "@/breeding-insight/service/BrAPIService";
+import {ListType} from "@/util/ListType";
 @Component({
   components: {
     GermplasmListsTable
@@ -44,7 +45,7 @@ export default class GermplasmLists extends ProgramsBase {
   private germplasmListFetch: (programId: string, sort: GermplasmListSort, paginationController: PaginationController) => ((filters: any) => Promise<BiResponse>) =
       function (programId: string, sort: GermplasmListSort, paginationController: PaginationController) {
         return function (filters: any) {
-          filters.type='germplasm';
+          filters.listType=ListType.Germplasm;
           return BrAPIService.get<GermplasmListSortField>(
               BrAPIType.LIST,
               programId,
