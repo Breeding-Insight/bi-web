@@ -112,6 +112,14 @@
         </b-table-column>
         <b-table-column
             v-slot="props"
+            label="Env Year"
+            sortable
+            searchable
+            :th-attrs="(column) => ({scope:'col'})"
+        >
+        </b-table-column>
+        <b-table-column
+            v-slot="props"
             field="data.expUnitId"
             label="Exp Unit ID"
             sortable
@@ -211,7 +219,7 @@
 
 
 <script lang="ts">
-import {Component, Prop, Vue, Watch} from 'vue-property-decorator'
+import {Component, Prop, Watch} from 'vue-property-decorator'
 import ProgramsBase from "@/components/program/ProgramsBase.vue";
 import {Result} from "@/breeding-insight/model/Result";
 import {DatasetModel} from "@/breeding-insight/model/DatasetModel";
