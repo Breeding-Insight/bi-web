@@ -112,11 +112,13 @@
         </b-table-column>
         <b-table-column
             v-slot="props"
+            field="data.envYear"
             label="Env Year"
             sortable
             searchable
             :th-attrs="(column) => ({scope:'col'})"
         >
+          {{ props.row.data.envYear }}
         </b-table-column>
         <b-table-column
             v-slot="props"
@@ -385,6 +387,9 @@ export default class Dataset extends ProgramsBase {
       datasetTableRow.envLocation = this.removeUnique(unit.locationName);
       datasetTableRow.expUnitId = this.removeUnique(unit.observationUnitName);
       datasetTableRow.obsUnitId = BrAPIUtils.getBreedingInsightId(unit.externalReferences, "/observationunits");
+      if (unit.studyDbId) {
+        datasetTableRow.envYear = this.envYearByStudyDbId[unit.studyDbId];
+      }
 
       //Exp Replicate # and Exp Block #
       datasetTableRow.expReplicate = "";
@@ -546,11 +551,11 @@ export default class Dataset extends ProgramsBase {
       // Use this.datasetModel to initialize this.unitDbId_to_traitValues
       this.unitDbId_to_traitValues = this.createUnitDbId_to_traitValues();
 
-      // Use this.datasetModel to initialize this.datasetTableRows
-      this.createDatasetTableRows();
+      // Initialize envYearByStudyDbId
+      await this.createEnvYearByStudyDbId();
 
-      // Set envYearByStudyId
-      this.createEnvYearByStudyDbId();
+      // Use this.datasetModel and this.envYearByStudyDbId to initialize this.datasetTableRows
+      this.createDatasetTableRows();
 
       //Initialize the paginationController
       this.paginationController.totalCount = this.datasetModel.observationUnits.length;
