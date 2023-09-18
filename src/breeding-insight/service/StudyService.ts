@@ -56,7 +56,17 @@ export class StudyService {
         
         data = PaginationUtilities.mockSortRecords(data);
         studies = data.map((study: any) => {
-          return new Study(study.studyDbId, study.studyName, study.studyDescription, study.studyType, study.startDate, study.endDate, study.locationName, study.active, study.externalReferences);
+          return new Study(
+              study.studyDbId,
+              study.studyName,
+              study.studyDescription,
+              study.studyType,
+              study.startDate,
+              study.endDate,
+              study.locationName,
+              study.active,
+              study.externalReferences,
+              study.seasons);
         });
 
         let newPagination;
@@ -72,6 +82,21 @@ export class StudyService {
       return ResultGenerator.err(error);
     }
   }
+
+  // static async getEnvYear(programId?: string, studyId?: string): Promise<Result<Error, string>> {
+  //   try {
+  //     if(!programId) throw new Error('missing or invalid program id');
+  //     if(!studyId) throw new Error('missing or invalid study id');
+  //     let studyResponse = await StudyDAO.getById(programId, studyId) as Result<Error, BiResponse>;
+  //     if (studyResponse.isErr()) throw studyResponse.value;
+  //     studyResponse.applyResult( (res: BiResponse) => {
+  //       let { result: { study }, metadata } = res;
+  //
+  //     })
+  //   } catch (error) {
+  //     return ResultGenerator.err(error);
+  //   }
+  // }
 
   static async getById(programId?: string, studyId?: string): Promise<Result<Error, Study>> {
     try {

@@ -234,6 +234,11 @@ import {ExternalReferences} from "@/breeding-insight/brapi/model/externalReferen
 import {DatasetTableRow} from "@/breeding-insight/model/DatasetTableRow";
 import {Trial} from "@/breeding-insight/model/Trial";
 import ProgressBar from '@/components/forms/ProgressBar.vue'
+import {Study} from "@/breeding-insight/model/Study";
+import {Metadata} from "@/breeding-insight/model/BiResponse";
+import {StudyService} from "@/breeding-insight/service/StudyService";
+import {BrAPIService, BrAPIType} from '@/breeding-insight/service/BrAPIService';
+import {SortOrder} from "@/breeding-insight/model/Sort";
 
 @Component({
   components: {
@@ -254,8 +259,8 @@ export default class Dataset extends ProgramsBase {
   private resultDatasetId: string | undefined;
   private paginationController: PaginationController = new PaginationController();
   private datasetTableRows: DatasetTableRow[] = [];
-
   private unitDbId_to_traitValues = {};
+  private envYearByStudyDbId: any = {};
 
   mounted() {
     this.load();
@@ -425,6 +430,48 @@ export default class Dataset extends ProgramsBase {
     }
   }
 
+  async createEnvYearByStudyDbId() {
+    try {
+      const response: Result<Error, [Study[], Metadata]> = await StudyService.getAll(this.activeProgram!.id!, this.experiment);
+      if(response.isErr()) throw response.value;
+      let [studies, metadata] = response.value;
+
+      // fetch seasons in the program
+      let seasonResponse =
+        await BrAPIService.get(
+            BrAPIType.SEASON,
+            this.activeProgram!.id!,
+            { field: undefined, order: SortOrder.Ascending },
+            { page: 0, pageSize: 1000 },
+            {"metadata": false});
+
+      // map season dBId to year
+      if (seasonResponse.result && seasonResponse.result.data) {
+        let envYearBySeasonDbId = seasonResponse.result.data.reduce((map: any, season: any) => {
+          if (season.seasonDbId && season.year) {
+            map[season.seasonDbId] = parseInt(season.year);
+          }
+          return map;
+        }, {});
+
+        // map study dBId to season year
+        studies.forEach(study => {
+          if (study.id && study.seasons && study.seasons.length > 0) {
+            this.envYearByStudyDbId[study.id] = envYearBySeasonDbId[study.seasons[0]];
+          }
+        })
+      }
+    } catch (e) {
+
+      // Display error that seasons can't be loaded
+      if (e.response && e.response.statusText && e.response.status != 500) {
+        this.$emit('show-error-notification', e.response.statusText);
+      } else {
+        this.$emit('show-error-notification', 'An unknown error has occurred while trying to load seasons.');
+      }
+    }
+  }
+
   createUnitDbId_to_traitValues(): {} {
     let unitDbId_to_traitValues = {};
     let arrayLength: number = this.phenotypesCount;
@@ -491,14 +538,19 @@ export default class Dataset extends ProgramsBase {
     }
 
     try {
+
       // Set this.datasetModel
       const response: Result<Error, DatasetModel> = await ExperimentService.getDatasetModel(this.activeProgram!.id!, this.experimentUUID, this.resultDatasetId);
       this.datasetModel = response.result;
+
       // Use this.datasetModel to initialize this.unitDbId_to_traitValues
       this.unitDbId_to_traitValues = this.createUnitDbId_to_traitValues();
 
       // Use this.datasetModel to initialize this.datasetTableRows
       this.createDatasetTableRows();
+
+      // Set envYearByStudyId
+      this.createEnvYearByStudyDbId();
 
       //Initialize the paginationController
       this.paginationController.totalCount = this.datasetModel.observationUnits.length;
@@ -506,6 +558,7 @@ export default class Dataset extends ProgramsBase {
       this.paginationController.pageSize = 200;
       this.paginationController.totalPages = this.paginationController.totalCount.valueOf() / this.paginationController.pageSize.valueOf();
     } catch (err) {
+
       // Display error that experiment cannot be loaded
       this.$emit('show-error-notification', 'Error while trying to load data set' + err.message());
       throw err;
