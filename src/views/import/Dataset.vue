@@ -412,24 +412,30 @@ export default class Dataset extends ProgramsBase {
     let variableDbId_to_index = this.createVariableDbId_to_index();
 
     // populate each array of observation values found in the unitDbId_to_traitValues Hash Table
-    for (let observation of this.datasetModel.data) {
-      // find the index (ie table column) of each observation
-      // NOTE: the first observation column will have an index of 0.
-      let obsVar_index = variableDbId_to_index[observation.observationVariableDbId];
+    if( this.datasetModel.data ) {
+      for (let observation of this.datasetModel.data) {
+        // find the index (ie table column) of each observation
+        // NOTE: the first observation column will have an index of 0.
+        let obsVar_index = variableDbId_to_index[observation.observationVariableDbId];
+        let obs_value = observation.value;
+        let unitDbId = observation.observationUnitDbId;
+        let traitValueArray = unitDbId_to_traitValues[unitDbId];
+        traitValueArray[obsVar_index] = obs_value;
 
-      let obs_value = observation.value;
-      let unitDbId = observation.observationUnitDbId;
-      let traitValueArray = unitDbId_to_traitValues[unitDbId];
-      traitValueArray[obsVar_index] = obs_value;
-
+      }
     }
+
     return unitDbId_to_traitValues;
   }
 
 
   createVariableDbId_to_index(): {} {
-    let variableDbId_to_index = {}
-    for (let index = 0; index < this.datasetModel.observationVariables.length; index++) {
+    let variableDbId_to_index = {};
+    let ov_count = 0 ;
+    if( this.datasetModel.observationVariables ){
+      ov_count = this.datasetModel.observationVariables.length;
+    }
+    for (let index = 0; index < ov_count; index++) {
       variableDbId_to_index[this.datasetModel.observationVariables[index].observationVariableDbId] = index;
     }
     return variableDbId_to_index;
