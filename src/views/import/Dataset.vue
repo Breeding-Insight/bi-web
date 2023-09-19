@@ -261,7 +261,7 @@ export default class Dataset extends ProgramsBase {
   private resultDatasetId: string | undefined;
   private paginationController: PaginationController = new PaginationController();
   private datasetTableRows: DatasetTableRow[] = [];
-  private unitDbId_to_traitValues = {};
+  private unitDbId_to_traitValues: any = {};
   private envYearByStudyDbId: any = {};
 
   mounted() {
@@ -528,19 +528,19 @@ export default class Dataset extends ProgramsBase {
 
   @Watch('$route')
   async load() {
-    this.loading = true;
-
-    //Set this.experiment
-    let experimentResult = await ExperimentService.getSingleExperiment(this.activeProgram!.id!, this.experimentUUID, false);
-    this.experiment = experimentResult.value;
-
-    if (this.datasetId === 'observation') {
-      this.resultDatasetId = this.experiment.additionalInfo.observationDatasetId;
-    } else {
-      this.resultDatasetId = this.datasetId;
-    }
-
     try {
+      this.loading = true;
+
+      //Set this.experiment
+      let experimentResult = await ExperimentService.getSingleExperiment(this.activeProgram!.id!, this.experimentUUID, false);
+      if (experimentResult.isErr()) throw experimentResult.value;
+      this.experiment = experimentResult.value;
+
+      if (this.datasetId === 'observation') {
+        this.resultDatasetId = this.experiment.additionalInfo.observationDatasetId;
+      } else {
+        this.resultDatasetId = this.datasetId;
+      }
 
       // Set this.datasetModel
       const response: Result<Error, DatasetModel> = await ExperimentService.getDatasetModel(this.activeProgram!.id!, this.experimentUUID, this.resultDatasetId);
