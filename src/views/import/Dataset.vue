@@ -232,7 +232,6 @@ import {ObservationUnit} from "@/breeding-insight/model/ObservationUnit";
 import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
 import ExpandableTable from "@/components/tables/expandableTable/ExpandableTable.vue";
 import {BrAPIUtils} from "@/breeding-insight/utils/BrAPIUtils";
-import {ExternalReferences} from "@/breeding-insight/brapi/model/externalReferences";
 import {DatasetTableRow} from "@/breeding-insight/model/DatasetTableRow";
 import {Trial} from "@/breeding-insight/model/Trial";
 import ProgressBar from '@/components/forms/ProgressBar.vue'
