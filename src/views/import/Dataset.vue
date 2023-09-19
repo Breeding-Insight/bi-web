@@ -431,12 +431,10 @@ export default class Dataset extends ProgramsBase {
 
   createVariableDbId_to_index(): {} {
     let variableDbId_to_index = {};
-    let ov_count = 0 ;
     if( this.datasetModel.observationVariables ){
-      ov_count = this.datasetModel.observationVariables.length;
-    }
-    for (let index = 0; index < ov_count; index++) {
-      variableDbId_to_index[this.datasetModel.observationVariables[index].observationVariableDbId] = index;
+      for (let index = 0; index < this.datasetModel.observationVariables.length; index++) {
+        variableDbId_to_index[this.datasetModel.observationVariables[index].observationVariableDbId] = index;
+      }
     }
     return variableDbId_to_index;
   }
