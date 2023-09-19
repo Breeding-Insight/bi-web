@@ -392,11 +392,9 @@ export default class Dataset extends ProgramsBase {
       }
 
       //Exp Replicate # and Exp Block #
-      datasetTableRow.expReplicate = "";
-      datasetTableRow.expBlock = "";
       if (unit.observationUnitPosition && unit.observationUnitPosition.observationLevelRelationships) {
         for (const relationship of unit.observationUnitPosition.observationLevelRelationships) {
-          if (relationship.levelName === 'replicate') {
+          if (relationship.levelName === 'rep') {
             datasetTableRow.expReplicate = relationship.levelCode;
           }
           if (relationship.levelName === 'block') {
