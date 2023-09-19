@@ -543,8 +543,9 @@ export default class Dataset extends ProgramsBase {
       }
 
       // Set this.datasetModel
-      const response: Result<Error, DatasetModel> = await ExperimentService.getDatasetModel(this.activeProgram!.id!, this.experimentUUID, this.resultDatasetId);
-      this.datasetModel = response.result;
+      const response: Result<Error, DatasetModel> = await ExperimentService.getDatasetModel(this.activeProgram!.id!, this.experimentUUID, this.resultDatasetId!);
+      if (response.isErr()) throw response.value;
+      this.datasetModel = response.value;
 
       // Use this.datasetModel to initialize this.unitDbId_to_traitValues
       this.unitDbId_to_traitValues = this.createUnitDbId_to_traitValues();
