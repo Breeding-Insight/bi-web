@@ -64,7 +64,7 @@
             label="Germplasm Name"
             sortable
             searchable
-            :th-attrs="(column) => ({scope:'col'})"
+            :th-attrs="() => ({scope:'col'})"
         >
           {{ props.row.data.germplasmName }}
         </b-table-column>
@@ -75,7 +75,7 @@
             label="GID"
             sortable
             searchable
-            :th-attrs="(column) => ({scope:'col'})"
+            :th-attrs="() => ({scope:'col'})"
         >
           {{ props.row.data.gid }}
         </b-table-column>
@@ -86,7 +86,7 @@
 "
           sortable
           searchable
-          :th-attrs="(column) => ({scope:'col'})"
+          :th-attrs="() => ({scope:'col'})"
       >
         {{ props.row.data.testOrCheck }}
       </b-table-column>
@@ -96,7 +96,7 @@
             label="Env"
             sortable
             searchable
-            :th-attrs="(column) => ({scope:'col'})"
+            :th-attrs="() => ({scope:'col'})"
         >
           {{ props.row.data.env }}
         </b-table-column>
@@ -106,7 +106,7 @@
             label="Env Location"
             sortable
             searchable
-            :th-attrs="(column) => ({scope:'col'})"
+            :th-attrs="() => ({scope:'col'})"
         >
           {{ props.row.data.envLocation }}
         </b-table-column>
@@ -116,7 +116,7 @@
             label="Env Year"
             sortable
             searchable
-            :th-attrs="(column) => ({scope:'col'})"
+            :th-attrs="() => ({scope:'col'})"
         >
           {{ props.row.data.envYear }}
         </b-table-column>
@@ -126,7 +126,7 @@
             label="Exp Unit ID"
             sortable
             searchable
-            :th-attrs="(column) => ({scope:'col'})"
+            :th-attrs="() => ({scope:'col'})"
         >
           {{ props.row.data.expUnitId }}
         </b-table-column>
@@ -136,7 +136,7 @@
             label="Exp Replicate #"
             sortable
             searchable
-            :th-attrs="(column) => ({scope:'col'})"
+            :th-attrs="() => ({scope:'col'})"
         >
           {{ props.row.data.expReplicate }}
         </b-table-column>
@@ -146,7 +146,7 @@
             label="Exp Block #"
             sortable
             searchable
-            :th-attrs="(column) => ({scope:'col'})"
+            :th-attrs="() => ({scope:'col'})"
         >
           {{ props.row.data.expBlock }}
         </b-table-column>
@@ -156,7 +156,7 @@
             label="Row"
             sortable
             searchable
-            :th-attrs="(column) => ({scope:'col'})"
+            :th-attrs="() => ({scope:'col'})"
         >
           {{ props.row.data.row }}
         </b-table-column>
@@ -166,7 +166,7 @@
             label="Column"
             sortable
             searchable
-            :th-attrs="(column) => ({scope:'col'})"
+            :th-attrs="() => ({scope:'col'})"
         >
           {{ props.row.data.column }}
         </b-table-column>
@@ -189,7 +189,7 @@
             label="ObsUnitID"
             sortable
             searchable
-            :th-attrs="(column) => ({scope:'col'})"
+            :th-attrs="() => ({scope:'col'})"
         >
           {{ props.row.data.obsUnitId }}
         </b-table-column>
@@ -261,7 +261,7 @@ export default class Dataset extends ProgramsBase {
   private resultDatasetId: string | undefined;
   private paginationController: PaginationController = new PaginationController();
   private datasetTableRows: DatasetTableRow[] = [];
-  private unitDbId_to_traitValues: any = {};
+  private unitDbIdToTraitValues: any = {};
   private envYearByStudyDbId: any = {};
 
   mounted() {
@@ -317,10 +317,6 @@ export default class Dataset extends ProgramsBase {
       count = this.datasetModel.additionalInfo.observationsWithoutData;
     }
     return count
-  }
-
-  getBreedingInsightId(refs: ExternalReferences, source: string): string | undefined {
-    return BrAPIUtils.getBreedingInsightId(refs, source);
   }
 
   filterByObservations(index: number, propsRow: any, input: string) {
@@ -428,7 +424,7 @@ export default class Dataset extends ProgramsBase {
         datasetTableRow.treatmentFactors = unit.treatments[0].factor;
       }
 
-      datasetTableRow.traitValues = this.unitDbId_to_traitValues[unit.observationUnitDbId];
+      datasetTableRow.traitValues = this.unitDbIdToTraitValues[unit.observationUnitDbId];
       this.datasetTableRows.push(datasetTableRow);
     }
   }
@@ -437,7 +433,7 @@ export default class Dataset extends ProgramsBase {
     try {
       const response: Result<Error, [Study[], Metadata]> = await StudyService.getAll(this.activeProgram!.id!, this.experiment);
       if(response.isErr()) throw response.value;
-      let [studies, metadata] = response.value;
+      let [studies] = response.value;
 
       // fetch seasons in the program
       let seasonResponse =
@@ -464,7 +460,7 @@ export default class Dataset extends ProgramsBase {
           }
         })
       }
-    } catch (e) {
+    } catch (e: any) {
 
       // Display error that seasons can't be loaded
       if (e.response && e.response.statusText && e.response.status != 500) {
@@ -475,8 +471,8 @@ export default class Dataset extends ProgramsBase {
     }
   }
 
-  createUnitDbId_to_traitValues(): {} {
-    let unitDbId_to_traitValues: any = {};
+  createUnitDbIdToTraitValues(): {} {
+    let unitDbIdToTraitValues: any = {};
     let arrayLength: number = this.phenotypesCount;
 
     let units: ObservationUnit[] = this.datasetModel.observationUnits;
@@ -484,37 +480,36 @@ export default class Dataset extends ProgramsBase {
     // create a Hash Table with the key being each observationUnit's DbId
     // and the value being an (initially) empty array of observation values.
     for (let unit of units) {
-      unitDbId_to_traitValues[unit.observationUnitDbId] = new Array<string>(arrayLength);
+      unitDbIdToTraitValues[unit.observationUnitDbId] = new Array<string>(arrayLength);
     }
 
-    let variableDbId_to_index: any = this.createVariableDbId_to_index();
+    let variableDbIdToIndex: any = this.createvariableDbIdToIndex();
 
-    // populate each array of observation values found in the unitDbId_to_traitValues Hash Table
+    // populate each array of observation values found in the unitDbIdToTraitValues Hash Table
     for (let observation of this.datasetModel.data) {
       // find the index (ie table column) of each observation
       // NOTE: the first observation column will have an index of 0.
       if (observation.observationVariableDbId && observation.observationUnitDbId) {
-        let obsVar_index = variableDbId_to_index[observation.observationVariableDbId];
-        let obs_value = observation.value;
+        let obsVarIndex = variableDbIdToIndex[observation.observationVariableDbId];
+        let obsValue = observation.value;
         let unitDbId = observation.observationUnitDbId;
-        let traitValueArray = unitDbId_to_traitValues[unitDbId];
-        traitValueArray[obsVar_index] = obs_value;
+        let traitValueArray = unitDbIdToTraitValues[unitDbId];
+        traitValueArray[obsVarIndex] = obsValue;
       }
     }
-
-    return unitDbId_to_traitValues;
+    return unitDbIdToTraitValues;
   }
 
 
-  createVariableDbId_to_index(): {} {
-    let variableDbId_to_index: any = {}
+  createvariableDbIdToIndex(): {} {
+    let variableDbIdToIndex: any = {}
     for (let index = 0; index < this.datasetModel.observationVariables.length; index++) {
       let obsVarDbId = this.datasetModel.observationVariables[index].observationVariableDbId;
       if (obsVarDbId) {
-        variableDbId_to_index[obsVarDbId] = index;
+        variableDbIdToIndex[obsVarDbId] = index;
       }
     }
-    return variableDbId_to_index;
+    return variableDbIdToIndex;
   }
 
   cellClassIfEmpty(row: any, column: any) {
@@ -547,8 +542,8 @@ export default class Dataset extends ProgramsBase {
       if (response.isErr()) throw response.value;
       this.datasetModel = response.value;
 
-      // Use this.datasetModel to initialize this.unitDbId_to_traitValues
-      this.unitDbId_to_traitValues = this.createUnitDbId_to_traitValues();
+      // Use this.datasetModel to initialize this.unitDbIdToTraitValues
+      this.unitDbIdToTraitValues = this.createUnitDbIdToTraitValues();
 
       // Initialize envYearByStudyDbId
       await this.createEnvYearByStudyDbId();
@@ -561,7 +556,7 @@ export default class Dataset extends ProgramsBase {
       this.paginationController.currentPage = 1;
       this.paginationController.pageSize = 200;
       this.paginationController.totalPages = this.paginationController.totalCount.valueOf() / this.paginationController.pageSize.valueOf();
-    } catch (err) {
+    } catch (err: any) {
 
       // Display error that experiment cannot be loaded
       this.$emit('show-error-notification', 'Error while trying to load data set' + err.message());
