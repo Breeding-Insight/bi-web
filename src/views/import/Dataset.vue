@@ -254,9 +254,9 @@ import {SortOrder} from "@/breeding-insight/model/Sort";
   }
 })
 export default class Dataset extends ProgramsBase {
-  private activeProgram: Program;
-  private datasetModel: DatasetModel;
-  private experiment: Trial;
+  private activeProgram!: Program;
+  private datasetModel!: DatasetModel;
+  private experiment!: Trial;
   private loading = true;
   private resultDatasetId: string | undefined;
   private paginationController: PaginationController = new PaginationController();
@@ -476,7 +476,7 @@ export default class Dataset extends ProgramsBase {
   }
 
   createUnitDbId_to_traitValues(): {} {
-    let unitDbId_to_traitValues = {};
+    let unitDbId_to_traitValues: any = {};
     let arrayLength: number = this.phenotypesCount;
 
     let units: ObservationUnit[] = this.datasetModel.observationUnits;
@@ -487,19 +487,18 @@ export default class Dataset extends ProgramsBase {
       unitDbId_to_traitValues[unit.observationUnitDbId] = new Array<string>(arrayLength);
     }
 
-    let variableDbId_to_index = this.createVariableDbId_to_index();
+    let variableDbId_to_index: any = this.createVariableDbId_to_index();
 
     // populate each array of observation values found in the unitDbId_to_traitValues Hash Table
-    if( this.datasetModel.data ) {
-      for (let observation of this.datasetModel.data) {
-        // find the index (ie table column) of each observation
-        // NOTE: the first observation column will have an index of 0.
+    for (let observation of this.datasetModel.data) {
+      // find the index (ie table column) of each observation
+      // NOTE: the first observation column will have an index of 0.
+      if (observation.observationVariableDbId && observation.observationUnitDbId) {
         let obsVar_index = variableDbId_to_index[observation.observationVariableDbId];
         let obs_value = observation.value;
         let unitDbId = observation.observationUnitDbId;
         let traitValueArray = unitDbId_to_traitValues[unitDbId];
         traitValueArray[obsVar_index] = obs_value;
-
       }
     }
 
@@ -508,10 +507,11 @@ export default class Dataset extends ProgramsBase {
 
 
   createVariableDbId_to_index(): {} {
-    let variableDbId_to_index = {};
-    if( this.datasetModel.observationVariables ){
-      for (let index = 0; index < this.datasetModel.observationVariables.length; index++) {
-        variableDbId_to_index[this.datasetModel.observationVariables[index].observationVariableDbId] = index;
+    let variableDbId_to_index: any = {}
+    for (let index = 0; index < this.datasetModel.observationVariables.length; index++) {
+      let obsVarDbId = this.datasetModel.observationVariables[index].observationVariableDbId;
+      if (obsVarDbId) {
+        variableDbId_to_index[obsVarDbId] = index;
       }
     }
     return variableDbId_to_index;
