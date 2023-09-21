@@ -23,6 +23,7 @@
       </header>
       <SuccessNotification ref="successNotification" class="is-marginless"></SuccessNotification>
       <ErrorNotification ref="errorNotification" class="is-marginless"></ErrorNotification>
+      <WarningNotification ref="warningNotification" class="is-marginless"></WarningNotification>
       <InfoNotification ref="infoNotification" class="is-marginless"></InfoNotification>
       <SandboxPublicNotification v-bind:active.sync="showPublicSandboxNotification" class="is-marginless"></SandboxPublicNotification>
       <SandboxCoordinatorNotification v-bind:active.sync="showCoordinatorSandboxNotification" class="is-marginless"></SandboxCoordinatorNotification>
@@ -32,6 +33,7 @@
         <router-view
             @show-success-notification="showSuccessNotification"
             @show-info-notification="showInfoNotification"
+            @show-warning-notification="showWarningNotification"
             @show-error-notification="showErrorNotification"
         />
     </component>
@@ -46,6 +48,7 @@ import {
   SHOW_ERROR_NOTIFICATION,
   SHOW_SUCCESS_NOTIFICATION,
   SHOW_INFO_NOTIFICATION,
+  SHOW_WARNING_NOTIFICATION,
 } from '@/store/mutation-types'
 import SuccessNotification from '@/components/notifications/SuccessNotification.vue'
 import InfoNotification from '@/components/notifications/InfoNotification.vue'
@@ -59,6 +62,7 @@ import SandboxPublicNotification from "@/components/notifications/SandboxPublicN
 import SandboxCoordinatorNotification from "@/components/notifications/SandboxCoordinatorNotification.vue";
 import {SandboxMode} from "@/util/config";
 import Footer from "@/components/layouts/Footer.vue";
+import WarningNotification from "@/components/notifications/WarningNotification.vue";
 
 @Component({
   watch: {
@@ -88,6 +92,7 @@ import Footer from "@/components/layouts/Footer.vue";
     SandboxPublicNotification,
     SuccessNotification,
     InfoNotification,
+    WarningNotification,
     ErrorNotification,
     simpleLayout: SimpleLayout,
     userSideBarLayout: UserSideBarLayout,
@@ -107,6 +112,7 @@ export default class App extends Vue {
   public $refs!: {
     successNotification: SuccessNotification,
     infoNotification: InfoNotification,
+    warningNotification: WarningNotification,
     errorNotification: ErrorNotification
   };
 
@@ -159,6 +165,10 @@ export default class App extends Vue {
 
   showInfoNotification(msg: string) {
     this.$store.commit(SHOW_INFO_NOTIFICATION, msg);
+  }
+
+  showWarningNotification(msg: string) {
+    this.$store.commit(SHOW_WARNING_NOTIFICATION, msg);
   }
 
   showErrorNotification(msg: string) {
