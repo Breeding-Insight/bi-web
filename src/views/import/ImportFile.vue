@@ -59,6 +59,7 @@
           @show-success-notification="$emit('show-success-notification', $event)"
           @show-info-notification="$emit('show-info-notification', $event)"
           @show-error-notification="$emit('show-error-notification', $event)"
+          @show-warning-notification="$emit('show-warning-notification', $event)"
       ></router-view>
     </div>
 
