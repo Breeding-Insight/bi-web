@@ -160,6 +160,19 @@
         >
           {{ props.row.data.column }}
         </b-table-column>
+
+        <b-table-column
+            v-slot="props"
+            field="data.treatmentFactors"
+            label="Treatment Factors"
+            sortable
+            searchable
+            :th-attrs="() => ({scope:'col'})"
+        >
+          {{ props.row.data.treatmentFactors }}
+        </b-table-column>
+
+
         <b-table-column
             v-slot="props"
             field="data.obsUnitId"
@@ -170,6 +183,7 @@
         >
           {{ props.row.data.obsUnitId }}
         </b-table-column>
+
         <b-table-column
             v-for="( observationVariable, index ) in this.datasetModel.observationVariables" :key="observationVariable.observationVariableName"
             v-slot="props"
@@ -390,6 +404,12 @@ export default class Dataset extends ProgramsBase {
         } else if (unit.observationUnitPosition.positionCoordinateYType && unit.observationUnitPosition.positionCoordinateYType === 'GRID_ROW') {
           datasetTableRow.row = unit.observationUnitPosition.positionCoordinateY;
         }
+      }
+
+      // Treatment Factors
+      datasetTableRow.treatmentFactors = "";
+      if(unit.additionalInfo && unit.additionalInfo.treatments && unit.additionalInfo.treatments && unit.additionalInfo.treatments[0]){
+        datasetTableRow.treatmentFactors = unit.additionalInfo.treatments[0].factor;
       }
 
       datasetTableRow.traitValues = this.unitDbId_to_traitValues[unit.observationUnitDbId];

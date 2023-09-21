@@ -29,7 +29,7 @@ export class DatasetTableRow {
   column?: string;
   obsUnitId?: string;
   traitValues?: string[] = [];
-
+  treatmentFactors?: string;
 
   constructor(germplasmName?: string,
               gid?: string,
