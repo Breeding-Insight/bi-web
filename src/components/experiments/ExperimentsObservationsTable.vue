@@ -182,7 +182,6 @@ export default class ExperimentsObservationsTable extends Vue {
       // Account for brapi 0 indexing of paging
       this.paginationController.currentPage = this.paginationController.currentPage.valueOf() + 1;
       this.experiments = response.result.data;
-      console.log( this.experiments);
       this.experimentsLoading = false;
 
     } catch (err) {
@@ -206,7 +205,6 @@ export default class ExperimentsObservationsTable extends Vue {
     this.downloadExperiment = experiment;
     this.downloadModalTitle = "Download " + experiment.trialName;
     this.downloadTrialId = BrAPIUtils.getBreedingInsightId(experiment.externalReferences!, '/trials');
-    console.log(this.downloadTrialId);
   }
 
   setSort(field: string, order: string) {

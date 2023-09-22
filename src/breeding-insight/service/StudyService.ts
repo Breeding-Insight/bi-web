@@ -83,21 +83,6 @@ export class StudyService {
     }
   }
 
-  // static async getEnvYear(programId?: string, studyId?: string): Promise<Result<Error, string>> {
-  //   try {
-  //     if(!programId) throw new Error('missing or invalid program id');
-  //     if(!studyId) throw new Error('missing or invalid study id');
-  //     let studyResponse = await StudyDAO.getById(programId, studyId) as Result<Error, BiResponse>;
-  //     if (studyResponse.isErr()) throw studyResponse.value;
-  //     studyResponse.applyResult( (res: BiResponse) => {
-  //       let { result: { study }, metadata } = res;
-  //
-  //     })
-  //   } catch (error) {
-  //     return ResultGenerator.err(error);
-  //   }
-  // }
-
   static async getById(programId?: string, studyId?: string): Promise<Result<Error, Study>> {
     try {
       if(!programId) throw new Error('missing or invalid program id');
