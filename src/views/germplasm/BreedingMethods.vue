@@ -554,7 +554,12 @@ export default class BreedingMethods extends ProgramsBase {
       this.getBreedingMethods();
       this.$emit('show-success-notification', 'Breeding method created successfully');
     } catch (e) {
-      this.$emit('show-error-notification', 'Error while trying to create breeding method');
+      if (e.response.status == 500) {
+        this.$emit('show-error-notification', 'Error while trying to create breeding method');
+      }
+      else{
+        this.$emit('show-error-notification', e.response.data);
+      }
     } finally {
       this.newMethodFormState.bus.$emit(DataFormEventBusHandler.SAVE_COMPLETE_EVENT);
     }
@@ -576,7 +581,12 @@ export default class BreedingMethods extends ProgramsBase {
       this.getBreedingMethods();
       this.$emit('show-success-notification', 'Breeding method updated successfully');
     } catch (e) {
-      this.$emit('show-error-notification', 'Error while trying to update breeding method');
+      if (e.response.status == 500) {
+        this.$emit('show-error-notification', 'Error while trying to create breeding method');
+      }
+      else{
+        this.$emit('show-error-notification', e.response.data);
+      }
     } finally {
       this.editMethodFormState.bus.$emit(DataFormEventBusHandler.SAVE_COMPLETE_EVENT)
     }
