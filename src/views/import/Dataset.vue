@@ -408,8 +408,8 @@ export default class Dataset extends ProgramsBase {
 
       // Treatment Factors
       datasetTableRow.treatmentFactors = "";
-      if(unit.additionalInfo && unit.additionalInfo.treatments && unit.additionalInfo.treatments && unit.additionalInfo.treatments[0]){
-        datasetTableRow.treatmentFactors = unit.additionalInfo.treatments[0].factor;
+      if(unit.treatments && unit.treatments[0]){
+        datasetTableRow.treatmentFactors = unit.treatments[0].factor;
       }
 
       datasetTableRow.traitValues = this.unitDbId_to_traitValues[unit.observationUnitDbId];
