@@ -92,9 +92,10 @@
         <ExpandableTable
             v-bind:records="processPreviewData(previewData.import)"
             v-bind:loading="false"
-            v-bind:pagination="previewData.pagination"
+            v-bind:pagination="paginationWithPageSize(previewData.pagination, 200)"
             v-bind:rowClasses="constructRowClasses(previewData.import)"
             v-on:show-error-notification="$emit('show-error-notification', $event)"
+            v-bind:is-show-all-enabled="false"
         >
           <b-table-column v-slot="props" :th-attrs="(column) => ({scope:'col'})">
             <AlertTriangleIcon
@@ -168,6 +169,7 @@ import {ImportObjectState} from "@/breeding-insight/model/import/ImportObjectSta
 import {ExternalUID} from "@/breeding-insight/model/import/germplasm/ExternalUID";
 import {GermplasmUtils} from "@/breeding-insight/utils/GermplasmUtils";
 import {Germplasm} from "@/breeding-insight/brapi/model/germplasm";
+import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
 
 @Component({
   components: {
@@ -242,6 +244,12 @@ export default class ImportGermplasm extends ProgramsBase {
 
     return displayPedigree;
 
+  }
+
+  paginationWithPageSize(pagination: PaginationController, pageSize: number) {
+    // Set pageSize on pagination and return it.
+    pagination.updatePageSize(pageSize);
+    return pagination;
   }
 
 }
