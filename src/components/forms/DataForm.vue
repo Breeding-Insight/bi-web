@@ -24,6 +24,7 @@
     <div class="columns">
       <div class="column is-whole has-text-centered buttons">
         <button
+            v-if="showSaveButton"
             data-testid="save"
             type="button"
             class="button is-primary"
@@ -64,6 +65,8 @@ export default class DataForm extends Vue {
   dataFormState!: DataFormEventBusHandler;
   @Prop({default: "Save"})
   saveButtonLabel?: string
+  @Prop({default: true})
+  showSaveButton?: boolean
   @Prop({default: true})
   showCancelButton?: boolean
 
