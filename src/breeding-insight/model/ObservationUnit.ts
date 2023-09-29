@@ -34,7 +34,7 @@ export class ObservationUnit {
   observationUnitPosition?: ObservationUnitPosition;
   externalReferences?: ExternalReferences;
   additionalInfo?: any;
-  treatments?: string[];
+  treatments?: any;
 
 
   constructor(observationUnitDbId:string, observationUnitName?:string, observationUnitPosition?:ObservationUnitPosition, externalReferences?: ExternalReferences) {
