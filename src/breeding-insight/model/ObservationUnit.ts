@@ -20,15 +20,15 @@ import {ExternalReferences} from "@/breeding-insight/brapi/model/externalReferen
 export class ObservationUnit {
   observationUnitDbId: string;
   germplasmDbId?: string;
-  germplasmName: string;
+  germplasmName?: string;
   locationDbI?: string;
-  locationName: string;
+  locationName?: string;
   observationUnitName?: string;
   observationUnitPUI?: string;
   programDbId?: string;
   programName?: string;
   studyDbId?: string;
-  studyName: string;
+  studyName?: string;
   trialDbId?: string;
   trialName?: string;
   observationUnitPosition?: ObservationUnitPosition;
