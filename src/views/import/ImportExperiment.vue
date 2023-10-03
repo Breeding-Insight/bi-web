@@ -23,6 +23,8 @@
         v-bind:confirm-msg="'Preview Experimental Upload'"
         v-bind:import-type-name="'Experiments & Observations'"
         v-bind:confirm-import-state="confirmImportState"
+        v-bind:user-input="experimentUserInput"
+        v-bind:show-proceed-warning="true"
         v-on="$listeners"
         v-on:finished="importFinished"
         v-on:preview-data-loaded="previewDataLoaded"
@@ -45,6 +47,7 @@
         <ConfirmImportMessageBox v-bind:num-records="getNumNewExperimentRecords(statistics)"
                                  v-bind:import-type-name="'Experiments & Observations'"
                                  v-bind:confirm-import-state="confirmImportState"
+                                 v-bind:show-loading-on-confirm="false"
                                  v-on:abort="abort"
                                  v-on:confirm="confirm"
                                  class="mb-4">
@@ -68,6 +71,40 @@
           </div>
           </div>
         </ConfirmImportMessageBox>
+      </template>
+
+      <template v-slot:userInput="{statistics}">
+        <!--  v-if="statistics.Observation_Units.newObjectCount > 0" -->
+        <!--
+        <article class="message is-primary" v-if="existingObservations">
+          <div class="message-body">
+        -->
+
+            <form
+                class="new-form"
+                novalidate="true"
+            >
+            <p class="is-size-5 has-text-weight-bold mb-0">Overwrite Request</p>
+            {{ repeatObservationsCount }} values detected that repeat observations already saved to the system. If you
+            do not want to overwrite existing observations you will need to edit the import file.
+            <BasicInputField
+                class="pb-2"
+                v-model="experimentUserInput.overwriteReason"
+                v-bind:field-name="'Reason for overwrite:'"
+                v-bind:placeholder="'Reason'"
+                v-bind:show-label="true"
+            />
+            <!--
+                v-bind:validations="clientValidations.observationVariableName"
+                v-bind:server-validations="validationHandler.getValidation(0, TraitError.ObservationVariableName)"
+                v-on:input="setOTName($event)"
+                -->
+          <!-- </div> -->
+            </form>
+        <!--
+        </article>
+        -->
+
       </template>
 
       <template v-slot:importPreviewTable="previewData">
@@ -158,6 +195,8 @@ import {AlertTriangleIcon} from 'vue-feather-icons';
 import BasicInputField from "@/components/forms/BasicInputField.vue";
 import ExpandableTable from "@/components/tables/expandableTable/ExpandableTable.vue";
 import {ImportObjectState} from "@/breeding-insight/model/import/ImportObjectState";
+import {GermplasmList} from "@/breeding-insight/model/GermplasmList";
+import {ExperimentUserInput} from "@/breeding-insight/model/ExperimentUserInput";
 
 @Component({
   components: {
@@ -175,6 +214,12 @@ export default class ImportExperiment extends ProgramsBase {
   private experimentImportTemplateName = 'ExperimentsTemplateMap';
   private confirmImportState: DataFormEventBusHandler = new DataFormEventBusHandler();
   private phenotypeColumns?: Array<String> = [];
+
+  private experimentUserInput: ExperimentUserInput = new ExperimentUserInput(true);
+
+  private existingObservations = true;
+  private repeatObservationsCount = 15;
+  private overwriteReason? : string;
 
   getNumNewExperimentRecords(statistics: any): number | undefined {
     return undefined;
