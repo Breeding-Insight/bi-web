@@ -93,9 +93,6 @@
     "vue-cli-plugin-axios": "0.0.4",
     "vue-template-compiler": "^2.6.10"
   },
-<<<<<<< HEAD
+
   "versionInfo": "https://github.com/Breeding-Insight/bi-web/commit/87faca99d768a53d44bc2e0f4684e1eaea88c71b"
-=======
-  "versionInfo": "https://github.com/Breeding-Insight/bi-web/commit/82fb0ea9ec41102ff226fd4ba2799b72de3f20e1"
->>>>>>> 45a33eb6 ([autocommit] bumping build number)
 }
