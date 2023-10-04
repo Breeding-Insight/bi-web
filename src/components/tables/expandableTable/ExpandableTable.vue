@@ -257,7 +257,6 @@ export default class ExpandableTable extends Mixins(ValidationMixin) {
 
   isSaveButtonVisible(row: any) {
     // Visible by default, evaluate saveButtonVisible on row if provided.
-    console.log(typeof this.saveButtonVisible);
     return ((typeof this.saveButtonVisible === "function") ? this.saveButtonVisible(row) : true);
   }
 
