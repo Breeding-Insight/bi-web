@@ -29,11 +29,14 @@
         <div class="level-left">
           <nav class="level-item">
             <div class="level">
+<!--              <div class="level-item">-->
+<!--                <a href="/">Terms of Use</a>-->
+<!--              </div>-->
+<!--              <div class="level-item">-->
+<!--                <a href="/">Privacy Policy</a>-->
+<!--              </div>-->
               <div class="level-item">
-                <a href="/">Terms of Use</a>
-              </div>
-              <div class="level-item">
-                <a href="/">Privacy Policy</a>
+                <a href="https://breedinginsight.atlassian.net/wiki/spaces/LH/pages/1680179235/DeltaBreed+User+Manual">User Manual</a>
               </div>
               <div class="level-item">
                 <a href="https://breedinginsight.org/contact-us/">Contact Us</a>
@@ -97,6 +100,7 @@
 import { Component, Vue } from 'vue-property-decorator';
 import VersionInfo from '@/components/layouts/VersionInfo.vue';
 import {mapGetters} from "vuex";
+import { SandboxMode } from '@/util/config';
 
 @Component({
   components: { VersionInfo },
@@ -111,7 +115,7 @@ export default class Footer extends Vue {
   copyrightYear = new Date().getFullYear();
 
   get showVersionInfo () {
-    return !this.$route.meta.layout || this.$route.meta.layout == 'simple' || this.$route.meta.layout == 'noSideBar';
+    return !this.$route.meta.layout || this.$route.meta.layout == 'simple' || this.$route.meta.layout == 'noSideBar' || (this.$route.meta.layout == 'infoSideBar' && process.env.VUE_APP_SANDBOX !== SandboxMode.Public && process.env.VUE_APP_SANDBOX !== SandboxMode.Coordinator);
   }
 
   get showSidebar() {
