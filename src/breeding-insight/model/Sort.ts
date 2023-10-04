@@ -170,16 +170,6 @@ export enum GermplasmSortField {
   UserName = "createdByUserName"
 }
 
-export class GermplasmSort {
-  field: GermplasmSortField;
-  order: SortOrder;
-
-  constructor(field: GermplasmSortField, order: SortOrder) {
-    this.field = field;
-    this.order = order;
-  }
-}
-
 // experiments
 export enum ExperimentSortField {
   Name = "name",
@@ -193,6 +183,17 @@ export class ExperimentSort {
   order: SortOrder;
 
   constructor(field: ExperimentSortField, order: SortOrder) {
+    this.field = field;
+    this.order = order;
+  }
+}
+
+// germplasm
+export class GermplasmSort {
+  field: GermplasmSortField;
+  order: SortOrder;
+
+  constructor(field: GermplasmSortField, order: SortOrder) {
     this.field = field;
     this.order = order;
   }

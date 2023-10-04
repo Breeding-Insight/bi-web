@@ -27,6 +27,7 @@ export class Study {
   location?: string;
   active?: boolean;
   externalReferences?: ExternalReferences;
+  seasons?: string[];
 
 
   constructor(id?: string,
@@ -37,7 +38,8 @@ export class Study {
               endDate?: string,
               location?: string,
               active?: boolean,
-              externalReferences?: ExternalReferences
+              externalReferences?: ExternalReferences,
+              seasons?: string[]
               ) {
     this.id = id;
     this.name = name;
@@ -56,13 +58,14 @@ export class Study {
       this.active = true;
     }
     this.externalReferences = externalReferences;
+    this.seasons = seasons;
   }
 
   static assign(study: Study): Study {
     const start: string | undefined = study.startDate ? study.startDate.toISOString() : undefined;
     const end: string | undefined = study.endDate ? study.endDate.toISOString() : undefined;    
 
-    return new Study(study.id, study.name, study.description, study.type, start, end, study.location, study.active, study.externalReferences);
+    return new Study(study.id, study.name, study.description, study.type, start, end, study.location, study.active, study.externalReferences, study.seasons);
   }
 
   equals(study?: Study): boolean {
