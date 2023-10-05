@@ -28,6 +28,7 @@
         v-on="$listeners"
         v-on:finished="importFinished"
         v-on:preview-data-loaded="previewDataLoaded"
+        v-on:statistics-loaded="statisticsLoaded"
     >
 
       <template v-slot:importInfoTemplateMessageBox>
@@ -73,9 +74,9 @@
         </ConfirmImportMessageBox>
       </template>
 
-      <template v-slot:userInput="{statistics}">
+      <template v-slot:userInput>
         <!-- TODO: change to use mutated observations count when api ready -->
-        <form v-if="statistics.Observation_Units.newObjectCount > 0"
+        <form v-if="experimentUserInput.overwrite"
             class="new-form"
             novalidate="true"
         >
@@ -90,7 +91,6 @@
             v-bind:show-label="true"
         />
         </form>
-
       </template>
 
       <template v-slot:importPreviewTable="previewData">
@@ -202,11 +202,8 @@ export default class ImportExperiment extends ProgramsBase {
   private confirmImportState: DataFormEventBusHandler = new DataFormEventBusHandler();
   private phenotypeColumns?: Array<String> = [];
 
-  private experimentUserInput: ExperimentUserInput = new ExperimentUserInput(true);
-
-  private existingObservations = true;
+  private experimentUserInput: ExperimentUserInput = new ExperimentUserInput();
   private repeatObservationsCount = 15;
-  private overwriteReason? : string;
 
   get showProceedDialog() {
     return this.experimentUserInput.overwriteReason !== undefined && this.experimentUserInput.overwriteReason.length >= 3;
@@ -270,6 +267,12 @@ export default class ImportExperiment extends ProgramsBase {
 
   previewDataLoaded(dynamicColumns: String[]) {
     this.phenotypeColumns = dynamicColumns;
+  }
+
+  statisticsLoaded(statistics: any) {
+    // TODO: change to appropriate fields once api is ready
+    this.experimentUserInput.overwrite = statistics.Observation_Units.newObjectCount > 0
+    this.repeatObservationsCount = statistics.Observation_Units.newObjectCount;
   }
 
   isExisting(rows: any[]) {

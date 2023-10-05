@@ -100,9 +100,7 @@
             v-bind:rows="currentImport.preview !== undefined ? currentImport.preview.rows : []"
       />
 
-      <slot name="userInput"
-            v-bind:statistics="newObjectCounts"
-      />
+      <slot name="userInput"/>
 
       <slot name="importPreviewTable" v-bind:import="previewData" v-bind:pagination="pagination"/>
     </template>
@@ -567,6 +565,7 @@ export default class ImportTemplate extends ProgramsBase {
             this.previewTotalRows = previewResponse.preview.rows.length;
             this.previewData = previewResponse.preview.rows as any[];
             this.newObjectCounts = previewResponse.preview.statistics;
+            this.$emit('statistics-loaded', this.newObjectCounts);
             this.dynamicColumns = previewResponse.preview.dynamicColumnNames;
             this.$emit('preview-data-loaded', this.dynamicColumns);
             this.importService.send(ImportEvent.IMPORT_SUCCESS);
