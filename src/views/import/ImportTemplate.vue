@@ -458,7 +458,7 @@ export default class ImportTemplate extends ProgramsBase {
       console.log('SHOW WARNING');
       this.showWarningModal = true;
     } else {
-      this.importService.send(ImportEvent.CONFIRMED);
+      this.importService.send(ImportEvent.PROCEED);
     }
   }
 
