@@ -79,11 +79,14 @@
       </template>
 
       <template v-slot:detail="props">
-        <EditDataRowForm class="mb-0"
-                         v-if="editable"
-                         v-bind:data-form-state="dataFormState"
-                         v-on:submit="validateAndSubmit(props.row)"
-                         v-on:cancel="cancelEditClicked(props.row)"
+        <EditDataRowForm
+          v-if="editable"
+          class="mb-0"
+          v-bind:data-form-state="dataFormState"
+          v-bind:show-save-button="isSaveButtonVisible(props.row)"
+          v-bind:show-cancel-button="isCancelButtonVisible(props.row)"
+          v-on:submit="validateAndSubmit(props.row)"
+          v-on:cancel="cancelEditClicked(props.row)"
         >
           <slot
               v-bind:editData="props.row.editData"
@@ -133,6 +136,10 @@ export default class ExpandableTable extends Mixins(ValidationMixin) {
   rowEditable!: Function;
   @Prop()
   rowArchivable!: Function;
+  @Prop()
+  saveButtonVisible?: Function;
+  @Prop()
+  cancelButtonVisible?: Function;
   @Prop()
   archivable!: boolean;
   @Prop()
@@ -246,6 +253,16 @@ export default class ExpandableTable extends Mixins(ValidationMixin) {
 
   isRowArchivable(row: any) {
     return ((typeof this.rowArchivable === "function") ? this.rowArchivable(row) : true) && this.archivable;
+  }
+
+  isSaveButtonVisible(row: any) {
+    // Visible by default, evaluate saveButtonVisible on row if provided.
+    return ((typeof this.saveButtonVisible === "function") ? this.saveButtonVisible(row) : true);
+  }
+
+  isCancelButtonVisible(row: any) {
+    // Visible by default, evaluate cancelButtonVisible on row if provided.
+    return ((typeof this.cancelButtonVisible === "function") ? this.cancelButtonVisible(row) : true);
   }
 
   paginate(event: any) {
