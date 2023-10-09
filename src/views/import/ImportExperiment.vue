@@ -153,8 +153,13 @@
             {{ getTreatment(props.row.data.observationUnit) }}
           </b-table-column>
           <!-- Dynamic Phenotype and Timestamp Columns -->
-          <b-table-column v-for="variable in phenotypeColumns" :key="variable" :label="variable" v-slot="props" :th-attrs="(column) => ({scope:'col'})"
-                          :td-attrs="(row, column) => ({class: 'db-filled'})">
+          <b-table-column v-for="(variable, index) in phenotypeColumns"
+                          v-slot="props"
+                          :key="variable"
+                          :label="variable"
+                          :th-attrs="(column) => ({scope:'col'})"
+                          :td-attrs="cellClassIfExisting"
+                          :meta="{'index': index}">
             <p> {{ retrieveDynamicColVal(props.row.data.observations, variable) }}</p>
           </b-table-column>
 
@@ -203,7 +208,7 @@ export default class ImportExperiment extends ProgramsBase {
   private phenotypeColumns?: Array<String> = [];
 
   private experimentUserInput: ExperimentUserInput = new ExperimentUserInput();
-  private repeatObservationsCount = 15;
+  private repeatObservationsCount = 10;
 
   get showProceedDialog() {
     return this.experimentUserInput.overwriteReason !== undefined && this.experimentUserInput.overwriteReason.length >= 3;
@@ -290,7 +295,14 @@ export default class ImportExperiment extends ProgramsBase {
     }
   }
 
-
+  cellClassIfExisting(row: any, column: any) {
+    let index = column.meta.index
+    // TODO: When backend is ready, change to check for MUTATED
+    if(row.data.observations[index].state === 'NEW') {
+      return {'class': 'db-filled'};
+    }
+    return {};
+  }
 
 }
 </script>
