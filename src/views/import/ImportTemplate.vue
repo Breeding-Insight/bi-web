@@ -187,6 +187,9 @@ export default class ImportTemplate extends ProgramsBase {
   @Prop()
   userInput!: any;
 
+  @Prop({default: 10})
+  initialPageSize!: number;
+
   private systemImportTemplateId!: string;
   private currentImport?: ImportResponse = new ImportResponse({});
   private previewData: any[] = [];
@@ -502,7 +505,7 @@ export default class ImportTemplate extends ProgramsBase {
             this.importService.send(ImportEvent.IMPORT_SUCCESS);
             // TODO: Temp pagination
             this.pagination.totalCount = previewResponse.preview.rows.length;
-            this.pagination.pageSize = 10;
+            this.pagination.pageSize = this.initialPageSize;
             this.pagination.currentPage = 1;
             this.pagination.totalPages = this.pagination.totalCount.valueOf() / this.pagination.pageSize.valueOf();
           }

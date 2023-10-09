@@ -38,7 +38,7 @@ export class ExperimentDAO {
             return ResultGenerator.err(error);
         }
     }
-    static getDatasetById(programId: string, experimentId: string, datasetId: string, stats: boolean): Promise<Result<Error, DatasetModel>> {
+    static async getDatasetById(programId: string, experimentId: string, datasetId: string, stats: boolean): Promise<Result<Error, DatasetModel>> {
         const config: any = {};
         config.url = `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/experiments/${experimentId}/dataset/${datasetId}`;
         config.method = 'get';
@@ -48,15 +48,13 @@ export class ExperimentDAO {
         config.params = {
             stats : stats,
         };
-        return new Promise<Result<Error, DatasetModel>>(((resolve, reject) => {
-            api.call(config)
-                .then((response: any) => {
-                    const biResponse = new BiResponse(response.data);
-                    resolve(biResponse);
-                }).catch((error) => {
-                    reject(error);
-                })
-        }))
+        try {
+            const res = await api.call(config) as Response;
+            let { result } = res.data;
+            return ResultGenerator.success(result);
+        } catch (error) {
+            return ResultGenerator.err(error);
+        }
     }
 
 }
