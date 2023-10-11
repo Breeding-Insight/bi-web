@@ -52,7 +52,8 @@
           <section>
             <ul style="list-style-type: none;">
               <li><b>Germplasm: </b> {{ germplasmCount }}</li>
-              <li><b>Environments: </b> {{ environmentsCount }}</li>
+<!--              the following may be revived later-->
+<!--              <li><b>Environments: </b> {{ environmentsCount }}</li>-->
             </ul>
           </section>
         </article>
@@ -172,10 +173,11 @@ export default class ExperimentDetails extends ProgramsBase {
     if( !this.experiment.additionalInfo ){return '';}
     return this.experiment.additionalInfo.germplasmCount;
   }
-  get environmentsCount(): string {
-    if( !this.experiment.additionalInfo ){return '';}
-    return this.experiment.additionalInfo.environmentsCount;
-  }
+  // This is not being used.  But may be used later.
+  // get environmentsCount(): string {
+  //   if( !this.experiment.additionalInfo ){return '';}
+  //   return this.experiment.additionalInfo.environmentsCount;
+  // }
 
   @Watch('$route')
   async getExperiment () {
