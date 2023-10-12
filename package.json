@@ -35,7 +35,7 @@
     "title-case": "^3.0.3",
     "uuid": "^8.3.2",
     "valid-url": "^1.0.9",
-    "vue": "^2.6.10",
+    "vue": "^2.7.14",
     "vue-breakpoint-component": "^1.2.6",
     "vue-class-component": "^7.0.2",
     "vue-click-outside": "^1.1.0",
@@ -92,7 +92,7 @@
     "shelljs": "^0.8.3",
     "typescript": "~3.5.3",
     "vue-cli-plugin-axios": "0.0.4",
-    "vue-template-compiler": "^2.6.10"
+    "vue-template-compiler": "^2.7.14"
   },
   "versionInfo": "https://github.com/Breeding-Insight/bi-web/commit/f12375141e1f7465e92b9649c801bc5701996ff2"
 }
