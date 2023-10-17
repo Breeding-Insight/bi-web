@@ -54,7 +54,6 @@
           v-bind:records.sync="datasetTableRows"
           v-bind:loading=false
           v-bind:pagination="paginationController"
-          v-bind:default-sort="['data.germplasmName', 'asc']"
           v-bind:debounce-search="400"
           v-on:show-error-notification="$emit('show-error-notification', $event)"
       >
