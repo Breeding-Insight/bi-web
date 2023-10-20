@@ -103,7 +103,7 @@
           </b-table-column>
           <!-- Env year -->
           <b-table-column field="envYear" label="Env Year" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-            {{ getEnvYear(props.row.data.study) }}
+            {{ getField(props.row.data.study, 'additionalInfo.envYear') }}
           </b-table-column>
           <!-- Exp Unit ID -->
           <b-table-column field="expUnitID" label="Exp Unit ID" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
