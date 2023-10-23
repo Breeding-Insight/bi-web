@@ -18,20 +18,17 @@
 <template>
   <div class="container brapi-info">
     <div class="columns is-centered">
-      <div class="column">
-
-      </div>
       <div class="column is-half">
         <div class="card">
           <div class="card-content">
             <h3 class="is-4 title">BrAPI Information</h3>
 
-            <div class="tabs is-boxed mt-5">
+            <nav class="tabs is-boxed mt-5">
               <ul class="ml-0">
                 <li :class="activeTab=='fieldbook' ? 'is-active' :''"><a v-on:click="activeTab = 'fieldbook'">Field Book BrAPI Settings</a></li>
                 <li :class="activeTab=='brapi' ? 'is-active' :''"><a v-on:click="activeTab = 'brapi'">BrAPI Base URL</a></li>
               </ul>
-            </div>
+            </nav>
             <div class="tab-content">
               <template v-if="activeTab=='brapi'">
                 <div><span class="has-text-link">{{getBrAPIRootPath()}}</span></div>
