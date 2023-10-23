@@ -276,8 +276,8 @@ export default class ImportExperiment extends ProgramsBase {
 
   statisticsLoaded(statistics: any) {
     // TODO: change to appropriate fields once api is ready
-    this.experimentUserInput.overwrite = statistics.Observation_Units.newObjectCount > 0
-    this.repeatObservationsCount = statistics.Observation_Units.newObjectCount;
+    this.experimentUserInput.overwrite = statistics.Mutated_Observations.newObjectCount > 0
+    this.repeatObservationsCount = statistics.Mutated_Observations.newObjectCount;
   }
 
   isExisting(rows: any[]) {
@@ -298,7 +298,7 @@ export default class ImportExperiment extends ProgramsBase {
   cellClassIfExisting(row: any, column: any) {
     let index = column.meta.index
     // TODO: When backend is ready, change to check for MUTATED
-    if(row.data.observations[index].state === 'NEW') {
+    if(row.data.observations[index].state === 'MUTATED') {
       return {'class': 'db-filled'};
     }
     return {};
