@@ -284,6 +284,45 @@ nav.tabs li.is-active {
   }
 }
 
+.b-tabs {
+  &.is-vertical {
+    .tabs {
+      ul {
+        border-right: 1px $turquoise solid;
+      }
+      &.is-boxed {
+        li a {
+          border: 1px solid transparent !important;
+          margin-right: -1px;
+        }
+
+        li:not(.is-active) a {
+          &:hover {
+            border-right-color: $turquoise !important;
+          }
+        }
+      }
+    }
+    li.is-active {
+      border-top: 1px $turquoise solid;
+      border-left: 2px $turquoise solid;
+      border-bottom: 1px $turquoise solid;
+
+      a {
+        background-color: white;
+        border-color: $turquoise;
+        border-right-color: transparent !important;
+        &:hover {
+          border-right-color: transparent !important;
+        }
+      }
+    }
+    li a {
+      //border
+    }
+  }
+}
+
 .expandable-card {
   .is-button-transparent {
     background: transparent;
@@ -912,6 +951,21 @@ tr:nth-child(odd) td.db-filled {
     white-space: -pre-wrap;
     white-space: -o-pre-wrap;
   }
+
+  .field-book-info {
+    .columns {
+      margin-bottom: 0;
+
+      .column {
+        padding-top: 0.5rem;
+        padding-bottom: 0.5rem;
+
+        &.is-two-thirds {
+          @extend .is-align-self-flex-end;
+        }
+      }
+    }
+  }
 }
 
 label.environment-option-label {
@@ -925,13 +979,36 @@ label.environment-option-label {
     'gray') to preserve some difference in row color when
     a table is striped.
    */
-  background-color: black;
-  opacity: 17%;
+  background-color: rgba(0,0,0,.17);
   }
 
 #data_set th {
   min-width: 5em;
 }
 
+.submission-details {
+  .plate-row-header {
+    background-color: $primary-light;
+    font-weight: bold;
+  }
+  .plate-column-header {
+    background-color: $primary-light;
+  }
+  .blank-well {
+    background-color: rgba(0,0,0,.17);
+    color: $black;
+  }
+}
 
+.sample-tooltip {
+  .tooltip-content {
+    //width: auto!important;
+    //display: flex;
+  }
+  .tooltip-trigger {
+    &:hover {
+      cursor: pointer;
+    }
+  }
+}
 
