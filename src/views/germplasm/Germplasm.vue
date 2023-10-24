@@ -38,21 +38,16 @@
           >
             <a>Lists</a>
           </router-link>
-          <button
-              v-if="$ability.can('create', 'Import')"
-              class="button is-primary is-pulled-right has-text-weight-bold above-tabs-button"
-              v-on:click="$router.push({name: 'germplasm-import', params: {programId: activeProgram.id}})"
-          >
-        <span class="icon is-small">
-          <PlusCircleIcon
-              size="1.5x"
-              aria-hidden="true"
-          />
-        </span>
-            <span>
-          Import Batch File
-        </span>
-          </button>
+            <ActionMenu
+                class = "is-pulled-right has-text-weight-bold above-tabs-button"
+                v-bind:is-primary="true"
+                        v-bind:id="'manage-experiment-dropdown-button'"
+                        v-bind:button-text="'Manage Germplasm'"
+                        v-bind:action-menu-items=actions
+                        v-on:import-file="importFile()"
+                        v-on:download-file="downloadFile()"
+            />
+
         </ul>
       </nav>
     </section>
@@ -73,9 +68,14 @@ import {mapGetters} from "vuex";
 import {Program} from "@/breeding-insight/model/Program";
 import GermplasmBase from "@/components/germplasm/GermplasmBase.vue";
 import {PlusCircleIcon} from 'vue-feather-icons'
+import ActionMenu from "@/components/layouts/menus/ActionMenu.vue";
+import {ActionMenuItem} from "@/breeding-insight/model/ActionMenuItem";
 
 @Component({
-  components: { PlusCircleIcon },
+  components: {
+    PlusCircleIcon,
+    ActionMenu
+  },
   computed: {
     ...mapGetters([
       'activeProgram'
@@ -86,5 +86,27 @@ export default class Germplasm extends GermplasmBase {
 
   private activeProgram?: Program;
 
+  private actions: ActionMenuItem[] = [
+    new ActionMenuItem('germplasm-import-file', 'import-file', 'Import file'),
+    new ActionMenuItem('germplasm-download-file', 'download-file', 'Download file')
+  ];
+
+  private importFile() {
+    this.$router.push({
+      name: 'germplasm-import',
+      params: {
+        programId: this.activeProgram!.id!
+      },
+    });
+  }
+
+  private downloadFile() {
+    console.info('download file.');
+    if (this.activeProgram) {
+      window.open(process.env.VUE_APP_BI_API_ROOT + '/v1/programs/' + this.activeProgram.id + '/germplasm/export?fileExtension=XLS' , '_blank');
+      return true;
+    }
+    return false;
+  }
 }
 </script>
