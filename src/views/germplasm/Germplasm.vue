@@ -87,8 +87,8 @@ export default class Germplasm extends GermplasmBase {
   private activeProgram?: Program;
 
   private actions: ActionMenuItem[] = [
-    new ActionMenuItem('germplasm-import-file', 'import-file', 'Import file'),
-    new ActionMenuItem('germplasm-download-file', 'download-file', 'Download file')
+    new ActionMenuItem('germplasm-import-file', 'import-file', 'Import file', this.$ability.cannot('create', 'Import')),
+    new ActionMenuItem('germplasm-download-file', 'download-file', 'Download file',  false)
   ];
 
   private importFile() {
