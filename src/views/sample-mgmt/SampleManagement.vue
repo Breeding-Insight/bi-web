@@ -45,24 +45,48 @@
             v-bind:records.sync="submissions"
             v-bind:loading="loading"
             v-bind:pagination="paginationController"
-            v-bind:default-sort="['data.submissionDate', 'asc']"
+            v-bind:default-sort="['data.createdAt', 'desc']"
             v-bind:debounce-search="400"
             v-bind:editable="false"
         >
 
-          <b-table-column field="data.projectName" label="Project Name" sortable searchable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-            <router-link v-bind:to="{name: 'submission-details', params: {programId: activeProgram.id, submissionId: 'abc-123'}}">
-              {{ props.row.data.projectName }}
+          <b-table-column field="data.name" label="Project Name" sortable searchable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+            <router-link v-bind:to="{name: 'submission-details', params: {programId: activeProgram.id, submissionId: props.row.data.id}}">
+              {{ props.row.data.name }}
             </router-link>
           </b-table-column>
-          <b-table-column field="data.submissionDate" label="Submission Date" sortable searchable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-            {{ props.row.data.submissionDate }}
+          <b-table-column field="data.createdAt" label="Created Date" sortable searchable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+            {{ props.row.data.createdAt }}
           </b-table-column>
-          <b-table-column field="data.submittedBy" label="Submitted By" sortable searchable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-            {{ props.row.data.submittedBy }}
+          <b-table-column field="data.createdByUser.name" label="Created By" sortable searchable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+            {{ props.row.data.createdByUser.name }}
+          </b-table-column>
+          <b-table-column field="data.submitted" label="Submission Status" sortable searchable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+            <span
+                v-if="props.row.data.vendorStatus"
+                class="tag"
+                :class="statusTagType()"
+            >
+            {{ props.row.data.submitted ? "SUBMITTED" : "NOT SUBMITTED" }}
+            </span>
+          </b-table-column>
+          <b-table-column field="data.submittedDate" label="Submitted Date" sortable searchable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+            {{ props.row.data.submittedDate }}
+          </b-table-column>
+          <b-table-column field="data.vendorOrderId" label="Vendor Order ID" sortable searchable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+            {{ props.row.data.vendorOrderId }}
+          </b-table-column>
+          <b-table-column field="data.vendorStatus" label="Vendor Status" sortable searchable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+            <span
+                v-if="props.row.data.vendorStatus"
+                class="tag"
+                :class="statusTagType(props.row.data.vendorStatus)"
+            >
+            {{ props.row.data.vendorStatus }}
+            </span>
           </b-table-column>
           <b-table-column field="buttons" label="" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-            <router-link v-bind:to="{name: 'submission-details', params: {programId: activeProgram.id, submissionId: 'abc-123'}}">
+            <router-link v-bind:to="{name: 'submission-details', params: {programId: activeProgram.id, submissionId: props.row.data.id}}">
               Details
             </router-link>
           </b-table-column>
@@ -105,6 +129,8 @@ import { PaginationController } from '@/breeding-insight/model/view_models/Pagin
 import GenericModal from '@/components/modals/GenericModal.vue';
 import * as XLSX from 'xlsx';
 import {PlusCircleIcon} from 'vue-feather-icons'
+import {SampleSubmission} from "@/breeding-insight/model/SampleSubmission";
+import {SampleSubmissionService} from "@/breeding-insight/service/SampleSubmissionService";
 
 @Component({
   components: { GenericModal, ExpandableTable, BasicInputField, NewDataForm, BasicSelectField, PlusCircleIcon },
@@ -117,18 +143,25 @@ import {PlusCircleIcon} from 'vue-feather-icons'
 export default class SampleManagement extends Vue {
 
   private activeProgram?: Program;
-  private loading = false;
-  private submissions: Array<any> = [{
-    'projectName': 'SPotatoP1-10-2023',
-    'submissionDate': '2023-10-16 15:10:32',
-    'submittedBy': 'Rebecca Cubitt'
-  }, {
-    'projectName': 'CranberryP1-09-2023',
-    'submissionDate': '2023-09-04 13:41:53',
-    'submittedBy': 'Rebecca Cubitt'
-  }];
+  private loading = true;
+  private submissions: Array<SampleSubmission> = new Array<SampleSubmission>();
   private paginationController: PaginationController = new PaginationController();
   private showGenerateFileModal = false;
+
+  mounted() {
+    this.fetchSubmissions();
+  }
+
+  async fetchSubmissions() {
+    try {
+      this.submissions = await SampleSubmissionService.getProgramSampleSubmissions(this.activeProgram!.id!);
+    } catch (e) {
+      console.log(e);
+      this.$emit('show-error-notification', "Error while trying to fetch submissions");
+    } finally {
+      this.loading = false;
+    }
+  }
 
   openModal() {
     this.showGenerateFileModal = true;
@@ -136,6 +169,19 @@ export default class SampleManagement extends Vue {
 
   closeModal() {
     this.showGenerateFileModal = false;
+  }
+
+  statusTagType(status?:string) {
+    if(status === "COMPLETED") {
+      return "is-success";
+    } else if(status === "REGISTERED" || status === "RECEIVED" ) {
+      return "is-info";
+    } else if(status === "INPROGRESS") {
+      return "is-warning";
+    } else if(status === "REJECTED") {
+      return "is-danger"
+    }
+    return "is-light";
   }
 
 

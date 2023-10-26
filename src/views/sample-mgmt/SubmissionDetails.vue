@@ -19,48 +19,72 @@
     <router-link v-bind:to="{name: 'sample-management', params: {programId: activeProgram.id}}">
       &lt; Sample Management
     </router-link>
-    <div class="mb-4" />
-    <h1 class="title">
-      {{submission.projectName}}
-    </h1>
-
-
-    <div v-if="!submissionLoading && submission !== undefined">
+    <div class="mb-4"/>
+    <template v-if="submissionLoading">
+      <div class="loading-indicator"></div>
+    </template>
+    <template v-if="!submissionLoading">
+      <h1 class="title">
+        {{ submission.name }}
+      </h1>
 
       <div class="columns is-multiline is-align-items-stretch mt-4">
-        <article class="column ">
+        <article class="column">
           <section>
-            <ul style="list-style-type: none;">
-              <li><b>Uploaded By: </b> {{ userName }}</li>
-              <li><b>Creation Date: </b> {{ createdDate }}</li>
+            <ul class="list-no-style">
+              <li><b>Uploaded By: </b> {{ submission.createdByUser.name }}</li>
+              <li><b>Upload Date: </b> {{ submission.createdAt }}</li>
+            </ul>
+            <ul class="list-no-style">
+              <li><b>Submission Status: </b>{{ getSubmissionStatus() }}</li>
+              <template v-if="submission.submitted">
+                <li><b>Submitted By: </b>{{ submission.submittedByUser.name }}</li>
+                <li><b>Submission Date: </b> {{ submission.submittedDate }}</li>
+              </template>
             </ul>
           </section>
+        </article>
+        <article class="column">
+          <ul class="list-no-style" v-if="submission.vendorOrderId">
+            <li><b>Vendor Order ID: </b>{{ submission.vendorOrderId }}</li>
+            <li><b>Vendor Order Status: </b>{{ submission.vendorStatus }}</li>
+            <li><b>Last Status Check: </b>{{ submission.vendorStatusLastCheck }}</li>
+          </ul>
         </article>
         <article class="column is-narrow">
           <ActionMenu v-bind:is-primary="true"
                       v-bind:id="'manage-submission-dropdown-button'"
-                      v-bind:button-text="'Actions'"
+                      v-bind:button-text="'Manage Submission'"
                       v-bind:action-menu-items=actions
                       v-on:import-file="importFile()"
-                      v-on:download-file="downloadFile()"
-                      v-on:submit="submitSample()"
+                      v-on:download-file="exportDArTFile()"
+                      v-on:download-lookup-file="exportLookupFile()"
+                      v-on:submit="startOrderSubmission()"
+                      v-on:manual-update-status="startManualUpdate()"
+                      v-on:check-status="checkVendorStatus()"
           />
         </article>
       </div>
 
-    </div>
-    <section>
-      <nav class="tabs is-boxed">
-        <ul>
-          <li :class="activeTab=='details' ? 'is-active' :''"><a v-on:click="activeTab = 'details'">Submission Details</a></li>
-          <li :class="activeTab=='plates' ? 'is-active' :''"><a v-on:click="activeTab = 'plates'">Plate Details</a></li>
-        </ul>
-      </nav>
-    </section>
-    <div class="tab-content ml-1">
-      <template v-if="activeTab == 'plates'">
-        <b-tabs vertical :animated="false" :type="'is-boxed'">
-          <template v-for="plate in submission.plates">
+      <section>
+        <nav class="tabs is-boxed">
+          <ul>
+            <li :class="activeTab=='details' ? 'is-active' :''"><a v-on:click="activeTab = 'details'">Submission
+              Details</a></li>
+            <li :class="activeTab=='plates' ? 'is-active' :''"><a v-on:click="activeTab = 'plates'">Plate Details</a>
+            </li>
+            <li :class="activeTab=='forms' ? 'is-active' :''" v-if="submission.shipmentForms"><a
+                v-on:click="activeTab = 'forms'">Shipment Forms</a></li>
+          </ul>
+        </nav>
+      </section>
+      <div class="tab-content">
+        <template v-if="activeTab == 'plates'">
+          <template v-if="submissionDetailsLoading">
+            <div class="loading-indicator"></div>
+          </template>
+          <b-tabs vertical :animated="false" :type="'is-boxed'" v-if="!submissionDetailsLoading">
+            <template v-for="plate in submission.plates">
               <b-tab-item :label="plate.plateName" :key="plate.plateName">
                 <article class="message is-success">
                   <div class="message-body">
@@ -71,21 +95,27 @@
                   <b-table-column v-slot="props" cell-class="plate-row-header">
                     {{ String.fromCharCode(65 + props.index) }}
                   </b-table-column>
-                  <b-table-column v-for="colIdx in 12" v-slot="props" :key="colIdx" :label="(colIdx).toString()" header-class="plate-column-header" :td-attrs="cellClassIfBlank">
-                    <b-tooltip v-if="props.row[colIdx-1] !== undefined" position="is-top" type="is-white" multilined :auto-close="['outside']" dashed :triggers="['click']" :size="'is-large'" class="sample-tooltip">
-                      <span>{{ props.row[colIdx - 1].additionalInfo.gid }}</span>
+                  <b-table-column v-for="colIdx in 12" v-slot="props" :key="colIdx" :label="(colIdx).toString()"
+                                  header-class="plate-column-header" :td-attrs="cellClassIfBlank">
+                    <b-tooltip v-if="props.row[colIdx-1] !== undefined" position="is-top" type="is-white" multilined
+                               :auto-close="['outside']" dashed :triggers="['click']" :size="'is-large'"
+                               class="sample-tooltip">
+                      <span class="is-clickable">{{ props.row[colIdx - 1].additionalInfo.gid }}</span>
                       <template v-slot:content>
                         <div class="columns pb-0 mb-0">
                           <div class="column is-narrow mr-1">Sample Name:</div>
-                          <div class="column is-narrow"><span>{{ props.row[colIdx - 1].sampleName }}__{{ props.row[colIdx - 1].plateName }}_{{ props.row[colIdx - 1].row }}{{ props.row[colIdx - 1].column }}</span></div>
+                          <div class="column is-narrow"><span>{{ props.row[colIdx - 1].sampleName }}</span></div>
                         </div>
                         <div class="columns pb-0 mb-0">
                           <div class="column is-narrow mr-1">Germplasm Name:</div>
-                          <div class="column is-narrow"><span>{{ props.row[colIdx - 1].sampleName }}</span></div>
+                          <div class="column is-narrow"><span>{{
+                              props.row[colIdx - 1].additionalInfo.germplasmName
+                            }}</span></div>
                         </div>
                         <div class="columns">
                           <div class="column is-narrow mr-1">GID:</div>
-                          <div class="column is-narrow"><span>{{ props.row[colIdx - 1].additionalInfo.gid }}</span></div>
+                          <div class="column is-narrow"><span>{{ props.row[colIdx - 1].additionalInfo.gid }}</span>
+                          </div>
                         </div>
                       </template>
                     </b-tooltip>
@@ -93,61 +123,202 @@
                   </b-table-column>
                 </b-table>
               </b-tab-item>
+            </template>
+          </b-tabs>
+        </template>
+        <template v-if="activeTab == 'details'">
+          <template v-if="submissionDetailsLoading">
+            <div class="loading-indicator"></div>
           </template>
-        </b-tabs>
+          <ExpandableTable
+              v-if="!submissionDetailsLoading"
+              v-bind:records.sync="submission.samples"
+              v-bind:loading="submissionDetailsLoading"
+              v-bind:pagination="paginationController"
+              v-on:show-error-notification="$emit('show-error-notification', $event)"
+              v-bind:is-show-all-enabled="false"
+              sort-multiple
+              :sort-multiple-data="[{field:'data.plateName', order:'asc'}, {field:'data.row', order:'asc'}, {field:'data.column', order:'asc'}]"
+          >
+            <b-table-column field="data.additionalInfo.germplasmName" label="Germplasm Name" v-slot="props" searchable
+                            :th-attrs="(column) => ({scope:'col'})">
+              {{ props.row.data.additionalInfo.germplasmName || props.row.data.sampleName }}
+            </b-table-column>
+            <b-table-column field="data.additionalInfo.gid" label="GID" v-slot="props" searchable
+                            :th-attrs="(column) => ({scope:'col'})">
+              <GermplasmLink
+                  v-bind:germplasmGID="props.row.data.additionalInfo.gid"
+              />
+            </b-table-column>
+            <b-table-column field="data.plateName" label="PlateID" sortable searchable :custom-search="filterByPlate"
+                            :custom-sort="sortPlates"
+                            :th-attrs="(column) => ({scope:'col'})">
+              <template v-slot="props">
+                {{ props.row.data.plateName }}
+              </template>
+              <template v-slot:searchable="props">
+                <div class="select">
+                  <select
+                      v-model="props.filters[props.column.field]"
+                  >
+                    <option value=""/>
+                    <option
+                        v-for="cat in submission.plates"
+                        :key="cat.plateDbId"
+                        :value="cat.plateName"
+                    >
+                      {{ cat.plateName }}
+                    </option>
+                  </select>
+                </div>
+              </template>
+            </b-table-column>
+            <b-table-column field="data.sampleName" label="Sample Name" v-slot="props"
+                            :th-attrs="(column) => ({scope:'col'})">
+              {{ props.row.data.sampleName }}
+            </b-table-column>
+            <b-table-column field="data.row" label="Row" v-slot="props" sortable
+                            :th-attrs="(column) => ({scope:'col'})">
+              {{ props.row.data.row }}
+            </b-table-column>
+            <b-table-column field="data.column" label="Column" v-slot="props" sortable
+                            :th-attrs="(column) => ({scope:'col'})">
+              {{ props.row.data.column }}
+            </b-table-column>
+            <b-table-column field="data.additionalInfo.organism" label="Organism" v-slot="props"
+                            :th-attrs="(column) => ({scope:'col'})">
+              {{ props.row.data.additionalInfo.organism }}
+            </b-table-column>
+            <b-table-column field="data.additionalInfo.species" label="Species" v-slot="props"
+                            :th-attrs="(column) => ({scope:'col'})">
+              {{ props.row.data.additionalInfo.species }}
+            </b-table-column>
+            <b-table-column field="data.tissueType" label="Tissue" v-slot="props"
+                            :th-attrs="(column) => ({scope:'col'})">
+              {{ props.row.data.tissueType }}
+            </b-table-column>
+            <b-table-column field="data.sampleDescription" label="Comment" v-slot="props"
+                            :th-attrs="(column) => ({scope:'col'})">
+              {{ props.row.data.sampleDescription }}
+            </b-table-column>
+            <b-table-column field="data.additionalInfo.obsUnitID" label="ObsUnitID" v-slot="props"
+                            :th-attrs="(column) => ({scope:'col'})">
+              {{ props.row.data.additionalInfo.obsUnitID }}
+            </b-table-column>
+            <template v-slot:emptyMessage>
+              <p class="has-text-weight-bold">
+                No samples were found in this import file.
+              </p>
+            </template>
+          </ExpandableTable>
+        </template>
+        <template v-if="activeTab == 'forms'">
+          <article class="message is-success">
+            <div class="message-body">
+              Forms are supplied by the vendor. Please review each form.
+            </div>
+          </article>
+          <div class="columns">
+            <div class="column">
+              <ul>
+                <template v-for="(form, index) in submission.shipmentForms">
+                  <li :key="index">
+                    <div class="shipment-form pb-4">
+                      <div><strong>Form: </strong><span>{{ form.fileName }}</span></div>
+                      <div><strong>Description: </strong><span>{{ form.fileDescription }}</span></div>
+                      <div><strong>Download Link: </strong><a :href="form.fileURL">{{ form.fileURL }}</a></div>
+                    </div>
+                  </li>
+                </template>
+              </ul>
+            </div>
+          </div>
+        </template>
+      </div>
+    </template>
+    <GenericModal
+        v-bind:active.sync="showSubmitModal"
+        v-bind:msg-title="'Submitting to DArT'"
+        v-bind:escapeDeactivates="!submissionStarted || submissionComplete"
+        v-bind:allowOutsideClick="!submissionStarted || submissionComplete"
+        v-bind:showCloseButton="!submissionStarted || submissionComplete"
+        v-on:deactivate="showSubmitModal = false"
+    >
+      <template v-if="!submissionStarted">
+        <h2>Are you sure?</h2>
       </template>
-      <template v-if="activeTab == 'details'">
-        <ExpandableTable
-            v-bind:records.sync="submission.samples"
-            v-bind:loading="false"
-            v-bind:pagination="paginationController"
-            v-on:show-error-notification="$emit('show-error-notification', $event)"
-            v-bind:is-show-all-enabled="false"
-        >
-          <b-table-column field="data.plateName" label="PlateID" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-            {{ props.row.data.plateName }}
-          </b-table-column>
-          <b-table-column field="data.sampleName" label="Sample Name" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-            {{ props.row.data.sampleName }}__{{props.row.data.plateName}}_{{props.row.data.row}}{{props.row.data.column}}
-          </b-table-column>
-          <b-table-column field="data.row" label="Row" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-            {{ props.row.data.row }}
-          </b-table-column>
-          <b-table-column field="data.column" label="Column" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-            {{ props.row.data.column }}
-          </b-table-column>
-          <b-table-column field="data.additionalInfo.organism" label="Organism" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-            {{ props.row.data.additionalInfo.organism }}
-          </b-table-column>
-          <b-table-column field="data.additionalInfo.species" label="Species" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-            {{ props.row.data.additionalInfo.species }}
-          </b-table-column>
-          <b-table-column field="data.additionalInfo.gid" label="GID" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-            <GermplasmLink
-                v-bind:germplasmUUID="'abc-123'"
-                v-bind:germplasmGID="props.row.data.additionalInfo.gid"
-            />
-          </b-table-column>
-          <b-table-column field="data.sampleName" label="Germplasm Name" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-            {{ props.row.data.additionalInfo.germplasmName || props.row.data.sampleName }}
-          </b-table-column>
-          <b-table-column field="data.additionalInfo.obsUnitID" label="ObsUnitID" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-            {{ props.row.data.additionalInfo.obsUnitID }}
-          </b-table-column>
-          <b-table-column field="data.tissueType" label="Tissue" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-            {{ props.row.data.tissueType }}
-          </b-table-column>
-          <b-table-column field="data.sampleDescription" label="Comment" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-            {{ props.row.data.sampleDescription }}
-          </b-table-column>
-          <template v-slot:emptyMessage>
-            <p class="has-text-weight-bold">
-              No samples were found in this import file.
-            </p>
-          </template>
-        </ExpandableTable>
+      <template v-if="submissionStarted && !submissionComplete">
+        <div class="loading-indicator"></div>
       </template>
-    </div>
+      <template v-if="submissionComplete && !submissionError">
+        <h2>Submitted Successfully!</h2>
+        <div><strong>Order ID: </strong>{{ submission.vendorOrderId }}</div>
+      </template>
+      <template v-if="submissionComplete && submissionError">
+        <h2>Submission Failed</h2>
+      </template>
+      <template v-slot:footer>
+        <div class="columns">
+          <div class="column is-whole has-text-centered buttons">
+            <template v-if="submissionComplete">
+              <button class="button is-success" v-on:click="showSubmitModal = false">Done</button>
+            </template>
+            <template v-if="!submissionStarted">
+              <button class="button is-success" v-on:click="submitOrder()">Submit</button>
+              <button class="button" v-on:click="showSubmitModal = false">Cancel</button>
+            </template>
+          </div>
+        </div>
+      </template>
+    </GenericModal>
+    <GenericModal
+        v-bind:active.sync="vendorCheckStarted"
+        v-bind:msg-title="'Checking Order Status'"
+        v-bind:escapeDeactivates="false"
+        v-bind:allowOutsideClick="false"
+        v-bind:showCloseButton="false"
+        v-on:deactivate="vendorCheckStarted = false"
+    >
+      <div class="loading-indicator"></div>
+      <template v-slot:footer>
+        <div class="columns">
+          <div class="column is-whole has-text-centered buttons">
+            <button class="button" v-on:click="vendorCheckStarted = false">Cancel</button>
+          </div>
+        </div>
+      </template>
+    </GenericModal>
+    <GenericModal
+        v-bind:active.sync="showUpdateModal"
+        v-bind:msg-title="'Update Submission'"
+        v-bind:escapeDeactivates="!updateStarted"
+        v-bind:allowOutsideClick="!updateStarted"
+        v-bind:showCloseButton="!updateStarted"
+        v-on:deactivate="showUpdateModal = false"
+    >
+      <div class="columns is-vcentered">
+        <div class="column is-one-quarter"><label>Status: </label></div>
+        <div class="column">
+          <div class="select">
+            <select v-model="statusEdit">
+              <option value="NOT SUBMITTED">NOT SUBMITTED</option>
+              <option value="SUBMITTED">SUBMITTED</option>
+              <option value="COMPLETED">COMPLETED</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <template v-slot:footer>
+        <div class="columns">
+          <div class="column is-whole has-text-centered buttons">
+            <button class="button is-success" v-on:click="updateSubmission()" :class="updateStarted ? 'is-loading' : ''"
+                    :disabled="updateStarted">Save
+            </button>
+            <button class="button" v-on:click="showUpdateModal = false" v-if="!updateStarted">Cancel</button>
+          </div>
+        </div>
+      </template>
+    </GenericModal>
   </div>
 </template>
 
@@ -157,20 +328,27 @@ import {mapGetters} from "vuex";
 import {PlusCircleIcon} from 'vue-feather-icons'
 import {Program} from "@/breeding-insight/model/Program";
 import {Result} from "@/breeding-insight/model/Result";
-import {ExperimentService} from "@/breeding-insight/service/ExperimentService";
 import ClickOutside from 'vue-click-outside';
-import {Trial} from "@/breeding-insight/model/Trial";
 import ProgramsBase from "@/components/program/ProgramsBase.vue";
 import ActionMenu from "@/components/layouts/menus/ActionMenu.vue";
 import {ActionMenuItem} from "@/breeding-insight/model/ActionMenuItem";
 import ExperimentObservationsDownloadModal from "@/components/experiments/ExperimentObservationsDownloadModal.vue";
 import GermplasmLink from '@/components/germplasm/GermplasmLink.vue';
 import ExpandableTable from '@/components/tables/expandableTable/ExpandableTable.vue';
-import { PaginationController } from '@/breeding-insight/model/view_models/PaginationController';
-import { PaginationQuery } from '@/breeding-insight/model/PaginationQuery';
+import {PaginationController} from '@/breeding-insight/model/view_models/PaginationController';
+import {PaginationQuery} from '@/breeding-insight/model/PaginationQuery';
+import {SampleSubmission} from "@/breeding-insight/model/SampleSubmission";
+import {SampleSubmissionService} from "@/breeding-insight/service/SampleSubmissionService";
+import {TableRow} from "@/breeding-insight/model/view_models/TableRow";
+import {Sample} from "@/breeding-insight/brapi/model/geno/sample";
+import GenericModal from "@/components/modals/GenericModal.vue";
+import {VendorOrderSubmission} from "@/breeding-insight/brapi/model/geno/vendorOrderSubmission";
+import {VendorOrderStatusResponseResult} from "@/breeding-insight/brapi/model/geno/vendorOrderStatusResponseResult";
+import StatusEnum = VendorOrderStatusResponseResult.StatusEnum;
 
 @Component({
   components: {
+    GenericModal,
     ExpandableTable,
     GermplasmLink,
     PlusCircleIcon,
@@ -189,44 +367,121 @@ import { PaginationQuery } from '@/breeding-insight/model/PaginationQuery';
 export default class SubmissionDetails extends ProgramsBase {
   private activeProgram: Program;
   private activeTab = 'details';
-  private submissionLoading: boolean = false;
+  private submissionLoading: boolean = true;
+  private submissionDetailsLoading: boolean = true;
   private downloadModalActive: boolean = false;
   private paginationController: PaginationController = new PaginationController();
+  private submission?: SampleSubmission;
+  private germNameOptions?: Array<String> = [];
+  private gidOptions?: Array<String> = [];
+  private showSubmitModal = false;
+  private submissionComplete = false;
+  private submissionStarted = false;
+  private submissionError?: string;
+  private vendorCheckStarted = false;
+  private showUpdateModal = false;
+  private updateStarted = false;
+  private statusEdit?: string = 'NOT SUBMITTED';
 
-  private actions: ActionMenuItem[] = [
-      new ActionMenuItem('submission-import-file', 'import-file', 'Import file'),
-      new ActionMenuItem('submission-download-file', 'download-file', 'Generate and Download DArT file'),
-    new ActionMenuItem('submission-submit', 'submit', 'Submit to DArT')
-  ];
+  private collator = new Intl.Collator('en', {numeric: true, sensitivity: 'base'});
 
-  mounted () {
-    this.paginationController.pageSize = 200;
-    this.paginationController.totalCount = this.submission.samples.length;
-    this.paginationController.currentPage = 1;
-    this.paginationController.totalPages = this.paginationController.totalCount.valueOf() / this.paginationController.pageSize.valueOf();
+  private actions: ActionMenuItem[] = [];
 
-    let samplesByPlate = new Map<String, Array<any>>();
-    this.submission.samples.forEach(sample => {
-      let plateSamples = samplesByPlate.get(sample.plateName) || new Array<any>();
-      plateSamples.push(sample);
-      samplesByPlate.set(sample.plateName, plateSamples);
-    });
-
-    this.submission.plates.forEach(plate => {
-      let plateSamples = samplesByPlate.get(plate.plateName);
-      let plateLayout = Array.from(Array(8), () => new Array(12));
-      plateSamples.forEach(sample => {
-        plateLayout[sample.row.charCodeAt(0)-'A'.charCodeAt(0)][sample.column-1] = sample;
-      });
-      plate.layout = plateLayout;
-    })
+  mounted() {
+    this.getSubmission();
+    this.getSubmissionDetails();
   }
 
-  @Watch('paginationController', { deep: true})
+  get submissionId(): string {
+    return this.$route.params.submissionId;
+  }
+
+  async getSubmission(showLoading: boolean = true) {
+    this.submissionLoading = showLoading;
+
+    try {
+      const response: Result<Error, SampleSubmission> = await SampleSubmissionService.getSubmission(this.activeProgram!.id!, this.submissionId);
+      if (response.isErr()) {
+        throw response.value;
+      }
+      this.submission = response.value;
+
+      this.actions = [];
+      if (this.$ability.can('create', 'Import')) {
+        this.actions.push(new ActionMenuItem('submission-import-file', 'import-file', 'Import file'));
+      }
+      this.actions.push(new ActionMenuItem('submission-download-file', 'download-file', 'Generate and Download DArT file'));
+      this.actions.push(new ActionMenuItem('submission-download-lookup-file', 'download-lookup-file', 'Download Lookup file'));
+      if (this.$ability.can('submit', 'Submission') && !this.submission!.vendorOrderId) {
+        this.actions.push(new ActionMenuItem('submission-manual-update-status', 'manual-update-status', 'Manually Update Status'));
+      }
+      if (this.$ability.can('submit', 'Submission') && !this.submission!.vendorOrderId && !this.submission!.submitted) {
+        this.actions.push(new ActionMenuItem('submission-submit', 'submit', 'Submit to DArT'));
+      } else if (this.submission!.submitted && this.submission!.vendorOrderId && this.submission!.vendorStatus !== StatusEnum.Completed.toUpperCase()) {
+        this.actions.push(new ActionMenuItem('submission-check-status', 'check-status', 'Check Vendor Status'));
+      }
+    } catch (e) {
+      this.$emit('show-error-notification', 'Error while trying to load submission details');
+      throw e;
+    } finally {
+      this.submissionLoading = false;
+    }
+  }
+
+  async getSubmissionDetails() {
+    this.submissionDetailsLoading = true;
+
+    try {
+      const response: Result<Error, SampleSubmission> = await SampleSubmissionService.getSubmissionDetails(this.activeProgram!.id!, this.submissionId);
+      if (response.isErr()) {
+        throw response.value;
+      }
+      let details = response.value;
+
+      let samplesByPlate = new Map<String, Array<any>>();
+      let uniqueGermplasm = new Set<String>();
+      let uniqueGIDs = new Set<String>();
+      details!.samples!.forEach(sample => {
+        let plateSamples = samplesByPlate.get(sample.plateName) || new Array<any>();
+        plateSamples.push(sample);
+        samplesByPlate.set(sample.plateName, plateSamples);
+        uniqueGermplasm.add(sample.additionalInfo.germplasmName);
+        uniqueGIDs.add(sample.additionalInfo.gid);
+      });
+
+      details!.plates!.forEach(plate => {
+        let plateSamples = samplesByPlate.get(plate.plateName);
+        let plateLayout = Array.from(Array(8), () => new Array(12));
+        plateSamples.forEach(sample => {
+          plateLayout[sample.row.charCodeAt(0) - 'A'.charCodeAt(0)][sample.column - 1] = sample;
+        });
+        plate.layout = plateLayout;
+      });
+
+
+      this.submission!.plates = details!.plates!.sort((a, b) => this.collator.compare(a!.plateName, b!.plateName));
+      this.germNameOptions = Array.from(uniqueGermplasm).sort(this.collator.compare);
+      this.gidOptions = Array.from(uniqueGIDs).sort(this.collator.compare);
+      this.submission!.samples = details!.samples;
+
+      this.paginationController.pageSize = 200;
+      this.paginationController.totalCount = this.submission!.samples!.length;
+      this.paginationController.currentPage = 1;
+      this.paginationController.totalPages = this.paginationController.totalCount.valueOf() / this.paginationController.pageSize.valueOf();
+
+    } catch (e) {
+      this.$emit('show-error-notification', 'Error while trying to load submission details');
+      throw e;
+    } finally {
+      this.submissionDetailsLoading = false;
+    }
+  }
+
+  @Watch('paginationController', {deep: true})
   paginationChanged() {
     let currentCall = this.paginationController.currentCall
     let paginationQuery = this.paginationController.getPaginationSelections();
-    if(currentCall && currentCall!.page == paginationQuery.page && currentCall!.pageSize == paginationQuery.pageSize && currentCall!.showAll == paginationQuery.showAll) {
+    if (currentCall && currentCall!.page == paginationQuery.page && currentCall!.pageSize == paginationQuery.pageSize && currentCall!.showAll == paginationQuery.showAll) {
       return;
     }
     this.updatePagination();
@@ -238,12 +493,19 @@ export default class SubmissionDetails extends ProgramsBase {
   }
 
   get userName(): string {
-    if( !this.submission.additionalInfo ){return '';}
-    if( !this.submission.additionalInfo.createdBy){return '';}
+    if (!this.submission.additionalInfo) {
+      return '';
+    }
+    if (!this.submission.additionalInfo.createdBy) {
+      return '';
+    }
     return this.submission.additionalInfo.createdBy.userName;
   }
+
   get createdDate(): string {
-    if( !this.submission.additionalInfo ){return '';}
+    if (!this.submission.additionalInfo) {
+      return '';
+    }
     return this.submission.additionalInfo.createdDate;
   }
 
@@ -256,1077 +518,137 @@ export default class SubmissionDetails extends ProgramsBase {
     });
   }
 
-  private downloadFile() {
-    this.downloadModalActive = true;
+  private exportDArTFile() {
+    if (this.activeProgram) {
+      window.open(process.env.VUE_APP_BI_API_ROOT
+          + '/v1/programs/'
+          + this.activeProgram.id
+          + '/submissions/'
+          + this.submissionId
+          + '/dart',
+          '_blank');
+    }
   }
 
-  private submitSample() {
-    console.log("submitting to DArT");
-}
+  private exportLookupFile() {
+    if (this.activeProgram) {
+      window.open(process.env.VUE_APP_BI_API_ROOT
+          + '/v1/programs/'
+          + this.activeProgram.id
+          + '/submissions/'
+          + this.submissionId
+          + '/lookup',
+          '_blank');
+    }
+  }
+
+  private startOrderSubmission() {
+    this.showSubmitModal = true;
+    this.submissionComplete = false;
+    this.submissionStarted = false;
+  }
+
+  private async submitOrder() {
+    this.submissionStarted = true;
+    this.submissionComplete = false;
+    try {
+      const response: Result<Error, VendorOrderSubmission> = await SampleSubmissionService.submitToDArT(this.activeProgram!.id!, this.submissionId);
+      if (response.isErr()) {
+        throw response.value;
+      }
+      // let orderResponse = response.value;
+      // this.submission!.vendorOrderId = orderResponse.orderId;
+      await this.getSubmission(false);
+    } catch (e) {
+      // this.$emit('show-error-notification', 'Error while trying to submit sample order');
+      this.submissionError = e;
+    } finally {
+      this.submissionComplete = true;
+    }
+  }
+
+  private async checkVendorStatus() {
+    this.vendorCheckStarted = true;
+    try {
+      const response: Result<Error, SampleSubmission> = await SampleSubmissionService.checkVendorStatus(this.activeProgram!.id!, this.submissionId);
+      if (response.isErr()) {
+        throw response.value;
+      }
+      this.submission = response.value;
+    } catch (e) {
+      this.$emit('show-error-notification', 'Error while trying to check order status');
+    } finally {
+      this.vendorCheckStarted = false;
+    }
+  }
+
+  private startManualUpdate() {
+    if (this.submission!.submitted && this.submission!.vendorStatus) {
+      this.statusEdit = this.submission!.vendorStatus;
+    } else if (this.submission!.submitted) {
+      this.statusEdit = "SUBMITTED";
+    } else {
+      this.statusEdit = "NOT SUBMITTED";
+    }
+
+    this.showUpdateModal = true;
+  }
+
+  private async updateSubmission() {
+    this.updateStarted = true;
+    try {
+      const response: Result<Error, SampleSubmission> = await SampleSubmissionService.updateSubmissionStatus(this.activeProgram!.id!, this.submissionId, this.statusEdit!);
+      if (response.isErr()) {
+        throw response.value;
+      }
+      await this.getSubmission(false);
+    } catch (e) {
+      this.$emit('show-error-notification', 'Error while trying to update status');
+    } finally {
+      this.updateStarted = false;
+      this.showUpdateModal = false;
+    }
+  }
 
   cellClassIfBlank(row: any, column: any) {
-    let index = parseInt(column.label)-1;
-    if(row[index] === undefined) {
+    let index = parseInt(column.label) - 1;
+    if (row[index] === undefined) {
       return {'class': 'blank-well'};
     } else {
       return {};
     }
   }
 
-  // @Watch('$route')
-  // async getExperiment () {
-  //   this.submissionLoading = true;
-  //   try {
-  //     const response: Result<Error, Trial> = await ExperimentService.getSingleExperiment(this.activeProgram!.id!, this.experimentUUID, true);
-  //     if (response.isErr()) {
-  //       throw response.value;
-  //     }
-  //     this.submission = response.value;
-  //   } catch (err) {
-  //     // Display error that experiment cannot be loaded
-  //     this.$emit('show-error-notification', 'Error while trying to load experiment');
-  //     throw err;
-  //   } finally {
-  //     this.submissionLoading = false;
-  //   }
-  // }
+  getSubmissionStatus() {
+    if (this.submission!.submitted) {
+      if (!this.submission!.vendorOrderId && this.submission!.vendorStatus) {
+        return this.submission!.vendorStatus;
+      } else {
+        return "SUBMITTED";
+      }
+    } else {
+      return "NOT SUBMITTED";
+    }
+  }
 
-  private submission = {
-    additionalInfo: {
-      createdBy: {
-        userName: 'Rebecca Cubitt'
-      },
-      createdDate: '2023-10-09'
-    },
-    projectName: 'SPotatoP1-10-2023',
-    "plates": [
-      {
-        "plateName": "Y_1",
-        "plateFormat": "PLATE_96",
-        "additionalInfo": {
-          "createdBy": {
-            "userId": "55e268e9-cc02-44e6-ad1e-d99ea9770830",
-            "userName": "BI-DEV Admin"
-          }
-        },
-        "externalReferences": [
-          {
-            "referenceId": "b0fddf2e-3951-4f89-8502-ef3243a9a9b8",
-            "referenceSource": "breedinginsight.org/programs"
-          }
-        ]
-      },
-      {
-        "plateName": "Y_2",
-        "plateFormat": "PLATE_96",
-        "additionalInfo": {
-          "createdBy": {
-            "userId": "55e268e9-cc02-44e6-ad1e-d99ea9770830",
-            "userName": "BI-DEV Admin"
-          }
-        },
-        "externalReferences": [
-          {
-            "referenceId": "b0fddf2e-3951-4f89-8502-ef3243a9a9b8",
-            "referenceSource": "breedinginsight.org/programs"
-          }
-        ]
-      }
-    ],
-    "samples": [
-      {
-        "row": "A",
-        "column": 1,
-        "plateName": "Y_1",
-        "sampleName": "X1_33642_W6_B4",
-        "tissueType": "leaf",
-        "germplasmDbId": "4daa59b3-c4c2-4911-9f71-68d5e39ebef4",
-        "additionalInfo": {
-          "gid": "4",
-          "species": "Medicago sativa",
-          "organism": "Alfalfa",
-          "createdBy": {
-            "userId": "55e268e9-cc02-44e6-ad1e-d99ea9770830",
-            "userName": "BI-DEV Admin"
-          },
-          "obsUnitID": "611befa4-f782-428c-9d77-22e85749aafc"
-        },
-        "sampleDescription": "Cutlivar Panels for Yield study_ Pooled",
-        "externalReferences": [
-          {
-            "referenceId": "b0fddf2e-3951-4f89-8502-ef3243a9a9b8",
-            "referenceSource": "breedinginsight.org/programs"
-          },
-          {
-            "referenceID": "bfb76cab-3d02-45ff-853d-b77e4d755ac7",
-            "referenceId": "bfb76cab-3d02-45ff-853d-b77e4d755ac7",
-            "referenceSource": "breedinginsight.org"
-          }
-        ],
-        "observationUnitDbId": "b74fa178-3edc-431a-a7d5-bc5ee2133aab"
-      },
-      {
-        "row": "B",
-        "column": 1,
-        "plateName": "Y_1",
-        "sampleName": "X1_33642_W6_B4",
-        "tissueType": "leaf",
-        "germplasmDbId": "4daa59b3-c4c2-4911-9f71-68d5e39ebef4",
-        "additionalInfo": {
-          "gid": "4",
-          "species": "Medicago sativa",
-          "organism": "Alfalfa",
-          "createdBy": {
-            "userId": "55e268e9-cc02-44e6-ad1e-d99ea9770830",
-            "userName": "BI-DEV Admin"
-          },
-          "obsUnitID": "611befa4-f782-428c-9d77-22e85749aafc"
-        },
-        "sampleDescription": "Cutlivar Panels for Yield study_ Pooled",
-        "externalReferences": [
-          {
-            "referenceId": "b0fddf2e-3951-4f89-8502-ef3243a9a9b8",
-            "referenceSource": "breedinginsight.org/programs"
-          },
-          {
-            "referenceID": "bfb76cab-3d02-45ff-853d-b77e4d755ac7",
-            "referenceId": "bfb76cab-3d02-45ff-853d-b77e4d755ac7",
-            "referenceSource": "breedinginsight.org"
-          }
-        ],
-        "observationUnitDbId": "b74fa178-3edc-431a-a7d5-bc5ee2133aab"
-      },
-      {
-        "row": "C",
-        "column": 1,
-        "plateName": "Y_1",
-        "sampleName": "X1_33642_W6_B4",
-        "tissueType": "leaf",
-        "germplasmDbId": "4daa59b3-c4c2-4911-9f71-68d5e39ebef4",
-        "additionalInfo": {
-          "gid": "4",
-          "species": "Medicago sativa",
-          "organism": "Alfalfa",
-          "createdBy": {
-            "userId": "55e268e9-cc02-44e6-ad1e-d99ea9770830",
-            "userName": "BI-DEV Admin"
-          },
-          "obsUnitID": "611befa4-f782-428c-9d77-22e85749aafc"
-        },
-        "sampleDescription": "Cutlivar Panels for Yield study_ Pooled",
-        "externalReferences": [
-          {
-            "referenceId": "b0fddf2e-3951-4f89-8502-ef3243a9a9b8",
-            "referenceSource": "breedinginsight.org/programs"
-          },
-          {
-            "referenceID": "bfb76cab-3d02-45ff-853d-b77e4d755ac7",
-            "referenceId": "bfb76cab-3d02-45ff-853d-b77e4d755ac7",
-            "referenceSource": "breedinginsight.org"
-          }
-        ],
-        "observationUnitDbId": "b74fa178-3edc-431a-a7d5-bc5ee2133aab"
-      },
-      {
-        "row": "D",
-        "column": 1,
-        "plateName": "Y_1",
-        "sampleName": "X1_33642_W6_B4",
-        "tissueType": "leaf",
-        "germplasmDbId": "4daa59b3-c4c2-4911-9f71-68d5e39ebef4",
-        "additionalInfo": {
-          "gid": "4",
-          "species": "Medicago sativa",
-          "organism": "Alfalfa",
-          "createdBy": {
-            "userId": "55e268e9-cc02-44e6-ad1e-d99ea9770830",
-            "userName": "BI-DEV Admin"
-          },
-          "obsUnitID": "611befa4-f782-428c-9d77-22e85749aafc"
-        },
-        "sampleDescription": "Cutlivar Panels for Yield study_ Pooled",
-        "externalReferences": [
-          {
-            "referenceId": "b0fddf2e-3951-4f89-8502-ef3243a9a9b8",
-            "referenceSource": "breedinginsight.org/programs"
-          },
-          {
-            "referenceID": "bfb76cab-3d02-45ff-853d-b77e4d755ac7",
-            "referenceId": "bfb76cab-3d02-45ff-853d-b77e4d755ac7",
-            "referenceSource": "breedinginsight.org"
-          }
-        ],
-        "observationUnitDbId": "b74fa178-3edc-431a-a7d5-bc5ee2133aab"
-      },
-      {
-        "row": "E",
-        "column": 1,
-        "plateName": "Y_1",
-        "sampleName": "X1_33642_W6_P1",
-        "tissueType": "leaf",
-        "germplasmDbId": "9613cbf4-9b2c-4221-9f7e-b33fff064e3a",
-        "additionalInfo": {
-          "gid": "1",
-          "species": "Medicago sativa",
-          "organism": "Alfalfa",
-          "createdBy": {
-            "userId": "55e268e9-cc02-44e6-ad1e-d99ea9770830",
-            "userName": "BI-DEV Admin"
-          },
-          "obsUnitID": "0b5422f0-ef86-4959-8484-b6488d2afa9e"
-        },
-        "sampleDescription": "Cutlivar Panels for Yield study_ Pooled",
-        "externalReferences": [
-          {
-            "referenceId": "b0fddf2e-3951-4f89-8502-ef3243a9a9b8",
-            "referenceSource": "breedinginsight.org/programs"
-          },
-          {
-            "referenceID": "781c212e-cb9f-4bed-a49d-6fd6e140374a",
-            "referenceId": "781c212e-cb9f-4bed-a49d-6fd6e140374a",
-            "referenceSource": "breedinginsight.org"
-          }
-        ],
-        "observationUnitDbId": "55744ac3-897e-4b71-91f6-fefce1bc71b8"
-      },
-      {
-        "row": "F",
-        "column": 1,
-        "plateName": "Y_1",
-        "sampleName": "X1_33642_W6_P1",
-        "tissueType": "leaf",
-        "germplasmDbId": "9613cbf4-9b2c-4221-9f7e-b33fff064e3a",
-        "additionalInfo": {
-          "gid": "1",
-          "species": "Medicago sativa",
-          "organism": "Alfalfa",
-          "createdBy": {
-            "userId": "55e268e9-cc02-44e6-ad1e-d99ea9770830",
-            "userName": "BI-DEV Admin"
-          },
-          "obsUnitID": "0b5422f0-ef86-4959-8484-b6488d2afa9e"
-        },
-        "sampleDescription": "Cutlivar Panels for Yield study_ Pooled",
-        "externalReferences": [
-          {
-            "referenceId": "b0fddf2e-3951-4f89-8502-ef3243a9a9b8",
-            "referenceSource": "breedinginsight.org/programs"
-          },
-          {
-            "referenceID": "781c212e-cb9f-4bed-a49d-6fd6e140374a",
-            "referenceId": "781c212e-cb9f-4bed-a49d-6fd6e140374a",
-            "referenceSource": "breedinginsight.org"
-          }
-        ],
-        "observationUnitDbId": "55744ac3-897e-4b71-91f6-fefce1bc71b8"
-      },
-      {
-        "row": "G",
-        "column": 1,
-        "plateName": "Y_1",
-        "sampleName": "X1_33642_W6_P1",
-        "tissueType": "leaf",
-        "germplasmDbId": "9613cbf4-9b2c-4221-9f7e-b33fff064e3a",
-        "additionalInfo": {
-          "gid": "1",
-          "species": "Medicago sativa",
-          "organism": "Alfalfa",
-          "createdBy": {
-            "userId": "55e268e9-cc02-44e6-ad1e-d99ea9770830",
-            "userName": "BI-DEV Admin"
-          },
-          "obsUnitID": "0b5422f0-ef86-4959-8484-b6488d2afa9e"
-        },
-        "sampleDescription": "Cutlivar Panels for Yield study_ Pooled",
-        "externalReferences": [
-          {
-            "referenceId": "b0fddf2e-3951-4f89-8502-ef3243a9a9b8",
-            "referenceSource": "breedinginsight.org/programs"
-          },
-          {
-            "referenceID": "781c212e-cb9f-4bed-a49d-6fd6e140374a",
-            "referenceId": "781c212e-cb9f-4bed-a49d-6fd6e140374a",
-            "referenceSource": "breedinginsight.org"
-          }
-        ],
-        "observationUnitDbId": "55744ac3-897e-4b71-91f6-fefce1bc71b8"
-      },
-      {
-        "row": "H",
-        "column": 1,
-        "plateName": "Y_1",
-        "sampleName": "X1_33642_W6_P1",
-        "tissueType": "leaf",
-        "germplasmDbId": "9613cbf4-9b2c-4221-9f7e-b33fff064e3a",
-        "additionalInfo": {
-          "gid": "1",
-          "species": "Medicago sativa",
-          "organism": "Alfalfa",
-          "createdBy": {
-            "userId": "55e268e9-cc02-44e6-ad1e-d99ea9770830",
-            "userName": "BI-DEV Admin"
-          },
-          "obsUnitID": "0b5422f0-ef86-4959-8484-b6488d2afa9e"
-        },
-        "sampleDescription": "Cutlivar Panels for Yield study_ Pooled",
-        "externalReferences": [
-          {
-            "referenceId": "b0fddf2e-3951-4f89-8502-ef3243a9a9b8",
-            "referenceSource": "breedinginsight.org/programs"
-          },
-          {
-            "referenceID": "781c212e-cb9f-4bed-a49d-6fd6e140374a",
-            "referenceId": "781c212e-cb9f-4bed-a49d-6fd6e140374a",
-            "referenceSource": "breedinginsight.org"
-          }
-        ],
-        "observationUnitDbId": "55744ac3-897e-4b71-91f6-fefce1bc71b8"
-      },
-      {
-        "row": "A",
-        "column": 2,
-        "plateName": "Y_1",
-        "sampleName": "X1_33642_W6_P2",
-        "tissueType": "leaf",
-        "germplasmDbId": "19cfe44b-544d-46a9-a643-37a883f21bf5",
-        "additionalInfo": {
-          "gid": "2",
-          "species": "Medicago sativa",
-          "organism": "Alfalfa",
-          "createdBy": {
-            "userId": "55e268e9-cc02-44e6-ad1e-d99ea9770830",
-            "userName": "BI-DEV Admin"
-          },
-          "obsUnitID": "b2a81912-d31c-45a2-a58d-197632d02d08"
-        },
-        "sampleDescription": "Cutlivar Panels for Yield study_ Pooled",
-        "externalReferences": [
-          {
-            "referenceId": "b0fddf2e-3951-4f89-8502-ef3243a9a9b8",
-            "referenceSource": "breedinginsight.org/programs"
-          },
-          {
-            "referenceID": "760792e5-fc37-4495-a2ec-ac2fc85e18ff",
-            "referenceId": "760792e5-fc37-4495-a2ec-ac2fc85e18ff",
-            "referenceSource": "breedinginsight.org"
-          }
-        ],
-        "observationUnitDbId": "a3335ebf-4dc4-4eab-98ea-8680e989c03d"
-      },
-      {
-        "row": "B",
-        "column": 2,
-        "plateName": "Y_1",
-        "sampleName": "X1_33642_W6_P2",
-        "tissueType": "leaf",
-        "germplasmDbId": "19cfe44b-544d-46a9-a643-37a883f21bf5",
-        "additionalInfo": {
-          "gid": "2",
-          "species": "Medicago sativa",
-          "organism": "Alfalfa",
-          "createdBy": {
-            "userId": "55e268e9-cc02-44e6-ad1e-d99ea9770830",
-            "userName": "BI-DEV Admin"
-          },
-          "obsUnitID": "b2a81912-d31c-45a2-a58d-197632d02d08"
-        },
-        "sampleDescription": "Cutlivar Panels for Yield study_ Pooled",
-        "externalReferences": [
-          {
-            "referenceId": "b0fddf2e-3951-4f89-8502-ef3243a9a9b8",
-            "referenceSource": "breedinginsight.org/programs"
-          },
-          {
-            "referenceID": "760792e5-fc37-4495-a2ec-ac2fc85e18ff",
-            "referenceId": "760792e5-fc37-4495-a2ec-ac2fc85e18ff",
-            "referenceSource": "breedinginsight.org"
-          }
-        ],
-        "observationUnitDbId": "a3335ebf-4dc4-4eab-98ea-8680e989c03d"
-      },
-      {
-        "row": "C",
-        "column": 2,
-        "plateName": "Y_1",
-        "sampleName": "X1_33642_W6_P2",
-        "tissueType": "leaf",
-        "germplasmDbId": "19cfe44b-544d-46a9-a643-37a883f21bf5",
-        "additionalInfo": {
-          "gid": "2",
-          "species": "Medicago sativa",
-          "organism": "Alfalfa",
-          "createdBy": {
-            "userId": "55e268e9-cc02-44e6-ad1e-d99ea9770830",
-            "userName": "BI-DEV Admin"
-          },
-          "obsUnitID": "b2a81912-d31c-45a2-a58d-197632d02d08"
-        },
-        "sampleDescription": "Cutlivar Panels for Yield study_ Pooled",
-        "externalReferences": [
-          {
-            "referenceId": "b0fddf2e-3951-4f89-8502-ef3243a9a9b8",
-            "referenceSource": "breedinginsight.org/programs"
-          },
-          {
-            "referenceID": "760792e5-fc37-4495-a2ec-ac2fc85e18ff",
-            "referenceId": "760792e5-fc37-4495-a2ec-ac2fc85e18ff",
-            "referenceSource": "breedinginsight.org"
-          }
-        ],
-        "observationUnitDbId": "a3335ebf-4dc4-4eab-98ea-8680e989c03d"
-      },
-      {
-        "row": "D",
-        "column": 2,
-        "plateName": "Y_1",
-        "sampleName": "X1_33642_W6_P2",
-        "tissueType": "leaf",
-        "germplasmDbId": "19cfe44b-544d-46a9-a643-37a883f21bf5",
-        "additionalInfo": {
-          "gid": "2",
-          "species": "Medicago sativa",
-          "organism": "Alfalfa",
-          "createdBy": {
-            "userId": "55e268e9-cc02-44e6-ad1e-d99ea9770830",
-            "userName": "BI-DEV Admin"
-          },
-          "obsUnitID": "b2a81912-d31c-45a2-a58d-197632d02d08"
-        },
-        "sampleDescription": "Cutlivar Panels for Yield study_ Pooled",
-        "externalReferences": [
-          {
-            "referenceId": "b0fddf2e-3951-4f89-8502-ef3243a9a9b8",
-            "referenceSource": "breedinginsight.org/programs"
-          },
-          {
-            "referenceID": "760792e5-fc37-4495-a2ec-ac2fc85e18ff",
-            "referenceId": "760792e5-fc37-4495-a2ec-ac2fc85e18ff",
-            "referenceSource": "breedinginsight.org"
-          }
-        ],
-        "observationUnitDbId": "a3335ebf-4dc4-4eab-98ea-8680e989c03d"
-      },
-      {
-        "row": "E",
-        "column": 2,
-        "plateName": "Y_1",
-        "sampleName": "X1_33642_W6_P3",
-        "tissueType": "leaf",
-        "germplasmDbId": "93bb5da0-f8db-4dd3-ab70-c3bcf728b658",
-        "additionalInfo": {
-          "gid": "3",
-          "species": "Medicago sativa",
-          "organism": "Alfalfa",
-          "createdBy": {
-            "userId": "55e268e9-cc02-44e6-ad1e-d99ea9770830",
-            "userName": "BI-DEV Admin"
-          },
-          "obsUnitID": "1d04e8f1-afcd-4c89-ba17-e9f6550dd0ef"
-        },
-        "sampleDescription": "Cutlivar Panels for Yield study_ Pooled",
-        "externalReferences": [
-          {
-            "referenceId": "b0fddf2e-3951-4f89-8502-ef3243a9a9b8",
-            "referenceSource": "breedinginsight.org/programs"
-          },
-          {
-            "referenceID": "69375af3-ebee-4297-879b-7a6cf44f7676",
-            "referenceId": "69375af3-ebee-4297-879b-7a6cf44f7676",
-            "referenceSource": "breedinginsight.org"
-          }
-        ],
-        "observationUnitDbId": "ff9fa700-9ccc-4b47-91ba-7461fa558320"
-      },
-      {
-        "row": "F",
-        "column": 2,
-        "plateName": "Y_1",
-        "sampleName": "X1_33642_W6_P3",
-        "tissueType": "leaf",
-        "germplasmDbId": "93bb5da0-f8db-4dd3-ab70-c3bcf728b658",
-        "additionalInfo": {
-          "gid": "3",
-          "species": "Medicago sativa",
-          "organism": "Alfalfa",
-          "createdBy": {
-            "userId": "55e268e9-cc02-44e6-ad1e-d99ea9770830",
-            "userName": "BI-DEV Admin"
-          },
-          "obsUnitID": "1d04e8f1-afcd-4c89-ba17-e9f6550dd0ef"
-        },
-        "sampleDescription": "Cutlivar Panels for Yield study_ Pooled",
-        "externalReferences": [
-          {
-            "referenceId": "b0fddf2e-3951-4f89-8502-ef3243a9a9b8",
-            "referenceSource": "breedinginsight.org/programs"
-          },
-          {
-            "referenceID": "69375af3-ebee-4297-879b-7a6cf44f7676",
-            "referenceId": "69375af3-ebee-4297-879b-7a6cf44f7676",
-            "referenceSource": "breedinginsight.org"
-          }
-        ],
-        "observationUnitDbId": "ff9fa700-9ccc-4b47-91ba-7461fa558320"
-      },
-      {
-        "row": "G",
-        "column": 2,
-        "plateName": "Y_1",
-        "sampleName": "X1_33642_W6_P3",
-        "tissueType": "leaf",
-        "germplasmDbId": "93bb5da0-f8db-4dd3-ab70-c3bcf728b658",
-        "additionalInfo": {
-          "gid": "3",
-          "species": "Medicago sativa",
-          "organism": "Alfalfa",
-          "createdBy": {
-            "userId": "55e268e9-cc02-44e6-ad1e-d99ea9770830",
-            "userName": "BI-DEV Admin"
-          },
-          "obsUnitID": "1d04e8f1-afcd-4c89-ba17-e9f6550dd0ef"
-        },
-        "sampleDescription": "Cutlivar Panels for Yield study_ Pooled",
-        "externalReferences": [
-          {
-            "referenceId": "b0fddf2e-3951-4f89-8502-ef3243a9a9b8",
-            "referenceSource": "breedinginsight.org/programs"
-          },
-          {
-            "referenceID": "69375af3-ebee-4297-879b-7a6cf44f7676",
-            "referenceId": "69375af3-ebee-4297-879b-7a6cf44f7676",
-            "referenceSource": "breedinginsight.org"
-          }
-        ],
-        "observationUnitDbId": "ff9fa700-9ccc-4b47-91ba-7461fa558320"
-      },
-      {
-        "row": "H",
-        "column": 2,
-        "plateName": "Y_1",
-        "sampleName": "X1_33642_W6_P3",
-        "tissueType": "leaf",
-        "germplasmDbId": "93bb5da0-f8db-4dd3-ab70-c3bcf728b658",
-        "additionalInfo": {
-          "gid": "3",
-          "species": "Medicago sativa",
-          "organism": "Alfalfa",
-          "createdBy": {
-            "userId": "55e268e9-cc02-44e6-ad1e-d99ea9770830",
-            "userName": "BI-DEV Admin"
-          },
-          "obsUnitID": "1d04e8f1-afcd-4c89-ba17-e9f6550dd0ef"
-        },
-        "sampleDescription": "Cutlivar Panels for Yield study_ Pooled",
-        "externalReferences": [
-          {
-            "referenceId": "b0fddf2e-3951-4f89-8502-ef3243a9a9b8",
-            "referenceSource": "breedinginsight.org/programs"
-          },
-          {
-            "referenceID": "69375af3-ebee-4297-879b-7a6cf44f7676",
-            "referenceId": "69375af3-ebee-4297-879b-7a6cf44f7676",
-            "referenceSource": "breedinginsight.org"
-          }
-        ],
-        "observationUnitDbId": "ff9fa700-9ccc-4b47-91ba-7461fa558320"
-      },
-      {
-        "row": "A",
-        "column": 5,
-        "plateName": "Y_2",
-        "sampleName": "X1_33642_W6_B4",
-        "tissueType": "leaf",
-        "germplasmDbId": "4daa59b3-c4c2-4911-9f71-68d5e39ebef4",
-        "additionalInfo": {
-          "gid": "4",
-          "species": "Medicago sativa",
-          "organism": "Alfalfa",
-          "createdBy": {
-            "userId": "55e268e9-cc02-44e6-ad1e-d99ea9770830",
-            "userName": "BI-DEV Admin"
-          },
-          "obsUnitID": "611befa4-f782-428c-9d77-22e85749aafc"
-        },
-        "sampleDescription": "Cutlivar Panels for Yield study_ Pooled",
-        "externalReferences": [
-          {
-            "referenceId": "b0fddf2e-3951-4f89-8502-ef3243a9a9b8",
-            "referenceSource": "breedinginsight.org/programs"
-          },
-          {
-            "referenceID": "bfb76cab-3d02-45ff-853d-b77e4d755ac7",
-            "referenceId": "bfb76cab-3d02-45ff-853d-b77e4d755ac7",
-            "referenceSource": "breedinginsight.org"
-          }
-        ],
-        "observationUnitDbId": "b74fa178-3edc-431a-a7d5-bc5ee2133aab"
-      },
-      {
-        "row": "B",
-        "column": 5,
-        "plateName": "Y_2",
-        "sampleName": "X1_33642_W6_B4",
-        "tissueType": "leaf",
-        "germplasmDbId": "4daa59b3-c4c2-4911-9f71-68d5e39ebef4",
-        "additionalInfo": {
-          "gid": "4",
-          "species": "Medicago sativa",
-          "organism": "Alfalfa",
-          "createdBy": {
-            "userId": "55e268e9-cc02-44e6-ad1e-d99ea9770830",
-            "userName": "BI-DEV Admin"
-          },
-          "obsUnitID": "611befa4-f782-428c-9d77-22e85749aafc"
-        },
-        "sampleDescription": "Cutlivar Panels for Yield study_ Pooled",
-        "externalReferences": [
-          {
-            "referenceId": "b0fddf2e-3951-4f89-8502-ef3243a9a9b8",
-            "referenceSource": "breedinginsight.org/programs"
-          },
-          {
-            "referenceID": "bfb76cab-3d02-45ff-853d-b77e4d755ac7",
-            "referenceId": "bfb76cab-3d02-45ff-853d-b77e4d755ac7",
-            "referenceSource": "breedinginsight.org"
-          }
-        ],
-        "observationUnitDbId": "b74fa178-3edc-431a-a7d5-bc5ee2133aab"
-      },
-      {
-        "row": "C",
-        "column": 5,
-        "plateName": "Y_2",
-        "sampleName": "X1_33642_W6_B4",
-        "tissueType": "leaf",
-        "germplasmDbId": "4daa59b3-c4c2-4911-9f71-68d5e39ebef4",
-        "additionalInfo": {
-          "gid": "4",
-          "species": "Medicago sativa",
-          "organism": "Alfalfa",
-          "createdBy": {
-            "userId": "55e268e9-cc02-44e6-ad1e-d99ea9770830",
-            "userName": "BI-DEV Admin"
-          },
-          "obsUnitID": "611befa4-f782-428c-9d77-22e85749aafc"
-        },
-        "sampleDescription": "Cutlivar Panels for Yield study_ Pooled",
-        "externalReferences": [
-          {
-            "referenceId": "b0fddf2e-3951-4f89-8502-ef3243a9a9b8",
-            "referenceSource": "breedinginsight.org/programs"
-          },
-          {
-            "referenceID": "bfb76cab-3d02-45ff-853d-b77e4d755ac7",
-            "referenceId": "bfb76cab-3d02-45ff-853d-b77e4d755ac7",
-            "referenceSource": "breedinginsight.org"
-          }
-        ],
-        "observationUnitDbId": "b74fa178-3edc-431a-a7d5-bc5ee2133aab"
-      },
-      {
-        "row": "D",
-        "column": 5,
-        "plateName": "Y_2",
-        "sampleName": "X1_33642_W6_B4",
-        "tissueType": "leaf",
-        "germplasmDbId": "4daa59b3-c4c2-4911-9f71-68d5e39ebef4",
-        "additionalInfo": {
-          "gid": "4",
-          "species": "Medicago sativa",
-          "organism": "Alfalfa",
-          "createdBy": {
-            "userId": "55e268e9-cc02-44e6-ad1e-d99ea9770830",
-            "userName": "BI-DEV Admin"
-          },
-          "obsUnitID": "611befa4-f782-428c-9d77-22e85749aafc"
-        },
-        "sampleDescription": "Cutlivar Panels for Yield study_ Pooled",
-        "externalReferences": [
-          {
-            "referenceId": "b0fddf2e-3951-4f89-8502-ef3243a9a9b8",
-            "referenceSource": "breedinginsight.org/programs"
-          },
-          {
-            "referenceID": "bfb76cab-3d02-45ff-853d-b77e4d755ac7",
-            "referenceId": "bfb76cab-3d02-45ff-853d-b77e4d755ac7",
-            "referenceSource": "breedinginsight.org"
-          }
-        ],
-        "observationUnitDbId": "b74fa178-3edc-431a-a7d5-bc5ee2133aab"
-      },
-      {
-        "row": "E",
-        "column": 5,
-        "plateName": "Y_2",
-        "sampleName": "X1_33642_W6_P1",
-        "tissueType": "leaf",
-        "germplasmDbId": "9613cbf4-9b2c-4221-9f7e-b33fff064e3a",
-        "additionalInfo": {
-          "gid": "1",
-          "species": "Medicago sativa",
-          "organism": "Alfalfa",
-          "createdBy": {
-            "userId": "55e268e9-cc02-44e6-ad1e-d99ea9770830",
-            "userName": "BI-DEV Admin"
-          },
-          "obsUnitID": "0b5422f0-ef86-4959-8484-b6488d2afa9e"
-        },
-        "sampleDescription": "Cutlivar Panels for Yield study_ Pooled",
-        "externalReferences": [
-          {
-            "referenceId": "b0fddf2e-3951-4f89-8502-ef3243a9a9b8",
-            "referenceSource": "breedinginsight.org/programs"
-          },
-          {
-            "referenceID": "781c212e-cb9f-4bed-a49d-6fd6e140374a",
-            "referenceId": "781c212e-cb9f-4bed-a49d-6fd6e140374a",
-            "referenceSource": "breedinginsight.org"
-          }
-        ],
-        "observationUnitDbId": "55744ac3-897e-4b71-91f6-fefce1bc71b8"
-      },
-      {
-        "row": "F",
-        "column": 5,
-        "plateName": "Y_2",
-        "sampleName": "X1_33642_W6_P1",
-        "tissueType": "leaf",
-        "germplasmDbId": "9613cbf4-9b2c-4221-9f7e-b33fff064e3a",
-        "additionalInfo": {
-          "gid": "1",
-          "species": "Medicago sativa",
-          "organism": "Alfalfa",
-          "createdBy": {
-            "userId": "55e268e9-cc02-44e6-ad1e-d99ea9770830",
-            "userName": "BI-DEV Admin"
-          },
-          "obsUnitID": "0b5422f0-ef86-4959-8484-b6488d2afa9e"
-        },
-        "sampleDescription": "Cutlivar Panels for Yield study_ Pooled",
-        "externalReferences": [
-          {
-            "referenceId": "b0fddf2e-3951-4f89-8502-ef3243a9a9b8",
-            "referenceSource": "breedinginsight.org/programs"
-          },
-          {
-            "referenceID": "781c212e-cb9f-4bed-a49d-6fd6e140374a",
-            "referenceId": "781c212e-cb9f-4bed-a49d-6fd6e140374a",
-            "referenceSource": "breedinginsight.org"
-          }
-        ],
-        "observationUnitDbId": "55744ac3-897e-4b71-91f6-fefce1bc71b8"
-      },
-      {
-        "row": "G",
-        "column": 5,
-        "plateName": "Y_2",
-        "sampleName": "X1_33642_W6_P1",
-        "tissueType": "leaf",
-        "germplasmDbId": "9613cbf4-9b2c-4221-9f7e-b33fff064e3a",
-        "additionalInfo": {
-          "gid": "1",
-          "species": "Medicago sativa",
-          "organism": "Alfalfa",
-          "createdBy": {
-            "userId": "55e268e9-cc02-44e6-ad1e-d99ea9770830",
-            "userName": "BI-DEV Admin"
-          },
-          "obsUnitID": "0b5422f0-ef86-4959-8484-b6488d2afa9e"
-        },
-        "sampleDescription": "Cutlivar Panels for Yield study_ Pooled",
-        "externalReferences": [
-          {
-            "referenceId": "b0fddf2e-3951-4f89-8502-ef3243a9a9b8",
-            "referenceSource": "breedinginsight.org/programs"
-          },
-          {
-            "referenceID": "781c212e-cb9f-4bed-a49d-6fd6e140374a",
-            "referenceId": "781c212e-cb9f-4bed-a49d-6fd6e140374a",
-            "referenceSource": "breedinginsight.org"
-          }
-        ],
-        "observationUnitDbId": "55744ac3-897e-4b71-91f6-fefce1bc71b8"
-      },
-      {
-        "row": "H",
-        "column": 5,
-        "plateName": "Y_2",
-        "sampleName": "X1_33642_W6_P1",
-        "tissueType": "leaf",
-        "germplasmDbId": "9613cbf4-9b2c-4221-9f7e-b33fff064e3a",
-        "additionalInfo": {
-          "gid": "1",
-          "species": "Medicago sativa",
-          "organism": "Alfalfa",
-          "createdBy": {
-            "userId": "55e268e9-cc02-44e6-ad1e-d99ea9770830",
-            "userName": "BI-DEV Admin"
-          },
-          "obsUnitID": "0b5422f0-ef86-4959-8484-b6488d2afa9e"
-        },
-        "sampleDescription": "Cutlivar Panels for Yield study_ Pooled",
-        "externalReferences": [
-          {
-            "referenceId": "b0fddf2e-3951-4f89-8502-ef3243a9a9b8",
-            "referenceSource": "breedinginsight.org/programs"
-          },
-          {
-            "referenceID": "781c212e-cb9f-4bed-a49d-6fd6e140374a",
-            "referenceId": "781c212e-cb9f-4bed-a49d-6fd6e140374a",
-            "referenceSource": "breedinginsight.org"
-          }
-        ],
-        "observationUnitDbId": "55744ac3-897e-4b71-91f6-fefce1bc71b8"
-      },
-      {
-        "row": "A",
-        "column": 6,
-        "plateName": "Y_2",
-        "sampleName": "X1_33642_W6_P2",
-        "tissueType": "leaf",
-        "germplasmDbId": "19cfe44b-544d-46a9-a643-37a883f21bf5",
-        "additionalInfo": {
-          "gid": "2",
-          "species": "Medicago sativa",
-          "organism": "Alfalfa",
-          "createdBy": {
-            "userId": "55e268e9-cc02-44e6-ad1e-d99ea9770830",
-            "userName": "BI-DEV Admin"
-          },
-          "obsUnitID": "b2a81912-d31c-45a2-a58d-197632d02d08"
-        },
-        "sampleDescription": "Cutlivar Panels for Yield study_ Pooled",
-        "externalReferences": [
-          {
-            "referenceId": "b0fddf2e-3951-4f89-8502-ef3243a9a9b8",
-            "referenceSource": "breedinginsight.org/programs"
-          },
-          {
-            "referenceID": "760792e5-fc37-4495-a2ec-ac2fc85e18ff",
-            "referenceId": "760792e5-fc37-4495-a2ec-ac2fc85e18ff",
-            "referenceSource": "breedinginsight.org"
-          }
-        ],
-        "observationUnitDbId": "a3335ebf-4dc4-4eab-98ea-8680e989c03d"
-      },
-      {
-        "row": "B",
-        "column": 6,
-        "plateName": "Y_2",
-        "sampleName": "X1_33642_W6_P2",
-        "tissueType": "leaf",
-        "germplasmDbId": "19cfe44b-544d-46a9-a643-37a883f21bf5",
-        "additionalInfo": {
-          "gid": "2",
-          "species": "Medicago sativa",
-          "organism": "Alfalfa",
-          "createdBy": {
-            "userId": "55e268e9-cc02-44e6-ad1e-d99ea9770830",
-            "userName": "BI-DEV Admin"
-          },
-          "obsUnitID": "b2a81912-d31c-45a2-a58d-197632d02d08"
-        },
-        "sampleDescription": "Cutlivar Panels for Yield study_ Pooled",
-        "externalReferences": [
-          {
-            "referenceId": "b0fddf2e-3951-4f89-8502-ef3243a9a9b8",
-            "referenceSource": "breedinginsight.org/programs"
-          },
-          {
-            "referenceID": "760792e5-fc37-4495-a2ec-ac2fc85e18ff",
-            "referenceId": "760792e5-fc37-4495-a2ec-ac2fc85e18ff",
-            "referenceSource": "breedinginsight.org"
-          }
-        ],
-        "observationUnitDbId": "a3335ebf-4dc4-4eab-98ea-8680e989c03d"
-      },
-      {
-        "row": "C",
-        "column": 6,
-        "plateName": "Y_2",
-        "sampleName": "X1_33642_W6_P2",
-        "tissueType": "leaf",
-        "germplasmDbId": "19cfe44b-544d-46a9-a643-37a883f21bf5",
-        "additionalInfo": {
-          "gid": "2",
-          "species": "Medicago sativa",
-          "organism": "Alfalfa",
-          "createdBy": {
-            "userId": "55e268e9-cc02-44e6-ad1e-d99ea9770830",
-            "userName": "BI-DEV Admin"
-          },
-          "obsUnitID": "b2a81912-d31c-45a2-a58d-197632d02d08"
-        },
-        "sampleDescription": "Cutlivar Panels for Yield study_ Pooled",
-        "externalReferences": [
-          {
-            "referenceId": "b0fddf2e-3951-4f89-8502-ef3243a9a9b8",
-            "referenceSource": "breedinginsight.org/programs"
-          },
-          {
-            "referenceID": "760792e5-fc37-4495-a2ec-ac2fc85e18ff",
-            "referenceId": "760792e5-fc37-4495-a2ec-ac2fc85e18ff",
-            "referenceSource": "breedinginsight.org"
-          }
-        ],
-        "observationUnitDbId": "a3335ebf-4dc4-4eab-98ea-8680e989c03d"
-      },
-      {
-        "row": "D",
-        "column": 6,
-        "plateName": "Y_2",
-        "sampleName": "X1_33642_W6_P2",
-        "tissueType": "leaf",
-        "germplasmDbId": "19cfe44b-544d-46a9-a643-37a883f21bf5",
-        "additionalInfo": {
-          "gid": "2",
-          "species": "Medicago sativa",
-          "organism": "Alfalfa",
-          "createdBy": {
-            "userId": "55e268e9-cc02-44e6-ad1e-d99ea9770830",
-            "userName": "BI-DEV Admin"
-          },
-          "obsUnitID": "b2a81912-d31c-45a2-a58d-197632d02d08"
-        },
-        "sampleDescription": "Cutlivar Panels for Yield study_ Pooled",
-        "externalReferences": [
-          {
-            "referenceId": "b0fddf2e-3951-4f89-8502-ef3243a9a9b8",
-            "referenceSource": "breedinginsight.org/programs"
-          },
-          {
-            "referenceID": "760792e5-fc37-4495-a2ec-ac2fc85e18ff",
-            "referenceId": "760792e5-fc37-4495-a2ec-ac2fc85e18ff",
-            "referenceSource": "breedinginsight.org"
-          }
-        ],
-        "observationUnitDbId": "a3335ebf-4dc4-4eab-98ea-8680e989c03d"
-      },
-      {
-        "row": "E",
-        "column": 6,
-        "plateName": "Y_2",
-        "sampleName": "X1_33642_W6_P3",
-        "tissueType": "leaf",
-        "germplasmDbId": "93bb5da0-f8db-4dd3-ab70-c3bcf728b658",
-        "additionalInfo": {
-          "gid": "3",
-          "species": "Medicago sativa",
-          "organism": "Alfalfa",
-          "createdBy": {
-            "userId": "55e268e9-cc02-44e6-ad1e-d99ea9770830",
-            "userName": "BI-DEV Admin"
-          },
-          "obsUnitID": "1d04e8f1-afcd-4c89-ba17-e9f6550dd0ef"
-        },
-        "sampleDescription": "Cutlivar Panels for Yield study_ Pooled",
-        "externalReferences": [
-          {
-            "referenceId": "b0fddf2e-3951-4f89-8502-ef3243a9a9b8",
-            "referenceSource": "breedinginsight.org/programs"
-          },
-          {
-            "referenceID": "69375af3-ebee-4297-879b-7a6cf44f7676",
-            "referenceId": "69375af3-ebee-4297-879b-7a6cf44f7676",
-            "referenceSource": "breedinginsight.org"
-          }
-        ],
-        "observationUnitDbId": "ff9fa700-9ccc-4b47-91ba-7461fa558320"
-      },
-      {
-        "row": "F",
-        "column": 6,
-        "plateName": "Y_2",
-        "sampleName": "X1_33642_W6_P3",
-        "tissueType": "leaf",
-        "germplasmDbId": "93bb5da0-f8db-4dd3-ab70-c3bcf728b658",
-        "additionalInfo": {
-          "gid": "3",
-          "species": "Medicago sativa",
-          "organism": "Alfalfa",
-          "createdBy": {
-            "userId": "55e268e9-cc02-44e6-ad1e-d99ea9770830",
-            "userName": "BI-DEV Admin"
-          },
-          "obsUnitID": "1d04e8f1-afcd-4c89-ba17-e9f6550dd0ef"
-        },
-        "sampleDescription": "Cutlivar Panels for Yield study_ Pooled",
-        "externalReferences": [
-          {
-            "referenceId": "b0fddf2e-3951-4f89-8502-ef3243a9a9b8",
-            "referenceSource": "breedinginsight.org/programs"
-          },
-          {
-            "referenceID": "69375af3-ebee-4297-879b-7a6cf44f7676",
-            "referenceId": "69375af3-ebee-4297-879b-7a6cf44f7676",
-            "referenceSource": "breedinginsight.org"
-          }
-        ],
-        "observationUnitDbId": "ff9fa700-9ccc-4b47-91ba-7461fa558320"
-      },
-      {
-        "row": "G",
-        "column": 6,
-        "plateName": "Y_2",
-        "sampleName": "X1_33642_W6_P3",
-        "tissueType": "leaf",
-        "germplasmDbId": "93bb5da0-f8db-4dd3-ab70-c3bcf728b658",
-        "additionalInfo": {
-          "gid": "3",
-          "species": "Medicago sativa",
-          "organism": "Alfalfa",
-          "createdBy": {
-            "userId": "55e268e9-cc02-44e6-ad1e-d99ea9770830",
-            "userName": "BI-DEV Admin"
-          },
-          "obsUnitID": "1d04e8f1-afcd-4c89-ba17-e9f6550dd0ef"
-        },
-        "sampleDescription": "Cutlivar Panels for Yield study_ Pooled",
-        "externalReferences": [
-          {
-            "referenceId": "b0fddf2e-3951-4f89-8502-ef3243a9a9b8",
-            "referenceSource": "breedinginsight.org/programs"
-          },
-          {
-            "referenceID": "69375af3-ebee-4297-879b-7a6cf44f7676",
-            "referenceId": "69375af3-ebee-4297-879b-7a6cf44f7676",
-            "referenceSource": "breedinginsight.org"
-          }
-        ],
-        "observationUnitDbId": "ff9fa700-9ccc-4b47-91ba-7461fa558320"
-      },
-      {
-        "row": "H",
-        "column": 6,
-        "plateName": "Y_2",
-        "sampleName": "X1_33642_W6_P3",
-        "tissueType": "leaf",
-        "germplasmDbId": "93bb5da0-f8db-4dd3-ab70-c3bcf728b658",
-        "additionalInfo": {
-          "gid": "3",
-          "species": "Medicago sativa",
-          "organism": "Alfalfa",
-          "createdBy": {
-            "userId": "55e268e9-cc02-44e6-ad1e-d99ea9770830",
-            "userName": "BI-DEV Admin"
-          },
-          "obsUnitID": "1d04e8f1-afcd-4c89-ba17-e9f6550dd0ef"
-        },
-        "sampleDescription": "Cutlivar Panels for Yield study_ Pooled",
-        "externalReferences": [
-          {
-            "referenceId": "b0fddf2e-3951-4f89-8502-ef3243a9a9b8",
-            "referenceSource": "breedinginsight.org/programs"
-          },
-          {
-            "referenceID": "69375af3-ebee-4297-879b-7a6cf44f7676",
-            "referenceId": "69375af3-ebee-4297-879b-7a6cf44f7676",
-            "referenceSource": "breedinginsight.org"
-          }
-        ],
-        "observationUnitDbId": "ff9fa700-9ccc-4b47-91ba-7461fa558320"
-      }
-    ]
-  };
+  filterByPlate(row: TableRow<Sample>, input: string) {
+    return row.data.plateName === input;
+  }
+
+  filterByGID(row: TableRow<Sample>, input: string) {
+    return row.data.additionalInfo.gid === input;
+  }
+
+  filterByGermplasmName(row: TableRow<Sample>, input: string) {
+    return row.data.additionalInfo.germplasmName === input;
+  }
+
+  sortPlates(a: TableRow<Sample>, b: TableRow<Sample>, isAsc: boolean) {
+    if (isAsc) {
+      return a.data.plateName.localeCompare(b.data.plateName, undefined, {numeric: true, sensitivity: 'base'});
+    } else {
+      return b.data.plateName.localeCompare(a.data.plateName, undefined, {numeric: true, sensitivity: 'base'});
+    }
+  }
 }
 </script>

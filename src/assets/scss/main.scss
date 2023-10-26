@@ -136,6 +136,10 @@ main ul {
   }
 }
 
+.list-no-style {
+  list-style-type: none;
+}
+
 nav.pagination {
   align-items: normal;
   justify-content: flex-start;
@@ -265,11 +269,21 @@ img {
   }
 }
 
-// Added to override message background colors for modals only
-.modal-card-body .message.is-info,
-.modal-card-body .message.is-danger,
-.modal-card-body message.is-success {
-  background-color: white;
+.modal {
+  .modal-background {
+    backdrop-filter: blur(5px);
+  }
+
+  // Added to override message background colors for modals only
+  .modal-card-body {
+    .message.is-info, .message.is-danger, message.is-success {
+      background-color: white;
+    }
+  }
+
+  .modal-card-foot {
+    justify-content: center;
+  }
 }
 
 // Added to support new account creation process
@@ -289,6 +303,7 @@ nav.tabs li.is-active {
     .tabs {
       ul {
         border-right: 1px $turquoise solid;
+        margin-left: 0px;
       }
       &.is-boxed {
         li a {
@@ -545,10 +560,6 @@ table tr.is-edited + .detail {
 
 .orcidBtn {
   margin-bottom: 7em;
-}
-
-.modal-background {
-  backdrop-filter: blur(5px);
 }
 
 .program-selection-level {
@@ -825,10 +836,20 @@ th.activesort.sortcolumn, th.sortcolumn:hover {
 }
 
 // Some css to only overlay on tbody for tables instead of entire table like b-table
-div.b-table.loading-active tbody {
-  opacity: 0.25;
-  z-index: 1;
-  pointer-events: none;
+div.b-table {
+  .loading-active tbody {
+    opacity: 0.25;
+    z-index: 1;
+    pointer-events: none;
+  }
+  .th-wrap {
+    .icon {
+      margin-left: 0!important;
+    }
+    .multi-sort-cancel-icon {
+      margin-left:3px;
+    }
+  }
 }
 .loading-overlay {
   &, .loading-background {
@@ -987,6 +1008,9 @@ label.environment-option-label {
 }
 
 .submission-details {
+  .loading-indicator {
+    min-height: 200px;
+  }
   .plate-row-header {
     background-color: $primary-light;
     font-weight: bold;
@@ -1000,15 +1024,5 @@ label.environment-option-label {
   }
 }
 
-.sample-tooltip {
-  .tooltip-content {
-    //width: auto!important;
-    //display: flex;
-  }
-  .tooltip-trigger {
-    &:hover {
-      cursor: pointer;
-    }
-  }
-}
+
 

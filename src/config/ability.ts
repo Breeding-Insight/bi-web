@@ -47,6 +47,7 @@ const rolePermissions: Record<string, DefinePermissions> = {
     can('archive', 'ProgramUser');
     can('manage', 'User');
     can('access', 'AdminSection');
+    can('submit', 'Submission');
   }
 };
 

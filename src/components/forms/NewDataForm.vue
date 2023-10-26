@@ -26,7 +26,7 @@ export default class NewDataForm extends DataForm {
 
   created () {
     super.formClass = 'new-form';
-    super.record = this.newRecord;
+    super.formRecord = this.newRecord;
   }
 }
 

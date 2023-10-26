@@ -19,15 +19,16 @@
     <router-link v-if="this.germplasmUUID" v-bind:to="{name: 'germplasm-details', params: {programId: activeProgram.id, germplasmId: this.germplasmUUID}}">
       {{ this.germplasmGID }}
     </router-link>
-    <div v-else>
+    <router-link v-else v-bind:to="{name: 'germplasm-details', params: {programId: activeProgram.id, germplasmId: 'gid-'+this.germplasmGID}}">
       {{ this.germplasmGID }}
-    </div>
+    </router-link>
 </template>
 
 <script lang="ts">
 import {Component, Prop, Vue} from 'vue-property-decorator'
 import { mapGetters } from 'vuex'
 import {Program} from "@/breeding-insight/model/Program";
+import { Germplasm } from '@/breeding-insight/brapi/model/germplasm';
 
 @Component({
   computed: {
@@ -43,6 +44,17 @@ export default class GermplasmLink extends Vue {
   private germplasmUUID!: String;
   @Prop()
   private germplasmGID!: String;
+  private loading = true;
+  private germplasm?: Germplasm;
+
+  fetchGermplasm() {
+    if(this.germplasm === undefined) {
+      setTimeout(() => {
+        this.germplasm = {germplasmName: "X2_33649_W6_B4"} as Germplasm;
+        this.loading = false;
+      }, 1000);
+    }
+  }
 
 }
 
