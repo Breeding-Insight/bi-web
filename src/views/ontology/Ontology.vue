@@ -41,21 +41,15 @@
           >
             <a>Archived</a>
           </router-link>
-          <button
-              v-if="$ability.can('create', 'Trait') && !isSubscribed"
-              class="button is-primary is-pulled-right has-text-weight-bold above-tabs-button"
-              v-on:click="$router.push({name: 'import-ontology', params: {programId: activeProgram.id}})"
-          >
-        <span class="icon is-small">
-          <PlusCircleIcon
-              size="1.5x"
-              aria-hidden="true"
+          <ActionMenu
+              class = "is-pulled-right has-text-weight-bold above-tabs-button"
+              v-bind:is-primary="true"
+              v-bind:id="'manage-experiment-dropdown-button'"
+              v-bind:button-text="'Manage Ontology'"
+              v-bind:action-menu-items=actions
+              v-on:import-file="importFile()"
+              v-on:download-file="downloadFile()"
           />
-        </span>
-            <span>
-          Import Batch File
-        </span>
-          </button>
         </ul>
       </nav>
     </section>
@@ -79,10 +73,12 @@
   import OntologyArchivedTable from "@/components/ontology/OntologyArchivedTable.vue";
   import {SubscribedOntology} from "@/breeding-insight/model/SubscribedOntology";
   import {PlusCircleIcon} from 'vue-feather-icons'
+  import ActionMenu from "@/components/layouts/menus/ActionMenu.vue";
+  import {ActionMenuItem} from "@/breeding-insight/model/ActionMenuItem";
 
   @Component({
     components: {
-      OntologyArchivedTable, OntologyActiveTable, PlusCircleIcon
+      OntologyArchivedTable, OntologyActiveTable, PlusCircleIcon, ActionMenu
     },
     computed: {
       ...mapGetters([
@@ -99,5 +95,31 @@
     private isSubscribed?: boolean;
     private subscribedOntology?: SubscribedOntology;
 
+    private actions: ActionMenuItem[] =
+        [
+            new ActionMenuItem('ontology-import-file', 'import-file', 'Import file', this.$ability.cannot('create', 'Import')),
+          new ActionMenuItem('ontology-download-file', 'download-file', 'Download file',  false)
+        ];
+
+    private importFile() {
+      this.$router.push({
+            name: 'import-ontology',
+            params: {
+              programId: this.activeProgram!.id!
+            },
+      });
+    }
+
+    private downloadFile() {
+      console.info('download file.');
+      if (this.activeProgram) {
+        console.info('about to open: ' + process.env.VUE_APP_BI_API_ROOT + '/v1/programs/' + this.activeProgram.id + '/traits/export?fileExtension=XLS');
+        window.open(process.env.VUE_APP_BI_API_ROOT + '/v1/programs/' + this.activeProgram.id + '/traits/export?fileExtension=XLSX' ,
+              '_blank');
+        console.info('done');
+        return true;
+      }
+      return false;
+    }
   }
 </script>
