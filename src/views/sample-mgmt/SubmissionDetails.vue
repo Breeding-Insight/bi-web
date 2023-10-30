@@ -86,11 +86,20 @@
           <b-tabs vertical :animated="false" :type="'is-boxed'" v-if="!submissionDetailsLoading">
             <template v-for="plate in submission.plates">
               <b-tab-item :label="plate.plateName" :key="plate.plateName">
-                <article class="message is-success">
-                  <div class="message-body">
-                    Click on a well to see more details, including sample name and germplasm name
+                <div class="columns is-vcentered">
+                  <div class="column">
+                    <article class="message is-success">
+                      <div class="message-body">
+<!--                        TODO figure out why this text on the same line causes the DIV to be too wide and move below the tabs-->
+                        Click on a well to see more details, including sample name and germplasm name.<br>To download the plate layout, click the "Download" button to the right.
+                      </div>
+                    </article>
                   </div>
-                </article>
+                  <div class="column is-narrow">
+                    <button class="button is-primary is-outlined is-small" v-on:click="downloadPlate(plate)">Download</button>
+                    <button class="button is-primary is-outlined is-small ml-1" v-on:click="downloadPlate()">Download All</button>
+                  </div>
+                </div>
                 <b-table :data="plate.layout" :narrowed="true" class="plate-layout">
                   <b-table-column v-slot="props" cell-class="plate-row-header">
                     {{ String.fromCharCode(65 + props.index) }}
@@ -297,7 +306,7 @@
         v-on:deactivate="showUpdateModal = false"
     >
       <div class="columns is-vcentered">
-        <div class="column is-one-quarter"><label>Status: </label></div>
+        <div class="column is-narrow"><label>Status: </label></div>
         <div class="column">
           <div class="select">
             <select v-model="statusEdit">
@@ -345,6 +354,9 @@ import GenericModal from "@/components/modals/GenericModal.vue";
 import {VendorOrderSubmission} from "@/breeding-insight/brapi/model/geno/vendorOrderSubmission";
 import {VendorOrderStatusResponseResult} from "@/breeding-insight/brapi/model/geno/vendorOrderStatusResponseResult";
 import StatusEnum = VendorOrderStatusResponseResult.StatusEnum;
+import {Plate} from "@/breeding-insight/brapi/model/geno/plate";
+import * as XLSX from "xlsx";
+import {WorkBook, WorkSheet} from "xlsx";
 
 @Component({
   components: {
@@ -406,26 +418,38 @@ export default class SubmissionDetails extends ProgramsBase {
       }
       this.submission = response.value;
 
-      this.actions = [];
-      if (this.$ability.can('create', 'Import')) {
-        this.actions.push(new ActionMenuItem('submission-import-file', 'import-file', 'Import file'));
-      }
-      this.actions.push(new ActionMenuItem('submission-download-file', 'download-file', 'Generate and Download DArT file'));
-      this.actions.push(new ActionMenuItem('submission-download-lookup-file', 'download-lookup-file', 'Download Lookup file'));
-      if (this.$ability.can('submit', 'Submission') && !this.submission!.vendorOrderId) {
-        this.actions.push(new ActionMenuItem('submission-manual-update-status', 'manual-update-status', 'Manually Update Status'));
-      }
-      if (this.$ability.can('submit', 'Submission') && !this.submission!.vendorOrderId && !this.submission!.submitted) {
-        this.actions.push(new ActionMenuItem('submission-submit', 'submit', 'Submit to DArT'));
-      } else if (this.submission!.submitted && this.submission!.vendorOrderId && this.submission!.vendorStatus !== StatusEnum.Completed.toUpperCase()) {
-        this.actions.push(new ActionMenuItem('submission-check-status', 'check-status', 'Check Vendor Status'));
-      }
+      this.updateActionsMenu();
     } catch (e) {
       this.$emit('show-error-notification', 'Error while trying to load submission details');
       throw e;
     } finally {
       this.submissionLoading = false;
     }
+  }
+
+  private updateActionsMenu() {
+    let actionsMenuItems = [];
+
+    if (this.$ability.can('create', 'Import')) {
+      actionsMenuItems.push(new ActionMenuItem('submission-import-file', 'import-file', 'Import file'));
+    }
+
+    actionsMenuItems.push(new ActionMenuItem('submission-download-file', 'download-file', 'Generate and Download DArT file'));
+    actionsMenuItems.push(new ActionMenuItem('submission-download-lookup-file', 'download-lookup-file', 'Download Lookup file'));
+
+    if (this.$ability.can('submit', 'Submission') && !this.submission!.vendorOrderId) {
+      actionsMenuItems.push(new ActionMenuItem('submission-manual-update-status', 'manual-update-status', 'Manually Update Status'));
+    }
+
+    if(process.env.VUE_APP_BRAPI_VENDOR_SUBMISSION_ENABLED === 'true') {
+      if (this.$ability.can('submit', 'Submission') && !this.submission!.vendorOrderId && !this.submission!.submitted) {
+        actionsMenuItems.push(new ActionMenuItem('submission-submit', 'submit', 'Submit to DArT'));
+      } else if (this.submission!.submitted && this.submission!.vendorOrderId && this.submission!.vendorStatus !== StatusEnum.Completed.toUpperCase()) {
+        actionsMenuItems.push(new ActionMenuItem('submission-check-status', 'check-status', 'Check Vendor Status'));
+      }
+    }
+
+    this.actions = actionsMenuItems;
   }
 
   async getSubmissionDetails() {
@@ -629,6 +653,44 @@ export default class SubmissionDetails extends ProgramsBase {
     } else {
       return "NOT SUBMITTED";
     }
+  }
+
+  downloadPlate(plate?: Plate) {
+    if(plate) {
+      this.downloadIndividualPlate(plate);
+    } else {
+      const wb = XLSX.utils.book_new();
+      for(let i = 0; i < this.submission.plates.length; i++) {
+        this.createPlateSheet(this.submission.plates[i], wb);
+      }
+      XLSX.writeFile(wb, this.submission!.name + '_all_plate_export.xlsx');
+    }
+  }
+
+  downloadIndividualPlate(plate: Plate) {
+    const wb = XLSX.utils.book_new();
+
+    this.createPlateSheet(plate, wb);
+
+    XLSX.writeFile(wb, this.submission!.name + "_"+plate.plateName+'_plate_export.xlsx');
+  }
+
+  createPlateSheet(plate: Plate, wb:WorkBook) {
+    const plate_ws: XLSX.WorkSheet = XLSX.utils.book_new();
+    let plateData = [[
+      'Submission',
+      this.submission!.name
+    ],[
+      'Plate',
+      plate.plateName
+    ],[],[],['', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12']];
+
+    for(let i = 0; i < plate.layout.length; i++) {
+      plateData.push([String.fromCharCode(65 + i)].concat(plate.layout[i].map((sample:Sample) => `${sample!.additionalInfo!.germplasmName} [GID-${sample!.additionalInfo!.gid}]`)));
+    }
+
+    XLSX.utils.sheet_add_aoa(plate_ws, plateData);
+    XLSX.utils.book_append_sheet(wb, plate_ws, plate.plateName);
   }
 
   filterByPlate(row: TableRow<Sample>, input: string) {
