@@ -146,7 +146,6 @@ export default class SampleManagement extends Vue {
   private loading = true;
   private submissions: Array<SampleSubmission> = new Array<SampleSubmission>();
   private paginationController: PaginationController = new PaginationController();
-  private showGenerateFileModal = false;
 
   mounted() {
     this.fetchSubmissions();
@@ -161,14 +160,6 @@ export default class SampleManagement extends Vue {
     } finally {
       this.loading = false;
     }
-  }
-
-  openModal() {
-    this.showGenerateFileModal = true;
-  }
-
-  closeModal() {
-    this.showGenerateFileModal = false;
   }
 
   statusTagType(status?:string) {
