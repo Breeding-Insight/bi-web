@@ -45,11 +45,14 @@
               tag="li" active-class="is-active">
             <a>Genotypic Data</a>
           </router-link>
+          <!-- BI-1963 - Comment out data mapping tab, left url access in case want to get to it -->
+          <!--
           <router-link
               v-bind:to="{name: 'data-mapping', params: {programId: activeProgram.id}}"
               tag="li" active-class="is-active">
             <a>Data Mapping<span class="ml-2 tag is-warning">Beta</span></a>
           </router-link>
+          -->
         </ul>
       </nav>
     </section>
