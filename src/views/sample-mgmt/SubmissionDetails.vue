@@ -598,7 +598,7 @@ export default class SubmissionDetails extends ProgramsBase {
       if (response.isErr()) {
         throw response.value;
       }
-      this.submission = response.value;
+      await this.getSubmission(false);
     } catch (e) {
       this.$emit('show-error-notification', 'Error while trying to check order status');
     } finally {
