@@ -161,10 +161,10 @@ export default class BrapiInfo extends Vue {
     let settings = {
       'url': brapiRootPath,
       'name': 'DeltaBreed',
-      'v': 2,
-      'ps': 1000,
-      'cs': 500,
-      'st': 120,
+      'v': '2',
+      'ps': '1000',
+      'cs': '500',
+      'st': '120',
       'flow': 'implicit',
       'oidc': this.getBrAPIRootPath() + '/.well-known/openid-configuration',
       'cat': 'label'
