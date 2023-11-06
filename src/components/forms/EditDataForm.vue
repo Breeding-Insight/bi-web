@@ -21,12 +21,9 @@ import DataForm from '@/components/forms/DataForm.vue';
 
 @Component
 export default class EditDataForm extends DataForm {
-  @Prop()
-  editRecord!:Object;
 
   created () {
     super.formClass = 'edit-form';
-    super.formRecord = this.editRecord;
   }
 }
 

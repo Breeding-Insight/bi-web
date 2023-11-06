@@ -58,7 +58,7 @@
     <NewDataForm
       v-if="newLocationActive"
       v-bind:row-validations="locationValidations"
-      v-bind:new-record.sync="newLocation"
+      v-bind:record.sync="newLocation"
       v-bind:data-form-state="newLocationFormState"
       v-on:submit="saveLocation"
       v-on:cancel="cancelNewLocation"
