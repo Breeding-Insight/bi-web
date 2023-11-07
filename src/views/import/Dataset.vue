@@ -557,7 +557,7 @@ export default class Dataset extends ProgramsBase {
     } catch (err: any) {
 
       // Display error that experiment cannot be loaded
-      this.$emit('show-error-notification', 'Error while trying to load data set' + err.message());
+      this.$emit('show-error-notification', 'Error while trying to load data set');
       throw err;
     } finally {
       this.loading = false;
