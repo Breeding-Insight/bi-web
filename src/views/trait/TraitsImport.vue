@@ -119,6 +119,7 @@ import {Trait} from "@/breeding-insight/model/Trait";
 import {ProgramUpload} from "@/breeding-insight/model/ProgramUpload";
 import {AxiosResponse} from "axios";
 import {DataFormEventBusHandler} from "@/components/forms/DataFormEventBusHandler";
+import {DEACTIVATE_ALL_NOTIFICATIONS} from "@/store/mutation-types";
 
 enum ImportState {
   CHOOSE_FILE = "CHOOSE_FILE",
@@ -288,6 +289,7 @@ export default class TraitsImport extends ProgramsBase {
   }
 
   upload() {
+    this.$store.commit(DEACTIVATE_ALL_NOTIFICATIONS);
     TraitUploadService.uploadFile(this.activeProgram!.id!, this.file!).then((response) => {
       let count = 0;
       let traits: Trait[] = [];
@@ -312,6 +314,7 @@ export default class TraitsImport extends ProgramsBase {
   }
 
   abort() {
+    this.$store.commit(DEACTIVATE_ALL_NOTIFICATIONS);
     // TODO: actually cancel request
     this.showCancelledNotification();
   }
@@ -340,6 +343,7 @@ export default class TraitsImport extends ProgramsBase {
   }
 
   async confirm() {
+    this.$store.commit(DEACTIVATE_ALL_NOTIFICATIONS);
     const name = this.activeProgram && this.activeProgram.name ? this.activeProgram.name : 'the program';
     try {
       // fetch uploaded traits
