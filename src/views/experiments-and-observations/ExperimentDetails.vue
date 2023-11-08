@@ -23,28 +23,18 @@
     <h1 class="title">
       {{experiment.trialName}}
     </h1>
-      <span class="is-pulled-right is-flex" >
-        <router-link
-            v-bind:to="{name: 'experiment-import', params: {programId: activeProgram.id}}"
-            role="menuitem"
-            class="button is-primary is-outlined mr-2"
-        >
-          Import file
-        </router-link>
 
-        <ExperimentObservationsDownloadButton
-            v-bind:modal-title="`Download ${experiment.trialName}`"
-            v-bind:trial-db-id="experimentUUID"
-            v-on:show-error-notification ="$emit('show-error-notification', $event)"
-            anchor-class="button is-primary is-outlined"
-        >
-          Download file
-        </ExperimentObservationsDownloadButton>
-      </span>
-
+    <ExperimentObservationsDownloadModal
+        v-bind:experiment="experiment"
+        v-bind:modal-title="`Download ${experiment.trialName}`"
+        v-bind:trial-id="experimentUUID"
+        v-bind:active="downloadModalActive"
+        v-on:show-error-notification ="$emit('show-error-notification', $event)"
+        v-on:deactivate="downloadModalActive = false"
+    />
 
     <div v-if="!experimentLoading && experiment!=null">
-      <br/>
+
       <div class="columns is-multiline is-align-items-stretch mt-4">
         <article class="column ">
           <section>
@@ -66,8 +56,36 @@
             </ul>
           </section>
         </article>
+        <article class="column is-narrow">
+          <ActionMenu v-bind:is-primary="true"
+                      v-bind:id="'manage-experiment-dropdown-button'"
+                      v-bind:button-text="'Manage Experiment'"
+                      v-bind:action-menu-items=actions
+                      v-on:import-file="importFile()"
+                      v-on:download-file="downloadFile()"
+          />
+        </article>
       </div>
 
+    </div>
+    <section>
+      <nav class="tabs is-boxed">
+        <ul>
+          <router-link
+              v-bind:to="{name: 'experiment_obs_dataset', params: {programId: activeProgram.id, experimentId: experimentUUID, datasetId: 'observation'}}"
+              tag="li" active-class="is-active">
+            <a>Observation Dataset</a>
+          </router-link>
+          <!--TODO: Will need to loop through a list of datasets and add a tab for each.-->
+        </ul>
+      </nav>
+    </section>
+    <div class="tab-content">
+      <router-view
+          @show-success-notification="$emit('show-success-notification', $event)"
+          @show-info-notification="$emit('show-info-notification', $event)"
+          @show-error-notification="$emit('show-error-notification', $event)"
+      />
     </div>
   </div>
 </template>
@@ -76,18 +94,21 @@
 import {Component, Watch} from "vue-property-decorator";
 import {mapGetters} from "vuex";
 import {PlusCircleIcon} from 'vue-feather-icons'
-import TrialsAndStudiesBase from "@/components/trials/TrialsAndStudiesBase.vue";
 import {Program} from "@/breeding-insight/model/Program";
 import {Result} from "@/breeding-insight/model/Result";
 import {ExperimentService} from "@/breeding-insight/service/ExperimentService";
 import ClickOutside from 'vue-click-outside';
 import {Trial} from "@/breeding-insight/model/Trial";
-import ExperimentObservationsDownloadButton from "@/components/experiments/ExperimentObservationsDownloadButton.vue";
+import ProgramsBase from "@/components/program/ProgramsBase.vue";
+import ActionMenu from "@/components/layouts/menus/ActionMenu.vue";
+import {ActionMenuItem} from "@/breeding-insight/model/ActionMenuItem";
+import ExperimentObservationsDownloadModal from "@/components/experiments/ExperimentObservationsDownloadModal.vue";
 
 @Component({
   components: {
     PlusCircleIcon,
-    ExperimentObservationsDownloadButton
+    ExperimentObservationsDownloadModal,
+    ActionMenu
   },
   computed: {
     ...mapGetters([
@@ -98,17 +119,33 @@ import ExperimentObservationsDownloadButton from "@/components/experiments/Exper
     ClickOutside
   }
 })
-export default class ExperimentDetails extends TrialsAndStudiesBase {
+export default class ExperimentDetails extends ProgramsBase {
   private activeProgram: Program;
   private experiment: Trial;
   private experimentLoading: boolean = true;
-  private actionSelectActive: boolean = false;
+  private downloadModalActive: boolean = false;
 
+  private actions: ActionMenuItem[] = [
+      new ActionMenuItem('experiment-import-file', 'import-file', 'Import file'),
+      new ActionMenuItem('experiment-download-file', 'download-file', 'Download file')
+  ];
 
   mounted () {
     this.getExperiment();
   }
 
+  private importFile() {
+    this.$router.push({
+      name: 'experiment-import',
+      params: {
+        programId: this.activeProgram!.id!
+      },
+    });
+  }
+
+  private downloadFile() {
+    this.downloadModalActive = true;
+  }
 
   get experimentUUID(): string {
     return this.$route.params.experimentId;
@@ -157,14 +194,5 @@ export default class ExperimentDetails extends TrialsAndStudiesBase {
       this.experimentLoading = false;
     }
   }
-
-  downloadFile(){
-    alert("'Download file' is not yet implemented.");
-    this.actionSelectActive = false;
-  }
-  hideActionSelector(){
-    this.actionSelectActive = false;
-  }
-
 }
 </script>

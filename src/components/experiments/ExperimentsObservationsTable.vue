@@ -18,6 +18,15 @@
 <template>
   <section id="experimentsObservationsTableLabel">
 
+    <ExperimentObservationsDownloadModal
+        v-bind:experiment="downloadExperiment"
+        v-bind:modal-title="downloadModalTitle"
+        v-bind:trial-id="downloadTrialId"
+        v-bind:active="downloadModalActive"
+        v-on:show-error-notification ="$emit('show-error-notification', $event)"
+        v-on:deactivate="downloadModalActive = false"
+    />
+
     <div class="is-clearfix"></div>
 
     <ExpandableTable
@@ -53,14 +62,7 @@
         </template>
       </b-table-column>
       <b-table-column field="data.listDbId" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-        <ExperimentObservationsDownloadButton
-          v-bind:modal-title="`Download ${props.row.data.trialName}`"
-          v-bind:trial-db-id="BrAPIUtils.getBreedingInsightId(props.row.data.externalReferences, '/trials')"
-          v-on:show-error-notification="$emit('show-error-notification', $event)"
-        >
-          Download
-        </ExperimentObservationsDownloadButton>
-
+        <a href="javascript:void(0)" v-on:click="openDownloadModal(props.row.data)">Download</a>
       </b-table-column>
 
       <template v-slot:emptyMessage>
@@ -91,12 +93,12 @@ import {
 } from "@/breeding-insight/model/Sort";
 import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
 import {UPDATE_EXPERIMENT_SORT} from "@/store/sorting/mutation-types";
-import ExperimentObservationsDownloadButton from "@/components/experiments/ExperimentObservationsDownloadButton.vue";
 import {BrAPIUtils} from "@/breeding-insight/utils/BrAPIUtils";
+import ExperimentObservationsDownloadModal from "@/components/experiments/ExperimentObservationsDownloadModal.vue";
 
 @Component({
   mixins: [validationMixin],
-  components: {ExperimentObservationsDownloadButton, ExpandableTable, EmptyTableMessage, TableColumn},
+  components: {ExperimentObservationsDownloadModal, ExpandableTable, EmptyTableMessage, TableColumn},
   computed: {
     ...mapGetters([
       'activeProgram'
@@ -137,6 +139,11 @@ export default class ExperimentsObservationsTable extends Vue {
     'createdBy': ExperimentSortField.CreatedBy
   };
 
+  private downloadModalActive: boolean = false;
+  private downloadExperiment?: Trial = new Trial();
+  private downloadModalTitle?: string = 'undefined';
+  private downloadTrialId?: string = 'undefined';
+
   mounted() {
     this.experimentCallStack = new CallStack(this.experimentsFetch(
         this.activeProgram!.id!,
@@ -175,7 +182,6 @@ export default class ExperimentsObservationsTable extends Vue {
       // Account for brapi 0 indexing of paging
       this.paginationController.currentPage = this.paginationController.currentPage.valueOf() + 1;
       this.experiments = response.result.data;
-      console.log( this.experiments);
       this.experimentsLoading = false;
 
     } catch (err) {
@@ -192,6 +198,13 @@ export default class ExperimentsObservationsTable extends Vue {
     } else {
       return "archived";
     }
+  }
+
+  openDownloadModal(experiment: Trial) {
+    this.downloadModalActive = true;
+    this.downloadExperiment = experiment;
+    this.downloadModalTitle = "Download " + experiment.trialName;
+    this.downloadTrialId = BrAPIUtils.getBreedingInsightId(experiment.externalReferences!, '/trials');
   }
 
   setSort(field: string, order: string) {

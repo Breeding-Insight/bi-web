@@ -17,7 +17,7 @@
 
 <template>
   <div class="columns is-multiline is-align-items-stretch mt-4">
-    <article class="column">
+    <article class="column" v-if="sandboxConfig === SandboxMode.Public">
       <div
         class="card"
         style="height:100%"
@@ -107,15 +107,6 @@
             Our breeding collaborators
           </h1>
           <p>The USDA Agricultural Research Service (ARS) supports breeding programs for approximately 90 specialty species.</p>
-          <p>Breeding Insight is currently working with six species:</p>
-          <ul>
-            <li>Alfalfa</li>
-            <li>Blueberry</li>
-            <li>Table Grape</li>
-            <li>Atlantic Salmon</li>
-            <li>Rainbow Trout</li>
-            <li>Sweetpotato</li>
-          </ul>
           <p>Learn more about our projects for each species at <a href="https://www.breedinginsight.org">www.breedinginsight.org</a>.</p>
         </div>
       </div>
@@ -175,6 +166,10 @@
 
       // Start login process
       window.location.href = process.env.VUE_APP_BI_API_ROOT+'/sso/start';
+    }
+
+    get sandboxConfig() {
+      return process.env.VUE_APP_SANDBOX;
     }
 
   }

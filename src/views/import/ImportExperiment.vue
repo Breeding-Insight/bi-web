@@ -95,7 +95,7 @@
           </b-table-column>
           <!-- Env -->
           <b-table-column field="env" label="Env" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-            {{ getField(props.row.data.study, 'studyName') }}
+            {{ getField(props.row.data.study, 'studyName', true) }}
           </b-table-column>
           <!-- Env Location -->
           <b-table-column field="envLocation" label="Env Location" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
@@ -103,11 +103,11 @@
           </b-table-column>
           <!-- Env year -->
           <b-table-column field="envYear" label="Env Year" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-            {{ getEnvYear(props.row.data.study) }}
+            {{ getField(props.row.data.study, 'additionalInfo.envYear') }}
           </b-table-column>
           <!-- Exp Unit ID -->
           <b-table-column field="expUnitID" label="Exp Unit ID" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-            {{ getField(props.row.data.observationUnit, 'observationUnitName') }}
+            {{ getField(props.row.data.observationUnit, 'observationUnitName', true) }}
           </b-table-column>
           <!-- Exp Replicate # -->
           <b-table-column field="expRepNo" label="Exp Replicate #" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
@@ -180,7 +180,7 @@ export default class ImportExperiment extends ProgramsBase {
     return undefined;
   }
 
-  getField(importReturnObject: any, fieldAccessor: string) {
+  getField(importReturnObject: any, fieldAccessor: string, isRemovingUnique: boolean=false) {
     const accessors: string[] = fieldAccessor.split('.');
     const brapiObject = importReturnObject.brAPIObject;
     let currObject = brapiObject;
@@ -192,7 +192,11 @@ export default class ImportExperiment extends ProgramsBase {
       if (!currObject[accessor]) {
         return '';
       } else if (accessors.length == 0) {
-        return currObject[accessor];
+        let value = currObject[accessor];
+        if(isRemovingUnique){
+          value = this.removeUnique(value);
+        }
+        return value;
       } else {
         currObject = currObject[accessor];
       }
@@ -248,6 +252,15 @@ export default class ImportExperiment extends ProgramsBase {
       //Is phenotype observation
       return importReturnObject.filter((observation: { brAPIObject: { observationVariableName: string; }; }) => observation.brAPIObject.observationVariableName === column)[0].brAPIObject.value
     }
+  }
+  /*
+   * remove the '[....]' found at the end of the string
+   * */
+  removeUnique(str: string|undefined): string {
+    if(!str){ return "";}
+    str = str.trim();
+    const reg = /\[[^\]]*\]$/;
+    return str.replace(reg, '').trim();
   }
 }
 </script>

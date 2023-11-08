@@ -66,6 +66,7 @@
         </div>
 
         <button
+            v-if="isShowAllEnabled"
             data-testid="showAll"
             role="button"
             class="pagination-link show-all-button"
@@ -91,6 +92,8 @@ import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 
     @Prop()
     private pagination!: Pagination;
+    @Prop({default: true})
+    private isShowAllEnabled!: boolean;
 
     private showAllState = false;
 

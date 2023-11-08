@@ -15,14 +15,6 @@
  * limitations under the License.
  */
 
-import {ExternalReferences} from "@/breeding-insight/brapi/model/externalReferences";
-
-export class BrAPIUtils {
-    static getBreedingInsightId(references: ExternalReferences|undefined, referenceSourcePath: string = ""): string | undefined {
-        if(!references){
-            return undefined;
-        }
-        let val = references.find(ref => ref.referenceSource === process.env.VUE_APP_BI_REFERENCE_SOURCE + referenceSourcePath);
-        return val ? val.referenceID : "";
-    }
+export enum ListType {
+    Germplasm = "germplasm",
 }

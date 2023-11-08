@@ -11,6 +11,7 @@
         v-on:sort="setSort"
         v-on:search="initSearch"
         v-bind:search-debounce="400"
+        v-bind:is-show-all-enabled="false"
     >
       <b-table-column v-if="entryNumberVisible" field="importEntryNumber" label="Entry Number" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
         {{ GermplasmUtils.getEntryNumber(props.row.data, referenceId) }}
@@ -148,6 +149,7 @@ export default class GermplasmTable extends Vue {
       .reduce((obj, key) => Object.assign({}, obj, { [this.fieldMap[key]]: key }), {});
 
   mounted() {
+    this.paginationController.pageSize = 200
     this.germplasmCallStack = new CallStack(this.germplasmFetch(
         this.activeProgram!.id!,
         this.germplasmSort,

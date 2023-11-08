@@ -21,20 +21,20 @@ import {Scale} from "@/breeding-insight/model/Scale";
 
 // TODO: eventually refactor Trait into Observation Variable to be consistent with the BrAPI model
 export class ObservationVariable {
-  id?: string;
+  observationVariableDbId?: string;
   observationVariableName?: string;
   additionalInfo?: OVAdditionalInfo;
   trait?: Trait;
   method?: Method;
   scale?: Scale;
   
-  constructor(id?:string,
+  constructor(observationVariableDbId?:string,
               observationVariableName?:string,
               additionalInfo?:OVAdditionalInfo,
               trait?:Trait,
               method?:Method,
               scale?:Scale) {
-    this.id = id;
+    this.observationVariableDbId = observationVariableDbId;
     this.observationVariableName = observationVariableName;
     if (additionalInfo){
       this.additionalInfo = OVAdditionalInfo.assign({...additionalInfo} as OVAdditionalInfo);

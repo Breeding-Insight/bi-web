@@ -49,7 +49,7 @@
         <p>{{ props.row.data.germplasmName }}</p>
       </b-table-column>
       <b-table-column field="data.observationUnitName" label="Observation Unit" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-        <p>{{ props.row.data.observationUnitName }}</p>
+        <p>{{ props.row.data.name }}</p>
       </b-table-column>
       <b-table-column field="data.observationVariableName" label="Trait" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
         <p>{{ props.row.data.observationVariableName }}</p>
@@ -188,37 +188,6 @@ export default class ObservationsTable extends Vue {
     } finally {
       this.observationsLoading = false;
     }
-  }
-
-  createObservation() {
-    this.newObservationActive = true;
-  }
-
-//   updateObservation(updatedObservation: Observation) {
-
-//     ObservationService.update(updatedObservation).then(() => {
-//       this.getObservations();
-//       this.$emit('show-success-notification', 'Success! ' + updatedObservation.observationName + ' updated.');
-// }).catch((error: any) => {
-//       this.$emit('show-error-notification', error['errorMessage']);
-//     }).finally(() => this.editObservationFormState.bus.$emit(DataFormEventBusHandler.SAVE_COMPLETE_EVENT));
-
-//   }
-
-  saveObservation() {
-
-    // this.newObservation.id = this.activeProgram!.id;
-
-    // ObservationService.create(this.newObservation).then((observation: Observation) => {
-    //   this.paginationController.updatePage(1);
-    //   this.getObservations();
-    //   this.$emit('show-success-notification', 'Success! ' + this.newObservation.observationName + ' added.');
-    //   this.newObservation = new Observation();
-    //   this.newObservationActive = false;
-    // }).catch((error) => {
-    //   this.$emit('show-error-notification', error['errorMessage']);
-    // }).finally(() => this.newObservationFormState.bus.$emit(DataFormEventBusHandler.SAVE_COMPLETE_EVENT))
-
   }
 
   cancelNewObservation() {

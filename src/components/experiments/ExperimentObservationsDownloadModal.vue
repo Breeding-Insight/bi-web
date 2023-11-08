@@ -16,11 +16,11 @@
 -->
 
 <template>
-  <DownloadButton
-    v-bind:unique-id="trialDbId"
+  <DownloadModal
+    v-bind:unique-id="trialId"
     v-bind:modal-title="modalTitle"
     v-bind:download="downloadList"
-    v-bind:anchor-class="anchorClass"
+    v-bind:active="active && loadingStudyOptionsComplete"
     modal-class="experiment-observations-download-button"
     v-on:deactivate="resetExportOptions"
   >
@@ -31,12 +31,12 @@
           <div class="field">
             <label
               class="label"
-              v-bind:for="`dataset-select-${trialDbId}`"
+              v-bind:for="`dataset-select-${trialId}`"
             ><span>Dataset</span></label>
             <div class="control">
               <div class="select">
                 <select
-                  v-bind:id="`dataset-select-${trialDbId}`"
+                  v-bind:id="`dataset-select-${trialId}`"
                   v-model="fileOptions.dataset"
                 >
                   <option
@@ -57,16 +57,29 @@
             <legend class="label required">
               <span class="required">Environment(s)</span>
             </legend>
+            <div class="control">
+              <label
+                class="checkbox environment-option-label"
+              >
+                <input
+                  v-model="fileOptions.allEnvironments"
+                  type="checkbox"
+                  value="all"
+                >
+                All Environments
+              </label>
+            </div>
             <div
               v-for="option in environmentOptions"
               v-bind:key="option.id"
               class="control"
             >
-              <label class="checkbox">
+              <label class="checkbox environment-option-label">
                 <input
                   v-model="fileOptions.environments"
                   type="checkbox"
                   v-bind:value="option.id"
+                  v-bind:disabled="fileOptions.allEnvironments"
                 >
                 {{ option.name }}
               </label>
@@ -92,7 +105,7 @@
             </legend>
             <div class="field">
               <input
-                v-bind:id="`timestamps-switch-${trialDbId}`"
+                v-bind:id="`timestamps-switch-${trialId}`"
                 v-model="fileOptions.includeTimestamps"
                 type="checkbox"
                 true-value="Yes"
@@ -101,8 +114,8 @@
                 class="switch is-info is-rounded"
               >
               <label
-                v-bind:id="`timestamps-label-${trialDbId}`"
-                v-bind:for="`timestamps-switch-${trialDbId}`"
+                v-bind:id="`timestamps-label-${trialId}`"
+                v-bind:for="`timestamps-switch-${trialId}`"
               >{{ fileOptions.includeTimestamps }}</label>
             </div>
           </fieldset>
@@ -133,48 +146,76 @@
       </div>
     </template>
     <slot />
-  </DownloadButton>
+  </DownloadModal>
 </template>
 
 
 <script lang="ts">
-import {Component, Vue, Prop} from "vue-property-decorator";
+import {Component, Vue, Prop, Watch} from "vue-property-decorator";
 import {validationMixin} from "vuelidate";
 import {mapGetters} from "vuex";
 import {Program} from "@/breeding-insight/model/Program";
 import {ExperimentExportOptions} from "@/breeding-insight/model/ExperimentExportOptions";
 import {FileTypeOption} from "@/breeding-insight/model/FileTypeOption";
 import {ExperimentDatasetOption} from "@/breeding-insight/model/ExperimentDatasetOption";
-import {EnvironmentOption} from "@/breeding-insight/model/EnvironmentOption";
 import {AlertTriangleIcon} from 'vue-feather-icons';
-import DownloadButton from "@/components/DownloadButton.vue";
+import {Trial} from "@/breeding-insight/model/Trial";
+import {Metadata} from "@/breeding-insight/model/BiResponse";
+import {Study} from "@/breeding-insight/model/Study";
+import {StudyService} from "@/breeding-insight/service/StudyService";
+import {Result} from "@/breeding-insight/model/Result";
+import {BrAPIUtils} from "@/breeding-insight/utils/BrAPIUtils";
+import DownloadModal from "@/components/DownloadModal.vue";
 
 @Component({
   mixins: [validationMixin],
-  components: {DownloadButton, AlertTriangleIcon},
+  components: {DownloadModal, AlertTriangleIcon},
   computed: {
     ...mapGetters([
       'activeProgram'
     ])
   }
 })
-export default class ExperimentObservationsDownloadButton extends Vue {
+export default class ExperimentObservationsDownloadModal extends Vue {
 
   @Prop()
   active!: boolean;
   @Prop()
-  trialDbId!: string;
+  trialId!: string;
+  @Prop()
+  experiment!: Trial;
   @Prop()
   modalTitle?: string;
-  @Prop()
-  anchorClass?: string;
 
   private activeProgram?: Program;
   private fileOptions: ExperimentExportOptions = new ExperimentExportOptions();
   private showEnvironmentsValidationError: boolean = false;
   private fileExtensionOptions: object[] = Object.values(FileTypeOption);
   private datasetOptions: object[] = Object.values(ExperimentDatasetOption);
-  private environmentOptions: object[] = Object.values(EnvironmentOption);
+  private environmentOptions: object[] = [];
+  private loadingStudyOptionsComplete: boolean = false;
+
+  @Watch('experiment', {immediate: true})
+  onExperimentChanged() {
+    // reset loading flag
+    this.loadingStudyOptionsComplete = false;
+    this.getStudyOptions();
+  }
+
+  async getStudyOptions() {
+    // Fetch all environments (studies) for this experiment.
+    try {
+      const response: Result<Error, [Study[], Metadata]> = await StudyService.getAll(this.activeProgram!.id!, this.experiment);
+      if(response.isErr()) throw response.value;
+      let [studies, metadata] = response.value;
+      // Set environment options.
+      this.environmentOptions = studies.map((s) => ({id: BrAPIUtils.getBreedingInsightId(s.externalReferences!, '/studies'), name: s.name}));
+      this.loadingStudyOptionsComplete = true;
+    } catch (error) {
+      // Display error that studies cannot be loaded
+      this.$emit('show-error-notification', 'Error while trying to load studies');
+    }
+  }
 
   downloadList(): boolean {
     // Validate selected options.
@@ -185,13 +226,12 @@ export default class ExperimentObservationsDownloadButton extends Vue {
             + '/v1/programs/'
             + this.activeProgram.id
             + '/experiments/'
-            + this.trialDbId
+            + this.trialId
             + '/export?fileExtension='
             + this.fileOptions.fileExtension
             + '&dataset='
             + this.fileOptions.dataset
-            // + '&environments='
-            // + this.fileOptions.environments
+            + (this.fileOptions.allEnvironments ? '' : ('&environments=' + this.fileOptions.environments))
             + '&includeTimestamps='
             + this.fileOptions.timestampsTrueFalseString(),
             '_blank');
@@ -202,6 +242,8 @@ export default class ExperimentObservationsDownloadButton extends Vue {
   }
 
   resetExportOptions(){
+    // Notify parent when deactivated to close modal
+    this.$emit('deactivate');
     // Reset file export options.
     this.fileOptions = new ExperimentExportOptions();
     // Reset validation state.
@@ -209,7 +251,8 @@ export default class ExperimentObservationsDownloadButton extends Vue {
   }
 
   validateOptions(): boolean {
-    if (this.fileOptions.environments.length === 0){
+    // Either "All environments" or one or more specific environments must be selected.
+    if (this.fileOptions.environments.length === 0 && !this.fileOptions.allEnvironments){
       this.$emit('show-error-notification', 'One or more environments must be selected.');
       this.showEnvironmentsValidationError = true;
       return false;

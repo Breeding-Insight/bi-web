@@ -15,6 +15,8 @@
  * limitations under the License.
  */
 
+import {ExternalReferences} from "@/breeding-insight/brapi/model/externalReferences";
+
 export class Study {
   id?: string;
   name?: string;
@@ -24,6 +26,9 @@ export class Study {
   endDate?: Date | null;
   location?: string;
   active?: boolean;
+  externalReferences?: ExternalReferences;
+  seasons?: string[];
+
 
   constructor(id?: string,
               name?: string,
@@ -32,7 +37,9 @@ export class Study {
               startDate?: string,
               endDate?: string,
               location?: string,
-              active?: boolean
+              active?: boolean,
+              externalReferences?: ExternalReferences,
+              seasons?: string[]
               ) {
     this.id = id;
     this.name = name;
@@ -50,13 +57,15 @@ export class Study {
     } else {
       this.active = true;
     }
+    this.externalReferences = externalReferences;
+    this.seasons = seasons;
   }
 
   static assign(study: Study): Study {
     const start: string | undefined = study.startDate ? study.startDate.toISOString() : undefined;
     const end: string | undefined = study.endDate ? study.endDate.toISOString() : undefined;    
 
-    return new Study(study.id, study.name, study.description, study.type, start, end, study.location, study.active);
+    return new Study(study.id, study.name, study.description, study.type, start, end, study.location, study.active, study.externalReferences, study.seasons);
   }
 
   equals(study?: Study): boolean {

@@ -900,3 +900,38 @@ tr:nth-child(odd) td.db-filled {
     display: block;
   }
 }
+
+.brapi-info {
+  .access-token {
+    @extend .mb-5;
+    font-family: monospace;
+    word-wrap: break-word;
+    overflow-x: auto;
+    white-space: pre-wrap;
+    white-space: -moz-pre-wrap;
+    white-space: -pre-wrap;
+    white-space: -o-pre-wrap;
+  }
+}
+
+label.environment-option-label {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.missing-data {
+  /* using an opacity instead of a muted color (for example
+    'gray') to preserve some difference in row color when
+    a table is striped.
+   */
+  background-color: black;
+  opacity: 17%;
+  }
+
+#data_set th {
+  min-width: 5em;
+}
+
+
+

@@ -15,16 +15,14 @@
  * limitations under the License.
  */
 
-import {SelectOption} from "@/breeding-insight/model/SelectOption";
+export class ActionMenuItem {
+    id?: string;
+    event?: string;
+    label?: string;
 
-export class EnvironmentOption implements SelectOption<string, string> {
-    static all = new EnvironmentOption("All", "all");
-
-    name: string;
-    id: string;
-
-    constructor(name: string, id: string) {
-        this.name = name;
+    constructor(id?:string, event?:string, label?:string) {
         this.id = id;
+        this.event = event;
+        this.label = label;
     }
 }
