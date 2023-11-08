@@ -67,24 +67,28 @@
       <section>
         <nav class="tabs is-boxed">
           <ul>
+            <!--
             <router-link
                 v-bind:to="{name: '', params: {programId: activeProgram.id}}"
                 tag="li"
             >
               <a>Images</a>
             </router-link>
+            -->
             <router-link
                 v-bind:to="{name: 'germplasm-pedigrees', params: {programId: activeProgram.id, germplasmDbId: germplasm.germplasmDbId}}"
                 tag="li" active-class="is-active"
             >
               <a>Pedigrees</a>
             </router-link>
+            <!--
             <router-link
                 v-bind:to="{name: '', params: {programId: activeProgram.id}}"
                 tag="li"
             >
               <a>Attributes</a>
             </router-link>
+            -->
             <router-link
                 v-bind:to="{name: 'germplasm-genotype', params: {programId: activeProgram.id}}"
                 tag="li" active-class="is-active"
