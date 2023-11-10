@@ -103,7 +103,7 @@ export default class Germplasm extends GermplasmBase {
   private downloadFile() {
     console.info('download file.');
     if (this.activeProgram) {
-      window.open(process.env.VUE_APP_BI_API_ROOT + '/v1/programs/' + this.activeProgram.id + '/germplasm/export?fileExtension=XLS' , '_blank');
+      window.open(process.env.VUE_APP_BI_API_ROOT + '/v1/programs/' + this.activeProgram.id + '/germplasm/export?fileExtension=XLSX' , '_blank');
       return true;
     }
     return false;
