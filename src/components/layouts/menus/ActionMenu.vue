@@ -32,7 +32,7 @@
     <b-dropdown-item v-for="menuItem in actionMenuItems"
                      v-bind:key="menuItem.id" aria-role="menuitem"
                      v-bind:id="menuItem.id"
-                     v-bind:disabled="menuItem.disabled"
+                     v-bind:disabled="!menuItem.enabled"
                      @click="$emit(menuItem.event)">
       {{menuItem.label}}
     </b-dropdown-item>

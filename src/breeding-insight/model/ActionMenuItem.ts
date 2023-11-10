@@ -19,12 +19,12 @@ export class ActionMenuItem {
     id?: string;
     event?: string;
     label?: string;
-    disabled?: boolean;
+    enabled?: boolean;
 
-    constructor(id?:string, event?:string, label?:string, disabled?: boolean) {
+    constructor(id?:string, event?:string, label?:string, enabled: boolean=true) {
         this.id = id;
         this.event = event;
         this.label = label;
-        this.disabled = disabled;
+        this.enabled = enabled;
     }
 }
