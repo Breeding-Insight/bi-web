@@ -97,8 +97,8 @@
 
     private actions: ActionMenuItem[] =
         [
-            new ActionMenuItem('ontology-import-file', 'import-file', 'Import file', this.$ability.cannot('create', 'Import')),
-          new ActionMenuItem('ontology-download-file', 'download-file', 'Download file',  false)
+            new ActionMenuItem('ontology-import-file', 'import-file', 'Import file', (this.$ability.can('create', 'Trait') && !this.isSubscribed)),
+          new ActionMenuItem('ontology-download-file', 'download-file', 'Download file',  true)
         ];
 
     private importFile() {
