@@ -206,6 +206,7 @@ export default class ImportExperiment extends ProgramsBase {
   private experimentImportTemplateName = 'ExperimentsTemplateMap';
   private confirmImportState: DataFormEventBusHandler = new DataFormEventBusHandler();
   private phenotypeColumns?: Array<String> = [];
+  private observationIndexMap: Map<number, number> = new Map();
 
   private experimentUserInput: ExperimentUserInput = new ExperimentUserInput();
   private repeatObservationsCount = 10;
@@ -272,6 +273,28 @@ export default class ImportExperiment extends ProgramsBase {
 
   previewDataLoaded(dynamicColumns: String[]) {
     this.phenotypeColumns = dynamicColumns;
+    this.createObservationIndexMap();
+  }
+
+  // Map phenotypeColumn indices to brapi observation indices for use in highlighting
+  createObservationIndexMap() {
+    let obs_index = 0;
+    for (let i=0; i < this.phenotypeColumns!.length; i++) {
+      if (this.phenotypeColumns![i].startsWith('TS:')) {
+        this.observationIndexMap.set(i, obs_index++);
+      } else {
+        if (i+1 < this.phenotypeColumns!.length) {
+          if (!this.phenotypeColumns![i+1].startsWith('TS:')) {
+            obs_index++;
+          }
+        } else {
+          if (obs_index > 0) {
+            obs_index++;
+          }
+        }
+        this.observationIndexMap.set(i, obs_index);
+      }
+    }
   }
 
   statisticsLoaded(statistics: any) {
@@ -296,9 +319,9 @@ export default class ImportExperiment extends ProgramsBase {
   }
 
   cellClassIfExisting(row: any, column: any) {
-    let index = column.meta.index
-    // TODO: When backend is ready, change to check for MUTATED
-    if(row.data.observations[index].state === 'MUTATED') {
+    const index = column.meta.index
+
+    if(row.data.observations[this.observationIndexMap.get(index)!].state === 'MUTATED') {
       return {'class': 'db-filled'};
     }
     return {};
