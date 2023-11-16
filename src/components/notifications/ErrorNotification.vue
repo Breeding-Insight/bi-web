@@ -23,7 +23,7 @@
           <AlertCircleIcon size="1.5x"></AlertCircleIcon>
       </div>
       <div class="column" :class="bannerTextClass">
-        {{errorNotificationMsg}}
+        <span v-html="sanitizeHtml(errorNotificationMsg)"></span>
       </div>
     </div>
   </b-notification>
@@ -34,6 +34,7 @@ import {Component, Prop, Vue, Watch} from 'vue-property-decorator';
 import { AlertCircleIcon } from 'vue-feather-icons';
 import {DEACTIVATE_ERROR_NOTIFICATION} from "@/store/mutation-types";
 import {mapGetters} from "vuex";
+import * as DOMPurify from 'dompurify';
 
 @Component({
   components: {AlertCircleIcon},
@@ -51,6 +52,10 @@ export default class ErrorNotification extends Vue {
 
   onClose(){
     this.$store.commit(DEACTIVATE_ERROR_NOTIFICATION);
+  }
+
+  sanitizeHtml(html: string) {
+    return DOMPurify.sanitize(html);
   }
 }
 
