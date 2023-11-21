@@ -45,13 +45,13 @@
               tag="li" active-class="is-active">
             <a>Genotypic Data</a>
           </router-link>
-          <!-- BI-1963 - Comment out data mapping tab, left url access in case want to get to it -->
-          <!--
           <router-link
-              v-bind:to="{name: 'sample-import', params: {programId: activeProgram.id}}"
-              tag="li" active-class="is-active">
+            v-bind:to="{name: 'sample-import', params: {programId: activeProgram.id}}"
+            tag="li" active-class="is-active">
             <a>Genotype Samples</a>
           </router-link>
+          <!-- BI-1963 - Comment out data mapping tab, left url access in case want to get to it -->
+          <!--
           <router-link
               v-bind:to="{name: 'data-mapping', params: {programId: activeProgram.id}}"
               tag="li" active-class="is-active">
