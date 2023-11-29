@@ -69,7 +69,7 @@
 
     <NewDataForm
         v-if="newTraitActive"
-        v-bind:new-record.sync="newTrait"
+        v-bind:record.sync="newTrait"
         v-bind:row-validations="traitValidations"
         v-bind:data-form-state="newTraitFormState"
         v-on:submit="saveTrait"

@@ -26,7 +26,7 @@ export default class EditDataRowForm extends DataForm {
 
   created () {
     super.formClass = 'edit-form';
-    super.record = this.editRecord;
+    super.formRecord = this.editRecord;
   }
 }
 

@@ -60,6 +60,8 @@ import {
 })
 export default class DataForm extends Vue {
   @Prop()
+  record!:Object;
+  @Prop()
   rowValidations!: Object;
   @Prop()
   dataFormState!: DataFormEventBusHandler;
@@ -70,10 +72,15 @@ export default class DataForm extends Vue {
   @Prop({default: true})
   showCancelButton?: boolean
 
-  protected record!: Object;
-  protected formClass!: string;
+  protected formRecord!: Object;
+  protected formClass?: string;
 
   private timeout!: number;
+
+  created() {
+    this.formClass = 'data-form';
+    this.formRecord = this.record;
+  }
 
   @Validations()
   validations () {
@@ -126,6 +133,10 @@ export default class DataForm extends Vue {
 
   closeNotifications () {
     this.$store.commit( DEACTIVATE_ALL_NOTIFICATIONS );
+  }
+
+  protected setFormClass(formClass: string) {
+    this.formClass = formClass;
   }
 
 }

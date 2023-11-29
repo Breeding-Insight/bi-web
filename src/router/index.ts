@@ -70,6 +70,9 @@ import GermplasmGenotypeView from "@/components/germplasm/GermplasmGenotypeView.
 import ImportExperiment from "@/views/import/ImportExperiment.vue";
 import ExperimentsAndObservations from "@/views/experiments-and-observations/ExperimentsAndObservations.vue";
 import ImportGeno from "@/views/import/ImportGeno.vue";
+import ImportSample from "@/views/import/ImportSample.vue";
+import SampleManagement from '@/views/sample-mgmt/SampleManagement.vue';
+import SubmissionDetails from '@/views/sample-mgmt/SubmissionDetails.vue';
 
 Vue.use(VueRouter);
 
@@ -415,6 +418,15 @@ const routes = [
         component: ImportGeno
       },
       {
+        path: 'sample',
+        name: 'sample-import',
+        meta: {
+          title: 'Genotype Sample Submission',
+          layout: layouts.userSideBar
+        },
+        component: ImportSample
+      },
+      {
         path: 'data-mapping',
         name: 'data-mapping',
         meta: {
@@ -442,6 +454,26 @@ const routes = [
       layout: layouts.simple
     },
     component: NotAuthorized
+  },
+  {
+    path: '/programs/:programId/sample-management',
+    name: 'sample-management',
+    meta: {
+      title: 'Sample Management',
+      layout: layouts.userSideBar
+    },
+    component: SampleManagement,
+    beforeEnter: processProgramNavigation
+  },
+  {
+    path: '/programs/:programId/sample-management/:submissionId',
+    name: 'submission-details',
+    component: SubmissionDetails,
+    meta: {
+      title: 'Submission Details',
+      layout: layouts.userSideBar
+    },
+    beforeEnter: processProgramNavigation
   },
   {
     path: '/programs/:programId/brapi',

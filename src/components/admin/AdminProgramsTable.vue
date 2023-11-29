@@ -66,7 +66,7 @@
     <NewDataForm
       v-if="newProgramActive"
       v-bind:row-validations="programValidations"
-      v-bind:new-record.sync="newProgram"
+      v-bind:record.sync="newProgram"
       v-bind:data-form-state="newLocationFormState"
       v-on:submit="saveProgram"
       v-on:cancel="cancelNewProgram"

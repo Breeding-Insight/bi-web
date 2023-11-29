@@ -41,7 +41,7 @@
       <div class="card-content">
         <NewDataForm
             v-bind:row-validations="uploadValidations"
-            v-bind:new-record.sync="upload"
+            v-bind:record.sync="upload"
             v-bind:data-form-state="importState"
             v-bind:save-button-label="'Import'"
             v-bind:show-cancel-button="false"
