@@ -17,11 +17,9 @@
 
 import * as api from '@/util/api';
 import { BiResponse, Response } from '@/breeding-insight/model/BiResponse';
-import { BreedingMethod } from '@/breeding-insight/model/BreedingMethod';
 import {Result, ResultGenerator} from "@/breeding-insight/model/Result";
 import {SampleSubmission} from "@/breeding-insight/model/SampleSubmission";
 import {VendorOrderSubmission} from "@/breeding-insight/brapi/model/geno/vendorOrderSubmission";
-import {BrAPIDAOUtil} from "@/breeding-insight/dao/BrAPIDAOUtil";
 
 export class SampleSubmissionDAO {
 

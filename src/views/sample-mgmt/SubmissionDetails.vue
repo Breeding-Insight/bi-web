@@ -356,7 +356,7 @@ import {VendorOrderStatusResponseResult} from "@/breeding-insight/brapi/model/ge
 import StatusEnum = VendorOrderStatusResponseResult.StatusEnum;
 import {Plate} from "@/breeding-insight/brapi/model/geno/plate";
 import * as XLSX from "xlsx";
-import {WorkBook, WorkSheet} from "xlsx";
+import {WorkBook} from "xlsx";
 
 @Component({
   components: {
@@ -381,11 +381,8 @@ export default class SubmissionDetails extends ProgramsBase {
   private activeTab = 'details';
   private submissionLoading: boolean = true;
   private submissionDetailsLoading: boolean = true;
-  private downloadModalActive: boolean = false;
   private paginationController: PaginationController = new PaginationController();
   private submission?: SampleSubmission;
-  private germNameOptions?: Array<String> = [];
-  private gidOptions?: Array<String> = [];
   private showSubmitModal = false;
   private submissionComplete = false;
   private submissionStarted = false;
@@ -484,8 +481,6 @@ export default class SubmissionDetails extends ProgramsBase {
 
 
       this.submission!.plates = details!.plates!.sort((a, b) => this.collator.compare(a!.plateName, b!.plateName));
-      this.germNameOptions = Array.from(uniqueGermplasm).sort(this.collator.compare);
-      this.gidOptions = Array.from(uniqueGIDs).sort(this.collator.compare);
       this.submission!.samples = details!.samples;
 
       this.paginationController.pageSize = 200;
