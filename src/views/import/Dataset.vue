@@ -27,23 +27,47 @@
           class="message is-success"
       >
         <div class="message-body">
-          <div class="columns is-multiline">
-            <div class="column is-one-third">
-              <div class="has-text-right">
-                <b>Observation unit: </b> <span style="width: 30px;"
-                                                class="is-inline-block has-text-left">{{ observationUnit }}</span><br>
-                <b>Phenotypes: </b> <span style="width: 30px;" class="is-inline-block has-text-left">{{
-                  phenotypesCount
-                }}</span><br>
-                <b>Total observations: </b> <span style="width: 30px;" class="is-inline-block has-text-left">{{
-                  totalObservationsCount
-                }}</span><br>
-                <b>Observations with data: </b> <span style="width: 30px;" class="is-inline-block has-text-left">{{
-                  observationsWithData
-                }}</span><br>
-                <b>Observations without data: </b> <span style="width: 30px;" class="is-inline-block has-text-left">{{
-                  observationsWithoutData
-                }}</span><br>
+          <div class="columns">
+            <div class="column">
+              <div class="columns mb-0">
+                <div class="column has-text-right pr-0 pb-0">
+                  <b>Observation unit:</b>
+                </div>
+                <div class="column pl-1 is-three-quarters pb-0">
+                  {{ observationUnit }}
+                </div>
+              </div>
+              <div class="columns mb-0 pb-0 pt-0">
+                <div class="column has-text-right pr-0 pb-0">
+                  <b>Phenotypes:</b>
+                </div>
+                <div class="column pl-1 is-three-quarters pb-0">
+                  {{ phenotypesCount }}
+                </div>
+              </div>
+              <div class="columns mb-0 pb-0 pt-0">
+                <div class="column has-text-right pr-0 pb-0">
+                  <b>Total observations:</b>
+                </div>
+                <div class="column pl-1 is-three-quarters pb-0">
+                  {{ totalObservationsCount }}
+                </div>
+              </div>
+              <div class="columns mb-0 pb-0 pt-0">
+                <div class="column has-text-right pr-0 pb-0">
+                  <b>Observations with data:</b>
+                </div>
+                <div class="column pl-1 is-three-quarters pb-0">
+                  {{ observationsWithData }}
+                </div>
+              </div>
+              <div class="columns mb-0 pb-0 pt-0">
+                <div class="column has-text-right pr-0 pb-0">
+                  <b>Observations without data:</b>
+                </div>
+                <div class="column pl-1 is-three-quarters pb-0">
+                  {{ observationsWithoutData }}
+                </div>
               </div>
             </div>
           </div>
