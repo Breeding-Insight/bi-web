@@ -23,9 +23,12 @@
         v-bind:confirm-msg="'Preview Experimental Upload'"
         v-bind:import-type-name="'Experiments & Observations'"
         v-bind:confirm-import-state="confirmImportState"
+        v-bind:user-input="experimentUserInput"
+        v-bind:show-proceed-warning="showProceedDialog"
         v-on="$listeners"
         v-on:finished="importFinished"
         v-on:preview-data-loaded="previewDataLoaded"
+        v-on:statistics-loaded="statisticsLoaded"
     >
 
       <template v-slot:importInfoTemplateMessageBox>
@@ -45,6 +48,7 @@
         <ConfirmImportMessageBox v-bind:num-records="getNumNewExperimentRecords(statistics)"
                                  v-bind:import-type-name="'Experiments & Observations'"
                                  v-bind:confirm-import-state="confirmImportState"
+                                 v-bind:show-loading-on-confirm="false"
                                  v-on:abort="abort"
                                  v-on:confirm="confirm"
                                  class="mb-4">
@@ -52,22 +56,41 @@
             <p>Review your experimental data import before committing to the database.</p>
           <div class = "left-confirm-column">
             <p class="is-size-5 mb-2"><strong>Import Summary</strong></p>
-            <p>Environments: {{ statistics.Environments.newObjectCount }}</p>
-            <p>Germplasm: {{ statistics.GIDs.newObjectCount }}</p>
-            <p>Observation Units: {{ statistics.Observation_Units.newObjectCount }}</p>
+            Environments: {{ statistics.Environments.newObjectCount }}
+            <br>Germplasm: {{ statistics.GIDs.newObjectCount }}
+            <br>Observation Units: {{ statistics.Observation_Units.newObjectCount }}
           </div>
           <div id="experiment-summary" class ="right-confirm-column">
             <p class="is-size-5 mb-2"><strong>Experiment</strong></p>
-            <p>Title: {{ rows[0].trial.brAPIObject.trialName }}</p>
-            <p>Description: {{ rows[0].trial.brAPIObject.trialDescription }}</p>
-            <p>Experimental Unit: {{ rows[0].trial.brAPIObject.additionalInfo.defaultObservationLevel }}</p>
-            <p>Type: {{ rows[0].trial.brAPIObject.additionalInfo.experimentType }}</p>
-            <p>Experimental Design: Externally generated</p>
-            <p v-if="isExisting(rows)">User: {{ rows[0].trial.brAPIObject.additionalInfo.createdBy.userName }}</p>
-            <p v-if="isExisting(rows)">Creation Date: {{ rows[0].trial.brAPIObject.additionalInfo.createdDate | dmy}}</p>
+            Title: {{ rows[0].trial.brAPIObject.trialName }}
+            <br>Description: {{ rows[0].trial.brAPIObject.trialDescription }}
+            <br>Experimental Unit: {{ rows[0].trial.brAPIObject.additionalInfo.defaultObservationLevel }}
+            <br>Type: {{ rows[0].trial.brAPIObject.additionalInfo.experimentType }}
+            <br>Experimental Design: Externally generated
+            <template v-if="isExisting(rows)"><br>User: {{ rows[0].trial.brAPIObject.additionalInfo.createdBy.userName }}</template>
+            <template v-if="isExisting(rows)"><br>Creation Date: {{ rows[0].trial.brAPIObject.additionalInfo.createdDate | dmy}}</template>
           </div>
           </div>
         </ConfirmImportMessageBox>
+      </template>
+
+      <template v-slot:userInput>
+        <!-- TODO: change to use mutated observations count when api ready -->
+        <form v-if="experimentUserInput.overwrite"
+            class="new-form"
+            novalidate="true"
+        >
+        <p class="is-size-5 has-text-weight-bold mb-0">Overwrite Request</p>
+        {{ repeatObservationsCount }} values detected that repeat observations already saved to the system. If you
+        do not want to overwrite existing observations you will need to edit the import file.
+        <BasicInputField
+            class="pb-2"
+            v-model="experimentUserInput.overwriteReason"
+            v-bind:field-name="'Reason for overwrite:'"
+            v-bind:placeholder="'Reason'"
+            v-bind:show-label="true"
+        />
+        </form>
       </template>
 
       <template v-slot:importPreviewTable="previewData">
@@ -130,7 +153,13 @@
             {{ getTreatment(props.row.data.observationUnit) }}
           </b-table-column>
           <!-- Dynamic Phenotype and Timestamp Columns -->
-          <b-table-column v-for="variable in phenotypeColumns" :key="variable" :label="variable" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+          <b-table-column v-for="(variable, index) in phenotypeColumns"
+                          v-slot="props"
+                          :key="variable"
+                          :label="variable"
+                          :th-attrs="(column) => ({scope:'col'})"
+                          :td-attrs="cellClassIfExisting"
+                          :meta="{'index': index}">
             <p> {{ retrieveDynamicColVal(props.row.data.observations, variable) }}</p>
           </b-table-column>
 
@@ -158,6 +187,7 @@ import {AlertTriangleIcon} from 'vue-feather-icons';
 import BasicInputField from "@/components/forms/BasicInputField.vue";
 import ExpandableTable from "@/components/tables/expandableTable/ExpandableTable.vue";
 import {ImportObjectState} from "@/breeding-insight/model/import/ImportObjectState";
+import {ExperimentUserInput} from "@/breeding-insight/model/ExperimentUserInput";
 
 @Component({
   components: {
@@ -175,6 +205,14 @@ export default class ImportExperiment extends ProgramsBase {
   private experimentImportTemplateName = 'ExperimentsTemplateMap';
   private confirmImportState: DataFormEventBusHandler = new DataFormEventBusHandler();
   private phenotypeColumns?: Array<String> = [];
+  private observationIndexMap: Map<number, number> = new Map();
+
+  private experimentUserInput: ExperimentUserInput = new ExperimentUserInput();
+  private repeatObservationsCount = 10;
+
+  get showProceedDialog() {
+    return this.experimentUserInput.overwriteReason !== undefined && this.experimentUserInput.overwriteReason.length >= 3;
+  }
 
   getNumNewExperimentRecords(statistics: any): number | undefined {
     return undefined;
@@ -238,6 +276,34 @@ export default class ImportExperiment extends ProgramsBase {
 
   previewDataLoaded(dynamicColumns: String[]) {
     this.phenotypeColumns = dynamicColumns;
+    this.createObservationIndexMap();
+  }
+
+  // Map phenotypeColumn indices to brapi observation indices for use in highlighting
+  createObservationIndexMap() {
+    let obs_index = 0;
+    for (let i=0; i < this.phenotypeColumns!.length; i++) {
+      if (this.phenotypeColumns![i].startsWith('TS:')) {
+        this.observationIndexMap.set(i, obs_index++);
+      } else {
+        if (i+1 < this.phenotypeColumns!.length) {
+          if (!this.phenotypeColumns![i+1].startsWith('TS:')) {
+            obs_index++;
+          }
+        } else {
+          if (obs_index > 0) {
+            obs_index++;
+          }
+        }
+        this.observationIndexMap.set(i, obs_index);
+      }
+    }
+  }
+
+  statisticsLoaded(statistics: any) {
+    // TODO: change to appropriate fields once api is ready
+    this.experimentUserInput.overwrite = statistics.Mutated_Observations.newObjectCount > 0
+    this.repeatObservationsCount = statistics.Mutated_Observations.newObjectCount;
   }
 
   isExisting(rows: any[]) {
@@ -245,6 +311,7 @@ export default class ImportExperiment extends ProgramsBase {
   }
 
   retrieveDynamicColVal(importReturnObject: any, column: string){
+    console.log(importReturnObject);
     if (column.startsWith('TS:')) {
       //Is timestamp
       return importReturnObject.filter((observation: { brAPIObject: { observationVariableName: string; }; }) => observation.brAPIObject.observationVariableName === column.replace(/TS:\s*/,""))[0].brAPIObject.observationTimeStamp;
@@ -253,6 +320,16 @@ export default class ImportExperiment extends ProgramsBase {
       return importReturnObject.filter((observation: { brAPIObject: { observationVariableName: string; }; }) => observation.brAPIObject.observationVariableName === column)[0].brAPIObject.value
     }
   }
+
+  cellClassIfExisting(row: any, column: any) {
+    const index = column.meta.index
+
+    if(row.data.observations[this.observationIndexMap.get(index)!].state === 'MUTATED') {
+      return {'class': 'db-filled'};
+    }
+    return {};
+  }
+
   /*
    * remove the '[....]' found at the end of the string
    * */

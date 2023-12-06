@@ -45,6 +45,34 @@
       </div>
     </WarningModal>
 
+    <WarningModal
+        v-bind:active.sync="showWarningModal"
+        v-bind:msg-title="'Are you sure you would like to proceed?'"
+        v-on:deactivate="closeProceed()"
+    >
+      <section>
+        <p class="has-text-dark" :class="this.$modalTextClass">
+          Are you sure you would like to proceed?
+        </p>
+      </section>
+      <div class="columns">
+        <div class="column is-whole has-text-centered buttons">
+          <button
+              class="button is-danger"
+              v-on:click="handleWarningModal()" :id="yesWarningId"
+          >
+            <strong>Yes</strong>
+          </button>
+          <button
+              class="button"
+              v-on:click="closeProceed()"
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    </WarningModal>
+
     <template v-if="state === ImportState.CHOOSE_FILE || state === ImportState.FILE_CHOSEN">
       <h1 class="title" v-if="showTitle">{{title}}</h1>
       <slot name="importInfoTemplateMessageBox" />
@@ -72,7 +100,7 @@
             v-bind:rows="currentImport.preview !== undefined ? currentImport.preview.rows : []"
       />
 
-      <slot name="userInput" />
+      <slot name="userInput"/>
 
       <slot name="importPreviewTable" v-bind:import="previewData" v-bind:pagination="pagination"/>
     </template>
@@ -131,6 +159,7 @@ enum ImportEvent {
   ABORT_IMPORT = "ABORT_IMPORT",
   IMPORT_SUCCESS = "IMPORT_SUCCESS",
   CONFIRMED = "CONFIRMED",
+  PROCEED = "PROCEED",
   IMPORT_ERROR = "IMPORT_ERROR",
   TABLE_LOADED = "TABLE_LOADED",
   DONE = "DONE"
@@ -141,6 +170,7 @@ enum ImportAction {
   START = "START",
   LOADED = "LOADED",
   CONFIRM = "CONFIRM",
+  PROCEED = "PROCEED",
   ABORT = "ABORT",
   STOP_LOADING = "STOP_LOADING",
   DELETE = "DELETE",
@@ -168,6 +198,9 @@ export default class ImportTemplate extends ProgramsBase {
 
   @Prop({default: true})
   private showTitle!: boolean;
+
+  @Prop({default: false})
+  private showProceedWarning!: boolean;
 
   @Prop()
   private abortMsg!: string;
@@ -202,9 +235,11 @@ export default class ImportTemplate extends ProgramsBase {
   private activeProgram?: Program;
   private tableLoaded = false;
   private showAbortModal = false;
+  private showWarningModal = false;
   private pagination = new PaginationController();
 
   private yesAbortId: string = "import-yes-abort";
+  private yesWarningId: string = "import-yes-warning";
 
   private ImportState = ImportState;
   private ImportEvent = ImportEvent;
@@ -257,6 +292,9 @@ export default class ImportTemplate extends ProgramsBase {
                 actions: ImportAction.DELETE
               },
               [ImportEvent.CONFIRMED]: {
+                actions: ImportAction.PROCEED
+              },
+              [ImportEvent.PROCEED]: {
                 actions: ImportAction.CONFIRM
               },
               [ImportEvent.DONE]: {
@@ -292,6 +330,9 @@ export default class ImportTemplate extends ProgramsBase {
           },
           [ImportAction.CONFIRM]: (context, event) => {
             this.confirm();
+          },
+          [ImportAction.PROCEED]: (context, event) => {
+            this.proceed();
           },
           [ImportAction.DELETE]: (context, event) => {
             this.delete();
@@ -402,11 +443,38 @@ export default class ImportTemplate extends ProgramsBase {
     this.importService.send(ImportEvent.ABORT_IMPORT);
   }
 
+  handleWarningModal() {
+    console.log('WARNING YES');
+    this.showWarningModal = false;
+    this.importService.send(ImportEvent.PROCEED);
+  }
+
   loaded() {
     this.tableLoaded = true;
   }
 
+  proceed() {
+    console.log('PROCEED');
+    if (this.showProceedWarning) {
+      console.log('SHOW WARNING');
+      this.showWarningModal = true;
+    } else {
+      this.importService.send(ImportEvent.PROCEED);
+    }
+  }
+
+  closeProceed() {
+    this.showWarningModal = false;
+    this.confirmImportState.bus.$emit(DataFormEventBusHandler.SAVE_COMPLETE_EVENT);
+  }
+
   async confirm() {
+    console.log('CONFIRM');
+
+    if (this.showProceedWarning) {
+      this.confirmImportState.bus.$emit(DataFormEventBusHandler.SAVE_STARTED_EVENT);
+    }
+
     //New button submit, clear prior notifications
     this.$store.commit( DEACTIVATE_ALL_NOTIFICATIONS );
 
@@ -500,6 +568,7 @@ export default class ImportTemplate extends ProgramsBase {
             this.previewTotalRows = previewResponse.preview.rows.length;
             this.previewData = previewResponse.preview.rows as any[];
             this.newObjectCounts = previewResponse.preview.statistics;
+            this.$emit('statistics-loaded', this.newObjectCounts);
             this.dynamicColumns = previewResponse.preview.dynamicColumnNames;
             this.$emit('preview-data-loaded', this.dynamicColumns);
             this.importService.send(ImportEvent.IMPORT_SUCCESS);
