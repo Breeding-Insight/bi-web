@@ -187,7 +187,6 @@ import {AlertTriangleIcon} from 'vue-feather-icons';
 import BasicInputField from "@/components/forms/BasicInputField.vue";
 import ExpandableTable from "@/components/tables/expandableTable/ExpandableTable.vue";
 import {ImportObjectState} from "@/breeding-insight/model/import/ImportObjectState";
-import {GermplasmList} from "@/breeding-insight/model/GermplasmList";
 import {ExperimentUserInput} from "@/breeding-insight/model/ExperimentUserInput";
 
 @Component({
