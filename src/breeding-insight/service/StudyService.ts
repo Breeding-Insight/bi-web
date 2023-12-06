@@ -56,7 +56,17 @@ export class StudyService {
         
         data = PaginationUtilities.mockSortRecords(data);
         studies = data.map((study: any) => {
-          return new Study(study.studyDbId, study.studyName, study.studyDescription, study.studyType, study.startDate, study.endDate, study.locationName, study.active, study.externalReferences);
+          return new Study(
+              study.studyDbId,
+              study.studyName,
+              study.studyDescription,
+              study.studyType,
+              study.startDate,
+              study.endDate,
+              study.locationName,
+              study.active,
+              study.externalReferences,
+              study.seasons);
         });
 
         let newPagination;

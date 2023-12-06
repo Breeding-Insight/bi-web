@@ -24,6 +24,7 @@
         v-bind:import-type-name="'Germplasm'"
         v-bind:confirm-import-state="confirmImportState"
         v-bind:userInput="germplasmList"
+        v-bind:initial-page-size="200"
         v-on="$listeners"
         v-on:finished="importFinished"
     >
@@ -95,6 +96,7 @@
             v-bind:pagination="previewData.pagination"
             v-bind:rowClasses="constructRowClasses(previewData.import)"
             v-on:show-error-notification="$emit('show-error-notification', $event)"
+            v-bind:is-show-all-enabled="false"
         >
           <b-table-column v-slot="props" :th-attrs="(column) => ({scope:'col'})">
             <AlertTriangleIcon
@@ -243,6 +245,5 @@ export default class ImportGermplasm extends ProgramsBase {
     return displayPedigree;
 
   }
-
 }
 </script>

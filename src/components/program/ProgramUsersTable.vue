@@ -71,7 +71,7 @@
     <NewDataForm
       v-if="newUserActive"
       v-bind:row-validations="newUserValidations"
-      v-bind:new-record.sync="newUser"
+      v-bind:record.sync="newUser"
       v-bind:data-form-state="newUserFormState"
       v-on:submit="saveUser"
       v-on:cancel="cancelNewUser"

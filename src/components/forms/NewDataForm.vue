@@ -21,12 +21,9 @@ import DataForm from '@/components/forms/DataForm.vue';
 
 @Component
 export default class NewDataForm extends DataForm {
-  @Prop()
-  newRecord!:Object;
 
   created () {
     super.formClass = 'new-form';
-    super.record = this.newRecord;
   }
 }
 

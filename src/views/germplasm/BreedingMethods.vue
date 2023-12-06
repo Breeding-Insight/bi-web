@@ -68,7 +68,7 @@
     <NewDataForm
       v-if="newMethodActive"
       v-bind:row-validations="newMethodValidations"
-      v-bind:new-record.sync="newMethod"
+      v-bind:record.sync="newMethod"
       v-bind:data-form-state="newMethodFormState"
       v-on:submit="saveMethod"
       v-on:cancel="cancelNewMethod"
@@ -133,6 +133,8 @@
       v-bind:row-validations="newMethodValidations"
       v-bind:archivable="$ability.can('update', 'ProgramConfiguration')"
       v-bind:row-archivable="isRowArchivable"
+      v-bind:save-button-visible="showButtons"
+      v-bind:cancel-button-visible="showButtons"
       v-bind:deactivate-link-text="'Delete'"
       v-on:submit="updateMethod($event)"
       v-on:show-error-notification="$emit('show-error-notification', $event)"
@@ -264,54 +266,55 @@
               <AlertTriangleIcon
                 size="1.2x"
                 class="has-vertical-align-middle"
-              /> Breeding method is in use. Deletion disabled.
+              /> Breeding method is in use. Editing disabled.
             </div>
           </div>
         </div>
-
-        <div class="columns">
-          <div class="column is-one-fourth">
-            <BasicInputField
-              v-model="editData.name"
-              v-bind:validations="validations.name"
-              v-bind:field-name="'Name'"
-              v-bind:field-help="''"
-            />
+        <div v-else>
+          <div class="columns">
+            <div class="column is-one-fourth">
+              <BasicInputField
+                v-model="editData.name"
+                v-bind:validations="validations.name"
+                v-bind:field-name="'Name'"
+                v-bind:field-help="''"
+              />
+            </div>
+            <div class="column is-one-fourth">
+              <BasicInputField
+                v-model="editData.abbreviation"
+                v-bind:validations="validations.abbreviation"
+                v-bind:field-name="'Abbreviation'"
+                v-bind:field-help="'No more than 3 characters'"
+              />
+            </div>
+            <div class="column is-one-fourth">
+              <BasicInputField
+                v-model="editData.description"
+                v-bind:validations="validations.description"
+                v-bind:field-name="'Description'"
+              />
+            </div>
           </div>
-          <div class="column is-one-fourth">
-            <BasicInputField
-              v-model="editData.abbreviation"
-              v-bind:validations="validations.abbreviation"
-              v-bind:field-name="'Abbreviation'"
-              v-bind:field-help="'No more than 3 characters'"
-            />
-          </div>
-          <div class="column is-one-fourth">
-            <BasicInputField
-              v-model="editData.description"
-              v-bind:validations="validations.description"
-              v-bind:field-name="'Description'"
-            />
-          </div>
-        </div>
-        <div class="columns">
-          <div class="column is-one-fourth">
-            <BasicSelectField
-              v-model="editData.category"
-              v-bind:selected-id="editData.category"
-              v-bind:validations="validations.category"
-              v-bind:options="categories"
-              v-bind:field-name="'Category'"
-            />
-          </div>
-          <div class="column is-one-fourth">
-            <BasicSelectField
-              v-model="editData.geneticDiversity"
-              v-bind:selected-id="editData.geneticDiversity"
-              v-bind:validations="validations.geneticDiversity"
-              v-bind:options="diversities"
-              v-bind:field-name="'Genetic Diversity'"
-            />
+          <div class="columns">
+            <div class="column is-one-fourth">
+              <BasicSelectField
+                v-model="editData.category"
+                v-bind:selected-id="editData.category"
+                v-bind:validations="validations.category"
+                v-bind:options="categories"
+                v-bind:field-name="'Category'"
+              />
+            </div>
+            <div class="column is-one-fourth">
+              <BasicSelectField
+                v-model="editData.geneticDiversity"
+                v-bind:selected-id="editData.geneticDiversity"
+                v-bind:validations="validations.geneticDiversity"
+                v-bind:options="diversities"
+                v-bind:field-name="'Genetic Diversity'"
+              />
+            </div>
           </div>
         </div>
       </template>
@@ -554,7 +557,16 @@ export default class BreedingMethods extends ProgramsBase {
       this.getBreedingMethods();
       this.$emit('show-success-notification', 'Breeding method created successfully');
     } catch (e) {
-      this.$emit('show-error-notification', 'Error while trying to create breeding method');
+      if (e.response.status == 400 && e.response && e.response.data) {
+        this.$emit('show-error-notification', e.response.data);
+      }
+      else{
+        if( e.response && e.response.data ) {
+          //This message may also appear in the bi_api log
+          console.error(e.response.data);
+        }
+        this.$emit('show-error-notification', 'Error while trying to create breeding method');
+      }
     } finally {
       this.newMethodFormState.bus.$emit(DataFormEventBusHandler.SAVE_COMPLETE_EVENT);
     }
@@ -576,7 +588,16 @@ export default class BreedingMethods extends ProgramsBase {
       this.getBreedingMethods();
       this.$emit('show-success-notification', 'Breeding method updated successfully');
     } catch (e) {
-      this.$emit('show-error-notification', 'Error while trying to update breeding method');
+      if (e.response.status == 400 && e.response && e.response.data) {
+        this.$emit('show-error-notification', e.response.data);
+      }
+      else{
+        if( e.response && e.response.data ) {
+          //This message may also appear in the bi_api log
+          console.error(e.response.data);
+        }
+        this.$emit('show-error-notification', 'Error while trying to create breeding method');
+      }
     } finally {
       this.editMethodFormState.bus.$emit(DataFormEventBusHandler.SAVE_COMPLETE_EVENT)
     }
@@ -595,6 +616,10 @@ export default class BreedingMethods extends ProgramsBase {
       return this.inUseBreedingMethods.includes(method.id!);
     }
     return false;
+  }
+
+  showButtons(row: TableRow<BreedingMethod>) {
+    return !this.isMethodInUse(row.data);
   }
 
   filterByScope(row: TableRow<BreedingMethod>, input: string) {

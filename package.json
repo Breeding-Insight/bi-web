@@ -1,6 +1,6 @@
 {
   "name": "bi-web",
-  "version": "v0.9.0+589",
+  "version": "v0.9.0+637",
   "private": true,
   "scripts": {
     "build": "node $npm_package_config_task_path/build.js --dev-audit-level=critical --prod-audit-level=none",
@@ -50,7 +50,8 @@
     "vuelidate": "^0.7.5",
     "vuelidate-property-decorators": "^1.0.28",
     "vuex": "^3.1.2",
-    "vuex-class": "^0.3.2"
+    "vuex-class": "^0.3.2",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@creativebulma/bulma-divider": "^1.1.0",
@@ -93,5 +94,5 @@
     "vue-cli-plugin-axios": "0.0.4",
     "vue-template-compiler": "^2.6.10"
   },
-  "versionInfo": "https://github.com/Breeding-Insight/bi-web/commit/937c511b121a10e80190915065c1258e52473ad6"
+  "versionInfo": "https://github.com/Breeding-Insight/bi-web/commit/adb2b12e93fca74a3160c592b0aa3f0915793818"
 }

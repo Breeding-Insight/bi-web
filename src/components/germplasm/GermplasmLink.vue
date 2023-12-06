@@ -19,9 +19,9 @@
     <router-link v-if="this.germplasmUUID" v-bind:to="{name: 'germplasm-details', params: {programId: activeProgram.id, germplasmId: this.germplasmUUID}}">
       {{ this.germplasmGID }}
     </router-link>
-    <div v-else>
+    <router-link v-else v-bind:to="{name: 'germplasm-details', params: {programId: activeProgram.id, germplasmId: 'gid-'+this.germplasmGID}}">
       {{ this.germplasmGID }}
-    </div>
+    </router-link>
 </template>
 
 <script lang="ts">

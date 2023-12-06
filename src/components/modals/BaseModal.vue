@@ -20,7 +20,8 @@
   <focus-trap
       v-bind:active="active"
       v-bind:returnFocusOnDeactivate="true"
-      v-bind:escapeDeactivates="true"
+      v-bind:escapeDeactivates="escapeDeactivates"
+      v-bind:allowOutsideClick="allowOutsideClick"
       v-on:deactivate="$emit('deactivate')"
       ref="focusTrap"
   >
@@ -29,11 +30,16 @@
         v-bind:class="[{ 'is-active': active }, modalClass]"
         tabindex="-1"
     >
-        <div class="modal-background" v-on:click="() => $refs.focusTrap.deactivate()"/>
+        <div class="modal-background" v-on:click="backgroundClicked"/>
         <div class="modal-card">
           <header class="modal-card-head">
-            <div class="modal-card-title" />
+            <div class="modal-card-title">
+              <h3 class="is-5 title has-text-info" v-if="msgTitle">
+                {{msgTitle}}
+              </h3>
+            </div>
             <button
+                v-if="showCloseButton"
                 class="delete"
                 aria-label="close"
                 @click="() => $refs.focusTrap.deactivate()"
@@ -63,13 +69,27 @@
   })
   export default class BaseModal extends Vue {
     @Prop()
+    msgTitle!: string;
+    @Prop()
     active!: boolean;
+    @Prop({default:() => true})
+    escapeDeactivates!: boolean;
+    @Prop({default:() => true})
+    allowOutsideClick!: boolean;
+    @Prop({default:() => true})
+    showCloseButton!: boolean;
     @Prop()
     bodyClass!: Object;
     @Prop()
     modalClass!: Object;
 
     mounted() {
+    }
+
+    backgroundClicked() {
+      if(this.escapeDeactivates) {
+        this.$refs.focusTrap.deactivate();
+      }
     }
   }
 

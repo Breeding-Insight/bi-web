@@ -27,23 +27,47 @@
           class="message is-success"
       >
         <div class="message-body">
-          <div class="columns is-multiline">
-            <div class="column is-one-third">
-              <div class="has-text-right">
-                <b>Observation unit: </b> <span style="width: 30px;"
-                                                class="is-inline-block has-text-left">{{ observationUnit }}</span><br>
-                <b>Phenotypes: </b> <span style="width: 30px;" class="is-inline-block has-text-left">{{
-                  phenotypesCount
-                }}</span><br>
-                <b>Total observations: </b> <span style="width: 30px;" class="is-inline-block has-text-left">{{
-                  totalObservationsCount
-                }}</span><br>
-                <b>Observations with data: </b> <span style="width: 30px;" class="is-inline-block has-text-left">{{
-                  observationsWithData
-                }}</span><br>
-                <b>Observations without data: </b> <span style="width: 30px;" class="is-inline-block has-text-left">{{
-                  observationsWithoutData
-                }}</span><br>
+          <div class="columns">
+            <div class="column">
+              <div class="columns mb-0">
+                <div class="column has-text-right pr-0 pb-0">
+                  <b>Observation unit:</b>
+                </div>
+                <div class="column pl-1 is-three-quarters pb-0">
+                  {{ observationUnit }}
+                </div>
+              </div>
+              <div class="columns mb-0 pb-0 pt-0">
+                <div class="column has-text-right pr-0 pb-0">
+                  <b>Phenotypes:</b>
+                </div>
+                <div class="column pl-1 is-three-quarters pb-0">
+                  {{ phenotypesCount }}
+                </div>
+              </div>
+              <div class="columns mb-0 pb-0 pt-0">
+                <div class="column has-text-right pr-0 pb-0">
+                  <b>Total observations:</b>
+                </div>
+                <div class="column pl-1 is-three-quarters pb-0">
+                  {{ totalObservationsCount }}
+                </div>
+              </div>
+              <div class="columns mb-0 pb-0 pt-0">
+                <div class="column has-text-right pr-0 pb-0">
+                  <b>Observations with data:</b>
+                </div>
+                <div class="column pl-1 is-three-quarters pb-0">
+                  {{ observationsWithData }}
+                </div>
+              </div>
+              <div class="columns mb-0 pb-0 pt-0">
+                <div class="column has-text-right pr-0 pb-0">
+                  <b>Observations without data:</b>
+                </div>
+                <div class="column pl-1 is-three-quarters pb-0">
+                  {{ observationsWithoutData }}
+                </div>
               </div>
             </div>
           </div>
@@ -54,7 +78,6 @@
           v-bind:records.sync="datasetTableRows"
           v-bind:loading=false
           v-bind:pagination="paginationController"
-          v-bind:default-sort="['data.germplasmName', 'asc']"
           v-bind:debounce-search="400"
           v-on:show-error-notification="$emit('show-error-notification', $event)"
       >
@@ -64,7 +87,7 @@
             label="Germplasm Name"
             sortable
             searchable
-            :th-attrs="(column) => ({scope:'col'})"
+            :th-attrs="() => ({scope:'col'})"
         >
           {{ props.row.data.germplasmName }}
         </b-table-column>
@@ -75,7 +98,7 @@
             label="GID"
             sortable
             searchable
-            :th-attrs="(column) => ({scope:'col'})"
+            :th-attrs="() => ({scope:'col'})"
         >
           {{ props.row.data.gid }}
         </b-table-column>
@@ -86,7 +109,7 @@
 "
           sortable
           searchable
-          :th-attrs="(column) => ({scope:'col'})"
+          :th-attrs="() => ({scope:'col'})"
       >
         {{ props.row.data.testOrCheck }}
       </b-table-column>
@@ -96,7 +119,7 @@
             label="Env"
             sortable
             searchable
-            :th-attrs="(column) => ({scope:'col'})"
+            :th-attrs="() => ({scope:'col'})"
         >
           {{ props.row.data.env }}
         </b-table-column>
@@ -106,9 +129,19 @@
             label="Env Location"
             sortable
             searchable
-            :th-attrs="(column) => ({scope:'col'})"
+            :th-attrs="() => ({scope:'col'})"
         >
           {{ props.row.data.envLocation }}
+        </b-table-column>
+        <b-table-column
+            v-slot="props"
+            field="data.envYear"
+            label="Env Year"
+            sortable
+            searchable
+            :th-attrs="() => ({scope:'col'})"
+        >
+          {{ props.row.data.envYear }}
         </b-table-column>
         <b-table-column
             v-slot="props"
@@ -116,7 +149,7 @@
             label="Exp Unit ID"
             sortable
             searchable
-            :th-attrs="(column) => ({scope:'col'})"
+            :th-attrs="() => ({scope:'col'})"
         >
           {{ props.row.data.expUnitId }}
         </b-table-column>
@@ -126,7 +159,7 @@
             label="Exp Replicate #"
             sortable
             searchable
-            :th-attrs="(column) => ({scope:'col'})"
+            :th-attrs="() => ({scope:'col'})"
         >
           {{ props.row.data.expReplicate }}
         </b-table-column>
@@ -136,7 +169,7 @@
             label="Exp Block #"
             sortable
             searchable
-            :th-attrs="(column) => ({scope:'col'})"
+            :th-attrs="() => ({scope:'col'})"
         >
           {{ props.row.data.expBlock }}
         </b-table-column>
@@ -146,7 +179,7 @@
             label="Row"
             sortable
             searchable
-            :th-attrs="(column) => ({scope:'col'})"
+            :th-attrs="() => ({scope:'col'})"
         >
           {{ props.row.data.row }}
         </b-table-column>
@@ -156,20 +189,34 @@
             label="Column"
             sortable
             searchable
-            :th-attrs="(column) => ({scope:'col'})"
+            :th-attrs="() => ({scope:'col'})"
         >
           {{ props.row.data.column }}
         </b-table-column>
+
+        <b-table-column
+            v-slot="props"
+            field="data.treatmentFactors"
+            label="Treatment Factors"
+            sortable
+            searchable
+            :th-attrs="() => ({scope:'col'})"
+        >
+          {{ props.row.data.treatmentFactors }}
+        </b-table-column>
+
+
         <b-table-column
             v-slot="props"
             field="data.obsUnitId"
             label="ObsUnitID"
             sortable
             searchable
-            :th-attrs="(column) => ({scope:'col'})"
+            :th-attrs="() => ({scope:'col'})"
         >
           {{ props.row.data.obsUnitId }}
         </b-table-column>
+
         <b-table-column
             v-for="( observationVariable, index ) in this.datasetModel.observationVariables" :key="observationVariable.observationVariableName"
             v-slot="props"
@@ -197,7 +244,7 @@
 
 
 <script lang="ts">
-import {Component, Prop, Vue, Watch} from 'vue-property-decorator'
+import {Component, Prop, Watch} from 'vue-property-decorator'
 import ProgramsBase from "@/components/program/ProgramsBase.vue";
 import {Result} from "@/breeding-insight/model/Result";
 import {DatasetModel} from "@/breeding-insight/model/DatasetModel";
@@ -208,10 +255,14 @@ import {ObservationUnit} from "@/breeding-insight/model/ObservationUnit";
 import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
 import ExpandableTable from "@/components/tables/expandableTable/ExpandableTable.vue";
 import {BrAPIUtils} from "@/breeding-insight/utils/BrAPIUtils";
-import {ExternalReferences} from "@/breeding-insight/brapi/model/externalReferences";
 import {DatasetTableRow} from "@/breeding-insight/model/DatasetTableRow";
 import {Trial} from "@/breeding-insight/model/Trial";
 import ProgressBar from '@/components/forms/ProgressBar.vue'
+import {Study} from "@/breeding-insight/model/Study";
+import {Metadata} from "@/breeding-insight/model/BiResponse";
+import {StudyService} from "@/breeding-insight/service/StudyService";
+import {BrAPIService, BrAPIType} from '@/breeding-insight/service/BrAPIService';
+import {SortOrder} from "@/breeding-insight/model/Sort";
 
 @Component({
   components: {
@@ -225,15 +276,15 @@ import ProgressBar from '@/components/forms/ProgressBar.vue'
   }
 })
 export default class Dataset extends ProgramsBase {
-  private activeProgram: Program;
-  private datasetModel: DatasetModel;
-  private experiment: Trial;
+  private activeProgram!: Program;
+  private datasetModel!: DatasetModel;
+  private experiment!: Trial;
   private loading = true;
   private resultDatasetId: string | undefined;
   private paginationController: PaginationController = new PaginationController();
   private datasetTableRows: DatasetTableRow[] = [];
-
-  private unitDbId_to_traitValues = {};
+  private unitDbIdToTraitValues: any = {};
+  private envYearByStudyDbId: any = {};
 
   mounted() {
     this.load();
@@ -288,10 +339,6 @@ export default class Dataset extends ProgramsBase {
       count = this.datasetModel.additionalInfo.observationsWithoutData;
     }
     return count
-  }
-
-  getBreedingInsightId(refs: ExternalReferences, source: string): string | undefined {
-    return BrAPIUtils.getBreedingInsightId(refs, source);
   }
 
   filterByObservations(index: number, propsRow: any, input: string) {
@@ -358,13 +405,14 @@ export default class Dataset extends ProgramsBase {
       datasetTableRow.envLocation = this.removeUnique(unit.locationName);
       datasetTableRow.expUnitId = this.removeUnique(unit.observationUnitName);
       datasetTableRow.obsUnitId = BrAPIUtils.getBreedingInsightId(unit.externalReferences, "/observationunits");
+      if (unit.studyDbId) {
+        datasetTableRow.envYear = this.envYearByStudyDbId[unit.studyDbId];
+      }
 
       //Exp Replicate # and Exp Block #
-      datasetTableRow.expReplicate = "";
-      datasetTableRow.expBlock = "";
       if (unit.observationUnitPosition && unit.observationUnitPosition.observationLevelRelationships) {
         for (const relationship of unit.observationUnitPosition.observationLevelRelationships) {
-          if (relationship.levelName === 'replicate') {
+          if (relationship.levelName === 'rep') {
             datasetTableRow.expReplicate = relationship.levelCode;
           }
           if (relationship.levelName === 'block') {
@@ -392,13 +440,61 @@ export default class Dataset extends ProgramsBase {
         }
       }
 
-      datasetTableRow.traitValues = this.unitDbId_to_traitValues[unit.observationUnitDbId];
+      // Treatment Factors
+      datasetTableRow.treatmentFactors = "";
+      if(unit.treatments && unit.treatments[0]){
+        datasetTableRow.treatmentFactors = unit.treatments[0].factor;
+      }
+
+      datasetTableRow.traitValues = this.unitDbIdToTraitValues[unit.observationUnitDbId];
       this.datasetTableRows.push(datasetTableRow);
     }
   }
 
-  createUnitDbId_to_traitValues(): {} {
-    let unitDbId_to_traitValues = {};
+  async createEnvYearByStudyDbId() {
+    try {
+      const response: Result<Error, [Study[], Metadata]> = await StudyService.getAll(this.activeProgram!.id!, this.experiment);
+      if(response.isErr()) throw response.value;
+      let [studies] = response.value;
+
+      // fetch seasons in the program
+      let seasonResponse =
+        await BrAPIService.get(
+            BrAPIType.SEASON,
+            this.activeProgram!.id!,
+            { field: undefined, order: SortOrder.Ascending },
+            { page: 0, pageSize: 1000 },
+            {"metadata": false});
+
+      // map season dBId to year
+      if (seasonResponse.result && seasonResponse.result.data) {
+        let envYearBySeasonDbId = seasonResponse.result.data.reduce((map: any, season: any) => {
+          if (season.seasonDbId && season.year) {
+            map[season.seasonDbId] = parseInt(season.year);
+          }
+          return map;
+        }, {});
+
+        // map study dBId to season year
+        studies.forEach(study => {
+          if (study.id && study.seasons && study.seasons.length > 0) {
+            this.envYearByStudyDbId[study.id] = envYearBySeasonDbId[study.seasons[0]];
+          }
+        })
+      }
+    } catch (e: any) {
+
+      // Display error that seasons can't be loaded
+      if (e.response && e.response.statusText && e.response.status != 500) {
+        this.$emit('show-error-notification', e.response.statusText);
+      } else {
+        this.$emit('show-error-notification', 'An unknown error has occurred while trying to load seasons.');
+      }
+    }
+  }
+
+  createUnitDbIdToTraitValues(): {} {
+    let unitDbIdToTraitValues: any = {};
     let arrayLength: number = this.phenotypesCount;
 
     let units: ObservationUnit[] = this.datasetModel.observationUnits;
@@ -406,37 +502,36 @@ export default class Dataset extends ProgramsBase {
     // create a Hash Table with the key being each observationUnit's DbId
     // and the value being an (initially) empty array of observation values.
     for (let unit of units) {
-      unitDbId_to_traitValues[unit.observationUnitDbId] = new Array<string>(arrayLength);
+      unitDbIdToTraitValues[unit.observationUnitDbId] = new Array<string>(arrayLength);
     }
 
-    let variableDbId_to_index = this.createVariableDbId_to_index();
+    let variableDbIdToIndex: any = this.createvariableDbIdToIndex();
 
-    // populate each array of observation values found in the unitDbId_to_traitValues Hash Table
-    if( this.datasetModel.data ) {
-      for (let observation of this.datasetModel.data) {
-        // find the index (ie table column) of each observation
-        // NOTE: the first observation column will have an index of 0.
-        let obsVar_index = variableDbId_to_index[observation.observationVariableDbId];
-        let obs_value = observation.value;
+    // populate each array of observation values found in the unitDbIdToTraitValues Hash Table
+    for (let observation of this.datasetModel.data) {
+      // find the index (ie table column) of each observation
+      // NOTE: the first observation column will have an index of 0.
+      if (observation.observationVariableDbId && observation.observationUnitDbId) {
+        let obsVarIndex = variableDbIdToIndex[observation.observationVariableDbId];
+        let obsValue = observation.value;
         let unitDbId = observation.observationUnitDbId;
-        let traitValueArray = unitDbId_to_traitValues[unitDbId];
-        traitValueArray[obsVar_index] = obs_value;
-
+        let traitValueArray = unitDbIdToTraitValues[unitDbId];
+        traitValueArray[obsVarIndex] = obsValue;
       }
     }
-
-    return unitDbId_to_traitValues;
+    return unitDbIdToTraitValues;
   }
 
 
-  createVariableDbId_to_index(): {} {
-    let variableDbId_to_index = {};
-    if( this.datasetModel.observationVariables ){
-      for (let index = 0; index < this.datasetModel.observationVariables.length; index++) {
-        variableDbId_to_index[this.datasetModel.observationVariables[index].observationVariableDbId] = index;
+  createvariableDbIdToIndex(): {} {
+    let variableDbIdToIndex: any = {}
+    for (let index = 0; index < this.datasetModel.observationVariables.length; index++) {
+      let obsVarDbId = this.datasetModel.observationVariables[index].observationVariableDbId;
+      if (obsVarDbId) {
+        variableDbIdToIndex[obsVarDbId] = index;
       }
     }
-    return variableDbId_to_index;
+    return variableDbIdToIndex;
   }
 
   cellClassIfEmpty(row: any, column: any) {
@@ -450,26 +545,32 @@ export default class Dataset extends ProgramsBase {
 
   @Watch('$route')
   async load() {
-    this.loading = true;
-
-    //Set this.experiment
-    let experimentResult = await ExperimentService.getSingleExperiment(this.activeProgram!.id!, this.experimentUUID, false);
-    this.experiment = experimentResult.value;
-
-    if (this.datasetId === 'observation') {
-      this.resultDatasetId = this.experiment.additionalInfo.observationDatasetId;
-    } else {
-      this.resultDatasetId = this.datasetId;
-    }
-
     try {
-      // Set this.datasetModel
-      const response: Result<Error, DatasetModel> = await ExperimentService.getDatasetModel(this.activeProgram!.id!, this.experimentUUID, this.resultDatasetId);
-      this.datasetModel = response.result;
-      // Use this.datasetModel to initialize this.unitDbId_to_traitValues
-      this.unitDbId_to_traitValues = this.createUnitDbId_to_traitValues();
+      this.loading = true;
 
-      // Use this.datasetModel to initialize this.datasetTableRows
+      //Set this.experiment
+      let experimentResult = await ExperimentService.getSingleExperiment(this.activeProgram!.id!, this.experimentUUID, false);
+      if (experimentResult.isErr()) throw experimentResult.value;
+      this.experiment = experimentResult.value;
+
+      if (this.datasetId === 'observation') {
+        this.resultDatasetId = this.experiment.additionalInfo.observationDatasetId;
+      } else {
+        this.resultDatasetId = this.datasetId;
+      }
+
+      // Set this.datasetModel
+      const response: Result<Error, DatasetModel> = await ExperimentService.getDatasetModel(this.activeProgram!.id!, this.experimentUUID, this.resultDatasetId!);
+      if (response.isErr()) throw response.value;
+      this.datasetModel = response.value;
+
+      // Use this.datasetModel to initialize this.unitDbIdToTraitValues
+      this.unitDbIdToTraitValues = this.createUnitDbIdToTraitValues();
+
+      // Initialize envYearByStudyDbId
+      await this.createEnvYearByStudyDbId();
+
+      // Use this.datasetModel and this.envYearByStudyDbId to initialize this.datasetTableRows
       this.createDatasetTableRows();
 
       //Initialize the paginationController
@@ -477,13 +578,15 @@ export default class Dataset extends ProgramsBase {
       this.paginationController.currentPage = 1;
       this.paginationController.pageSize = 200;
       this.paginationController.totalPages = this.paginationController.totalCount.valueOf() / this.paginationController.pageSize.valueOf();
-    } catch (err) {
+    } catch (err: any) {
+
       // Display error that experiment cannot be loaded
-      this.$emit('show-error-notification', 'Error while trying to load data set' + err.message());
+      this.$emit('show-error-notification', 'Error while trying to load data set');
       throw err;
     } finally {
       this.loading = false;
     }
   }
 }
+
 </script>
