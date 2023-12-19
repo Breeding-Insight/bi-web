@@ -125,6 +125,16 @@
           <b-table-column field="column" label="Column" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
             {{ getField(props.row.data.observationUnit, 'observationUnitPosition.positionCoordinateY') }}
           </b-table-column>
+          <!-- Geocoordinates -->
+          <b-table-column field="lat" label="Lat" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+            {{ getGeoCoordinates(props.row.data.observationUnit).lat }}
+          </b-table-column>
+          <b-table-column field="long" label="Long" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+            {{ getGeoCoordinates(props.row.data.observationUnit).lon }}
+          </b-table-column>
+          <b-table-column field="elevation" label="Elevation" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+            {{ getGeoCoordinates(props.row.data.observationUnit).elevation }}
+          </b-table-column>
           <!-- Treatment Factors -->
           <b-table-column field="expTreatmentFactorName" label="Treatment Factors" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
             {{ getTreatment(props.row.data.observationUnit) }}
@@ -158,6 +168,7 @@ import {AlertTriangleIcon} from 'vue-feather-icons';
 import BasicInputField from "@/components/forms/BasicInputField.vue";
 import ExpandableTable from "@/components/tables/expandableTable/ExpandableTable.vue";
 import {ImportObjectState} from "@/breeding-insight/model/import/ImportObjectState";
+import { GeoCoordinates } from '@/breeding-insight/model/GeoCoordinates';
 
 @Component({
   components: {
@@ -182,6 +193,7 @@ export default class ImportExperiment extends ProgramsBase {
 
   getField(importReturnObject: any, fieldAccessor: string, isRemovingUnique: boolean=false) {
     const accessors: string[] = fieldAccessor.split('.');
+
     const brapiObject = importReturnObject.brAPIObject;
     let currObject = brapiObject;
     while (accessors.length > 0) {
@@ -232,6 +244,21 @@ export default class ImportExperiment extends ProgramsBase {
       }
     }
     return undefined;
+  }
+
+  getGeoCoordinates(importReturnObject: any) : GeoCoordinates {
+    const coordinates: any[] = this.getField(importReturnObject, 'observationUnitPosition.geoCoordinates.geometry.coordinates');
+    console.log(coordinates);
+    if (coordinates) {
+      console.log('coordinates!');
+      if (coordinates.length === 3) {
+        return new GeoCoordinates(coordinates[0], coordinates[1], coordinates[2]);
+      }
+      if (coordinates.length === 2) {
+        return new GeoCoordinates(coordinates[0], coordinates[1]);
+      }
+    }
+    return new GeoCoordinates(undefined, undefined, undefined);
   }
 
   importFinished(){}
