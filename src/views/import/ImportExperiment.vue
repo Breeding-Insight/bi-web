@@ -135,6 +135,9 @@
           <b-table-column field="elevation" label="Elevation" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
             {{ getGeoCoordinates(props.row.data.observationUnit).elevation }}
           </b-table-column>
+          <b-table-column field="rtk" label="RTK" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+            {{ getField(props.row.data.observationUnit, 'additionalInfo.rtk') }}
+          </b-table-column>
           <!-- Treatment Factors -->
           <b-table-column field="expTreatmentFactorName" label="Treatment Factors" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
             {{ getTreatment(props.row.data.observationUnit) }}
