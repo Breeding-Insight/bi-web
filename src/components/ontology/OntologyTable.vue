@@ -300,7 +300,7 @@ export default class OntologyTable extends Vue {
   private isSubscribed?: boolean;
   private getSubscribedOntology!: () => any;
 
-  shortCharLimit = 12;
+  shortCharLimit = 16;
   longCharLimit = 30;
   traitValidations = {
     observationVariableName: {
