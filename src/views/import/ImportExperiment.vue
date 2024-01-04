@@ -251,9 +251,7 @@ export default class ImportExperiment extends ProgramsBase {
 
   getGeoCoordinates(importReturnObject: any) : GeoCoordinates {
     const coordinates: any[] = this.getField(importReturnObject, 'observationUnitPosition.geoCoordinates.geometry.coordinates');
-    console.log(coordinates);
     if (coordinates) {
-      console.log('coordinates!');
       if (coordinates.length === 3) {
         return new GeoCoordinates(coordinates[0], coordinates[1], coordinates[2]);
       }

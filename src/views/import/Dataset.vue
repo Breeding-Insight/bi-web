@@ -429,7 +429,6 @@ export default class Dataset extends ProgramsBase {
   }
 
   createDatasetTableRows() {
-    console.log(this.datasetModel.observationUnits);
 
     for (let unit of this.datasetModel.observationUnits) {
       let datasetTableRow: DatasetTableRow = new DatasetTableRow();
@@ -487,8 +486,6 @@ export default class Dataset extends ProgramsBase {
 
         // GeoCoordinates
         if (unit.observationUnitPosition.geoCoordinates) {
-          console.log(unit.observationUnitPosition.geoCoordinates);
-
           const coordinates = unit.observationUnitPosition.geoCoordinates.geometry!.coordinates!;
           if (coordinates.length >= 2) {
             datasetTableRow.lat = coordinates[0];
