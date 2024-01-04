@@ -196,6 +196,50 @@
 
         <b-table-column
             v-slot="props"
+            field="data.lat"
+            label="Lat"
+            sortable
+            searchable
+            :th-attrs="() => ({scope:'col'})"
+        >
+          {{ props.row.data.lat }}
+        </b-table-column>
+
+        <b-table-column
+            v-slot="props"
+            field="data.lon"
+            label="Long"
+            sortable
+            searchable
+            :th-attrs="() => ({scope:'col'})"
+        >
+          {{ props.row.data.lon }}
+        </b-table-column>
+
+        <b-table-column
+            v-slot="props"
+            field="data.elevation"
+            label="Elevation"
+            sortable
+            searchable
+            :th-attrs="() => ({scope:'col'})"
+        >
+          {{ props.row.data.elevation }}
+        </b-table-column>
+
+        <b-table-column
+            v-slot="props"
+            field="data.rtk"
+            label="RTK"
+            sortable
+            searchable
+            :th-attrs="() => ({scope:'col'})"
+        >
+          {{ props.row.data.rtk }}
+        </b-table-column>
+
+        <b-table-column
+            v-slot="props"
             field="data.treatmentFactors"
             label="Treatment Factors"
             sortable
@@ -385,6 +429,8 @@ export default class Dataset extends ProgramsBase {
   }
 
   createDatasetTableRows() {
+    console.log(this.datasetModel.observationUnits);
+
     for (let unit of this.datasetModel.observationUnits) {
       let datasetTableRow: DatasetTableRow = new DatasetTableRow();
       datasetTableRow.germplasmName = this.removeUnique(unit.germplasmName);
@@ -438,6 +484,25 @@ export default class Dataset extends ProgramsBase {
         } else if (unit.observationUnitPosition.positionCoordinateYType && unit.observationUnitPosition.positionCoordinateYType === 'GRID_ROW') {
           datasetTableRow.row = unit.observationUnitPosition.positionCoordinateY;
         }
+
+        // GeoCoordinates
+        if (unit.observationUnitPosition.geoCoordinates) {
+          console.log(unit.observationUnitPosition.geoCoordinates);
+
+          const coordinates = unit.observationUnitPosition.geoCoordinates.geometry!.coordinates!;
+          if (coordinates.length >= 2) {
+            datasetTableRow.lat = coordinates[0];
+            datasetTableRow.lon = coordinates[1];
+          }
+          if (coordinates.length === 3) {
+            datasetTableRow.elevation = coordinates[2];
+          }
+        }
+
+        if (unit.additionalInfo && unit.additionalInfo.rtk) {
+          datasetTableRow.rtk = unit.additionalInfo.rtk;
+        }
+
       }
 
       // Treatment Factors
