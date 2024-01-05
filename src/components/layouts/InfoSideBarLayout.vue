@@ -54,7 +54,7 @@
           <h1
             class="title has-text-warning is-5"
           >
-            Guest Accounts
+            Guest Account
           </h1>
           <p class="has-text-light is-paddingless">
             Use these credentials to explore sample data and currently available features.
@@ -72,7 +72,7 @@
               </div>
               <div class="column">
                 <p class="is-paddingless is-marginless has-text-light is-size-7">
-                  using one of the supplied guest accounts
+                  using the supplied guest account
                 </p>
               </div>
             </div>
@@ -81,57 +81,13 @@
 
           <article class="block">
             <h2 class="has-text-warning is-5 is-normal">
-              Alfalfa Guest
+              Guest
             </h2>
             <p class="has-text-light is-paddingless is-marginless">
-              user: alfalfa@mailinator.com
+              user: guestusr@mailinator.com
             </p>
             <p class="has-text-light is-paddingless">
-              password: alfalfa1
-            </p>
-          </article>
-          <article class="block">
-            <h2 class="has-text-warning is-5 is-normal">
-              Blueberry Guest
-            </h2>
-            <p class="has-text-light is-paddingless is-marginless">
-              user: blueberry@mailinator.com
-            </p>
-            <p class="has-text-light is-paddingless">
-              password: blueberry1
-            </p>
-          </article>
-          <article class="block">
-            <h2 class="has-text-warning is-5 is-normal">
-              Grape Guest
-            </h2>
-            <p class="has-text-light is-paddingless is-marginless">
-              user: grape@mailinator.com
-            </p>
-            <p class="has-text-light is-paddingless">
-              password: grape--1
-            </p>
-          </article>
-          <article class="block">
-            <h2 class="has-text-warning is-5 is-normal">
-              Salmonids Guest
-            </h2>
-            <p class="has-text-light is-paddingless is-marginless">
-              user: salmonid@mailinator.com
-            </p>
-            <p class="has-text-light is-paddingless">
-              password: salmonid1
-            </p>
-          </article>
-          <article class="block">
-            <h2 class="has-text-warning is-5 is-normal">
-              Sweetpotato Guest
-            </h2>
-            <p class="has-text-light is-paddingless is-marginless">
-              user: sweetpotato@mailinator.com
-            </p>
-            <p class="has-text-light is-paddingless">
-              password: sweetpotato1
+              password: guestusr1
             </p>
           </article>
         </div>
