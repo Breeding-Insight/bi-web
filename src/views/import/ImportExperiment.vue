@@ -293,7 +293,6 @@ export default class ImportExperiment extends ProgramsBase {
       }
       this.observationIndexMap.set(i, obs_index);
     }
-    console.info(this.observationIndexMap);
   }
 
   statisticsLoaded(statistics: any) {
@@ -319,9 +318,8 @@ export default class ImportExperiment extends ProgramsBase {
 
   cellClassIfExisting(row: any, column: any) {
     const index = column.meta.index
-    let i = this.observationIndexMap.get(index);
-    console.info('i = ' + i);
-    if(row.data.observations[i].state === 'MUTATED') {
+
+    if(row.data.observations[this.observationIndexMap.get(index)!].state === 'MUTATED') {
       return {'class': 'db-filled'};
     }
     return {};
