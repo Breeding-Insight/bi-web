@@ -282,22 +282,18 @@ export default class ImportExperiment extends ProgramsBase {
   // Map phenotypeColumn indices to brapi observation indices for use in highlighting
   createObservationIndexMap() {
     let obs_index = 0;
+    // this assumes that any timestamp for an ontology immediately follows the ontology
+    let is_first_obs = true;
     for (let i=0; i < this.phenotypeColumns!.length; i++) {
-      if (this.phenotypeColumns![i].startsWith('TS:')) {
-        this.observationIndexMap.set(i, obs_index++);
-      } else {
-        if (i+1 < this.phenotypeColumns!.length) {
-          if (!this.phenotypeColumns![i+1].startsWith('TS:')) {
-            obs_index++;
-          }
-        } else {
-          if (obs_index > 0) {
-            obs_index++;
-          }
+      if (!this.phenotypeColumns![i].startsWith('TS:')) {
+        if( ! is_first_obs ){
+          obs_index++;
         }
-        this.observationIndexMap.set(i, obs_index);
+        is_first_obs = false;
       }
+      this.observationIndexMap.set(i, obs_index);
     }
+    console.info(this.observationIndexMap);
   }
 
   statisticsLoaded(statistics: any) {
@@ -323,8 +319,9 @@ export default class ImportExperiment extends ProgramsBase {
 
   cellClassIfExisting(row: any, column: any) {
     const index = column.meta.index
-
-    if(row.data.observations[this.observationIndexMap.get(index)!].state === 'MUTATED') {
+    let i = this.observationIndexMap.get(index);
+    console.info('i = ' + i);
+    if(row.data.observations[i].state === 'MUTATED') {
       return {'class': 'db-filled'};
     }
     return {};
