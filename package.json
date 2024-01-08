@@ -1,6 +1,6 @@
 {
   "name": "bi-web",
-  "version": "v0.9.0+639",
+  "version": "v0.9.0+641",
   "private": true,
   "scripts": {
     "build": "node $npm_package_config_task_path/build.js --dev-audit-level=critical --prod-audit-level=none",
@@ -29,6 +29,7 @@
     "@xstate/fsm": "^1.4.0",
     "core-js": "^3.4.3",
     "d3": "^4.11.0",
+    "dompurify": "^3.0.6",
     "flat": "^5.0.2",
     "focus-trap": "^5.1.0",
     "focus-trap-vue": "0.0.6",
@@ -57,6 +58,7 @@
     "@creativebulma/bulma-divider": "^1.1.0",
     "@types/chai": "^4.2.7",
     "@types/d3": "^7.1.0",
+    "@types/dompurify": "^3.0.5",
     "@types/jest": "^24.9.0",
     "@types/uuid": "^8.3.0",
     "@vue/cli-plugin-babel": "^4.1.0",
@@ -94,5 +96,5 @@
     "vue-cli-plugin-axios": "0.0.4",
     "vue-template-compiler": "^2.6.10"
   },
-  "versionInfo": "https://github.com/Breeding-Insight/bi-web/commit/bb3f5d230e6cfb1d6fab1f2b3e6b25701faa6608"
+  "versionInfo": "https://github.com/Breeding-Insight/bi-web/commit/ac8550a6421dd156d5fb1f8df2a56fd1eff1c475"
 }
