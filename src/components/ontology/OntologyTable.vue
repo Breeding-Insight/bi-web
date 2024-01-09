@@ -109,6 +109,9 @@
       <b-table-column :field="traitField.NAME" label="Name" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
         {{ props.row.data.observationVariableName }}
       </b-table-column>
+      <b-table-column :field="traitField.FULL_NAME" label="Full Name" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
+        {{ props.row.data.fullName }}
+      </b-table-column>
       <b-table-column :field="traitField.TERM_TYPE" label="Term Type" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
         {{ TraitStringFormatters.getTermTypeString(props.row.data.termType) }}
       </b-table-column>
