@@ -100,7 +100,7 @@
             <h3 class="title is-4">Access Token</h3>
             <article class="message is-info mt-5">
               <div class="message-body">
-                Executing BrAPI calls to DeltaBreed via scripts (i.e. R or Python) requires an authorization token.  Click "<strong>Generate Token</strong>" to create a new token to inject into your scripts.
+                Executing BrAPI calls to DeltaBreed via scripts (e.g. R or Python) requires an authorization token.  Click "<strong>Generate Token</strong>" to create a new token to inject into your scripts.
               </div>
             </article>
 
