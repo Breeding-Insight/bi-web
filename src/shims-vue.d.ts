@@ -87,3 +87,6 @@ declare module 'flat';
 declare module '@solgenomics/brapi-pedigree-viewer';
 declare module '@solgenomics/brapijs';
 declare module '@solgenomics/d3-pedigree-tree';
+declare module 'webr';
+declare module 'vue-plotly';
+declare module 'plotly.js';

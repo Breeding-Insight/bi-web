@@ -73,6 +73,9 @@
           </div>
         </div>
       </article>
+      <template v-if="!loading">
+        <WebRPlot v-bind:data="datasetModel"/>
+      </template>
       <ExpandableTable
           scrollable
           v-bind:records.sync="datasetTableRows"
@@ -307,11 +310,13 @@ import {Metadata} from "@/breeding-insight/model/BiResponse";
 import {StudyService} from "@/breeding-insight/service/StudyService";
 import {BrAPIService, BrAPIType} from '@/breeding-insight/service/BrAPIService';
 import {SortOrder} from "@/breeding-insight/model/Sort";
+import WebRPlot from "@/components/analysis/WebRPlot.vue"
 
 @Component({
   components: {
     ExpandableTable,
-    ProgressBar
+    ProgressBar,
+    WebRPlot
   },
   computed: {
     ...mapGetters([
