@@ -48,7 +48,6 @@
         <ConfirmImportMessageBox v-bind:num-records="getNumNewExperimentRecords(statistics)"
                                  v-bind:import-type-name="'Experiments & Observations'"
                                  v-bind:confirm-import-state="confirmImportState"
-                                 v-bind:show-loading-on-confirm="false"
                                  v-on:abort="abort"
                                  v-on:confirm="confirm"
                                  class="mb-4">
