@@ -504,8 +504,8 @@ const routes = [
     },
     component: BrapiAuthorize,
     props: (route: Route) => ({
-      applicationName: route.query.display_name,
-      returnUrl: route.query.return_url
+      applicationName: route.query.client_id || route.query.redirect_uri || route.query.return_url,
+      returnUrl: route.query.redirect_uri || route.query.return_url
     }),
     beforeEnter: processProgramNavigation
   },
