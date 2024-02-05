@@ -23,6 +23,15 @@
         <span v-if="!data.active" class="tag is-link is-normal ml-1">Archived</span>
       </p><br>
 
+      <div v-if="data.fullName" class="columns is-desktop pt-1 pl-3">
+        <div class="column is-one-third pt-0 pb-0 has-text-right-desktop">
+          <span class="has-text-weight-bold">Full Name</span>
+        </div>
+        <div class="column pt-0 pb-0">
+          <span class="is-size-7 mb-0">{{data.fullName}}</span>
+        </div>
+      </div>
+
       <div v-if="data.traitDescription" class="columns is-desktop pt-1 pl-3">
         <div class="column is-one-third pt-0 pb-0 has-text-right-desktop">
           <span class="has-text-weight-bold">Description</span>
