@@ -44,7 +44,7 @@
         </ImportInfoTemplateMessageBox>
       </template>
 
-      <template v-slot:confirmImportMessageBox="{ statistics, abort, confirm, rows }">
+      <template v-slot:confirmImportMessageBox="{ statistics, dynamicColumns, abort, confirm, rows }">
         <ConfirmImportMessageBox v-bind:num-records="getNumNewExperimentRecords(statistics)"
                                  v-bind:import-type-name="'Experiments & Observations'"
                                  v-bind:confirm-import-state="confirmImportState"
@@ -55,12 +55,6 @@
           <div>
             <p>Review your experimental data import before committing to the database.</p>
           <div class = "left-confirm-column">
-            <p class="is-size-5 mb-2"><strong>Import Summary</strong></p>
-            Environments: {{ statistics.Environments.newObjectCount }}
-            <br>Germplasm: {{ statistics.GIDs.newObjectCount }}
-            <br>Observation Units: {{ statistics.Observation_Units.newObjectCount }}
-          </div>
-          <div id="experiment-summary" class ="right-confirm-column">
             <p class="is-size-5 mb-2"><strong>Experiment</strong></p>
             Title: {{ rows[0].trial.brAPIObject.trialName }}
             <br>Description: {{ rows[0].trial.brAPIObject.trialDescription }}
@@ -69,6 +63,14 @@
             <br>Experimental Design: Externally generated
             <template v-if="isExisting(rows)"><br>User: {{ rows[0].trial.brAPIObject.additionalInfo.createdBy.userName }}</template>
             <template v-if="isExisting(rows)"><br>Creation Date: {{ rows[0].trial.brAPIObject.additionalInfo.createdDate | dmy}}</template>
+          </div>
+          <div id="experiment-summary" class ="right-confirm-column">
+            <p class="is-size-5 mb-2"><strong>Import Summary</strong></p>
+            Dataset: {{ rows[0].observationUnit.brAPIObject.additionalInfo.observationLevel }}
+            <br>Germplasm: {{ statistics.GIDs.newObjectCount }}
+            <br>Environment(s): {{ statistics.Environments.newObjectCount }}
+            <br>Observation Variables: {{ dynamicColumns.length }}
+            <br>Observations: {{ statistics.Observations.newObjectCount }}
           </div>
           </div>
         </ConfirmImportMessageBox>
