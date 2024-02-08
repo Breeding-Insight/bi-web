@@ -48,7 +48,7 @@
         <ConfirmImportMessageBox v-bind:num-records="getNumNewExperimentRecords(statistics)"
                                  v-bind:import-type-name="'Experiments & Observations'"
                                  v-bind:confirm-import-state="confirmImportState"
-                                 v-bind:show-loading-on-confirm="false"
+                                 v-bind:show-loading-on-confirm="!showProceedDialog"
                                  v-on:abort="abort"
                                  v-on:confirm="confirm"
                                  class="mb-4">
@@ -306,7 +306,7 @@ export default class ImportExperiment extends ProgramsBase {
   }
 
   retrieveDynamicColVal(importReturnObject: any, column: string){
-    console.log(importReturnObject);
+    //console.log(importReturnObject);
     if (column.startsWith('TS:')) {
       //Is timestamp
       return importReturnObject.filter((observation: { brAPIObject: { observationVariableName: string; }; }) => observation.brAPIObject.observationVariableName === column.replace(/TS:\s*/,""))[0].brAPIObject.observationTimeStamp;
