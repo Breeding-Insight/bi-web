@@ -16,7 +16,10 @@
   -->
 
 <template>
-  <div id="out"></div>
+  <div>
+    <div id="out"></div>
+
+  </div>
 </template>
 
 <script lang="ts">
@@ -66,6 +69,9 @@ export default class WebRPlot extends Vue {
     library(tidyr)
     library(ggplot2)
     library(plotly)
+    library(jsonlite)
+
+    #data <- fromJson(jsonString)
 
     p <- mtcars %>%
     keep(is.numeric) %>%
