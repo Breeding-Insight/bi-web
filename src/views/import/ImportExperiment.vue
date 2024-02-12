@@ -62,11 +62,13 @@
           </div>
           <div id="experiment-summary" class ="right-confirm-column">
             <p class="is-size-5 mb-2"><strong>Experiment</strong></p>
-            Title: {{ rows[0].trial.brAPIObject.trialName }}
-            <br>Description: {{ rows[0].trial.brAPIObject.trialDescription }}
-            <br>Experimental Unit: {{ rows[0].trial.brAPIObject.additionalInfo.defaultObservationLevel }}
-            <br>Type: {{ rows[0].trial.brAPIObject.additionalInfo.experimentType }}
-            <br>Experimental Design: Externally generated
+            <template v-if="rows && rows.length > 0">
+              Title: {{ rows[0].trial.brAPIObject.trialName }}
+              <br>Description: {{ rows[0].trial.brAPIObject.trialDescription }}
+              <br>Experimental Unit: {{ rows[0].trial.brAPIObject.additionalInfo.defaultObservationLevel }}
+              <br>Type: {{ rows[0].trial.brAPIObject.additionalInfo.experimentType }}
+              <br>Experimental Design: Externally generated
+            </template>
             <template v-if="isExisting(rows)"><br>User: {{ rows[0].trial.brAPIObject.additionalInfo.createdBy.userName }}</template>
             <template v-if="isExisting(rows)"><br>Creation Date: {{ rows[0].trial.brAPIObject.additionalInfo.createdDate | dmy}}</template>
           </div>
