@@ -227,7 +227,7 @@ export default class ImportExperiment extends ProgramsBase {
   private repeatObservationsCount = 10;
 
   get showProceedDialog() {
-    return this.experimentUserInput.overwriteReason !== undefined && this.experimentUserInput.overwriteReason.length >= 3;
+    return this.experimentUserInput.overwrite;
   }
 
   getNumNewExperimentRecords(statistics: any): number | undefined {
