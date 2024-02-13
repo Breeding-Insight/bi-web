@@ -307,7 +307,6 @@ export default class ImportExperiment extends ProgramsBase {
   }
 
   retrieveDynamicColVal(importReturnObject: any, column: string){
-    //console.log(importReturnObject);
     if (column.startsWith('TS:')) {
       //Is timestamp
       return importReturnObject.filter((observation: { brAPIObject: { observationVariableName: string; }; }) => observation.brAPIObject.observationVariableName === column.replace(/TS:\s*/,""))[0].brAPIObject.observationTimeStamp;
