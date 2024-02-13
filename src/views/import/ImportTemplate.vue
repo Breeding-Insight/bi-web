@@ -464,7 +464,6 @@ export default class ImportTemplate extends ProgramsBase {
 
   closeProceed() {
     this.showWarningModal = false;
-    //this.confirmImportState.bus.$emit(DataFormEventBusHandler.SAVE_COMPLETE_EVENT);
   }
 
   async confirm() {
