@@ -225,13 +225,6 @@ export default class ImportExperiment extends ProgramsBase {
 
   private experimentUserInput: ExperimentUserInput = new ExperimentUserInput();
   private repeatObservationsCount = 10;
-
-  @Watch('confirmImportState', {deep: true})
-  changed() {
-    console.log('IMPORTEXP CHANGED!!!!!');
-    console.log(this.confirmImportState);
-  }
-
   get showProceedDialog() {
     return this.experimentUserInput.overwrite;
   }

@@ -92,14 +92,6 @@
     private showLoadingOnConfirm!: boolean;
 
     private activeProgram?: Program;
-
-
-    @Watch('confirmImportState', {deep: true})
-    changed() {
-      console.log('CHANGED!!!!!');
-      console.log(this.confirmImportState);
-    }
-
     confirm() {
       this.$emit('confirm');
       if (this.showLoadingOnConfirm) {
