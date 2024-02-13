@@ -17,7 +17,7 @@
 import Vue from 'vue';
 
 export class DataFormEventBusHandler {
-  bus = new Vue();
+  private bus = new Vue();
 
   //Events
   static readonly SAVE_STARTED_EVENT = "save-activity-started"

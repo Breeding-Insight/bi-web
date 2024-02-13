@@ -178,7 +178,7 @@
 </template>
 
 <script lang="ts">
-import {Component} from 'vue-property-decorator'
+import {Component, Watch} from 'vue-property-decorator'
 import ProgramsBase from "@/components/program/ProgramsBase.vue";
 import ImportInfoTemplateMessageBox from "@/components/file-import/ImportInfoTemplateMessageBox.vue";
 import ConfirmImportMessageBox from "@/components/trait/ConfirmImportMessageBox.vue";
@@ -211,6 +211,12 @@ export default class ImportExperiment extends ProgramsBase {
 
   private experimentUserInput: ExperimentUserInput = new ExperimentUserInput();
   private repeatObservationsCount = 10;
+
+  @Watch('confirmImportState', {deep: true})
+  changed() {
+    console.log('IMPORTEXP CHANGED!!!!!');
+    console.log(this.confirmImportState);
+  }
 
   get showProceedDialog() {
     return this.experimentUserInput.overwrite;
