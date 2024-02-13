@@ -178,7 +178,7 @@
 </template>
 
 <script lang="ts">
-import {Component, Watch} from 'vue-property-decorator'
+import {Component} from 'vue-property-decorator'
 import ProgramsBase from "@/components/program/ProgramsBase.vue";
 import ImportInfoTemplateMessageBox from "@/components/file-import/ImportInfoTemplateMessageBox.vue";
 import ConfirmImportMessageBox from "@/components/trait/ConfirmImportMessageBox.vue";
