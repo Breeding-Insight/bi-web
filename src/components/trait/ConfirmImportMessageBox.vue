@@ -60,7 +60,7 @@
 </template>
 
 <script lang="ts">
-  import { Component, Prop, Vue } from 'vue-property-decorator'
+  import { Component, Prop, Vue, Watch } from 'vue-property-decorator'
   import {AlertTriangleIcon} from 'vue-feather-icons'
   import {StringFormatters} from '@/breeding-insight/utils/StringFormatters'
   import {DataFormEventBusHandler} from "@/components/forms/DataFormEventBusHandler";
@@ -92,6 +92,13 @@
     private showLoadingOnConfirm!: boolean;
 
     private activeProgram?: Program;
+
+
+    @Watch('confirmImportState', {deep: true})
+    changed() {
+      console.log('CHANGED!!!!!');
+      console.log(this.confirmImportState);
+    }
 
     confirm() {
       this.$emit('confirm');

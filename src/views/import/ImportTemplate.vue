@@ -97,7 +97,7 @@
             v-bind:abort="handleAbortEvent"
             v-bind:confirm="handleConfirmEvent"
             v-bind:confirm-import-state="confirmImportState"
-            v-bind:rows="currentImport.preview !== undefined ? currentImport.preview.rows : []"
+            v-bind:rows="previewImport.preview !== undefined ? previewImport.preview.rows : []"
       />
 
       <slot name="userInput"/>
@@ -225,6 +225,7 @@ export default class ImportTemplate extends ProgramsBase {
 
   private systemImportTemplateId!: string;
   private currentImport?: ImportResponse = new ImportResponse({});
+  private previewImport?: ImportResponse = new ImportResponse({});
   private previewData: any[] = [];
   private previewTotalRows: number = 0;
   private newObjectCounts: any = [];
@@ -386,6 +387,7 @@ export default class ImportTemplate extends ProgramsBase {
         }
         this.importService.send(ImportEvent.IMPORT_ERROR);
       }
+      this.previewImport = response;
       // this.importService.send(ImportEvent.IMPORT_SUCCESS) is in getDataUpload()
     } catch(e) {
       let fileName = this.file.name; //capture filename before this.file is set to null.
@@ -465,7 +467,7 @@ export default class ImportTemplate extends ProgramsBase {
 
   closeProceed() {
     this.showWarningModal = false;
-    this.confirmImportState.bus.$emit(DataFormEventBusHandler.SAVE_COMPLETE_EVENT);
+    //this.confirmImportState.bus.$emit(DataFormEventBusHandler.SAVE_COMPLETE_EVENT);
   }
 
   async confirm() {
@@ -475,6 +477,7 @@ export default class ImportTemplate extends ProgramsBase {
     console.log('sending started event');
     this.confirmImportState.bus.$emit(DataFormEventBusHandler.SAVE_STARTED_EVENT);
     console.log('sent started event');
+    console.log(this.confirmImportState);
     //}
 
     //New button submit, clear prior notifications
@@ -541,11 +544,13 @@ export default class ImportTemplate extends ProgramsBase {
     let previewResponse: ImportResponse = await ImportService.updateDataUpload(this.activeProgram!.id!,
         this.systemImportTemplateId, uploadId!, this.userInput, commit);
     console.log('before currentImport setting');
+
     this.currentImport = previewResponse;
     console.log('after currentImport setting');
 
     // Start check for our data upload
     const includeMapping = !commit;
+
     return this.getDataUpload(includeMapping);
   }
 
