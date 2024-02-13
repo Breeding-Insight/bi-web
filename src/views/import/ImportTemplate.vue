@@ -446,7 +446,6 @@ export default class ImportTemplate extends ProgramsBase {
   }
 
   handleWarningModal() {
-    console.log('WARNING YES');
     this.showWarningModal = false;
     this.importService.send(ImportEvent.PROCEED);
   }
@@ -456,9 +455,7 @@ export default class ImportTemplate extends ProgramsBase {
   }
 
   proceed() {
-    console.log('PROCEED');
     if (this.showProceedWarning) {
-      console.log('SHOW WARNING');
       this.showWarningModal = true;
     } else {
       this.importService.send(ImportEvent.PROCEED);
@@ -471,23 +468,14 @@ export default class ImportTemplate extends ProgramsBase {
   }
 
   async confirm() {
-    console.log('CONFIRM');
-
-    //if (this.showProceedWarning) {
-    console.log('sending started event');
     this.confirmImportState.bus.$emit(DataFormEventBusHandler.SAVE_STARTED_EVENT);
-    console.log('sent started event');
-    console.log(this.confirmImportState);
-    //}
 
     //New button submit, clear prior notifications
     this.$store.commit( DEACTIVATE_ALL_NOTIFICATIONS );
 
     const name = this.activeProgram && this.activeProgram.name ? this.activeProgram.name : 'the program';
     try {
-      console.log('updateDataUpload before');
       const response: ImportResponse = await this.updateDataUpload(this.currentImport!.importId!, true);
-      console.log('updateDataUpload done');
       if (response.progress!.statuscode == 500) {
         this.$emit('show-error-notification', 'An unknown error has occurred when processing your import.');
       } else if (response.progress!.statuscode != 200) {
@@ -543,10 +531,8 @@ export default class ImportTemplate extends ProgramsBase {
   async updateDataUpload(uploadId: string, commit: boolean) {
     let previewResponse: ImportResponse = await ImportService.updateDataUpload(this.activeProgram!.id!,
         this.systemImportTemplateId, uploadId!, this.userInput, commit);
-    console.log('before currentImport setting');
 
     this.currentImport = previewResponse;
-    console.log('after currentImport setting');
 
     // Start check for our data upload
     const includeMapping = !commit;
@@ -556,13 +542,9 @@ export default class ImportTemplate extends ProgramsBase {
 
   async getDataUpload(includeMapping: boolean): Promise<ImportResponse> {
     try {
-      console.log('before getDataUpload');
       const previewResponse: ImportResponse = await ImportService.getDataUpload(this.activeProgram!.id!, this.systemImportTemplateId, this.currentImport!.importId!, includeMapping);
-      console.log('after getDataUpload');
       this.currentImport = previewResponse;
-      console.log('setting currentImport');
 
-      console.log(previewResponse);
       if (!previewResponse.progress) {
         this.$log.error('Progress object was not returned with progress response.')
         throw 'Progress object not returned';
@@ -571,7 +553,6 @@ export default class ImportTemplate extends ProgramsBase {
         await new Promise(resolve => setTimeout(resolve, 1000));
         return this.getDataUpload(includeMapping);
       } else {
-        console.log('call finished');
         // Our call is finished, check the response
         if (previewResponse.progress && previewResponse.progress.statuscode != 200){
           return previewResponse;
@@ -580,7 +561,6 @@ export default class ImportTemplate extends ProgramsBase {
         // Calculate some stuff for the preview data display
         // TODO: Add pagination to this
         if (previewResponse && previewResponse.preview){
-          console.log('previewResponse processing rows');
           if (previewResponse.preview && previewResponse.preview.rows) {
             this.previewTotalRows = previewResponse.preview.rows.length;
             this.previewData = previewResponse.preview.rows as any[];

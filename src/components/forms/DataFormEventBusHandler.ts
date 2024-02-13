@@ -30,12 +30,10 @@ export class DataFormEventBusHandler {
     this.saveStarted = false;
 
     this.bus.$on(DataFormEventBusHandler.SAVE_STARTED_EVENT, () => {
-      console.log('SAVE STARTED');
       this.saveStarted = true;
     });
 
     this.bus.$on(DataFormEventBusHandler.SAVE_COMPLETE_EVENT, () => {
-      console.log('SAVE COMPLETE');
       this.saveStarted = false;
     });
   }
