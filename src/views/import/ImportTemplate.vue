@@ -499,6 +499,7 @@ export default class ImportTemplate extends ProgramsBase {
   reset() {
     this.file = null;
     this.tableLoaded = false;
+    this.finish();
   }
 
   async getSystemImportTemplateMapping() {

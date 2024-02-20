@@ -273,7 +273,9 @@ export default class ImportExperiment extends ProgramsBase {
     return undefined;
   }
 
-  importFinished(){}
+  importFinished(){
+    this.experimentUserInput.overwriteReason = "";
+  }
 
   previewDataLoaded(dynamicColumns: String[]) {
     this.phenotypeColumns = dynamicColumns;
