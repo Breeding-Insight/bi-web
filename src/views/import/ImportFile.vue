@@ -41,6 +41,7 @@
             <a>Experiments & Observations</a>
           </router-link>
           <router-link
+              v-if="!isProduction"
               v-bind:to="{name: 'geno-import', params: {programId: activeProgram.id}}"
               tag="li" active-class="is-active">
             <a>Genotypic Data</a>
@@ -101,6 +102,7 @@ export default class ImportFile extends ProgramsBase {
 
   private activeProgram?: Program;
   private isSubscribed?: boolean;
+  private isProduction: boolean = process.env.NODE_ENV === "production";
   private getSubscribedOntology!: () => any;
 
   mounted() {
