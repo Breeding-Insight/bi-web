@@ -76,26 +76,28 @@ export default class WebRPlot extends Vue {
 
     this.loadingMsg = "Installing webR packages";
 
-    await webR.installPackages(['jsonlite', 'purrr', 'tidyr', 'ggplot2', 'plotly'], true);
+    await webR.installPackages(['jsonlite', 'ggplot2', 'plotly'], true);
 
     this.loadingMsg = "Running R code";
 
     const plotlyData = await webR.evalRString(`
-    library(purrr)
-    library(tidyr)
     library(ggplot2)
     library(plotly)
     library(jsonlite)
 
     data <- fromJSON(jsonStr)
+    obs <- data$data
 
-    p <- mtcars %>%
-    keep(is.numeric) %>%
-    gather() %>%
-    ggplot(aes(value)) +
-    facet_wrap(~ key, scales = "free") +
-    geom_histogram() +
-    ggtitle("Histograms")
+    # Filter out non numeric observation values
+    obs$value <- as.numeric(as.character(obs$value))
+    df_filtered <- obs %>% filter(!is.na(value))
+
+    p <- ggplot(df_filtered, aes(x = value)) +
+      geom_histogram() +
+      facet_wrap(~ observationVariableName, scales = "free") +
+      labs(title = "Histograms for Each Numeric Observation Variable",
+           x = "Value",
+           y = "Count")
 
     plotly_json(p, pretty = FALSE)
     `);
