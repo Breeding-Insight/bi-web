@@ -17,7 +17,10 @@
 
 <template>
   <div>
-    <div id="out"></div>
+    <div v-if="loading">
+      <ProgressBar v-bind:label=loadingMsg />
+    </div>
+    <div id="out" class="mb-5" ></div>
 
   </div>
 </template>
@@ -27,9 +30,11 @@ import { Component, Prop, Vue } from 'vue-property-decorator'
 import {WebR} from 'webr';
 import Plotly from 'plotly.js';
 import {DatasetModel} from "@/breeding-insight/model/DatasetModel";
+import ProgressBar from "@/components/forms/ProgressBar.vue";
 
 @Component({
   components: {
+    ProgressBar
   }
 })
 export default class WebRPlot extends Vue {
@@ -37,12 +42,16 @@ export default class WebRPlot extends Vue {
   @Prop()
   private data!: DatasetModel;
 
+  private loading = true;
+  private loadingMsg = "";
+
   mounted() {
     this.plot();
   }
 
   async plot() {
 
+    /*
     const response = await fetch('http://192.168.0.11:8083/brapi/v2/observations?studyDbId=9df80d67-3eee-4557-a5f0-d7db4fe78461', {
       mode:  'cors',
       method: 'GET',
@@ -54,16 +63,23 @@ export default class WebRPlot extends Vue {
     const responseJson = await response.json();
     console.log(responseJson.result.data);
     console.log(JSON.stringify(responseJson.result.data));
+     */
+
+    this.loadingMsg = "Loading webR environment";
 
     const webR = new WebR({interactive: false});
-    console.log('new');
     await webR.init();
-    console.log('init');
-    console.log(JSON.stringify(this.data.data));
 
-    await webR.objs.globalEnv.bind('jsonString', JSON.stringify(this.data.data));
+    // bind dataset json data into R environment
+    console.log(JSON.stringify(this.data));
+    await webR.objs.globalEnv.bind('jsonStr', JSON.stringify(this.data));
+
+    this.loadingMsg = "Installing webR packages";
 
     await webR.installPackages(['jsonlite', 'purrr', 'tidyr', 'ggplot2', 'plotly'], true);
+
+    this.loadingMsg = "Running R code";
+
     const plotlyData = await webR.evalRString(`
     library(purrr)
     library(tidyr)
@@ -71,7 +87,7 @@ export default class WebRPlot extends Vue {
     library(plotly)
     library(jsonlite)
 
-    #data <- fromJson(jsonString)
+    data <- fromJSON(jsonStr)
 
     p <- mtcars %>%
     keep(is.numeric) %>%
@@ -84,6 +100,7 @@ export default class WebRPlot extends Vue {
     plotly_json(p, pretty = FALSE)
     `);
 
+    this.loading = false;
     Plotly.newPlot('out', JSON.parse(plotlyData), {});
   }
 
