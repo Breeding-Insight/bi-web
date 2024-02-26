@@ -16,11 +16,18 @@
   -->
 
 <template>
-  <div>
+  <div class="mb-5">
     <div v-if="loading">
       <ProgressBar v-bind:label=loadingMsg />
     </div>
-    <div id="out" class="mb-5" ></div>
+    <div id="out"></div>
+    <div class="has-text-right">
+      <a v-if="!loading" class="has-text-right" v-on:click="edit = !edit">Edit</a>
+    </div>
+    <div v-if="edit">
+      <textarea v-model="code"></textarea>
+      <button v-on:click="runCode">Run Code</button>
+    </div>
 
   </div>
 </template>
@@ -44,6 +51,8 @@ export default class WebRPlot extends Vue {
 
   private loading = true;
   private loadingMsg = "";
+  private edit = false;
+  private code = "";
 
   mounted() {
     this.plot();
@@ -69,14 +78,18 @@ export default class WebRPlot extends Vue {
     const response = await fetch('https://raw.githubusercontent.com/nickpalladino/analysis-widgets/main/histograms.R', {
       method: 'GET',
     });
-    const codeText = await response.text();
-    console.log(codeText);
+    this.code = await response.text();
+    console.log(this.code);
 
     this.loadingMsg = "Running R code";
-    const plotlyData = await webR.evalRString(codeText);
+    const plotlyData = await webR.evalRString(this.code);
 
     this.loading = false;
     Plotly.newPlot('out', JSON.parse(plotlyData), {});
+  }
+
+  runCode() {
+
   }
 
 }
