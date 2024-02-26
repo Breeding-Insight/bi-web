@@ -51,20 +51,6 @@ export default class WebRPlot extends Vue {
 
   async plot() {
 
-    /*
-    const response = await fetch('http://192.168.0.11:8083/brapi/v2/observations?studyDbId=9df80d67-3eee-4557-a5f0-d7db4fe78461', {
-      mode:  'cors',
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    });
-
-    const responseJson = await response.json();
-    console.log(responseJson.result.data);
-    console.log(JSON.stringify(responseJson.result.data));
-     */
-
     this.loadingMsg = "Loading webR environment";
 
     const webR = new WebR({interactive: false});
@@ -78,29 +64,16 @@ export default class WebRPlot extends Vue {
 
     await webR.installPackages(['jsonlite', 'ggplot2', 'plotly'], true);
 
+    this.loadingMsg = "Fetching widget source code";
+
+    const response = await fetch('https://raw.githubusercontent.com/nickpalladino/analysis-widgets/main/histograms.R', {
+      method: 'GET',
+    });
+    const codeText = await response.text();
+    console.log(codeText);
+
     this.loadingMsg = "Running R code";
-
-    const plotlyData = await webR.evalRString(`
-    library(ggplot2)
-    library(plotly)
-    library(jsonlite)
-
-    data <- fromJSON(jsonStr)
-    obs <- data$data
-
-    # Filter out non numeric observation values
-    obs$value <- as.numeric(as.character(obs$value))
-    df_filtered <- obs %>% filter(!is.na(value))
-
-    p <- ggplot(df_filtered, aes(x = value)) +
-      geom_histogram() +
-      facet_wrap(~ observationVariableName, scales = "free") +
-      labs(title = "Histograms for Each Numeric Observation Variable",
-           x = "Value",
-           y = "Count")
-
-    plotly_json(p, pretty = FALSE)
-    `);
+    const plotlyData = await webR.evalRString(codeText);
 
     this.loading = false;
     Plotly.newPlot('out', JSON.parse(plotlyData), {});
