@@ -25,7 +25,29 @@
       <a v-if="!loading" class="has-text-right" v-on:click="edit = !edit">Edit</a>
     </div>
     <div v-if="edit">
-      <textarea v-model="code"></textarea>
+      <div class="columns">
+        <div class="column is-half">
+          <template>
+            <vue-monaco-editor
+                v-model="codeM"
+                theme="vs-dark"
+                :options="MONACO_EDITOR_OPTIONS"
+                :language="'r'"
+                @mount="handleMount"
+            />
+          </template>
+        </div>
+        <div class="column is-half">
+          <vue-monaco-editor
+              v-model="jsonData"
+              theme="vs-dark"
+              :options="MONACO_EDITOR_OPTIONS"
+              :language="'json'"
+              @mount="handleJsonMount"
+          />
+        </div>
+      </div>
+
       <button v-on:click="runCode">Run Code</button>
     </div>
 
@@ -38,6 +60,7 @@ import {WebR} from 'webr';
 import Plotly from 'plotly.js';
 import {DatasetModel} from "@/breeding-insight/model/DatasetModel";
 import ProgressBar from "@/components/forms/ProgressBar.vue";
+import { Ref, ref, ShallowRef, shallowRef } from 'vue'
 
 @Component({
   components: {
@@ -53,6 +76,25 @@ export default class WebRPlot extends Vue {
   private loadingMsg = "";
   private edit = false;
   private code = "";
+  private codeM : Ref<string> = ref('// some code...');
+  private jsonData = "";
+
+  private MONACO_EDITOR_OPTIONS = {
+    automaticLayout: true,
+    formatOnType: true,
+    formatOnPaste: true,
+  }
+
+  private editorRef: ShallowRef = shallowRef();
+  private jsonEditor: ShallowRef = shallowRef();
+
+  handleMount(editor: any) {
+    this.editorRef = editor;
+  }
+
+  handleJsonMount(editor: any) {
+    this.jsonEditor = editor;
+  }
 
   mounted() {
     this.plot();
@@ -67,6 +109,7 @@ export default class WebRPlot extends Vue {
 
     // bind dataset json data into R environment
     console.log(JSON.stringify(this.data));
+    this.jsonData = JSON.stringify(this.data);
     await webR.objs.globalEnv.bind('jsonStr', JSON.stringify(this.data));
 
     this.loadingMsg = "Installing webR packages";
@@ -79,6 +122,7 @@ export default class WebRPlot extends Vue {
       method: 'GET',
     });
     this.code = await response.text();
+    this.codeM = this.code;
     console.log(this.code);
 
     this.loadingMsg = "Running R code";

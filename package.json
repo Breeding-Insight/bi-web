@@ -19,6 +19,7 @@
   "dependencies": {
     "@casl/ability": "~4.0.0",
     "@casl/vue": "^1.1.1",
+    "@guolao/vue-monaco-editor": "^1.5.1",
     "@solgenomics/brapi-pedigree-viewer": "git+https://github.com/Breeding-Insight/BrAPI-Pedigree-Viewer#v2.0.3",
     "@solgenomics/brapijs": "git+https://github.com/Breeding-Insight/BrAPI-js#v2.0.2",
     "@solgenomics/d3-pedigree-tree": "git+https://github.com/solgenomics/d3-pedigree-tree#f799b499c8019cfccd550d4297196e365c208d5c",
