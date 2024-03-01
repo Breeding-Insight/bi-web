@@ -48,7 +48,7 @@
         <ConfirmImportMessageBox v-bind:num-records="getNumNewExperimentRecords(statistics)"
                                  v-bind:import-type-name="'Experiments & Observations'"
                                  v-bind:confirm-import-state="confirmImportState"
-                                 v-bind:show-loading-on-confirm="false"
+                                 v-bind:show-loading-on-confirm="!showProceedDialog"
                                  v-on:abort="abort"
                                  v-on:confirm="confirm"
                                  class="mb-4">
@@ -62,11 +62,13 @@
           </div>
           <div id="experiment-summary" class ="right-confirm-column">
             <p class="is-size-5 mb-2"><strong>Experiment</strong></p>
-            Title: {{ rows[0].trial.brAPIObject.trialName }}
-            <br>Description: {{ rows[0].trial.brAPIObject.trialDescription }}
-            <br>Experimental Unit: {{ rows[0].trial.brAPIObject.additionalInfo.defaultObservationLevel }}
-            <br>Type: {{ rows[0].trial.brAPIObject.additionalInfo.experimentType }}
-            <br>Experimental Design: Externally generated
+            <template v-if="rows && rows.length > 0">
+              Title: {{ rows[0].trial.brAPIObject.trialName }}
+              <br>Description: {{ rows[0].trial.brAPIObject.trialDescription }}
+              <br>Experimental Unit: {{ rows[0].trial.brAPIObject.additionalInfo.defaultObservationLevel }}
+              <br>Type: {{ rows[0].trial.brAPIObject.additionalInfo.experimentType }}
+              <br>Experimental Design: Externally generated
+            </template>
             <template v-if="isExisting(rows)"><br>User: {{ rows[0].trial.brAPIObject.additionalInfo.createdBy.userName }}</template>
             <template v-if="isExisting(rows)"><br>Creation Date: {{ rows[0].trial.brAPIObject.additionalInfo.createdDate | dmy}}</template>
           </div>
@@ -209,9 +211,8 @@ export default class ImportExperiment extends ProgramsBase {
 
   private experimentUserInput: ExperimentUserInput = new ExperimentUserInput();
   private repeatObservationsCount = 10;
-
   get showProceedDialog() {
-    return this.experimentUserInput.overwriteReason !== undefined && this.experimentUserInput.overwriteReason.length >= 3;
+    return this.experimentUserInput.overwrite;
   }
 
   getNumNewExperimentRecords(statistics: any): number | undefined {
@@ -272,7 +273,9 @@ export default class ImportExperiment extends ProgramsBase {
     return undefined;
   }
 
-  importFinished(){}
+  importFinished(){
+    this.experimentUserInput.overwriteReason = "";
+  }
 
   previewDataLoaded(dynamicColumns: String[]) {
     this.phenotypeColumns = dynamicColumns;
@@ -306,7 +309,6 @@ export default class ImportExperiment extends ProgramsBase {
   }
 
   retrieveDynamicColVal(importReturnObject: any, column: string){
-    console.log(importReturnObject);
     if (column.startsWith('TS:')) {
       //Is timestamp
       return importReturnObject.filter((observation: { brAPIObject: { observationVariableName: string; }; }) => observation.brAPIObject.observationVariableName === column.replace(/TS:\s*/,""))[0].brAPIObject.observationTimeStamp;
