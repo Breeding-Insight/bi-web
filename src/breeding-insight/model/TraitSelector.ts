@@ -23,7 +23,8 @@ export enum TraitField {
   UPDATED_BY_USER_ID = 'updatedByUserId',
   UPDATED_BY_USER_NAME = 'updatedByUserName',
   TERM_TYPE = 'termType',
-  ENTITY_ATTRIBUTE = 'entityAttribute'
+  ENTITY_ATTRIBUTE = 'entityAttribute',
+  FULL_NAME = 'fullName'
 }
 
 export enum TermType {
