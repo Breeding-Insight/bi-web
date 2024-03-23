@@ -98,7 +98,7 @@
             v-bind:abort="handleAbortEvent"
             v-bind:confirm="handleConfirmEvent"
             v-bind:confirm-import-state="confirmImportState"
-            v-bind:rows="currentImport.preview !== undefined ? currentImport.preview.rows : []"
+            v-bind:rows="previewImport.preview !== undefined ? previewImport.preview.rows : []"
       />
 
       <slot name="userInput"/>
@@ -226,6 +226,7 @@ export default class ImportTemplate extends ProgramsBase {
 
   private systemImportTemplateId!: string;
   private currentImport?: ImportResponse = new ImportResponse({});
+  private previewImport?: ImportResponse = new ImportResponse({});
   private previewData: any[] = [];
   private previewTotalRows: number = 0;
   private newObjectCounts: any = [];
@@ -387,6 +388,7 @@ export default class ImportTemplate extends ProgramsBase {
         }
         this.importService.send(ImportEvent.IMPORT_ERROR);
       }
+      this.previewImport = response;
       // this.importService.send(ImportEvent.IMPORT_SUCCESS) is in getDataUpload()
     } catch(e) {
       let fileName = this.file.name; //capture filename before this.file is set to null.
@@ -445,7 +447,6 @@ export default class ImportTemplate extends ProgramsBase {
   }
 
   handleWarningModal() {
-    console.log('WARNING YES');
     this.showWarningModal = false;
     this.importService.send(ImportEvent.PROCEED);
   }
@@ -455,9 +456,7 @@ export default class ImportTemplate extends ProgramsBase {
   }
 
   proceed() {
-    console.log('PROCEED');
     if (this.showProceedWarning) {
-      console.log('SHOW WARNING');
       this.showWarningModal = true;
     } else {
       this.importService.send(ImportEvent.PROCEED);
@@ -466,15 +465,10 @@ export default class ImportTemplate extends ProgramsBase {
 
   closeProceed() {
     this.showWarningModal = false;
-    this.confirmImportState.bus.$emit(DataFormEventBusHandler.SAVE_COMPLETE_EVENT);
   }
 
   async confirm() {
-    console.log('CONFIRM');
-
-    if (this.showProceedWarning) {
-      this.confirmImportState.bus.$emit(DataFormEventBusHandler.SAVE_STARTED_EVENT);
-    }
+    this.confirmImportState.bus.$emit(DataFormEventBusHandler.SAVE_STARTED_EVENT);
 
     //New button submit, clear prior notifications
     this.$store.commit( DEACTIVATE_ALL_NOTIFICATIONS );
@@ -506,6 +500,7 @@ export default class ImportTemplate extends ProgramsBase {
   reset() {
     this.file = null;
     this.tableLoaded = false;
+    this.finish();
   }
 
   async getSystemImportTemplateMapping() {
@@ -537,10 +532,12 @@ export default class ImportTemplate extends ProgramsBase {
   async updateDataUpload(uploadId: string, commit: boolean) {
     let previewResponse: ImportResponse = await ImportService.updateDataUpload(this.activeProgram!.id!,
         this.systemImportTemplateId, uploadId!, this.userInput, commit);
+
     this.currentImport = previewResponse;
 
     // Start check for our data upload
     const includeMapping = !commit;
+
     return this.getDataUpload(includeMapping);
   }
 
