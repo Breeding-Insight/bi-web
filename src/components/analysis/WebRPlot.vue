@@ -26,7 +26,7 @@
     </div>
     <div v-if="edit">
       <div class="columns">
-        <div class="column is-half">
+        <div class="column is-half" style="height: 500px;">
           <template>
             <vue-monaco-editor
                 v-model="codeM"
@@ -37,11 +37,11 @@
             />
           </template>
         </div>
-        <div class="column is-half">
+        <div class="column is-half" style="height: 500px;">
           <vue-monaco-editor
               v-model="jsonData"
               theme="vs-dark"
-              :options="MONACO_EDITOR_OPTIONS"
+              :options="JSON_MONACO_EDITOR_OPTIONS"
               :language="'json'"
               @mount="handleJsonMount"
           />
@@ -85,8 +85,20 @@ export default class WebRPlot extends Vue {
     formatOnPaste: true,
   }
 
+  private JSON_MONACO_EDITOR_OPTIONS = {
+    automaticLayout: true,
+    wordWrap: 'on',
+    minimap: { enabled: false },
+    showFoldingControls: 'always',
+    folding: true,
+    foldingStrategy: 'indentation',
+  }
+
   private editorRef: ShallowRef = shallowRef();
   private jsonEditor: ShallowRef = shallowRef();
+
+  private shelter = null;
+  private webr = null;
 
   handleMount(editor: any) {
     this.editorRef = editor;
@@ -102,19 +114,20 @@ export default class WebRPlot extends Vue {
 
   async plot() {
 
+    const webr = new WebR({interactive: false});
     this.loadingMsg = "Loading webR environment";
+    await webr.init();
 
-    const webR = new WebR({interactive: false});
-    await webR.init();
+    //this.shelter = await new WebR.Shelter();
 
     // bind dataset json data into R environment
     console.log(JSON.stringify(this.data));
     this.jsonData = JSON.stringify(this.data);
-    await webR.objs.globalEnv.bind('jsonStr', JSON.stringify(this.data));
+    await webr.objs.globalEnv.bind('jsonStr', JSON.stringify(this.data));
 
     this.loadingMsg = "Installing webR packages";
 
-    await webR.installPackages(['jsonlite', 'ggplot2', 'plotly'], true);
+    await webr.installPackages(['jsonlite', 'ggplot2', 'plotly'], true);
 
     this.loadingMsg = "Fetching widget source code";
 
@@ -126,13 +139,40 @@ export default class WebRPlot extends Vue {
     console.log(this.code);
 
     this.loadingMsg = "Running R code";
-    const plotlyData = await webR.evalRString(this.code);
+    const plotlyData = await webr.evalRString(this.code);
 
     this.loading = false;
     Plotly.newPlot('out', JSON.parse(plotlyData), {});
+
+    // TODO: this is causing an error on the console
+    this.webr = webr;
   }
 
-  runCode() {
+  async runCode() {
+    console.log(this.codeM);
+
+    // TODO: manage resources properly, shelter?
+    /*
+    const result = await this.shelter.captureR(this.codeM, {
+      withAutoprint: true,
+      captureStreams: true,
+      captureConditions: false
+    });
+
+    console.log(result);
+    */
+
+
+    const plotlyData = await this.webr.evalRString(this.codeM);
+    console.log(plotlyData);
+
+    Plotly.newPlot('out', JSON.parse(plotlyData), {});
+
+    // TODO: isn't working
+    Plotly.relayout('out', {
+      'xaxis.autorange': true,
+      'yaxis.autorange': true
+    });
 
   }
 
