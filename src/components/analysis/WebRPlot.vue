@@ -48,7 +48,7 @@
         </div>
       </div>
 
-      <button v-on:click="runCode">Run Code</button>
+      <button class="button is-primary" v-bind:class="{ 'is-loading': codeRunning }" v-on:click="runCode">Run Code</button>
     </div>
 
   </div>
@@ -78,6 +78,7 @@ export default class WebRPlot extends Vue {
   private code = "";
   private codeM : Ref<string> = ref('// some code...');
   private jsonData = "";
+  private codeRunning = false;
 
   private MONACO_EDITOR_OPTIONS = {
     automaticLayout: true,
@@ -149,6 +150,7 @@ export default class WebRPlot extends Vue {
   }
 
   async runCode() {
+    this.codeRunning = true;
     console.log(this.codeM);
 
     // TODO: manage resources properly, shelter?
@@ -163,6 +165,7 @@ export default class WebRPlot extends Vue {
     */
 
 
+    // TODO: handle errors in case code syntax errors, etc.
     const plotlyData = await this.webr.evalRString(this.codeM);
     console.log(plotlyData);
 
@@ -173,6 +176,8 @@ export default class WebRPlot extends Vue {
       'xaxis.autorange': true,
       'yaxis.autorange': true
     });
+
+    this.codeRunning = false;
 
   }
 
