@@ -258,11 +258,11 @@
       <div class="column is-full">
         <NumericalTraitForm
             class="p-0"
-            v-bind:unit="trait.scale.scaleName"
+            v-bind:unit="trait.scale.units"
             v-bind:decimal-places="trait.scale.decimalPlaces"
             v-bind:valid-min="trait.scale.validValueMin"
             v-bind:valid-max="trait.scale.validValueMax"
-            v-on:unit-change="trait.scale.scaleName = $event"
+            v-on:unit-change="trait.scale.units = $event"
             v-on:decimal-change="trait.scale.decimalPlaces = $event"
             v-on:min-change="trait.scale.validValueMin = $event"
             v-on:max-change="trait.scale.validValueMax = $event"

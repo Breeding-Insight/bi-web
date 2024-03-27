@@ -27,6 +27,7 @@ export enum DataType {
 
 export class Scale {
   scaleName?: string;
+  units?:string;
   dataType?: string;
   categories?: Array<Category>;
   decimalPlaces?: number;
