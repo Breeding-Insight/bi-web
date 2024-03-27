@@ -132,7 +132,7 @@ export default class WebRPlot extends Vue {
 
     this.loadingMsg = "Fetching widget source code";
 
-    const response = await fetch('https://raw.githubusercontent.com/nickpalladino/analysis-widgets/main/histograms.R', {
+    const response = await fetch('https://raw.githubusercontent.com/nickpalladino/analysis-widgets/main/boxplots_envs.R', {
       method: 'GET',
     });
     this.code = await response.text();
@@ -145,8 +145,24 @@ export default class WebRPlot extends Vue {
     this.loading = false;
     Plotly.newPlot('out', JSON.parse(plotlyData), {});
 
+    this.clickAutoscale();
+
     // TODO: this is causing an error on the console
     this.webr = webr;
+  }
+
+  //TODO: hack because plotly relayout was not working
+  clickAutoscale() {
+    // Find the autoscale button element
+    const autoscaleButton = document.querySelector('a[data-title="Autoscale"]');
+
+    // Check if the autoscale button element exists
+    if (autoscaleButton) {
+      // Trigger a click event on the autoscale button
+      autoscaleButton.click();
+    } else {
+      console.log('Autoscale button not found.');
+    }
   }
 
   async runCode() {
@@ -169,13 +185,38 @@ export default class WebRPlot extends Vue {
     const plotlyData = await this.webr.evalRString(this.codeM);
     console.log(plotlyData);
 
-    Plotly.newPlot('out', JSON.parse(plotlyData), {});
+    var layout = {
+      xaxis: {
+        range: undefined,
+        autorange: true
+      },
+      yaxis: {
+        range: undefined,
+        autorange: true
+      }
+    };
+
+    // TODO: relayout isn't updating autoscale so removing for now
+    //Plotly.purge('out');
+    Plotly.newPlot('out', JSON.parse(plotlyData), layout);
 
     // TODO: isn't working
+    /*
     Plotly.relayout('out', {
       'xaxis.autorange': true,
-      'yaxis.autorange': true
+      'yaxis.autorange': true,
+      'xaxis.range': undefined,
+      'yaxis.range': undefined
     });
+    */
+
+    /*
+    Plotly.relayout('out', {
+      'autosize': true
+    });
+     */
+
+    this.clickAutoscale();
 
     this.codeRunning = false;
 
