@@ -23,9 +23,9 @@
     <div class="column new-term is-10">
       <BasicInputField
           v-bind:field-name="'Unit'"
-          v-bind:value="unit"
+          v-bind:value="units"
           v-bind:show-label="false"
-          v-on:input="$emit('unit-change', $event)"
+          v-on:input="$emit('units-change', $event)"
           v-bind:field-help="'Can be any measurable unit.'"
           v-bind:server-validations="validationHandler.getValidation(validationIndex, TraitError.ScaleName)"
       />
@@ -89,7 +89,7 @@
 })
 export default class NumericalTraitForm extends Vue {
   @Prop()
-  private unit: string | undefined;
+  private units: string | undefined;
   @Prop()
   private decimalPlaces: number | undefined;
   @Prop()

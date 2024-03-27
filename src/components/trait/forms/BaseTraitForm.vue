@@ -258,11 +258,11 @@
       <div class="column is-full">
         <NumericalTraitForm
             class="p-0"
-            v-bind:unit="trait.scale.scaleName"
+            v-bind:units="trait.scale.units"
             v-bind:decimal-places="trait.scale.decimalPlaces"
             v-bind:valid-min="trait.scale.validValueMin"
             v-bind:valid-max="trait.scale.validValueMax"
-            v-on:unit-change="trait.scale.scaleName = $event"
+            v-on:units-change="trait.scale.units = $event"
             v-on:decimal-change="trait.scale.decimalPlaces = $event"
             v-on:min-change="trait.scale.validValueMin = $event"
             v-on:max-change="trait.scale.validValueMax = $event"
@@ -453,7 +453,7 @@ export default class BaseTraitForm extends Vue {
       }
 
       this.trait.scale.dataType = value;
-      this.trait!.scale!.scaleName = value;
+      this.trait!.scale!.units = value;
 
     } else if (Scale.dataTypeEquals(value, DataType.Ordinal) && Scale.dataTypeEquals(this.lastCategoryType, DataType.Nominal)) {
       //Nominal to Ordinal
@@ -471,7 +471,7 @@ export default class BaseTraitForm extends Vue {
         this.restoreMinCategories(2);
       }
       this.trait.scale.dataType = value;
-      this.trait!.scale!.scaleName = value;
+      this.trait!.scale!.units = value;
 
     //Scale history
     } else if (this.scaleHistory[value.toLowerCase()]) {
@@ -479,7 +479,7 @@ export default class BaseTraitForm extends Vue {
       this.trait.scale.dataType = value;
 
       if (!Scale.dataTypeEquals(value, DataType.Numerical)) {
-        this.trait!.scale!.scaleName = value;
+        this.trait!.scale!.units = value;
       }
     } else {
       // No history
@@ -488,9 +488,9 @@ export default class BaseTraitForm extends Vue {
 
       // Allow for units in the numerical and duration traits
       if (Scale.dataTypeEquals(value, DataType.Numerical)) {
-        this.trait!.scale!.scaleName = undefined;
+        this.trait!.scale!.units = undefined;
       } else {
-        this.trait!.scale!.scaleName = value;
+        this.trait!.scale!.units = value;
       }
 
       //Establish minimal categories for ordinal and nominal

@@ -27,14 +27,16 @@ export enum DataType {
 
 export class Scale {
   scaleName?: string;
+  units?: string;
   dataType?: string;
   categories?: Array<Category>;
   decimalPlaces?: number;
   validValueMin?: number;
   validValueMax?: number;
 
-  constructor(scaleName?:string, dataType?:string, categories?:Array<Category>, decimalPlaces?:number, validValueMin?:number, validValueMax?: number) {
+  constructor(scaleName?:string, units?:string, dataType?:string, categories?:Array<Category>, decimalPlaces?:number, validValueMin?:number, validValueMax?: number) {
     this.scaleName = scaleName;
+    this.units = units;
     this.dataType = dataType;
     if (categories) {
       this.categories = categories.map(category => new Category(category.label, category.value));
@@ -45,7 +47,7 @@ export class Scale {
   }
 
   static assign(scale: Scale) {
-    return new Scale(scale.scaleName, scale.dataType, scale.categories, scale.decimalPlaces,
+    return new Scale(scale.scaleName, scale.units, scale.dataType, scale.categories, scale.decimalPlaces,
       scale.validValueMin, scale.validValueMax);
   }
 
@@ -71,6 +73,7 @@ export class Scale {
   equals(scale?: Scale): boolean {
     if (!scale) {return false;}
     return (this.scaleName === scale.scaleName) &&
+      (this.units === scale.units) &&
       (this.dataType === scale.dataType) &&
       (this.decimalPlaces === scale.decimalPlaces) &&
       (this.validValueMin === scale.validValueMin) &&
