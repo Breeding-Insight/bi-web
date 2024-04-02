@@ -85,7 +85,7 @@
                     </div>
                     <div class="columns">
                       <div class="column"><strong>Value vs Label Display:</strong></div>
-                      <div class="column is-two-thirds">Label</div>
+                      <div class="column is-two-thirds">Value</div>
                     </div>
                   </div>
                 </article>
@@ -167,7 +167,7 @@ export default class BrapiInfo extends Vue {
       'st': '120',
       'flow': 'implicit',
       'oidc': this.getBrAPIRootPath() + '/.well-known/openid-configuration',
-      'cat': 'label'
+      'cat': 'value'
     };
 
     return JSON.stringify(settings)
