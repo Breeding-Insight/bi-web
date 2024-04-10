@@ -88,11 +88,16 @@
     @Prop()
     confirmImportState!: DataFormEventBusHandler;
 
+    @Prop({default: true})
+    private showLoadingOnConfirm!: boolean;
+
     private activeProgram?: Program;
 
     confirm() {
       this.$emit('confirm');
-      this.confirmImportState.bus.$emit(DataFormEventBusHandler.SAVE_STARTED_EVENT);
+      if (this.showLoadingOnConfirm) {
+        this.confirmImportState.bus.$emit(DataFormEventBusHandler.SAVE_STARTED_EVENT);
+      }
     }
 
     abort() {

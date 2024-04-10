@@ -17,17 +17,17 @@
 
 <template>
   <div id="program-configuration">
-      <SharedOntologyConfiguration
-          v-on="$listeners"
-          class="mb-6"
-          v-bind:subscription-change="subscribeAction"
-          v-on:share-change="shareAction += 1"
-      />
-      <SubscribeOntologyConfiguration
-          v-on="$listeners"
-          v-on:subscription-change="subscribeAction += 1"
-          v-bind:share-change="shareAction"
-      />
+    <SharedOntologyConfiguration
+        v-on="$listeners"
+        class="mb-6"
+        v-bind:subscription-change="subscribeAction"
+        v-on:share-change="shareAction += 1"
+    />
+    <SubscribeOntologyConfiguration
+        v-on="$listeners"
+        v-on:subscription-change="subscribeAction += 1"
+        v-bind:share-change="shareAction"
+    />
   </div>
 </template>
 
@@ -43,7 +43,6 @@ import BreedingMethods from "@/views/germplasm/BreedingMethods.vue";
   components: {
     SubscribeOntologyConfiguration,
     SharedOntologyConfiguration,
-    BreedingMethods
   },
   computed: {
     ...mapGetters([

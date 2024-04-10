@@ -120,6 +120,14 @@
                 Import Data
               </router-link>
             </li>
+            <li>
+              <router-link
+                  v-bind:to="{name: 'sample-management', params: {programId: activeProgram.id}}"
+                  :id="sampleMgmtMenuId"
+              >
+                Sample Management
+              </router-link>
+            </li>
             <!--
             <li>
               <a>Labels</a>
@@ -216,6 +224,7 @@
 
     private homeMenuId: string = "usersidebarlayout-home-menu";
     private importFileMenuId: string = "usersidebarlayout-import-file-menu";
+    private sampleMgmtMenuId: string = "usersidebarlayout-sample-management-menu";
     private ontologyMenuId: string = "usersidebarlayout-ontology-menu";
     private programManagementMenuId: string = "usersidebarlayout-program-management-menu";
     private jobManagementMenuId: string = "usersidebarlayout-job-management-menu";

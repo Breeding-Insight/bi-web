@@ -69,7 +69,7 @@
 
     <NewDataForm
         v-if="newTraitActive"
-        v-bind:new-record.sync="newTrait"
+        v-bind:record.sync="newTrait"
         v-bind:row-validations="traitValidations"
         v-bind:data-form-state="newTraitFormState"
         v-on:submit="saveTrait"
@@ -300,7 +300,7 @@ export default class OntologyTable extends Vue {
   private isSubscribed?: boolean;
   private getSubscribedOntology!: () => any;
 
-  shortCharLimit = 12;
+  shortCharLimit = 16;
   longCharLimit = 30;
   traitValidations = {
     observationVariableName: {

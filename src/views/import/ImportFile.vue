@@ -41,15 +41,24 @@
             <a>Experiments & Observations</a>
           </router-link>
           <router-link
+              v-if="!isProduction"
               v-bind:to="{name: 'geno-import', params: {programId: activeProgram.id}}"
               tag="li" active-class="is-active">
             <a>Genotypic Data</a>
           </router-link>
           <router-link
+            v-bind:to="{name: 'sample-import', params: {programId: activeProgram.id}}"
+            tag="li" active-class="is-active">
+            <a>Genotype Samples</a>
+          </router-link>
+          <!-- BI-1963 - Comment out data mapping tab, left url access in case want to get to it -->
+          <!--
+          <router-link
               v-bind:to="{name: 'data-mapping', params: {programId: activeProgram.id}}"
               tag="li" active-class="is-active">
             <a>Data Mapping<span class="ml-2 tag is-warning">Beta</span></a>
           </router-link>
+          -->
         </ul>
       </nav>
     </section>
@@ -93,6 +102,7 @@ export default class ImportFile extends ProgramsBase {
 
   private activeProgram?: Program;
   private isSubscribed?: boolean;
+  private isProduction: boolean = process.env.NODE_ENV === "production";
   private getSubscribedOntology!: () => any;
 
   mounted() {

@@ -220,7 +220,7 @@
         v-on:cancel="$emit('deactivate-edit')"
         v-on:submit="$emit('submit')"
         v-bind:row-validations="clientValidations"
-        v-bind:edit-record.sync="editTrait"
+        v-bind:record.sync="editTrait"
         v-bind:data-form-state="editFormState"
         v-on:show-error-notification="$emit('show-error-notification', $event)"
       >

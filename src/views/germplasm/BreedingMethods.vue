@@ -68,7 +68,7 @@
     <NewDataForm
       v-if="newMethodActive"
       v-bind:row-validations="newMethodValidations"
-      v-bind:new-record.sync="newMethod"
+      v-bind:record.sync="newMethod"
       v-bind:data-form-state="newMethodFormState"
       v-on:submit="saveMethod"
       v-on:cancel="cancelNewMethod"
