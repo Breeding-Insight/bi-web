@@ -64,13 +64,13 @@ state = {
     programSort: new ProgramSort(ProgramSortField.Name, SortOrder.Ascending),
 
     // germplasm table
-    germplasmSort: new GermplasmSort(GermplasmSortField.AccessionNumber, SortOrder.Ascending),
+    germplasmSort: new GermplasmSort(GermplasmSortField.AccessionNumber, SortOrder.Descending),
 
     // germplasm list table
     germplasmListSort: new GermplasmListSort(GermplasmListSortField.Name, SortOrder.Ascending),
 
     //experiment and observation table
-    experimentSort: new ExperimentSort(ExperimentSortField.Name, SortOrder.Ascending)
+    experimentSort: new ExperimentSort(ExperimentSortField.CreatedDate, SortOrder.Descending)
 
 };
 
