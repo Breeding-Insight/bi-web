@@ -16,6 +16,7 @@
  */
 
 import {ExternalReferences} from "@/breeding-insight/brapi/model/externalReferences";
+import {GeoCoordinates} from "@/breeding-insight/model/GeoCoordinates";
 
 export class ObservationUnit {
   observationUnitDbId: string;
@@ -53,6 +54,7 @@ export class ObservationUnitPosition {
   positionCoordinateYType?: string;
   positionCoordinateY?: string;
   entryType?: string;
+  geoCoordinates?: GeoJson;
 
   constructor(level?:string,
               observationLevelRelationships?: ObservationLevelRelationship[],
@@ -61,6 +63,7 @@ export class ObservationUnitPosition {
               positionCoordinateYType?: string,
               positionCoordinateY?: string,
               entryType?: string,
+              geoCoordinates?: GeoJson
               ) {
     this.level = level;
     this.observationLevelRelationships = observationLevelRelationships;
@@ -68,7 +71,8 @@ export class ObservationUnitPosition {
     this.positionCoordinateX = positionCoordinateX;
     this.positionCoordinateYType = positionCoordinateYType;
     this.positionCoordinateY = positionCoordinateY;
-    this.entryType = entryType
+    this.entryType = entryType;
+    this.geoCoordinates = geoCoordinates;
   }
 }
 
@@ -82,5 +86,24 @@ export class ObservationLevelRelationship {
     this.levelName = levelName;
     this.levelOrder = levelOrder;
     this.levelCode = levelCode;
+  }
+}
+
+export class GeoJson {
+  type?: string;
+  geometry?: Geometry;
+  constructor(type?: string, geometry?: Geometry) {
+    this.type = type;
+    this.geometry = geometry;
+  }
+}
+
+export class Geometry {
+  type?: string;
+  coordinates?: number[];
+
+  constructor(type?: string, coordinates?: number[]) {
+    this.type = type;
+    this.coordinates = coordinates;
   }
 }

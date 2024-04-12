@@ -94,6 +94,7 @@
 
       <slot name="confirmImportMessageBox"
             v-bind:statistics="newObjectCounts"
+            v-bind:dynamicColumns="dynamicColumns"
             v-bind:abort="handleAbortEvent"
             v-bind:confirm="handleConfirmEvent"
             v-bind:confirm-import-state="confirmImportState"
