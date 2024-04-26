@@ -39,7 +39,7 @@ function setup() {
 
   // Mock trait response
   const method = new Method('Test Method', 'Computation', 'A method', '1=1');
-  const scale = new Scale('Test Scale', 'Number', undefined, 3, 0, 999);
+  const scale = new Scale('Test Scale', 'cm', 'Number', undefined, 3, 0, 999);
   const level = new ProgramObservationLevel('Plant');
   const range = [...Array(200).keys()];
   traits = range.map((i:number) => new Trait(i.toString(), `Trait${i}`, `Trait${i}`, level, undefined, undefined, undefined, method, scale));
