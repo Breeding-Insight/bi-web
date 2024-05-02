@@ -33,6 +33,16 @@
         v-on:deactivate="downloadModalActive = false"
     />
 
+    <SubEntityDatasetModal
+        v-bind:experiment="experiment"
+        v-bind:modal-title="`Create Sub-Entity Dataset`"
+        v-bind:trial-id="experimentUUID"
+        v-bind:active="subEntityModalActive"
+        v-bind:experiment-observation-unit="experimentObservationUnit"
+        v-on:show-error-notification ="$emit('show-error-notification', $event)"
+        v-on:deactivate="subEntityModalActive = false"
+    />
+
     <div v-if="!experimentLoading && experiment!=null">
 
       <div class="columns is-multiline is-align-items-stretch mt-4">
@@ -61,9 +71,10 @@
           <ActionMenu v-bind:is-primary="true"
                       v-bind:id="'manage-experiment-dropdown-button'"
                       v-bind:button-text="'Manage Experiment'"
-                      v-bind:action-menu-items=actions
+                      v-bind:action-menu-items="actions"
                       v-on:import-file="importFile()"
                       v-on:download-file="downloadFile()"
+                      v-on:create-sub-entity-dataset="createSubEntityDataset()"
           />
         </article>
       </div>
@@ -104,9 +115,11 @@ import ProgramsBase from "@/components/program/ProgramsBase.vue";
 import ActionMenu from "@/components/layouts/menus/ActionMenu.vue";
 import {ActionMenuItem} from "@/breeding-insight/model/ActionMenuItem";
 import ExperimentObservationsDownloadModal from "@/components/experiments/ExperimentObservationsDownloadModal.vue";
+import SubEntityDatasetModal from "@/components/modals/SubEntityDatasetModal.vue";
 
 @Component({
   components: {
+    SubEntityDatasetModal,
     PlusCircleIcon,
     ExperimentObservationsDownloadModal,
     ActionMenu
@@ -125,10 +138,12 @@ export default class ExperimentDetails extends ProgramsBase {
   private experiment: Trial;
   private experimentLoading: boolean = true;
   private downloadModalActive: boolean = false;
+  private subEntityModalActive: boolean = false;
 
   private actions: ActionMenuItem[] = [
       new ActionMenuItem('experiment-import-file', 'import-file', 'Import file'),
-      new ActionMenuItem('experiment-download-file', 'download-file', 'Download file')
+      new ActionMenuItem('experiment-download-file', 'download-file', 'Download file'),
+      new ActionMenuItem('experiment-create-sub-entity-dataset', 'create-sub-entity-dataset', 'Create Sub-Entity Dataset')
   ];
 
   mounted () {
@@ -146,6 +161,10 @@ export default class ExperimentDetails extends ProgramsBase {
 
   private downloadFile() {
     this.downloadModalActive = true;
+  }
+
+  private createSubEntityDataset() {
+    this.subEntityModalActive = true;
   }
 
   get experimentUUID(): string {
@@ -178,6 +197,12 @@ export default class ExperimentDetails extends ProgramsBase {
   //   if( !this.experiment.additionalInfo ){return '';}
   //   return this.experiment.additionalInfo.environmentsCount;
   // }
+
+
+  get experimentObservationUnit(): string {
+    // TODO: get the actual default observation unit/level for this experiment!
+    return 'plot';
+  }
 
   @Watch('$route')
   async getExperiment () {

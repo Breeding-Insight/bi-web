@@ -165,7 +165,7 @@ import {Study} from "@/breeding-insight/model/Study";
 import {StudyService} from "@/breeding-insight/service/StudyService";
 import {Result} from "@/breeding-insight/model/Result";
 import {BrAPIUtils} from "@/breeding-insight/utils/BrAPIUtils";
-import DownloadModal from "@/components/DownloadModal.vue";
+import DownloadModal from "@/components/modals/DownloadModal.vue";
 
 @Component({
   mixins: [validationMixin],
