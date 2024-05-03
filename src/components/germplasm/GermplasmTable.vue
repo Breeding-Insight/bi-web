@@ -23,7 +23,7 @@
         >
         </GermplasmLink>
       </b-table-column>
-      <b-table-column field="defaultDisplayName" label="Name" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
+      <b-table-column field="defaultDisplayName" label="Germplasm Name" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
         {{ props.row.data.defaultDisplayName }}
       </b-table-column>
       <b-table-column field="breedingMethod" label="Breeding Method" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
