@@ -35,7 +35,7 @@
       v-bind:pagination="paginationController"
       backend-sorting
       backend-filtering
-      v-bind:default-sort="[fieldMap['name'], 'ASC']"
+      v-bind:default-sort="[fieldMap['createdDate'], 'DESC']"
       v-bind:search-debounce="400"
       v-on:show-error-notification="$emit('show-error-notification', $event)"
       v-on:sort="setSort"
