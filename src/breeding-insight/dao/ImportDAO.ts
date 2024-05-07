@@ -47,6 +47,14 @@ export class ImportDAO {
     return new BiResponse(data);
   }
 
+  static async getWorkflowsForMapping(mappingId: string | undefined) : Promise<BiResponse> {
+    const { data } =  await api.call({
+      url: `${process.env.VUE_APP_BI_API_V1_PATH}/import/mappings/${mappingId}/workflows`,
+      method: 'get'
+    }) as Response;
+    return new BiResponse(data);
+  }
+
   static async updateMapping(programId: string, mapping: ImportMappingConfig, options: {[key:string]:boolean}): Promise<any> {
     const mappingWithoutFile: ImportMappingConfig = new ImportMappingConfig({
       id: mapping.id,
