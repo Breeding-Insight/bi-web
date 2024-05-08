@@ -82,7 +82,26 @@
                               v-bind:errors="import_errors"
                               v-on:import="importService.send(ImportEvent.IMPORT_STARTED)">
           <slot>
-
+            <template v-if="workflows && workflows.length > 0">
+              <div class="field">
+                <label class="label">Select workflow</label>
+                <div class="control">
+                  <div class="select mb-5">
+                    <select
+                        v-model="selectedWorkflowId"
+                    >
+                      <option
+                          v-for="workflow in workflows"
+                          :key="workflow.id"
+                          :value="workflow.id"
+                      >
+                        {{ workflow.name }}
+                      </option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </template>
           </slot>
         </FileSelectMessageBox>
       </div>
@@ -221,7 +240,8 @@ export default class ImportTemplate extends ProgramsBase {
   initialPageSize!: number;
 
   private systemImportTemplateId!: string;
-  private workflows: ImportMappingWorkflow[] | undefined;
+  private workflows: ImportMappingWorkflow[] = [];
+  private selectedWorkflowId: string | undefined;
   private currentImport?: ImportResponse = new ImportResponse({});
   private previewImport?: ImportResponse = new ImportResponse({});
   private previewData: any[] = [];
@@ -350,6 +370,11 @@ export default class ImportTemplate extends ProgramsBase {
     // get system mapping and any associated workflows
     this.systemImportTemplateId = await this.getSystemImportTemplateMapping(this.systemImportTemplateName);
     this.workflows = await this.getWorkflowsForMapping(this.systemImportTemplateId);
+
+    // set default selected workflow to first in list
+    if (this.workflows.length > 0) {
+      this.selectedWorkflowId = this.workflows[0].id;
+    }
 
     // start state machine
     this.importService.subscribe(state => {
