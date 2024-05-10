@@ -574,7 +574,7 @@ export default class ImportTemplate extends ProgramsBase {
 
   async updateDataUpload(uploadId: string, commit: boolean) {
     let previewResponse: ImportResponse = await ImportService.updateDataUpload(this.activeProgram!.id!,
-        this.systemImportTemplateId, uploadId!, this.userInput, commit);
+        this.systemImportTemplateId, uploadId!, this.selectedWorkflowId, this.userInput, commit);
 
     this.currentImport = previewResponse;
 
