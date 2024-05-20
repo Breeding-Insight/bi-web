@@ -78,7 +78,7 @@
     <template v-slot:menu>
       <nav role="navigation" aria-label="main navigation">
         <template v-if="activeProgram">
-          <p class="menu-label customize">
+          <p class="menu-label customize_for_accessibility">
             {{activeProgram.name}}
           </p>
           <ul class="menu-list">
@@ -165,7 +165,7 @@
           <template v-if="activeProgram">
             <hr style="margin:5px;">
           </template>
-          <p class="menu-label customize">
+          <p class="menu-label customize_for_accessibility">
             System Administration
           </p>
           <ul class="menu-list">

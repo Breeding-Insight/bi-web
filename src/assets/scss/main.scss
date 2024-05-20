@@ -90,7 +90,9 @@ $medium-modal-body-padding: 0 3em 2em 3em;
 @import "~bulma/sass/utilities/_all";
 
 // Customize buefy if you want to here
-.menu-label.customize {
+
+//see https://alfa.siteimprove.com/rules/sia-r72
+.menu-label.customize_for_accessibility {
   text-transform: none;
   font-size: 0.8em;
   letter-spacing: 2px;
