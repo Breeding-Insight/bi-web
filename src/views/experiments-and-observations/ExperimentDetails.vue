@@ -29,17 +29,19 @@
         v-bind:modal-title="`Download ${experiment.trialName}`"
         v-bind:trial-id="experimentUUID"
         v-bind:active="downloadModalActive"
-        v-on:show-error-notification ="$emit('show-error-notification', $event)"
+        v-on:show-error-notification="$emit('show-error-notification', $event)"
         v-on:deactivate="downloadModalActive = false"
     />
 
     <SubEntityDatasetModal
         v-bind:experiment="experiment"
+        v-bind:default-observation-level="experimentObservationUnit"
+        v-bind:dataset-name-options="datasetNameOptions"
         v-bind:modal-title="`Create Sub-Entity Dataset`"
         v-bind:trial-id="experimentUUID"
         v-bind:active="subEntityModalActive"
-        v-bind:experiment-observation-unit="experimentObservationUnit"
-        v-on:show-error-notification ="$emit('show-error-notification', $event)"
+        v-bind:create="createSubEntityDataset"
+        v-on:show-error-notification="$emit('show-error-notification', $event)"
         v-on:deactivate="subEntityModalActive = false"
     />
 
@@ -74,7 +76,7 @@
                       v-bind:action-menu-items="actions"
                       v-on:import-file="importFile()"
                       v-on:download-file="downloadFile()"
-                      v-on:create-sub-entity-dataset="createSubEntityDataset()"
+                      v-on:create-sub-entity-dataset="openSubEntityModal()"
           />
         </article>
       </div>
@@ -84,11 +86,14 @@
       <nav class="tabs is-boxed">
         <ul>
           <router-link
-              v-bind:to="{name: 'experiment_obs_dataset', params: {programId: activeProgram.id, experimentId: experimentUUID, datasetId: 'observation'}}"
-              tag="li" active-class="is-active">
-            <a>Observation Dataset</a>
+            v-for="datasetName in datasetNames"
+            v-bind:key="datasetName"
+            v-bind:to="{name: 'experiment_obs_dataset', params: {programId: activeProgram.id, experimentId: experimentUUID, datasetId: 'observation'}}"
+            tag="li"
+            active-class="is-active"
+          >
+            <a>{{ datasetName }} Dataset</a>
           </router-link>
-          <!--TODO: Will need to loop through a list of datasets and add a tab for each.-->
         </ul>
       </nav>
     </section>
@@ -163,7 +168,13 @@ export default class ExperimentDetails extends ProgramsBase {
     this.downloadModalActive = true;
   }
 
-  private createSubEntityDataset() {
+  private createSubEntityDataset(datasetName: string, repeatedMeasures: number): boolean {
+    // TODO: implement!
+    console.log("createSubEntityDataset invoked with arguments: datasetName=" + datasetName + ", repeatedMeasures=" + repeatedMeasures);
+    return true;
+  }
+
+  private openSubEntityModal() {
     this.subEntityModalActive = true;
   }
 
@@ -198,10 +209,23 @@ export default class ExperimentDetails extends ProgramsBase {
   //   return this.experiment.additionalInfo.environmentsCount;
   // }
 
+  // The options to make available in the autocomplete.
+  get datasetNameOptions(): string[] {
+    // TODO: implement!
+    return ['Plot', 'Plant', 'Leaf']
+  }
 
-  get experimentObservationUnit(): string {
-    // TODO: get the actual default observation unit/level for this experiment!
-    return 'plot';
+  // The datasets that exist for this experiment already.
+  get datasetNames(): string[] {
+    // TODO: implement!
+    return ['Plot'];
+  }
+
+  get experimentObservationUnit(): string | null {
+    if (this.experiment && this.experiment.additionalInfo && this.experiment.additionalInfo.defaultObservationLevel) {
+      return this.experiment.additionalInfo.defaultObservationLevel;
+    }
+    return null;
   }
 
   @Watch('$route')

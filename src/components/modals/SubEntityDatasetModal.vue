@@ -23,12 +23,12 @@
     <FormModal
         v-bind:active.sync="active"
         v-bind:title="modalTitle"
-        v-on:deactivate="closeSubEntityDatasetModal"
+        v-on:deactivate="deactivateModal"
     >
       <template #form>
         <div class="message is-success">
           <div class="message-body">
-            Prepare a dataset for repeated observations within {{ experimentObservationUnit }}.
+            Prepare a dataset for repeated observations within {{ defaultObservationLevel }}.
           </div>
         </div>
         <div class="columns is-multiline is-vcentered mb-4">
@@ -36,14 +36,14 @@
           <div class="column is-7">
                   <AutoCompleteField
                       id="dataset-name-autocomplete"
+                      v-model="datasetName"
                       v-bind:options="datasetNameOptions"
-                      v-bind:value="datasetName"
                       v-bind:field-name="'Dataset Name'"
                       v-bind:field-help="'Create new or reuse a previously described sub-observation unit.'"
                       v-bind:show-label="true"
                   />
           </div>
-          <!-- Environments Multi-select -->
+          <!-- Dataset Repeated Measures -->
           <div class="column is-5">
               <BasicInputField
                   id="dataset-repeated-measures"
@@ -65,7 +65,7 @@
             </button>
             <button
                 class="button"
-                v-on:click="closeSubEntityDatasetModal"
+                v-on:click="deactivateModal"
             >
               Cancel
             </button>
@@ -83,6 +83,8 @@ import {validationMixin} from "vuelidate";
 import FormModal from "@/components/modals/FormModal.vue";
 import AutoCompleteField from "@/components/forms/AutoCompleteField.vue";
 import BasicInputField from "@/components/forms/BasicInputField.vue";
+import {Trial} from "@/breeding-insight/model/Trial";
+import {between, maxLength, minLength, required, integer} from 'vuelidate/lib/validators'
 
 @Component({
   mixins: [validationMixin],
@@ -97,28 +99,44 @@ export default class SubEntityDatasetModal extends Vue {
   @Prop()
   modalClass?: string;
   @Prop()
-  create!: () => boolean;
+  create!: (string, number) => boolean;
   @Prop()
   active!: boolean;
   @Prop()
   datasetNameOptions?: string[];
   @Prop()
-  experimentObservationUnit!: string;
+  experiment!: Trial;
+  @Prop()
+  defaultObservationLevel?: string;
 
-  private datasetName?: string;
-  private datasetRepeatedMeasures?: number;
+  // Reactive, private (would not be reactive if declared without initial values).
+  private datasetName: string = null;
+  private datasetRepeatedMeasures: number = null;
 
-  closeSubEntityDatasetModal(){
-    // Emit deactivate event, allows parent to reset form state, for example.
+  // Form validations. TODO: wire up validations!
+  formValidations = {
+    name: {required, minLength: minLength(1)},
+    repeatedMeasures: {
+      required,
+      between: between(1, 100),  // Note: number of repeated measures is capped at 100 for performance considerations.
+      integer
+    }
+  }
+
+  deactivateModal(){
+    // Reset form state.
+    this.datasetName = null;
+    this.datasetRepeatedMeasures = null;
+    // Emit deactivate event.
     this.$emit('deactivate');
   }
 
   invokeCreate(){
     // Invoke the create prop, which returns true if create succeeded.
-    if (this.create())
+    if (this.create(this.datasetName, this.datasetRepeatedMeasures))
     {
       // Close and deactivate modal.
-      this.closeSubEntityDatasetModal();
+      this.deactivateModal();
     }
   }
 
