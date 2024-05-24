@@ -116,6 +116,11 @@ $divider-margin-inner-size: 0;
 // Overrides that can't be done with variables go here
 // may be broken out into a separate file later
 
+// bold anchors to improve accessibility.
+a.customize-for-accessibility {
+  font-weight: bold;
+}
+
 main {
   /*
   a {
