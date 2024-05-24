@@ -22,8 +22,8 @@
         <h1 class="title has-text-danger">Not Authorized</h1>
         <p class="has-text-dark">
           You are not authorized to access this resource. Verify your login credentials, and if the issue persists
-          <a href="#!">contact your breeding program leader</a> or
-          <a href="#!">DeltaBreed support</a>.
+          <a class="customize-for-accessibility" href="#!">contact your breeding program leader</a> or
+          <a class="customize-for-accessibility" href="#!">DeltaBreed support</a>.
         </p>
         <router-link v-bind:to="{name:'home'}" v-bind:replace="true">
           Return to Home Page
