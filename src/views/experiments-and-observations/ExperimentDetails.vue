@@ -86,13 +86,13 @@
       <nav class="tabs is-boxed">
         <ul>
           <router-link
-            v-for="datasetName in datasetNames"
-            v-bind:key="datasetName"
-            v-bind:to="{name: 'experiment_obs_dataset', params: {programId: activeProgram.id, experimentId: experimentUUID, datasetId: 'observation'}}"
+            v-for="dataset in datasets"
+            v-bind:key="dataset.id"
+            v-bind:to="{name: dataset.name, params: {programId: activeProgram.id, experimentId: experimentUUID, datasetId: dataset.id}}"
             tag="li"
             active-class="is-active"
           >
-            <a>{{ datasetName }} Dataset</a>
+            <a>{{ dataset.name }} Dataset</a>
           </router-link>
         </ul>
       </nav>
@@ -169,8 +169,9 @@ export default class ExperimentDetails extends ProgramsBase {
   }
 
   private createSubEntityDataset(datasetName: string, repeatedMeasures: number): boolean {
-    // TODO: implement!
+    // TODO: implement exception handling!
     console.log("createSubEntityDataset invoked with arguments: datasetName=" + datasetName + ", repeatedMeasures=" + repeatedMeasures);
+    ExperimentService.createSubEntityDataset(this.activeProgram!.id!, this.experimentUUID, datasetName, repeatedMeasures);
     return true;
   }
 
@@ -216,13 +217,16 @@ export default class ExperimentDetails extends ProgramsBase {
   }
 
   // The datasets that exist for this experiment already.
-  get datasetNames(): string[] {
-    // TODO: implement!
-    return ['Plot'];
+  get datasets(): string[] | null {
+    console.log(this.experiment.additionalInfo.datasets);
+    if (this.experiment && this.experiment.additionalInfo) {
+      return this.experiment.additionalInfo.datasets;
+    }
+    return null;
   }
 
   get experimentObservationUnit(): string | null {
-    if (this.experiment && this.experiment.additionalInfo && this.experiment.additionalInfo.defaultObservationLevel) {
+    if (this.experiment && this.experiment.additionalInfo) {
       return this.experiment.additionalInfo.defaultObservationLevel;
     }
     return null;

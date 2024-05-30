@@ -36,4 +36,10 @@ export class ExperimentService {
         return await ExperimentDAO.getDatasetById(programId,experimentId, datasetId, true);
     }
 
+    static async createSubEntityDataset(programId: string, experimentId: string, name: string, repeatedMeasures: number): Promise<Result<Error, DatasetModel>> {
+        if (!programId) {
+            return ResultGenerator.err(new Error('Missing or invalid program id'));
+        }
+        return await ExperimentDAO.createSubEntityDataset(programId, experimentId, name, repeatedMeasures);
+    }
 }
