@@ -191,6 +191,7 @@ export default class ExperimentObservationsDownloadModal extends Vue {
   private fileOptions: ExperimentExportOptions = new ExperimentExportOptions();
   private showEnvironmentsValidationError: boolean = false;
   private fileExtensionOptions: object[] = Object.values(FileTypeOption);
+  // TODO: make this a dynamic set of datasets available for the experiment.
   private datasetOptions: object[] = Object.values(ExperimentDatasetOption);
   private environmentOptions: object[] = [];
   private loadingStudyOptionsComplete: boolean = false;

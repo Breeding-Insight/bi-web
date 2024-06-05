@@ -15,17 +15,21 @@
  * limitations under the License.
  */
 
-import {SelectOption} from "@/breeding-insight/model/SelectOption";
+import {Observation} from "@/breeding-insight/model/Observation";
+import {ObservationUnit} from "@/breeding-insight/model/ObservationUnit";
+import {ObservationVariable} from "@/breeding-insight/model/ObservationVariable";
 
-// TODO: update - this needs to be dynamic.
-export class ExperimentDatasetOption implements SelectOption<string, string> {
-    static observations = new ExperimentDatasetOption("Observation Dataset", "observations");
-
-    name: string;
+export class DatasetMetadata {
     id: string;
+    name: string;
+    level: number;
 
-    constructor(name: string, id: string) {
-        this.name = name;
+    constructor(id: string,
+                name: string,
+                level: number
+    ) {
         this.id = id;
+        this.name = name;
+        this.level = level;
     }
 }

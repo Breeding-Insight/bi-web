@@ -42,7 +42,7 @@
       v-on:search="initSearch"
     >
       <b-table-column label="Title" field="name" cell-class="fixed-width-wrapped" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
-        <router-link v-bind:to="{name: 'experiment-details', params: {programId: activeProgram.id, experimentId: BrAPIUtils.getBreedingInsightId(props.row.data.externalReferences,'/trials')}}">
+        <router-link v-bind:to="{name: 'experiment_dataset', params: {datasetId: getDefaultDataset(props.row.data).id, programId: activeProgram.id, experimentId: BrAPIUtils.getBreedingInsightId(props.row.data.externalReferences,'/trials')}}">
           {{ props.row.data.trialName }}
         </router-link>
 
@@ -95,6 +95,7 @@ import {PaginationController} from "@/breeding-insight/model/view_models/Paginat
 import {UPDATE_EXPERIMENT_SORT} from "@/store/sorting/mutation-types";
 import {BrAPIUtils} from "@/breeding-insight/utils/BrAPIUtils";
 import ExperimentObservationsDownloadModal from "@/components/experiments/ExperimentObservationsDownloadModal.vue";
+import {DatasetMetadata} from "@/breeding-insight/model/DatasetMetadata";
 
 @Component({
   mixins: [validationMixin],
@@ -190,6 +191,17 @@ export default class ExperimentsObservationsTable extends Vue {
     } finally {
       this.experimentsLoading=false;
     }
+  }
+
+  // TODO: move to utilitiy?
+  getDefaultDataset(experiment: Trial): DatasetMetadata | null {
+    // Get default observation level.
+    if (experiment.additionalInfo !== null)
+    {
+      // One and only one top level dataset is always expected, and it will have level = 0.
+      return experiment.additionalInfo.datasets.find((x: DatasetMetadata) => x.level == 0) || null;
+    }
+    return null;
   }
 
   getStatus(active: boolean){

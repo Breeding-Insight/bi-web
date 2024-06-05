@@ -88,7 +88,7 @@
           <router-link
             v-for="dataset in datasets"
             v-bind:key="dataset.id"
-            v-bind:to="{name: dataset.name, params: {programId: activeProgram.id, experimentId: experimentUUID, datasetId: dataset.id}}"
+            v-bind:to="{name: 'experiment_dataset', params: {programId: activeProgram.id, experimentId: experimentUUID, datasetId: dataset.id}}"
             tag="li"
             active-class="is-active"
           >
@@ -121,6 +121,7 @@ import ActionMenu from "@/components/layouts/menus/ActionMenu.vue";
 import {ActionMenuItem} from "@/breeding-insight/model/ActionMenuItem";
 import ExperimentObservationsDownloadModal from "@/components/experiments/ExperimentObservationsDownloadModal.vue";
 import SubEntityDatasetModal from "@/components/modals/SubEntityDatasetModal.vue";
+import {DatasetMetadata} from "@/breeding-insight/model/DatasetMetadata";
 
 @Component({
   components: {
@@ -144,6 +145,7 @@ export default class ExperimentDetails extends ProgramsBase {
   private experimentLoading: boolean = true;
   private downloadModalActive: boolean = false;
   private subEntityModalActive: boolean = false;
+  private datasetMetadata: DatasetMetadata[] = [];
 
   private actions: ActionMenuItem[] = [
       new ActionMenuItem('experiment-import-file', 'import-file', 'Import file'),
@@ -153,6 +155,7 @@ export default class ExperimentDetails extends ProgramsBase {
 
   mounted () {
     this.getExperiment();
+    this.getDatasetMetadata();
   }
 
   private importFile() {
@@ -170,6 +173,7 @@ export default class ExperimentDetails extends ProgramsBase {
 
   private createSubEntityDataset(datasetName: string, repeatedMeasures: number): boolean {
     // TODO: implement exception handling!
+    // TODO: improve UX - don't close modal without any indication.
     console.log("createSubEntityDataset invoked with arguments: datasetName=" + datasetName + ", repeatedMeasures=" + repeatedMeasures);
     ExperimentService.createSubEntityDataset(this.activeProgram!.id!, this.experimentUUID, datasetName, repeatedMeasures);
     return true;
@@ -210,17 +214,17 @@ export default class ExperimentDetails extends ProgramsBase {
   //   return this.experiment.additionalInfo.environmentsCount;
   // }
 
-  // The options to make available in the autocomplete.
-  get datasetNameOptions(): string[] {
-    // TODO: implement!
-    return ['Plot', 'Plant', 'Leaf']
-  }
-
   // The datasets that exist for this experiment already.
   get datasets(): string[] | null {
-    console.log(this.experiment.additionalInfo.datasets);
     if (this.experiment && this.experiment.additionalInfo) {
       return this.experiment.additionalInfo.datasets;
+    }
+    return null;
+  }
+
+  get datasetNameOptions(): String[] | null {
+    if (this.datasetMetadata) {
+      return this.datasetMetadata.map((x) => x.name);
     }
     return null;
   }
@@ -247,6 +251,23 @@ export default class ExperimentDetails extends ProgramsBase {
       throw err;
     } finally {
       this.experimentLoading = false;
+    }
+  }
+
+  // TODO: add and test @Watch('$route').
+  // Get metadata for all datasets available in this experiment.
+  async getDatasetMetadata(): string[] {
+    try {
+      const response: Result<Error, DatasetMetadata[]> = await ExperimentService.getDatasetMetadata(this.activeProgram!.id!, this.experimentUUID, true);
+      if (response.isErr()) {
+        throw response.value;
+      }
+      console.log(response.value);
+      this.datasetMetadata = response.value;
+    } catch (err) {
+      // Display error that experiment cannot be loaded
+      this.$emit('show-error-notification', 'Error while trying to load datasets');
+      throw err;
     }
   }
 }
