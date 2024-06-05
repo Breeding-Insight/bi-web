@@ -74,7 +74,7 @@
     </WarningModal>
 
     <template v-if="state === ImportState.CHOOSE_FILE || state === ImportState.FILE_CHOSEN">
-      <h1 class="title" v-if="showTitle">{{title}}</h1>
+
       <slot name="importInfoTemplateMessageBox" />
       <div class="box">
         <FileSelectMessageBox v-model="file"
@@ -91,9 +91,9 @@
 
     <template v-if="state === ImportState.CURATE"> <!-- state === ImportState.LOADING ||-->
       <h1 class="title">{{toTitleCase(confirmMsg)}}</h1>
-
       <slot name="confirmImportMessageBox"
             v-bind:statistics="newObjectCounts"
+            v-bind:dynamicColumns="dynamicColumns"
             v-bind:abort="handleAbortEvent"
             v-bind:confirm="handleConfirmEvent"
             v-bind:confirm-import-state="confirmImportState"
@@ -192,12 +192,6 @@ enum ImportAction {
   }
 })
 export default class ImportTemplate extends ProgramsBase {
-
-  @Prop()
-  private title!: string;
-
-  @Prop({default: true})
-  private showTitle!: boolean;
 
   @Prop({default: false})
   private showProceedWarning!: boolean;

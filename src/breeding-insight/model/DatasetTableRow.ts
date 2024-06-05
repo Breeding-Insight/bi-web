@@ -27,6 +27,10 @@ export class DatasetTableRow {
   expBlock?: number;
   row?: string;
   column?: string;
+  lat?: number;
+  lon?: number;
+  elevation?: number;
+  rtk?: string;
   obsUnitId?: string;
   traitValues?: string[] = [];
   treatmentFactors?: string;
@@ -42,6 +46,10 @@ export class DatasetTableRow {
               expBlock?: number,
               row?: string,
               column?: string,
+              lat?: number,
+              lon?: number,
+              elevation?: number,
+              rtk?: string,
               obsUnitId?: string,
               traitValues?: string[]) {
     this.germplasmName = germplasmName;
@@ -55,6 +63,10 @@ export class DatasetTableRow {
     this.expBlock = expBlock;
     this.row = row;
     this.column = column;
+    this.lat = lat;
+    this.lon = lon;
+    this.elevation = elevation;
+    this.rtk = rtk;
     this.obsUnitId = obsUnitId;
     this.traitValues = traitValues;
 
@@ -74,6 +86,10 @@ export class DatasetTableRow {
         dataset.expBlock,
         dataset.row,
         dataset.column,
+        dataset.lat,
+        dataset.lon,
+        dataset.elevation,
+        dataset.rtk,
         dataset.obsUnitId,
         dataset.traitValues
         );
