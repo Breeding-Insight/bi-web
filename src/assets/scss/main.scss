@@ -27,7 +27,7 @@
 // Override Bulma default colors
 $red: #E20057;
 $yellow: #FFCC21;
-$green: #2AB14E;
+$green: #1d7b36;
 $blue: #1B64DD;
 
 // Custom colors
@@ -35,6 +35,7 @@ $purple: #763FCE;
 $magenta: #9c27b0;
 $applegreen: #C1ED2F;
 $turquoise: #3FB3B6;
+$dark-turquoise: #287274;
 $darkmenu: #4a4a4a; // $grey-dark, can't specify here because variables not loaded
 $link-light: #edf3fd; // variables not loaded
 $pending: $applegreen;
@@ -48,7 +49,7 @@ $custom-colors: (
 // Update Bulma's global variables
 $family-sans-serif: "Source Sans Pro", "Segoe UI", "Ubuntu", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
 $primary: $purple;
-$info: $turquoise;
+$info: $dark-turquoise;
 $family-heading: "Fira Sans", "Segoe UI", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
 $code: $magenta;
 $menu-item-color: white;
@@ -64,7 +65,7 @@ $footer-padding: 1rem 2.5rem;
 $level-item-spacing: 2rem;
 
 $tabs-boxed-link-radius: 1px;
-$tabs-link-active-color: $turquoise;
+$tabs-link-active-color: $dark-turquoise;
 $tabs-boxed-link-hover-border-bottom-color: $turquoise;
 $tabs-border-bottom-color: $turquoise;
 $tabs-boxed-link-active-border-color: $turquoise;
@@ -991,7 +992,9 @@ tr:nth-child(odd) td.db-filled {
     white-space: -pre-wrap;
     white-space: -o-pre-wrap;
   }
-
+  .message-body.high-contrast{
+    color: $dark-turquoise;
+  }
   .field-book-info {
     .columns {
       margin-bottom: 0;
