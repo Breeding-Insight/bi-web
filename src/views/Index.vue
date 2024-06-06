@@ -107,7 +107,7 @@
             Our breeding collaborators
           </h1>
           <p>The USDA Agricultural Research Service (ARS) supports breeding programs for approximately 90 specialty species.</p>
-          <p>Learn more about our projects for each species at <a href="https://www.breedinginsight.org">www.breedinginsight.org</a>.</p>
+          <p>Learn more about our projects for each species at <a class="customize-for-accessibility" href="https://www.breedinginsight.org">www.breedinginsight.org</a>.</p>
         </div>
       </div>
     </article>
