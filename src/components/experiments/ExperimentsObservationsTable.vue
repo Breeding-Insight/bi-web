@@ -58,7 +58,7 @@
       </b-table-column>
       <b-table-column label="Datasets" cell-class="fixed-width-wrapped" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
         <template v-for="dataset in props.row.data.additionalInfo.datasets">
-          <span v-bind:key="dataset" class="tag is-info is-normal mr-1">{{ dataset }}</span>
+          <span v-bind:key="dataset" class="tag is-info is-normal mr-1">{{ dataset.name }}</span>
         </template>
       </b-table-column>
       <b-table-column field="data.listDbId" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
