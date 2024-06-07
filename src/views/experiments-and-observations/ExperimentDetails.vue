@@ -92,7 +92,7 @@
             tag="li"
             active-class="is-active"
           >
-            <a>{{ dataset.name }} Dataset</a>
+            <a>{{ dataset.name }}</a>
           </router-link>
         </ul>
       </nav>
@@ -223,9 +223,8 @@ export default class ExperimentDetails extends ProgramsBase {
   }
 
   get datasetNameOptions(): String[] | null {
-    if (this.datasetMetadata) {
-      return this.datasetMetadata.map((x) => x.name);
-    }
+    // TODO: [BI-2182] fetch and return all sub-entity names for experiments in this program, excluding the current experiment.
+    // TODO: [BI-2182] exclude top level dataset names.
     return null;
   }
 

@@ -38,7 +38,7 @@
                       id="dataset-name-autocomplete"
                       v-model="datasetName"
                       v-bind:options="datasetNameOptions"
-                      v-bind:field-name="'Dataset Name'"
+                      v-bind:field-name="'Sub-Entity Name'"
                       v-bind:field-help="'Create new or reuse a previously described sub-observation unit.'"
                       v-bind:show-label="true"
                   />
