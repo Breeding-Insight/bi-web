@@ -20,6 +20,7 @@ import {Trial} from "@/breeding-insight/model/Trial.ts";
 import {Result, ResultGenerator} from "@/breeding-insight/model/Result";
 import {DatasetModel} from "@/breeding-insight/model/DatasetModel";
 import {DatasetMetadata} from "@/breeding-insight/model/DatasetMetadata";
+import {SubEntityDatasetNewRequest} from "@/breeding-insight/model/SubEntityDatasetNewRequest";
 
 export class ExperimentService {
 
@@ -37,11 +38,11 @@ export class ExperimentService {
         return await ExperimentDAO.getDatasetById(programId,experimentId, datasetId, true);
     }
 
-    static async createSubEntityDataset(programId: string, experimentId: string, name: string, repeatedMeasures: number): Promise<Result<Error, DatasetModel>> {
+    static async createSubEntityDataset(programId: string, experimentId: string, subEntityRequest: SubEntityDatasetNewRequest): Promise<Result<Error, DatasetModel>> {
         if (!programId) {
             return ResultGenerator.err(new Error('Missing or invalid program id'));
         }
-        return await ExperimentDAO.createSubEntityDataset(programId, experimentId, name, repeatedMeasures);
+        return await ExperimentDAO.createSubEntityDataset(programId, experimentId, subEntityRequest.name, subEntityRequest.repeatedMeasures);
     }
 
     static async getDatasetMetadata(programId: string, experimentId: string): Promise<Result<Error, DatasetMetadata[]>> {

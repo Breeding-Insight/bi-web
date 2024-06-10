@@ -17,62 +17,65 @@
 
 <template>
   <section
-      v-bind:id="'subEntityDatasetModal-' + uniqueId"
-      class="sub-entity-dataset-modal"
+    v-bind:id="'subEntityDatasetModal-' + uniqueId"
+    class="sub-entity-dataset-modal"
   >
-    <FormModal
-        v-bind:active.sync="active"
-        v-bind:title="modalTitle"
-        v-on:deactivate="deactivateModal"
+    <BaseModal
+      v-bind:active.sync="active"
+      v-bind:title="modalTitle"
+      v-on:deactivate="deactivateModal"
     >
-      <template #form>
-        <div class="message is-success">
-          <div class="message-body">
-            Prepare a dataset for repeated observations within {{ defaultObservationLevel }}.
+      <article class="media">
+        <div class="media-content">
+          <div class="content">
+            <h2 class="is-5 title model-header">
+              {{ modalTitle }}
+            </h2>
           </div>
         </div>
-        <div class="columns is-multiline is-vcentered mb-4">
-          <!-- Dataset Name Select -->
-          <div class="column is-7">
-                  <AutoCompleteField
-                      id="dataset-name-autocomplete"
-                      v-model="datasetName"
-                      v-bind:options="datasetNameOptions"
-                      v-bind:field-name="'Sub-Entity Name'"
-                      v-bind:field-help="'Create new or reuse a previously described sub-observation unit.'"
-                      v-bind:show-label="true"
-                  />
+      </article>
+      <DataForm
+        v-if="true"
+        v-bind:row-validations="formValidations"
+        v-bind:record.sync="newSubEntity"
+        v-bind:data-form-state="newSubEntityFormState"
+        v-on:submit="invokeCreate"
+        v-on:cancel="deactivateModal"
+        v-on:show-error-notification="$emit('show-error-notification', $event)"
+      >
+        <template v-slot="validations">
+          <div class="message is-success">
+            <div class="message-body">
+              Prepare a dataset for repeated observations within {{ defaultObservationLevel }}.
+            </div>
           </div>
-          <!-- Dataset Repeated Measures -->
-          <div class="column is-5">
-              <BasicInputField
-                  id="dataset-repeated-measures"
-                  v-model="datasetRepeatedMeasures"
-                  v-bind:field-name="'Number of Repeated Measures'"
-                  v-bind:field-help="'Maximum expected'"
+          <div class="columns is-multiline mb-4">
+            <!-- Dataset Name Select -->
+            <div class="column is-6">
+              <AutoCompleteField
+                id="dataset-name-autocomplete"
+                v-model="newSubEntity.name"
+                v-bind:options="datasetNameOptions"
+                v-bind:validations="validations.name"
+                v-bind:field-name="'Sub-Entity Name'"
+                v-bind:field-help="'Create new or reuse a previously described sub-observation unit.'"
+                v-bind:show-label="true"
               />
+            </div>
+            <!-- Dataset Repeated Measures -->
+            <div class="column is-6">
+              <BasicInputField
+                id="dataset-repeated-measures"
+                v-model="newSubEntity.repeatedMeasures"
+                v-bind:validations="validations.repeatedMeasures"
+                v-bind:field-name="'Repeated Measures'"
+                v-bind:field-help="'Maximum expected'"
+              />
+            </div>
           </div>
-        </div>
-      </template>
-      <template #buttons>
-        <div class="columns">
-          <div class="column is-whole has-text-centered buttons">
-            <button
-                class="button is-primary has-text-weight-bold"
-                v-on:click="invokeCreate"
-            >
-              <strong>Create</strong>
-            </button>
-            <button
-                class="button"
-                v-on:click="deactivateModal"
-            >
-              Cancel
-            </button>
-          </div>
-        </div>
-      </template>
-    </FormModal>
+        </template>
+      </DataForm>
+    </BaseModal>
   </section>
 </template>
 
@@ -80,15 +83,20 @@
 <script lang="ts">
 import {Component, Vue, Prop} from "vue-property-decorator";
 import {validationMixin} from "vuelidate";
-import FormModal from "@/components/modals/FormModal.vue";
+import BaseModal from "@/components/modals/BaseModal.vue";
 import AutoCompleteField from "@/components/forms/AutoCompleteField.vue";
 import BasicInputField from "@/components/forms/BasicInputField.vue";
 import {Trial} from "@/breeding-insight/model/Trial";
 import {between, maxLength, minLength, required, integer} from 'vuelidate/lib/validators'
+import BasicSelectField from "@/components/forms/BasicSelectField.vue";
+import DataForm from "@/components/forms/DataForm.vue";
+import {DatasetMetadata} from "@/breeding-insight/model/DatasetMetadata";
+import {SubEntityDatasetNewRequest} from "@/breeding-insight/model/SubEntityDatasetNewRequest";
+import {DataFormEventBusHandler} from "@/components/forms/DataFormEventBusHandler";
 
 @Component({
   mixins: [validationMixin],
-  components: {BasicInputField, AutoCompleteField, FormModal}
+  components: {DataForm, BasicSelectField, BasicInputField, AutoCompleteField, BaseModal}
 })
 export default class SubEntityDatasetModal extends Vue {
 
@@ -99,7 +107,7 @@ export default class SubEntityDatasetModal extends Vue {
   @Prop()
   modalClass?: string;
   @Prop()
-  create!: (string, number) => boolean;
+  create!: (SubEntityDatasetNewRequest) => Promise<boolean>;
   @Prop()
   active!: boolean;
   @Prop()
@@ -110,33 +118,39 @@ export default class SubEntityDatasetModal extends Vue {
   defaultObservationLevel?: string;
 
   // Reactive, private (would not be reactive if declared without initial values).
-  private datasetName: string = null;
-  private datasetRepeatedMeasures: number = null;
+  private newSubEntity: SubEntityDatasetNewRequest = new SubEntityDatasetNewRequest();
+  private newSubEntityFormState: DataFormEventBusHandler = new DataFormEventBusHandler();
 
-  // Form validations. TODO: wire up validations!
+  // Form validations.
   formValidations = {
-    name: {required, minLength: minLength(1)},
+    name: {
+      required,
+      minLength: minLength(1),
+      maxLength: maxLength(200)},
     repeatedMeasures: {
       required,
-      between: between(1, 100),  // Note: number of repeated measures is capped at 100 for performance considerations.
-      integer
+      integer,
+      between: between(1, 50),  // Note: capped at 50 for performance considerations.
     }
   }
 
   deactivateModal(){
     // Reset form state.
-    this.datasetName = null;
-    this.datasetRepeatedMeasures = null;
+    this.newSubEntity = new SubEntityDatasetNewRequest();
     // Emit deactivate event.
     this.$emit('deactivate');
   }
 
-  invokeCreate(){
-    // Invoke the create prop, which returns true if create succeeded.
-    if (this.create(this.datasetName, this.datasetRepeatedMeasures))
-    {
+  async invokeCreate(){
+    try {
+      // Invoke the create prop, which returns true if create succeeded.
+      await this.create(this.newSubEntity)
       // Close and deactivate modal.
       this.deactivateModal();
+    } catch (error) {
+      this.$emit('show-error-notification', 'Error creating sub-entity dataset.');
+    } finally {
+      this.newSubEntityFormState.bus.$emit(DataFormEventBusHandler.SAVE_COMPLETE_EVENT);
     }
   }
 

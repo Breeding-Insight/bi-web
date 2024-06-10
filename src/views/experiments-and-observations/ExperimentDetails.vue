@@ -122,6 +122,8 @@ import {ActionMenuItem} from "@/breeding-insight/model/ActionMenuItem";
 import ExperimentObservationsDownloadModal from "@/components/experiments/ExperimentObservationsDownloadModal.vue";
 import SubEntityDatasetModal from "@/components/modals/SubEntityDatasetModal.vue";
 import {DatasetMetadata} from "@/breeding-insight/model/DatasetMetadata";
+import {SubEntityDatasetNewRequest} from "@/breeding-insight/model/SubEntityDatasetNewRequest";
+import {DatasetModel} from "@/breeding-insight/model/DatasetModel";
 
 @Component({
   components: {
@@ -171,11 +173,14 @@ export default class ExperimentDetails extends ProgramsBase {
     this.downloadModalActive = true;
   }
 
-  private createSubEntityDataset(datasetName: string, repeatedMeasures: number): boolean {
-    // TODO: implement exception handling!
-    // TODO: improve UX - don't close modal without any indication.
-    console.log("createSubEntityDataset invoked with arguments: datasetName=" + datasetName + ", repeatedMeasures=" + repeatedMeasures);
-    ExperimentService.createSubEntityDataset(this.activeProgram!.id!, this.experimentUUID, datasetName, repeatedMeasures);
+  private async createSubEntityDataset(subEntityRequest: SubEntityDatasetNewRequest): Promise<boolean> {
+    console.log("createSubEntityDataset invoked with arguments: datasetName=" + subEntityRequest.name + ", repeatedMeasures=" + subEntityRequest.repeatedMeasures);
+    const response: Result<Error, DatasetModel> = await ExperimentService.createSubEntityDataset(this.activeProgram!.id!, this.experimentUUID, subEntityRequest);
+    if (response.isErr()) {
+      throw response.value;
+    }
+    // TODO: redirect not working.
+    await this.$router.push({name: 'experiment_dataset', params: {datasetId: response.value.id, programId: this.activeProgram!.id!, experimentId: this.experimentUUID}});
     return true;
   }
 
@@ -222,10 +227,10 @@ export default class ExperimentDetails extends ProgramsBase {
     return null;
   }
 
-  get datasetNameOptions(): String[] | null {
+  get datasetNameOptions(): String[] {
     // TODO: [BI-2182] fetch and return all sub-entity names for experiments in this program, excluding the current experiment.
     // TODO: [BI-2182] exclude top level dataset names.
-    return null;
+    return [];
   }
 
   get experimentObservationUnit(): string | null {
@@ -253,9 +258,8 @@ export default class ExperimentDetails extends ProgramsBase {
     }
   }
 
-  // TODO: add and test @Watch('$route').
+  // TODO: remove if unused!
   // Get metadata for all datasets available in this experiment.
-  @Watch('$route')
   async getDatasetMetadata(): string[] {
     try {
       const response: Result<Error, DatasetMetadata[]> = await ExperimentService.getDatasetMetadata(this.activeProgram!.id!, this.experimentUUID, true);

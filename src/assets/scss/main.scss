@@ -84,6 +84,8 @@ $table-striped-row-even-hover-background-color:$link-light;
 $medium-modal-content-width: $modal-content-width * 1.4;
 $medium-modal-body-padding: 0 3em 2em 3em;
 
+$large-modal-content-width: $modal-content-width * 1.8;
+
 //$margin-right: 2 rem;
 
 // Import buefy before bulma
@@ -902,6 +904,17 @@ tr:nth-child(odd) td.db-filled {
   .modal {
     .modal-card {
       width: $medium-modal-content-width;
+      .modal-card-body {
+        padding: $medium-modal-body-padding;
+      }
+    }
+  }
+}
+
+.sub-entity-dataset-modal {
+  .modal {
+    .modal-card {
+      width: $large-modal-content-width;
       .modal-card-body {
         padding: $medium-modal-body-padding;
       }
