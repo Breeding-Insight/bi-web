@@ -255,6 +255,7 @@ export default class ExperimentDetails extends ProgramsBase {
 
   // TODO: add and test @Watch('$route').
   // Get metadata for all datasets available in this experiment.
+  @Watch('$route')
   async getDatasetMetadata(): string[] {
     try {
       const response: Result<Error, DatasetMetadata[]> = await ExperimentService.getDatasetMetadata(this.activeProgram!.id!, this.experimentUUID, true);
