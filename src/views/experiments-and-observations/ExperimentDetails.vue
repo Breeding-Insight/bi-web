@@ -86,7 +86,7 @@
       <nav class="tabs is-boxed">
         <ul>
           <router-link
-            v-for="dataset in datasets"
+            v-for="dataset in datasetMetadata"
             v-bind:key="dataset.id"
             v-bind:to="{name: 'experiment_dataset', params: {programId: activeProgram.id, experimentId: experimentUUID, datasetId: dataset.id}}"
             tag="li"
@@ -179,7 +179,6 @@ export default class ExperimentDetails extends ProgramsBase {
     if (response.isErr()) {
       throw response.value;
     }
-    // TODO: redirect not working.
     await this.$router.push({name: 'experiment_dataset', params: {datasetId: response.value.id, programId: this.activeProgram!.id!, experimentId: this.experimentUUID}});
     return true;
   }
@@ -219,14 +218,6 @@ export default class ExperimentDetails extends ProgramsBase {
   //   return this.experiment.additionalInfo.environmentsCount;
   // }
 
-  // The datasets that exist for this experiment already.
-  get datasets(): string[] | null {
-    if (this.experiment && this.experiment.additionalInfo) {
-      return this.experiment.additionalInfo.datasets;
-    }
-    return null;
-  }
-
   get datasetNameOptions(): String[] {
     // TODO: [BI-2182] fetch and return all sub-entity names for experiments in this program, excluding the current experiment.
     // TODO: [BI-2182] exclude top level dataset names.
@@ -258,9 +249,9 @@ export default class ExperimentDetails extends ProgramsBase {
     }
   }
 
-  // TODO: remove if unused!
   // Get metadata for all datasets available in this experiment.
-  async getDatasetMetadata(): string[] {
+  @Watch('$route')
+  async getDatasetMetadata(): DatasetMetadata[] {
     try {
       const response: Result<Error, DatasetMetadata[]> = await ExperimentService.getDatasetMetadata(this.activeProgram!.id!, this.experimentUUID, true);
       if (response.isErr()) {
