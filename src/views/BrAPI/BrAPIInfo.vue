@@ -36,7 +36,7 @@
                   <qr-code v-bind:text="getBrAPIRootPath()" v-bind:size="100" v-bind:error-level="'L'"/>
                 </div>
                 <article class="message is-info mt-5">
-                  <div class="message-body">
+                  <div class="message-body high-contrast">
                     Example BrAPI call:<br>
                     <a :href="getBrAPIRootPath()+'/brapi/v2/serverinfo'" target="_blank">{{getBrAPIRootPath() + '/brapi/v2/serverinfo'}}</a>
                   </div>
@@ -47,7 +47,7 @@
                   <qr-code v-bind:text="getFieldBookSettings()" v-bind:size="200" v-bind:error-level="'L'"/>
                 </div>
                 <article class="message is-info mt-5">
-                  <div class="message-body field-book-info">
+                  <div class="message-body field-book-info high-contrast">
                     From Field Book's BrAPI settings screen, tap:<br>"<strong>Scan a configuration code</strong>",<br> then scan the above QR code.<br><br>
                     The settings that will be set are:
                     <div class="columns mt-1">
@@ -99,7 +99,7 @@
           <div class="card-content">
             <h3 class="title is-4">Access Token</h3>
             <article class="message is-info mt-5">
-              <div class="message-body">
+              <div class="message-body high-contrast">
                 Executing BrAPI calls to DeltaBreed via scripts (e.g. R or Python) requires an authorization token.  Click "<strong>Generate Token</strong>" to create a new token to inject into your scripts.
               </div>
             </article>
