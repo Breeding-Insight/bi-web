@@ -34,11 +34,8 @@ $blue: #1B64DD;
 $purple: #763FCE;
 $magenta: #9c27b0;
 $applegreen: #C1ED2F;
-$lt-turquoise: #65c2c4;
 $turquoise: #3FB3B6;
-$dark-turquoise: #297577;
-//$dark-turquoise: #2d8082;
-$very-dark-turquoise: #1b4c4e;
+$dark-turquoise: #287274;
 $darkmenu: #4a4a4a; // $grey-dark, can't specify here because variables not loaded
 $link-light: #edf3fd; // variables not loaded
 $pending: $applegreen;
@@ -52,15 +49,15 @@ $custom-colors: (
 // Update Bulma's global variables
 $family-sans-serif: "Source Sans Pro", "Segoe UI", "Ubuntu", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
 $primary: $purple;
-$info: $turquoise;
+//$info: $dark-turquoise;
 $family-heading: "Fira Sans", "Segoe UI", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
 $code: $magenta;
 $menu-item-color: white;
 $menu-label-color: white;
 
-$menu-item-active-background-color: none;
+$menu-item-active-background-color: black;
 $menu-item-radius: 0;
-$menu-item-hover-background-color: $info;
+$menu-item-hover-background-color: black;
 $menu-item-hover-color: white;
 $menu-nested-list-padding-left: 0;
 
@@ -87,8 +84,6 @@ $table-striped-row-even-hover-background-color:$link-light;
 // Custom variables.
 $medium-modal-content-width: $modal-content-width * 1.4;
 $medium-modal-body-padding: 0 3em 2em 3em;
-
-$large-modal-content-width: $modal-content-width * 1.8;
 
 //$margin-right: 2 rem;
 
@@ -119,7 +114,6 @@ $divider-margin-inner-size: 0;
 
 // Overrides that can't be done with variables go here
 // may be broken out into a separate file later
-
 
 main {
   /*
@@ -162,8 +156,7 @@ nav.pagination {
     flex-grow: 0;
     flex-shrink: 0;
     & li a.is-current {
-      background-color: $lt-turquoise;
-      color: $very-dark-turquoise;
+      background-color: $info;
       border: none;
     }
   }
@@ -912,21 +905,10 @@ tr:nth-child(odd) td.db-filled {
   }
 }
 
-.sub-entity-dataset-modal, .experiment-observations-download-button {
+.experiment-observations-download-button {
   .modal {
     .modal-card {
       width: $medium-modal-content-width;
-      .modal-card-body {
-        padding: $medium-modal-body-padding;
-      }
-    }
-  }
-}
-
-.sub-entity-dataset-modal {
-  .modal {
-    .modal-card {
-      width: $large-modal-content-width;
       .modal-card-body {
         padding: $medium-modal-body-padding;
       }
