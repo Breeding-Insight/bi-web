@@ -136,7 +136,30 @@
                               v-bind:fileTypes="'.csv, .xls, .xlsx'"
                               v-bind:errors="import_errors"
                               v-bind:confirm-import-state="confirmImportState"
-                              v-on:import="importService.send(ImportEvent.IMPORT_STARTED)"/>
+                              v-on:import="importService.send(ImportEvent.IMPORT_STARTED)">
+          <slot>
+            <template v-if="workflows && workflows.length > 0">
+              <div class="field">
+                <label class="label">Select workflow</label>
+                <div class="control">
+                  <div class="select mb-5">
+                    <select
+                        v-model="selectedWorkflowId"
+                    >
+                      <option
+                          v-for="workflow in workflows"
+                          :key="workflow.id"
+                          :value="workflow.id"
+                      >
+                        {{ workflow.name }}
+                      </option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </template>
+          </slot>
+        </FileSelectMessageBox>
       </div>
     </template>
 
