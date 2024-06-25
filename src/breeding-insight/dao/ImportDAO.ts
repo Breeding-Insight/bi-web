@@ -47,6 +47,14 @@ export class ImportDAO {
     return new BiResponse(data);
   }
 
+  static async getWorkflowsForMapping(mappingId: string | undefined) : Promise<BiResponse> {
+    const { data } =  await api.call({
+      url: `${process.env.VUE_APP_BI_API_V1_PATH}/import/mappings/${mappingId}/workflows`,
+      method: 'get'
+    }) as Response;
+    return new BiResponse(data);
+  }
+
   static async updateMapping(programId: string, mapping: ImportMappingConfig, options: {[key:string]:boolean}): Promise<any> {
     const mappingWithoutFile: ImportMappingConfig = new ImportMappingConfig({
       id: mapping.id,
@@ -99,8 +107,13 @@ export class ImportDAO {
     return new BiResponse(data);
   }
 
-  static async updateUploadData(programId: string, mappingId: string, uploadId: string, userInput: any, commit: boolean) {
+  static async updateUploadData(programId: string, mappingId: string, uploadId: string, workflowId: string | undefined, userInput: any, commit: boolean) {
     let url = `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/import/mappings/${mappingId}/data/${uploadId}`;
+
+    if (workflowId !== undefined) {
+      url = `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/import/mappings/${mappingId}/workflows/${workflowId}/data/${uploadId}`;
+    }
+
     url += commit ? '/commit' : '/preview';
     const {data} = await api.call({
       url: url,
@@ -109,4 +122,7 @@ export class ImportDAO {
 
     return new BiResponse(data);
   }
+
+
+
 }

@@ -15,7 +15,6 @@
  * limitations under the License.
  */
 
-import {ImportData} from "@/breeding-insight/model/import/ImportData";
 import {ImportDAO} from "@/breeding-insight/dao/ImportDAO";
 import {ImportTypeConfig} from "@/breeding-insight/model/import/ImportTypeConfig";
 import {ImportMappingConfig} from "@/breeding-insight/model/import/ImportMapping";
@@ -25,6 +24,7 @@ import {ValidationError} from "@/breeding-insight/model/errors/ValidationError";
 import {ImportProgress} from "@/breeding-insight/model/import/ImportProgress";
 import {AxiosResponse} from "axios";
 import {ImportError} from "@/breeding-insight/model/errors/ImportError";
+import {ImportMappingWorkflow} from "@/breeding-insight/model/import/ImportMappingWorkflow";
 
 export class ImportService {
   static mappingNameExists : string = 'A mapping with that name already exists';
@@ -49,6 +49,11 @@ export class ImportService {
     const response: BiResponse = await ImportDAO.getSystemMappings(importName);
     const mappings: ImportMappingConfig[] = response.result.data.map((mapping: ImportMappingConfig) => new ImportMappingConfig(mapping));
     return mappings;
+  }
+
+  static async getWorkflowsForMapping(mappingId: string | undefined): Promise<ImportMappingWorkflow[]> {
+    const response: BiResponse = await ImportDAO.getWorkflowsForMapping(mappingId);
+    return response.result.data;
   }
 
   static async updateMapping(programId: string, mapping: ImportMappingConfig, options: {[key:string]:boolean}): Promise<any> {
@@ -110,7 +115,7 @@ export class ImportService {
 
   }
 
-  static async updateDataUpload(programId: string, mappingId: string, uploadId: string, userInput: any, commit: boolean) {
+  static async updateDataUpload(programId: string, mappingId: string, uploadId: string, workflowId: string | undefined, userInput: any, commit: boolean) {
     if (!programId || programId === null) {
       throw 'Program ID not provided';
     }
@@ -118,7 +123,7 @@ export class ImportService {
       throw 'Upload ID not provided';
     }
 
-    const response: BiResponse = await ImportDAO.updateUploadData(programId, mappingId, uploadId, userInput, commit);
+    const response: BiResponse = await ImportDAO.updateUploadData(programId, mappingId, uploadId, workflowId, userInput, commit);
     const data: any = response.result;
     const importResponse = new ImportResponse(data);
     return importResponse;

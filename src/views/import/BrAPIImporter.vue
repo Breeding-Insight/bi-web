@@ -707,7 +707,7 @@ enum PageState {
 
     async updateDataUpload(uploadId: string, commit: boolean) {
       try {
-        let previewResponse: ImportResponse = await ImportService.updateDataUpload(this.activeProgram!.id!, this.mapping.id!, uploadId!, this.userInput, commit);
+        let previewResponse: ImportResponse = await ImportService.updateDataUpload(this.activeProgram!.id!, this.mapping.id!, uploadId!,undefined, this.userInput, commit);
         this.currentImport = previewResponse;
 
         // Start check for our data upload
