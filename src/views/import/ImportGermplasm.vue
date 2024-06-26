@@ -31,7 +31,7 @@
 
       <template v-slot:importInfoTemplateMessageBox>
         <ImportInfoTemplateMessageBox v-bind:import-type-name="'Germplasm'"
-                                      v-bind:template-url="'https://cornell.box.com/shared/static/7i2nayetu0h4hawjr5nx21lsidw6c438.xls'"
+                                      v-bind:template-url="'https://cornell.box.com/shared/static/nx22mqw2y2q7uod0xt388zq5t04ejai3.xls'"
                                       class="mb-5">
           <strong>Before You Import...</strong>
           <br/>
