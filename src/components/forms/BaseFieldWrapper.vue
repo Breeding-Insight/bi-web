@@ -108,6 +108,9 @@
             case 'alpha':
               validationMap['message'] = `${this.fieldName} must use only alphabetic characters.`;
               break;
+            case 'between':
+              validationMap['message'] = `${this.fieldName} must be between ${this.validations.$params.between.min} and ${this.validations.$params.between.max}.`;
+              break;
             default:
               // For now assume other possibility is a specific format
               validationMap['message'] = `${this.fieldName} must be in ${validation} format`;

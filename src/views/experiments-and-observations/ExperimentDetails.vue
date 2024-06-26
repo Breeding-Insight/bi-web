@@ -29,8 +29,20 @@
         v-bind:modal-title="`Download ${experiment.trialName}`"
         v-bind:trial-id="experimentUUID"
         v-bind:active="downloadModalActive"
-        v-on:show-error-notification ="$emit('show-error-notification', $event)"
+        v-on:show-error-notification="$emit('show-error-notification', $event)"
         v-on:deactivate="downloadModalActive = false"
+    />
+
+    <SubEntityDatasetModal
+        v-bind:experiment="experiment"
+        v-bind:default-observation-level="experimentObservationUnit"
+        v-bind:dataset-name-options="datasetNameOptions"
+        v-bind:modal-title="`Create Sub-Entity Dataset`"
+        v-bind:trial-id="experimentUUID"
+        v-bind:active="subEntityModalActive"
+        v-bind:create="createSubEntityDataset"
+        v-on:show-error-notification="$emit('show-error-notification', $event)"
+        v-on:deactivate="subEntityModalActive = false"
     />
 
     <div v-if="!experimentLoading && experiment!=null">
@@ -61,9 +73,10 @@
           <ActionMenu v-bind:is-primary="true"
                       v-bind:id="'manage-experiment-dropdown-button'"
                       v-bind:button-text="'Manage Experiment'"
-                      v-bind:action-menu-items=actions
+                      v-bind:action-menu-items="actions"
                       v-on:import-file="importFile()"
                       v-on:download-file="downloadFile()"
+                      v-on:create-sub-entity-dataset="openSubEntityModal()"
           />
         </article>
       </div>
@@ -73,11 +86,14 @@
       <nav class="tabs is-boxed">
         <ul>
           <router-link
-              v-bind:to="{name: 'experiment_obs_dataset', params: {programId: activeProgram.id, experimentId: experimentUUID, datasetId: 'observation'}}"
-              tag="li" active-class="is-active">
-            <a>Observation Dataset</a>
+            v-for="dataset in datasetMetadata"
+            v-bind:key="dataset.id"
+            v-bind:to="{name: 'experiment_dataset', params: {programId: activeProgram.id, experimentId: experimentUUID, datasetId: dataset.id}}"
+            tag="li"
+            active-class="is-active"
+          >
+            <a>{{ dataset.name }}</a>
           </router-link>
-          <!--TODO: Will need to loop through a list of datasets and add a tab for each.-->
         </ul>
       </nav>
     </section>
@@ -104,9 +120,14 @@ import ProgramsBase from "@/components/program/ProgramsBase.vue";
 import ActionMenu from "@/components/layouts/menus/ActionMenu.vue";
 import {ActionMenuItem} from "@/breeding-insight/model/ActionMenuItem";
 import ExperimentObservationsDownloadModal from "@/components/experiments/ExperimentObservationsDownloadModal.vue";
+import SubEntityDatasetModal from "@/components/modals/SubEntityDatasetModal.vue";
+import {DatasetMetadata} from "@/breeding-insight/model/DatasetMetadata";
+import {SubEntityDatasetNewRequest} from "@/breeding-insight/model/SubEntityDatasetNewRequest";
+import {DatasetModel} from "@/breeding-insight/model/DatasetModel";
 
 @Component({
   components: {
+    SubEntityDatasetModal,
     PlusCircleIcon,
     ExperimentObservationsDownloadModal,
     ActionMenu
@@ -125,14 +146,18 @@ export default class ExperimentDetails extends ProgramsBase {
   private experiment: Trial;
   private experimentLoading: boolean = true;
   private downloadModalActive: boolean = false;
+  private subEntityModalActive: boolean = false;
+  private datasetMetadata: DatasetMetadata[] = [];
 
   private actions: ActionMenuItem[] = [
       new ActionMenuItem('experiment-import-file', 'import-file', 'Import file'),
-      new ActionMenuItem('experiment-download-file', 'download-file', 'Download file')
+      new ActionMenuItem('experiment-download-file', 'download-file', 'Download file'),
+      new ActionMenuItem('experiment-create-sub-entity-dataset', 'create-sub-entity-dataset', 'Create Sub-Entity Dataset')
   ];
 
   mounted () {
     this.getExperiment();
+    this.getDatasetMetadata();
   }
 
   private importFile() {
@@ -146,6 +171,20 @@ export default class ExperimentDetails extends ProgramsBase {
 
   private downloadFile() {
     this.downloadModalActive = true;
+  }
+
+  private async createSubEntityDataset(subEntityRequest: SubEntityDatasetNewRequest): Promise<boolean> {
+    console.log("createSubEntityDataset invoked with arguments: datasetName=" + subEntityRequest.name + ", repeatedMeasures=" + subEntityRequest.repeatedMeasures);
+    const response: Result<Error, DatasetModel> = await ExperimentService.createSubEntityDataset(this.activeProgram!.id!, this.experimentUUID, subEntityRequest);
+    if (response.isErr()) {
+      throw response.value;
+    }
+    await this.$router.push({name: 'experiment_dataset', params: {datasetId: response.value.id, programId: this.activeProgram!.id!, experimentId: this.experimentUUID}});
+    return true;
+  }
+
+  private openSubEntityModal() {
+    this.subEntityModalActive = true;
   }
 
   get experimentUUID(): string {
@@ -179,6 +218,19 @@ export default class ExperimentDetails extends ProgramsBase {
   //   return this.experiment.additionalInfo.environmentsCount;
   // }
 
+  get datasetNameOptions(): String[] {
+    // TODO: [BI-2182] fetch and return all sub-entity names for experiments in this program, excluding the current experiment.
+    // TODO: [BI-2182] exclude top level dataset names.
+    return [];
+  }
+
+  get experimentObservationUnit(): string | null {
+    if (this.experiment && this.experiment.additionalInfo) {
+      return this.experiment.additionalInfo.defaultObservationLevel;
+    }
+    return null;
+  }
+
   @Watch('$route')
   async getExperiment () {
     this.experimentLoading = true;
@@ -194,6 +246,22 @@ export default class ExperimentDetails extends ProgramsBase {
       throw err;
     } finally {
       this.experimentLoading = false;
+    }
+  }
+
+  // Get metadata for all datasets available in this experiment.
+  @Watch('$route')
+  async getDatasetMetadata(): DatasetMetadata[] {
+    try {
+      const response: Result<Error, DatasetMetadata[]> = await ExperimentService.getDatasetMetadata(this.activeProgram!.id!, this.experimentUUID, true);
+      if (response.isErr()) {
+        throw response.value;
+      }
+      this.datasetMetadata = response.value;
+    } catch (err) {
+      // Display error that experiment cannot be loaded
+      this.$emit('show-error-notification', 'Error while trying to load datasets');
+      throw err;
     }
   }
 }

@@ -351,14 +351,15 @@ const routes = [
       layout: layouts.userSideBar
     },
     component: ExperimentDetails,
-    redirect: (to: Route) => ({name: 'experiment_obs_dataset', params: {datasetId: 'observation', programId: to.params.programId, experimentId: to.params.experimentId}}),
+    // TODO: test redirect with datasetId: null.
+    redirect: (to: Route) => ({name: 'experiment_dataset', params: {datasetId: null, programId: to.params.programId, experimentId: to.params.experimentId}}),
     beforeEnter: processProgramNavigation,
     children: [
       {
         path: 'dataset/:datasetId',
-        name: 'experiment_obs_dataset',
+        name: 'experiment_dataset',
         meta: {
-          title: 'Observation Dataset',
+          title: `Datasets`,
           layout: layouts.userSideBar
         },
         component: Dataset,

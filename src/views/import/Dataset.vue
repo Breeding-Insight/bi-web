@@ -307,6 +307,7 @@ import {Metadata} from "@/breeding-insight/model/BiResponse";
 import {StudyService} from "@/breeding-insight/service/StudyService";
 import {BrAPIService, BrAPIType} from '@/breeding-insight/service/BrAPIService';
 import {SortOrder} from "@/breeding-insight/model/Sort";
+import {DatasetMetadata} from "@/breeding-insight/model/DatasetMetadata";
 
 @Component({
   components: {
@@ -615,8 +616,9 @@ export default class Dataset extends ProgramsBase {
       if (experimentResult.isErr()) throw experimentResult.value;
       this.experiment = experimentResult.value;
 
-      if (this.datasetId === 'observation') {
-        this.resultDatasetId = this.experiment.additionalInfo.observationDatasetId;
+      if (this.datasetId === null) {
+        // Get top level dataset id.
+        this.resultDatasetId = this.experiment.additionalInfo.datasets.find((x: DatasetMetadata) => x.level == 0).id || null;
       } else {
         this.resultDatasetId = this.datasetId;
       }

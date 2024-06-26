@@ -15,23 +15,21 @@
  * limitations under the License.
  */
 
-import {FileTypeOption} from "@/breeding-insight/model/FileTypeOption";
-import {ExperimentDatasetOption} from "@/breeding-insight/model/ExperimentDatasetOption";
+import {Observation} from "@/breeding-insight/model/Observation";
+import {ObservationUnit} from "@/breeding-insight/model/ObservationUnit";
+import {ObservationVariable} from "@/breeding-insight/model/ObservationVariable";
 
-// Stores the user selected options for Experiment Observation file export.
-export class ExperimentExportOptions {
+export class DatasetMetadata {
+    id: string;
+    name: string;
+    level: number;
 
-    public fileExtension: string = FileTypeOption.xls.id;
-    public datasetId: string;
-    public environments: string[] = [];
-    public allEnvironments: boolean = false;
-    public includeTimestamps: string = 'No';
-
-    public timestampsTrueFalseString(): string {
-        if (this.includeTimestamps.toLowerCase() === 'yes')
-        {
-            return 'true';
-        }
-        return 'false';
+    constructor(id: string,
+                name: string,
+                level: number
+    ) {
+        this.id = id;
+        this.name = name;
+        this.level = level;
     }
 }
