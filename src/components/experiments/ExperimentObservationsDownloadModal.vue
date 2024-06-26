@@ -20,7 +20,7 @@
     v-bind:unique-id="trialId"
     v-bind:modal-title="modalTitle"
     v-bind:download="downloadList"
-    v-bind:active="active && loadingStudyOptionsComplete"
+    v-bind:active="active && loadingStudyOptionsComplete && loadingDatasetOptionsComplete"
     modal-class="experiment-observations-download-button"
     v-on:deactivate="resetExportOptions"
   >
@@ -37,7 +37,7 @@
               <div class="select">
                 <select
                   v-bind:id="`dataset-select-${trialId}`"
-                  v-model="fileOptions.dataset"
+                  v-model="fileOptions.datasetId"
                 >
                   <option
                     v-for="option in datasetOptions"
@@ -157,7 +157,6 @@ import {mapGetters} from "vuex";
 import {Program} from "@/breeding-insight/model/Program";
 import {ExperimentExportOptions} from "@/breeding-insight/model/ExperimentExportOptions";
 import {FileTypeOption} from "@/breeding-insight/model/FileTypeOption";
-import {ExperimentDatasetOption} from "@/breeding-insight/model/ExperimentDatasetOption";
 import {AlertTriangleIcon} from 'vue-feather-icons';
 import {Trial} from "@/breeding-insight/model/Trial";
 import {Metadata} from "@/breeding-insight/model/BiResponse";
@@ -166,6 +165,8 @@ import {StudyService} from "@/breeding-insight/service/StudyService";
 import {Result} from "@/breeding-insight/model/Result";
 import {BrAPIUtils} from "@/breeding-insight/utils/BrAPIUtils";
 import DownloadModal from "@/components/modals/DownloadModal.vue";
+import {DatasetMetadata} from "@/breeding-insight/model/DatasetMetadata";
+import {ExperimentService} from "@/breeding-insight/service/ExperimentService";
 
 @Component({
   mixins: [validationMixin],
@@ -186,21 +187,25 @@ export default class ExperimentObservationsDownloadModal extends Vue {
   experiment!: Trial;
   @Prop()
   modalTitle?: string;
+  @Prop()
+  defaultDatasetId?: string;
 
   private activeProgram?: Program;
   private fileOptions: ExperimentExportOptions = new ExperimentExportOptions();
   private showEnvironmentsValidationError: boolean = false;
   private fileExtensionOptions: object[] = Object.values(FileTypeOption);
-  // TODO: make this a dynamic set of datasets available for the experiment.
-  private datasetOptions: object[] = Object.values(ExperimentDatasetOption);
+  private datasetOptions: DatasetMetadata[] = [];
   private environmentOptions: object[] = [];
   private loadingStudyOptionsComplete: boolean = false;
+  private loadingDatasetOptionsComplete: boolean = false;
 
   @Watch('experiment', {immediate: true})
   onExperimentChanged() {
-    // reset loading flag
+    // Reset loading flags.
     this.loadingStudyOptionsComplete = false;
+    this.loadingDatasetOptionsComplete = false;
     this.getStudyOptions();
+    this.getDatasetOptions();
   }
 
   async getStudyOptions() {
@@ -218,6 +223,34 @@ export default class ExperimentObservationsDownloadModal extends Vue {
     }
   }
 
+  async getDatasetOptions() {
+    // Fetch all datasets available for this experiment.
+    try {
+      const response: Result<Error, DatasetMetadata[]> = await ExperimentService.getDatasetMetadataByTrial(this.activeProgram!.id!, this.experiment!);
+      if (response.isErr()) {
+        throw response.value;
+      }
+      this.datasetOptions = response.value;
+
+      this.setDefaultDatasetOption();
+
+      this.loadingDatasetOptionsComplete = true;
+    } catch (err) {
+      // Display error that datasets cannot be loaded
+      this.$emit('show-error-notification', 'Error while trying to load datasets');
+      throw err;
+    }
+  }
+
+  setDefaultDatasetOption() {
+    // Set default selected dataset to property if provided, fall back to first in list of options.
+    if (this.defaultDatasetId !== undefined) {
+      this.fileOptions.datasetId = this.defaultDatasetId;
+    } else if (this.datasetOptions.length > 0){
+      this.fileOptions.datasetId = this.datasetOptions[0].id;
+    }
+  }
+
   downloadList(): boolean {
     // Validate selected options.
     if (this.validateOptions()) {
@@ -230,8 +263,8 @@ export default class ExperimentObservationsDownloadModal extends Vue {
             + this.trialId
             + '/export?fileExtension='
             + this.fileOptions.fileExtension
-            + '&dataset='
-            + this.fileOptions.dataset
+            + '&datasetId='
+            + this.fileOptions.datasetId
             + (this.fileOptions.allEnvironments ? '' : ('&environments=' + this.fileOptions.environments))
             + '&includeTimestamps='
             + this.fileOptions.timestampsTrueFalseString(),
@@ -247,6 +280,8 @@ export default class ExperimentObservationsDownloadModal extends Vue {
     this.$emit('deactivate');
     // Reset file export options.
     this.fileOptions = new ExperimentExportOptions();
+    // Make sure default dataset option is selected.
+    this.setDefaultDatasetOption();
     // Reset validation state.
     this.showEnvironmentsValidationError = false;
   }

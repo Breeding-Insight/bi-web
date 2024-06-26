@@ -257,7 +257,6 @@ export default class ExperimentDetails extends ProgramsBase {
       if (response.isErr()) {
         throw response.value;
       }
-      console.log(response.value);
       this.datasetMetadata = response.value;
     } catch (err) {
       // Display error that experiment cannot be loaded

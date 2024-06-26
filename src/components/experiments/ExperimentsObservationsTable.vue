@@ -19,12 +19,13 @@
   <section id="experimentsObservationsTableLabel">
 
     <ExperimentObservationsDownloadModal
-        v-bind:experiment="downloadExperiment"
-        v-bind:modal-title="downloadModalTitle"
-        v-bind:trial-id="downloadTrialId"
-        v-bind:active="downloadModalActive"
-        v-on:show-error-notification ="$emit('show-error-notification', $event)"
-        v-on:deactivate="downloadModalActive = false"
+      v-if="downloadModalActive"
+      v-bind:experiment="downloadExperiment"
+      v-bind:modal-title="downloadModalTitle"
+      v-bind:trial-id="downloadTrialId"
+      v-bind:active="downloadModalActive"
+      v-on:show-error-notification="$emit('show-error-notification', $event)"
+      v-on:deactivate="downloadModalActive = false"
     />
 
     <div class="is-clearfix"></div>
@@ -142,8 +143,8 @@ export default class ExperimentsObservationsTable extends Vue {
 
   private downloadModalActive: boolean = false;
   private downloadExperiment?: Trial = new Trial();
-  private downloadModalTitle?: string = 'undefined';
-  private downloadTrialId?: string = 'undefined';
+  private downloadModalTitle?: string;
+  private downloadTrialId?: string;
 
   mounted() {
     this.experimentCallStack = new CallStack(this.experimentsFetch(
@@ -213,10 +214,10 @@ export default class ExperimentsObservationsTable extends Vue {
   }
 
   openDownloadModal(experiment: Trial) {
-    this.downloadModalActive = true;
     this.downloadExperiment = experiment;
     this.downloadModalTitle = "Download " + experiment.trialName;
     this.downloadTrialId = BrAPIUtils.getBreedingInsightId(experiment.externalReferences!, '/trials');
+    this.downloadModalActive = true;
   }
 
   setSort(field: string, order: string) {
