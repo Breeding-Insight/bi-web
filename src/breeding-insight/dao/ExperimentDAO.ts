@@ -20,6 +20,7 @@ import * as api from "@/util/api";
 import {Result, ResultGenerator} from "@/breeding-insight/model/Result";
 import {Trial} from "@/breeding-insight/model/Trial.ts";
 import {DatasetModel} from "@/breeding-insight/model/DatasetModel";
+import {DatasetMetadata} from "@/breeding-insight/model/DatasetMetadata";
 
 export class ExperimentDAO {
 
@@ -38,6 +39,22 @@ export class ExperimentDAO {
             return ResultGenerator.err(error);
         }
     }
+
+    static async getDatasetMetadata(programId: string, experimentId: string): Promise<Result<Error, DatasetMetadata[]>> {
+        const config: any = {};
+        config.url = `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/experiments/${experimentId}/datasets`;
+        config.method = 'get';
+        config.programId = programId;
+        config.experimentId = experimentId;
+        try {
+            const res = await api.call(config) as Response;
+            let { result } = res.data;
+            return ResultGenerator.success(result);
+        } catch (error) {
+            return ResultGenerator.err(error);
+        }
+    }
+
     static async getDatasetById(programId: string, experimentId: string, datasetId: string, stats: boolean): Promise<Result<Error, DatasetModel>> {
         const config: any = {};
         config.url = `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/experiments/${experimentId}/dataset/${datasetId}`;
@@ -57,4 +74,19 @@ export class ExperimentDAO {
         }
     }
 
+    static async createSubEntityDataset(programId: string, experimentId: string, name: string, repeatedMeasures: number): Promise<Result<Error, DatasetModel>> {
+        const config: any = {};
+        config.url = `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/experiments/${experimentId}/dataset`;
+        config.method = 'post';
+        config.programId = programId;
+        config.experimentId = experimentId;
+        config.data = {name: name, repeatedMeasures: repeatedMeasures}  // Corresponds to SubEntityDatasetRequest in bi-api.
+        try {
+            const res = await api.call(config) as Response;
+            let { result } = res.data;
+            return ResultGenerator.success(result);
+        } catch (error) {
+            return ResultGenerator.err(error);
+        }
+    }
 }

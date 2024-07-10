@@ -16,9 +16,12 @@
  */
 
 import {ExperimentDAO} from "@/breeding-insight/dao/ExperimentDAO";
-import {Trial} from "@/breeding-insight/model/Trial.ts";
+import {Trial} from "@/breeding-insight/model/Trial";
 import {Result, ResultGenerator} from "@/breeding-insight/model/Result";
 import {DatasetModel} from "@/breeding-insight/model/DatasetModel";
+import {DatasetMetadata} from "@/breeding-insight/model/DatasetMetadata";
+import {SubEntityDatasetNewRequest} from "@/breeding-insight/model/SubEntityDatasetNewRequest";
+import {BrAPIUtils} from "@/breeding-insight/utils/BrAPIUtils";
 
 export class ExperimentService {
 
@@ -36,4 +39,36 @@ export class ExperimentService {
         return await ExperimentDAO.getDatasetById(programId,experimentId, datasetId, true);
     }
 
+    static async createSubEntityDataset(programId: string, experimentId: string, subEntityRequest: SubEntityDatasetNewRequest): Promise<Result<Error, DatasetModel>> {
+        if (!programId) {
+            return ResultGenerator.err(new Error('Missing or invalid program id'));
+        }
+        return await ExperimentDAO.createSubEntityDataset(programId, experimentId, subEntityRequest.name, subEntityRequest.repeatedMeasures);
+    }
+
+    static async getDatasetMetadata(programId: string, experimentId: string): Promise<Result<Error, DatasetMetadata[]>> {
+        if (!programId) {
+            return ResultGenerator.err(new Error('Missing or invalid program id'));
+        }
+        return await ExperimentDAO.getDatasetMetadata(programId, experimentId);
+    }
+
+    static async getDatasetMetadataByTrial(programId: string, trial: Trial): Promise<Result<Error, DatasetMetadata[]>> {
+        if (!programId) {
+            return ResultGenerator.err(new Error('Missing or invalid program id'));
+        }
+        if (!trial) {
+            return ResultGenerator.err(new Error('Missing or invalid trial'));
+        }
+        if (!trial.externalReferences) {
+            return ResultGenerator.err(new Error('Trial is missing external references'));
+        }
+        // Try to get the /trials external reference.
+        let externalReferenceId = BrAPIUtils.getBreedingInsightId(trial.externalReferences, '/trials');
+        // Throw if trial is missing ExternalReferenceId.
+        if (!externalReferenceId) {
+            return ResultGenerator.err(new Error("Trial is missing external reference."));
+        }
+        return await ExperimentDAO.getDatasetMetadata(programId, externalReferenceId);
+    }
 }
