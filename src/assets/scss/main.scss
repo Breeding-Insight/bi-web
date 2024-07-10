@@ -93,6 +93,12 @@ $large-modal-content-width: $modal-content-width * 1.8;
 
 // Customize buefy if you want to here
 
+//see https://alfa.siteimprove.com/rules/sia-r72
+.menu-label.customize-for-accessibility {
+  text-transform: none;
+  font-size: 0.8em;
+  letter-spacing: 2px;
+}
 
 // Update some of Bulma's component variables
 

@@ -16,13 +16,13 @@
  */
 
 export class GeoCoordinates {
-    lat?: number;
     lon?: number;
+    lat?: number;
     elevation?: number;
 
-    constructor(lat?: number, lon?: number, elevation?: number) {
-        this.lat = lat;
+    constructor(lon?: number, lat?: number, elevation?: number) {
         this.lon = lon;
+        this.lat = lat;
         this.elevation = elevation;
     }
 }

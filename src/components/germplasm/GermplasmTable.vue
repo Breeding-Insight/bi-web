@@ -7,7 +7,7 @@
         v-on:show-error-notification="$emit('show-error-notification', $event)"
         backend-sorting
         backend-filtering
-        v-bind:default-sort="entryNumberVisible ? [fieldMap['importEntryNumber'], 'ASC'] : [fieldMap['accessionNumber'], 'ASC']"
+        v-bind:default-sort="entryNumberVisible ? [fieldMap['importEntryNumber'], 'ASC'] : [fieldMap['accessionNumber'], 'DESC']"
         v-on:sort="setSort"
         v-on:search="initSearch"
         v-bind:search-debounce="400"

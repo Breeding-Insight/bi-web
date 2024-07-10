@@ -489,8 +489,8 @@ export default class Dataset extends ProgramsBase {
         if (unit.observationUnitPosition.geoCoordinates) {
           const coordinates = unit.observationUnitPosition.geoCoordinates.geometry!.coordinates!;
           if (coordinates.length >= 2) {
-            datasetTableRow.lat = coordinates[0];
-            datasetTableRow.lon = coordinates[1];
+            datasetTableRow.lon = coordinates[0];
+            datasetTableRow.lat = coordinates[1];
           }
           if (coordinates.length === 3) {
             datasetTableRow.elevation = coordinates[2];
