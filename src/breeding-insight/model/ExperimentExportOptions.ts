@@ -22,7 +22,7 @@ import {ExperimentDatasetOption} from "@/breeding-insight/model/ExperimentDatase
 export class ExperimentExportOptions {
 
     public fileExtension: string = FileTypeOption.xls.id;
-    public dataset: string = ExperimentDatasetOption.observations.id;
+    public datasetId: string;
     public environments: string[] = [];
     public allEnvironments: boolean = false;
     public includeTimestamps: string = 'No';

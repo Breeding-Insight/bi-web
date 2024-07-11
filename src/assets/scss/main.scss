@@ -84,6 +84,8 @@ $table-striped-row-even-hover-background-color:$link-light;
 $medium-modal-content-width: $modal-content-width * 1.4;
 $medium-modal-body-padding: 0 3em 2em 3em;
 
+$large-modal-content-width: $modal-content-width * 1.8;
+
 //$margin-right: 2 rem;
 
 // Import buefy before bulma
@@ -91,6 +93,12 @@ $medium-modal-body-padding: 0 3em 2em 3em;
 
 // Customize buefy if you want to here
 
+//see https://alfa.siteimprove.com/rules/sia-r72
+.menu-label.customize-for-accessibility {
+  text-transform: none;
+  font-size: 0.8em;
+  letter-spacing: 2px;
+}
 
 // Update some of Bulma's component variables
 
@@ -898,10 +906,21 @@ tr:nth-child(odd) td.db-filled {
   }
 }
 
-.experiment-observations-download-button {
+.sub-entity-dataset-modal, .experiment-observations-download-button {
   .modal {
     .modal-card {
       width: $medium-modal-content-width;
+      .modal-card-body {
+        padding: $medium-modal-body-padding;
+      }
+    }
+  }
+}
+
+.sub-entity-dataset-modal {
+  .modal {
+    .modal-card {
+      width: $large-modal-content-width;
       .modal-card-body {
         padding: $medium-modal-body-padding;
       }

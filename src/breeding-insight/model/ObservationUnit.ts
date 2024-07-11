@@ -16,7 +16,6 @@
  */
 
 import {ExternalReferences} from "@/breeding-insight/brapi/model/externalReferences";
-import {GeoCoordinates} from "@/breeding-insight/model/GeoCoordinates";
 
 export class ObservationUnit {
   observationUnitDbId: string;

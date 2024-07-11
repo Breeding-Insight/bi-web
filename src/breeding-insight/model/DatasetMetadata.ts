@@ -15,14 +15,21 @@
  * limitations under the License.
  */
 
-export class GeoCoordinates {
-    lon?: number;
-    lat?: number;
-    elevation?: number;
+import {Observation} from "@/breeding-insight/model/Observation";
+import {ObservationUnit} from "@/breeding-insight/model/ObservationUnit";
+import {ObservationVariable} from "@/breeding-insight/model/ObservationVariable";
 
-    constructor(lon?: number, lat?: number, elevation?: number) {
-        this.lon = lon;
-        this.lat = lat;
-        this.elevation = elevation;
+export class DatasetMetadata {
+    id: string;
+    name: string;
+    level: number;
+
+    constructor(id: string,
+                name: string,
+                level: number
+    ) {
+        this.id = id;
+        this.name = name;
+        this.level = level;
     }
 }

@@ -35,6 +35,7 @@
             aria-haspopup="true"
             aria-controls="program-menu"
           >
+
             <span class="icon is-small">
               <span class="is-sr-only">Show Program Menu</span>
               <ChevronDownIcon></ChevronDownIcon>
@@ -51,7 +52,8 @@
             class="dropdown-content"
           >
             <div class="dropdown-item">
-              <input class="input" type="text" placeholder="Program Name" v-on:input="filterPrograms($event)" v-bind:value="programFilterValue">
+              <label class="is-sr-only" for="programName">Program Name</label>
+              <input class="input" type="text" id="programName" placeholder="Program Name" v-on:input="filterPrograms($event)" v-bind:value="programFilterValue">
             </div>
             <hr class="dropdown-divider">
             <div class="programs">
@@ -76,7 +78,7 @@
     <template v-slot:menu>
       <nav role="navigation" aria-label="main navigation">
         <template v-if="activeProgram">
-          <p class="menu-label">
+          <p class="menu-label customize-for-accessibility">
             {{activeProgram.name}}
           </p>
           <ul class="menu-list">
@@ -163,7 +165,7 @@
           <template v-if="activeProgram">
             <hr style="margin:5px;">
           </template>
-          <p class="menu-label">
+          <p class="menu-label customize-for-accessibility">
             System Administration
           </p>
           <ul class="menu-list">
