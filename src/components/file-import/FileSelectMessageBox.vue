@@ -19,6 +19,7 @@
   <div class="file-select">
     <div>
       <article>
+        <slot/>
         <!-- Select file -->
         <nav class="level">
           <div class="level-left">
