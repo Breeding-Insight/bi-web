@@ -15,7 +15,7 @@
   -->
 
 <template>
-  <span>
+  <span role="contentinfo" aria-label="versions">
     <a :href="versionInfo" target="_blank">web {{ versionName }}</a> /
     <a :href="apiVersionInfo" target="_blank"> api
       <template v-if="apiInfoLoading"><span class="is-italic">loading</span></template>
