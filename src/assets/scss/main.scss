@@ -27,14 +27,17 @@
 // Override Bulma default colors
 $red: #E20057;
 $yellow: #FFCC21;
-$green: #2AB14E;
+$green: #1d7b36;
 $blue: #1B64DD;
 
 // Custom colors
 $purple: #763FCE;
 $magenta: #9c27b0;
 $applegreen: #C1ED2F;
+$lt-turquoise: #65c2c4;
 $turquoise: #3FB3B6;
+$dark-turquoise: #297577;
+$very-dark-turquoise: #1b4c4e;
 $darkmenu: #4a4a4a; // $grey-dark, can't specify here because variables not loaded
 $link-light: #edf3fd; // variables not loaded
 $pending: $applegreen;
@@ -64,7 +67,7 @@ $footer-padding: 1rem 2.5rem;
 $level-item-spacing: 2rem;
 
 $tabs-boxed-link-radius: 1px;
-$tabs-link-active-color: $turquoise;
+$tabs-link-active-color: $dark-turquoise;
 $tabs-boxed-link-hover-border-bottom-color: $turquoise;
 $tabs-border-bottom-color: $turquoise;
 $tabs-boxed-link-active-border-color: $turquoise;
@@ -162,7 +165,8 @@ nav.pagination {
     flex-grow: 0;
     flex-shrink: 0;
     & li a.is-current {
-      background-color: $info;
+      background-color: $lt-turquoise;
+      color: $very-dark-turquoise;
       border: none;
     }
   }
@@ -996,7 +1000,9 @@ tr:nth-child(odd) td.db-filled {
     white-space: -pre-wrap;
     white-space: -o-pre-wrap;
   }
-
+  .message-body.high-contrast{
+    color: $dark-turquoise;
+  }
   .field-book-info {
     .columns {
       margin-bottom: 0;
