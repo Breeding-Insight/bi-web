@@ -24,9 +24,9 @@ import {Program} from "@/breeding-insight/model/Program";
 type DefinePermissions = (user: User, builder: AbilityBuilder<AppAbility>) => void;
 
 const rolePermissions: Record<string, DefinePermissions> = {
-  member(user, { can }) {
+  readonly(user, { can }) {
   },
-  breeder(user, { can }) {
+  programadministrator(user, { can }) {
     can('create', 'ProgramUser');
     can('update', 'ProgramUser');
     can('archive', 'ProgramUser');
@@ -41,7 +41,7 @@ const rolePermissions: Record<string, DefinePermissions> = {
     can('create', 'ProgramConfiguration');
     can('update', 'ProgramConfiguration');
   },
-  admin(user, { can }) {
+  systemadministrator(user, { can }) {
     can('create', 'ProgramUser');
     can('update', 'ProgramUser');
     can('archive', 'ProgramUser');
@@ -55,10 +55,13 @@ export function defineAbilityFor(user: User | undefined, program: Program | unde
   const builder = new AbilityBuilder<AppAbility>();
 
   if (user) {
+    let roleNameConcat;
     // Check system roles
     if (user.roleName) {
-      if (typeof rolePermissions[user.roleName] === 'function') {
-        rolePermissions[user.roleName](user, builder);
+      roleNameConcat = user.roleName.replace(/\s/g, "").toLowerCase();
+      console.log(roleNameConcat);
+      if (typeof rolePermissions[roleNameConcat] === 'function') {
+        rolePermissions[roleNameConcat](user, builder);
       }
     }
 
@@ -66,12 +69,13 @@ export function defineAbilityFor(user: User | undefined, program: Program | unde
       // Check program roles
       if (user.programRoles) {
         for (const programRole of user.programRoles) {
+          roleNameConcat = programRole.domain.replace(/\s/g, "").toLowerCase(); //todo may need to wrap
           if (programRole.program && programRole.program.id &&
             programRole.program.id === program.id && programRole.domain &&
             programRole.active &&
-            typeof rolePermissions[programRole.domain] === 'function') {
+            typeof rolePermissions[roleNameConcat] === 'function') {
 
-            rolePermissions[programRole.domain](user, builder);
+            rolePermissions[roleNameConcat](user, builder);
           }
         }
       }
