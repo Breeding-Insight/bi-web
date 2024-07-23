@@ -23,7 +23,7 @@
     <div class="columns">
       <div class="column is-narrow">
         <div class="buttons is-block">
-          <template v-if="activeUser && activeUser.hasRole('admin')">
+          <template v-if="activeUser && activeUser.hasRole('System Administrator')">
             <router-link
               v-bind:to="{name: 'admin'}"
               class="button is-primary is-light is-block is-outlined mr-0"
