@@ -55,7 +55,8 @@ export function defineAbilityFor(user: User | undefined, program: Program | unde
   const builder = new AbilityBuilder<AppAbility>();
 
   if (user) {
-    let roleNameConcat;
+    //functions depend on no whitespace domain name, hence concat
+    let roleNameConcat = "";
     // Check system roles
     if (user.roleName) {
       roleNameConcat = user.roleName.replace(/\s/g, "").toLowerCase();
