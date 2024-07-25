@@ -60,7 +60,6 @@ export function defineAbilityFor(user: User | undefined, program: Program | unde
     // Check system roles
     if (user.roleName) {
       roleNameConcat = user.roleName.replace(/\s/g, "").toLowerCase();
-      console.log(roleNameConcat);
       if (typeof rolePermissions[roleNameConcat] === 'function') {
         rolePermissions[roleNameConcat](user, builder);
       }
@@ -70,7 +69,9 @@ export function defineAbilityFor(user: User | undefined, program: Program | unde
       // Check program roles
       if (user.programRoles) {
         for (const programRole of user.programRoles) {
-          roleNameConcat = programRole.domain.replace(/\s/g, "").toLowerCase(); //todo may need to wrap
+          if (programRole.domain) {
+            roleNameConcat = programRole.domain.replace(/\s/g, "").toLowerCase();
+          }
           if (programRole.program && programRole.program.id &&
             programRole.program.id === program.id && programRole.domain &&
             programRole.active &&
