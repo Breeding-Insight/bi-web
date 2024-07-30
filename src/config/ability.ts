@@ -64,9 +64,9 @@ export function defineAbilityFor(user: User | undefined, program: Program | unde
     let roleFunctionName = "";
     // Check system roles
     if (user.roleName) {
-      roleNameConcat = user.roleName.replace(/\s/g, "").toLowerCase();
-      if (typeof rolePermissions[roleNameConcat] === 'function') {
-        rolePermissions[roleNameConcat](user, builder);
+      roleFunctionName = toRoleFunctionName(user.roleName);
+      if (typeof rolePermissions[roleFunctionName] === 'function') {
+        rolePermissions[roleFunctionName](user, builder);
       }
     }
 
