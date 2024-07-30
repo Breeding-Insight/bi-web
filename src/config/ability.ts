@@ -51,12 +51,17 @@ const rolePermissions: Record<string, DefinePermissions> = {
   }
 };
 
+//Helper method to convert domain name to associated rolePermissions function
+//Necessary as functions depend on no whitespace and present domain names have whitespace
+function toRoleFunctionName(domain: String){
+  return domain.replace(/\s/g, "").toLowerCase();
+}
+
 export function defineAbilityFor(user: User | undefined, program: Program | undefined): AppAbility {
   const builder = new AbilityBuilder<AppAbility>();
 
   if (user) {
-    //functions depend on no whitespace domain name, hence concat
-    let roleNameConcat = "";
+    let roleFunctionName = "";
     // Check system roles
     if (user.roleName) {
       roleNameConcat = user.roleName.replace(/\s/g, "").toLowerCase();
@@ -70,14 +75,14 @@ export function defineAbilityFor(user: User | undefined, program: Program | unde
       if (user.programRoles) {
         for (const programRole of user.programRoles) {
           if (programRole.domain) {
-            roleNameConcat = programRole.domain.replace(/\s/g, "").toLowerCase();
+            roleFunctionName = toRoleFunctionName(programRole.domain);
           }
           if (programRole.program && programRole.program.id &&
             programRole.program.id === program.id && programRole.domain &&
             programRole.active &&
-            typeof rolePermissions[roleNameConcat] === 'function') {
+            typeof rolePermissions[roleFunctionName] === 'function') {
 
-            rolePermissions[roleNameConcat](user, builder);
+            rolePermissions[roleFunctionName](user, builder);
           }
         }
       }
