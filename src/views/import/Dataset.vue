@@ -329,7 +329,6 @@ export default class Dataset extends ProgramsBase {
   private paginationController: PaginationController = new PaginationController();
   private datasetTableRows: DatasetTableRow[] = [];
   private unitDbIdToTraitValues: any = {};
-  private envYearByStudyDbId: any = {};
 
   mounted() {
     this.load();
@@ -451,8 +450,12 @@ export default class Dataset extends ProgramsBase {
       datasetTableRow.envLocation = this.removeUnique(unit.locationName);
       datasetTableRow.expUnitId = this.removeUnique(unit.observationUnitName);
       datasetTableRow.obsUnitId = BrAPIUtils.getBreedingInsightId(unit.externalReferences, "/observationunits");
-      if (unit.studyDbId) {
-        datasetTableRow.envYear = this.envYearByStudyDbId[unit.studyDbId];
+
+
+      // Env Year
+      datasetTableRow.envYear = "";
+      if (unit.additionalInfo && unit.additionalInfo.envYear) {
+        datasetTableRow.envYear = unit.additionalInfo.envYear;
       }
 
       //Exp Replicate # and Exp Block #
@@ -511,48 +514,6 @@ export default class Dataset extends ProgramsBase {
 
       datasetTableRow.traitValues = this.unitDbIdToTraitValues[unit.observationUnitDbId];
       this.datasetTableRows.push(datasetTableRow);
-    }
-  }
-
-  async createEnvYearByStudyDbId() {
-    try {
-      const response: Result<Error, [Study[], Metadata]> = await StudyService.getAll(this.activeProgram!.id!, this.experiment);
-      if(response.isErr()) throw response.value;
-      let [studies] = response.value;
-
-      // fetch seasons in the program
-      let seasonResponse =
-        await BrAPIService.get(
-            BrAPIType.SEASON,
-            this.activeProgram!.id!,
-            { field: undefined, order: SortOrder.Ascending },
-            { page: 0, pageSize: 1000 },
-            {"metadata": false});
-
-      // map season dBId to year
-      if (seasonResponse.result && seasonResponse.result.data) {
-        let envYearBySeasonDbId = seasonResponse.result.data.reduce((map: any, season: any) => {
-          if (season.seasonDbId && season.year) {
-            map[season.seasonDbId] = parseInt(season.year);
-          }
-          return map;
-        }, {});
-
-        // map study dBId to season year
-        studies.forEach(study => {
-          if (study.id && study.seasons && study.seasons.length > 0) {
-            this.envYearByStudyDbId[study.id] = envYearBySeasonDbId[study.seasons[0]];
-          }
-        })
-      }
-    } catch (e: any) {
-
-      // Display error that seasons can't be loaded
-      if (e.response && e.response.statusText && e.response.status != 500) {
-        this.$emit('show-error-notification', e.response.statusText);
-      } else {
-        this.$emit('show-error-notification', 'An unknown error has occurred while trying to load seasons.');
-      }
     }
   }
 
@@ -631,10 +592,8 @@ export default class Dataset extends ProgramsBase {
       // Use this.datasetModel to initialize this.unitDbIdToTraitValues
       this.unitDbIdToTraitValues = this.createUnitDbIdToTraitValues();
 
-      // Initialize envYearByStudyDbId
-      await this.createEnvYearByStudyDbId();
 
-      // Use this.datasetModel and this.envYearByStudyDbId to initialize this.datasetTableRows
+      // Use this.datasetModel to initialize this.datasetTableRows
       this.createDatasetTableRows();
 
       //Initialize the paginationController
