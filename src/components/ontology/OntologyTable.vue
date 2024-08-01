@@ -89,6 +89,8 @@
             v-bind:tags="tagOptions"
             v-bind:client-validations="validations"
             v-bind:validation-handler="validationHandler"
+            v-bind:editable-check-loading="false"
+            v-bind:editable="true"
         ></BaseTraitForm>
       </template>
     </NewDataForm>

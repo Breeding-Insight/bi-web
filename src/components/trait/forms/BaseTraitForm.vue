@@ -14,6 +14,26 @@
       <label for="newTermActiveToggle" class="is-pulled-right">{{trait.active ? 'Active' : 'Archived'}}</label>
     </div>
 
+  <div class="column is-full">
+    <article v-if="!editable && !editableCheckLoading" class="message is-primary mb-3">
+      <div class="message-body">
+        <div class="media">
+          <figure class="media-left">
+            <p class="image is-24x24">
+              <help-circle-icon size="1.5x"></help-circle-icon>
+            </p>
+          </figure>
+          <div class="media-content">
+            <div class="has-text-dark">
+              Not editable because this trait has associated experiment data. Only active status can be changed and saved.
+            </div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+  </div>
+  <template v-if="editable">
 <!-- term type -->
   <div class="column is-2">
     <span class="is-pulled-right required new-term pb-2 pr-3">Term Type</span>
@@ -26,6 +46,7 @@
         v-bind:options="termTypes"
         v-bind:field-name="'Term Type'"
         v-bind:show-label="false"
+        v-bind:is-disabled="!editable"
         v-on:input="setTermType($event)"
     />
   </div>
@@ -44,6 +65,7 @@
           v-bind:field-help="''"
           v-bind:validations="clientValidations.observationVariableName"
           v-bind:server-validations="validationHandler.getValidation(0, TraitError.ObservationVariableName)"
+          v-bind:is-disabled="!editable"
           v-on:input="setOTName($event)"
       />
     </div>
@@ -58,6 +80,7 @@
           v-bind:placeholder="'Full Name'"
           v-bind:show-label="false"
           v-bind:server-validations="validationHandler.getValidation(0, TraitError.FullName)"
+          v-bind:is-disabled="!editable"
           v-on:input="setFullName($event)"
       />
     </div>
@@ -72,6 +95,7 @@
           v-bind:placeholder="'Ontology Term Description'"
           v-bind:show-label="false"
           v-bind:server-validations="validationHandler.getValidation(0, TraitError.TraitDescription)"
+          v-bind:is-disabled="!editable"
           v-on:input="trait.traitDescription = $event"
       />
     </div>
@@ -95,6 +119,7 @@
           v-bind:field-name="'Tags'"
           v-bind:show-label="false"
           v-bind:before-adding="checkTag"
+          v-bind:is-disabled="!editable"
           v-on:add="addTag($event)"
           v-on:remove="removeTag($event)"
       />
@@ -273,7 +298,7 @@
         />
       </div>
     </template>
-
+    </template>
   </div>
 </template>
 
@@ -300,6 +325,7 @@ import TagField from "@/components/forms/TagField.vue";
 import BaseFieldWrapper from "@/components/forms/BaseFieldWrapper.vue";
 import {TermType} from "@/breeding-insight/model/TraitSelector";
 import {EnumUtils} from "@/breeding-insight/utils/EnumUtils";
+import { HelpCircleIcon } from 'vue-feather-icons'
 
 @Component({
   components: {
@@ -308,7 +334,13 @@ import {EnumUtils} from "@/breeding-insight/utils/EnumUtils";
     CategoryTraitForm,
     NumericalTraitForm,
     BaseFieldWrapper,
-    DurationTraitForm, DateTraitForm, TextTraitForm, OrdinalTraitForm, BasicSelectField, BasicInputField},
+    DurationTraitForm,
+    DateTraitForm,
+    TextTraitForm,
+    OrdinalTraitForm,
+    BasicSelectField,
+    BasicInputField,
+    HelpCircleIcon},
   data: () => ({DataType, MethodClass, TraitError, StringFormatters, Scale}),
   filters: {
     toCSV: function (value: string[] | undefined): string {
@@ -341,6 +373,10 @@ export default class BaseTraitForm extends Vue {
   editFormat!: boolean;
   @Prop()
   tags?: string[];
+  @Prop()
+  editable!: boolean;
+  @Prop()
+  editableCheckLoading!: boolean;
 
   private termTypes: TermType[] = Object.values(TermType);
 

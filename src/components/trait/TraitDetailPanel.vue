@@ -189,8 +189,9 @@
       <!-- maybe break out controls for reuse eventually -->
       <div v-if="!isSubscribed" class="columns is-centered is-mobile is-variable is-multiline is-0 my-0">
         <div class="column is-half p-0 mt-5">
+          <!-- editable && !loadingEditable && -->
           <a
-              v-if="editable && !loadingEditable && !data.isDup"
+              v-if="!data.isDup"
               v-on:click="$emit('activate-edit', data)"
               v-on:keypress.enter.space="$emit('activate-edit', data)"
               tabindex="0"
@@ -202,10 +203,13 @@
         <div class="column is-half p-0"></div>
       </div>
 
+      <!--
       <ProgressBar v-if="loadingEditable && $ability.can('update', 'Trait')" v-bind:label="'Checking trait editability status'"
                    v-bind:estimated-time-text="'May take a few seconds'"
       />
+      -->
 
+      <!--
       <article v-if="!editable && !loadingEditable && !fromImportTable && $ability.can('update', 'Trait')" class="message is-info">
         <div class="message-body">
           <div class="media">
@@ -222,6 +226,7 @@
           </div>
         </div>
       </article>
+      -->
     </template>
 
     <template v-if="data && editActive">
@@ -249,6 +254,8 @@
               v-bind:attributes="attributeOptions"
               v-bind:client-validations="validations"
               v-bind:validation-handler="validationHandler"
+              v-bind:editable="false"
+              v-bind:editable-check-loading="false"
           ></BaseTraitForm>
         </template>
       </EditDataForm>

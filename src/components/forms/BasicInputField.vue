@@ -31,6 +31,7 @@
         v-bind:type="fieldTypeComputed"
         v-bind:placeholder="placeholder ? placeholder : fieldName"
         v-bind:autocomplete="autocomplete"
+        v-bind:disabled="isDisabled"
     />
   </BaseFieldWrapper>
 </template>
@@ -64,6 +65,8 @@
     inputId: string | undefined;
     @Prop()
     autocomplete!: boolean | true;
+    @Prop()
+    isDisabled!: boolean;
 
     get fieldTypeComputed() {
       return this.fieldType ? this.fieldType : 'text';
