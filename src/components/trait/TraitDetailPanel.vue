@@ -255,7 +255,7 @@
               v-bind:client-validations="validations"
               v-bind:validation-handler="validationHandler"
               v-bind:editable="false"
-              v-bind:editable-check-loading="false"
+              v-bind:editable-check-loading="true"
           ></BaseTraitForm>
         </template>
       </EditDataForm>

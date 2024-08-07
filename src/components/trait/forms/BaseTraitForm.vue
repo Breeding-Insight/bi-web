@@ -13,6 +13,11 @@
              v-on:input="toggleActiveState">
       <label for="newTermActiveToggle" class="is-pulled-right">{{trait.active ? 'Active' : 'Archived'}}</label>
     </div>
+  <div class="column is-full">
+    <ProgressBar v-if="editableCheckLoading && $ability.can('update', 'Trait')" v-bind:label="'Checking trait editability status'"
+                 v-bind:estimated-time-text="'May take a few seconds'"
+    />
+  </div>
 
   <div class="column is-full">
     <article v-if="!editable && !editableCheckLoading" class="message is-primary mb-3">
@@ -325,7 +330,8 @@ import TagField from "@/components/forms/TagField.vue";
 import BaseFieldWrapper from "@/components/forms/BaseFieldWrapper.vue";
 import {TermType} from "@/breeding-insight/model/TraitSelector";
 import {EnumUtils} from "@/breeding-insight/utils/EnumUtils";
-import { HelpCircleIcon } from 'vue-feather-icons'
+import { HelpCircleIcon } from 'vue-feather-icons';
+import ProgressBar from '@/components/forms/ProgressBar.vue';
 
 @Component({
   components: {
@@ -340,7 +346,9 @@ import { HelpCircleIcon } from 'vue-feather-icons'
     OrdinalTraitForm,
     BasicSelectField,
     BasicInputField,
-    HelpCircleIcon},
+    HelpCircleIcon,
+    ProgressBar,
+  },
   data: () => ({DataType, MethodClass, TraitError, StringFormatters, Scale}),
   filters: {
     toCSV: function (value: string[] | undefined): string {
