@@ -24,9 +24,9 @@ import {Program} from "@/breeding-insight/model/Program";
 type DefinePermissions = (user: User, builder: AbilityBuilder<AppAbility>) => void;
 
 const rolePermissions: Record<string, DefinePermissions> = {
-  member(user, { can }) {
+  readonly(user, { can }) {
   },
-  breeder(user, { can }) {
+  programadministrator(user, { can }) {
     can('create', 'ProgramUser');
     can('update', 'ProgramUser');
     can('archive', 'ProgramUser');
@@ -41,7 +41,7 @@ const rolePermissions: Record<string, DefinePermissions> = {
     can('create', 'ProgramConfiguration');
     can('update', 'ProgramConfiguration');
   },
-  admin(user, { can }) {
+  systemadministrator(user, { can }) {
     can('create', 'ProgramUser');
     can('update', 'ProgramUser');
     can('archive', 'ProgramUser');
@@ -51,14 +51,22 @@ const rolePermissions: Record<string, DefinePermissions> = {
   }
 };
 
+//Helper method to convert domain name to associated rolePermissions function
+//Necessary as functions depend on no whitespace and present domain names have whitespace
+function toRoleFunctionName(domain: String){
+  return domain.replace(/\s/g, "").toLowerCase();
+}
+
 export function defineAbilityFor(user: User | undefined, program: Program | undefined): AppAbility {
   const builder = new AbilityBuilder<AppAbility>();
 
   if (user) {
+    let roleFunctionName = "";
     // Check system roles
     if (user.roleName) {
-      if (typeof rolePermissions[user.roleName] === 'function') {
-        rolePermissions[user.roleName](user, builder);
+      roleFunctionName = toRoleFunctionName(user.roleName);
+      if (typeof rolePermissions[roleFunctionName] === 'function') {
+        rolePermissions[roleFunctionName](user, builder);
       }
     }
 
@@ -66,12 +74,15 @@ export function defineAbilityFor(user: User | undefined, program: Program | unde
       // Check program roles
       if (user.programRoles) {
         for (const programRole of user.programRoles) {
+          if (programRole.domain) {
+            roleFunctionName = toRoleFunctionName(programRole.domain);
+          }
           if (programRole.program && programRole.program.id &&
             programRole.program.id === program.id && programRole.domain &&
             programRole.active &&
-            typeof rolePermissions[programRole.domain] === 'function') {
+            typeof rolePermissions[roleFunctionName] === 'function') {
 
-            rolePermissions[programRole.domain](user, builder);
+            rolePermissions[roleFunctionName](user, builder);
           }
         }
       }
