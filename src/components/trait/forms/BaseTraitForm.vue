@@ -51,7 +51,6 @@
         v-bind:options="termTypes"
         v-bind:field-name="'Term Type'"
         v-bind:show-label="false"
-        v-bind:is-disabled="!editable"
         v-on:input="setTermType($event)"
     />
   </div>
@@ -70,7 +69,6 @@
           v-bind:field-help="''"
           v-bind:validations="clientValidations.observationVariableName"
           v-bind:server-validations="validationHandler.getValidation(0, TraitError.ObservationVariableName)"
-          v-bind:is-disabled="!editable"
           v-on:input="setOTName($event)"
       />
     </div>
@@ -85,7 +83,6 @@
           v-bind:placeholder="'Full Name'"
           v-bind:show-label="false"
           v-bind:server-validations="validationHandler.getValidation(0, TraitError.FullName)"
-          v-bind:is-disabled="!editable"
           v-on:input="setFullName($event)"
       />
     </div>
@@ -100,7 +97,6 @@
           v-bind:placeholder="'Ontology Term Description'"
           v-bind:show-label="false"
           v-bind:server-validations="validationHandler.getValidation(0, TraitError.TraitDescription)"
-          v-bind:is-disabled="!editable"
           v-on:input="trait.traitDescription = $event"
       />
     </div>
@@ -124,7 +120,6 @@
           v-bind:field-name="'Tags'"
           v-bind:show-label="false"
           v-bind:before-adding="checkTag"
-          v-bind:is-disabled="!editable"
           v-on:add="addTag($event)"
           v-on:remove="removeTag($event)"
       />
