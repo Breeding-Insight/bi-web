@@ -202,31 +202,6 @@
         </div>
         <div class="column is-half p-0"></div>
       </div>
-
-      <!--
-      <ProgressBar v-if="loadingEditable && $ability.can('update', 'Trait')" v-bind:label="'Checking trait editability status'"
-                   v-bind:estimated-time-text="'May take a few seconds'"
-      />
-      -->
-
-      <!--
-      <article v-if="!editable && !loadingEditable && !fromImportTable && $ability.can('update', 'Trait')" class="message is-info">
-        <div class="message-body">
-          <div class="media">
-            <figure class="media-left">
-              <p class="image is-24x24">
-                <help-circle-icon size="1.5x"></help-circle-icon>
-              </p>
-            </figure>
-            <div class="media-content">
-              <div class="has-text-dark">
-                Not editable because this trait has associated experiment data.
-              </div>
-            </div>
-          </div>
-        </div>
-      </article>
-      -->
     </template>
 
     <template v-if="data && editActive">
