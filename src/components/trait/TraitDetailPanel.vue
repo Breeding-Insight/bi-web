@@ -189,7 +189,6 @@
       <!-- maybe break out controls for reuse eventually -->
       <div v-if="!isSubscribed" class="columns is-centered is-mobile is-variable is-multiline is-0 my-0">
         <div class="column is-half p-0 mt-5">
-          <!-- editable && !loadingEditable && -->
           <a
               v-if="!data.isDup"
               v-on:click="$emit('activate-edit', data)"
