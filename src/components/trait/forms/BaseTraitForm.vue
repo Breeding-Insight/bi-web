@@ -20,7 +20,7 @@
   </div>
 
   <div class="column is-full">
-    <article v-if="!editable && !editableCheckLoading" class="message is-primary mb-3">
+    <article v-if="!editable && !editableCheckLoading && !fromImportTable && $ability.can('update', 'Trait')" class="message is-primary mb-3">
       <div class="message-body">
         <div class="media">
           <figure class="media-left">
@@ -380,6 +380,8 @@ export default class BaseTraitForm extends Vue {
   editable!: boolean;
   @Prop()
   editableCheckLoading!: boolean;
+  @Prop({default: false})
+  private fromImportTable!: boolean;
 
   private termTypes: TermType[] = Object.values(TermType);
 

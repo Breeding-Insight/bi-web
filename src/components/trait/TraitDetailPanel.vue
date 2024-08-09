@@ -230,6 +230,7 @@
               v-bind:validation-handler="validationHandler"
               v-bind:editable="editable"
               v-bind:editable-check-loading="loadingEditable"
+              v-bind:from-import-table="fromImportTable"
           ></BaseTraitForm>
         </template>
       </EditDataForm>
