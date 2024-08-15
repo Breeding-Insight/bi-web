@@ -190,7 +190,7 @@
       <div v-if="!isSubscribed" class="columns is-centered is-mobile is-variable is-multiline is-0 my-0">
         <div class="column is-half p-0 mt-5">
           <a
-              v-if="editable && !loadingEditable && !data.isDup"
+              v-if="!data.isDup"
               v-on:click="$emit('activate-edit', data)"
               v-on:keypress.enter.space="$emit('activate-edit', data)"
               tabindex="0"
@@ -201,27 +201,6 @@
         </div>
         <div class="column is-half p-0"></div>
       </div>
-
-      <ProgressBar v-if="loadingEditable && $ability.can('update', 'Trait')" v-bind:label="'Checking trait editability status'"
-                   v-bind:estimated-time-text="'May take a few seconds'"
-      />
-
-      <article v-if="!editable && !loadingEditable && !fromImportTable && $ability.can('update', 'Trait')" class="message is-info">
-        <div class="message-body">
-          <div class="media">
-            <figure class="media-left">
-              <p class="image is-24x24">
-                <help-circle-icon size="1.5x"></help-circle-icon>
-              </p>
-            </figure>
-            <div class="media-content">
-              <div class="has-text-dark">
-                Not editable because this trait has associated experiment data.
-              </div>
-            </div>
-          </div>
-        </div>
-      </article>
     </template>
 
     <template v-if="data && editActive">
@@ -249,6 +228,9 @@
               v-bind:attributes="attributeOptions"
               v-bind:client-validations="validations"
               v-bind:validation-handler="validationHandler"
+              v-bind:editable="editable"
+              v-bind:editable-check-loading="loadingEditable"
+              v-bind:from-import-table="fromImportTable"
           ></BaseTraitForm>
         </template>
       </EditDataForm>
