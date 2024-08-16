@@ -150,7 +150,7 @@ export default class ExperimentDetails extends ProgramsBase {
   private datasetMetadata: DatasetMetadata[] = [];
 
   private actions: ActionMenuItem[] = [
-      new ActionMenuItem('experiment-import-file', 'import-file', 'Import file'),
+      new ActionMenuItem('experiment-import-file', 'import-file', 'Import file', this.$ability.can('create', 'Import')),
       new ActionMenuItem('experiment-download-file', 'download-file', 'Download file'),
       // new ActionMenuItem('experiment-create-sub-entity-dataset', 'create-sub-entity-dataset', 'Create Sub-Entity Dataset')
   ];
