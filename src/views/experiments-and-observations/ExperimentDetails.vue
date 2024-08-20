@@ -45,6 +45,15 @@
         v-on:deactivate="subEntityModalActive = false"
     />
 
+    <ExperimentAddCollaboratorModal
+        v-bind:experiment="experiment"
+        v-bind:modal-title="`Add experimental collaborator`"
+        v-bind:trial-id="experimentUUID"
+        v-bind:active="addCollaboratorActive"
+        v-on:show-error-notification="$emit('show-error-notification', $event)"
+        v-on:deactivate="addCollaboratorActive = false"
+    />
+
     <div v-if="!experimentLoading && experiment!=null">
 
       <div class="columns is-multiline is-align-items-stretch mt-4">
@@ -77,7 +86,21 @@
                       v-on:import-file="importFile()"
                       v-on:download-file="downloadFile()"
                       v-on:create-sub-entity-dataset="openSubEntityModal()"
+                      v-on:add-collaborator="addCollaborator()"
           />
+        </article>
+        <article class="column px-2">
+          <section>
+            <ul style="list-style-type: none;">
+              <li v-for="collaborator in collaborators" :key="collaborator.id">
+                <span>{{ collaborator.name }}</span>
+                <span>{{ collaborator.email }}</span>
+                <button v-on:click="selectedForRemoval = collaborator; removeCollaboratorActive = true;">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </li>
+            </ul>
+          </section>
         </article>
       </div>
 
@@ -110,6 +133,7 @@
 <script lang="ts">
 import {Component, Watch} from "vue-property-decorator";
 import {mapGetters} from "vuex";
+import {Collaborator} from "@/breeding-insight/model/Collaborator";
 import {PlusCircleIcon} from 'vue-feather-icons'
 import {Program} from "@/breeding-insight/model/Program";
 import {Result} from "@/breeding-insight/model/Result";
@@ -124,12 +148,16 @@ import SubEntityDatasetModal from "@/components/modals/SubEntityDatasetModal.vue
 import {DatasetMetadata} from "@/breeding-insight/model/DatasetMetadata";
 import {SubEntityDatasetNewRequest} from "@/breeding-insight/model/SubEntityDatasetNewRequest";
 import {DatasetModel} from "@/breeding-insight/model/DatasetModel";
+import ExperimentAddCollaboratorModal from "@/components/experiments/ExperimentAddCollaboratorModal.vue";
+import ExperimentCollaboratorRemovalModal from "@/components/experiments/ExperimentCollaboratorRemovalModal.vue";
 
 @Component({
   components: {
     SubEntityDatasetModal,
     PlusCircleIcon,
     ExperimentObservationsDownloadModal,
+    ExperimentAddCollaboratorModal,
+    ExperimentCollaboratorRemovalModal,
     ActionMenu
   },
   computed: {
@@ -145,13 +173,17 @@ export default class ExperimentDetails extends ProgramsBase {
   private activeProgram: Program;
   private experiment: Trial;
   private experimentLoading: boolean = true;
+  private addCollaboratorActive: boolean = false;
   private downloadModalActive: boolean = false;
   private subEntityModalActive: boolean = false;
+  private removeCollaboratorActive: boolean = false;
+  private selectedForRemoval?: Collaborator;
   private datasetMetadata: DatasetMetadata[] = [];
 
   private actions: ActionMenuItem[] = [
       new ActionMenuItem('experiment-import-file', 'import-file', 'Import file', this.$ability.can('create', 'Import')),
       new ActionMenuItem('experiment-download-file', 'download-file', 'Download file'),
+      new ActionMenuItem('experiment-add-collaborator', 'add-collaborator', 'Add Collaborator'),
       // new ActionMenuItem('experiment-create-sub-entity-dataset', 'create-sub-entity-dataset', 'Create Sub-Entity Dataset')
   ];
 
@@ -173,6 +205,11 @@ export default class ExperimentDetails extends ProgramsBase {
     this.downloadModalActive = true;
   }
 
+  private addCollaborator() {
+    this.addCollaboratorActive = true;
+  }
+
+
   private async createSubEntityDataset(subEntityRequest: SubEntityDatasetNewRequest): Promise<boolean> {
     console.log("createSubEntityDataset invoked with arguments: datasetName=" + subEntityRequest.name + ", repeatedMeasures=" + subEntityRequest.repeatedMeasures);
     const response: Result<Error, DatasetModel> = await ExperimentService.createSubEntityDataset(this.activeProgram!.id!, this.experimentUUID, subEntityRequest);
@@ -191,6 +228,7 @@ export default class ExperimentDetails extends ProgramsBase {
     return this.$route.params.experimentId;
   }
 
+  private collaborators: Collaborator[] = [];
   get userName(): string {
     if( !this.experiment.additionalInfo ){return '';}
     if( !this.experiment.additionalInfo.createdBy){return '';}
@@ -249,11 +287,26 @@ export default class ExperimentDetails extends ProgramsBase {
     }
   }
 
+@Watch('$route')
+async getAssignedCollaborators(): Promise<void> {
+  try {
+    const response: Result<Error, Collaborator[]> = await ExperimentService.getAssignedCollaborators(this.activeProgram!.id!, this.experimentUUID);
+    if (response.isErr()) {
+      throw response.value;
+    }
+    this.collaborators = response.value;
+  } catch (err) {
+    // Display error that experiment cannot be loaded
+    this.$emit('show-error-notification', 'Error while trying to load collaborators');
+    throw err;
+  }
+}
+
   // Get metadata for all datasets available in this experiment.
   @Watch('$route')
-  async getDatasetMetadata(): DatasetMetadata[] {
+  async getDatasetMetadata(): Promise<void> {
     try {
-      const response: Result<Error, DatasetMetadata[]> = await ExperimentService.getDatasetMetadata(this.activeProgram!.id!, this.experimentUUID, true);
+      const response: Result<Error, DatasetMetadata[]> = await ExperimentService.getDatasetMetadata(this.activeProgram!.id!, this.experimentUUID);
       if (response.isErr()) {
         throw response.value;
       }
