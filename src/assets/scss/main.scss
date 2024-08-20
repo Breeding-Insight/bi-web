@@ -129,6 +129,18 @@ main {
   a {
     text-decoration: underline;
   }
+  
+  .experiment-observation-add-collaborator-button {
+    .modal {
+      .modal-card {
+        width: $medium-modal-content-width;
+        .modal-card-body {
+          padding: $medium-modal-body-padding;
+        }
+      }
+    }
+  }
+  
   */
   p,
   dl,
@@ -932,6 +944,17 @@ tr:nth-child(odd) td.db-filled {
       width: $large-modal-content-width;
       .modal-card-body {
         padding: $medium-modal-body-padding;
+      }
+    }
+  }
+  
+  .experiment-observation-remove-collaborator-button {
+    .modal {
+      .modal-card {
+        width: $medium-modal-content-width;
+        .modal-card-body {
+          padding: $medium-modal-body-padding;
+        }
       }
     }
   }
