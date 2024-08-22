@@ -33,7 +33,7 @@
 
       <template v-slot:importInfoTemplateMessageBox>
         <ImportInfoTemplateMessageBox v-bind:import-type-name="'Experiments & Observations'"
-                                      v-bind:template-url="'https://cornell.box.com/shared/static/ggmpt318mo0exw2b8qrff5axuamv3sv9.xls'"
+                                      v-bind:template-url="'https://cornell.box.com/shared/static/7ziyhhnia5i7bdvekawhb2ldyobrecmw.xls'"
                                       class="mb-5">
           <strong>Before You Import...</strong>
           <br/>
