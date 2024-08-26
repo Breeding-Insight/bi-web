@@ -84,7 +84,7 @@ export default class ExperimentCollaboratorRemovalModal extends Vue {
         // Handle any errors that might occur during the async operation
         console.error('Error removing collaborator:', error);
         // Optionally emit an error event or handle the error in some way
-        this.$emit('remove-collaborator-error', error);
+        this.$emit('show-error-notification', `Error while trying to remove a collaborator`);
       }
     }
   }

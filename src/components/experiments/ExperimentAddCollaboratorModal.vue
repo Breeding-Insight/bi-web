@@ -24,6 +24,7 @@
     modal-class="experiment-observation-add-collaborator-button"
     v-on:deactivate="resetCollaboratorOptions"
     v-on:add-collaborator="$emit('add-collaborator')"
+    v-on:show-error-notification="$emit('show-error-notification', $event)"
   >
     <template #form>
       <p>An experimental collaborator will be granted read, download, and BrAPI pull access to this experiment {{experiment.trialName}}. If the collaborator is not available from the dropdown menu, they will need to be added. <router-link v-bind:to="{name: 'program-users', params:{programId: activeProgram.id}}">Program Administration > Users</router-link></p>

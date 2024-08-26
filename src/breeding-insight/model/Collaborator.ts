@@ -1,12 +1,12 @@
 export class Collaborator {
-    id: string;
+    collaboratorId: string;
     active: boolean;
     userId: string;
     name: string;
     email: string;
 
     constructor(id: string, active: boolean, userId: string, name: string, email: string) {
-        this.id = id;
+        this.collaboratorId = id;
         this.active = active;
         this.userId = userId;
         this.name = name;

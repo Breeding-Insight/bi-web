@@ -92,7 +92,7 @@ export default class AddCollaboratorModal extends Vue {
       // Handle any errors that might occur during the async operation
       console.error('Error adding collaborator:', error);
       // Optionally emit an error event or handle the error in some way
-      this.$emit('add-collaborator-error', error);
+      this.$emit('show-error-notification', `Error while adding a collaborator`);
     }
   }
 

@@ -97,7 +97,7 @@
             <div class="collaborators-section">
               <b class="collaborators-label">Collaborators:</b>
               <ul class="collaborators-list">
-                <li v-for="collaborator in collaborators" :key="collaborator.id" class="collaborator-item">
+                <li v-for="collaborator in collaborators" :key="collaborator.collaboratorId" class="collaborator-item">
                   <span class="collaborator-info">{{ collaborator.name }}</span>
                   <span class="collaborator-info">{{ collaborator.email }}</span>
                   <button v-on:click="removeCollaborator(collaborator)" class="remove-collaborator-button">
