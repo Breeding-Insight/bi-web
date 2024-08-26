@@ -78,9 +78,16 @@ export class ExperimentDAO {
         config.method = 'delete';
         config.programId = programId;
         config.experimentId = experimentId;
+        config.responseType = 'text';
+        config.validateStatus = (status: number) => status >= 200 && status < 300;
         try {
-            const res = await api.call(config) as Response;
-            return ResultGenerator.success(true);
+            const response = await api.call(config);
+            // Check if the status code indicates success
+            if (response.status >= 200 && response.status < 300) {
+                return ResultGenerator.success(true);
+            } else {
+                throw new Error(`Unexpected status code: ${response.status}`);
+            }
         } catch (error) {
             return ResultGenerator.err(error);
         }

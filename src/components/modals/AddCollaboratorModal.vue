@@ -69,7 +69,7 @@ export default class AddCollaboratorModal extends Vue {
   @Prop()
   modalClass?: string;
   @Prop()
-  addCollaborator!: () => boolean;
+  addCollaborator!: () => Promise<boolean>;
   @Prop()
   active!: boolean;
 
@@ -78,12 +78,21 @@ export default class AddCollaboratorModal extends Vue {
     this.$emit('deactivate');
   }
 
-  invokeAddCollaborator(){
-    // Invoke the addCollaborator prop, which returns true if adding collaborator succeeded.
-    if (this.addCollaborator())
-    {
-      // Close and deactivate modal.
-      this.closeAddCollaboratorModal();
+  async invokeAddCollaborator(){
+    try {
+      // Await the result of the async addCollaborator function
+      const result = await this.addCollaborator();
+      if (result) {
+        // Emit the event after the promise is resolved
+        this.$emit('add-collaborator');
+        // Close and deactivate modal
+        this.closeAddCollaboratorModal();
+      }
+    } catch (error) {
+      // Handle any errors that might occur during the async operation
+      console.error('Error adding collaborator:', error);
+      // Optionally emit an error event or handle the error in some way
+      this.$emit('add-collaborator-error', error);
     }
   }
 

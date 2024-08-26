@@ -25,7 +25,7 @@
     v-on:deactivate="resetCollaborator"
   >
     <template #form>
-      <p>Are you sure you want to revoke ${collaborator.name}'s access as an experimental collaborator?</p>
+      <p>Are you sure you want to revoke {{collaborator.name}}'s access as an experimental collaborator?</p>
     </template>
     <slot />
   </ConfirmationModal>
@@ -66,11 +66,27 @@ export default class ExperimentCollaboratorRemovalModal extends Vue {
 
   private activeProgram?: Program;
 
-  removeCollaborator(): boolean {
+  async removeCollaborator(): Promise<void> {
     if (this.activeProgram) {
-      ExperimentService.removeCollaboratorFromExperiment(this.activeProgram.id, this.trialId, this.collaborator.id);
+      try {
+        // Call the service method and await its completion
+        await ExperimentService.removeCollaboratorFromExperiment(
+            this.activeProgram.id,
+            this.trialId,
+            this.collaborator.collaboratorId
+        );
+
+        // If the above call doesn't throw an error, we assume it was successful
+        // Emit the event after the promise is resolved
+        this.$emit('remove-collaborator');
+
+      } catch (error) {
+        // Handle any errors that might occur during the async operation
+        console.error('Error removing collaborator:', error);
+        // Optionally emit an error event or handle the error in some way
+        this.$emit('remove-collaborator-error', error);
+      }
     }
-    return true;
   }
 
   resetCollaborator(){

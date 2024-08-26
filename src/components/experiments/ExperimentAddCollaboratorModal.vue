@@ -23,9 +23,10 @@
     v-bind:active="active && loadingCollaboratorOptionsComplete"
     modal-class="experiment-observation-add-collaborator-button"
     v-on:deactivate="resetCollaboratorOptions"
+    v-on:add-collaborator="$emit('add-collaborator')"
   >
     <template #form>
-      <p>An experimental collaborator will  be granted read, dowload, and BrAPI pull access to this experiment ${experiment-name}. If the collaborator is not available from the dropdown menu, they will need to be added. Program Administration > Users</p>
+      <p>An experimental collaborator will be granted read, download, and BrAPI pull access to this experiment {{experiment.trialName}}. If the collaborator is not available from the dropdown menu, they will need to be added. <router-link v-bind:to="{name: 'program-users', params:{programId: activeProgram.id}}">Program Administration > Users</router-link></p>
       <div class="columns mb-4">
         <!-- Collaborator Select -->
         <div class="column control">
@@ -91,35 +92,51 @@ export default class ExperimentAddCollaboratorModal extends Vue {
   experiment!: Trial;
   @Prop()
   modalTitle?: string;
+  @Prop()
+  collaborators: Collaborator[];
 
   private activeProgram?: Program;
-  private collaboratorId?: string;
+  private collaboratorId?: string = '';
   private showValidationError: boolean = false;
   private collaboratorOptions: object[] = [];
   private loadingCollaboratorOptionsComplete: boolean = false;
 
-  @Watch('experiment', {immediate: true})
+  @Watch('experiment',{immediate: true})
   onExperimentChanged() {
     this.loadingCollaboratorOptionsComplete = false;
+    this.getCollaboratorOptions();
+  }
+
+  @Watch('collaborators')
+  onCollaboratorsChanged() {
     this.getCollaboratorOptions();
   }
 
   async getCollaboratorOptions() {
     try {
       const response: Result<Error, Collaborator[]> = await ExperimentService.getUnassignedCollaboratorsByExperiment(this.activeProgram!.id!, this.trialId);
-      if(response.isErr()) throw response.value;
-      let collaborators = response.value;
-      this.collaboratorOptions = collaborators.map((c) => ({id: c.id, name: c.name}));
+      if(response.isErr()) {
+        throw response.value;
+      }
+      let collaborators: Collaborator[] = response.value.data;
+      this.collaboratorOptions = collaborators.map((c) => ({id: c.userId, name: c.name}));
+      this.setDefaultCollaboratorOption();
       this.loadingCollaboratorOptionsComplete = true;
     } catch (error) {
       this.$emit('show-error-notification', 'Error while trying to load collaborators');
     }
   }
 
-  addCollaborator(): boolean {
+  setDefaultCollaboratorOption() {
+    if (this.collaboratorOptions.length > 0) {
+      this.collaboratorId = this.collaboratorOptions[0].id;
+    }
+  }
+
+  async addCollaborator(): boolean {
     if (this.collaboratorId !== undefined) {
       if (this.activeProgram) {
-        ExperimentService.addCollaboratorToExperiment(this.activeProgram.id, this.trialId, this.collaboratorId);
+        const response: Result<Error, Collaborator[]> = await ExperimentService.addCollaboratorToExperiment(this.activeProgram.id, this.trialId, this.collaboratorId);
       }
       return true;
     }
@@ -130,7 +147,7 @@ export default class ExperimentAddCollaboratorModal extends Vue {
 
   resetCollaboratorOptions(){
     this.$emit('deactivate');
-    this.collaboratorId = undefined;
+    this.setDefaultCollaboratorOption();
     this.showValidationError = false;
   }
 }
