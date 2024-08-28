@@ -22,6 +22,7 @@ import {DatasetModel} from "@/breeding-insight/model/DatasetModel";
 import {DatasetMetadata} from "@/breeding-insight/model/DatasetMetadata";
 import {SubEntityDatasetNewRequest} from "@/breeding-insight/model/SubEntityDatasetNewRequest";
 import {BrAPIUtils} from "@/breeding-insight/utils/BrAPIUtils";
+import {Collaborator} from "@/breeding-insight/model/Collaborator";
 
 export class ExperimentService {
 
@@ -70,5 +71,33 @@ export class ExperimentService {
             return ResultGenerator.err(new Error("Trial is missing external reference."));
         }
         return await ExperimentDAO.getDatasetMetadata(programId, externalReferenceId);
+    }
+    
+    static async getUnassignedCollaboratorsByExperiment(programId: string | undefined, experimentId: string): Promise<Result<Error, Collaborator[]>> {
+        if (!programId) {
+            return ResultGenerator.err(new Error('Missing or invalid program id'));
+        }
+        return await ExperimentDAO.getUnassignedCollaborators(programId, experimentId);
+    }
+
+    static async getAssignedCollaborators(programId: string | undefined, experimentId: string): Promise<Result<Error, Collaborator[]>> {
+        if (!programId) {
+            return ResultGenerator.err(new Error('Missing or invalid program id'));
+        }
+        return await ExperimentDAO.getAssignedCollaborators(programId, experimentId);
+    }
+
+    static async addCollaboratorToExperiment(programId: string | undefined, experimentId: string, userId: string): Promise<Result<Error, Collaborator>> {
+        if (!programId) {
+            return ResultGenerator.err(new Error('Missing or invalid program id'));
+        }
+        return await ExperimentDAO.addCollaborator(programId, experimentId, userId);
+    }
+
+    static async removeCollaboratorFromExperiment(programId: string | undefined, experimentId: string, id: string): Promise<Result<Error, boolean>> {
+        if (!programId) {
+            return ResultGenerator.err(new Error('Missing or invalid program id'));
+        }
+        return await ExperimentDAO.deleteCollaborator(programId, experimentId, id);
     }
 }

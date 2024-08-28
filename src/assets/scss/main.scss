@@ -915,7 +915,43 @@ tr:nth-child(odd) td.db-filled {
   }
 }
 
-.sub-entity-dataset-modal, .experiment-observations-download-button {
+.collaborators-section {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+
+.collaborators-label {
+  margin-right: 10px;
+  padding-top: 0;
+}
+
+.collaborators-list {
+  list-style-type: none;
+  padding-left: 0;
+  margin: 0;
+  flex: 1;
+}
+
+.collaborator-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.collaborator-info {
+  flex: 1;
+  margin-right: 10px;
+}
+
+.remove-collaborator-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.sub-entity-dataset-modal, .experiment-observations-download-button, .experiment-observation-add-collaborator-button, .experiment-observation-remove-collaborator-button {
   .modal {
     .modal-card {
       width: $medium-modal-content-width;
