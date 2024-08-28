@@ -30,10 +30,12 @@ const rolePermissions: Record<string, DefinePermissions> = {
     can('access', 'Germplasm');
     can('access', 'ProgramAdministration');
     can('access', 'SampleManagement');
+    can('access', 'BrAPI');
     can('access', 'JobManagement');
   },
   experimentalcollaborator(user, { can }) {
     can('access', 'Experiment');
+    can('access', 'BrAPI');
   },
   programadministrator(user, { can }) {
     can('create', 'ProgramUser');
@@ -54,8 +56,10 @@ const rolePermissions: Record<string, DefinePermissions> = {
     can('access', 'Germplasm');
     can('access', 'SampleManagement');
     can('access', 'ProgramAdministration');
+    can('access', 'BrAPI');
     can('access', 'JobManagement');
-    can( 'create', 'Collaborator');
+    can('create', 'Collaborator');
+
   },
   systemadministrator(user, { can }) {
     can('create', 'ProgramUser');
@@ -72,8 +76,9 @@ const rolePermissions: Record<string, DefinePermissions> = {
     can('access', 'Germplasm');
     can('access', 'SampleManagement');
     can('access', 'ProgramAdministration');
+    can('access', 'BrAPI');
     can('access', 'JobManagement');
-    can( 'create', 'Collaborator');
+    can('create', 'Collaborator');
 
   }
 };

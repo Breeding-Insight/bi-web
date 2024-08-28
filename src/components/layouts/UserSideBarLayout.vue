@@ -101,7 +101,9 @@
                 Germplasm
               </router-link>
             </li>
-            <li>
+            <li
+                v-if="$ability.can('access', 'Experiment')"
+            >
               <router-link
                   v-bind:to="{name: 'experiments-observations', params: {programId: activeProgram.id}}"
               >
@@ -157,7 +159,9 @@
                 Program Administration
               </router-link>
             </li>
-            <li>
+            <li
+                v-if="$ability.can('access', 'BrAPI')"
+            >
               <router-link v-bind:to="{name: 'brapi-info', params: {programId: activeProgram.id}}" :id="brAPIMenuId">
                 BrAPI
               </router-link>
