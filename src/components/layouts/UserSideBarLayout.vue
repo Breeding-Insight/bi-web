@@ -96,7 +96,6 @@
               <router-link
                   v-bind:to="{name: 'germplasm', params: {programId: activeProgram.id}}"
                   :id="germplasmMenuId"
-                  v-if="$ability.can('access', 'Germplasm')"
               >
                 Germplasm
               </router-link>
