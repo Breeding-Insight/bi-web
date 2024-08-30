@@ -98,10 +98,13 @@
               <b class="collaborators-label">Collaborators:</b>
               <ul class="collaborators-list">
                 <li v-for="collaborator in collaborators" :key="collaborator.collaboratorId" class="collaborator-item">
-                  <span class="collaborator-info">{{ collaborator.name }}</span>
-                  <span class="collaborator-info">{{ collaborator.email }}</span>
-                  <button v-on:click="removeCollaborator(collaborator)" class="remove-collaborator-button">
-                    <i class="fas fa-minus-circle"></i>
+                  <span class="collaborator-info has-text-right">{{ collaborator.name }}</span>
+                  <span class="collaborator-info">{{"(" + collaborator.email + ")"}}</span>
+                  <button
+                    v-show="$ability.can('manage', 'Collaborator')"
+                    v-on:click="removeCollaborator(collaborator)"
+                    type="button"
+                    class="delete">
                   </button>
                 </li>
               </ul>
@@ -201,7 +204,7 @@ export default class ExperimentDetails extends ProgramsBase {
   private actions: ActionMenuItem[] = [
       new ActionMenuItem('experiment-import-file', 'import-file', 'Import file', this.$ability.can('create', 'Import')),
       new ActionMenuItem('experiment-download-file', 'download-file', 'Download file'),
-      new ActionMenuItem('experiment-add-collaborator', 'add-collaborator', 'Add Collaborator',  this.$ability.can('create', 'Collaborator')),
+      new ActionMenuItem('experiment-add-collaborator', 'add-collaborator', 'Add Collaborator',  this.$ability.can('manage', 'Collaborator')),
       // new ActionMenuItem('experiment-create-sub-entity-dataset', 'create-sub-entity-dataset', 'Create Sub-Entity Dataset')
   ];
 
