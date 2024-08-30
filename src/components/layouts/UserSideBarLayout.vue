@@ -90,7 +90,9 @@
 <!--            <li>
               <a>Germplasm Inventory</a>
             </li>-->
-            <li>
+            <li
+                v-if="$ability.can('access', 'Germplasm')"
+            >
               <router-link
                   v-bind:to="{name: 'germplasm', params: {programId: activeProgram.id}}"
                   :id="germplasmMenuId"
@@ -98,31 +100,39 @@
                 Germplasm
               </router-link>
             </li>
-            <li>
+            <li
+                v-if="$ability.can('access', 'Experiment')"
+            >
               <router-link
                   v-bind:to="{name: 'experiments-observations', params: {programId: activeProgram.id}}"
               >
                 Experiments & Observations
               </router-link>
             </li>
-            <li>
+            <li
+                v-if="$ability.can('access', 'Ontology')"
+            >
               <router-link
                   v-bind:to="{name: 'ontology', params: {programId: activeProgram.id}}"
                   :id="ontologyMenuId"
+
               >
                 Ontology
               </router-link>
             </li>
-            <li>
+            <li
+                v-if="$ability.can('create', 'Import')"
+            >
               <router-link
                 v-bind:to="{name: 'import'}"
                 :id="importFileMenuId"
-                v-if="$ability.can('create', 'Import')"
               >
                 Import Data
               </router-link>
             </li>
-            <li>
+            <li
+                v-if="$ability.can('access', 'SampleManagement')"
+            >
               <router-link
                   v-bind:to="{name: 'sample-management', params: {programId: activeProgram.id}}"
                   :id="sampleMgmtMenuId"
@@ -138,7 +148,9 @@
               <a>Reports</a>
             </li>
             -->
-            <li>
+            <li
+                v-if="$ability.can('access', 'ProgramAdministration')"
+            >
               <router-link
                 v-bind:to="{name: 'program-administration', params: {programId: activeProgram.id}}"
                 :id="programManagementMenuId"
@@ -146,12 +158,16 @@
                 Program Administration
               </router-link>
             </li>
-            <li>
+            <li
+                v-if="$ability.can('access', 'BrAPI')"
+            >
               <router-link v-bind:to="{name: 'brapi-info', params: {programId: activeProgram.id}}" :id="brAPIMenuId">
                 BrAPI
               </router-link>
             </li>
-            <li>
+            <li
+                v-if="$ability.can('access', 'JobManagement')"
+            >
               <router-link
                   v-bind:to="{name: 'job-management', params: {programId: activeProgram.id}}"
                   :id="jobManagementMenuId"

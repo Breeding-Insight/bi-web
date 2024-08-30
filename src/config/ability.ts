@@ -25,6 +25,17 @@ type DefinePermissions = (user: User, builder: AbilityBuilder<AppAbility>) => vo
 
 const rolePermissions: Record<string, DefinePermissions> = {
   readonly(user, { can }) {
+    can('access', 'Experiment');
+    can('access', 'Ontology');
+    can('access', 'Germplasm');
+    can('access', 'ProgramAdministration');
+    can('access', 'SampleManagement');
+    can('access', 'BrAPI');
+    can('access', 'JobManagement');
+  },
+  experimentalcollaborator(user, { can }) {
+    can('access', 'Experiment');
+    can('access', 'BrAPI');
   },
   programadministrator(user, { can }) {
     can('create', 'ProgramUser');
@@ -40,14 +51,35 @@ const rolePermissions: Record<string, DefinePermissions> = {
     can('access', 'ProgramConfiguration');
     can('create', 'ProgramConfiguration');
     can('update', 'ProgramConfiguration');
+    can('access', 'Experiment');
+    can('access', 'Ontology');
+    can('access', 'Germplasm');
+    can('access', 'SampleManagement');
+    can('access', 'ProgramAdministration');
+    can('access', 'BrAPI');
+    can('access', 'JobManagement');
+    can('create', 'Collaborator');
+
   },
   systemadministrator(user, { can }) {
     can('create', 'ProgramUser');
     can('update', 'ProgramUser');
     can('archive', 'ProgramUser');
+    can('create', 'Location');
+    can('update', 'Location');
+    can('archive', 'Location');
     can('manage', 'User');
     can('access', 'AdminSection');
     can('submit', 'Submission');
+    can('access', 'Experiment');
+    can('access', 'Ontology');
+    can('access', 'Germplasm');
+    can('access', 'SampleManagement');
+    can('access', 'ProgramAdministration');
+    can('access', 'BrAPI');
+    can('access', 'JobManagement');
+    can('create', 'Collaborator');
+
   }
 };
 
@@ -81,7 +113,6 @@ export function defineAbilityFor(user: User | undefined, program: Program | unde
             programRole.program.id === program.id && programRole.domain &&
             programRole.active &&
             typeof rolePermissions[roleFunctionName] === 'function') {
-
             rolePermissions[roleFunctionName](user, builder);
           }
         }

@@ -201,7 +201,7 @@ export default class ExperimentDetails extends ProgramsBase {
   private actions: ActionMenuItem[] = [
       new ActionMenuItem('experiment-import-file', 'import-file', 'Import file', this.$ability.can('create', 'Import')),
       new ActionMenuItem('experiment-download-file', 'download-file', 'Download file'),
-      new ActionMenuItem('experiment-add-collaborator', 'add-collaborator', 'Add Collaborator'),
+      new ActionMenuItem('experiment-add-collaborator', 'add-collaborator', 'Add Collaborator',  this.$ability.can('create', 'Collaborator')),
       // new ActionMenuItem('experiment-create-sub-entity-dataset', 'create-sub-entity-dataset', 'Create Sub-Entity Dataset')
   ];
 
