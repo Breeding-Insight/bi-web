@@ -58,7 +58,7 @@ const rolePermissions: Record<string, DefinePermissions> = {
     can('access', 'ProgramAdministration');
     can('access', 'BrAPI');
     can('access', 'JobManagement');
-    can('create', 'Collaborator');
+    can('manage', 'Collaborator');
 
   },
   systemadministrator(user, { can }) {
@@ -78,7 +78,7 @@ const rolePermissions: Record<string, DefinePermissions> = {
     can('access', 'ProgramAdministration');
     can('access', 'BrAPI');
     can('access', 'JobManagement');
-    can('create', 'Collaborator');
+    can('manage', 'Collaborator');
 
   }
 };
