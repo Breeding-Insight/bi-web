@@ -26,7 +26,7 @@
       <article
           class="message is-success"
       >
-        <div class="message-body">
+        <div class="message-body has-text-dark">
           <div class="columns">
             <div class="column">
               <div class="columns mb-0">
