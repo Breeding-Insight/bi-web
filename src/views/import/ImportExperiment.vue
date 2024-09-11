@@ -72,7 +72,10 @@
             <br>Germplasm: {{ statistics.GIDs.newObjectCount }}
             <br>Environment(s): {{ statistics.Environments.newObjectCount }}
             <br>Observation Variables: {{ dynamicColumns.length }}
-            <br>Observations: {{ statistics.Observations.newObjectCount }}
+            <br>New Observations: {{ statistics.Observations.newObjectCount }}
+            <br>Existing Observations: {{ statistics.Existing_Observations.newObjectCount }}
+            <br>Mutated Observations: {{ statistics.Mutated_Observations.newObjectCount }}
+
           </div>
           </div>
         </ConfirmImportMessageBox>
