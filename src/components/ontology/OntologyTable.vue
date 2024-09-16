@@ -91,6 +91,7 @@
             v-bind:validation-handler="validationHandler"
             v-bind:editable-check-loading="false"
             v-bind:editable="true"
+            v-bind:currentTraitEditable="true"
         ></BaseTraitForm>
       </template>
     </NewDataForm>
