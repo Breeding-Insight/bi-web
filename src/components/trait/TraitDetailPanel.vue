@@ -185,12 +185,11 @@
           </div>
         </template>
       </div>
-
       <!-- maybe break out controls for reuse eventually -->
       <div v-if="!isSubscribed" class="columns is-centered is-mobile is-variable is-multiline is-0 my-0">
         <div class="column is-half p-0 mt-5">
           <a
-              v-if="!data.isDup"
+              v-if="!data.isDup && editable"
               v-on:click="$emit('activate-edit', data)"
               v-on:keypress.enter.space="$emit('activate-edit', data)"
               tabindex="0"
@@ -212,6 +211,7 @@
         v-bind:data-form-state="editFormState"
         v-on:show-error-notification="$emit('show-error-notification', $event)"
       >
+
         <template v-slot="validations">
           <BaseTraitForm
               v-bind:trait.sync="editTrait"
@@ -229,6 +229,7 @@
               v-bind:client-validations="validations"
               v-bind:validation-handler="validationHandler"
               v-bind:editable="editable"
+              v-bind:currentTraitEditable="currentTraitEditable"
               v-bind:editable-check-loading="loadingEditable"
               v-bind:from-import-table="fromImportTable"
           ></BaseTraitForm>
@@ -280,6 +281,8 @@
     private editActive!: boolean;
     @Prop()
     private editable!: boolean | undefined;
+    @Prop()
+    private currentTraitEditable!: boolean | undefined;
     @Prop({default: true})
     private loadingEditable!: boolean;
     @Prop({default: false})

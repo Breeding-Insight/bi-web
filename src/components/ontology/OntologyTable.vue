@@ -91,6 +91,7 @@
             v-bind:validation-handler="validationHandler"
             v-bind:editable-check-loading="false"
             v-bind:editable="true"
+            v-bind:currentTraitEditable="true"
         ></BaseTraitForm>
       </template>
     </NewDataForm>
@@ -154,7 +155,8 @@
             v-bind:entity-options="entityOptions"
             v-bind:attribute-options="attributeOptions"
             v-bind:edit-active="traitSidePanelState.editActive"
-            v-bind:editable="$ability.can('update', 'Trait') && currentTraitEditable"
+            v-bind:editable="$ability.can('update', 'Trait')"
+            v-bind:currentTraitEditable="currentTraitEditable"
             v-bind:loading-editable="loadingTraitEditable"
             v-bind:edit-form-state="traitSidePanelState.dataFormState"
             v-bind:client-validations="traitValidations"
