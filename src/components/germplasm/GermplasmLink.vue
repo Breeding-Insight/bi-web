@@ -16,10 +16,10 @@
   -->
 
 <template>
-    <router-link v-if="this.germplasmUUID" v-bind:to="{name: 'germplasm-details', params: {programId: activeProgram.id, germplasmId: this.germplasmUUID}}">
+    <router-link v-if="this.germplasmUUID && this.germplasmUUID!=''" v-bind:to="{name: 'germplasm-details', params: {programId: activeProgram.id, germplasmId: this.germplasmUUID}}">
       {{ this.germplasmGID }}
     </router-link>
-    <router-link v-else v-bind:to="{name: 'germplasm-details', params: {programId: activeProgram.id, germplasmId: 'gid-'+this.germplasmGID}}">
+    <router-link v-else-if="this.germplasmGID && this.germplasmGID!=''" v-bind:to="{name: 'germplasm-details', params: {programId: activeProgram.id, germplasmId: 'gid-'+this.germplasmGID}}">
       {{ this.germplasmGID }}
     </router-link>
 </template>
@@ -43,7 +43,6 @@ export default class GermplasmLink extends Vue {
   private germplasmUUID!: String;
   @Prop()
   private germplasmGID!: String;
-
 }
 
 </script>
