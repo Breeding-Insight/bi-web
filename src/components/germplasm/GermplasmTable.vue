@@ -155,6 +155,7 @@ export default class GermplasmTable extends Vue {
         this.germplasmSort,
         this.paginationController
     ));
+    this.paginationChanged();
   }
 
   @Watch('paginationController', { deep: true})
