@@ -251,7 +251,6 @@ export default class ProgramUsersTable extends Vue {
   }
 
   mounted() {
-    this.updatePagination();
     this.getRoles();
     this.getSystemUsers();
     this.paginationChanged();

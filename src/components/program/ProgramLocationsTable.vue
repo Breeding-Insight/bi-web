@@ -193,7 +193,6 @@ export default class ProgramLocationsTable extends Vue {
   }
 
   mounted() {
-    this.updatePagination();
     this.paginationChanged();
   }
 

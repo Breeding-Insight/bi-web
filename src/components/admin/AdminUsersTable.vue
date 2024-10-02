@@ -296,7 +296,6 @@ export default class AdminUsersTable extends Vue {
 
   mounted() {
     this.getRoles();
-    this.updatePagination();
     this.paginationChanged();
   }
 
