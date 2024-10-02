@@ -253,8 +253,8 @@ export default class ProgramUsersTable extends Vue {
   mounted() {
     this.updatePagination();
     this.getRoles();
-    this.getUsers();
     this.getSystemUsers();
+    this.paginationChanged();
   }
 
   setSort(field: string, order: string) {
@@ -286,6 +286,7 @@ export default class ProgramUsersTable extends Vue {
   }
 
   getUsers() {
+    this.usersLoading = true;
     ProgramUserService.getAll(this.activeProgram!.id!, this.paginationController.currentCall, this.programUserSort).then(([programUsers, metadata]) => {
       if (this.paginationController.matchesCurrentRequest(metadata.pagination)){
         this.users = programUsers;

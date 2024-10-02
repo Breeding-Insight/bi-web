@@ -297,7 +297,7 @@ export default class AdminUsersTable extends Vue {
   mounted() {
     this.getRoles();
     this.updatePagination();
-    this.getUsers();
+    this.paginationChanged();
   }
 
     setSort(field: string, order: string) {
@@ -344,6 +344,7 @@ export default class AdminUsersTable extends Vue {
   }
 
   getUsers() {
+    this.usersLoading = true;
     UserService.getAll(this.paginationController.currentCall, this.systemUserSort).then(([users, metadata]) => {
       if (this.paginationController.matchesCurrentRequest(metadata.pagination)){
         this.users = users;
