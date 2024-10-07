@@ -48,8 +48,7 @@ export class GermplasmUtils {
 
     static getEntryNumber(germplasm: Germplasm, referenceId: string | undefined): string | undefined {
         if (germplasm.additionalInfo) {
-            return referenceId ? germplasm.additionalInfo.listEntryNumbers[<any>referenceId] :
-                germplasm.additionalInfo.importEntryNumber;
+            return germplasm.additionalInfo.importEntryNumber;
         }
         return "";
     }
