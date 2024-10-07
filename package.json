@@ -1,6 +1,6 @@
 {
   "name": "bi-web",
-  "version": "v0.10.0+744",
+  "version": "v1.1.0+744",
   "private": true,
   "scripts": {
     "build": "node $npm_package_config_task_path/build.js --dev-audit-level=critical --prod-audit-level=none",
