@@ -337,6 +337,7 @@ export default class OntologyTable extends Vue {
   ontologySort!: OntologySort;
 
   mounted() {
+    this.paginationController.pageSize = 200;
     this.getSubscribedOntology();
     this.getObservationLevels();
     this.getAttributesEntitiesDescriptions();
@@ -347,7 +348,7 @@ export default class OntologyTable extends Vue {
         this.paginationController
     ));
     this.registerSidePanelEventHandlers();
-    this.getTraits();
+    this.paginationChanged();
   }
 
   @Watch('paginationController', { deep: true})

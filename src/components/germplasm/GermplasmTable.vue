@@ -156,7 +156,7 @@ export default class GermplasmTable extends Vue {
         this.paginationController
     ));
 
-    this.getGermplasm();
+    this.paginationChanged();
   }
 
   @Watch('paginationController', { deep: true})
@@ -177,6 +177,7 @@ export default class GermplasmTable extends Vue {
 
   @Watch('filters', {deep: true})
   async getGermplasm() {
+    this.germplasmLoading = true;
     try {
       // Only process the most recent call
       const {call, callId} = this.germplasmCallStack.makeCall(this.filters);
