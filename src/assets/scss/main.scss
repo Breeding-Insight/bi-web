@@ -1084,5 +1084,9 @@ label.environment-option-label {
   }
 }
 
+article.message.is-success *:not(button) {
+  color: mix(black, $success, 70%);
+}
+
 
 
