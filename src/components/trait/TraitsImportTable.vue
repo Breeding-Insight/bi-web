@@ -270,7 +270,6 @@ export default class TraitsImportTable extends Vue {
 
   @Watch('importPreviewOntologySort', {deep: true})
   getTraitUpload() {
-    this.loaded = false;
     TraitUploadService.getTraits(this.activeProgram!.id!, this.paginationController.currentCall, this.importPreviewOntologySort).then(([upload, metadata]) => {
       if (this.paginationController.matchesCurrentRequest(metadata.pagination)){
         this.traits = upload.data || [];
