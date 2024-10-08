@@ -154,6 +154,7 @@ export default class ExperimentsObservationsTable extends Vue {
     ));
 
     this.paginationController.pageSize = 20;
+    this.paginationChanged();
   }
 
   @Watch('paginationController', { deep: true})
@@ -174,6 +175,7 @@ export default class ExperimentsObservationsTable extends Vue {
 
   @Watch('filters', {deep: true})
   async getExperiments() {
+    this.experimentsLoading = true;
     try {
       const {call, callId} = this.experimentCallStack.makeCall(this.filters);
 

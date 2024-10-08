@@ -193,8 +193,7 @@ export default class ProgramLocationsTable extends Vue {
   }
 
   mounted() {
-    this.updatePagination();
-    this.getLocations();
+    this.paginationChanged();
   }
 
   setSort(field: string, order: string) {
@@ -222,6 +221,7 @@ export default class ProgramLocationsTable extends Vue {
   }
 
   getLocations() {
+    this.locationsLoading = true;
     ProgramLocationService.getAll(this.activeProgram!.id!, this.paginationController.currentCall, this.locationSort).then(([programLocations, metadata]) => {
       if (this.paginationController.matchesCurrentRequest(metadata.pagination)){
         this.locations = programLocations;
