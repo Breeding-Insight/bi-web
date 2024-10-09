@@ -13,7 +13,32 @@
              v-on:input="toggleActiveState">
       <label for="newTermActiveToggle" class="is-pulled-right">{{trait.active ? 'Active' : 'Archived'}}</label>
     </div>
+  <div class="column is-full">
+    <ProgressBar v-if="editableCheckLoading && $ability.can('update', 'Trait')" v-bind:label="'Checking trait editability status'"
+                 v-bind:estimated-time-text="'May take a few seconds'"
+    />
+  </div>
 
+  <div class="column is-full">
+    <article v-if="!currentTraitEditable && !editableCheckLoading && !fromImportTable && $ability.can('update', 'Trait')" class="message is-primary mb-3">
+      <div class="message-body">
+        <div class="media">
+          <figure class="media-left">
+            <p class="image is-24x24">
+              <help-circle-icon size="1.5x"></help-circle-icon>
+            </p>
+          </figure>
+          <div class="media-content">
+            <div class="has-text-dark">
+              Not editable because this trait has associated experiment data. Only active status can be changed and saved.
+            </div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+  </div>
+  <template v-if="currentTraitEditable">
 <!-- term type -->
   <div class="column is-2">
     <span class="is-pulled-right required new-term pb-2 pr-3">Term Type</span>
@@ -258,11 +283,11 @@
       <div class="column is-full">
         <NumericalTraitForm
             class="p-0"
-            v-bind:unit="trait.scale.scaleName"
+            v-bind:units="trait.scale.units"
             v-bind:decimal-places="trait.scale.decimalPlaces"
             v-bind:valid-min="trait.scale.validValueMin"
             v-bind:valid-max="trait.scale.validValueMax"
-            v-on:unit-change="trait.scale.scaleName = $event"
+            v-on:units-change="trait.scale.units = $event"
             v-on:decimal-change="trait.scale.decimalPlaces = $event"
             v-on:min-change="trait.scale.validValueMin = $event"
             v-on:max-change="trait.scale.validValueMax = $event"
@@ -273,7 +298,7 @@
         />
       </div>
     </template>
-
+    </template>
   </div>
 </template>
 
@@ -300,6 +325,8 @@ import TagField from "@/components/forms/TagField.vue";
 import BaseFieldWrapper from "@/components/forms/BaseFieldWrapper.vue";
 import {TermType} from "@/breeding-insight/model/TraitSelector";
 import {EnumUtils} from "@/breeding-insight/utils/EnumUtils";
+import { HelpCircleIcon } from 'vue-feather-icons';
+import ProgressBar from '@/components/forms/ProgressBar.vue';
 
 @Component({
   components: {
@@ -308,7 +335,15 @@ import {EnumUtils} from "@/breeding-insight/utils/EnumUtils";
     CategoryTraitForm,
     NumericalTraitForm,
     BaseFieldWrapper,
-    DurationTraitForm, DateTraitForm, TextTraitForm, OrdinalTraitForm, BasicSelectField, BasicInputField},
+    DurationTraitForm,
+    DateTraitForm,
+    TextTraitForm,
+    OrdinalTraitForm,
+    BasicSelectField,
+    BasicInputField,
+    HelpCircleIcon,
+    ProgressBar,
+  },
   data: () => ({DataType, MethodClass, TraitError, StringFormatters, Scale}),
   filters: {
     toCSV: function (value: string[] | undefined): string {
@@ -341,6 +376,14 @@ export default class BaseTraitForm extends Vue {
   editFormat!: boolean;
   @Prop()
   tags?: string[];
+  @Prop()
+  editable!: boolean;
+  @Prop()
+  currentTraitEditable!: boolean;
+  @Prop()
+  editableCheckLoading!: boolean;
+  @Prop({default: false})
+  private fromImportTable!: boolean;
 
   private termTypes: TermType[] = Object.values(TermType);
 
@@ -453,7 +496,7 @@ export default class BaseTraitForm extends Vue {
       }
 
       this.trait.scale.dataType = value;
-      this.trait!.scale!.scaleName = value;
+      this.trait!.scale!.units = value;
 
     } else if (Scale.dataTypeEquals(value, DataType.Ordinal) && Scale.dataTypeEquals(this.lastCategoryType, DataType.Nominal)) {
       //Nominal to Ordinal
@@ -471,7 +514,7 @@ export default class BaseTraitForm extends Vue {
         this.restoreMinCategories(2);
       }
       this.trait.scale.dataType = value;
-      this.trait!.scale!.scaleName = value;
+      this.trait!.scale!.units = value;
 
     //Scale history
     } else if (this.scaleHistory[value.toLowerCase()]) {
@@ -479,7 +522,7 @@ export default class BaseTraitForm extends Vue {
       this.trait.scale.dataType = value;
 
       if (!Scale.dataTypeEquals(value, DataType.Numerical)) {
-        this.trait!.scale!.scaleName = value;
+        this.trait!.scale!.units = value;
       }
     } else {
       // No history
@@ -488,9 +531,9 @@ export default class BaseTraitForm extends Vue {
 
       // Allow for units in the numerical and duration traits
       if (Scale.dataTypeEquals(value, DataType.Numerical)) {
-        this.trait!.scale!.scaleName = undefined;
+        this.trait!.scale!.units = undefined;
       } else {
-        this.trait!.scale!.scaleName = value;
+        this.trait!.scale!.units = value;
       }
 
       //Establish minimal categories for ordinal and nominal

@@ -23,6 +23,7 @@
       <button
           class="button is-small is-primary has-text-weight-bold"
           v-bind:id="dropDownId"
+          aria-label="User Status"
       >
         <b-icon icon="user" class="mr-0"></b-icon>
         <b-icon icon="chevron-down" class="ml-0"></b-icon>

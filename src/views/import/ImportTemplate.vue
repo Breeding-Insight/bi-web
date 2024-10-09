@@ -74,13 +74,36 @@
     </WarningModal>
 
     <template v-if="state === ImportState.CHOOSE_FILE || state === ImportState.FILE_CHOSEN">
-      <h1 class="title" v-if="showTitle">{{title}}</h1>
+
       <slot name="importInfoTemplateMessageBox" />
       <div class="box">
         <FileSelectMessageBox v-model="file"
                               v-bind:fileTypes="'.csv, .xls, .xlsx'"
                               v-bind:errors="import_errors"
-                              v-on:import="importService.send(ImportEvent.IMPORT_STARTED)"/>
+                              v-on:import="importService.send(ImportEvent.IMPORT_STARTED)">
+          <slot>
+            <template v-if="workflows && workflows.length > 0">
+              <div class="field">
+                <label class="label">Select workflow</label>
+                <div class="control">
+                  <div class="select mb-5">
+                    <select
+                        v-model="selectedWorkflowId"
+                    >
+                      <option
+                          v-for="workflow in workflows"
+                          :key="workflow.id"
+                          :value="workflow.id"
+                      >
+                        {{ workflow.name }}
+                      </option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </template>
+          </slot>
+        </FileSelectMessageBox>
       </div>
     </template>
 
@@ -91,7 +114,6 @@
 
     <template v-if="state === ImportState.CURATE"> <!-- state === ImportState.LOADING ||-->
       <h1 class="title">{{toTitleCase(confirmMsg)}}</h1>
-
       <slot name="confirmImportMessageBox"
             v-bind:statistics="newObjectCounts"
             v-bind:dynamicColumns="dynamicColumns"
@@ -114,7 +136,30 @@
                               v-bind:fileTypes="'.csv, .xls, .xlsx'"
                               v-bind:errors="import_errors"
                               v-bind:confirm-import-state="confirmImportState"
-                              v-on:import="importService.send(ImportEvent.IMPORT_STARTED)"/>
+                              v-on:import="importService.send(ImportEvent.IMPORT_STARTED)">
+          <slot>
+            <template v-if="workflows && workflows.length > 0">
+              <div class="field">
+                <label class="label">Select workflow</label>
+                <div class="control">
+                  <div class="select mb-5">
+                    <select
+                        v-model="selectedWorkflowId"
+                    >
+                      <option
+                          v-for="workflow in workflows"
+                          :key="workflow.id"
+                          :value="workflow.id"
+                      >
+                        {{ workflow.name }}
+                      </option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </template>
+          </slot>
+        </FileSelectMessageBox>
       </div>
     </template>
 
@@ -122,8 +167,8 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Watch, Vue } from 'vue-property-decorator'
-import { mapGetters } from 'vuex'
+import {Component, Prop, Watch} from 'vue-property-decorator'
+import {mapGetters} from 'vuex'
 
 import ProgramsBase from "@/components/program/ProgramsBase.vue"
 import ImportingMessageBox from "@/components/file-import/ImportingMessageBox.vue";
@@ -132,18 +177,17 @@ import ImportInfoTemplateMessageBox from "@/components/file-import/ImportInfoTem
 import FileSelectMessageBox from "@/components/file-import/FileSelectMessageBox.vue"
 import WarningModal from '@/components/modals/WarningModal.vue'
 import {Program} from '@/breeding-insight/model/Program'
-import { createMachine, interpret } from '@xstate/fsm';
+import {createMachine, interpret} from '@xstate/fsm';
 import {ValidationError} from "@/breeding-insight/model/errors/ValidationError";
 import {ImportMappingConfig} from "@/breeding-insight/model/import/ImportMapping";
 import {ImportService} from "@/breeding-insight/service/ImportService";
 import {ImportResponse} from "@/breeding-insight/model/import/ImportResponse";
-import { titleCase } from "title-case";
+import {titleCase} from "title-case";
 import {DataFormEventBusHandler} from "@/components/forms/DataFormEventBusHandler";
 import {ValidationErrorService} from "@/breeding-insight/service/ValidationErrorService";
-import {
-  DEACTIVATE_ALL_NOTIFICATIONS
-} from "@/store/mutation-types";
-import { PaginationController } from '@/breeding-insight/model/view_models/PaginationController';
+import {DEACTIVATE_ALL_NOTIFICATIONS} from "@/store/mutation-types";
+import {PaginationController} from '@/breeding-insight/model/view_models/PaginationController';
+import {ImportMappingWorkflow} from "@/breeding-insight/model/import/ImportMappingWorkflow";
 
 enum ImportState {
   CHOOSE_FILE = "CHOOSE_FILE",
@@ -194,12 +238,6 @@ enum ImportAction {
 })
 export default class ImportTemplate extends ProgramsBase {
 
-  @Prop()
-  private title!: string;
-
-  @Prop({default: true})
-  private showTitle!: boolean;
-
   @Prop({default: false})
   private showProceedWarning!: boolean;
 
@@ -225,6 +263,8 @@ export default class ImportTemplate extends ProgramsBase {
   initialPageSize!: number;
 
   private systemImportTemplateId!: string;
+  private workflows: ImportMappingWorkflow[] = [];
+  private selectedWorkflowId: string | undefined;
   private currentImport?: ImportResponse = new ImportResponse({});
   private previewImport?: ImportResponse = new ImportResponse({});
   private previewData: any[] = [];
@@ -349,7 +389,17 @@ export default class ImportTemplate extends ProgramsBase {
   private initialState = this.importStateMachine;
   private importService = interpret(this.importStateMachine);
 
-  created() {
+  async created() {
+    // get system mapping and any associated workflows
+    this.systemImportTemplateId = await this.getSystemImportTemplateMapping(this.systemImportTemplateName);
+    this.workflows = await this.getWorkflowsForMapping(this.systemImportTemplateId);
+
+    // set default selected workflow to first in list
+    if (this.workflows.length > 0) {
+      this.selectedWorkflowId = this.workflows[0].id;
+    }
+
+    // start state machine
     this.importService.subscribe(state => {
       this.state = ImportState[state.value as keyof typeof ImportState];
     });
@@ -371,7 +421,7 @@ export default class ImportTemplate extends ProgramsBase {
     //New button submit, clear prior notifications
     this.$store.commit( DEACTIVATE_ALL_NOTIFICATIONS );
     try {
-      await this.getSystemImportTemplateMapping();
+      //await this.getSystemImportTemplateMapping();
       this.import_errors=null;
       await this.uploadData();
       const response: ImportResponse = await this.updateDataUpload(this.currentImport!.importId!, false);
@@ -503,21 +553,37 @@ export default class ImportTemplate extends ProgramsBase {
     this.finish();
   }
 
-  async getSystemImportTemplateMapping() {
+  async getSystemImportTemplateMapping(systemImportTemplateName: string) : Promise<string> {
     let importMappings: ImportMappingConfig[];
     try {
-      importMappings = await ImportService.getSystemMappings(this.systemImportTemplateName);
+      importMappings = await ImportService.getSystemMappings(systemImportTemplateName);
     } catch (e) {
       this.$log.error(e);
       throw 'Unable to load system import mappings';
     }
 
     if (importMappings.length === 1) {
-      this.systemImportTemplateId = importMappings[0].id!;
+      //this.systemImportTemplateId = importMappings[0].id!;
+      return importMappings[0].id!;
     } else {
-      throw 'Expected system import mapping named ' + this.systemImportTemplateName;
+      throw 'Expected system import mapping named ' + systemImportTemplateName;
     }
   }
+
+  async getWorkflowsForMapping(mappingId: string) : Promise<ImportMappingWorkflow[]> {
+    let workflows: ImportMappingWorkflow[];
+
+    try {
+      workflows = await ImportService.getWorkflowsForMapping(mappingId);
+    } catch (e) {
+      this.$log.error(e);
+      throw 'Unable to get workflows';
+    }
+
+    return workflows;
+  }
+
+
 
   async uploadData() {
     try {
@@ -531,7 +597,7 @@ export default class ImportTemplate extends ProgramsBase {
 
   async updateDataUpload(uploadId: string, commit: boolean) {
     let previewResponse: ImportResponse = await ImportService.updateDataUpload(this.activeProgram!.id!,
-        this.systemImportTemplateId, uploadId!, this.userInput, commit);
+        this.systemImportTemplateId, uploadId!, this.selectedWorkflowId, this.userInput, commit);
 
     this.currentImport = previewResponse;
 

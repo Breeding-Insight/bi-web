@@ -7,7 +7,7 @@
         v-on:show-error-notification="$emit('show-error-notification', $event)"
         backend-sorting
         backend-filtering
-        v-bind:default-sort="entryNumberVisible ? [fieldMap['importEntryNumber'], 'ASC'] : [fieldMap['accessionNumber'], 'ASC']"
+        v-bind:default-sort="entryNumberVisible ? [fieldMap['importEntryNumber'], 'ASC'] : [fieldMap['accessionNumber'], 'DESC']"
         v-on:sort="setSort"
         v-on:search="initSearch"
         v-bind:search-debounce="400"
@@ -23,7 +23,7 @@
         >
         </GermplasmLink>
       </b-table-column>
-      <b-table-column field="defaultDisplayName" label="Name" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
+      <b-table-column field="defaultDisplayName" label="Germplasm Name" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
         {{ props.row.data.defaultDisplayName }}
       </b-table-column>
       <b-table-column field="breedingMethod" label="Breeding Method" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
@@ -155,8 +155,7 @@ export default class GermplasmTable extends Vue {
         this.germplasmSort,
         this.paginationController
     ));
-
-    this.getGermplasm();
+    this.paginationChanged();
   }
 
   @Watch('paginationController', { deep: true})
@@ -177,6 +176,9 @@ export default class GermplasmTable extends Vue {
 
   @Watch('filters', {deep: true})
   async getGermplasm() {
+    // Set loading = true so the table shows a loading indicator rather than an "empty" message.
+    this.germplasmLoading = true;
+
     try {
       // Only process the most recent call
       const {call, callId} = this.germplasmCallStack.makeCall(this.filters);

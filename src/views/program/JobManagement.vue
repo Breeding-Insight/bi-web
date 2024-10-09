@@ -40,7 +40,7 @@
     >
       <b-table-column field="data.statuscode" label="Status" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
         <span class="tag" :class="progressTagType(props.row.data.statuscode)">
-          {{ formatProgress(props.row.data.statuscode) }}
+         {{ formatProgress(props.row.data.statuscode) }}
         </span>
       </b-table-column>
       <b-table-column field="data.jobType" label="Type" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">

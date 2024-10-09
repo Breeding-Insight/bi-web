@@ -31,7 +31,7 @@
 
       <template v-slot:importInfoTemplateMessageBox>
         <ImportInfoTemplateMessageBox v-bind:import-type-name="'Germplasm'"
-                                      v-bind:template-url="'https://cornell.box.com/shared/static/raxqv3pbz858jjdb33ymsepbyizt9imd.xls'"
+                                      v-bind:template-url="'https://cornell.box.com/shared/static/nx22mqw2y2q7uod0xt388zq5t04ejai3.xls'"
                                       class="mb-5">
           <strong>Before You Import...</strong>
           <br/>
@@ -109,7 +109,7 @@
           <b-table-column field="gid" label="GID" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
             {{ props.row.data.brAPIObject.accessionNumber }}
           </b-table-column>
-          <b-table-column field="defaultDisplayName" label="Name" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+          <b-table-column field="defaultDisplayName" label="Germplasm Name" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
             {{ props.row.data.brAPIObject.defaultDisplayName }}
           </b-table-column>
           <b-table-column field="breedingMethod" label="Breeding Method" v-slot="props" :th-attrs="(column) => ({scope:'col'})">

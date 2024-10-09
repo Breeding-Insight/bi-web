@@ -20,6 +20,8 @@ import * as api from "@/util/api";
 import {Result, ResultGenerator} from "@/breeding-insight/model/Result";
 import {Trial} from "@/breeding-insight/model/Trial.ts";
 import {DatasetModel} from "@/breeding-insight/model/DatasetModel";
+import {DatasetMetadata} from "@/breeding-insight/model/DatasetMetadata";
+import {Collaborator} from "@/breeding-insight/model/Collaborator";
 
 export class ExperimentDAO {
 
@@ -38,6 +40,89 @@ export class ExperimentDAO {
             return ResultGenerator.err(error);
         }
     }
+
+    static async getUnassignedCollaborators(programId: string, experimentId: string): Promise<Result<Error, Collaborator[]>> {
+        const config: any = {};
+        config.url = `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/experiments/${experimentId}/collaborators?active=false`;
+        config.method = 'get';
+        config.programId = programId;
+        config.experimentId = experimentId;
+        try {
+            const res = await api.call(config) as Response;
+            let { result } = res.data;
+            return ResultGenerator.success(result);
+        } catch (error) {
+            return ResultGenerator.err(error);
+        }
+    }
+
+    static async addCollaborator(programId: string, experimentId: string, userId: string): Promise<Result<Error, Collaborator>> {
+        const config: any = {};
+        config.url = `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/experiments/${experimentId}/collaborators`;
+        config.method = 'post';
+        config.programId = programId;
+        config.experimentId = experimentId;
+        config.data = {userId: userId};
+        try {
+            const res = await api.call(config) as Response;
+            let { result } = res.data;
+            return ResultGenerator.success(result);
+        } catch (error) {
+            return ResultGenerator.err(error);
+        }
+    }
+
+    static async deleteCollaborator(programId: string, experimentId: string, id: string): Promise<Result<Error, boolean>> {
+        const config: any = {};
+        config.url = `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/experiments/${experimentId}/collaborators/${id}`;
+        config.method = 'delete';
+        config.programId = programId;
+        config.experimentId = experimentId;
+        config.responseType = 'text';
+        config.validateStatus = (status: number) => status >= 200 && status < 300;
+        try {
+            const response = await api.call(config);
+            // Check if the status code indicates success
+            if (response.status >= 200 && response.status < 300) {
+                return ResultGenerator.success(true);
+            } else {
+                throw new Error(`Unexpected status code: ${response.status}`);
+            }
+        } catch (error) {
+            return ResultGenerator.err(error);
+        }
+    }
+
+    static async getAssignedCollaborators(programId: string, experimentId: string): Promise<Result<Error, Collaborator[]>> {
+        const config: any = {};
+        config.url = `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/experiments/${experimentId}/collaborators?active=true`;
+        config.method = 'get';
+        config.programId = programId;
+        config.experimentId = experimentId;
+        try {
+            const res = await api.call(config) as Response;
+            let { result } = res.data;
+            return ResultGenerator.success(result);
+        } catch (error) {
+            return ResultGenerator.err(error);
+        }
+    }
+
+    static async getDatasetMetadata(programId: string, experimentId: string): Promise<Result<Error, DatasetMetadata[]>> {
+        const config: any = {};
+        config.url = `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/experiments/${experimentId}/datasets`;
+        config.method = 'get';
+        config.programId = programId;
+        config.experimentId = experimentId;
+        try {
+            const res = await api.call(config) as Response;
+            let { result } = res.data;
+            return ResultGenerator.success(result);
+        } catch (error) {
+            return ResultGenerator.err(error);
+        }
+    }
+
     static async getDatasetById(programId: string, experimentId: string, datasetId: string, stats: boolean): Promise<Result<Error, DatasetModel>> {
         const config: any = {};
         config.url = `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/experiments/${experimentId}/dataset/${datasetId}`;
@@ -57,4 +142,19 @@ export class ExperimentDAO {
         }
     }
 
+    static async createSubEntityDataset(programId: string, experimentId: string, name: string, repeatedMeasures: number): Promise<Result<Error, DatasetModel>> {
+        const config: any = {};
+        config.url = `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/experiments/${experimentId}/dataset`;
+        config.method = 'post';
+        config.programId = programId;
+        config.experimentId = experimentId;
+        config.data = {name: name, repeatedMeasures: repeatedMeasures}  // Corresponds to SubEntityDatasetRequest in bi-api.
+        try {
+            const res = await api.call(config) as Response;
+            let { result } = res.data;
+            return ResultGenerator.success(result);
+        } catch (error) {
+            return ResultGenerator.err(error);
+        }
+    }
 }

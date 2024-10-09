@@ -249,8 +249,7 @@ export default class TraitsImportTable extends Vue {
   private fullNameSortLabel: string = OntologySortField.FullName;
 
   mounted() {
-    this.updatePagination();
-    this.getTraitUpload();
+    this.paginationChanged();
   }
 
   @Watch('paginationController', { deep: true})

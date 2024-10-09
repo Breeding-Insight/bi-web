@@ -89,6 +89,9 @@
             v-bind:tags="tagOptions"
             v-bind:client-validations="validations"
             v-bind:validation-handler="validationHandler"
+            v-bind:editable-check-loading="false"
+            v-bind:editable="true"
+            v-bind:currentTraitEditable="true"
         ></BaseTraitForm>
       </template>
     </NewDataForm>
@@ -152,7 +155,8 @@
             v-bind:entity-options="entityOptions"
             v-bind:attribute-options="attributeOptions"
             v-bind:edit-active="traitSidePanelState.editActive"
-            v-bind:editable="$ability.can('update', 'Trait') && currentTraitEditable"
+            v-bind:editable="$ability.can('update', 'Trait')"
+            v-bind:currentTraitEditable="currentTraitEditable"
             v-bind:loading-editable="loadingTraitEditable"
             v-bind:edit-form-state="traitSidePanelState.dataFormState"
             v-bind:client-validations="traitValidations"
@@ -335,6 +339,7 @@ export default class OntologyTable extends Vue {
   ontologySort!: OntologySort;
 
   mounted() {
+    this.paginationController.pageSize = 200;
     this.getSubscribedOntology();
     this.getObservationLevels();
     this.getAttributesEntitiesDescriptions();
@@ -345,7 +350,7 @@ export default class OntologyTable extends Vue {
         this.paginationController
     ));
     this.registerSidePanelEventHandlers();
-    this.getTraits();
+    this.paginationChanged();
   }
 
   @Watch('paginationController', { deep: true})
@@ -446,8 +451,12 @@ export default class OntologyTable extends Vue {
   async updateTerm() {
     if (this.originalTrait && this.editTrait) {
       try {
-        if (this.originalTrait.active === !this.editTrait.active) this.activateArchive(this.editTrait);
-        else await this.updateTrait();
+        if (this.originalTrait.active === !this.editTrait.active) {
+          this.activateArchive(this.editTrait);
+        } else {
+          // check for editablity done in updatetrait
+          await this.updateTrait();
+        }
       } catch (error) {
         this.$log.error(error);
         this.$emit('show-error-notification', `"${this.editTrait.observationVariableName}" could not be updated`);
@@ -458,6 +467,7 @@ export default class OntologyTable extends Vue {
   async modalDeleteHandler(){
     try {
       const traitClone = JSON.parse(JSON.stringify(this.editTrait));
+
       const updatedTrait: Trait = await TraitService.archiveTrait(this.activeProgram!.id!, traitClone);
 
       // Replace traits in queried traits
@@ -466,7 +476,10 @@ export default class OntologyTable extends Vue {
 
       this.deactivateActive = false;
       this.paginationController.updatePage(1);
+
+      // only update if trait is editable will be handled in updateTrait
       await this.updateTrait(true);
+
     } catch(err) {
       this.$log.error(err);
       if (this.editTrait)
@@ -552,23 +565,33 @@ export default class OntologyTable extends Vue {
       let traitToSave = this.prepareScaleCategoriesForSave(this.editTrait!);
 
       this.editValidationHandler = new ValidationError();
-      const [data] = await TraitService.updateTraits(this.activeProgram!.id!, [traitToSave!]) as [Trait[], Metadata];
+      let eventPayload;
 
-      // Temporary: Only update the given trait.
-      // TODO: Select all traits and find the edited trait within results to keep row open
-      if (data.length > 0){
-        const traitInd = this.traits.findIndex(trait => trait.id === data[0].id);
-        const traitCopy = [...this.traits];
-        if (traitInd >= 0) {
-          traitCopy[traitInd] = {...data[0]} as Trait;
+      if (this.currentTraitEditable) {
+        const [data] = await TraitService.updateTraits(this.activeProgram!.id!, [traitToSave!]) as [Trait[], Metadata];
+
+        // Temporary: Only update the given trait.
+        // TODO: Select all traits and find the edited trait within results to keep row open
+        if (data.length > 0) {
+          const traitInd = this.traits.findIndex(trait => trait.id === data[0].id);
+          const traitCopy = [...this.traits];
+          if (traitInd >= 0) {
+            traitCopy[traitInd] = {...data[0]} as Trait;
+          }
+          this.traits = traitCopy;
+          eventPayload = data[0];
         }
-        this.traits = traitCopy;
+      } else {
+        eventPayload = {...traitToSave} as Trait;
       }
+
       const tagPromise = this.getTraitTags();
-      this.traitSidePanelState.bus.$emit(this.traitSidePanelState.successEditEvent, data[0]);
+      this.traitSidePanelState.bus.$emit(this.traitSidePanelState.successEditEvent, eventPayload);
       let editNote;
       if (this.editTrait) {
-        if (archiveStateChanged) {
+        if (archiveStateChanged && !this.currentTraitEditable) {
+          editNote = `"${this.editTrait.observationVariableName}" successfully ${ this.editTrait.active ? 'restored' : 'archived'}.`;
+        } else if (archiveStateChanged && this.currentTraitEditable) {
           editNote = `"${this.editTrait.observationVariableName}" successfully edited and ${ this.editTrait.active ? 'restored' : 'archived'}.`;
         } else {
           editNote = `"${this.editTrait.observationVariableName}" successfully edited.`;

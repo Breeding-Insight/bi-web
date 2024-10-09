@@ -19,12 +19,13 @@
   <section id="experimentsObservationsTableLabel">
 
     <ExperimentObservationsDownloadModal
-        v-bind:experiment="downloadExperiment"
-        v-bind:modal-title="downloadModalTitle"
-        v-bind:trial-id="downloadTrialId"
-        v-bind:active="downloadModalActive"
-        v-on:show-error-notification ="$emit('show-error-notification', $event)"
-        v-on:deactivate="downloadModalActive = false"
+      v-if="downloadModalActive"
+      v-bind:experiment="downloadExperiment"
+      v-bind:modal-title="downloadModalTitle"
+      v-bind:trial-id="downloadTrialId"
+      v-bind:active="downloadModalActive"
+      v-on:show-error-notification="$emit('show-error-notification', $event)"
+      v-on:deactivate="downloadModalActive = false"
     />
 
     <div class="is-clearfix"></div>
@@ -35,14 +36,14 @@
       v-bind:pagination="paginationController"
       backend-sorting
       backend-filtering
-      v-bind:default-sort="[fieldMap['name'], 'ASC']"
+      v-bind:default-sort="[fieldMap['createdDate'], 'DESC']"
       v-bind:search-debounce="400"
       v-on:show-error-notification="$emit('show-error-notification', $event)"
       v-on:sort="setSort"
       v-on:search="initSearch"
     >
       <b-table-column label="Title" field="name" cell-class="fixed-width-wrapped" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
-        <router-link v-bind:to="{name: 'experiment-details', params: {programId: activeProgram.id, experimentId: BrAPIUtils.getBreedingInsightId(props.row.data.externalReferences,'/trials')}}">
+        <router-link v-bind:to="{name: 'experiment_dataset', params: {datasetId: getDefaultDataset(props.row.data).id, programId: activeProgram.id, experimentId: BrAPIUtils.getBreedingInsightId(props.row.data.externalReferences,'/trials')}}">
           {{ props.row.data.trialName }}
         </router-link>
 
@@ -58,7 +59,7 @@
       </b-table-column>
       <b-table-column label="Datasets" cell-class="fixed-width-wrapped" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
         <template v-for="dataset in props.row.data.additionalInfo.datasets">
-          <span v-bind:key="dataset" class="tag is-info is-normal mr-1">{{ dataset }}</span>
+          <span v-bind:key="dataset.id" class="tag is-info is-normal mr-1">{{ dataset.name }}</span>
         </template>
       </b-table-column>
       <b-table-column field="data.listDbId" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
@@ -95,6 +96,7 @@ import {PaginationController} from "@/breeding-insight/model/view_models/Paginat
 import {UPDATE_EXPERIMENT_SORT} from "@/store/sorting/mutation-types";
 import {BrAPIUtils} from "@/breeding-insight/utils/BrAPIUtils";
 import ExperimentObservationsDownloadModal from "@/components/experiments/ExperimentObservationsDownloadModal.vue";
+import {DatasetMetadata} from "@/breeding-insight/model/DatasetMetadata";
 
 @Component({
   mixins: [validationMixin],
@@ -141,8 +143,8 @@ export default class ExperimentsObservationsTable extends Vue {
 
   private downloadModalActive: boolean = false;
   private downloadExperiment?: Trial = new Trial();
-  private downloadModalTitle?: string = 'undefined';
-  private downloadTrialId?: string = 'undefined';
+  private downloadModalTitle?: string;
+  private downloadTrialId?: string;
 
   mounted() {
     this.experimentCallStack = new CallStack(this.experimentsFetch(
@@ -152,6 +154,7 @@ export default class ExperimentsObservationsTable extends Vue {
     ));
 
     this.paginationController.pageSize = 20;
+    this.paginationChanged();
   }
 
   @Watch('paginationController', { deep: true})
@@ -172,6 +175,7 @@ export default class ExperimentsObservationsTable extends Vue {
 
   @Watch('filters', {deep: true})
   async getExperiments() {
+    this.experimentsLoading = true;
     try {
       const {call, callId} = this.experimentCallStack.makeCall(this.filters);
 
@@ -192,6 +196,17 @@ export default class ExperimentsObservationsTable extends Vue {
     }
   }
 
+  // TODO: move to utilitiy?
+  getDefaultDataset(experiment: Trial): DatasetMetadata | null {
+    // Get default observation level.
+    if (experiment.additionalInfo !== null)
+    {
+      // One and only one top level dataset is always expected, and it will have level = 0.
+      return experiment.additionalInfo.datasets.find((x: DatasetMetadata) => x.level == 0) || null;
+    }
+    return null;
+  }
+
   getStatus(active: boolean){
     if (active) {
       return "active";
@@ -201,10 +216,10 @@ export default class ExperimentsObservationsTable extends Vue {
   }
 
   openDownloadModal(experiment: Trial) {
-    this.downloadModalActive = true;
     this.downloadExperiment = experiment;
     this.downloadModalTitle = "Download " + experiment.trialName;
     this.downloadTrialId = BrAPIUtils.getBreedingInsightId(experiment.externalReferences!, '/trials');
+    this.downloadModalActive = true;
   }
 
   setSort(field: string, order: string) {

@@ -35,6 +35,7 @@
             aria-haspopup="true"
             aria-controls="program-menu"
           >
+
             <span class="icon is-small">
               <span class="is-sr-only">Show Program Menu</span>
               <ChevronDownIcon></ChevronDownIcon>
@@ -51,7 +52,8 @@
             class="dropdown-content"
           >
             <div class="dropdown-item">
-              <input class="input" type="text" placeholder="Program Name" v-on:input="filterPrograms($event)" v-bind:value="programFilterValue">
+              <label class="is-sr-only" for="programName">Program Name</label>
+              <input class="input" type="text" id="programName" placeholder="Program Name" v-on:input="filterPrograms($event)" v-bind:value="programFilterValue">
             </div>
             <hr class="dropdown-divider">
             <div class="programs">
@@ -76,7 +78,7 @@
     <template v-slot:menu>
       <nav role="navigation" aria-label="main navigation">
         <template v-if="activeProgram">
-          <p class="menu-label">
+          <p class="menu-label customize-for-accessibility">
             {{activeProgram.name}}
           </p>
           <ul class="menu-list">
@@ -88,7 +90,9 @@
 <!--            <li>
               <a>Germplasm Inventory</a>
             </li>-->
-            <li>
+            <li
+                v-if="$ability.can('access', 'Germplasm')"
+            >
               <router-link
                   v-bind:to="{name: 'germplasm', params: {programId: activeProgram.id}}"
                   :id="germplasmMenuId"
@@ -96,31 +100,39 @@
                 Germplasm
               </router-link>
             </li>
-            <li>
+            <li
+                v-if="$ability.can('access', 'Experiment')"
+            >
               <router-link
                   v-bind:to="{name: 'experiments-observations', params: {programId: activeProgram.id}}"
               >
                 Experiments & Observations
               </router-link>
             </li>
-            <li>
+            <li
+                v-if="$ability.can('access', 'Ontology')"
+            >
               <router-link
                   v-bind:to="{name: 'ontology', params: {programId: activeProgram.id}}"
                   :id="ontologyMenuId"
+
               >
                 Ontology
               </router-link>
             </li>
-            <li>
+            <li
+                v-if="$ability.can('create', 'Import')"
+            >
               <router-link
                 v-bind:to="{name: 'import'}"
                 :id="importFileMenuId"
-                v-if="$ability.can('create', 'Import')"
               >
                 Import Data
               </router-link>
             </li>
-            <li>
+            <li
+                v-if="$ability.can('access', 'SampleManagement')"
+            >
               <router-link
                   v-bind:to="{name: 'sample-management', params: {programId: activeProgram.id}}"
                   :id="sampleMgmtMenuId"
@@ -136,7 +148,9 @@
               <a>Reports</a>
             </li>
             -->
-            <li>
+            <li
+                v-if="$ability.can('access', 'ProgramAdministration')"
+            >
               <router-link
                 v-bind:to="{name: 'program-administration', params: {programId: activeProgram.id}}"
                 :id="programManagementMenuId"
@@ -144,12 +158,16 @@
                 Program Administration
               </router-link>
             </li>
-            <li>
+            <li
+                v-if="$ability.can('access', 'BrAPI')"
+            >
               <router-link v-bind:to="{name: 'brapi-info', params: {programId: activeProgram.id}}" :id="brAPIMenuId">
                 BrAPI
               </router-link>
             </li>
-            <li>
+            <li
+                v-if="$ability.can('access', 'JobManagement')"
+            >
               <router-link
                   v-bind:to="{name: 'job-management', params: {programId: activeProgram.id}}"
                   :id="jobManagementMenuId"
@@ -163,7 +181,7 @@
           <template v-if="activeProgram">
             <hr style="margin:5px;">
           </template>
-          <p class="menu-label">
+          <p class="menu-label customize-for-accessibility">
             System Administration
           </p>
           <ul class="menu-list">

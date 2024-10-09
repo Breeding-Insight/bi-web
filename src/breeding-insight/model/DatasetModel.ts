@@ -28,7 +28,6 @@ export class DatasetModel {
   additionalInfo?: any;
 
 
-
   constructor(id: string,
               experimentId: string,
               data: Observation[],
