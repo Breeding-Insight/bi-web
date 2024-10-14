@@ -63,6 +63,7 @@ import GermplasmByList from "@/views/germplasm/GermplasmByList.vue";
 import GermplasmLists from "@/views/germplasm/GermplasmLists.vue";
 import BreedingMethods from "@/views/germplasm/BreedingMethods.vue";
 import GermplasmDetails from "@/views/germplasm/GermplasmDetails.vue";
+import GermplasmAdvancedSearch from "@/views/germplasm/GermplasmAdvancedSearch.vue";
 import ProgramConfiguration from "@/views/program/ProgramConfiguration.vue";
 import JobManagement from '@/views/program/JobManagement.vue';
 import GermplasmPedigreesView from "@/components/germplasm/GermplasmPedigreesView.vue";
@@ -286,6 +287,15 @@ const routes = [
           layout: layouts.userSideBar
         },
         component: GermplasmLists
+      },
+      {
+        path: 'germplasm-search',
+        name: 'germplasm-search',
+        meta: {
+          title: 'Germplasm Advanced Search',
+          layout: layouts.userSideBar
+        },
+        component: GermplasmAdvancedSearch
       }
     ]
   },
