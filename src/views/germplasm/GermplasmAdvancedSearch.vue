@@ -16,8 +16,11 @@
 -->
 
 <template>
-  <div class="germplasm">
+  <div id="germplasm-advanced-search">
+    <div v-bind:id="pedigreeWrapId" ref="pedigreeWrap"></div>
 
+    <div id="filter_div"></div>
+    <table id="filtered_results"></table>
   </div>
 </template>
 
@@ -30,6 +33,11 @@ import {Program} from '@/breeding-insight/model/Program';
 import GermplasmDownloadButton from '@/components/germplasm/GermplasmDownloadButton.vue';
 import BrAPI from '@solgenomics/brapijs';
 import GraphicalFilter from '@solgenomics/brapi-graphical-filtering';
+import * as d3 from 'd3';
+import 'datatables.net';
+import 'datatables.net-dt/css/dataTables.dataTables.min.css';
+import $ from 'jquery';
+import pedigreeTree from "@solgenomics/d3-pedigree-tree";
 
 
 @Component({
@@ -43,11 +51,20 @@ import GraphicalFilter from '@solgenomics/brapi-graphical-filtering';
 export default class GermplasmAdvancedSearch extends GermplasmBase {
 
   private activeProgram?: Program;
+  private pedigreeWrapId: String = 'pedigree-wrap';
 
-  mounted() {
-    this.drawGraphicalFilter();
+  $refs!: {
+    pedigreeWrap: HTMLElement
   }
 
+  mounted() {
+    window.d3 = Object.assign(
+        d3
+    );
+    window.$ = $;
+
+    this.drawGraphicalFilter();
+  }
 
   drawGraphicalFilter() {
     /**
@@ -60,19 +77,21 @@ export default class GermplasmAdvancedSearch extends GermplasmBase {
      * @param   {String} credentials Optional. credentials option to use for fetch API.  See: https://developer.mozilla.org/en-US/docs/Web/API/Request/credentials
      * @returns {EmptyBrAPINode}
      */
+
+    /*
     let gf = GraphicalFilter(
         // BrAPI search of observationUnits to be displayed
         BrAPI(`${process.env.VUE_APP_BI_API_V1_PATH}/programs/${this.activeProgram!.id}/brapi/v2`,
             undefined,
             undefined,
             undefined,
-            'include').search_observations(),
+            'include').observations(),
         // Accessor describing traits for each observationUnit (returns object)
         function (d) {
+          console.log('TEST');
+          console.log(d);
           var traits = {}
-          d.observations.forEach(function (obs) {
-            traits[obs.observationVariableName] = obs.value;
-          });
+          traits[d.observationVariableName] = d.value;
           return traits;
         },
         // Accessor describing extra columns to display in the table (returns object)
@@ -90,6 +109,51 @@ export default class GermplasmAdvancedSearch extends GermplasmBase {
     );
 
     gf.draw("#filter_div","#filtered_results");
+
+     */
+    const brapiClient = BrAPI(
+        `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${this.activeProgram.id}/brapi/v2`,
+        undefined,
+        undefined,
+        undefined,
+        'include'
+    );
+
+    const params = {
+      "includeObservations": true
+    };
+
+    // Get brapi_node
+    const brapiNode = brapiClient.observationunits(params);
+
+    // Create GraphicalFilter without changing its code
+    let gf = GraphicalFilter(
+        brapiNode,
+        // Accessor describing traits for each observationUnit (returns object)
+        function(d) {
+          var traits = {}
+          d.observations.forEach(function(obs){
+            traits[obs.observationVariableName] = obs.value;
+          });
+          return traits;
+        },
+        // Accessor describing extra columns to display in the table (returns object)
+        function(d) {
+          return {
+            'Accession':d.germplasmName
+          }
+        },
+        // Order to display the above columns in (array)
+        ["Accession"],
+        // key to group observationUnits by in the table (key value or undefined for no grouping)
+        function(d) { // groupBy function
+          return d.germplasmDbId
+        }
+    );
+
+    // Draw the filter
+    gf.draw("#filter_div", "#filtered_results");
+
 
   }
 
