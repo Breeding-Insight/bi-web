@@ -46,6 +46,9 @@ import 'datatables.net';
 import 'datatables.net-dt/css/dataTables.dataTables.min.css';
 import '@solgenomics/brapi-graphical-filtering/css/GraphicalFilter.css';
 import $ from 'jquery';
+import 'bootstrap';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import '@popperjs/core';
 import pedigreeTree from "@solgenomics/d3-pedigree-tree";
 
 
@@ -140,12 +143,12 @@ export default class GermplasmAdvancedSearch extends GermplasmBase {
         brapiNode,
         // Accessor describing traits for each observationUnit (returns object)
         function(d) {
-          console.log(d);
+          //console.log(d);
           var traits = {}
           d.observations.forEach(function(obs){
             traits[obs.observationVariableName] = obs.value;
           });
-          console.log(traits);
+          //console.log(traits);
           return traits;
         },
         // Accessor describing extra columns to display in the table (returns object)

@@ -19,6 +19,7 @@
   "dependencies": {
     "@casl/ability": "~4.0.0",
     "@casl/vue": "^1.1.1",
+    "@popperjs/core": "^2.11.8",
     "@solgenomics/brapi-graphical-filtering": "github:Breeding-Insight/BrAPI-Graphical-Filtering#master",
     "@solgenomics/brapi-pedigree-viewer": "git+https://github.com/Breeding-Insight/BrAPI-Pedigree-Viewer#v2.0.3",
     "@solgenomics/brapijs": "git+https://github.com/Breeding-Insight/BrAPI-js#feature/BI-1936",
@@ -28,6 +29,7 @@
     "@types/valid-url": "^1.0.3",
     "@types/vuelidate": "^0.7.10",
     "@xstate/fsm": "^1.4.0",
+    "bootstrap": "^5.3.3",
     "core-js": "^3.4.3",
     "d3": "^4.11.0",
     "datatables.net-dt": "^2.1.8",
