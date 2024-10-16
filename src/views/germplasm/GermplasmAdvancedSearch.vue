@@ -17,10 +17,18 @@
 
 <template>
   <div id="germplasm-advanced-search">
-    <div v-bind:id="pedigreeWrapId" ref="pedigreeWrap"></div>
+    <div style="width:1000px;padding:1em;position:relative;">
+      <div id="filter_div" style="margin:1em"></div>
+      <div style="width:100%;overflow-x:scroll;">
+        <table id="filtered_results"></table>
+      </div>
+    </div>
 
+    <!--
     <div id="filter_div"></div>
     <table id="filtered_results"></table>
+    -->
+
   </div>
 </template>
 
@@ -36,6 +44,7 @@ import GraphicalFilter from '@solgenomics/brapi-graphical-filtering';
 import * as d3 from 'd3';
 import 'datatables.net';
 import 'datatables.net-dt/css/dataTables.dataTables.min.css';
+import '@solgenomics/brapi-graphical-filtering/css/GraphicalFilter.css';
 import $ from 'jquery';
 import pedigreeTree from "@solgenomics/d3-pedigree-tree";
 
@@ -131,10 +140,12 @@ export default class GermplasmAdvancedSearch extends GermplasmBase {
         brapiNode,
         // Accessor describing traits for each observationUnit (returns object)
         function(d) {
+          console.log(d);
           var traits = {}
           d.observations.forEach(function(obs){
             traits[obs.observationVariableName] = obs.value;
           });
+          console.log(traits);
           return traits;
         },
         // Accessor describing extra columns to display in the table (returns object)
@@ -153,6 +164,7 @@ export default class GermplasmAdvancedSearch extends GermplasmBase {
 
     // Draw the filter
     gf.draw("#filter_div", "#filtered_results");
+
 
 
   }
