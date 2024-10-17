@@ -38,6 +38,13 @@
           >
             <a>Lists</a>
           </router-link>
+          <router-link
+              v-bind:to="{name: 'germplasm-search', params: {programId: activeProgram.id}}"
+              tag="li"
+              active-class="is-active"
+          >
+            <a>Advanced Search</a>
+          </router-link>
             <ActionMenu
                 class = "is-pulled-right has-text-weight-bold above-tabs-button"
                 v-bind:is-primary="true"
