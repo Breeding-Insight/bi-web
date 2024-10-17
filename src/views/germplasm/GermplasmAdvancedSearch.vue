@@ -154,14 +154,17 @@ export default class GermplasmAdvancedSearch extends GermplasmBase {
         // Accessor describing extra columns to display in the table (returns object)
         function(d) {
           return {
-            'Accession':d.germplasmName
+            'Accession':d.germplasmName,
+            'GID':d.additionalInfo.gid,
+            'Experiment':d.trialName,
+            'Environment':d.studyName
           }
         },
         // Order to display the above columns in (array)
-        ["Accession"],
+        ["Accession", "GID", "Experiment", "Environment"],
         // key to group observationUnits by in the table (key value or undefined for no grouping)
         function(d) { // groupBy function
-          return d.germplasmDbId
+          return d.observationUnitDbId
         }
     );
 
