@@ -17,12 +17,12 @@
 
 <template>
   <div id="germplasm-advanced-search">
-    <div style="width:1000px;padding:1em;position:relative;">
-      <div id="filter_div" style="margin:1em"></div>
+    <!--<div style="width:1000px;padding:1em;position:relative;">-->
+      <div id="filter_div"></div>
       <div style="width:100%;overflow-x:scroll;">
         <table id="filtered_results"></table>
       </div>
-    </div>
+    <!--</div>-->
 
     <!--
     <div id="filter_div"></div>
