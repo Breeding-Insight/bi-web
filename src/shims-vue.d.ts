@@ -87,3 +87,4 @@ declare module 'flat';
 declare module '@solgenomics/brapi-pedigree-viewer';
 declare module '@solgenomics/brapijs';
 declare module '@solgenomics/d3-pedigree-tree';
+declare module '@solgenomics/brapi-graphical-filtering'
