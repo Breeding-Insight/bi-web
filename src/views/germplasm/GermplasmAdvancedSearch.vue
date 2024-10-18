@@ -17,18 +17,10 @@
 
 <template>
   <div id="germplasm-advanced-search">
-    <!--<div style="width:1000px;padding:1em;position:relative;">-->
       <div id="filter_div"></div>
       <div style="width:100%;overflow-x:scroll;">
         <table id="filtered_results"></table>
       </div>
-    <!--</div>-->
-
-    <!--
-    <div id="filter_div"></div>
-    <table id="filtered_results"></table>
-    -->
-
   </div>
 </template>
 
@@ -49,8 +41,6 @@ import $ from 'jquery';
 import 'bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '@popperjs/core';
-import pedigreeTree from "@solgenomics/d3-pedigree-tree";
-
 
 @Component({
   components: {GermplasmTable, GermplasmDownloadButton},
@@ -63,11 +53,6 @@ import pedigreeTree from "@solgenomics/d3-pedigree-tree";
 export default class GermplasmAdvancedSearch extends GermplasmBase {
 
   private activeProgram?: Program;
-  private pedigreeWrapId: String = 'pedigree-wrap';
-
-  $refs!: {
-    pedigreeWrap: HTMLElement
-  }
 
   mounted() {
     window.d3 = Object.assign(
@@ -89,40 +74,6 @@ export default class GermplasmAdvancedSearch extends GermplasmBase {
      * @param   {String} credentials Optional. credentials option to use for fetch API.  See: https://developer.mozilla.org/en-US/docs/Web/API/Request/credentials
      * @returns {EmptyBrAPINode}
      */
-
-    /*
-    let gf = GraphicalFilter(
-        // BrAPI search of observationUnits to be displayed
-        BrAPI(`${process.env.VUE_APP_BI_API_V1_PATH}/programs/${this.activeProgram!.id}/brapi/v2`,
-            undefined,
-            undefined,
-            undefined,
-            'include').observations(),
-        // Accessor describing traits for each observationUnit (returns object)
-        function (d) {
-          console.log('TEST');
-          console.log(d);
-          var traits = {}
-          traits[d.observationVariableName] = d.value;
-          return traits;
-        },
-        // Accessor describing extra columns to display in the table (returns object)
-        function (d) {
-          return {
-            'Accession': d.germplasmName
-          }
-        },
-        // Order to display the above columns in (array)
-        ["Accession"],
-        // key to group observationUnits by in the table (key value or undefined for no grouping)
-        function (d) { // groupBy function
-          return d.germplasmDbId
-        }
-    );
-
-    gf.draw("#filter_div","#filtered_results");
-
-     */
     const brapiClient = BrAPI(
         `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${this.activeProgram.id}/brapi/v2`,
         undefined,
@@ -143,35 +94,35 @@ export default class GermplasmAdvancedSearch extends GermplasmBase {
         brapiNode,
         // Accessor describing traits for each observationUnit (returns object)
         function(d) {
-          //console.log(d);
+          console.log(d);
           var traits = {}
           d.observations.forEach(function(obs){
             traits[obs.observationVariableName] = obs.value;
           });
-          //console.log(traits);
+          console.log(traits);
           return traits;
         },
         // Accessor describing extra columns to display in the table (returns object)
         function(d) {
           return {
-            'Accession':d.germplasmName,
             'GID':d.additionalInfo.gid,
+            'Germplasm Name':d.germplasmName,
             'Experiment':d.trialName,
-            'Environment':d.studyName
+            'Environment':d.studyName,
+            'Exp Unit ID':d.observationUnitName
           }
         },
         // Order to display the above columns in (array)
-        ["Accession", "GID", "Experiment", "Environment"],
+        ["GID", "Germplasm Name", "Experiment", "Environment", "Exp Unit ID"],
         // key to group observationUnits by in the table (key value or undefined for no grouping)
-        function(d) { // groupBy function
-          return d.observationUnitDbId
-        }
+        undefined
+        //function(d) { // groupBy function
+        //  return d.observationUnitDbId
+        //}
     );
 
     // Draw the filter
     gf.draw("#filter_div", "#filtered_results");
-
-
 
   }
 
