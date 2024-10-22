@@ -311,9 +311,8 @@ export default class AdminProgramsTable extends Vue {
   }
 
   mounted() {
-    this.updatePagination();
-    this.getPrograms();
     this.getSpecies();
+    this.paginationChanged();
   }
 
   setSort(field: string, order: string) {
@@ -333,7 +332,7 @@ export default class AdminProgramsTable extends Vue {
 
   @Watch('paginationController', { deep: true})
   paginationChanged() {
-    let currentCall = this.paginationController.currentCall
+    let currentCall = this.paginationController.currentCall;
     let paginationQuery = this.paginationController.getPaginationSelections();
     if(currentCall && currentCall!.page == paginationQuery.page && currentCall!.pageSize == paginationQuery.pageSize && currentCall!.showAll == paginationQuery.showAll) {
       return;
@@ -348,6 +347,7 @@ export default class AdminProgramsTable extends Vue {
   }
 
   getPrograms() {
+    this.programsLoading = true;
     ProgramService.getAll(this.paginationController.currentCall, this.programSort).then(([programs, metadata]) => {
 
       // Check that our most recent query is this one
