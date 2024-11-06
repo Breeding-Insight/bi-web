@@ -621,6 +621,7 @@ export default class SubmissionDetails extends ProgramsBase {
         throw response.value;
       }
       await this.getSubmission(false);
+      await this.getSubmissionDetails();
     } catch (e) {
       this.$emit('show-error-notification', 'Error while trying to update status');
     } finally {
