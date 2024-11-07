@@ -579,6 +579,7 @@ export default class SubmissionDetails extends ProgramsBase {
       // let orderResponse = response.value;
       // this.submission!.vendorOrderId = orderResponse.orderId;
       await this.getSubmission(false);
+      await this.getSubmissionDetails();
     } catch (e) {
       // this.$emit('show-error-notification', 'Error while trying to submit sample order');
       this.submissionError = e;
@@ -595,6 +596,7 @@ export default class SubmissionDetails extends ProgramsBase {
         throw response.value;
       }
       await this.getSubmission(false);
+      await this.getSubmissionDetails();
     } catch (e) {
       this.$emit('show-error-notification', 'Error while trying to check order status');
     } finally {
