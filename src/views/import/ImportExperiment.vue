@@ -72,7 +72,17 @@
             <br>Germplasm: {{ statistics.GIDs.newObjectCount }}
             <br>Environment(s): {{ statistics.Environments.newObjectCount }}
             <br>Observation Variables: {{ dynamicColumns.length }}
-            <br>Observations: {{ statistics.Observations.newObjectCount }}
+
+            <span v-if="isExisting(rows)" >
+              <br>New Observations: {{ statistics.Observations.newObjectCount }}
+              <br>Existing Observations: {{ statistics.Existing_Observations.newObjectCount }}
+              <br>Overwritten Observations: {{ statistics.Mutated_Observations.newObjectCount }}
+            </span>
+            <span v-else>
+              <br>Observations: {{ statistics.Observations.newObjectCount }}
+            </span>
+
+
           </div>
           </div>
         </ConfirmImportMessageBox>
