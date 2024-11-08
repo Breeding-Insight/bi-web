@@ -496,7 +496,6 @@ export default class BaseTraitForm extends Vue {
       }
 
       this.trait.scale.dataType = value;
-      this.trait!.scale!.units = value;
 
     } else if (Scale.dataTypeEquals(value, DataType.Ordinal) && Scale.dataTypeEquals(this.lastCategoryType, DataType.Nominal)) {
       //Nominal to Ordinal
@@ -514,27 +513,16 @@ export default class BaseTraitForm extends Vue {
         this.restoreMinCategories(2);
       }
       this.trait.scale.dataType = value;
-      this.trait!.scale!.units = value;
 
     //Scale history
     } else if (this.scaleHistory[value.toLowerCase()]) {
       this.trait.scale = this.scaleHistory[value.toLowerCase()];
       this.trait.scale.dataType = value;
 
-      if (!Scale.dataTypeEquals(value, DataType.Numerical)) {
-        this.trait!.scale!.units = value;
-      }
     } else {
       // No history
       this.trait.scale = new Scale();
       this.trait.scale.dataType = value;
-
-      // Allow for units in the numerical and duration traits
-      if (Scale.dataTypeEquals(value, DataType.Numerical)) {
-        this.trait!.scale!.units = undefined;
-      } else {
-        this.trait!.scale!.units = value;
-      }
 
       //Establish minimal categories for ordinal and nominal
       if (Scale.dataTypeEquals(value, DataType.Nominal) || Scale.dataTypeEquals(value, DataType.Ordinal)) {
