@@ -77,8 +77,8 @@ export const defaultStore = new Vuex.Store({
 });
 
 const fakeUser: User = new User('1', 'Test User','1', 'email@email.com',
-  new Role('1', 'admin'),
-  [new ProgramUser('1', 'Test User', 'email@email.com', '1', 'breeder', fakeProgram, true)]);
+  new Role('1', 'System Administrator'),
+  [new ProgramUser('1', 'Test User', 'email@email.com', '1', 'Program Administrator', fakeProgram, true)]);
 localVue.use(abilitiesPlugin, defineAbilityFor(fakeUser, fakeProgram));
 
 export default localVue;

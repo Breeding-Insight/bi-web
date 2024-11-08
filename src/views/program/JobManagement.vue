@@ -40,7 +40,7 @@
     >
       <b-table-column field="data.statuscode" label="Status" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
         <span class="tag" :class="progressTagType(props.row.data.statuscode)">
-          {{ formatProgress(props.row.data.statuscode) }}
+         {{ formatProgress(props.row.data.statuscode) }}
         </span>
       </b-table-column>
       <b-table-column field="data.jobType" label="Type" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
@@ -54,9 +54,6 @@
       </b-table-column>
       <b-table-column field="data.updatedAt" label="Last Updated" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
         {{ formatDate(props.row.data.updatedAt) }}
-      </b-table-column>
-      <b-table-column field="data.statusMessage" label="Status Message" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" :width="50">
-        <span class="truncated">{{ props.row.data.statusMessage }}</span>
       </b-table-column>
 
       <template v-slot:detail="{row}">

@@ -74,7 +74,7 @@
         </a>
       </b-table-column>
 
-      <template v-slot:empty v-if="this.loading !== true">
+      <template v-slot:empty v-if="!loading">
         <slot name="emptyMessage" />
       </template>
 

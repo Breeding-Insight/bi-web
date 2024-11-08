@@ -69,24 +69,24 @@ function setup() {
   roleDAO.getAll.mockResolvedValue(rolesResponse);
 
   const systemUser = {'id':'1', 'name':'Test user', 'email':'testuser@test.com', 'active':'true',
-    'systemRoles': [{'id':'1', 'domain':'admin'}],
-    'programRoles': [{'active':'true', 'program':{'id':'1', 'name':'Test Program'}, 'roles':{'id':'1','domain':'member'}}]};
+    'systemRoles': [{'id':'1', 'domain':'System Administrator'}],
+    'programRoles': [{'active':'true', 'program':{'id':'1', 'name':'Test Program'}, 'roles':{'id':'1','domain':'Read Only'}}]};
   const systemUser1 = {
     'id':'2', 'name':'Test user 2', 'email':'testuser1@test.com', 'active':'true', 'orcid': '123',
-    'systemRoles': [{'id':'1', 'domain':'admin'}],
-    'programRoles': [{'active':'true', 'program':{'id':'1', 'name':'Test Program'}, 'roles':{'id':'1','domain':'member'}}]
+    'systemRoles': [{'id':'1', 'domain':'System Administrator'}],
+    'programRoles': [{'active':'true', 'program':{'id':'1', 'name':'Test Program'}, 'roles':{'id':'1','domain':'Read Only'}}]
   };
   const systemUser2 = {
     'id':'2', 'name':'Test user 2', 'email':'testuse2@test.com', 'active':'true', 'orcid': '456',
-    'systemRoles': [{'id':'1', 'domain':'admin'}],
-    'programRoles': [{'active':'true', 'program':{'id':'1', 'name':'Test Program'}, 'roles':{'id':'1','domain':'member'}}]
+    'systemRoles': [{'id':'1', 'domain':'System Administrator'}],
+    'programRoles': [{'active':'true', 'program':{'id':'1', 'name':'Test Program'}, 'roles':{'id':'1','domain':'Read Only'}}]
   }
   systemUsers.push(systemUser, systemUser1, systemUser2);
   users.forEach(user => {
     systemUsers.push({
       'id':user.id, 'name':user.name, 'email':user.email, 'active':'true', 'orcid': `456-${user.id}`,
-      'systemRoles': [{'id':'1', 'domain':'admin'}],
-      'programRoles': [{'active':'true', 'program':{'id':'1', 'name':'Test Program'}, 'roles':{'id':'1','domain':'member'}}]
+      'systemRoles': [{'id':'1', 'domain':'System Administrator'}],
+      'programRoles': [{'active':'true', 'program':{'id':'1', 'name':'Test Program'}, 'roles':{'id':'1','domain':'Read Only'}}]
     })
   })
   const systemUsersResponse = DaoUtils.formatBiResponse(systemUsers);

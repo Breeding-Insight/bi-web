@@ -27,14 +27,17 @@
 // Override Bulma default colors
 $red: #E20057;
 $yellow: #FFCC21;
-$green: #2AB14E;
+$green: #1d7b36;
 $blue: #1B64DD;
 
 // Custom colors
 $purple: #763FCE;
 $magenta: #9c27b0;
 $applegreen: #C1ED2F;
+$lt-turquoise: #65c2c4;
 $turquoise: #3FB3B6;
+$dark-turquoise: #297577;
+$very-dark-turquoise: #1b4c4e;
 $darkmenu: #4a4a4a; // $grey-dark, can't specify here because variables not loaded
 $link-light: #edf3fd; // variables not loaded
 $pending: $applegreen;
@@ -64,7 +67,7 @@ $footer-padding: 1rem 2.5rem;
 $level-item-spacing: 2rem;
 
 $tabs-boxed-link-radius: 1px;
-$tabs-link-active-color: $turquoise;
+$tabs-link-active-color: $dark-turquoise;
 $tabs-boxed-link-hover-border-bottom-color: $turquoise;
 $tabs-border-bottom-color: $turquoise;
 $tabs-boxed-link-active-border-color: $turquoise;
@@ -84,6 +87,8 @@ $table-striped-row-even-hover-background-color:$link-light;
 $medium-modal-content-width: $modal-content-width * 1.4;
 $medium-modal-body-padding: 0 3em 2em 3em;
 
+$large-modal-content-width: $modal-content-width * 1.8;
+
 //$margin-right: 2 rem;
 
 // Import buefy before bulma
@@ -91,6 +96,12 @@ $medium-modal-body-padding: 0 3em 2em 3em;
 
 // Customize buefy if you want to here
 
+//see https://alfa.siteimprove.com/rules/sia-r72
+.menu-label.customize-for-accessibility {
+  text-transform: none;
+  font-size: 0.8em;
+  letter-spacing: 2px;
+}
 
 // Update some of Bulma's component variables
 
@@ -107,6 +118,11 @@ $divider-margin-inner-size: 0;
 
 // Overrides that can't be done with variables go here
 // may be broken out into a separate file later
+
+// bold anchors to improve accessibility.
+a.customize-for-accessibility {
+  font-weight: bold;
+}
 
 main {
   /*
@@ -149,7 +165,8 @@ nav.pagination {
     flex-grow: 0;
     flex-shrink: 0;
     & li a.is-current {
-      background-color: $info;
+      background-color: $lt-turquoise;
+      color: $very-dark-turquoise;
       border: none;
     }
   }
@@ -898,10 +915,51 @@ tr:nth-child(odd) td.db-filled {
   }
 }
 
-.experiment-observations-download-button {
+.collaborators-section {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+
+.collaborators-label {
+  margin-right: 10px;
+  padding-top: 0;
+}
+
+.collaborators-list {
+  list-style-type: none;
+  padding-left: 0;
+  margin: 0;
+  flex: 1;
+}
+
+.collaborator-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.collaborator-info {
+  flex: 1;
+  margin-right: 10px;
+}
+
+.sub-entity-dataset-modal, .experiment-observations-download-button, .experiment-observation-add-collaborator-button, .experiment-observation-remove-collaborator-button {
   .modal {
     .modal-card {
       width: $medium-modal-content-width;
+      .modal-card-body {
+        padding: $medium-modal-body-padding;
+      }
+    }
+  }
+}
+
+.sub-entity-dataset-modal {
+  .modal {
+    .modal-card {
+      width: $large-modal-content-width;
       .modal-card-body {
         padding: $medium-modal-body-padding;
       }
@@ -972,7 +1030,9 @@ tr:nth-child(odd) td.db-filled {
     white-space: -pre-wrap;
     white-space: -o-pre-wrap;
   }
-
+  .message-body.high-contrast{
+    color: $dark-turquoise;
+  }
   .field-book-info {
     .columns {
       margin-bottom: 0;
@@ -1022,6 +1082,10 @@ label.environment-option-label {
     background-color: rgba(0,0,0,.17);
     color: $black;
   }
+}
+
+article.message.is-success *:not(button) {
+  color: mix(black, $success, 70%);
 }
 
 
