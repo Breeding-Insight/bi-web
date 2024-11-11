@@ -387,7 +387,9 @@ export default class Dataset extends ProgramsBase {
 
   filterByObservations(index: number, propsRow: any, input: string) {
     let obsValue = propsRow.data.traitValues[index];
-    obsValue = obsValue ? obsValue : "";  //convert null or undefined to an empty string
+    //Make case insensitive
+    obsValue = obsValue ? obsValue.toUpperCase() : "";  //convert null or undefined to an empty string;
+    input = input.toUpperCase();
     return obsValue.includes(input);
   }
 
