@@ -34,7 +34,7 @@ export class ListService {
         }
         try {
             const response = await api.call({
-                url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/deltalists/${listDbId}`,
+                url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/brapi/v2/lists/${listDbId}`,
                 method: 'delete',
                 params: { hardDelete: true }
             }) as Response;
@@ -84,7 +84,7 @@ export class ListService {
         // Make the GET call
         try {
             const { data }: any = await api.call({
-                url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/deltalists`,
+                url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/brapi/v2/lists`,
                 method: 'get',
                 params: params
             });
@@ -142,7 +142,7 @@ export class ListService {
 
             //Get the list germplasm
             const { data }: any = await api.call({
-                url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/deltalists/${listId}`,
+                url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/brapi/v2/lists/${listId}`,
                 method: 'get',
                 params: params
             }) as Response;

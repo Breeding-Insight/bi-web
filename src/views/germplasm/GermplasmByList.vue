@@ -160,7 +160,7 @@ export default class GermplasmByList extends GermplasmBase {
   private list: any = {};
   private referenceId?: string = '';
   private actions: ActionMenuItem[] = [
-    new ActionMenuItem('germplasm-list-delete', 'delete-list', 'Delete', this.$ability.can('create', 'Import')),
+    new ActionMenuItem('germplasm-list-delete', 'delete-list', 'Delete', this.$ability.can('delete', 'List')),
     new ActionMenuItem('germplasm-list-download-file', 'download-file', 'Download',  true)
   ];
 
@@ -230,7 +230,7 @@ export default class GermplasmByList extends GermplasmBase {
 
   private downloadList(): boolean {
     if (this.activeProgram) {
-      window.open(process.env.VUE_APP_BI_API_ROOT + '/v1/programs/' + this.activeProgram.id + '/deltalists/' + this.listDbId + '/export?fileExtension=' + this.fileExtension, '_blank');
+      window.open(process.env.VUE_APP_BI_API_ROOT + '/v1/programs/' + this.activeProgram.id + '/brapi/v2/lists/' + this.listDbId + '/export?fileExtension=' + this.fileExtension, '_blank');
       return true;
     }
     return false;
