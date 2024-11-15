@@ -94,7 +94,7 @@ import {
 } from "@/breeding-insight/model/Sort";
 import {UPDATE_GERMPLASM_SORT} from "@/store/sorting/mutation-types";
 import { PaginationQuery } from '@/breeding-insight/model/PaginationQuery';
-import {GermplasmFilter} from "@/breeding-insight/model/GermplasmFilter";
+import {GermplasmFilter} from "@/breeding-insight/model/ListFilter";
 
 @Component({
   mixins: [validationMixin],

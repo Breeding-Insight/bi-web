@@ -27,33 +27,33 @@
 </template>
 
 <script lang="ts">
-import { Component } from 'vue-property-decorator'
+import {Component} from 'vue-property-decorator'
 import ProgramsBase from "@/components/program/ProgramsBase.vue";
 import GermplasmListsTable from "@/components/germplasm/GermplasmListsTable.vue";
 import {GermplasmListSort, GermplasmListSortField} from "@/breeding-insight/model/Sort";
 import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
 import {BiResponse} from "@/breeding-insight/model/BiResponse";
-import {BrAPIService, BrAPIType} from "@/breeding-insight/service/BrAPIService";
 import {ListType} from "@/util/ListType";
+import {ListService} from "@/breeding-insight/service/ListService";
+
 @Component({
   components: {
     GermplasmListsTable
   }
 })
 export default class GermplasmLists extends ProgramsBase {
-
-  private germplasmListFetch: (programId: string, sort: GermplasmListSort, paginationController: PaginationController) => ((filters: any) => Promise<BiResponse>) =
-      function (programId: string, sort: GermplasmListSort, paginationController: PaginationController) {
-        return function (filters: any) {
-          filters.listType=ListType.Germplasm;
-          return BrAPIService.get<GermplasmListSortField>(
-              BrAPIType.LIST,
-              programId,
-              sort,
-              { pageSize: paginationController.pageSize, page: paginationController.currentPage - 1 },
-              filters)
-        };
-      };
+  private germplasmListFetch = (
+      programId: string,
+      sort: GermplasmListSort,
+      { pageSize, currentPage }: PaginationController
+  ) => (filters: any): Promise<BiResponse> =>
+      ListService.getLists<GermplasmListSortField>(
+          ListType.GERMPLASM,
+          programId,
+          sort,
+          { pageSize, page: currentPage - 1 },
+          filters
+      );
 }
 
 </script>

@@ -18,14 +18,17 @@
 import {GermplasmSortField} from "@/breeding-insight/model/Sort";
 import {BaseFilter} from "@/breeding-insight/model/BaseFilter";
 
-export enum GermplasmBIField {
+export enum ListBIField {
     ListDbId = "listDbId",
     ListName = "listName",
 }
 
-export class GermplasmFilter extends BaseFilter {
-    [GermplasmBIField.ListDbId]: string;
-    [GermplasmBIField.ListName]: string;
+export class ListFilter extends BaseFilter {
+    [ListBIField.ListDbId]: string;
+    [ListBIField.ListName]: string;
+}
+
+export class GermplasmFilter extends ListFilter {
     [GermplasmSortField.AccessionNumber]: string;
     [GermplasmSortField.DefaultDisplayName]: string;
     [GermplasmSortField.BreedingMethod]: string;
