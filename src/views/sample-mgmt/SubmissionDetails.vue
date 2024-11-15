@@ -154,7 +154,8 @@
               {{ props.row.data.additionalInfo.germplasmName || props.row.data.sampleName }}
             </b-table-column>
             <b-table-column field="data.additionalInfo.gid" label="GID" v-slot="props" searchable
-                            :th-attrs="(column) => ({scope:'col'})">
+                            :th-attrs="(column) => ({scope:'col'})"
+                            :custom-search="(props, filterString) => exactSearchGID(props, filterString)">
               <GermplasmLink
                   v-bind:germplasmGID="props.row.data.additionalInfo.gid"
               />
@@ -706,6 +707,12 @@ export default class SubmissionDetails extends ProgramsBase {
     } else {
       return b.data.plateName.localeCompare(a.data.plateName, undefined, {numeric: true, sensitivity: 'base'});
     }
+  }
+
+  //Filter GIDs by exact match
+  exactSearchGID(props: any, input: string) {
+    let value = props.data.additionalInfo.gid;
+    return Number(value) === (Number(input));
   }
 }
 </script>
