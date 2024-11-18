@@ -35,7 +35,7 @@ export class GermplasmService {
                          { listDbId, listName, ...brapiFilters  }: GermplasmFilter):
         Promise<BiResponse> {
         //Form the query params including sorting, pagination, and filtering
-        let params: any = { ...brapiFilters };
+        let params: any = {list: listDbId, ...brapiFilters };
 
         if (sort.field) {
             params['sortField'] = sort.field;
@@ -69,7 +69,7 @@ export class GermplasmService {
 
             //Get the list germplasm
             const {data}: any = await api.call({
-                url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/germplasm/lists/${listId}/records`,
+                url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/brapi/v2/germplasm`,
                 method: 'get',
                 params: params
             }) as Response;

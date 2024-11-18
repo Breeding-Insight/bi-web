@@ -141,6 +141,7 @@ import FormModal from "@/components/modals/FormModal.vue";
 import {ListService} from '@/breeding-insight/service/ListService';
 import {ListType} from "@/util/ListType";
 import {GermplasmFilter} from "@/breeding-insight/model/ListFilter";
+import {GermplasmService} from "@/breeding-insight/service/GermplasmService";
 
 @Component({
   components: { FormModal, GermplasmTable, GermplasmDownloadButton, GermplasmListDeletionModal, ActionMenu },
@@ -189,8 +190,7 @@ export default class GermplasmByList extends GermplasmBase {
       sort: GermplasmSort,
       { pageSize, currentPage }: PaginationController
   ) => (filters: any): Promise<BiResponse> =>
-      ListService.getAllInList<GermplasmSortField, GermplasmFilter>(
-          ListType.GERMPLASM,
+      GermplasmService.getAllInList<GermplasmSortField>(
           programId,
           sort,
           { pageSize, page: currentPage - 1 },

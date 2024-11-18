@@ -123,8 +123,6 @@ export class ListService {
 
             if(listName && !listDbId) {
                 //Get the list db id
-                const paginationQuery = new PaginationQuery(0, 20, true);
-                //const {result: {data: lists}} = await GermplasmDAO.getAllLists(programId, paginationQuery);
                 const {result: {data: lists}} = await ListService.getLists<GermplasmListSortField>(
                     ListType.GERMPLASM,
                     programId,
