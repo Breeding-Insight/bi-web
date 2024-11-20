@@ -15,17 +15,10 @@
  * limitations under the License.
  */
 
-import {GermplasmList} from "@/breeding-insight/model/GermplasmList";
-import {BiResponse, Metadata} from "@/breeding-insight/model/BiResponse";
-import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
-import {PaginationUtilities} from "@/breeding-insight/model/view_models/PaginationUtilities";
-import {GermplasmDAO} from "@/breeding-insight/dao/GermplasmDAO";
-import {Germplasm} from "@/breeding-insight/brapi/model/germplasm";
-import {Result, ResultGenerator} from "@/breeding-insight/model/Result";
-import {GermplasmListSortField, SortOrder} from "@/breeding-insight/model/Sort";
+import {BiResponse} from "@/breeding-insight/model/BiResponse";
+import {SortOrder} from "@/breeding-insight/model/Sort";
 import * as api from "@/util/api";
 import {ListType} from "@/util/ListType";
-import {ListFilter} from "@/breeding-insight/model/ListFilter";
 
 export class ListService {
     static async deleteList(programId: string | undefined, listDbId: string) {
@@ -95,61 +88,4 @@ export class ListService {
             throw error;
         }
     }
-
-    static async getAllInList<T, U extends ListFilter>(
-        listType: ListType,
-        programId: string,
-        sort: { field: T, order: SortOrder },
-        pagination: { pageSize: number, page: number },
-        { listDbId, listName, ...brapiFilters  }: U): Promise<BiResponse> {
-        // Form the query params including list type, sorting, pagination, and filtering
-        let params: any = { listType, ...brapiFilters };
-
-        if (sort.field) {
-            params['sortField'] = sort.field;
-        }
-        if (sort.order) {
-            params['sortOrder'] = sort.order;
-        }
-        if (pagination.page || pagination.page == 0) { //have to account for 0-index pagination since 0 falsy
-            params['page'] = pagination.page;
-        }
-        if (pagination.pageSize) {
-            params['pageSize'] = pagination.pageSize;
-        }
-
-        try {
-            let listId: String = '';
-
-            if(listName && !listDbId) {
-                //Get the list db id
-                const {result: {data: lists}} = await ListService.getLists<GermplasmListSortField>(
-                    ListType.GERMPLASM,
-                    programId,
-                    { field: GermplasmListSortField.Name, order: SortOrder.Descending },
-                    new PaginationQuery(0, 200, true));
-                const matchingLists = lists.filter((list: any) => list.listName === listName);
-                if (matchingLists.length === 0) throw Error("List name is not valid for this program");
-                if (matchingLists.length > 1) throw Error("List name must be unique");
-                listId = matchingLists[0].listDbId;
-            } else if(listDbId) {
-                listId = listDbId;
-            } else {
-                throw Error("Missing list id and name");
-            }
-
-            //Get the list germplasm
-            const { data }: any = await api.call({
-                url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/brapi/v2/lists/${listId}`,
-                method: 'get',
-                params: params
-            }) as Response;
-
-            return new BiResponse(data);
-
-        } catch(error) {
-            throw error;
-        }
-    }
-
 }
