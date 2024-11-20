@@ -230,7 +230,7 @@ export default class GermplasmByList extends GermplasmBase {
 
   private downloadList(): boolean {
     if (this.activeProgram) {
-      window.open(process.env.VUE_APP_BI_API_ROOT + '/v1/programs/' + this.activeProgram.id + '/brapi/v2/lists/' + this.listDbId + '/export?fileExtension=' + this.fileExtension, '_blank');
+      window.open(process.env.VUE_APP_BI_API_ROOT + '/v1/programs/' + this.activeProgram.id + '/germplasm/export?fileExtension=' + this.fileExtension + '&list=' + this.listDbId, '_blank');
       return true;
     }
     return false;
