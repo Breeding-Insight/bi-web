@@ -99,6 +99,7 @@
             sortable
             searchable
             :th-attrs="() => ({scope:'col'})"
+            :custom-search="(props, filterString) => exactSearchGID(props, filterString)"
         >
           {{ props.row.data.gid }}
         </b-table-column>
@@ -403,6 +404,12 @@ export default class Dataset extends ProgramsBase {
     } else {
       return second.localeCompare(first);
     }
+  }
+
+  //Filter GIDs by exact match
+  exactSearchGID(props: any, input: string) {
+    let value = props.data.gid;
+    return Number(value) === (Number(input));
   }
 
   //sort GIDs numerically
