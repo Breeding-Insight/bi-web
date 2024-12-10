@@ -1,4 +1,4 @@
-import { GermplasmFilter } from "@/breeding-insight/model/GermplasmFilter";
+import { GermplasmFilter } from "@/breeding-insight/model/ListFilter";
 
 export interface FilterState {
     // germplasm table
