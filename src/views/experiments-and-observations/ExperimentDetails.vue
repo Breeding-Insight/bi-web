@@ -213,6 +213,7 @@ export default class ExperimentDetails extends ProgramsBase {
   private removeCollaboratorActive: boolean = false;
   private selectedForRemoval?: Collaborator = new Collaborator();
   private datasetMetadata: DatasetMetadata[] = [];
+  private hasObsUnits: boolean = false;
   private collaborators: Collaborator[] = [];
 
   private actions: ActionMenuItem[] = [
@@ -360,6 +361,7 @@ async getAssignedCollaborators(): Promise<void> {
       if (response.isErr()) {
         throw response.value;
       }
+      console.info(".....Setting datsetMetadata");
       this.datasetMetadata = response.value;
     } catch (err) {
       // Display error that experiment cannot be loaded
@@ -367,5 +369,54 @@ async getAssignedCollaborators(): Promise<void> {
       throw err;
     }
   }
+
+  @Watch( 'datasetMetadata')
+  //TODO could this be an anonymous function?
+  async getHasObservationUnits():  Promise<void> {
+    console.info("()()()()(()dataset watch");
+    for (const dsm of this.datasetMetadata) {
+      let datasetId = dsm.id;
+      // console.info(datasetId);
+      try {
+        const response: Result<Error, DatasetModel> = await ExperimentService.getDatasetModel(this.activeProgram!.id!, this.experimentUUID, datasetId);
+        if (response.isErr()) {
+          throw response.value;
+        }
+        let dataset = response.value;
+        console.info("././././/./././../././.");
+        if(dataset && dataset.data && dataset.data.length>0){
+          this.hasObsUnits = true;
+          console.info("You got it");
+          break;
+        }
+      } catch (err) {
+        // Display error that dataset cannot be loaded
+        this.$emit('show-error-notification', 'Error while trying to load dataset');
+        throw err;
+      }
+    }
+  }
+
+  // async fetchDataSet(): Promise<Result<Error, DatasetModel>> {
+  //   try {
+  //     const response: Result<Error, DatasetModel> = await ExperimentService.getDatasetModel(this.activeProgram!.id!, this.experimentUUID, datasetId);
+  //     if (response.isErr()) {
+  //       throw response.value;
+  //     }
+  //     // let dataset = response.value;
+  //     // console.info(dataset);
+  //   } catch (err) {
+  //     // Display error that dataset cannot be loaded
+  //     this.$emit('show-error-notification', 'Error while trying to load dataset');
+  //     throw err;
+  //   }
+  //   return response.value;
+  // }
+
+
+
+  // async hasObservationUnits(): Promise<boolean> {
+  //
+  // }
 }
 </script>

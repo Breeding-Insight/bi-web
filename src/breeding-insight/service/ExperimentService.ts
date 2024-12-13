@@ -101,10 +101,11 @@ export class ExperimentService {
         return await ExperimentDAO.deleteCollaborator(programId, experimentId, id);
     }
 
-    static async observationUnitCount(programId: string | undefined, experimentId: string, id: string): Promise<Result<Error, number>> {
-        if (!programId) {
-            return ResultGenerator.err(new Error('Missing or invalid program id'));
-        }
-        return await ExperimentDAO.deleteCollaborator(programId, experimentId, id);
-    }
+    // static async hasObservationUnit(programId: string | undefined, experimentId: string, id: string): Promise<Result<Error, boolean>> {
+    //     if (!programId) {
+    //         return ResultGenerator.err(new Error('Missing or invalid program id'));
+    //     }
+    //     const response: Result<Error, DatasetMetadata[]> =
+    //     return await ExperimentDAO.deleteCollaborator(programId, experimentId, id);
+    // }
 }
