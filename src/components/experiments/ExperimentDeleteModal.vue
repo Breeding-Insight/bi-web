@@ -16,137 +16,19 @@
 -->
 
 <template>
-  <DownloadModal
+  <DeleteModal
     v-bind:unique-id="trialId"
     v-bind:modal-title="modalTitle"
-    v-bind:download="downloadList"
+    v-bind:deleteAction ="deleteaAction"
     v-bind:active="active && loadingStudyOptionsComplete && loadingDatasetOptionsComplete"
     modal-class="experiment-observations-download-button"
     v-on:deactivate="resetExportOptions"
   >
     <template #form>
-      <div class="columns mb-4">
-        <!-- Dataset Select -->
-        <div class="column control">
-          <div class="field">
-            <label
-              class="label"
-              v-bind:for="`dataset-select-${trialId}`"
-            ><span>Dataset</span></label>
-            <div class="control">
-              <div class="select">
-                <select
-                  v-bind:id="`dataset-select-${trialId}`"
-                  v-model="fileOptions.datasetId"
-                >
-                  <option
-                    v-for="option in datasetOptions"
-                    v-bind:key="option.id"
-                    v-bind:value="option.id"
-                  >
-                    {{ option.name }}
-                  </option>
-                </select>
-              </div>
-            </div>
-          </div>
-        </div>
-        <!-- Environments Multi-select -->
-        <div class="column control">
-          <fieldset>
-            <legend class="label required">
-              <span class="required">Environment(s)!</span>
-            </legend>
-            <div class="control">
-              <label
-                class="checkbox environment-option-label"
-              >
-                <input
-                  v-model="fileOptions.allEnvironments"
-                  type="checkbox"
-                  value="all"
-                >
-                All Environments
-              </label>
-            </div>
-            <div
-              v-for="option in environmentOptions"
-              v-bind:key="option.id"
-              class="control"
-            >
-              <label class="checkbox environment-option-label">
-                <input
-                  v-model="fileOptions.environments"
-                  type="checkbox"
-                  v-bind:value="option.id"
-                  v-bind:disabled="fileOptions.allEnvironments"
-                >
-                {{ option.name }}
-              </label>
-            </div>
-          </fieldset>
-          <span
-            class="form-error has-text-danger"
-            :class="{ 'is-invisible': ( !showEnvironmentsValidationError ) }"
-          >
-            <AlertTriangleIcon
-              size="1x"
-              aria-hidden="true"
-              class="has-vertical-align-middle mr-1"
-            />
-            Missing Environment(s)
-          </span>
-        </div>
-        <!-- Timestamps Switch -->
-        <div class="column control">
-          <fieldset>
-            <legend class="label">
-              <span>With{{ '\xa0' }}Timestamps?</span>
-            </legend>
-            <div class="field">
-              <input
-                v-bind:id="`timestamps-switch-${trialId}`"
-                v-model="fileOptions.includeTimestamps"
-                type="checkbox"
-                true-value="Yes"
-                false-value="No"
-                name="timestamps-switch"
-                class="switch is-info is-rounded"
-              >
-              <label
-                v-bind:id="`timestamps-label-${trialId}`"
-                v-bind:for="`timestamps-switch-${trialId}`"
-              >{{ fileOptions.includeTimestamps }}</label>
-            </div>
-          </fieldset>
-        </div>
-        <!-- File Format Radio -->
-        <div class="column control">
-          <fieldset>
-            <legend class="label">
-              <span>File{{ '\xa0' }}Format</span>
-            </legend>
-            <div
-              v-for="option in fileExtensionOptions"
-              v-bind:key="option.id"
-            >
-              <label
-                class="radio"
-              >
-                <input
-                  v-model="fileOptions.fileExtension"
-                  type="radio"
-                  v-bind:value="option.id"
-                >
-                {{ option.name }}
-              </label>
-            </div>
-          </fieldset>
-        </div>
-      </div>
+      <p>{{obsCount}} observations will be deleted. All records will be lost. Are you sure you want to delete the experimental data?</p>
     </template>
     <slot />
-  </DownloadModal>
+  </DeleteModal>
 </template>
 
 
@@ -164,20 +46,20 @@ import {Study} from "@/breeding-insight/model/Study";
 import {StudyService} from "@/breeding-insight/service/StudyService";
 import {Result} from "@/breeding-insight/model/Result";
 import {BrAPIUtils} from "@/breeding-insight/utils/BrAPIUtils";
-import DownloadModal from "@/components/modals/DownloadModal.vue";
+import DeleteModal from "@/components/modals/DeleteModal.vue";
 import {DatasetMetadata} from "@/breeding-insight/model/DatasetMetadata";
 import {ExperimentService} from "@/breeding-insight/service/ExperimentService";
 
 @Component({
   mixins: [validationMixin],
-  components: {DownloadModal, AlertTriangleIcon},
+  components: {DeleteModal, AlertTriangleIcon},
   computed: {
     ...mapGetters([
       'activeProgram'
     ])
   }
 })
-export default class ExperimentObservationsDownloadModal extends Vue {
+export default class ExperimentDeleteModal extends Vue {
 
   @Prop()
   active!: boolean;
@@ -188,34 +70,41 @@ export default class ExperimentObservationsDownloadModal extends Vue {
   @Prop()
   modalTitle?: string;
   @Prop()
-  defaultDatasetId?: string;
+  defaultDatasetId?: string; // TODO do I need this?
 
   private activeProgram?: Program;
   private fileOptions: ExperimentExportOptions = new ExperimentExportOptions();
-  private showEnvironmentsValidationError: boolean = false;
+  private obsCount: number = 5;
+  //private showEnvironmentsValidationError: boolean = false;
   private fileExtensionOptions: object[] = Object.values(FileTypeOption);
   private datasetOptions: DatasetMetadata[] = [];
   private environmentOptions: object[] = [];
   private loadingStudyOptionsComplete: boolean = false;
   private loadingDatasetOptionsComplete: boolean = false;
 
+  //TODO remove?
   @Watch('experiment', {immediate: true})
   onExperimentChanged() {
     // Reset loading flags.
+    console.info("......hi Delete Modal........");
     this.loadingStudyOptionsComplete = false;
     this.loadingDatasetOptionsComplete = false;
-    this.getStudyOptions();
+    this.getObsservationUnitCount();
     this.getDatasetOptions();
   }
 
-  async getStudyOptions() {
+  async getObsservationUnitCount() {
     // Fetch all environments (studies) for this experiment.
     try {
+      // console.info("..............");
+      // console.info(this.experiment);
       const response: Result<Error, [Study[], Metadata]> = await StudyService.getAll(this.activeProgram!.id!, this.experiment);
       if(response.isErr()) throw response.value;
       let [studies, metadata] = response.value;
       // Set environment options.
       this.environmentOptions = studies.map((s) => ({id: BrAPIUtils.getBreedingInsightId(s.externalReferences!, '/studies'), name: s.name}));
+      // console.info(":<><><><><><><>><>");
+      // console.info(this.environmentOptions);
       this.loadingStudyOptionsComplete = true;
     } catch (error) {
       // Display error that studies cannot be loaded
@@ -231,7 +120,8 @@ export default class ExperimentObservationsDownloadModal extends Vue {
         throw response.value;
       }
       this.datasetOptions = response.value;
-
+      console.info("########");
+      console.info(this.datasetOptions);
       this.setDefaultDatasetOption();
 
       this.loadingDatasetOptionsComplete = true;
@@ -251,28 +141,28 @@ export default class ExperimentObservationsDownloadModal extends Vue {
     }
   }
 
-  downloadList(): boolean {
-    // Validate selected options.
-    if (this.validateOptions()) {
-      // Open download URL in a new tab.
-      if (this.activeProgram) {
-        window.open(process.env.VUE_APP_BI_API_ROOT
-            + '/v1/programs/'
-            + this.activeProgram.id
-            + '/experiments/'
-            + this.trialId
-            + '/export?fileExtension='
-            + this.fileOptions.fileExtension
-            + '&datasetId='
-            + this.fileOptions.datasetId
-            + (this.fileOptions.allEnvironments ? '' : ('&environments=' + this.fileOptions.environments))
-            + '&includeTimestamps='
-            + this.fileOptions.timestampsTrueFalseString(),
-            '_blank');
+  async deleteaAction(): Promise<void> {
+    if (this.activeProgram) {
+      try {
+        // Call the service method and await its completion
+        //TODO add deleteExperiment to ExperimentService
+        await ExperimentService.removeCollaboratorFromExperiment(
+            this.activeProgram.id,
+            this.trialId,
+            this.collaborator.collaboratorId
+        );
+
+        // If the above call doesn't throw an error, we assume it was successful
+        // Emit the event after the promise is resolved
+        this.$emit('remove-collaborator');
+
+      } catch (error) {
+        // Handle any errors that might occur during the async operation
+        console.error('Error removing collaborator:', error);
+        // Optionally emit an error event or handle the error in some way
+        this.$emit('show-error-notification', `Error while trying to remove a collaborator`);
       }
-      return true;
     }
-    return false;
   }
 
   resetExportOptions(){
@@ -283,17 +173,20 @@ export default class ExperimentObservationsDownloadModal extends Vue {
     // Make sure default dataset option is selected.
     this.setDefaultDatasetOption();
     // Reset validation state.
-    this.showEnvironmentsValidationError = false;
+    // this.showEnvironmentsValidationError = false;
   }
 
   validateOptions(): boolean {
     // Either "All environments" or one or more specific environments must be selected.
     if (this.fileOptions.environments.length === 0 && !this.fileOptions.allEnvironments){
       this.$emit('show-error-notification', 'One or more environments must be selected.');
-      this.showEnvironmentsValidationError = true;
+       // this.showEnvironmentsValidationError = true;
       return false;
     }
     return true;
+  }
+  mounted() {
+    this.obsCount = 77;
   }
 }
 </script>

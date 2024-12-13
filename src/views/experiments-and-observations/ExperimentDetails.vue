@@ -33,6 +33,15 @@
         v-on:deactivate="downloadModalActive = false"
     />
 
+    <ExperimentDeleteModal
+        v-bind:experiment="experiment"
+        v-bind:modal-title="`Delete ${experiment.trialName}`"
+        v-bind:trial-id="experimentUUID"
+        v-bind:active="deleteModalActive"
+        v-on:show-error-notification="$emit('show-error-notification', $event)"
+        v-on:deactivate="deleteModalActive = false"
+    />
+
     <SubEntityDatasetModal
         v-bind:experiment="experiment"
         v-bind:default-observation-level="experimentObservationUnit"
@@ -120,6 +129,7 @@
                       v-on:download-file="downloadFile()"
                       v-on:create-sub-entity-dataset="openSubEntityModal()"
                       v-on:add-collaborator="addCollaborator()"
+                      v-on:delete-experiment="deleteExperiment()"
           />
         </article>
       </div>
@@ -164,6 +174,7 @@ import ProgramsBase from "@/components/program/ProgramsBase.vue";
 import ActionMenu from "@/components/layouts/menus/ActionMenu.vue";
 import {ActionMenuItem} from "@/breeding-insight/model/ActionMenuItem";
 import ExperimentObservationsDownloadModal from "@/components/experiments/ExperimentObservationsDownloadModal.vue";
+import ExperimentDeleteModal from "@/components/experiments/ExperimentDeleteModal.vue";
 import SubEntityDatasetModal from "@/components/modals/SubEntityDatasetModal.vue";
 import {DatasetMetadata} from "@/breeding-insight/model/DatasetMetadata";
 import {SubEntityDatasetNewRequest} from "@/breeding-insight/model/SubEntityDatasetNewRequest";
@@ -176,6 +187,7 @@ import ExperimentCollaboratorRemovalModal from "@/components/experiments/Experim
     SubEntityDatasetModal,
     PlusCircleIcon,
     ExperimentObservationsDownloadModal,
+    ExperimentDeleteModal,
     ExperimentAddCollaboratorModal,
     ExperimentCollaboratorRemovalModal,
     ActionMenu
@@ -195,6 +207,8 @@ export default class ExperimentDetails extends ProgramsBase {
   private experimentLoading: boolean = true;
   private addCollaboratorActive: boolean = false;
   private downloadModalActive: boolean = false;
+  private deleteModalActive: boolean = false;
+  private obsCount
   private subEntityModalActive: boolean = false;
   private removeCollaboratorActive: boolean = false;
   private selectedForRemoval?: Collaborator = new Collaborator();
@@ -206,6 +220,7 @@ export default class ExperimentDetails extends ProgramsBase {
       new ActionMenuItem('experiment-download-file', 'download-file', 'Download file'),
       new ActionMenuItem('experiment-add-collaborator', 'add-collaborator', 'Add Collaborator',  this.$ability.can('manage', 'Collaborator')),
       new ActionMenuItem('experiment-create-sub-entity-dataset', 'create-sub-entity-dataset', 'Create Sub-Entity Dataset')
+      new ActionMenuItem('experiment-delete', 'delete-experiment', 'Delete experiment', this.$ability.can('delete', 'Experiment'))
   ];
 
   mounted () {
@@ -224,6 +239,10 @@ export default class ExperimentDetails extends ProgramsBase {
 
   private downloadFile() {
     this.downloadModalActive = true;
+  }
+
+  private deleteExperiment() {
+    this.deleteModalActive = true;
   }
 
   private addCollaborator() {
@@ -300,6 +319,8 @@ export default class ExperimentDetails extends ProgramsBase {
 
   @Watch('$route')
   async getExperiment () {
+    console.info(".....route.....");
+    console.info(this.$route);
     this.experimentLoading = true;
     try {
       const response: Result<Error, Trial> = await ExperimentService.getSingleExperiment(this.activeProgram!.id!, this.experimentUUID, true);

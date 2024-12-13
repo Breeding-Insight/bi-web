@@ -108,6 +108,27 @@ export class ExperimentDAO {
         }
     }
 
+    static async observationUnitCount(programId: string, experimentId: string, id: string): Promise<Result<Error, number>> {
+        const config: any = {};
+        config.url = `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/experiments/${experimentId}/collaborators/${id}`;
+        config.method = 'get';
+        config.programId = programId;
+        config.experimentId = experimentId;
+        config.responseType = 'text';
+        // config.validateStatus = (status: number) => status >= 200 && status < 300;
+        try {
+            const response = await api.call(config);
+            // Check if the status code indicates success
+            if (response.status >= 200 && response.status < 300) {
+                return ResultGenerator.success(true);
+            } else {
+                throw new Error(`Unexpected status code: ${response.status}`);
+            }
+        } catch (error) {
+            return ResultGenerator.err(error);
+        }
+    }
+
     static async getDatasetMetadata(programId: string, experimentId: string): Promise<Result<Error, DatasetMetadata[]>> {
         const config: any = {};
         config.url = `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/experiments/${experimentId}/datasets`;
