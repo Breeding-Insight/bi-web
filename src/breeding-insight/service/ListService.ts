@@ -57,8 +57,9 @@ export class ListService {
 
         // Set list type, sort, and pagination
         let params: any = { listType };
+
         if(filters) {
-            params = filters;
+            params = { listType, ...filters };
         }
 
         if (sort.field) {

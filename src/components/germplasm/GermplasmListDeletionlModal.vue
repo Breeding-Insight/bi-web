@@ -21,7 +21,7 @@
     v-bind:modal-title="modalTitle"
     v-bind:confirmedAction="deleteList"
     v-bind:active="active"
-    modal-class="experiment-observation-remove-collaborator-button"
+    modal-class="germplasm-list-deletion-button"
     v-on:deactivate="cancelDelete"
   >
     <template #form>
@@ -52,7 +52,7 @@ import { ListService } from '@/breeding-insight/service/ListService';
     ])
   }
 })
-export default class ExperimentCollaboratorRemovalModal extends Vue {
+export default class GermplasmListDeletionlModal extends Vue {
 
   @Prop()
   active!: boolean;
