@@ -30,9 +30,9 @@ export class DatasetModel {
 
   constructor(id: string,
               experimentId: string,
-              data: Observation[],
-              observationUnits: ObservationUnit[],
-              observationVariables: ObservationVariable[],
+              data?: Observation[],
+              observationUnits?: ObservationUnit[],
+              observationVariables?: ObservationVariable[],
               additionalInfo?: any
   ) {
     this.id = id;

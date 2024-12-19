@@ -195,7 +195,7 @@ export class ExperimentDAO {
             let { result } = res.data;
             return ResultGenerator.success(result);
         } catch (error) {
-            console.info("....error..");
+            console.info("....error..");ß
             return ResultGenerator.err(error);
         }
     }

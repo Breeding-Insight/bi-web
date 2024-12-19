@@ -38,6 +38,7 @@
         v-bind:modal-title="`Delete ${experiment.trialName}`"
         v-bind:trial-id="experimentUUID"
         v-bind:active="deleteModalActive"
+        v-bind:obs-count="fetchObsCount()"
         v-on:show-error-notification="$emit('show-error-notification', $event)"
         v-on:deactivate="deleteModalActive = false"
     />
@@ -208,12 +209,13 @@ export default class ExperimentDetails extends ProgramsBase {
   private addCollaboratorActive: boolean = false;
   private downloadModalActive: boolean = false;
   private deleteModalActive: boolean = false;
-  private obsCount
+  // private obsCount
   private subEntityModalActive: boolean = false;
   private removeCollaboratorActive: boolean = false;
   private selectedForRemoval?: Collaborator = new Collaborator();
   private datasetMetadata: DatasetMetadata[] = [];
   private hasObsUnits: boolean = false;
+  private dataset: DatasetModel = new DatasetModel("", "");
   private collaborators: Collaborator[] = [];
 
   private actions: ActionMenuItem[] = [
@@ -222,9 +224,10 @@ export default class ExperimentDetails extends ProgramsBase {
       new ActionMenuItem('experiment-add-collaborator', 'add-collaborator', 'Add Collaborator',  this.$ability.can('manage', 'Collaborator')),
       new ActionMenuItem('experiment-create-sub-entity-dataset', 'create-sub-entity-dataset', 'Create Sub-Entity Dataset')
       new ActionMenuItem('experiment-delete', 'delete-experiment', 'Delete experiment', this.$ability.can('delete', 'Experiment'))
+
   ];
 
-  mounted () {
+  mounted() {
     this.getExperiment();
     this.getDatasetMetadata();
   }
@@ -250,7 +253,7 @@ export default class ExperimentDetails extends ProgramsBase {
     this.addCollaboratorActive = true;
   }
 
-  private removeCollaborator(collaborator:Collaborator) {
+  private removeCollaborator(collaborator: Collaborator) {
     this.selectedForRemoval = collaborator;
     this.removeCollaboratorActive = true;
   }
@@ -278,27 +281,45 @@ export default class ExperimentDetails extends ProgramsBase {
   get experimentUUID(): string {
     return this.$route.params.experimentId;
   }
+
   get userName(): string {
-    if( !this.experiment.additionalInfo ){return '';}
-    if( !this.experiment.additionalInfo.createdBy){return '';}
+    if (!this.experiment.additionalInfo) {
+      return '';
+    }
+    if (!this.experiment.additionalInfo.createdBy) {
+      return '';
+    }
     return this.experiment.additionalInfo.createdBy.userName;
   }
+
   get experimentalUnit(): string {
-    if( !this.experiment.additionalInfo ){return '';}
+    if (!this.experiment.additionalInfo) {
+      return '';
+    }
     return this.experiment.additionalInfo.defaultObservationLevel;
   }
+
   get experimentType(): string {
-    if( !this.experiment.additionalInfo ){return '';}
+    if (!this.experiment.additionalInfo) {
+      return '';
+    }
     return this.experiment.additionalInfo.experimentType;
   }
+
   get createdDate(): string {
-    if( !this.experiment.additionalInfo ){return '';}
+    if (!this.experiment.additionalInfo) {
+      return '';
+    }
     return this.experiment.additionalInfo.createdDate;
   }
+
   get germplasmCount(): string {
-    if( !this.experiment.additionalInfo ){return '';}
+    if (!this.experiment.additionalInfo) {
+      return '';
+    }
     return this.experiment.additionalInfo.germplasmCount;
   }
+
   // This is not being used.  But may be used later.
   // get environmentsCount(): string {
   //   if( !this.experiment.additionalInfo ){return '';}
@@ -319,7 +340,7 @@ export default class ExperimentDetails extends ProgramsBase {
   }
 
   @Watch('$route')
-  async getExperiment () {
+  async getExperiment() {
     console.info(".....route.....");
     console.info(this.$route);
     this.experimentLoading = true;
@@ -338,20 +359,20 @@ export default class ExperimentDetails extends ProgramsBase {
     }
   }
 
-@Watch('$route', { immediate: true })
-async getAssignedCollaborators(): Promise<void> {
-  try {
-    const response: Result<Error, Collaborator[]> = await ExperimentService.getAssignedCollaborators(this.activeProgram!.id!, this.experimentUUID);
-    if (response.isErr()) {
-      throw response.value;
+  @Watch('$route', {immediate: true})
+  async getAssignedCollaborators(): Promise<void> {
+    try {
+      const response: Result<Error, Collaborator[]> = await ExperimentService.getAssignedCollaborators(this.activeProgram!.id!, this.experimentUUID);
+      if (response.isErr()) {
+        throw response.value;
+      }
+      this.collaborators = response.value.data;
+    } catch (err) {
+      // Display error that experiment cannot be loaded
+      this.$emit('show-error-notification', 'Error while trying to load collaborators');
+      throw err;
     }
-    this.collaborators = response.value.data;
-  } catch (err) {
-    // Display error that experiment cannot be loaded
-    this.$emit('show-error-notification', 'Error while trying to load collaborators');
-    throw err;
   }
-}
 
   // Get metadata for all datasets available in this experiment.
   @Watch('$route')
@@ -370,33 +391,50 @@ async getAssignedCollaborators(): Promise<void> {
     }
   }
 
-  @Watch( 'datasetMetadata')
+  @Watch('datasetMetadata')
   //TODO could this be an anonymous function?
-  async getHasObservationUnits():  Promise<void> {
-    console.info("()()()()(()dataset watch");
-    for (const dsm of this.datasetMetadata) {
-      let datasetId = dsm.id;
-      // console.info(datasetId);
+  async getHasObservationUnits(): Promise<void> {
+    console.info("()()()()()))())()");
+      let dms = this.datasetMetadata[0];
+    console.info("..getting dms");
+    console.info(dms);
+      let datasetId = dms.id;
+    console.info("..got dms ID");
       try {
+        console.info("..getting dataset");
         const response: Result<Error, DatasetModel> = await ExperimentService.getDatasetModel(this.activeProgram!.id!, this.experimentUUID, datasetId);
         if (response.isErr()) {
+          console.info("..error");
           throw response.value;
         }
-        let dataset = response.value;
-        console.info("././././/./././../././.");
-        if(dataset && dataset.data && dataset.data.length>0){
-          this.hasObsUnits = true;
-          console.info("You got it");
-          break;
-        }
+        this.dataset = response.value;
+        console.info("has dataset");
+        // if (dataset && dataset.data && dataset.data.length > 0) {
+        //   this.hasObsUnits = true;
+        //   console.info("You got it");
+        // }
       } catch (err) {
         // Display error that dataset cannot be loaded
         this.$emit('show-error-notification', 'Error while trying to load dataset');
         throw err;
       }
-    }
   }
-
+  fetchObsCount(): number{
+    let count = 1;
+    console.info(".....1");
+    if(this.dataset){
+      console.info(".....2");
+      console.info(this.dataset);
+    }
+    if(this.dataset && this.dataset.additionalInfo){
+      console.info(".....3");
+      count = this.dataset.additionalInfo.observations;
+    }
+    console.info("Count = " + count);
+    return count;
+  }
+}
+</script>
   // async fetchDataSet(): Promise<Result<Error, DatasetModel>> {
   //   try {
   //     const response: Result<Error, DatasetModel> = await ExperimentService.getDatasetModel(this.activeProgram!.id!, this.experimentUUID, datasetId);
@@ -418,5 +456,3 @@ async getAssignedCollaborators(): Promise<void> {
   // async hasObservationUnits(): Promise<boolean> {
   //
   // }
-}
-</script>

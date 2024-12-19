@@ -19,7 +19,7 @@
   <DeleteModal
     v-bind:unique-id="trialId"
     v-bind:modal-title="modalTitle"
-    v-bind:deleteAction ="deleteaAction"
+    v-bind:deleteAction ="deleteAction"
     v-bind:active="active && loadingStudyOptionsComplete && loadingDatasetOptionsComplete"
     modal-class="experiment-observations-download-button"
     v-on:deactivate="resetExportOptions"
@@ -66,6 +66,8 @@ export default class ExperimentDeleteModal extends Vue {
   @Prop()
   trialId!: string;
   @Prop()
+  obsCount!: number;
+  @Prop()
   experiment!: Trial;
   @Prop()
   modalTitle?: string;
@@ -74,7 +76,7 @@ export default class ExperimentDeleteModal extends Vue {
 
   private activeProgram?: Program;
   private fileOptions: ExperimentExportOptions = new ExperimentExportOptions();
-  private obsCount: number = 5;
+  // private obsCount: number = 5;
   //private showEnvironmentsValidationError: boolean = false;
   private fileExtensionOptions: object[] = Object.values(FileTypeOption);
   private datasetOptions: DatasetMetadata[] = [];
@@ -141,26 +143,33 @@ export default class ExperimentDeleteModal extends Vue {
     }
   }
 
-  async deleteaAction(): Promise<void> {
+  async deleteAction(): Promise<void> {
     if (this.activeProgram) {
       try {
         // Call the service method and await its completion
-        //TODO add deleteExperiment to ExperimentService
-        await ExperimentService.removeCollaboratorFromExperiment(
+        console.debug("obs count...");
+        console.debug(this.obsCount);
+        let hasObsUnits: boolean = this.obsCount > 0;
+        await ExperimentService.deleteExperiment(
             this.activeProgram.id,
             this.trialId,
-            this.collaborator.collaboratorId
+            hasObsUnits
         );
-
+        this.$router.push({
+          name: 'experiments-observations',
+          params: {
+            programId: this.activeProgram!.id!
+          },
+        });
         // If the above call doesn't throw an error, we assume it was successful
         // Emit the event after the promise is resolved
         this.$emit('remove-collaborator');
 
       } catch (error) {
         // Handle any errors that might occur during the async operation
-        console.error('Error removing collaborator:', error);
+        console.error('Error while trying to delete experiment:', error);
         // Optionally emit an error event or handle the error in some way
-        this.$emit('show-error-notification', `Error while trying to remove a collaborator`);
+        this.$emit('show-error-notification', `Error while trying to delete experiment`);
       }
     }
   }
@@ -185,8 +194,8 @@ export default class ExperimentDeleteModal extends Vue {
     }
     return true;
   }
-  mounted() {
-    this.obsCount = 77;
-  }
+  // mounted() {
+  //   this.obsCount = 77;
+  // }
 }
 </script>

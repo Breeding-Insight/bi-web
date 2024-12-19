@@ -101,6 +101,17 @@ export class ExperimentService {
         return await ExperimentDAO.deleteCollaborator(programId, experimentId, id);
     }
 
+    static async deleteExperiment(programId: string | undefined, experimentId: string, hasObsUnits: boolean): Promise<Result<Error, boolean>> {
+
+            console.info("-----has unit obj");
+            console.info(hasObsUnits);
+
+        if (!programId) {
+            return ResultGenerator.err(new Error('Missing or invalid program id'));
+        }
+        return await ExperimentDAO.deleteExperiment(programId, experimentId, hasObsUnits);
+    }
+
     // static async hasObservationUnit(programId: string | undefined, experimentId: string, id: string): Promise<Result<Error, boolean>> {
     //     if (!programId) {
     //         return ResultGenerator.err(new Error('Missing or invalid program id'));
