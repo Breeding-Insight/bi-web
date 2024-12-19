@@ -20,7 +20,7 @@
     v-bind:unique-id="trialId"
     v-bind:modal-title="modalTitle"
     v-bind:deleteAction ="deleteAction"
-    v-bind:active="active && loadingStudyOptionsComplete && loadingDatasetOptionsComplete"
+    v-bind:active="active && loadingDatasetOptionsComplete"
     modal-class="experiment-observations-download-button"
     v-on:deactivate="resetExportOptions"
   >
@@ -81,38 +81,16 @@ export default class ExperimentDeleteModal extends Vue {
   private fileExtensionOptions: object[] = Object.values(FileTypeOption);
   private datasetOptions: DatasetMetadata[] = [];
   private environmentOptions: object[] = [];
-  private loadingStudyOptionsComplete: boolean = false;
-  private loadingDatasetOptionsComplete: boolean = false;
+  // private loadingStudyOptionsComplete: boolean = false;
+  private loadingDatasetOptionsComplete: boolean = true;
 
-  //TODO remove?
-  @Watch('experiment', {immediate: true})
-  onExperimentChanged() {
-    // Reset loading flags.
-    console.info("......hi Delete Modal........");
-    this.loadingStudyOptionsComplete = false;
-    this.loadingDatasetOptionsComplete = false;
-    this.getObsservationUnitCount();
-    this.getDatasetOptions();
-  }
-
-  async getObsservationUnitCount() {
-    // Fetch all environments (studies) for this experiment.
-    try {
-      // console.info("..............");
-      // console.info(this.experiment);
-      const response: Result<Error, [Study[], Metadata]> = await StudyService.getAll(this.activeProgram!.id!, this.experiment);
-      if(response.isErr()) throw response.value;
-      let [studies, metadata] = response.value;
-      // Set environment options.
-      this.environmentOptions = studies.map((s) => ({id: BrAPIUtils.getBreedingInsightId(s.externalReferences!, '/studies'), name: s.name}));
-      // console.info(":<><><><><><><>><>");
-      // console.info(this.environmentOptions);
-      this.loadingStudyOptionsComplete = true;
-    } catch (error) {
-      // Display error that studies cannot be loaded
-      this.$emit('show-error-notification', 'Error while trying to load studies');
-    }
-  }
+  // //TODO remove?
+  // @Watch('experiment', {immediate: true})
+  // onExperimentChanged() {
+  //   // Reset loading flag.
+  //   this.loadingDatasetOptionsComplete = false;
+  //   this.getDatasetOptions();
+  // }
 
   async getDatasetOptions() {
     // Fetch all datasets available for this experiment.
@@ -122,8 +100,6 @@ export default class ExperimentDeleteModal extends Vue {
         throw response.value;
       }
       this.datasetOptions = response.value;
-      console.info("########");
-      console.info(this.datasetOptions);
       this.setDefaultDatasetOption();
 
       this.loadingDatasetOptionsComplete = true;
@@ -147,13 +123,11 @@ export default class ExperimentDeleteModal extends Vue {
     if (this.activeProgram) {
       try {
         // Call the service method and await its completion
-        console.debug("obs count...");
-        console.debug(this.obsCount);
         let hasObsUnits: boolean = this.obsCount > 0;
         await ExperimentService.deleteExperiment(
             this.activeProgram.id,
             this.trialId,
-            hasObsUnits
+            hasObsUnits,
         );
         this.$router.push({
           name: 'experiments-observations',

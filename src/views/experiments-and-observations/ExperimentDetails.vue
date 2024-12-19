@@ -209,7 +209,6 @@ export default class ExperimentDetails extends ProgramsBase {
   private addCollaboratorActive: boolean = false;
   private downloadModalActive: boolean = false;
   private deleteModalActive: boolean = false;
-  // private obsCount
   private subEntityModalActive: boolean = false;
   private removeCollaboratorActive: boolean = false;
   private selectedForRemoval?: Collaborator = new Collaborator();
@@ -341,8 +340,6 @@ export default class ExperimentDetails extends ProgramsBase {
 
   @Watch('$route')
   async getExperiment() {
-    console.info(".....route.....");
-    console.info(this.$route);
     this.experimentLoading = true;
     try {
       const response: Result<Error, Trial> = await ExperimentService.getSingleExperiment(this.activeProgram!.id!, this.experimentUUID, true);
@@ -382,7 +379,6 @@ export default class ExperimentDetails extends ProgramsBase {
       if (response.isErr()) {
         throw response.value;
       }
-      console.info(".....Setting datsetMetadata");
       this.datasetMetadata = response.value;
     } catch (err) {
       // Display error that experiment cannot be loaded
@@ -392,27 +388,16 @@ export default class ExperimentDetails extends ProgramsBase {
   }
 
   @Watch('datasetMetadata')
-  //TODO could this be an anonymous function?
   async getHasObservationUnits(): Promise<void> {
-    console.info("()()()()()))())()");
       let dms = this.datasetMetadata[0];
-    console.info("..getting dms");
-    console.info(dms);
       let datasetId = dms.id;
-    console.info("..got dms ID");
       try {
-        console.info("..getting dataset");
         const response: Result<Error, DatasetModel> = await ExperimentService.getDatasetModel(this.activeProgram!.id!, this.experimentUUID, datasetId);
         if (response.isErr()) {
-          console.info("..error");
           throw response.value;
         }
         this.dataset = response.value;
-        console.info("has dataset");
-        // if (dataset && dataset.data && dataset.data.length > 0) {
-        //   this.hasObsUnits = true;
-        //   console.info("You got it");
-        // }
+
       } catch (err) {
         // Display error that dataset cannot be loaded
         this.$emit('show-error-notification', 'Error while trying to load dataset');
@@ -421,38 +406,10 @@ export default class ExperimentDetails extends ProgramsBase {
   }
   fetchObsCount(): number{
     let count = 1;
-    console.info(".....1");
-    if(this.dataset){
-      console.info(".....2");
-      console.info(this.dataset);
-    }
     if(this.dataset && this.dataset.additionalInfo){
-      console.info(".....3");
       count = this.dataset.additionalInfo.observations;
     }
-    console.info("Count = " + count);
     return count;
   }
 }
 </script>
-  // async fetchDataSet(): Promise<Result<Error, DatasetModel>> {
-  //   try {
-  //     const response: Result<Error, DatasetModel> = await ExperimentService.getDatasetModel(this.activeProgram!.id!, this.experimentUUID, datasetId);
-  //     if (response.isErr()) {
-  //       throw response.value;
-  //     }
-  //     // let dataset = response.value;
-  //     // console.info(dataset);
-  //   } catch (err) {
-  //     // Display error that dataset cannot be loaded
-  //     this.$emit('show-error-notification', 'Error while trying to load dataset');
-  //     throw err;
-  //   }
-  //   return response.value;
-  // }
-
-
-
-  // async hasObservationUnits(): Promise<boolean> {
-  //
-  // }

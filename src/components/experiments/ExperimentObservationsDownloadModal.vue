@@ -55,7 +55,7 @@
         <div class="column control">
           <fieldset>
             <legend class="label required">
-              <span class="required">Environment(s)!</span>
+              <span class="required">Environment(s)</span>
             </legend>
             <div class="control">
               <label

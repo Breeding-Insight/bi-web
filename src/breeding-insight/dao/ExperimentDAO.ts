@@ -110,11 +110,7 @@ export class ExperimentDAO {
 
 
     static async deleteExperiment(programId: string, experimentId: string, softDelete: boolean): Promise<Result<Error, boolean>> {
-          console.info("ExperimentDAO....in deleteExperiment");
-          console.info(softDelete ? "soft delete": "hard delete");
-        console.info("A");
         const config: any = {};
-        console.info("B");
         config.url = `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/experiments/${experimentId}`;
         config.method = 'delete';
         config.programId = programId;
@@ -122,12 +118,8 @@ export class ExperimentDAO {
         config.params = {
             hard : ! softDelete,
         };
-        console.info("C");
         try {
-            console.info("D");
-            console.info(config);
             const response = await api.call(config);
-            console.info("E");
             // Check if the status code indicates success
             if (response.status >= 200 && response.status < 300) {
                 return ResultGenerator.success(true);
@@ -139,26 +131,6 @@ export class ExperimentDAO {
             return ResultGenerator.err(error);
         }
     }
-    // static async observationUnitCount(programId: string, experimentId: string, id: string): Promise<Result<Error, number>> {
-    //     const config: any = {};
-    //     config.url = `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/experiments/${experimentId}/collaborators/${id}`;
-    //     config.method = 'get';
-    //     config.programId = programId;
-    //     config.experimentId = experimentId;
-    //     config.responseType = 'text';
-    //     // config.validateStatus = (status: number) => status >= 200 && status < 300;
-    //     try {
-    //         const response = await api.call(config);
-    //         // Check if the status code indicates success
-    //         if (response.status >= 200 && response.status < 300) {
-    //             return ResultGenerator.success(true);
-    //         } else {
-    //             throw new Error(`Unexpected status code: ${response.status}`);
-    //         }
-    //     } catch (error) {
-    //         return ResultGenerator.err(error);
-    //     }
-    // }
 
     static async getDatasetMetadata(programId: string, experimentId: string): Promise<Result<Error, DatasetMetadata[]>> {
         const config: any = {};
@@ -185,17 +157,11 @@ export class ExperimentDAO {
         config.params = {
             stats : stats,
         };
-        console.info(">>>>config:");
-        console.info(config);
         try {
-            console.info("....before..");
             const res = await api.call(config) as Response;
-            console.info("....after..");
-
             let { result } = res.data;
             return ResultGenerator.success(result);
         } catch (error) {
-            console.info("....error..");
             return ResultGenerator.err(error);
         }
     }
