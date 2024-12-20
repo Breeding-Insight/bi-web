@@ -23,7 +23,7 @@
       <a>&lt; Germplasm Lists</a>
     </router-link>
     <h1 class="title">
-      {{ toStartCase(list ? list.listName : "") }}
+      {{ list ? list.listName : "" }}
     </h1>
 
     <GermplasmListDeletionModal
