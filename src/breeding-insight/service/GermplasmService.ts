@@ -24,7 +24,8 @@ import {Germplasm} from "@/breeding-insight/brapi/model/germplasm";
 import {Result, ResultGenerator} from "@/breeding-insight/model/Result";
 import {SortOrder} from "@/breeding-insight/model/Sort";
 import * as api from "@/util/api";
-import {GermplasmFilter} from "@/breeding-insight/model/GermplasmFilter";
+import {GermplasmFilter} from "@/breeding-insight/model/ListFilter";
+
 
 export class GermplasmService {
 
@@ -34,7 +35,7 @@ export class GermplasmService {
                          { listDbId, listName, ...brapiFilters  }: GermplasmFilter):
         Promise<BiResponse> {
         //Form the query params including sorting, pagination, and filtering
-        let params: any = { ...brapiFilters };
+        let params: any = {listDbId: listDbId, ...brapiFilters };
 
         if (sort.field) {
             params['sortField'] = sort.field;
@@ -67,8 +68,8 @@ export class GermplasmService {
             }
 
             //Get the list germplasm
-            const {data} = await api.call({
-                url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/germplasm/lists/${listId}/records`,
+            const {data}: any = await api.call({
+                url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/brapi/v2/germplasm`,
                 method: 'get',
                 params: params
             }) as Response;

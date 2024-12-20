@@ -20,7 +20,7 @@ import {getters} from '@/store/filtering/getters';
 import {mutations} from '@/store/filtering/mutations';
 import {RootState} from '@/store/types';
 import {FilterState} from "@/store/filtering/types";
-import {GermplasmFilter} from "@/breeding-insight/model/GermplasmFilter";
+import {GermplasmFilter} from "@/breeding-insight/model/ListFilter";
 
 export let state: FilterState;
 state = {
