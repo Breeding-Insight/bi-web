@@ -35,7 +35,7 @@ export class GermplasmService {
                          { listDbId, listName, ...brapiFilters  }: GermplasmFilter):
         Promise<BiResponse> {
         //Form the query params including sorting, pagination, and filtering
-        let params: any = {list: listDbId, ...brapiFilters };
+        let params: any = {listDbId: listDbId, ...brapiFilters };
 
         if (sort.field) {
             params['sortField'] = sort.field;

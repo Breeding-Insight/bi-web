@@ -36,7 +36,8 @@ export class ListService {
             return new BiResponse({ success: true });
 
         } catch (error) {
-            // Check if the error is actually a 204 No Content response
+            // Check if the error is actually a 204 No Content response since http clients can be configured to
+            // automatically throw an error if the response has no content
             if (error.response && error.response.status === 204) {
                 // This is actually a successful deletion
                 return new BiResponse({ success: true });
