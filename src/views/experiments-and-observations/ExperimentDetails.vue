@@ -38,7 +38,7 @@
         v-bind:modal-title="`Delete ${experiment.trialName}`"
         v-bind:trial-id="experimentUUID"
         v-bind:active="deleteModalActive"
-        v-bind:obs-count="fetchObsCount()"
+        v-bind:obs-count="obsCount"
         v-on:show-error-notification="$emit('show-error-notification', $event)"
         v-on:deactivate="deleteModalActive = false"
     />
@@ -214,7 +214,7 @@ export default class ExperimentDetails extends ProgramsBase {
   private selectedForRemoval?: Collaborator = new Collaborator();
   private datasetMetadata: DatasetMetadata[] = [];
   private hasObsUnits: boolean = false;
-  private dataset: DatasetModel = new DatasetModel("", "");
+  private obsCount: number = 0;
   private collaborators: Collaborator[] = [];
 
   private actions: ActionMenuItem[] = [
@@ -388,28 +388,25 @@ export default class ExperimentDetails extends ProgramsBase {
   }
 
   @Watch('datasetMetadata')
-  async getHasObservationUnits(): Promise<void> {
+  async getObsUnitCount(): Promise<void> {
       let dms = this.datasetMetadata[0];
       let datasetId = dms.id;
       try {
         const response: Result<Error, DatasetModel> = await ExperimentService.getDatasetModel(this.activeProgram!.id!, this.experimentUUID, datasetId);
+
         if (response.isErr()) {
           throw response.value;
         }
-        this.dataset = response.value;
-
+        let dataset = response.value;
+        if(dataset && dataset.additionalInfo){
+          this.obsCount = dataset.additionalInfo.observations;
+        }
       } catch (err) {
         // Display error that dataset cannot be loaded
         this.$emit('show-error-notification', 'Error while trying to load dataset');
         throw err;
       }
   }
-  fetchObsCount(): number{
-    let count = 1;
-    if(this.dataset && this.dataset.additionalInfo){
-      count = this.dataset.additionalInfo.observations;
-    }
-    return count;
-  }
+
 }
 </script>

@@ -71,7 +71,7 @@ export default class DeleteModal extends Vue {
   @Prop()
   modalClass?: string;
   @Prop()
-  deleteAction!: () => boolean;
+  deleteAction!: () => Promise<void>;
   @Prop()
   active!: boolean;
 
