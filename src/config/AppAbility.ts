@@ -17,7 +17,7 @@
 
 import {Ability, AbilityClass} from '@casl/ability';
 
-type Actions = 'manage' | 'delete' |'create' | 'read' | 'update' | 'delete' | 'archive' | 'access' | 'submit';
+type Actions = 'manage' | 'create' | 'read' | 'update' | 'delete' | 'archive' | 'access' | 'submit';
 type Subjects = 'ProgramUser' | 'Location' | 'User' | 'AdminSection' | 'Trait' | 'Import' | 'ProgramConfiguration' | 'Submission'
     | 'Experiment' | 'Germplasm' | 'Ontology' | 'SampleManagement' | 'ProgramAdministration' | 'JobManagement' | 'Collaborator' | 'BrAPI'
     | 'List';

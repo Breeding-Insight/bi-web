@@ -16,10 +16,10 @@
 -->
 
 <template>
-  <DeleteModal
+  <ConfirmationModal
     v-bind:unique-id="trialId"
     v-bind:modal-title="modalTitle"
-    v-bind:deleteAction ="deleteAction"
+    v-bind:confirmedAction ="deleteAction"
     v-bind:active="active"
     modal-class="experiment-observations-download-button"
     v-on:deactivate="resetExportOptions"
@@ -27,7 +27,7 @@
     <template #form>
       <p>{{obsCount}} observations will be deleted. All records will be lost. Are you sure you want to delete the experimental data?</p>
     </template>
-  </DeleteModal>
+  </ConfirmationModal>
 </template>
 
 
@@ -39,12 +39,12 @@ import {Program} from "@/breeding-insight/model/Program";
 import {ExperimentExportOptions} from "@/breeding-insight/model/ExperimentExportOptions";
 import {AlertTriangleIcon} from 'vue-feather-icons';
 import {Trial} from "@/breeding-insight/model/Trial";
-import DeleteModal from "@/components/modals/DeleteModal.vue";
+import ConfirmationModal from "@/components/modals/ConfirmationModal.vue";
 import {ExperimentService} from "@/breeding-insight/service/ExperimentService";
 
 @Component({
   mixins: [validationMixin],
-  components: {DeleteModal, AlertTriangleIcon},
+  components: {ConfirmationModal, AlertTriangleIcon},
   computed: {
     ...mapGetters([
       'activeProgram'
