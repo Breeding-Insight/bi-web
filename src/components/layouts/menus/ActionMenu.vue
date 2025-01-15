@@ -16,9 +16,11 @@
 
 <template>
   <b-dropdown
-              position="is-bottom-left"
-              append-to-body
-              aria-role="menu">
+      <!--   aria-label Fixes accessibility issue https://www.w3.org/WAI/ARIA/apg/practices/landmark-regions/ -->
+      :aria-label="buttonText"
+      position="is-bottom-left"
+      append-to-body
+      aria-role="menu">
     <template #trigger>
       <button
           class="button has-text-weight-bold"
