@@ -16,7 +16,6 @@
 
 <template>
   <b-dropdown
-      <!--   aria-label Fixes accessibility issue https://www.w3.org/WAI/ARIA/apg/practices/landmark-regions/ -->
       :aria-label="buttonText"
       position="is-bottom-left"
       append-to-body
