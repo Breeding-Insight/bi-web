@@ -85,7 +85,7 @@ export default class ExperimentDeleteModal extends Vue {
             programId: this.activeProgram!.id!
           },
         });
-
+        this.$emit('show-success-notification', `Success! The experiment has been deleted.`);
 
       } catch (error) {
         // Handle any errors that might occur during the async operation
@@ -95,6 +95,7 @@ export default class ExperimentDeleteModal extends Vue {
       }
     }
   }
+
 
   resetExportOptions(){
     // Notify parent when deactivated to close modal

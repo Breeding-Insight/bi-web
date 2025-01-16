@@ -40,6 +40,7 @@
         v-bind:active="deleteModalActive"
         v-bind:obs-count="obsCount"
         v-on:show-error-notification="$emit('show-error-notification', $event)"
+        v-on:show-success-notification="$emit('show-success-notification', $event)"
         v-on:deactivate="deleteModalActive = false"
     />
 
