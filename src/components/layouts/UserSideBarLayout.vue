@@ -294,7 +294,8 @@
     }
 
     filterPrograms($event: any) {
-      let filter = $event.target.value.toLowerCase();
+      this.programFilterValue = $event.target.value;
+      let filter = this.programFilterValue.toLowerCase();
       if(filter.trim().length > 0) {
         this.filteredPrograms = this.programs.filter(value => value.name!.toLowerCase().includes(filter));
       } else {
