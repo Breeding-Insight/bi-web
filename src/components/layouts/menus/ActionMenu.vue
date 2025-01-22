@@ -16,9 +16,10 @@
 
 <template>
   <b-dropdown
-              position="is-bottom-left"
-              append-to-body
-              aria-role="menu">
+      :aria-label="buttonText"
+      position="is-bottom-left"
+      append-to-body
+      aria-role="menu">
     <template #trigger>
       <button
           class="button has-text-weight-bold"

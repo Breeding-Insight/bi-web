@@ -108,6 +108,30 @@ export class ExperimentDAO {
         }
     }
 
+
+    static async deleteExperiment(programId: string, experimentId: string, softDelete: boolean): Promise<Result<Error, boolean>> {
+        const config: any = {};
+        config.url = `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/experiments/${experimentId}`;
+        config.method = 'delete';
+        config.programId = programId;
+        config.experimentId = experimentId;
+        config.params = {
+            hard : ! softDelete,
+        };
+        try {
+            const response = await api.call(config);
+            // Check if the status code indicates success
+            if (response.status >= 200 && response.status < 300) {
+                return ResultGenerator.success(true);
+            } else {
+                throw new Error(`Unexpected status code: ${response.status}`);
+            }
+        } catch (error) {
+            console.info("F");
+            return ResultGenerator.err(error);
+        }
+    }
+
     static async getDatasetMetadata(programId: string, experimentId: string): Promise<Result<Error, DatasetMetadata[]>> {
         const config: any = {};
         config.url = `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/experiments/${experimentId}/datasets`;
