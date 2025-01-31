@@ -20,6 +20,7 @@ import {SampleSubmission} from "@/breeding-insight/model/SampleSubmission";
 import {SampleSubmissionDAO} from "@/breeding-insight/dao/SampleSubmissionDAO";
 import {Result, ResultGenerator} from "@/breeding-insight/model/Result";
 import {VendorOrderSubmission} from "@/breeding-insight/brapi/model/geno/vendorOrderSubmission";
+import {programManagement} from "@/store/program-management";
 
 export class SampleSubmissionService {
   private static getSampleSubmissionUnknown: string = 'An unknown error occurred while retrieving sample submissions';
@@ -61,24 +62,30 @@ export class SampleSubmissionService {
     return await SampleSubmissionDAO.getSubmissionById(programId, submissionId, true);
   }
 
-    static async submitToDArT(programId: string, submissionId: string): Promise<Result<Error, VendorOrderSubmission>> {
-      if (!programId) {
-        return ResultGenerator.err(new Error('Missing or invalid program id'));
-      }
-      return await SampleSubmissionDAO.submitToDArT(programId, submissionId);
+  static async submitToDArT(programId: string, submissionId: string): Promise<Result<Error, VendorOrderSubmission>> {
+    if (!programId) {
+      return ResultGenerator.err(new Error('Missing or invalid program id'));
     }
+    return await SampleSubmissionDAO.submitToDArT(programId, submissionId);
+  }
 
-    static async checkVendorStatus(programId: string, submissionId: string): Promise<Result<Error, SampleSubmission>> {
-      if (!programId) {
-        return ResultGenerator.err(new Error('Missing or invalid program id'));
-      }
-      return await SampleSubmissionDAO.checkVendorStatus(programId, submissionId);
+  static async checkVendorStatus(programId: string, submissionId: string): Promise<Result<Error, SampleSubmission>> {
+    if (!programId) {
+      return ResultGenerator.err(new Error('Missing or invalid program id'));
     }
+    return await SampleSubmissionDAO.checkVendorStatus(programId, submissionId);
+  }
 
-    static async updateSubmissionStatus(programId: string, submissionId: string, status: string): Promise<Result<Error, SampleSubmission>> {
-      if (!programId) {
-        return ResultGenerator.err(new Error('Missing or invalid program id'));
-      }
-      return await SampleSubmissionDAO.updateSubmissionStatus(programId, submissionId, status);
+  static async updateSubmissionStatus(programId: string, submissionId: string, status: string): Promise<Result<Error, SampleSubmission>> {
+    if (!programId) {
+      return ResultGenerator.err(new Error('Missing or invalid program id'));
     }
+    return await SampleSubmissionDAO.updateSubmissionStatus(programId, submissionId, status);
+  }
+
+  static async deleteSubmission(programId: string, submissionId: string) : Promise<Result<Error, Void>> {
+    return await SampleSubmissionDAO.deleteSubmission(programId, submissionId);
+  }
+
+
 }

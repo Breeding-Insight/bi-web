@@ -99,6 +99,8 @@
         </ExpandableTable>
       </div>
     </div>
+    <!-- The following seems to be some old dead code so commented out for now, was causing console errors -->
+    <!--
     <GenericModal
         v-bind:active.sync="showGenerateFileModal"
         v-bind:msg-title="'Generate Sample Management File'"
@@ -111,6 +113,7 @@
         <button class="button" v-on:click="closeModal()">Cancel</button>
       </template>
     </GenericModal>
+    -->
   </div>
 </template>
 

@@ -19,6 +19,17 @@
     <router-link v-bind:to="{name: 'sample-management', params: {programId: activeProgram.id}}">
       &lt; Sample Management
     </router-link>
+
+    <SampleSubmissionDeleteModal
+      v-bind:active="deleteModalActive"
+      v-bind:submission-id="submissionId"
+      v-bind:modal-title="`Delete Submission`"
+      v-on:show-error-notification="$emit('show-error-notification', $event)"
+      v-on:deactivate="deleteModalActive = false"
+      v-on:list-deleted="deleteSuccess"
+    />
+    <!-- ${submission.name} -->
+
     <div class="mb-4"/>
     <template v-if="submissionLoading">
       <div class="loading-indicator"></div>
@@ -62,6 +73,7 @@
                       v-on:submit="startOrderSubmission()"
                       v-on:manual-update-status="startManualUpdate()"
                       v-on:check-status="checkVendorStatus()"
+                      v-on:delete="deleteSubmission()"
           />
         </article>
       </div>
@@ -358,15 +370,19 @@ import StatusEnum = VendorOrderStatusResponseResult.StatusEnum;
 import {Plate} from "@/breeding-insight/brapi/model/geno/plate";
 import * as XLSX from "xlsx";
 import {WorkBook} from "xlsx";
+import SampleSubmissionDeleteModal from "@/components/modals/SampleSubmissionDeleteModal.vue";
+import GermplasmListDeletionModal from "@/components/germplasm/GermplasmListDeletionlModal.vue";
 
 @Component({
   components: {
+    GermplasmListDeletionModal,
     GenericModal,
     ExpandableTable,
     GermplasmLink,
     PlusCircleIcon,
     ExperimentObservationsDownloadModal,
-    ActionMenu
+    ActionMenu,
+    SampleSubmissionDeleteModal
   },
   computed: {
     ...mapGetters([
@@ -392,6 +408,7 @@ export default class SubmissionDetails extends ProgramsBase {
   private showUpdateModal = false;
   private updateStarted = false;
   private statusEdit?: string = 'NOT SUBMITTED';
+  private deleteModalActive: boolean = false;
 
   private collator = new Intl.Collator('en', {numeric: true, sensitivity: 'base'});
 
@@ -404,6 +421,11 @@ export default class SubmissionDetails extends ProgramsBase {
 
   get submissionId(): string {
     return this.$route.params.submissionId;
+  }
+
+  private deleteSuccess() {
+    // Navigate to the submissions table since this submission no longer exists
+    this.$router.push({ name: "sample-management" });
   }
 
   async getSubmission(showLoading: boolean = true) {
@@ -445,6 +467,10 @@ export default class SubmissionDetails extends ProgramsBase {
       } else if (this.submission!.submitted && this.submission!.vendorOrderId && this.submission!.vendorStatus !== StatusEnum.Completed.toUpperCase()) {
         actionsMenuItems.push(new ActionMenuItem('submission-check-status', 'check-status', 'Check Vendor Status'));
       }
+    }
+
+    if (this.$ability.can('delete', 'Submission')) {
+      actionsMenuItems.push(new ActionMenuItem('submission-delete', 'delete', 'Delete'));
     }
 
     this.actions = actionsMenuItems;
@@ -716,6 +742,10 @@ export default class SubmissionDetails extends ProgramsBase {
   exactSearchGID(props: any, input: string) {
     let value = props.data.additionalInfo.gid;
     return Number(value) === (Number(input));
+  }
+
+  deleteSubmission() {
+    this.deleteModalActive = true;
   }
 }
 </script>

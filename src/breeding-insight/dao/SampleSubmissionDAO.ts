@@ -48,6 +48,20 @@ export class SampleSubmissionDAO {
     }
   }
 
+  static async deleteSubmission(programId: string, submissionId: string): Promise<Result<Error, Void>> {
+    const config: any = {};
+    config.url = `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/submissions/${submissionId}`;
+    config.method = 'delete';
+    config.programId = programId;
+    config.submissionId = submissionId;
+    try {
+      await api.call(config);
+      return ResultGenerator.success();
+    } catch (error) {
+      return ResultGenerator.err(error);
+    }
+  }
+
     static async submitToDArT(programId: string, submissionId: string): Promise<Result<Error, VendorOrderSubmission>> {
       const config: any = {};
       config.url = `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/submissions/${submissionId}/submit?vendor=dart`;
