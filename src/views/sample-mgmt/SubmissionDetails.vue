@@ -26,7 +26,7 @@
       v-bind:modal-title="`Delete Submission`"
       v-on:show-error-notification="$emit('show-error-notification', $event)"
       v-on:deactivate="deleteModalActive = false"
-      v-on:list-deleted="deleteSuccess"
+      v-on:submission-deleted="deleteSuccess"
     />
     <!-- ${submission.name} -->
 
@@ -470,7 +470,9 @@ export default class SubmissionDetails extends ProgramsBase {
     }
 
     if (this.$ability.can('delete', 'Submission')) {
-      actionsMenuItems.push(new ActionMenuItem('submission-delete', 'delete', 'Delete'));
+      const enabled = !this.submission!.submitted && this.submission!.vendorStatus !== StatusEnum.Completed.toUpperCase();
+
+      actionsMenuItems.push(new ActionMenuItem('submission-delete', 'delete', 'Delete', enabled));
     }
 
     this.actions = actionsMenuItems;

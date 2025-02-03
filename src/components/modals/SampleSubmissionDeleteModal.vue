@@ -39,6 +39,8 @@ import {Program} from "@/breeding-insight/model/Program";
 import {AlertTriangleIcon} from 'vue-feather-icons';
 import ConfirmationModal from "@/components/modals/ConfirmationModal.vue";
 import {SampleSubmissionService} from "@/breeding-insight/service/SampleSubmissionService";
+import {Result} from "@/breeding-insight/model/Result";
+import {SampleSubmission} from "@/breeding-insight/model/SampleSubmission";
 
 @Component({
   mixins: [validationMixin],
@@ -60,10 +62,19 @@ export default class SampleSubmissionDeleteModal extends Vue {
 
   private activeProgram?: Program;
 
+  // TODO: move this to parent and get rid of this modal component
   async deleteSampleSubmission(): Promise<void> {
     if (this.activeProgram) {
       try {
-        await SampleSubmissionService.deleteSubmission(this.activeProgram.id, this.submissionId);
+        const result: Result<Error, Void> = await SampleSubmissionService.deleteSubmission(this.activeProgram.id, this.submissionId);
+        if (result.isErr()) {
+          const response = result.value.response;
+
+          if (response && response.status === 405) {
+            this.$emit('show-error-notification', `Cannot delete a submission with submitted or completed status`);
+            return;
+          }
+        }
         this.$emit('submission-deleted');
 
       } catch (error) {
