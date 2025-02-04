@@ -41,6 +41,7 @@ import {AlertTriangleIcon} from 'vue-feather-icons';
 import {Trial} from "@/breeding-insight/model/Trial";
 import ConfirmationModal from "@/components/modals/ConfirmationModal.vue";
 import {ExperimentService} from "@/breeding-insight/service/ExperimentService";
+import {ResultGenerator} from "@/breeding-insight/model/Result";
 
 @Component({
   mixins: [validationMixin],
@@ -78,6 +79,7 @@ export default class ExperimentDeleteModal extends Vue {
             this.trialId,
             hasObsUnits,
         );
+
         // now switch screen to the list of remaining experiments
         this.$router.push({
           name: 'experiments-observations',
@@ -85,7 +87,7 @@ export default class ExperimentDeleteModal extends Vue {
             programId: this.activeProgram!.id!
           },
         });
-        this.$emit('show-success-notification', `Success! The experiment has been deleted.`);
+        this.$emit('show-success-notification', `Success!! The experiment has been deleted.`);
 
       } catch (error) {
         // Handle any errors that might occur during the async operation
