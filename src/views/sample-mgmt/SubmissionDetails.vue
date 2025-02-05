@@ -472,7 +472,7 @@ export default class SubmissionDetails extends ProgramsBase {
     if (this.$ability.can('delete', 'Submission')) {
       const enabled = !this.submission!.submitted && this.submission!.vendorStatus !== StatusEnum.Completed.toUpperCase();
 
-      actionsMenuItems.push(new ActionMenuItem('submission-delete', 'delete', 'Delete', enabled));
+      actionsMenuItems.push(new ActionMenuItem('submission-delete', 'delete', 'Delete submission', enabled));
     }
 
     this.actions = actionsMenuItems;
