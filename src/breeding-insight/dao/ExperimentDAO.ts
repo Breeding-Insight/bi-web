@@ -110,7 +110,6 @@ export class ExperimentDAO {
 
 
     static async deleteExperiment(programId: string, experimentId: string, softDelete: boolean): Promise<Result<Error, boolean>> {
-          console.info("....deleteExperiment()....");
         const config: any = {};
         config.url = `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/experiments/${experimentId}`;
         config.method = 'delete';

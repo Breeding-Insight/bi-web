@@ -23,7 +23,6 @@ import {DatasetMetadata} from "@/breeding-insight/model/DatasetMetadata";
 import {SubEntityDatasetNewRequest} from "@/breeding-insight/model/SubEntityDatasetNewRequest";
 import {BrAPIUtils} from "@/breeding-insight/utils/BrAPIUtils";
 import {Collaborator} from "@/breeding-insight/model/Collaborator";
-import {BiResponse} from "@/breeding-insight/model/BiResponse";
 
 export class ExperimentService {
 
@@ -108,8 +107,6 @@ export class ExperimentService {
         }
         let response: Result<Error, boolean>;
         response = await ExperimentDAO.deleteExperiment(programId, experimentId, hasObsUnits);
-        if(response.isErr()) { console.info('ERRRRROR');}
-        else (console.info('Noooo Errrror'));
         if(response.isErr()) throw response.value;
         return response;
     }
