@@ -37,8 +37,6 @@
       </ConfirmationModal>
     </template>
 
-    <!-- ${submission.name} -->
-
     <div class="mb-4"/>
     <template v-if="submissionLoading">
       <div class="loading-indicator"></div>
@@ -379,13 +377,11 @@ import StatusEnum = VendorOrderStatusResponseResult.StatusEnum;
 import {Plate} from "@/breeding-insight/brapi/model/geno/plate";
 import * as XLSX from "xlsx";
 import {WorkBook} from "xlsx";
-import GermplasmListDeletionModal from "@/components/germplasm/GermplasmListDeletionlModal.vue";
 import ConfirmationModal from "@/components/modals/ConfirmationModal.vue";
 
 @Component({
   components: {
     ConfirmationModal,
-    GermplasmListDeletionModal,
     GenericModal,
     ExpandableTable,
     GermplasmLink,
