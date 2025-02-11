@@ -20,7 +20,6 @@ import {SampleSubmission} from "@/breeding-insight/model/SampleSubmission";
 import {SampleSubmissionDAO} from "@/breeding-insight/dao/SampleSubmissionDAO";
 import {Result, ResultGenerator} from "@/breeding-insight/model/Result";
 import {VendorOrderSubmission} from "@/breeding-insight/brapi/model/geno/vendorOrderSubmission";
-import {programManagement} from "@/store/program-management";
 
 export class SampleSubmissionService {
   private static getSampleSubmissionUnknown: string = 'An unknown error occurred while retrieving sample submissions';
