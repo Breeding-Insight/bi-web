@@ -20,14 +20,23 @@
       &lt; Sample Management
     </router-link>
 
-    <SampleSubmissionDeleteModal
-      v-bind:active="deleteModalActive"
-      v-bind:submission-id="submissionId"
-      v-bind:modal-title="`Delete Submission`"
-      v-on:show-error-notification="$emit('show-error-notification', $event)"
-      v-on:deactivate="deleteModalActive = false"
-      v-on:submission-deleted="deleteSuccess"
-    />
+    <template v-if="!submissionDetailsLoading">
+      <ConfirmationModal
+          v-bind:unique-id="submissionId"
+          v-bind:modal-title="`Delete Submission ${submission.name}`"
+          v-bind:confirmedAction="deleteSampleSubmission"
+          v-bind:active="deleteModalActive"
+          modal-class="germplasm-list-deletion-button"
+          v-on:deactivate="deleteModalActive = false"
+          v-on:show-error-notification="$emit('show-error-notification', $event)"
+      >
+        <template #form>
+          <p><strong>{{submission.samples.length}} samples</strong> will be deleted. Are you sure you want to delete the sample submission?</p>
+        </template>
+        <slot />
+      </ConfirmationModal>
+    </template>
+
     <!-- ${submission.name} -->
 
     <div class="mb-4"/>
@@ -370,11 +379,12 @@ import StatusEnum = VendorOrderStatusResponseResult.StatusEnum;
 import {Plate} from "@/breeding-insight/brapi/model/geno/plate";
 import * as XLSX from "xlsx";
 import {WorkBook} from "xlsx";
-import SampleSubmissionDeleteModal from "@/components/modals/SampleSubmissionDeleteModal.vue";
 import GermplasmListDeletionModal from "@/components/germplasm/GermplasmListDeletionlModal.vue";
+import ConfirmationModal from "@/components/modals/ConfirmationModal.vue";
 
 @Component({
   components: {
+    ConfirmationModal,
     GermplasmListDeletionModal,
     GenericModal,
     ExpandableTable,
@@ -382,7 +392,6 @@ import GermplasmListDeletionModal from "@/components/germplasm/GermplasmListDele
     PlusCircleIcon,
     ExperimentObservationsDownloadModal,
     ActionMenu,
-    SampleSubmissionDeleteModal
   },
   computed: {
     ...mapGetters([
@@ -426,6 +435,7 @@ export default class SubmissionDetails extends ProgramsBase {
   private deleteSuccess() {
     // Navigate to the submissions table since this submission no longer exists
     this.$router.push({ name: "sample-management" });
+    this.$emit('show-success-notification', `Successfully deleted sample submission`);
   }
 
   async getSubmission(showLoading: boolean = true) {
@@ -748,6 +758,30 @@ export default class SubmissionDetails extends ProgramsBase {
 
   deleteSubmission() {
     this.deleteModalActive = true;
+  }
+
+  async deleteSampleSubmission(): Promise<void> {
+    if (this.activeProgram) {
+      try {
+        const result: Result<Error, Void> = await SampleSubmissionService.deleteSubmission(this.activeProgram.id, this.submissionId);
+        if (result.isErr()) {
+          const response = result.value.response;
+
+          if (response && response.status === 405) {
+            this.$emit('show-error-notification', `Cannot delete a submission with submitted or completed status`);
+            return;
+          }
+        }
+        this.deleteSuccess();
+
+      } catch (error) {
+        this.$emit('show-error-notification', `Error while trying to delete the sample submission`);
+      }
+    }
+  }
+
+  cancelDelete(){
+    this.$emit('deactivate');
   }
 }
 </script>
