@@ -767,8 +767,11 @@ export default class SubmissionDetails extends ProgramsBase {
             this.$emit('show-error-notification', `Cannot delete a submission with submitted or completed status`);
             return;
           }
+          this.$emit('show-error-notification', `Unknown error deleting submission`);
+
+        } else {
+          this.deleteSuccess();
         }
-        this.deleteSuccess();
 
       } catch (error) {
         this.$emit('show-error-notification', `Error while trying to delete the sample submission`);
