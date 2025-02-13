@@ -29,17 +29,9 @@
         <div class="message-body has-text-dark">
           <div class="columns">
             <div class="column">
-              <div class="columns mb-0">
-                <div class="column has-text-right pr-0 pb-0">
-                  <b>Observation unit:</b>
-                </div>
-                <div class="column pl-1 is-three-quarters pb-0">
-                  {{ observationUnit }}
-                </div>
-              </div>
               <div class="columns mb-0 pb-0 pt-0">
                 <div class="column has-text-right pr-0 pb-0">
-                  <b>Phenotypes:</b>
+                  <b>Observation Variables:</b>
                 </div>
                 <div class="column pl-1 is-three-quarters pb-0">
                   {{ phenotypesCount }}
@@ -51,22 +43,6 @@
                 </div>
                 <div class="column pl-1 is-three-quarters pb-0">
                   {{ totalObservationsCount }}
-                </div>
-              </div>
-              <div class="columns mb-0 pb-0 pt-0">
-                <div class="column has-text-right pr-0 pb-0">
-                  <b>Observations with data:</b>
-                </div>
-                <div class="column pl-1 is-three-quarters pb-0">
-                  {{ observationsWithData }}
-                </div>
-              </div>
-              <div class="columns mb-0 pb-0 pt-0">
-                <div class="column has-text-right pr-0 pb-0">
-                  <b>Observations without data:</b>
-                </div>
-                <div class="column pl-1 is-three-quarters pb-0">
-                  {{ observationsWithoutData }}
                 </div>
               </div>
             </div>
