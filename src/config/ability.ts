@@ -56,6 +56,7 @@ const rolePermissions: Record<string, DefinePermissions> = {
     can('access', 'Ontology');
     can('access', 'Germplasm');
     can('access', 'SampleManagement');
+    can('delete', 'Submission');
     can('access', 'ProgramAdministration');
     can('access', 'BrAPI');
     can('access', 'JobManagement');
@@ -73,6 +74,7 @@ const rolePermissions: Record<string, DefinePermissions> = {
     can('manage', 'User');
     can('access', 'AdminSection');
     can('submit', 'Submission');
+    can('delete', 'Submission');
     can('access', 'Experiment');
     can('access', 'Ontology');
     can('access', 'Germplasm');
