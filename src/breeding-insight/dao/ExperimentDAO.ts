@@ -127,7 +127,6 @@ export class ExperimentDAO {
                 throw new Error(`Unexpected status code: ${response.status}`);
             }
         } catch (error) {
-            console.info("F");
             return ResultGenerator.err(error);
         }
     }

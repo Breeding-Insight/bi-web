@@ -105,6 +105,9 @@ export class ExperimentService {
         if (!programId) {
             return ResultGenerator.err(new Error('Missing or invalid program id'));
         }
-        return await ExperimentDAO.deleteExperiment(programId, experimentId, hasObsUnits);
+        let response: Result<Error, boolean>;
+        response = await ExperimentDAO.deleteExperiment(programId, experimentId, hasObsUnits);
+        if(response.isErr()) throw response.value;
+        return response;
     }
 }
