@@ -42,7 +42,7 @@
                   <b>Total observations:</b>
                 </div>
                 <div class="column pl-1 is-three-quarters pb-0">
-                  {{ totalObservationsCount }}
+                  {{ observationsWithData }}
                 </div>
               </div>
             </div>
