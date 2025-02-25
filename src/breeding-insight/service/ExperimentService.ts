@@ -100,4 +100,14 @@ export class ExperimentService {
         }
         return await ExperimentDAO.deleteCollaborator(programId, experimentId, id);
     }
+
+    static async deleteExperiment(programId: string | undefined, experimentId: string, hasObsUnits: boolean): Promise<Result<Error, boolean>> {
+        if (!programId) {
+            return ResultGenerator.err(new Error('Missing or invalid program id'));
+        }
+        let response: Result<Error, boolean>;
+        response = await ExperimentDAO.deleteExperiment(programId, experimentId, hasObsUnits);
+        if(response.isErr()) throw response.value;
+        return response;
+    }
 }

@@ -18,7 +18,7 @@
 import {GetterTree} from 'vuex';
 import {RootState} from "@/store/types";
 import {FilterState} from "@/store/filtering/types";
-import {GermplasmFilter} from "@/breeding-insight/model/GermplasmFilter";
+import {GermplasmFilter} from "@/breeding-insight/model/ListFilter";
 
 export const getters: GetterTree<FilterState, RootState> = {
     // germplasm
