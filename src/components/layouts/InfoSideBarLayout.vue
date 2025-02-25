@@ -128,6 +128,19 @@
         <p>
           To access to your breeding program, please log in.
         </p>
+      <div>
+        <button
+            v-if="alternateAuthenticationEnabled()"
+            id="connect-github-button"
+            class="button githubBtn"
+            v-bind:class="{'is-loading': githubLoginProcessing}"
+            v-bind:disabled="githubLoginProcessing"
+            v-on:click="githubLogin"
+        >
+          SIGN IN with GitHub
+        </button>
+      </div>
+      <div>
         <button
             id="connect-orcid-button"
             class="button orcidBtn"
@@ -146,6 +159,7 @@
               alt="ORCID iD icon"
           >
         </button>
+      </div>
         <p class="is-size-7 has-text-left">
           To acknowledge that you have used your iD and that it has been authenticated, we display
           the ORCID iD icon
@@ -188,6 +202,7 @@
     public isLoginModalActive: boolean = false;
     public isLoginServerErrorModalActive: boolean = false;
     public loginProcessing: boolean = false;
+    public githubLoginProcessing: boolean = false;
     private orcidLogoUrl: string = 'https://orcid.org/sites/default/files/images/orcid_24x24.png';
     @Prop()
     public loginRedirect!: boolean;
@@ -231,9 +246,28 @@
       window.location.href = process.env.VUE_APP_BI_API_ROOT+'/sso/start';
     }
 
+    async githubLogin() {
+      // Check the server can be contacted
+      this.githubLoginProcessing = true;
+      try {
+        await ServerManagementService.checkHealth();
+      } catch (error) {
+        this.isLoginServerErrorModalActive = true;
+        this.githubLoginProcessing = false;
+        return;
+      }
+
+      // Start login process
+      window.location.href = process.env.VUE_APP_BI_API_ROOT+'/sso/start/github';
+    }
+
     get sandboxConfig() {
       return process.env.VUE_APP_SANDBOX;
     }
 
+    alternateAuthenticationEnabled() {
+      return process.env.VUE_APP_ALTERNATE_AUTHENTICATION_ENABLED === 'true';
     }
+
+  }
 </script>
