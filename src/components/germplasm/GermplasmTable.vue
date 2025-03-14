@@ -149,6 +149,16 @@ export default class GermplasmTable extends Vue {
       .reduce((obj, key) => Object.assign({}, obj, { [this.fieldMap[key]]: key }), {});
 
   mounted() {
+    // The initial request was using the default value of the mapped getter, germplasmSort.
+    // This component is used for both AllGermplasm.vue and GermplasmByList.vue with different default sorts
+    // and the built-in buefy properties (default-sort) doesn't seem to do what we want with backend sorting.
+    // Because germplasmSort is persistent client-side state, it needs to be set properly for the initial
+    // request in for both cases.
+    if (this.entryNumberVisible) {
+      this.updateSort(new GermplasmSort("importEntryNumber", "ASC"));
+    } else {
+      this.updateSort(new GermplasmSort("accessionNumber", "DESC"));
+    }
     this.paginationController.pageSize = 200
     this.germplasmCallStack = new CallStack(this.germplasmFetch(
         this.activeProgram!.id!,
