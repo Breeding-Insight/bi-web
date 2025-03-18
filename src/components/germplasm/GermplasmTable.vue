@@ -92,7 +92,7 @@ import {
   GermplasmSortField,
   Sort
 } from "@/breeding-insight/model/Sort";
-import {UPDATE_GERMPLASM_SORT} from "@/store/sorting/mutation-types";
+import {UPDATE_GERMPLASM_SORT, UPDATE_GERMPLASM_BY_LIST_SORT} from "@/store/sorting/mutation-types";
 import { PaginationQuery } from '@/breeding-insight/model/PaginationQuery';
 import {GermplasmFilter} from "@/breeding-insight/model/ListFilter";
 
@@ -105,12 +105,14 @@ import {GermplasmFilter} from "@/breeding-insight/model/ListFilter";
     ]),
     ...mapGetters('sorting',
         [
-          'germplasmSort'
+          'germplasmSort',
+          'germplasmByListSort',
       ])
   },
   methods: {
     ...mapMutations('sorting', {
-      updateSort: UPDATE_GERMPLASM_SORT
+      updateGermplasmSort: UPDATE_GERMPLASM_SORT,
+      updateGermplasmByListSort: UPDATE_GERMPLASM_BY_LIST_SORT,
     })
   },
   data: () => ({Trait, StringFormatters, TraitStringFormatters, Pedigree, GermplasmUtils, BrAPIUtils, Sort})
@@ -133,7 +135,9 @@ export default class GermplasmTable extends Vue {
   private germplasmCallStack?: CallStack;
 
   private germplasmSort!: GermplasmSort;
-  private updateSort!: (sort: GermplasmSort) => void;
+  private germplasmByListSort!: GermplasmSort;
+  private updateGermplasmSort!: (sort: GermplasmSort) => void;
+  private updateGermplasmByListSort!: (sort: GermplasmSort) => void;
   private fieldMap: any = {
     'importEntryNumber': GermplasmSortField.ImportEntryNumber,
     'accessionNumber': GermplasmSortField.AccessionNumber,
@@ -149,20 +153,13 @@ export default class GermplasmTable extends Vue {
       .reduce((obj, key) => Object.assign({}, obj, { [this.fieldMap[key]]: key }), {});
 
   mounted() {
-    // The initial request was using the default value of the mapped getter, germplasmSort.
-    // This component is used for both AllGermplasm.vue and GermplasmByList.vue with different default sorts
-    // and the built-in buefy properties (default-sort) doesn't seem to do what we want with backend sorting.
-    // Because germplasmSort is persistent client-side state, it needs to be set properly for the initial
-    // request in for both cases.
-    if (this.entryNumberVisible) {
-      this.updateSort(new GermplasmSort("importEntryNumber", "ASC"));
-    } else {
-      this.updateSort(new GermplasmSort("accessionNumber", "DESC"));
-    }
-    this.paginationController.pageSize = 200
+    // Set default page size to 200.
+    this.paginationController.pageSize = 200;
+    // Germplasm and Germplasm by List use different sorts.
+    let sort: GermplasmSort = this.entryNumberVisible ? this.germplasmByListSort : this.germplasmSort;
     this.germplasmCallStack = new CallStack(this.germplasmFetch(
         this.activeProgram!.id!,
-        this.germplasmSort,
+        sort,
         this.paginationController
     ));
 
@@ -211,7 +208,12 @@ export default class GermplasmTable extends Vue {
 
   setSort(field: string, order: string) {
     if (field in this.fieldMap) {
-      this.updateSort(new GermplasmSort(this.fieldMap[field], Sort.orderAsBI(order)));
+      // Update the appropriate sort.
+      if (this.entryNumberVisible) {
+        this.updateGermplasmByListSort(new GermplasmSort(this.fieldMap[field], Sort.orderAsBI(order)));
+      } else {
+        this.updateGermplasmSort(new GermplasmSort(this.fieldMap[field], Sort.orderAsBI(order)));
+      }
       this.getGermplasm();
     }
   }

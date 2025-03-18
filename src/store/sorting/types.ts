@@ -32,10 +32,13 @@ export interface SortState {
     programSort: ProgramSort,
 
     // germplasm table
-    germplasmSort: GermplasmSort
+    germplasmSort: GermplasmSort,
+
+    // germplasm (by list) table
+    germplasmByListSort: GermplasmSort,
 
     // germplasm list table
-    germplasmListSort: GermplasmListSort
+    germplasmListSort: GermplasmListSort,
 
     // experiment and observation table
     experimentSort: ExperimentSort
