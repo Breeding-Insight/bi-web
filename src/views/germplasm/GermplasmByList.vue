@@ -116,6 +116,8 @@
         v-bind:germplasmFetch="germplasmFetch"
         entryNumberVisible="true"
         v-bind:reference-id="referenceId"
+        v-bind:germplasm-sort="germplasmByListSort"
+        v-bind:update-germplasm-sort="updateGermplasmByListSort"
     >
     </GermplasmTable>
   </div>
@@ -128,7 +130,7 @@ import GermplasmTable from '@/components/germplasm/GermplasmTable.vue';
 import {GermplasmListSortField, GermplasmSort, SortOrder, GermplasmSortField} from '@/breeding-insight/model/Sort';
 import {BiResponse} from '@/breeding-insight/model/BiResponse';
 import {PaginationQuery} from '@/breeding-insight/model/PaginationQuery';
-import {mapGetters} from 'vuex';
+import {mapGetters, mapMutations} from 'vuex';
 import {Program} from '@/breeding-insight/model/Program';
 import {StringFormatters} from "@/breeding-insight/utils/StringFormatters";
 import GermplasmDownloadButton from '@/components/germplasm/GermplasmDownloadButton.vue';
@@ -142,13 +144,23 @@ import {ListService} from '@/breeding-insight/service/ListService';
 import {ListType} from "@/util/ListType";
 import {GermplasmFilter} from "@/breeding-insight/model/ListFilter";
 import {GermplasmService} from "@/breeding-insight/service/GermplasmService";
+import {UPDATE_GERMPLASM_BY_LIST_SORT} from "@/store/sorting/mutation-types";
 
 @Component({
   components: { FormModal, GermplasmTable, GermplasmDownloadButton, GermplasmListDeletionModal, ActionMenu },
   computed: {
     ...mapGetters([
       'activeProgram'
-    ])
+    ]),
+    ...mapGetters('sorting',
+        [
+          'germplasmByListSort',
+        ])
+  },
+  methods: {
+    ...mapMutations('sorting', {
+      updateGermplasmByListSort: UPDATE_GERMPLASM_BY_LIST_SORT,
+    })
   }
 })
 export default class GermplasmByList extends GermplasmBase {
@@ -164,6 +176,9 @@ export default class GermplasmByList extends GermplasmBase {
     new ActionMenuItem('germplasm-list-delete', 'delete-list', 'Delete', this.$ability.can('delete', 'List')),
     new ActionMenuItem('germplasm-list-download-file', 'download-file', 'Download',  true)
   ];
+
+  private germplasmByListSort: GermplasmSort;
+  private updateGermplasmByListSort: (sort: GermplasmSort) => void;
 
   // Formatting filters
   private toYMD(date: string | null | undefined): string {

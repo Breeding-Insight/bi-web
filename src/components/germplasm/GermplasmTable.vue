@@ -103,17 +103,6 @@ import {GermplasmFilter} from "@/breeding-insight/model/ListFilter";
     ...mapGetters([
       'activeProgram'
     ]),
-    ...mapGetters('sorting',
-        [
-          'germplasmSort',
-          'germplasmByListSort',
-      ])
-  },
-  methods: {
-    ...mapMutations('sorting', {
-      updateGermplasmSort: UPDATE_GERMPLASM_SORT,
-      updateGermplasmByListSort: UPDATE_GERMPLASM_BY_LIST_SORT,
-    })
   },
   data: () => ({Trait, StringFormatters, TraitStringFormatters, Pedigree, GermplasmUtils, BrAPIUtils, Sort})
 })
@@ -125,6 +114,10 @@ export default class GermplasmTable extends Vue {
   entryNumberVisible?: Boolean;
   @Prop()
   referenceId?: string;
+  @Prop()
+  germplasmSort!: GermplasmSort;
+  @Prop()
+  updateGermplasmSort!: (sort: GermplasmSort) => void;
 
   private activeProgram?: Program;
   private paginationController: PaginationController = new PaginationController();
@@ -134,10 +127,7 @@ export default class GermplasmTable extends Vue {
 
   private germplasmCallStack?: CallStack;
 
-  private germplasmSort!: GermplasmSort;
-  private germplasmByListSort!: GermplasmSort;
-  private updateGermplasmSort!: (sort: GermplasmSort) => void;
-  private updateGermplasmByListSort!: (sort: GermplasmSort) => void;
+
   private fieldMap: any = {
     'importEntryNumber': GermplasmSortField.ImportEntryNumber,
     'accessionNumber': GermplasmSortField.AccessionNumber,
@@ -155,11 +145,9 @@ export default class GermplasmTable extends Vue {
   mounted() {
     // Set default page size to 200.
     this.paginationController.pageSize = 200;
-    // Germplasm and Germplasm by List use different sorts.
-    let sort: GermplasmSort = this.entryNumberVisible ? this.germplasmByListSort : this.germplasmSort;
     this.germplasmCallStack = new CallStack(this.germplasmFetch(
         this.activeProgram!.id!,
-        sort,
+        this.germplasmSort,
         this.paginationController
     ));
 
@@ -208,12 +196,8 @@ export default class GermplasmTable extends Vue {
 
   setSort(field: string, order: string) {
     if (field in this.fieldMap) {
-      // Update the appropriate sort.
-      if (this.entryNumberVisible) {
-        this.updateGermplasmByListSort(new GermplasmSort(this.fieldMap[field], Sort.orderAsBI(order)));
-      } else {
-        this.updateGermplasmSort(new GermplasmSort(this.fieldMap[field], Sort.orderAsBI(order)));
-      }
+      // Update the sort.
+      this.updateGermplasmSort(new GermplasmSort(this.fieldMap[field], Sort.orderAsBI(order)));
       this.getGermplasm();
     }
   }
