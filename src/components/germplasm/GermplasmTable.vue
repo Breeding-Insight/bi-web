@@ -92,7 +92,6 @@ import {
   GermplasmSortField,
   Sort
 } from "@/breeding-insight/model/Sort";
-import {UPDATE_GERMPLASM_SORT, UPDATE_GERMPLASM_BY_LIST_SORT} from "@/store/sorting/mutation-types";
 import { PaginationQuery } from '@/breeding-insight/model/PaginationQuery';
 import {GermplasmFilter} from "@/breeding-insight/model/ListFilter";
 
@@ -126,7 +125,6 @@ export default class GermplasmTable extends Vue {
   private filters: GermplasmFilter = new GermplasmFilter();
 
   private germplasmCallStack?: CallStack;
-
 
   private fieldMap: any = {
     'importEntryNumber': GermplasmSortField.ImportEntryNumber,
