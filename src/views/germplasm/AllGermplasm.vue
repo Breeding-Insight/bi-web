@@ -2,6 +2,8 @@
   <section id="germplasmTable">
     <GermplasmTable
       v-bind:germplasmFetch="germplasmFetch"
+      v-bind:germplasm-sort="germplasmSort"
+      v-bind:update-germplasm-sort="updateGermplasmSort"
       >
     </GermplasmTable>
   </section>
@@ -10,7 +12,7 @@
 <script lang="ts">
 import {Component, Vue} from "vue-property-decorator";
 import {validationMixin} from "vuelidate";
-import {mapGetters} from "vuex";
+import {mapGetters, mapMutations} from "vuex";
 import {Trait} from "@/breeding-insight/model/Trait";
 import {StringFormatters} from "@/breeding-insight/utils/StringFormatters";
 import {TraitStringFormatters} from "@/breeding-insight/utils/TraitStringFormatters";
@@ -29,6 +31,7 @@ import {
 } from "@/breeding-insight/model/Sort";
 import GermplasmTable from "@/components/germplasm/GermplasmTable.vue";
 import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
+import {UPDATE_GERMPLASM_SORT} from "@/store/sorting/mutation-types";
 
 @Component({
   mixins: [validationMixin],
@@ -37,12 +40,23 @@ import {PaginationController} from "@/breeding-insight/model/view_models/Paginat
     ...mapGetters([
       'activeProgram'
     ]),
+    ...mapGetters('sorting',
+        [
+          'germplasmSort',
+        ])
+  },
+  methods: {
+    ...mapMutations('sorting', {
+      updateGermplasmSort: UPDATE_GERMPLASM_SORT,
+    })
   },
   data: () => ({Trait, StringFormatters, TraitStringFormatters, Pedigree, GermplasmUtils, Sort})
 })
 export default class AllGermplasm extends Vue {
 
   private activeProgram?: Program;
+  private germplasmSort!: GermplasmSort;
+  private updateGermplasmSort!: (sort: GermplasmSort) => void;
 
   // Set the method used to populate the germplasm table
   private germplasmFetch: (programId: string, sort: GermplasmSort, paginationController: PaginationController) => ((filters: any) => Promise<BiResponse>) =
