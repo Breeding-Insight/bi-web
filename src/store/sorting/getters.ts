@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-import {GetterTree} from 'vuex';
-import {RootState} from "@/store/types";
-import {SortState} from "@/store/sorting/types";
+import { GetterTree } from 'vuex';
+import { RootState } from "@/store/types";
+import { SortState } from "@/store/sorting/types";
 import {
     ExperimentSort,
     GermplasmSort,
@@ -31,7 +31,7 @@ import {
     UserSortField
 } from "@/breeding-insight/model/Sort";
 
-const orderMap: any = {[SortOrder.Ascending]: 'asc', [SortOrder.Descending]: 'desc'};
+const orderMap: any = { [SortOrder.Ascending]: 'asc', [SortOrder.Descending]: 'desc' };
 
 export const getters: GetterTree<SortState, RootState> = {
 
@@ -40,7 +40,7 @@ export const getters: GetterTree<SortState, RootState> = {
         return state.activeOntologySort;
     },
     activeOntologySortOrder(state: SortState): SortOrder {
-      return state.activeOntologySort.order;
+        return state.activeOntologySort.order;
     },
 
     // archived ontology table
@@ -123,6 +123,12 @@ export const getters: GetterTree<SortState, RootState> = {
         return state.germplasmSort;
     },
 
+    // germplasm (by list)
+    germplasmByListSort(state: SortState): GermplasmSort {
+        return state.germplasmByListSort;
+    },
+
+    // germplmas list
     germplasmListSort(state: SortState): GermplasmListSort {
         return state.germplasmListSort;
     },
