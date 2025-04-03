@@ -45,13 +45,13 @@ export default class GermplasmLists extends ProgramsBase {
   private germplasmListFetch = (
       programId: string,
       sort: GermplasmListSort,
-      { pageSize, currentPage }: PaginationController
+      paginationController: PaginationController
   ) => (filters: any): Promise<BiResponse> =>
       ListService.getLists<GermplasmListSortField>(
           ListType.GERMPLASM,
           programId,
           sort,
-          { pageSize, page: currentPage - 1 },
+          { pageSize: paginationController.pageSize, page: paginationController.currentPage - 1 },
           filters
       );
 }

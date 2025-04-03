@@ -203,12 +203,12 @@ export default class GermplasmByList extends GermplasmBase {
   private germplasmFetch = (
       programId: string,
       sort: GermplasmSort,
-      { pageSize, currentPage }: PaginationController
+      paginationController: PaginationController
   ) => (filters: any): Promise<BiResponse> =>
       GermplasmService.getAllInList<GermplasmSortField>(
           programId,
           sort,
-          { pageSize, page: currentPage - 1 },
+          { pageSize: paginationController.pageSize, page: paginationController.currentPage - 1 },
           { listDbId: this.$route.params.listId, ...filters }
       );
 
