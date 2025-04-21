@@ -230,7 +230,7 @@
         <b-table-column
             v-slot="props"
             field="data.obsUnitId"
-            label="ObsUnitID"
+            v-bind:label="obsUnitIDLabel"
             sortable
             searchable
             :th-attrs="() => ({scope:'col'})"
@@ -306,6 +306,7 @@ export default class Dataset extends ProgramsBase {
   private paginationController: PaginationController = new PaginationController();
   private datasetTableRows: DatasetTableRow[] = [];
   private unitDbIdToTraitValues: any = {};
+  private obsUnitIDLabel :string = "ObsUnitID";
 
   mounted() {
     this.load();
@@ -552,6 +553,11 @@ export default class Dataset extends ProgramsBase {
     }
   }
 
+  setObsUnitIDLabel(){
+    //todo add NA case? what if there is a genuine NA obs lvl
+    this.obsUnitIDLabel = this.observationUnit + " ObsUnitID"
+  }
+
   @Watch('$route')
   async load() {
     try {
@@ -580,6 +586,9 @@ export default class Dataset extends ProgramsBase {
 
       // Use this.datasetModel to initialize this.datasetTableRows
       this.createDatasetTableRows();
+
+      // Set the obsUnitId label to include observation level
+      this.setObsUnitIDLabel();
 
       //Initialize the paginationController
       this.paginationController.totalCount = this.datasetModel.observationUnits.length;
