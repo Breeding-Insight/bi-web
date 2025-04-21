@@ -70,7 +70,7 @@ state = {
     germplasmByListSort: new GermplasmSort(GermplasmSortField.ImportEntryNumber, SortOrder.Ascending),
 
     // germplasm list table
-    germplasmListSort: new GermplasmListSort(GermplasmListSortField.Name, SortOrder.Ascending),
+    germplasmListSort: new GermplasmListSort(GermplasmListSortField.CreatedDate, SortOrder.Descending),
 
     //experiment and observation table
     experimentSort: new ExperimentSort(ExperimentSortField.CreatedDate, SortOrder.Descending)
