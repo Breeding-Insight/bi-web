@@ -554,7 +554,6 @@ export default class Dataset extends ProgramsBase {
   }
 
   setObsUnitIDLabel(){
-    //todo add NA case? what if there is a genuine NA obs lvl
     this.obsUnitIDLabel = this.observationUnit + " ObsUnitID"
   }
 
