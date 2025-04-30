@@ -92,9 +92,8 @@ import {
   GermplasmSortField,
   Sort
 } from "@/breeding-insight/model/Sort";
-import {UPDATE_GERMPLASM_SORT} from "@/store/sorting/mutation-types";
 import { PaginationQuery } from '@/breeding-insight/model/PaginationQuery';
-import {GermplasmFilter} from "@/breeding-insight/model/GermplasmFilter";
+import {GermplasmFilter} from "@/breeding-insight/model/ListFilter";
 
 @Component({
   mixins: [validationMixin],
@@ -103,15 +102,6 @@ import {GermplasmFilter} from "@/breeding-insight/model/GermplasmFilter";
     ...mapGetters([
       'activeProgram'
     ]),
-    ...mapGetters('sorting',
-        [
-          'germplasmSort'
-      ])
-  },
-  methods: {
-    ...mapMutations('sorting', {
-      updateSort: UPDATE_GERMPLASM_SORT
-    })
   },
   data: () => ({Trait, StringFormatters, TraitStringFormatters, Pedigree, GermplasmUtils, BrAPIUtils, Sort})
 })
@@ -123,6 +113,10 @@ export default class GermplasmTable extends Vue {
   entryNumberVisible?: Boolean;
   @Prop()
   referenceId?: string;
+  @Prop()
+  germplasmSort!: GermplasmSort;
+  @Prop()
+  updateGermplasmSort!: (sort: GermplasmSort) => void;
 
   private activeProgram?: Program;
   private paginationController: PaginationController = new PaginationController();
@@ -132,8 +126,6 @@ export default class GermplasmTable extends Vue {
 
   private germplasmCallStack?: CallStack;
 
-  private germplasmSort!: GermplasmSort;
-  private updateSort!: (sort: GermplasmSort) => void;
   private fieldMap: any = {
     'importEntryNumber': GermplasmSortField.ImportEntryNumber,
     'accessionNumber': GermplasmSortField.AccessionNumber,
@@ -149,7 +141,8 @@ export default class GermplasmTable extends Vue {
       .reduce((obj, key) => Object.assign({}, obj, { [this.fieldMap[key]]: key }), {});
 
   mounted() {
-    this.paginationController.pageSize = 200
+    // Set default page size to 200.
+    this.paginationController.pageSize = 200;
     this.germplasmCallStack = new CallStack(this.germplasmFetch(
         this.activeProgram!.id!,
         this.germplasmSort,
@@ -177,7 +170,10 @@ export default class GermplasmTable extends Vue {
 
   @Watch('filters', {deep: true})
   async getGermplasm() {
+
+    // Set loading = true so the table shows a loading indicator rather than an "empty" message.
     this.germplasmLoading = true;
+
     try {
       // Only process the most recent call
       const {call, callId} = this.germplasmCallStack.makeCall(this.filters);
@@ -198,7 +194,8 @@ export default class GermplasmTable extends Vue {
 
   setSort(field: string, order: string) {
     if (field in this.fieldMap) {
-      this.updateSort(new GermplasmSort(this.fieldMap[field], Sort.orderAsBI(order)));
+      // Update the sort.
+      this.updateGermplasmSort(new GermplasmSort(this.fieldMap[field], Sort.orderAsBI(order)));
       this.getGermplasm();
     }
   }

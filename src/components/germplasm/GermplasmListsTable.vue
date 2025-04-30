@@ -23,7 +23,7 @@
       v-bind:pagination="paginationController"
       backend-sorting
       backend-filtering
-      v-bind:default-sort="[fieldMap['name'], 'ASC']"
+      v-bind:default-sort="[fieldMap['dateCreated'], 'Desc']"
       v-on:sort="setSort"
       v-on:search="initSearch"
       v-bind:search-debounce="400"

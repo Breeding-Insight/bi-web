@@ -16,5 +16,5 @@
  */
 
 export enum ListType {
-    Germplasm = "germplasm",
+    GERMPLASM = "germplasm",
 }

@@ -29,17 +29,9 @@
         <div class="message-body has-text-dark">
           <div class="columns">
             <div class="column">
-              <div class="columns mb-0">
-                <div class="column has-text-right pr-0 pb-0">
-                  <b>Observation unit:</b>
-                </div>
-                <div class="column pl-1 is-three-quarters pb-0">
-                  {{ observationUnit }}
-                </div>
-              </div>
               <div class="columns mb-0 pb-0 pt-0">
                 <div class="column has-text-right pr-0 pb-0">
-                  <b>Phenotypes:</b>
+                  <b>Observation Variables:</b>
                 </div>
                 <div class="column pl-1 is-three-quarters pb-0">
                   {{ phenotypesCount }}
@@ -50,23 +42,7 @@
                   <b>Total observations:</b>
                 </div>
                 <div class="column pl-1 is-three-quarters pb-0">
-                  {{ totalObservationsCount }}
-                </div>
-              </div>
-              <div class="columns mb-0 pb-0 pt-0">
-                <div class="column has-text-right pr-0 pb-0">
-                  <b>Observations with data:</b>
-                </div>
-                <div class="column pl-1 is-three-quarters pb-0">
                   {{ observationsWithData }}
-                </div>
-              </div>
-              <div class="columns mb-0 pb-0 pt-0">
-                <div class="column has-text-right pr-0 pb-0">
-                  <b>Observations without data:</b>
-                </div>
-                <div class="column pl-1 is-three-quarters pb-0">
-                  {{ observationsWithoutData }}
                 </div>
               </div>
             </div>
@@ -99,6 +75,7 @@
             sortable
             searchable
             :th-attrs="() => ({scope:'col'})"
+            :custom-search="(props, filterString) => exactSearchGID(props, filterString)"
         >
           {{ props.row.data.gid }}
         </b-table-column>
@@ -387,7 +364,9 @@ export default class Dataset extends ProgramsBase {
 
   filterByObservations(index: number, propsRow: any, input: string) {
     let obsValue = propsRow.data.traitValues[index];
-    obsValue = obsValue ? obsValue : "";  //convert null or undefined to an empty string
+    //Make case insensitive
+    obsValue = obsValue ? obsValue.toUpperCase() : "";  //convert null or undefined to an empty string;
+    input = input.toUpperCase();
     return obsValue.includes(input);
   }
 
@@ -401,6 +380,12 @@ export default class Dataset extends ProgramsBase {
     } else {
       return second.localeCompare(first);
     }
+  }
+
+  //Filter GIDs by exact match
+  exactSearchGID(props: any, input: string) {
+    let value = props.data.gid;
+    return Number(value) === (Number(input));
   }
 
   //sort GIDs numerically

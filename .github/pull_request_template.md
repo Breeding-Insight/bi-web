@@ -20,3 +20,4 @@ _Please include any details needed for reviewers to test this code_
 - [ ] I have commented my code, particularly in hard-to-understand areas
 - [ ] I have made corresponding changes to documentation
 - [ ] I have run TAF: _\<link to TAF run>_
+- [ ] I have run SiteImprove on pages impacted by changes 

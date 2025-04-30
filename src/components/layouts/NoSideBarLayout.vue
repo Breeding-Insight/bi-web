@@ -32,7 +32,7 @@
         </div>
         <div class="level-right">
           <div class="level-item">
-            <h1 class="title has-text-primary level-item">{{title}}</h1>
+            <h1 v-if="title" class="title has-text-primary level-item">{{title}}</h1>
           </div>
           <div class="level-item">
             <UserStatusMenu v-bind:username="username" v-on:logout="$emit('logout')"/>

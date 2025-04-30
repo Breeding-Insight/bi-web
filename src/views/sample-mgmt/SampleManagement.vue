@@ -99,18 +99,6 @@
         </ExpandableTable>
       </div>
     </div>
-    <GenericModal
-        v-bind:active.sync="showGenerateFileModal"
-        v-bind:msg-title="'Generate Sample Management File'"
-        v-on:deactivate="closeModal()"
-        v-bind:modalClass="'generate-sample-file'"
-    >
-      <h2>Visible!</h2>
-      <template v-slot:footer>
-        <button class="button is-success" v-on:click="closeModal()">Generate</button>
-        <button class="button" v-on:click="closeModal()">Cancel</button>
-      </template>
-    </GenericModal>
   </div>
 </template>
 
