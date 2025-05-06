@@ -59,7 +59,7 @@
           <p class="has-text-light is-paddingless">
             Use these credentials to explore sample data and currently available features.
           </p>
-          <div class="is-hidden-touch">
+          <div>
             <hr class="is-light">
             <div class="columns is-gapless">
               <div class="column is-narrow mr-2">
