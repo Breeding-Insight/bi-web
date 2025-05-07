@@ -19,6 +19,24 @@
     <router-link v-bind:to="{name: 'sample-management', params: {programId: activeProgram.id}}">
       &lt; Sample Management
     </router-link>
+
+    <template v-if="!submissionDetailsLoading">
+      <ConfirmationModal
+          v-bind:unique-id="submissionId"
+          v-bind:modal-title="`Delete Submission ${submission.name}`"
+          v-bind:confirmedAction="deleteSampleSubmission"
+          v-bind:active="deleteModalActive"
+          modal-class="germplasm-list-deletion-button"
+          v-on:deactivate="deleteModalActive = false"
+          v-on:show-error-notification="$emit('show-error-notification', $event)"
+      >
+        <template #form>
+          <p><strong>{{submission.samples.length}} samples</strong> will be deleted. Are you sure you want to delete the sample submission?</p>
+        </template>
+        <slot />
+      </ConfirmationModal>
+    </template>
+
     <div class="mb-4"/>
     <template v-if="submissionLoading">
       <div class="loading-indicator"></div>
@@ -62,6 +80,7 @@
                       v-on:submit="startOrderSubmission()"
                       v-on:manual-update-status="startManualUpdate()"
                       v-on:check-status="checkVendorStatus()"
+                      v-on:delete="deleteSubmission()"
           />
         </article>
       </div>
@@ -154,7 +173,8 @@
               {{ props.row.data.additionalInfo.germplasmName || props.row.data.sampleName }}
             </b-table-column>
             <b-table-column field="data.additionalInfo.gid" label="GID" v-slot="props" searchable
-                            :th-attrs="(column) => ({scope:'col'})">
+                            :th-attrs="(column) => ({scope:'col'})"
+                            :custom-search="(props, filterString) => exactSearchGID(props, filterString)">
               <GermplasmLink
                   v-bind:germplasmGID="props.row.data.additionalInfo.gid"
               />
@@ -357,15 +377,17 @@ import StatusEnum = VendorOrderStatusResponseResult.StatusEnum;
 import {Plate} from "@/breeding-insight/brapi/model/geno/plate";
 import * as XLSX from "xlsx";
 import {WorkBook} from "xlsx";
+import ConfirmationModal from "@/components/modals/ConfirmationModal.vue";
 
 @Component({
   components: {
+    ConfirmationModal,
     GenericModal,
     ExpandableTable,
     GermplasmLink,
     PlusCircleIcon,
     ExperimentObservationsDownloadModal,
-    ActionMenu
+    ActionMenu,
   },
   computed: {
     ...mapGetters([
@@ -391,6 +413,7 @@ export default class SubmissionDetails extends ProgramsBase {
   private showUpdateModal = false;
   private updateStarted = false;
   private statusEdit?: string = 'NOT SUBMITTED';
+  private deleteModalActive: boolean = false;
 
   private collator = new Intl.Collator('en', {numeric: true, sensitivity: 'base'});
 
@@ -403,6 +426,12 @@ export default class SubmissionDetails extends ProgramsBase {
 
   get submissionId(): string {
     return this.$route.params.submissionId;
+  }
+
+  private deleteSuccess() {
+    // Navigate to the submissions table since this submission no longer exists
+    this.$router.push({ name: "sample-management" });
+    this.$emit('show-success-notification', `Successfully deleted sample submission`);
   }
 
   async getSubmission(showLoading: boolean = true) {
@@ -444,6 +473,12 @@ export default class SubmissionDetails extends ProgramsBase {
       } else if (this.submission!.submitted && this.submission!.vendorOrderId && this.submission!.vendorStatus !== StatusEnum.Completed.toUpperCase()) {
         actionsMenuItems.push(new ActionMenuItem('submission-check-status', 'check-status', 'Check Vendor Status'));
       }
+    }
+
+    if (this.$ability.can('delete', 'Submission')) {
+      const enabled = !this.submission!.submitted && this.submission!.vendorStatus !== StatusEnum.Completed.toUpperCase();
+
+      actionsMenuItems.push(new ActionMenuItem('submission-delete', 'delete', 'Delete submission', enabled));
     }
 
     this.actions = actionsMenuItems;
@@ -578,6 +613,7 @@ export default class SubmissionDetails extends ProgramsBase {
       // let orderResponse = response.value;
       // this.submission!.vendorOrderId = orderResponse.orderId;
       await this.getSubmission(false);
+      await this.getSubmissionDetails();
     } catch (e) {
       // this.$emit('show-error-notification', 'Error while trying to submit sample order');
       this.submissionError = e;
@@ -594,6 +630,7 @@ export default class SubmissionDetails extends ProgramsBase {
         throw response.value;
       }
       await this.getSubmission(false);
+      await this.getSubmissionDetails();
     } catch (e) {
       this.$emit('show-error-notification', 'Error while trying to check order status');
     } finally {
@@ -621,6 +658,7 @@ export default class SubmissionDetails extends ProgramsBase {
         throw response.value;
       }
       await this.getSubmission(false);
+      await this.getSubmissionDetails();
     } catch (e) {
       this.$emit('show-error-notification', 'Error while trying to update status');
     } finally {
@@ -706,6 +744,43 @@ export default class SubmissionDetails extends ProgramsBase {
     } else {
       return b.data.plateName.localeCompare(a.data.plateName, undefined, {numeric: true, sensitivity: 'base'});
     }
+  }
+
+  //Filter GIDs by exact match
+  exactSearchGID(props: any, input: string) {
+    let value = props.data.additionalInfo.gid;
+    return Number(value) === (Number(input));
+  }
+
+  deleteSubmission() {
+    this.deleteModalActive = true;
+  }
+
+  async deleteSampleSubmission(): Promise<void> {
+    if (this.activeProgram) {
+      try {
+        const result: Result<Error, Void> = await SampleSubmissionService.deleteSubmission(this.activeProgram.id, this.submissionId);
+        if (result.isErr()) {
+          const response = result.value.response;
+
+          if (response && response.status === 405) {
+            this.$emit('show-error-notification', `Cannot delete a submission with submitted or completed status`);
+            return;
+          }
+          this.$emit('show-error-notification', `Unknown error deleting submission`);
+
+        } else {
+          this.deleteSuccess();
+        }
+
+      } catch (error) {
+        this.$emit('show-error-notification', `Error while trying to delete the sample submission`);
+      }
+    }
+  }
+
+  cancelDelete(){
+    this.$emit('deactivate');
   }
 }
 </script>

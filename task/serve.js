@@ -26,7 +26,7 @@ const port = process.env.PORT || JSON.parse(fs.readFileSync('package.json', 'utf
   let spinner = ora({prefixText: ' ', color: 'yellow'});
   try {
     spinner = spinner.start('sort package.json');
-    await execa('npx', ['sort-package-json'], {preferLocal: true});
+    await execa('npx', ['sort-package-json@3.0.0'], {preferLocal: true});
     spinner = spinner.clear()
                      .succeed('package.json sorted');
 

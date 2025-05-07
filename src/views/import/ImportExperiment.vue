@@ -33,7 +33,7 @@
 
       <template v-slot:importInfoTemplateMessageBox>
         <ImportInfoTemplateMessageBox v-bind:import-type-name="'Experiments & Observations'"
-                                      v-bind:template-url="'https://cornell.box.com/shared/static/7ziyhhnia5i7bdvekawhb2ldyobrecmw.xls'"
+                                      v-bind:template-url="'https://cornell.box.com/shared/static/x53n1x8fhccgij8hroel0zuz3y4l31iu.xls'"
                                       class="mb-5">
           <strong>Before You Import...</strong>
           <br/>
@@ -68,9 +68,6 @@
           </div>
           <div id="experiment-summary" class ="right-confirm-column">
             <p class="is-size-5 mb-2"><strong>Import Summary</strong></p>
-            Dataset: {{ rows[0].observationUnit.brAPIObject.additionalInfo.observationLevel }}
-            <br>Germplasm: {{ statistics.GIDs.newObjectCount }}
-            <br>Environment(s): {{ statistics.Environments.newObjectCount }}
             <br>Observation Variables: {{ dynamicColumns.length }}
 
             <span v-if="isExisting(rows)" >

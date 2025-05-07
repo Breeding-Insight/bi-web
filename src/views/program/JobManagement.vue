@@ -55,9 +55,6 @@
       <b-table-column field="data.updatedAt" label="Last Updated" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
         {{ formatDate(props.row.data.updatedAt) }}
       </b-table-column>
-      <b-table-column field="data.statusMessage" label="Status Message" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" :width="50">
-        <span class="truncated">{{ props.row.data.statusMessage }}</span>
-      </b-table-column>
 
       <template v-slot:detail="{row}">
         <div class="column" v-if="row.jobDetail.jobType === 'IMPORT'">

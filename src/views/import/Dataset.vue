@@ -29,17 +29,9 @@
         <div class="message-body has-text-dark">
           <div class="columns">
             <div class="column">
-              <div class="columns mb-0">
-                <div class="column has-text-right pr-0 pb-0">
-                  <b>Observation unit:</b>
-                </div>
-                <div class="column pl-1 is-three-quarters pb-0">
-                  {{ observationUnit }}
-                </div>
-              </div>
               <div class="columns mb-0 pb-0 pt-0">
                 <div class="column has-text-right pr-0 pb-0">
-                  <b>Phenotypes:</b>
+                  <b>Observation Variables:</b>
                 </div>
                 <div class="column pl-1 is-three-quarters pb-0">
                   {{ phenotypesCount }}
@@ -50,23 +42,7 @@
                   <b>Total observations:</b>
                 </div>
                 <div class="column pl-1 is-three-quarters pb-0">
-                  {{ totalObservationsCount }}
-                </div>
-              </div>
-              <div class="columns mb-0 pb-0 pt-0">
-                <div class="column has-text-right pr-0 pb-0">
-                  <b>Observations with data:</b>
-                </div>
-                <div class="column pl-1 is-three-quarters pb-0">
                   {{ observationsWithData }}
-                </div>
-              </div>
-              <div class="columns mb-0 pb-0 pt-0">
-                <div class="column has-text-right pr-0 pb-0">
-                  <b>Observations without data:</b>
-                </div>
-                <div class="column pl-1 is-three-quarters pb-0">
-                  {{ observationsWithoutData }}
                 </div>
               </div>
             </div>
@@ -99,6 +75,7 @@
             sortable
             searchable
             :th-attrs="() => ({scope:'col'})"
+            :custom-search="(props, filterString) => exactSearchGID(props, filterString)"
         >
           {{ props.row.data.gid }}
         </b-table-column>
@@ -146,6 +123,7 @@
         <b-table-column
             v-slot="props"
             field="data.expUnitId"
+            :custom-sort="sortExpUnitId"
             label="Exp Unit ID"
             sortable
             searchable
@@ -387,7 +365,9 @@ export default class Dataset extends ProgramsBase {
 
   filterByObservations(index: number, propsRow: any, input: string) {
     let obsValue = propsRow.data.traitValues[index];
-    obsValue = obsValue ? obsValue : "";  //convert null or undefined to an empty string
+    //Make case insensitive
+    obsValue = obsValue ? obsValue.toUpperCase() : "";  //convert null or undefined to an empty string;
+    input = input.toUpperCase();
     return obsValue.includes(input);
   }
 
@@ -403,6 +383,12 @@ export default class Dataset extends ProgramsBase {
     }
   }
 
+  //Filter GIDs by exact match
+  exactSearchGID(props: any, input: string) {
+    let value = props.data.gid;
+    return Number(value) === (Number(input));
+  }
+
   //sort GIDs numerically
   sortGID(a: any, b: any, isAsc: boolean){
     let first :number = parseInt(a.data.gid);
@@ -415,6 +401,18 @@ export default class Dataset extends ProgramsBase {
       if( second > first ){ return 1; }
       else if ( second < first){ return -1;}
       else return 0;
+    }
+  }
+
+  // This sorts the Exp Unit ID's in Alphanumeric order (ie. B300,BO2, B1 would sort to B1, B02, B300)
+  sortExpUnitId(a: any, b: any, isAsc: boolean){
+    let first :any = (a.data.expUnitId);
+    let second :any = (b.data.expUnitId);
+    if (isAsc) {
+      return first.toString().localeCompare(second.toString(), 'en', {numeric: true});
+    }
+    else {
+      return second.toString().localeCompare(first.toString(), 'en', {numeric: true});
     }
   }
 

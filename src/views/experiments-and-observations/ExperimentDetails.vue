@@ -33,6 +33,17 @@
         v-on:deactivate="downloadModalActive = false"
     />
 
+    <ExperimentDeleteModal
+        v-bind:experiment="experiment"
+        v-bind:modal-title="`Delete ${experiment.trialName}`"
+        v-bind:trial-id="experimentUUID"
+        v-bind:active="deleteModalActive"
+        v-bind:obs-count="obsCount"
+        v-on:show-error-notification="$emit('show-error-notification', $event)"
+        v-on:show-success-notification="$emit('show-success-notification', $event)"
+        v-on:deactivate="deleteModalActive = false"
+    />
+
     <SubEntityDatasetModal
         v-bind:experiment="experiment"
         v-bind:default-observation-level="experimentObservationUnit"
@@ -120,6 +131,7 @@
                       v-on:download-file="downloadFile()"
                       v-on:create-sub-entity-dataset="openSubEntityModal()"
                       v-on:add-collaborator="addCollaborator()"
+                      v-on:delete-experiment="deleteExperiment()"
           />
         </article>
       </div>
@@ -164,6 +176,7 @@ import ProgramsBase from "@/components/program/ProgramsBase.vue";
 import ActionMenu from "@/components/layouts/menus/ActionMenu.vue";
 import {ActionMenuItem} from "@/breeding-insight/model/ActionMenuItem";
 import ExperimentObservationsDownloadModal from "@/components/experiments/ExperimentObservationsDownloadModal.vue";
+import ExperimentDeleteModal from "@/components/experiments/ExperimentDeleteModal.vue";
 import SubEntityDatasetModal from "@/components/modals/SubEntityDatasetModal.vue";
 import {DatasetMetadata} from "@/breeding-insight/model/DatasetMetadata";
 import {SubEntityDatasetNewRequest} from "@/breeding-insight/model/SubEntityDatasetNewRequest";
@@ -176,6 +189,7 @@ import ExperimentCollaboratorRemovalModal from "@/components/experiments/Experim
     SubEntityDatasetModal,
     PlusCircleIcon,
     ExperimentObservationsDownloadModal,
+    ExperimentDeleteModal,
     ExperimentAddCollaboratorModal,
     ExperimentCollaboratorRemovalModal,
     ActionMenu
@@ -195,20 +209,24 @@ export default class ExperimentDetails extends ProgramsBase {
   private experimentLoading: boolean = true;
   private addCollaboratorActive: boolean = false;
   private downloadModalActive: boolean = false;
+  private deleteModalActive: boolean = false;
   private subEntityModalActive: boolean = false;
   private removeCollaboratorActive: boolean = false;
   private selectedForRemoval?: Collaborator = new Collaborator();
   private datasetMetadata: DatasetMetadata[] = [];
+  private hasObsUnits: boolean = false;
+  private obsCount: number = 0;
   private collaborators: Collaborator[] = [];
 
   private actions: ActionMenuItem[] = [
       new ActionMenuItem('experiment-import-file', 'import-file', 'Import file', this.$ability.can('create', 'Import')),
       new ActionMenuItem('experiment-download-file', 'download-file', 'Download file'),
       new ActionMenuItem('experiment-add-collaborator', 'add-collaborator', 'Add Collaborator',  this.$ability.can('manage', 'Collaborator')),
-      // new ActionMenuItem('experiment-create-sub-entity-dataset', 'create-sub-entity-dataset', 'Create Sub-Entity Dataset')
+      new ActionMenuItem('experiment-create-sub-entity-dataset', 'create-sub-entity-dataset', 'Create Sub-Entity Dataset'),
+      new ActionMenuItem('experiment-delete', 'delete-experiment', 'Delete experiment', this.$ability.can('delete', 'Experiment'))
   ];
 
-  mounted () {
+  mounted() {
     this.getExperiment();
     this.getDatasetMetadata();
   }
@@ -226,11 +244,15 @@ export default class ExperimentDetails extends ProgramsBase {
     this.downloadModalActive = true;
   }
 
+  private deleteExperiment() {
+    this.deleteModalActive = true;
+  }
+
   private addCollaborator() {
     this.addCollaboratorActive = true;
   }
 
-  private removeCollaborator(collaborator:Collaborator) {
+  private removeCollaborator(collaborator: Collaborator) {
     this.selectedForRemoval = collaborator;
     this.removeCollaboratorActive = true;
   }
@@ -258,27 +280,45 @@ export default class ExperimentDetails extends ProgramsBase {
   get experimentUUID(): string {
     return this.$route.params.experimentId;
   }
+
   get userName(): string {
-    if( !this.experiment.additionalInfo ){return '';}
-    if( !this.experiment.additionalInfo.createdBy){return '';}
+    if (!this.experiment.additionalInfo) {
+      return '';
+    }
+    if (!this.experiment.additionalInfo.createdBy) {
+      return '';
+    }
     return this.experiment.additionalInfo.createdBy.userName;
   }
+
   get experimentalUnit(): string {
-    if( !this.experiment.additionalInfo ){return '';}
+    if (!this.experiment.additionalInfo) {
+      return '';
+    }
     return this.experiment.additionalInfo.defaultObservationLevel;
   }
+
   get experimentType(): string {
-    if( !this.experiment.additionalInfo ){return '';}
+    if (!this.experiment.additionalInfo) {
+      return '';
+    }
     return this.experiment.additionalInfo.experimentType;
   }
+
   get createdDate(): string {
-    if( !this.experiment.additionalInfo ){return '';}
+    if (!this.experiment.additionalInfo) {
+      return '';
+    }
     return this.experiment.additionalInfo.createdDate;
   }
+
   get germplasmCount(): string {
-    if( !this.experiment.additionalInfo ){return '';}
+    if (!this.experiment.additionalInfo) {
+      return '';
+    }
     return this.experiment.additionalInfo.germplasmCount;
   }
+
   // This is not being used.  But may be used later.
   // get environmentsCount(): string {
   //   if( !this.experiment.additionalInfo ){return '';}
@@ -299,7 +339,7 @@ export default class ExperimentDetails extends ProgramsBase {
   }
 
   @Watch('$route')
-  async getExperiment () {
+  async getExperiment() {
     this.experimentLoading = true;
     try {
       const response: Result<Error, Trial> = await ExperimentService.getSingleExperiment(this.activeProgram!.id!, this.experimentUUID, true);
@@ -316,20 +356,20 @@ export default class ExperimentDetails extends ProgramsBase {
     }
   }
 
-@Watch('$route', { immediate: true })
-async getAssignedCollaborators(): Promise<void> {
-  try {
-    const response: Result<Error, Collaborator[]> = await ExperimentService.getAssignedCollaborators(this.activeProgram!.id!, this.experimentUUID);
-    if (response.isErr()) {
-      throw response.value;
+  @Watch('$route', {immediate: true})
+  async getAssignedCollaborators(): Promise<void> {
+    try {
+      const response: Result<Error, Collaborator[]> = await ExperimentService.getAssignedCollaborators(this.activeProgram!.id!, this.experimentUUID);
+      if (response.isErr()) {
+        throw response.value;
+      }
+      this.collaborators = response.value.data;
+    } catch (err) {
+      // Display error that experiment cannot be loaded
+      this.$emit('show-error-notification', 'Error while trying to load collaborators');
+      throw err;
     }
-    this.collaborators = response.value.data;
-  } catch (err) {
-    // Display error that experiment cannot be loaded
-    this.$emit('show-error-notification', 'Error while trying to load collaborators');
-    throw err;
   }
-}
 
   // Get metadata for all datasets available in this experiment.
   @Watch('$route')
@@ -346,5 +386,27 @@ async getAssignedCollaborators(): Promise<void> {
       throw err;
     }
   }
+
+  @Watch('datasetMetadata')
+  async getObsUnitCount(): Promise<void> {
+      let dms = this.datasetMetadata[0];
+      let datasetId = dms.id;
+      try {
+        const response: Result<Error, DatasetModel> = await ExperimentService.getDatasetModel(this.activeProgram!.id!, this.experimentUUID, datasetId);
+
+        if (response.isErr()) {
+          throw response.value;
+        }
+        let dataset = response.value;
+        if(dataset && dataset.additionalInfo){
+          this.obsCount = dataset.additionalInfo.observations;
+        }
+      } catch (err) {
+        // Display error that dataset cannot be loaded
+        this.$emit('show-error-notification', 'Error while trying to load dataset');
+        throw err;
+      }
+  }
+
 }
 </script>

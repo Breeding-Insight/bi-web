@@ -945,7 +945,7 @@ tr:nth-child(odd) td.db-filled {
   margin-right: 10px;
 }
 
-.sub-entity-dataset-modal, .experiment-observations-download-button, .experiment-observation-add-collaborator-button, .experiment-observation-remove-collaborator-button {
+.sub-entity-dataset-modal, .experiment-observations-download-button, .experiment-observation-add-collaborator-button, .experiment-observation-remove-collaborator-button, .germplasm-list-deletion-button {
   .modal {
     .modal-card {
       width: $medium-modal-content-width;
@@ -1082,6 +1082,10 @@ label.environment-option-label {
     background-color: rgba(0,0,0,.17);
     color: $black;
   }
+}
+
+article.message.is-success *:not(button) {
+  color: mix(black, $success, 70%);
 }
 
 
