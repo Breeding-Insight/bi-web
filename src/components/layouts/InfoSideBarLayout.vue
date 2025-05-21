@@ -30,6 +30,7 @@
         </div>
       </template>
       <template v-slot:menu>
+        <div class="hide_when_small">
         <div v-if="sandboxConfig === ''" class="pl-3">
           <h1
             class="title has-text-warning is-5"
@@ -90,6 +91,7 @@
               password: guestusr1
             </p>
           </article>
+        </div>
         </div>
       </template>
       <template v-slot:content>

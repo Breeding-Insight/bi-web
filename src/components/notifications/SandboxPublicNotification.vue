@@ -17,7 +17,7 @@
 
 <template>
   <b-notification type="is-warning" v-bind:active.sync="notificationActive" aria-close-label="Close Notification"
-                  role="alert">
+                  role="alert" >
     <div class="content">
       <h1 class="title is-4">This is a sandbox site open to the general public.</h1>
       <ul class="is-size-5">

@@ -17,7 +17,6 @@
 
 <template>
   <div class="sidebarlayout">
-
     <header class="main-header">
       <div class="level header-title is-marginless">
         <div class="level-left">
@@ -28,7 +27,7 @@
                aria-expanded="false"
                @click="toggleSidebar()"
             >
-              <MenuIcon v-if="showMenuToggle"></MenuIcon>
+              <MenuIcon></MenuIcon>
             </a>
           </div>
           <div class="level-item">
@@ -62,10 +61,10 @@
         </div>
       </div>
     </header>
-    <div class="columns is-marginless">
+    <div  class="columns is-marginless">
       <div class="column is-narrow p-0" :class="{ 'is-hidden': !showMenu || !showSidebarMobile }">
         <div class="is-300px">
-          <div id="sideMenu" class="menu mb-0 menu-test sidebar side-menu">
+          <div id="sideMenu" class="menu mb-0 menu-test sidebar side-menu hide_when_small" >
             <slot name="menu"></slot>
             <div id="versionInfo" class="is-size-7 is-justify-content-center is-align-content-center is-flex">
               <span class="is-centered">
@@ -120,7 +119,10 @@ import UserStatusMenu from "@/components/layouts/menus/UserStatusMenu.vue";
     showMenu?: boolean;
 
     toggleSidebar() {
+      console.info("this.showSidebarMobile");
+      console.info(this.showSidebarMobile);
       store.commit(SHOW_SIDEBAR_MOBILE, !this.showSidebarMobile);
+      console.info(this.showSidebarMobile);
     }
 
     get sandboxConfig() {
