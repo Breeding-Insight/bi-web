@@ -40,16 +40,6 @@
             For now, this message should only show up if there is no sandbox mode set.
           </p>
         </div>
-        <div v-if="sandboxConfig === ''" class="pl-3">
-          <h1
-            class="title has-text-warning is-5"
-          >
-            Developer mode
-          </h1>
-          <p class="has-text-light is-paddingless">
-            For now, this message should only show up if there is no sandbox mode set.
-          </p>
-        </div>
         <div v-if="sandboxConfig === SandboxMode.Coordinator" class="pl-3">
           <h1
             class="title has-text-warning is-5"

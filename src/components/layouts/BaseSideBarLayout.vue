@@ -61,7 +61,7 @@
         </div>
       </div>
     </header>
-    <div  class="columns is-marginless">
+    <div class="columns is-marginless">
       <div class="column is-narrow p-0" :class="{ 'is-hidden': !showMenu || !showSidebarMobile }">
         <div class="is-300px">
           <div id="sideMenu" class="menu mb-0 menu-test sidebar side-menu">
@@ -119,7 +119,8 @@ import UserStatusMenu from "@/components/layouts/menus/UserStatusMenu.vue";
     showMenu?: boolean;
 
   mounted () {
-    store.commit(SHOW_SIDEBAR_MOBILE, !(window.matchMedia("(max-width: 700px)").matches && (this.sandboxConfig === '1' || this.sandboxConfig === SandboxMode.Coordinator)));
+    // IF the screen is narrow and DeltaBreed is in private-sandbox or coordinator-sandbox modes, THEN default the sidebar to "hidden".
+    store.commit(SHOW_SIDEBAR_MOBILE, (window.matchMedia("(min-width: 700px)").matches && (this.sandboxConfig === '1' || this.sandboxConfig === SandboxMode.Coordinator)));
   }
     toggleSidebar() {
       store.commit(SHOW_SIDEBAR_MOBILE, !this.showSidebarMobile);
