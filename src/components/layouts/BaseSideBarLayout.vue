@@ -118,9 +118,9 @@ import UserStatusMenu from "@/components/layouts/menus/UserStatusMenu.vue";
     @Prop({default: true})
     showMenu?: boolean;
 
-  // mounted () {
-  //   store.commit(SHOW_SIDEBAR_MOBILE, !(window.matchMedia("(max-width: 700px)").matches));
-  // }
+  mounted () {
+    store.commit(SHOW_SIDEBAR_MOBILE, !(window.matchMedia("(max-width: 700px)").matches && (this.sandboxConfig === '1' || this.sandboxConfig === SandboxMode.Coordinator)));
+  }
     toggleSidebar() {
       store.commit(SHOW_SIDEBAR_MOBILE, !this.showSidebarMobile);
     }
