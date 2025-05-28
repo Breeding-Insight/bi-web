@@ -20,20 +20,15 @@
     <header class="main-header">
       <div class="level header-title is-marginless">
         <div class="level-left">
-          <div class="level-item is-pulled-left">
+          <div v-if="showMenu" class="level-item is-pulled-left">
             <a role="button"
                class="navbar-hamburger has-text-dark"
                aria-label="Open Navigation Menu"
                aria-expanded="false"
                @click="toggleSidebar()"
             >
-              <MenuIcon v-if="!this.showSidebarMobile"></MenuIcon>
-              <span
-                  v-if="this.showSidebarMobile"
-              >❌</span>
+              <MenuIcon ></MenuIcon>
             </a>
-
-
           </div>
           <div class="level-item">
             <a href="/">
@@ -67,9 +62,9 @@
       </div>
     </header>
     <div  class="columns is-marginless">
-      <div class="column is-narrow p-0" :class="{ 'is-hidden':  !showSidebarMobile }">
+      <div class="column is-narrow p-0" :class="{ 'is-hidden': !showMenu || !showSidebarMobile }">
         <div class="is-300px">
-          <div id="sideMenu" class="menu mb-0 menu-test sidebar side-menu" >
+          <div id="sideMenu" class="menu mb-0 menu-test sidebar side-menu">
             <slot name="menu"></slot>
             <div id="versionInfo" class="is-size-7 is-justify-content-center is-align-content-center is-flex">
               <span class="is-centered">
@@ -123,9 +118,9 @@ import UserStatusMenu from "@/components/layouts/menus/UserStatusMenu.vue";
     @Prop({default: true})
     showMenu?: boolean;
 
-  mounted () {
-    store.commit(SHOW_SIDEBAR_MOBILE, !(window.matchMedia("(max-width: 700px)").matches));
-  }
+  // mounted () {
+  //   store.commit(SHOW_SIDEBAR_MOBILE, !(window.matchMedia("(max-width: 700px)").matches));
+  // }
     toggleSidebar() {
       store.commit(SHOW_SIDEBAR_MOBILE, !this.showSidebarMobile);
     }

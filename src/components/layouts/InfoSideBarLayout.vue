@@ -30,7 +30,16 @@
         </div>
       </template>
       <template v-slot:menu>
-        <div class="hide_when_small">
+        <div v-if="sandboxConfig === ''" class="pl-3">
+          <h1
+            class="title has-text-warning is-5"
+          >
+            Developer mode
+          </h1>
+          <p class="has-text-light is-paddingless">
+            For now, this message should only show up if there is no sandbox mode set.
+          </p>
+        </div>
         <div v-if="sandboxConfig === ''" class="pl-3">
           <h1
             class="title has-text-warning is-5"
@@ -57,8 +66,11 @@
           >
             Guest Account
           </h1>
-          <p class="has-text-light is-paddingless">
+          <p class="has-text-light is-paddingless mb-3">
             Use these credentials to explore sample data and currently available features.
+          </p>
+          <p class="has-text-light is-paddingless">
+            Data submitted to this site is not private.
           </p>
           <div>
             <hr class="is-light">
@@ -82,7 +94,7 @@
 
           <article class="block">
             <h2 class="has-text-warning is-5 is-normal">
-              Guest
+              Sandbox Guest
             </h2>
             <p class="has-text-light is-paddingless is-marginless">
               user: guestusr@mailinator.com
@@ -91,7 +103,6 @@
               password: guestusr1
             </p>
           </article>
-        </div>
         </div>
       </template>
       <template v-slot:content>
