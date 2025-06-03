@@ -25,10 +25,13 @@ const port = process.env.PORT || JSON.parse(fs.readFileSync('package.json', 'utf
 (async () => {
   let spinner = ora({prefixText: ' ', color: 'yellow'});
   try {
+    // TODO: figure out the issue here
+    /*
     spinner = spinner.start('sort package.json');
     await execa('npx', ['sort-package-json@3.0.0'], {preferLocal: true});
     spinner = spinner.clear()
                      .succeed('package.json sorted');
+     */
 
     console.log(`App running at http://localhost:${port}`);
     await execa.command(`vue-cli-service\ serve --port ${port}`);
