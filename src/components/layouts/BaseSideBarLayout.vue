@@ -17,18 +17,17 @@
 
 <template>
   <div class="sidebarlayout">
-
     <header class="main-header">
       <div class="level header-title is-marginless">
         <div class="level-left">
-          <div class="level-item is-pulled-left">
+          <div v-if="showMenu" class="level-item is-pulled-left">
             <a role="button"
                class="navbar-hamburger has-text-dark"
                aria-label="Open Navigation Menu"
                aria-expanded="false"
                @click="toggleSidebar()"
             >
-              <MenuIcon v-if="showMenuToggle"></MenuIcon>
+              <MenuIcon ></MenuIcon>
             </a>
           </div>
           <div class="level-item">
@@ -119,6 +118,10 @@ import UserStatusMenu from "@/components/layouts/menus/UserStatusMenu.vue";
     @Prop({default: true})
     showMenu?: boolean;
 
+  mounted () {
+    // IF the screen is narrow and DeltaBreed is in private-sandbox or coordinator-sandbox modes, THEN default the sidebar to "hidden".
+    store.commit(SHOW_SIDEBAR_MOBILE, (window.matchMedia("(min-width: 700px)").matches && (this.sandboxConfig === '1' || this.sandboxConfig === SandboxMode.Coordinator)));
+  }
     toggleSidebar() {
       store.commit(SHOW_SIDEBAR_MOBILE, !this.showSidebarMobile);
     }

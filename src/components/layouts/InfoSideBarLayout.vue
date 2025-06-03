@@ -56,10 +56,13 @@
           >
             Guest Account
           </h1>
-          <p class="has-text-light is-paddingless">
+          <p class="has-text-light is-paddingless mb-3">
             Use these credentials to explore sample data and currently available features.
           </p>
-          <div class="is-hidden-touch">
+          <p class="has-text-light is-paddingless">
+            Data submitted to this site is not private.
+          </p>
+          <div>
             <hr class="is-light">
             <div class="columns is-gapless">
               <div class="column is-narrow mr-2">
@@ -81,7 +84,7 @@
 
           <article class="block">
             <h2 class="has-text-warning is-5 is-normal">
-              Guest
+              Sandbox Guest
             </h2>
             <p class="has-text-light is-paddingless is-marginless">
               user: guestusr@mailinator.com
