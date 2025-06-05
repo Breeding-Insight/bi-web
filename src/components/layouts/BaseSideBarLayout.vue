@@ -39,7 +39,7 @@
               >
             </a>
           </div>
-          <div v-if="sandboxConfig !== ''" class="level-item">
+          <div v-if="isSandbox" class="level-item">
             <div id="sandbox-feedback" v-bind:class="{'notification is-warning px-5 has-text-centered': sandboxConfig === SandboxMode.Public,
                                 'notification is-info px-5 has-text-centered': sandboxConfig === SandboxMode.Coordinator}">
               <p class="title is-size-5">Sandbox </p>
@@ -119,8 +119,8 @@ import UserStatusMenu from "@/components/layouts/menus/UserStatusMenu.vue";
     showMenu?: boolean;
 
   mounted () {
-    // IF the screen is narrow and DeltaBreed is in private-sandbox or coordinator-sandbox modes, THEN default the sidebar to "hidden".
-    store.commit(SHOW_SIDEBAR_MOBILE, (window.matchMedia("(min-width: 700px)").matches && (this.sandboxConfig === '1' || this.sandboxConfig === SandboxMode.Coordinator)));
+    // Default to Showing the sidebar menu if the width is wider than 700px or if it not in Sandbox mode, Otherwise default to hiding the sidebar.
+    store.commit(SHOW_SIDEBAR_MOBILE, (window.matchMedia("(min-width: 700px)").matches || !this.isSandbox));
   }
     toggleSidebar() {
       store.commit(SHOW_SIDEBAR_MOBILE, !this.showSidebarMobile);
@@ -128,6 +128,10 @@ import UserStatusMenu from "@/components/layouts/menus/UserStatusMenu.vue";
 
     get sandboxConfig() {
       return process.env.VUE_APP_SANDBOX;
+    }
+
+    get isSandbox() {
+      return (this.sandboxConfig===SandboxMode.Coordinator || this.sandboxConfig===SandboxMode.Public || this.sandboxConfig==='1');
     }
   }
 
