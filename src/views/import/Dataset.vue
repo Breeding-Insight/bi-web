@@ -123,6 +123,7 @@
         <b-table-column
             v-slot="props"
             field="data.expUnitId"
+            :custom-sort="sortExpUnitId"
             label="Exp Unit ID"
             sortable
             searchable
@@ -230,7 +231,7 @@
         <b-table-column
             v-slot="props"
             field="data.obsUnitId"
-            label="ObsUnitID"
+            v-bind:label="obsUnitIDLabel"
             sortable
             searchable
             :th-attrs="() => ({scope:'col'})"
@@ -306,6 +307,7 @@ export default class Dataset extends ProgramsBase {
   private paginationController: PaginationController = new PaginationController();
   private datasetTableRows: DatasetTableRow[] = [];
   private unitDbIdToTraitValues: any = {};
+  private obsUnitIDLabel :string = "ObsUnitID";
 
   mounted() {
     this.load();
@@ -400,6 +402,18 @@ export default class Dataset extends ProgramsBase {
       if( second > first ){ return 1; }
       else if ( second < first){ return -1;}
       else return 0;
+    }
+  }
+
+  // This sorts the Exp Unit ID's in Alphanumeric order (ie. B300,BO2, B1 would sort to B1, B02, B300)
+  sortExpUnitId(a: any, b: any, isAsc: boolean){
+    let first :any = (a.data.expUnitId);
+    let second :any = (b.data.expUnitId);
+    if (isAsc) {
+      return first.toString().localeCompare(second.toString(), 'en', {numeric: true});
+    }
+    else {
+      return second.toString().localeCompare(first.toString(), 'en', {numeric: true});
     }
   }
 
@@ -552,6 +566,10 @@ export default class Dataset extends ProgramsBase {
     }
   }
 
+  setObsUnitIDLabel(){
+    this.obsUnitIDLabel = this.observationUnit + " ObsUnitID"
+  }
+
   @Watch('$route')
   async load() {
     try {
@@ -580,6 +598,9 @@ export default class Dataset extends ProgramsBase {
 
       // Use this.datasetModel to initialize this.datasetTableRows
       this.createDatasetTableRows();
+
+      // Set the obsUnitId label to include observation level
+      this.setObsUnitIDLabel();
 
       //Initialize the paginationController
       this.paginationController.totalCount = this.datasetModel.observationUnits.length;

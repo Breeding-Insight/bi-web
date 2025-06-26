@@ -25,10 +25,13 @@ const port = process.env.PORT || JSON.parse(fs.readFileSync('package.json', 'utf
 (async () => {
   let spinner = ora({prefixText: ' ', color: 'yellow'});
   try {
+    //TODO: Pinning version did not fix npm sort issue. Tempoarily commenting out to enable TAF runs, will be fixed in BI-2657
+    /*
     spinner = spinner.start('sort package.json');
-    await execa('npx', ['sort-package-json'], {preferLocal: true});
+    await execa('npx', ['sort-package-json@3.0.0'], {preferLocal: true});
     spinner = spinner.clear()
                      .succeed('package.json sorted');
+    */
 
     console.log(`App running at http://localhost:${port}`);
     await execa.command(`vue-cli-service\ serve --port ${port}`);
