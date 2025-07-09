@@ -21,6 +21,7 @@ import {BiResponse} from "@/breeding-insight/model/BiResponse";
 import {Role} from "@/breeding-insight/model/Role";
 import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
 import {UserSort} from "@/breeding-insight/model/Sort";
+import {SearchRequest} from "@/breeding-insight/model/SearchRequest";
 
 export class UserDAO {
 
@@ -99,6 +100,40 @@ export class UserDAO {
 
     }))
 
+  }
+
+  static getById(id: string): Promise<BiResponse> {
+    return new Promise<BiResponse>((resolve, reject) => {
+      api.call({ url: `${process.env.VUE_APP_BI_API_V1_PATH}/users/${id}`, method: 'get' })
+          .then((response: any) => {
+            const biResponse = new BiResponse(response.data);
+            resolve(biResponse);
+          }).catch((error) => reject(error));
+    });
+  }
+
+  static search(searchRequest: SearchRequest, {page, pageSize}: PaginationQuery, {field, order}: UserSort): Promise<BiResponse> {
+
+    return new Promise<BiResponse>(((resolve, reject) => {
+      const config = {
+        url: `${process.env.VUE_APP_BI_API_V1_PATH}/users/search`,
+        method: 'post',
+        data: searchRequest,
+        params: {
+          sortField: field,
+          sortOrder: order,
+          page,
+          pageSize
+        }
+      }
+      api.call(config)
+          .then((response: any) => {
+            const biResponse = new BiResponse(response.data);
+            resolve(biResponse);
+          }).catch((error) => {
+        reject(error);
+      })
+    }));
   }
 
   static updateSystemRoles(id: string, systemRoles: Array<Role>) {

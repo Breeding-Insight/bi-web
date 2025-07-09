@@ -24,6 +24,7 @@ import {Program} from "@/breeding-insight/model/Program";
 import {ProgramUser} from "@/breeding-insight/model/ProgramUser";
 import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
 import {ProgramSort, SortOrder, UserSort, UserSortField} from "@/breeding-insight/model/Sort";
+import {SearchRequest} from "@/breeding-insight/model/SearchRequest";
 
 export class UserService {
 
@@ -147,6 +148,45 @@ export class UserService {
 
       }).catch((error) => {
         error['errorMessage'] = this.errorGetUsers;
+        reject(error)
+      });
+
+    }));
+  }
+
+  static getById(id: string): Promise<User> {
+    return new Promise<User>((resolve, reject) => {
+      UserDAO.getById(id).then((biResponse: BiResponse) => {
+        const result: any = biResponse.result;
+        const role: Role | undefined = this.parseSystemRoles(result.systemRoles);
+        const programRoles: ProgramUser[] | undefined = this.parseProgramRoles(result.programRoles);
+        const user = new User(result.id, result.name, result.orcid, result.email, role, programRoles);
+        resolve(user);
+      }).catch((error) => {
+        error['errorMessage'] = this.errorGetUser;
+        reject(error);
+      });
+    });
+  }
+
+  static search(searchRequest: SearchRequest,
+                paginationQuery: PaginationQuery = new PaginationQuery(1, 50, true),
+                sort: UserSort = new UserSort(UserSortField.Name, SortOrder.Ascending)): Promise<[User[], Metadata]> {
+    return new Promise<[User[], Metadata]>(((resolve, reject) => {
+
+      UserDAO.search(searchRequest, paginationQuery, sort).then((biResponse) => {
+
+        // Parse our users into the vue users param
+        let users = biResponse.result.data.map((user: any) => {
+          const role: Role | undefined = this.parseSystemRoles(user.systemRoles);
+          const programRoles: ProgramUser[] | undefined = this.parseProgramRoles(user.programRoles);
+          return new User(user.id, user.name, user.orcid, user.email, role, programRoles);
+        });
+
+        resolve([users, biResponse.metadata]);
+
+      }).catch((error) => {
+        error['errorMessage'] = this.errorSearchUsers;
         reject(error)
       });
 
