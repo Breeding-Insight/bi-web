@@ -192,6 +192,7 @@
     UPDATE_PROGRAM_USER_SORT
   } from "@/store/sorting/mutation-types";
   import {SearchRequest} from "@/breeding-insight/model/SearchRequest";
+  import {FilterRequest} from "@/breeding-insight/model/FilterRequest";
 
 @Component({
   components: { ExpandableTable, NewDataForm, BasicInputField, BasicSelectField, TableColumn,
@@ -332,12 +333,12 @@ export default class ProgramUsersTable extends Vue {
 
   }
 
-  saveUser() {
+  async saveUser() {
 
     this.newUser.program = this.activeProgram;
 
     try {
-      this.newUser = this.checkExistingUserByEmail(this.newUser);
+      this.newUser = await this.checkExistingUserByEmail(this.newUser);
     } catch (err) {
       this.$emit('show-error-notification', err);
       this.newUserFormState.bus.$emit(DataFormEventBusHandler.SAVE_COMPLETE_EVENT);
@@ -378,23 +379,25 @@ export default class ProgramUsersTable extends Vue {
   }
 
   //TODO: Do we still want this since orcid entry is removed?
-  checkExistingUserByEmail(user: ProgramUser): ProgramUser {
+  async checkExistingUserByEmail(user: ProgramUser): Promise<ProgramUser> {
     user.id = undefined;
-
     // api call to check if user exists for email
     // this was done on front-end before because we didn't have search endpoint at the time
     const filter = new FilterRequest('email', user.email);
     const request = new SearchRequest(filter);
-    UserService.search(request).then(([users, metadata]) => {
+
+    try {
+      const [users, metadata] = await UserService.search(request);
       // email exists
       if (users.length === 1) {
         user.id = users[0].id;
       }
-    }).catch((error) => {
+    } catch (error) {
       // Display error that users cannot be loaded
       this.$emit('show-error-notification', 'Error while trying to load system users');
       throw error;
-    });
+    }
+
 
     return user;
   }
