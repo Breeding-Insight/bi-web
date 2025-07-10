@@ -32,6 +32,7 @@ export class UserService {
   static errorCreateUser: string = 'Unable to create user';
   static errorDeleteUser: string = 'Unable to archive user';
   static errorGetUsers: string = 'Error while trying to load roles';
+  static errorGetUser: string = 'Error user not found';
   static errorDeleteUserNotFound: string = 'Unable to find user to deactivate';
   static errorDeleteUserNotAllowed: string = 'You are not allowed to deactivate this user.';
   static errorPermissionsEditUser: string = "You don't have permissions to edit the roles of this user.";
@@ -147,7 +148,7 @@ export class UserService {
         resolve([users, biResponse.metadata]);
 
       }).catch((error) => {
-        error['errorMessage'] = this.errorGetUsers;
+        error['errorMessage'] = this.errorGetUser;
         reject(error)
       });
 
