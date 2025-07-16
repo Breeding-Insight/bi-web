@@ -31,8 +31,9 @@ export class UserService {
   static duplicateEmailMessage : string = 'Email is already in use.';
   static errorCreateUser: string = 'Unable to create user';
   static errorDeleteUser: string = 'Unable to archive user';
-  static errorGetUsers: string = 'Error while trying to load roles';
-  static errorGetUser: string = 'Error user not found';
+  static errorGetUsers: string = 'Error while trying to load users';
+  static errorSearchUsers: string = 'Error while searching users';
+  static errorGetUser: string = 'User not found';
   static errorDeleteUserNotFound: string = 'Unable to find user to deactivate';
   static errorDeleteUserNotAllowed: string = 'You are not allowed to deactivate this user.';
   static errorPermissionsEditUser: string = "You don't have permissions to edit the roles of this user.";
@@ -148,7 +149,7 @@ export class UserService {
         resolve([users, biResponse.metadata]);
 
       }).catch((error) => {
-        error['errorMessage'] = this.errorGetUser;
+        error['errorMessage'] = this.errorGetUsers;
         reject(error)
       });
 
