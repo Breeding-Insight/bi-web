@@ -52,6 +52,7 @@
         v-bind:trial-id="experimentUUID"
         v-bind:active="subEntityModalActive"
         v-bind:create="createSubEntityDataset"
+        v-bind:existing-dataset-names="experimentDatasetNames"
         v-on:show-error-notification="$emit('show-error-notification', $event)"
         v-on:deactivate="subEntityModalActive = false"
     />
@@ -183,6 +184,7 @@ import {SubEntityDatasetNewRequest} from "@/breeding-insight/model/SubEntityData
 import {DatasetModel} from "@/breeding-insight/model/DatasetModel";
 import ExperimentAddCollaboratorModal from "@/components/experiments/ExperimentAddCollaboratorModal.vue";
 import ExperimentCollaboratorRemovalModal from "@/components/experiments/ExperimentCollaboratorRemovalModal.vue";
+import {ProgramService} from "@/breeding-insight/service/ProgramService";
 
 @Component({
   components: {
@@ -217,6 +219,8 @@ export default class ExperimentDetails extends ProgramsBase {
   private hasObsUnits: boolean = false;
   private obsCount: number = 0;
   private collaborators: Collaborator[] = [];
+  private programDatasetNames: string[] = [];
+  private experimentDatasetNames: string[] = [];
 
   private actions: ActionMenuItem[] = [
       new ActionMenuItem('experiment-import-file', 'import-file', 'Import file', this.$ability.can('create', 'Import')),
@@ -229,6 +233,7 @@ export default class ExperimentDetails extends ProgramsBase {
   mounted() {
     this.getExperiment();
     this.getDatasetMetadata();
+    this.getProgramDatasetNames();
   }
 
   private importFile() {
@@ -325,11 +330,34 @@ export default class ExperimentDetails extends ProgramsBase {
   //   return this.experiment.additionalInfo.environmentsCount;
   // }
 
-  get datasetNameOptions(): String[] {
-    // TODO: [BI-2182] fetch and return all sub-entity names for experiments in this program, excluding the current experiment.
-    // TODO: [BI-2182] exclude top level dataset names.
-    return [];
+  //Get program entity names for sub-entity modal suggestions
+  @Watch('$route')
+  async getProgramDatasetNames() {
+    try {
+      const response = await ProgramService.getObservationLevels(this.activeProgram!.id!);
+      if (response) {
+        const [observationLevels, metadata] = response;
+        this.programDatasetNames = observationLevels.map(value => value.name!);
+        return;
+      }
+    } catch (error) {
+      this.$emit('show-error-notification', 'Unable to retrieve program entity names');
+    }
+    this.$emit('show-error-notification', 'Unable to retrieve program entity names');
+    return;
   }
+
+  //Retrieves entity names in experiment
+  @Watch('datasetMetadata')
+  async getExperimentDatasetNames() {
+    this.experimentDatasetNames = this.datasetMetadata.map(value => value.name!);
+    return;
+  }
+
+  //Retrieves program entity names minus any that already exist as entity names for the experiment
+  get datasetNameOptions(): String[] {
+    return this.programDatasetNames.filter((x) => !this.experimentDatasetNames.includes(x));
+}
 
   get experimentObservationUnit(): string | null {
     if (this.experiment && this.experiment.additionalInfo) {
