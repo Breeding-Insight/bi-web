@@ -45,7 +45,7 @@
       >
         <template v-slot="validations">
           <div class="message is-success">
-            <div class="message-body">
+            <div class="message-body has-text-dark">
               Prepare a dataset for repeated observations within {{ defaultObservationLevel }}.
             </div>
           </div>
