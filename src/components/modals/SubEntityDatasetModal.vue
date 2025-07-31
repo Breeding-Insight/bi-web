@@ -147,7 +147,7 @@ export default class SubEntityDatasetModal extends Vue {
     //Check if sub-entity name is already in experiment
     let nameAlreadyInExp = this.existingDatasetNames.map(y => y.toLowerCase()).includes(this.newSubEntity.name.toLowerCase());
     if (nameAlreadyInExp) {
-      this.$emit('show-error-notification', 'Sub-entity name cannot already exist in the experiment.');
+      this.$emit('show-error-notification', `A ${this.newSubEntity.name} dataset already exists in ${this.experiment.trialName}.`);
       this.newSubEntityFormState.bus.$emit(DataFormEventBusHandler.SAVE_COMPLETE_EVENT);
       return;
     }
