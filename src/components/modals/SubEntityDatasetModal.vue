@@ -69,7 +69,7 @@
                 v-model="newSubEntity.repeatedMeasures"
                 v-bind:validations="validations.repeatedMeasures"
                 v-bind:field-name="'Repeated Measures'"
-                v-bind:field-help="'Maximum expected between 2-50'"
+                v-bind:field-help="'Maximum expected between 1-50'"
               />
             </div>
           </div>
@@ -132,7 +132,7 @@ export default class SubEntityDatasetModal extends Vue {
     repeatedMeasures: {
       required,
       integer,
-      between: between(2, 50),  // Note: capped at 50 for performance considerations
+      between: between(1, 50),  // Note: capped at 50 for performance considerations
     }
   }
 
