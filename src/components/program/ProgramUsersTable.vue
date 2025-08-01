@@ -191,6 +191,8 @@
   import {
     UPDATE_PROGRAM_USER_SORT
   } from "@/store/sorting/mutation-types";
+  import {SearchRequest} from "@/breeding-insight/model/SearchRequest";
+  import {FilterRequest} from "@/breeding-insight/model/FilterRequest";
 
 @Component({
   components: { ExpandableTable, NewDataForm, BasicInputField, BasicSelectField, TableColumn,
@@ -218,7 +220,6 @@ export default class ProgramUsersTable extends Vue {
   private activeProgram?: Program;
   private activeUser?: User;
   public users: ProgramUser[] = [];
-  public systemUsers: User[] = [];
 
   private deactivateActive: boolean = false;
   private newUserActive: boolean = false;
@@ -252,7 +253,6 @@ export default class ProgramUsersTable extends Vue {
 
   mounted() {
     this.getRoles();
-    this.getSystemUsers();
     this.paginationChanged();
   }
 
@@ -333,27 +333,28 @@ export default class ProgramUsersTable extends Vue {
 
   }
 
-  saveUser() {
+  async saveUser() {
 
     this.newUser.program = this.activeProgram;
 
     try {
-      this.newUser = this.checkExistingUserByEmail(this.newUser, this.systemUsers);
+      this.newUser = await this.checkExistingUserByEmail(this.newUser);
     } catch (err) {
       this.$emit('show-error-notification', err);
       this.newUserFormState.bus.$emit(DataFormEventBusHandler.SAVE_COMPLETE_EVENT);
       return;
     }
 
+    // if we found a system user by email in checkExistingUserByEmail then system user exists
+    const systemUserExisted = this.newUser.id !== undefined;
+
     ProgramUserService.create(this.newUser).then((user: ProgramUser) => {
       this.paginationController.updatePage(1);
       this.paginationController.updateOnAdd();
       this.getUsers();
-      this.getSystemUsers();
 
       // See if the user already existed
-      //TODO: Reconsider when user search feature is added
-      if (this.getSystemUserById(user, this.systemUsers)) {
+      if (systemUserExisted) {
         this.$emit('show-success-notification', 'Success! Existing user ' + user.name + ' added to program.');
       } else {
         this.$emit('show-success-notification', 'Success! ' + this.newUser.name + ' added.');
@@ -361,13 +362,11 @@ export default class ProgramUsersTable extends Vue {
 
       if(this.newUser.email === this.activeUser!.email) this.updateActiveUser();
 
-      this.getSystemUsers();
       this.newUser = new ProgramUser();
       this.newUserActive = false;
     }).catch((error) => {
       this.$emit('show-error-notification', error.errorMessage);
       this.getUsers();
-      this.getSystemUsers();
     }).finally(() => this.newUserFormState.bus.$emit(DataFormEventBusHandler.SAVE_COMPLETE_EVENT))
 
   }
@@ -379,47 +378,42 @@ export default class ProgramUsersTable extends Vue {
     Vue.prototype.$ability.update(rules);
   }
 
-  //TODO: Reconsider when user search feature is added
-  getSystemUsers() {
+  //TODO: Do we still want this since orcid entry is removed?
+  async checkExistingUserByEmail(user: ProgramUser): Promise<ProgramUser> {
+    user.id = undefined;
+    // api call to check if user exists for email
+    // this was done on front-end before because we didn't have search endpoint at the time
+    const filter = new FilterRequest('email', user.email);
+    const request = new SearchRequest(filter);
 
-    UserService.getAll().then(([users, metadata]) => {
-      this.systemUsers = users;
-    }).catch((error) => {
+    try {
+      const [users, metadata] = await UserService.search(request);
+      // email exists
+      if (users.length === 1) {
+        user.id = users[0].id;
+      }
+    } catch (error) {
       // Display error that users cannot be loaded
       this.$emit('show-error-notification', 'Error while trying to load system users');
       throw error;
-    });
-
-  }
-
-  //TODO: Reconsider when user search feature is added
-  //TODO: Do we still want this since orcid entry is removed?
-  checkExistingUserByEmail(user: ProgramUser, systemUsers: User[]): ProgramUser {
-    user.id = undefined;
-    let usersFound = 0;
-    for (const systemUser of systemUsers){
-      if (user.email === systemUser.email){
-        usersFound += 1;
-        if (systemUser.id){
-          user.id = systemUser.id;
-        }
-      }
     }
 
-    if (usersFound > 1){
-      throw "Email matches two different users.";
-    }
 
     return user;
   }
 
-  //TODO: Reconsider when user search feature is added
-  getSystemUserById(user: ProgramUser, systemUsers: User[]): User | undefined {
-    for (const systemUser of systemUsers){
-      if (user.id === systemUser.id){
-        return systemUser;
+  getSystemUserById(user: ProgramUser): User | undefined {
+
+    UserService.getById(user.id).then(([users, metadata]) => {
+      if (users.length === 1) {
+        return users[0];
       }
-    }
+    }).catch((error) => {
+      // Display error that users cannot be loaded
+      this.$emit('show-error-notification', 'Error while trying to load system user');
+      throw error;
+    });
+
     return undefined;
   }
 
