@@ -315,7 +315,7 @@ export default class ImportExperiment extends ProgramsBase {
   }
 
   previewDataLoaded(dynamicColumns: String[]) {
-    this.phenotypeColumns = dynamicColumns.filter(name => !name.includes('ObsUnitID'));
+    this.phenotypeColumns = dynamicColumns;
     this.createObservationIndexMap();
   }
 
