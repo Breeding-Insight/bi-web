@@ -492,7 +492,7 @@ export default class Dataset extends ProgramsBase {
         datasetTableRow.expUnitId = this.removeUnique(unit.observationUnitName);
         datasetTableRow.obsUnitId = BrAPIUtils.getBreedingInsightId(unit.externalReferences, "/observationunits");
       } else {
-        let parentObsInfo = unit.observationUnitPosition.observationLevelRelationships.find((val) => val.levelOrder === 0); //todo maybe put in brapiutils, also check if robust
+        let parentObsInfo = unit.observationUnitPosition.observationLevelRelationships.find((val) => val.levelOrder === 0);
         if (parentObsInfo) datasetTableRow.obsUnitId = this.removeUnique(parentObsInfo.levelCode);
         datasetTableRow.expUnitId = unit.additionalInfo.expUnitID;
         datasetTableRow.subExpUnitId = this.removeUnique(unit.observationUnitName);
