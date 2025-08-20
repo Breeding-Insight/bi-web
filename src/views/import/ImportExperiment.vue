@@ -357,7 +357,6 @@ export default class ImportExperiment extends ProgramsBase {
 
   cellClassIfExisting(row: any, column: any) {
     const index = column.meta.index
-
     if(row.data.observations[this.observationIndexMap.get(index)!].state === 'MUTATED') {
       return {'class': 'db-filled'};
     }
