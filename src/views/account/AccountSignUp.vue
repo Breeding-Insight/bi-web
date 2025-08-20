@@ -27,23 +27,37 @@
         <p>
           To activate your account, please log in.
         </p>
-        <button
-            id="connect-orcid-button"
-            class="button orcidBtn"
-            v-bind:class="{'is-loading': loginProcessing}"
-            v-bind:disabled="loginProcessing"
-            v-on:click="orcidLogin"
-        >
-          SIGN IN with ORCID
-          <img
-              id="orcid-id-icon"
-              src="https://orcid.org/sites/default/files/images/orcid_24x24.png"
-              width="24"
-              height="24"
-              class="is-pulled-right"
-              alt="ORCID iD icon"
+        <div>
+          <button
+              v-if="alternateAuthenticationEnabled()"
+              id="connect-github-button"
+              class="button githubBtn"
+              v-bind:class="{'is-loading': loginGithubProcessing}"
+              v-bind:disabled="loginGithubProcessing"
+              v-on:click="githubLogin"
           >
-        </button>
+            SIGN IN with GitHub
+          </button>
+        </div>
+        <div>
+          <button
+              id="connect-orcid-button"
+              class="button orcidBtn"
+              v-bind:class="{'is-loading': loginProcessing}"
+              v-bind:disabled="loginProcessing"
+              v-on:click="orcidLogin"
+          >
+            SIGN IN with ORCID
+            <img
+                id="orcid-id-icon"
+                src="https://orcid.org/sites/default/files/images/orcid_24x24.png"
+                width="24"
+                height="24"
+                class="is-pulled-right"
+                alt="ORCID iD icon"
+            >
+          </button>
+        </div>
         <p class="is-size-7 has-text-left">
           To acknowledge that you have used your iD and that it has been authenticated, we display
           the ORCID iD icon
@@ -79,6 +93,7 @@
   })
   export default class AccountSignUp extends Vue {
     public loginProcessing: boolean = false;
+    public loginGithubProcessing: boolean = false;
     public accountTokenCookieName: string = Vue.prototype.$cookieNames.accountToken;
     public isLoginServerErrorModalActive: boolean = false;
     @Prop()
@@ -109,6 +124,28 @@
 
       // Start login process
       window.location.href = process.env.VUE_APP_BI_API_ROOT+'/sso/start';
+    }
+
+    async githubLogin() {
+      // Check the server can be contacted
+      this.loginGithubProcessing = true;
+      try {
+        await ServerManagementService.checkHealth();
+      } catch (error) {
+        this.isLoginServerErrorModalActive = true;
+        this.loginGithubProcessing = false;
+        return;
+      }
+
+      // Set the cookie to pass back their account token. Timeout is an hour
+      Vue.$cookies.set(this.accountTokenCookieName, this.accountToken, 60*60);
+
+      // Start login process
+      window.location.href = process.env.VUE_APP_BI_API_ROOT+'/sso/start/github';
+    }
+
+    alternateAuthenticationEnabled() {
+      return process.env.VUE_APP_ALTERNATE_AUTHENTICATION_ENABLED === 'true';
     }
   }
 </script>
