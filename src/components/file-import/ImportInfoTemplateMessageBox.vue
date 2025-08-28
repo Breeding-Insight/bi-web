@@ -30,7 +30,6 @@
               <!-- temporary link until the backend card is done -->
               <a v-bind:href="templateUrl"
                  class="button is-outlined is-primary" :id="downloadTemplateId">Download the {{toTitleCase(importTypeName)}} Import Template</a>
-              <br/>Template version placeholder
             </div>
           </div>
         </div>

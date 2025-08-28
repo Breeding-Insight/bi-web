@@ -17,18 +17,17 @@
 
 <template>
   <div class="sidebarlayout">
-
     <header class="main-header">
       <div class="level header-title is-marginless">
         <div class="level-left">
-          <div class="level-item is-pulled-left">
+          <div v-if="showMenu" class="level-item is-pulled-left">
             <a role="button"
                class="navbar-hamburger has-text-dark"
                aria-label="Open Navigation Menu"
                aria-expanded="false"
                @click="toggleSidebar()"
             >
-              <MenuIcon v-if="showMenuToggle"></MenuIcon>
+              <MenuIcon ></MenuIcon>
             </a>
           </div>
           <div class="level-item">
@@ -40,7 +39,7 @@
               >
             </a>
           </div>
-          <div v-if="sandboxConfig !== ''" class="level-item">
+          <div v-if="isSandbox" class="level-item">
             <div id="sandbox-feedback" v-bind:class="{'notification is-warning px-5 has-text-centered': sandboxConfig === SandboxMode.Public,
                                 'notification is-info px-5 has-text-centered': sandboxConfig === SandboxMode.Coordinator}">
               <p class="title is-size-5">Sandbox </p>
@@ -119,12 +118,20 @@ import UserStatusMenu from "@/components/layouts/menus/UserStatusMenu.vue";
     @Prop({default: true})
     showMenu?: boolean;
 
+  mounted () {
+    // Default to Showing the sidebar menu if the width is wider than 700px or if it not in Sandbox mode, Otherwise default to hiding the sidebar.
+    store.commit(SHOW_SIDEBAR_MOBILE, (window.matchMedia("(min-width: 700px)").matches || !this.isSandbox));
+  }
     toggleSidebar() {
       store.commit(SHOW_SIDEBAR_MOBILE, !this.showSidebarMobile);
     }
 
     get sandboxConfig() {
       return process.env.VUE_APP_SANDBOX;
+    }
+
+    get isSandbox() {
+      return (this.sandboxConfig===SandboxMode.Coordinator || this.sandboxConfig===SandboxMode.Public || this.sandboxConfig==='1');
     }
   }
 
