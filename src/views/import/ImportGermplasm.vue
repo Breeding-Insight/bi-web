@@ -81,8 +81,7 @@
             <p>New Germplasm count: {{ statistics.Germplasm.newObjectCount }}</p>
             <p>New Pedigree Connections: {{ statistics["Pedigree Connections"].newObjectCount }}</p>
             <template v-if="duplicatesPresent(rows)">
-              <p>Duplicate names detected and are highlighted in yellow and show a <alert-triangle-icon size="1.2x" class="icon-align"/> icon.
-                Upon import duplicates will become independent database entries.</p>
+              <p>Duplicate names detected and are highlighted in yellow and show a <alert-triangle-icon size="1.2x" class="icon-align"/> icon.</p>
             </template>
 
           </div>
