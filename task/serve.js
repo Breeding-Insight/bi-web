@@ -25,6 +25,7 @@ const port = process.env.PORT || JSON.parse(fs.readFileSync('package.json', 'utf
 (async () => {
   let spinner = ora({prefixText: ' ', color: 'yellow'});
   try {
+
     //TODO: Pinning version did not fix npm sort issue. Tempoarily commenting out to enable TAF runs, will be fixed in BI-2657
     /*
     spinner = spinner.start('sort package.json');
