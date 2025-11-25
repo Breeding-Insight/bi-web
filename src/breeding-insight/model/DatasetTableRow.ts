@@ -34,6 +34,8 @@ export class DatasetTableRow {
   obsUnitId?: string;
   traitValues?: string[] = [];
   treatmentFactors?: string;
+  subExpUnitId?: string;
+  subObsUnitId?: string;
 
   constructor(germplasmName?: string,
               gid?: string,
@@ -51,7 +53,9 @@ export class DatasetTableRow {
               elevation?: number,
               rtk?: string,
               obsUnitId?: string,
-              traitValues?: string[]) {
+              traitValues?: string[],
+              subExpUnitId?: string,
+              subObsUnitId?: string) {
     this.germplasmName = germplasmName;
     this.gid = gid;
     this.testOrCheck = testOrCheck;
@@ -69,7 +73,8 @@ export class DatasetTableRow {
     this.rtk = rtk;
     this.obsUnitId = obsUnitId;
     this.traitValues = traitValues;
-
+    this.subExpUnitId = subExpUnitId;
+    this.subObsUnitId = subObsUnitId;
   }
 
   static assign(dataset: DatasetTableRow): DatasetTableRow {
@@ -91,7 +96,9 @@ export class DatasetTableRow {
         dataset.elevation,
         dataset.rtk,
         dataset.obsUnitId,
-        dataset.traitValues
+        dataset.traitValues,
+        dataset.subExpUnitId,
+        dataset.subObsUnitId
         );
   }
 

@@ -56,6 +56,7 @@
           v-bind:pagination="paginationController"
           v-bind:debounce-search="400"
           v-on:show-error-notification="$emit('show-error-notification', $event)"
+          v-bind:default-sort="['data.envLocation', 'desc']"
       >
         <b-table-column
             v-slot="props"
@@ -130,6 +131,18 @@
             :th-attrs="() => ({scope:'col'})"
         >
           {{ props.row.data.expUnitId }}
+        </b-table-column>
+        <b-table-column
+            v-if="isSubEntity"
+            v-slot="props"
+            field="data.subExpUnitId"
+            :custom-sort="sortSubUnitId"
+            label="Sub Unit ID"
+            sortable
+            searchable
+            :th-attrs="() => ({scope:'col'})"
+        >
+          {{ props.row.data.subExpUnitId }}
         </b-table-column>
         <b-table-column
             v-slot="props"
@@ -240,6 +253,18 @@
         </b-table-column>
 
         <b-table-column
+            v-if="isSubEntity"
+            v-slot="props"
+            field="data.subObsUnitId"
+            v-bind:label="subObsUnitIDLabel"
+            sortable
+            searchable
+            :th-attrs="() => ({scope:'col'})"
+        >
+          {{ props.row.data.subObsUnitId }}
+        </b-table-column>
+
+        <b-table-column
             v-for="( observationVariable, index ) in this.datasetModel.observationVariables" :key="observationVariable.observationVariableName"
             v-slot="props"
             :custom-sort="(a,b,isAsc) => sortObservations(index, a, b, isAsc)"
@@ -308,6 +333,9 @@ export default class Dataset extends ProgramsBase {
   private datasetTableRows: DatasetTableRow[] = [];
   private unitDbIdToTraitValues: any = {};
   private obsUnitIDLabel :string = "ObsUnitID";
+  private subObsUnitIDLabel :string = "";
+  private isSubEntity = false;
+  private subObservationUnit = "";
 
   mounted() {
     this.load();
@@ -417,6 +445,18 @@ export default class Dataset extends ProgramsBase {
     }
   }
 
+  // This sorts the Sub Unit ID's in Alphanumeric order (ie. B300,BO2, B1 would sort to B1, B02, B300)
+  sortSubUnitId(a: any, b: any, isAsc: boolean) {
+    let first: any = (a.data.subExpUnitId);
+    let second: any = (b.data.subExpUnitId);
+    if (isAsc) {
+      return first.toString().localeCompare(second.toString(), 'en', {numeric: true});
+    } else {
+      return second.toString().localeCompare(first.toString(), 'en', {numeric: true});
+
+    }
+  }
+
   /*
   * remove the '[....]' found at the end of the string
   * */
@@ -447,9 +487,17 @@ export default class Dataset extends ProgramsBase {
 
       datasetTableRow.env = this.removeUnique(unit.studyName);
       datasetTableRow.envLocation = this.removeUnique(unit.locationName);
-      datasetTableRow.expUnitId = this.removeUnique(unit.observationUnitName);
-      datasetTableRow.obsUnitId = BrAPIUtils.getBreedingInsightId(unit.externalReferences, "/observationunits");
 
+      if(!this.isSubEntity){
+        datasetTableRow.expUnitId = this.removeUnique(unit.observationUnitName);
+        datasetTableRow.obsUnitId = BrAPIUtils.getBreedingInsightId(unit.externalReferences, "/observationunits");
+      } else {
+        let parentObsInfo = unit.observationUnitPosition.observationLevelRelationships.find((val) => val.levelOrder === 0);
+        if (parentObsInfo) datasetTableRow.obsUnitId = this.removeUnique(parentObsInfo.levelCode);
+        datasetTableRow.expUnitId = unit.additionalInfo.expUnitID;
+        datasetTableRow.subExpUnitId = this.removeUnique(unit.observationUnitName);
+        datasetTableRow.subObsUnitId = BrAPIUtils.getBreedingInsightId(unit.externalReferences, "/observationunits");
+      }
 
       // Env Year
       datasetTableRow.envYear = "";
@@ -568,6 +616,7 @@ export default class Dataset extends ProgramsBase {
 
   setObsUnitIDLabel(){
     this.obsUnitIDLabel = this.observationUnit + " ObsUnitID"
+    if (this.isSubEntity) this.subObsUnitIDLabel = this.subObservationUnit + " ObsUnitID"
   }
 
   @Watch('$route')
@@ -592,6 +641,9 @@ export default class Dataset extends ProgramsBase {
       if (response.isErr()) throw response.value;
       this.datasetModel = response.value;
 
+      // Use this.datasetModel to determine if this table is for a top level or sub entity dataset
+      if (this.datasetModel.observationUnits[0].observationUnitPosition.observationLevelRelationships.length > 2) this.isSubEntity = true;
+
       // Use this.datasetModel to initialize this.unitDbIdToTraitValues
       this.unitDbIdToTraitValues = this.createUnitDbIdToTraitValues();
 
@@ -600,6 +652,7 @@ export default class Dataset extends ProgramsBase {
       this.createDatasetTableRows();
 
       // Set the obsUnitId label to include observation level
+      if (this.isSubEntity) this.subObservationUnit = this.datasetModel.observationUnits[0].additionalInfo.observationLevel;
       this.setObsUnitIDLabel();
 
       //Initialize the paginationController
