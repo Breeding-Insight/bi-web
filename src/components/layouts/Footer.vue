@@ -55,12 +55,12 @@
               <p class="has-text-right is-hidden-touch">
                 <strong>&copy; {{copyrightYear}} Breeding Insight</strong>
                 <br>
-                Funded by the USDA through Cornell University
+                Funded by the USDA through University of Florida/IFAS, formerly through Cornell University
               </p>
               <p class="has-text-centered is-hidden-desktop">
                 <strong>&copy; {{copyrightYear}} Breeding Insight</strong>
                 <br>
-                Funded by the USDA through Cornell University
+                Funded by the USDA through University of Florida/IFAS, formerly through Cornell University
               </p>
             </div>
             <div class="level-item">
@@ -68,6 +68,13 @@
                   src="../../assets/img/usda.svg"
                   alt="USDA Logo"
                   width="75"
+              >
+            </div>
+            <div class="level-item">
+              <img
+                  src="../../assets/img/UFIFASlogo.svg"
+                  alt="University of Florida IFAS Logo"
+                  width="120"
               >
             </div>
             <div class="level-item">
