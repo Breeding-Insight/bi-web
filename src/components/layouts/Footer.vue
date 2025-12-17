@@ -36,7 +36,7 @@
 <!--                <a href="/">Privacy Policy</a>-->
 <!--              </div>-->
               <div class="level-item">
-                <a href="https://breedinginsight.atlassian.net/wiki/spaces/LH/pages/1680179235/DeltaBreed+User+Manual">User Manual</a>
+                <a href="https://breedinginsight.org/docs-category/deltabreed">User Manual</a>
               </div>
               <div class="level-item">
                 <a href="https://breedinginsight.org/contact-us/">Contact Us</a>
