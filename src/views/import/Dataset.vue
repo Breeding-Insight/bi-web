@@ -56,7 +56,6 @@
           v-bind:pagination="paginationController"
           v-bind:debounce-search="400"
           v-on:show-error-notification="$emit('show-error-notification', $event)"
-          v-bind:default-sort="['data.envLocation', 'desc']"
       >
         <b-table-column
             v-slot="props"
