@@ -633,7 +633,7 @@ export default class ImportTemplate extends ProgramsBase {
             this.previewData = previewResponse.preview.rows as any[];
             this.newObjectCounts = previewResponse.preview.statistics;
             this.$emit('statistics-loaded', this.newObjectCounts);
-            this.dynamicColumns = previewResponse.preview.dynamicColumnNames;
+            this.dynamicColumns = previewResponse.preview.dynamicColumnNames.filter(name => !name.includes('ObsUnitID'));
             this.$emit('preview-data-loaded', this.dynamicColumns);
             this.importService.send(ImportEvent.IMPORT_SUCCESS);
             // TODO: Temp pagination
