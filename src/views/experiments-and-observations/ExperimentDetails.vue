@@ -185,6 +185,7 @@ import {DatasetModel} from "@/breeding-insight/model/DatasetModel";
 import ExperimentAddCollaboratorModal from "@/components/experiments/ExperimentAddCollaboratorModal.vue";
 import ExperimentCollaboratorRemovalModal from "@/components/experiments/ExperimentCollaboratorRemovalModal.vue";
 import {ProgramService} from "@/breeding-insight/service/ProgramService";
+import {StringFormatters} from "@/breeding-insight/utils/StringFormatters";
 
 @Component({
   components: {
@@ -334,23 +335,23 @@ export default class ExperimentDetails extends ProgramsBase {
   @Watch('$route')
   async getProgramDatasetNames() {
     try {
-      const response = await ProgramService.getObservationLevels(this.activeProgram!.id!);
+      const response = await ProgramService.getObservationLevelNames(this.activeProgram!.id!);
       if (response) {
-        const [observationLevels, metadata] = response;
-        this.programDatasetNames = observationLevels.map(value => value.name!);
+        const [observationLevelNames, metadata] = response;
+        this.programDatasetNames = observationLevelNames.map(value => StringFormatters.toStartCase(value.levelName!));
         return;
       }
     } catch (error) {
-      this.$emit('show-error-notification', 'Unable to retrieve program entity names');
+      this.$emit('show-error-notification', 'Unable to retrieve program dataset names');
     }
-    this.$emit('show-error-notification', 'Unable to retrieve program entity names');
+    this.$emit('show-error-notification', 'Unable to retrieve program dataset names');
     return;
   }
 
   //Retrieves entity names in experiment
   @Watch('datasetMetadata')
   async getExperimentDatasetNames() {
-    this.experimentDatasetNames = this.datasetMetadata.map(value => value.name!);
+    this.experimentDatasetNames = this.datasetMetadata.map(value => StringFormatters.toStartCase(value.name!));
     return;
   }
 

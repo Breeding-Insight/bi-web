@@ -108,4 +108,13 @@ export class ProgramDAO {
     return new BiResponse(data);
   }
 
+  static async getObservationLevelNames(programId: string): Promise<BiResponse> {
+
+    const { data } =  await api.call({
+      url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/brapi/v2/observationlevelnames`,
+      method: 'get'
+    }) as Response;
+    return new BiResponse(data);
+
+  }
 }
