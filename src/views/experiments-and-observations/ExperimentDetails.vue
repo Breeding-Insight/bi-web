@@ -148,7 +148,7 @@
             tag="li"
             active-class="is-active"
           >
-            <a>{{ dataset.name }}</a>
+            <a>{{ StringFormatters.toStartCase(dataset.name) }}</a>
           </router-link>
         </ul>
       </nav>
@@ -204,7 +204,8 @@ import {StringFormatters} from "@/breeding-insight/utils/StringFormatters";
   },
   directives: {
     ClickOutside
-  }
+  },
+  data: () => ({StringFormatters})
 })
 export default class ExperimentDetails extends ProgramsBase {
   private activeProgram: Program;
