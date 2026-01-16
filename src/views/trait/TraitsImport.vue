@@ -178,7 +178,7 @@ export default class TraitsImport extends ProgramsBase {
   private showAbortModal = false;
 
   private yesAbortId: string = "traitsimport-yes-abort";
-  private templateUrl: string = "https://cornell.box.com/shared/static/pgi6ncysrdnxkb3sbk2bijmemcqqrygd.xls";
+  private templateUrl: string = "https://www.dropbox.com/scl/fi/9br4l35yrjlud9gz32yo9/bi_ontology_template_v16_2024-10-31.xls?rlkey=znr3ogzmv7i1k703lk91oh3xc&st=l2c13czs&dl=1";
 
   private confirmImportState: DataFormEventBusHandler = new DataFormEventBusHandler();
 
