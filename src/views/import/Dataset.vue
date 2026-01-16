@@ -310,6 +310,7 @@ import {StudyService} from "@/breeding-insight/service/StudyService";
 import {BrAPIService, BrAPIType} from '@/breeding-insight/service/BrAPIService';
 import {SortOrder} from "@/breeding-insight/model/Sort";
 import {DatasetMetadata} from "@/breeding-insight/model/DatasetMetadata";
+import {StringFormatters} from "@/breeding-insight/utils/StringFormatters";
 
 @Component({
   components: {
@@ -614,8 +615,8 @@ export default class Dataset extends ProgramsBase {
   }
 
   setObsUnitIDLabel(){
-    this.obsUnitIDLabel = this.observationUnit + " ObsUnitID"
-    if (this.isSubEntity) this.subObsUnitIDLabel = this.subObservationUnit + " ObsUnitID"
+    this.obsUnitIDLabel = StringFormatters.toStartCase(this.observationUnit) + " ObsUnitID"
+    if (this.isSubEntity) this.subObsUnitIDLabel = StringFormatters.toStartCase(this.subObservationUnit) + " ObsUnitID"
   }
 
   @Watch('$route')
