@@ -185,7 +185,12 @@ import {DatasetModel} from "@/breeding-insight/model/DatasetModel";
 import ExperimentAddCollaboratorModal from "@/components/experiments/ExperimentAddCollaboratorModal.vue";
 import ExperimentCollaboratorRemovalModal from "@/components/experiments/ExperimentCollaboratorRemovalModal.vue";
 import {ProgramService} from "@/breeding-insight/service/ProgramService";
+import {ObservationUnitService} from "@/breeding-insight/service/ObservationUnitService";
 import {StringFormatters} from "@/breeding-insight/utils/StringFormatters";
+import {Observation} from "@/breeding-insight/model/Observation";
+import {Metadata} from "@/breeding-insight/model/BiResponse";
+import {ObservationService} from "@/breeding-insight/service/ObservationService";
+import {ProgramObservationLevel} from "@/breeding-insight/model/ProgramObservationLevel";
 
 @Component({
   components: {
@@ -336,10 +341,14 @@ export default class ExperimentDetails extends ProgramsBase {
   @Watch('$route')
   async getProgramDatasetNames() {
     try {
-      const response = await ProgramService.getObservationLevelNames(this.activeProgram!.id!);
-      if (response) {
-        const [observationLevelNames, metadata] = response;
-        this.programDatasetNames = observationLevelNames.map(value => StringFormatters.toStartCase(value.levelName!));
+      const response: Result<Error, [ProgramObservationLevel[], Metadata]> = await ObservationUnitService.getObservationLevels(this.activeProgram!.id!);
+      if(response.isErr()) {
+        this.$emit('show-error-notification', 'isErr Unable to retrieve program dataset names');
+      }
+
+      if (response.isSuccess()) {
+        const [observationLevelNames, metadata] = response.value;
+        this.programDatasetNames = observationLevelNames.map(value => StringFormatters.toStartCase(value.name!));
         return;
       }
     } catch (error) {
