@@ -343,7 +343,7 @@ export default class ExperimentDetails extends ProgramsBase {
     try {
       const response: Result<Error, [ProgramObservationLevel[], Metadata]> = await ObservationUnitService.getObservationLevels(this.activeProgram!.id!);
       if(response.isErr()) {
-        this.$emit('show-error-notification', 'isErr Unable to retrieve program dataset names');
+        this.$emit('show-error-notification', 'Unable to retrieve program dataset names');
       }
 
       if (response.isSuccess()) {
