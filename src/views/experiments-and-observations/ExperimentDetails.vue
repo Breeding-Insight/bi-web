@@ -427,7 +427,7 @@ export default class ExperimentDetails extends ProgramsBase {
         }
         let dataset = response.value;
         if(dataset && dataset.additionalInfo){
-          this.obsCount = dataset.additionalInfo.observationsWithData;
+          this.obsCount = dataset.additionalInfo.observations;
         }
       } catch (err) {
         // Display error that dataset cannot be loaded
