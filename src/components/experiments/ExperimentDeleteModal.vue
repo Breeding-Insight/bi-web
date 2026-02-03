@@ -25,7 +25,7 @@
     v-on:deactivate="resetExportOptions"
   >
     <template #form>
-      <p>{{obsCount}} observations will be deleted. All records will be lost. Are you sure you want to delete the experimental data?</p>
+      <p>All records will be lost. Are you sure you want to delete the experimental data?</p>
     </template>
   </ConfirmationModal>
 </template>
