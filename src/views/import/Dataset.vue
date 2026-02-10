@@ -409,11 +409,8 @@ export default class Dataset extends ProgramsBase {
     first = first ? first : "";  //convert null or undefined to an empty string
     let second = b.data.traitValues[index];
     second = second ? second : "";  //convert null or undefined to an empty string
-    if (isAsc) {
-      return first.localeCompare(second);
-    } else {
-      return second.localeCompare(first);
-    }
+    return this.sortAlphaAsNumeric(first, second, isAsc);
+
   }
 
   //Filter GIDs by exact match
@@ -430,52 +427,48 @@ export default class Dataset extends ProgramsBase {
     return this.sortAlphaAsNumeric(first, second, isAsc);
   }
   sortColumn(a: any, b: any, isAsc: boolean) {
-    let first: any = (a.data.column);
-    let second: any = (b.data.column);
+
+    let first: any = a.data.column;
+    let second: any = b.data.column;
     return this.sortAlphaAsNumeric(first, second, isAsc);
   }
 
   sortRow(a: any, b: any, isAsc: boolean) {
-    let first: any = (a.data.row);
-    let second: any = (b.data.row);
+    let first: any = a.data.row;
+    let second: any = b.data.row;
     return this.sortAlphaAsNumeric(first, second, isAsc);
   }
 
   sortExpBlock(a: any, b: any, isAsc: boolean) {
-    let first: any = (a.data.expBlock);
-    let second: any = (b.data.expBlock);
+    let first: any = a.data.expBlock;
+    let second: any = b.data.expBlock;
     return this.sortAlphaAsNumeric(first, second, isAsc);
   }
   sortExpReplicate(a: any, b: any, isAsc: boolean){
-    let first :any = (a.data.expReplicate);
-    let second :any = (b.data.expReplicate);
+    let first :any = a.data.expReplicate;
+    let second :any = b.data.expReplicate;
     return this.sortAlphaAsNumeric( first, second, isAsc);
   }
 
   // This sorts the Exp Unit ID's in Alphanumeric order (ie. B300,BO2, B1 would sort to B1, B02, B300)
   sortExpUnitId(a: any, b: any, isAsc: boolean){
-    let first :any = (a.data.expUnitId);
-    let second :any = (b.data.expUnitId);
+    let first :any = a.data.expUnitId;
+    let second :any = b.data.expUnitId;
     return this.sortAlphaAsNumeric( first, second, isAsc);
-  }
-
-  private sortAlphaAsNumeric( first: any, second: any, isAsc: boolean)  {
-    if (isAsc) {
-      return first.toString().localeCompare(second.toString(), 'en', {numeric: true});
-    } else {
-      return second.toString().localeCompare(first.toString(), 'en', {numeric: true});
-    }
   }
 
 // This sorts the Sub Unit ID's in Alphanumeric order (ie. B300,BO2, B1 would sort to B1, B02, B300)
   sortSubUnitId(a: any, b: any, isAsc: boolean) {
-    let first: any = (a.data.subExpUnitId);
-    let second: any = (b.data.subExpUnitId);
+    let first: any = a.data.subExpUnitId;
+    let second: any = b.data.subExpUnitId;
+    return this.sortAlphaAsNumeric( first, second, isAsc);
+  }
+  
+  private sortAlphaAsNumeric( first: number, second: number, isAsc: boolean)  {
     if (isAsc) {
       return first.toString().localeCompare(second.toString(), 'en', {numeric: true});
     } else {
       return second.toString().localeCompare(first.toString(), 'en', {numeric: true});
-
     }
   }
 
