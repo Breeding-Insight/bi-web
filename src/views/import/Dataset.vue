@@ -244,11 +244,13 @@
             v-slot="props"
             field="data.obsUnitId"
             v-bind:label="obsUnitIDLabel"
+            width="320"
             sortable
             searchable
-            :th-attrs="() => ({scope:'col'})"
+            :th-attrs="() => ({scope:'col', class: 'uuid-column'})"
+            cell-class="uuid-column"
         >
-          {{ props.row.data.obsUnitId }}
+          <span class="uuid-value">{{ props.row.data.obsUnitId }}</span>
         </b-table-column>
 
         <b-table-column
@@ -256,11 +258,13 @@
             v-slot="props"
             field="data.subObsUnitId"
             v-bind:label="subObsUnitIDLabel"
+            width="320"
             sortable
             searchable
-            :th-attrs="() => ({scope:'col'})"
+            :th-attrs="() => ({scope:'col', class: 'uuid-column'})"
+            cell-class="uuid-column"
         >
-          {{ props.row.data.subObsUnitId }}
+          <span class="uuid-value">{{ props.row.data.subObsUnitId }}</span>
         </b-table-column>
 
         <b-table-column
@@ -310,6 +314,7 @@ import {StudyService} from "@/breeding-insight/service/StudyService";
 import {BrAPIService, BrAPIType} from '@/breeding-insight/service/BrAPIService';
 import {SortOrder} from "@/breeding-insight/model/Sort";
 import {DatasetMetadata} from "@/breeding-insight/model/DatasetMetadata";
+import {StringFormatters} from "@/breeding-insight/utils/StringFormatters";
 
 @Component({
   components: {
@@ -614,8 +619,8 @@ export default class Dataset extends ProgramsBase {
   }
 
   setObsUnitIDLabel(){
-    this.obsUnitIDLabel = this.observationUnit + " ObsUnitID"
-    if (this.isSubEntity) this.subObsUnitIDLabel = this.subObservationUnit + " ObsUnitID"
+    this.obsUnitIDLabel = StringFormatters.toStartCase(this.observationUnit) + " ObsUnitID"
+    if (this.isSubEntity) this.subObsUnitIDLabel = StringFormatters.toStartCase(this.subObservationUnit) + " ObsUnitID"
   }
 
   @Watch('$route')
@@ -671,3 +676,16 @@ export default class Dataset extends ProgramsBase {
 }
 
 </script>
+
+<style scoped>
+.uuid-column {
+  min-width: 22rem;
+  white-space: nowrap;
+  word-break: normal;
+  overflow-wrap: normal;
+}
+
+.uuid-value {
+  white-space: nowrap;
+}
+</style>

@@ -59,7 +59,7 @@
       </b-table-column>
       <b-table-column label="Datasets" cell-class="fixed-width-wrapped" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
         <template v-for="dataset in props.row.data.additionalInfo.datasets">
-          <span v-bind:key="dataset.id" class="tag is-info is-normal mr-1">{{ dataset.name }}</span>
+          <span v-bind:key="dataset.id" class="tag is-info is-normal mr-1">{{ StringFormatters.toStartCase(dataset.name) }}</span>
         </template>
       </b-table-column>
       <b-table-column field="data.listDbId" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
@@ -97,6 +97,7 @@ import {UPDATE_EXPERIMENT_SORT} from "@/store/sorting/mutation-types";
 import {BrAPIUtils} from "@/breeding-insight/utils/BrAPIUtils";
 import ExperimentObservationsDownloadModal from "@/components/experiments/ExperimentObservationsDownloadModal.vue";
 import {DatasetMetadata} from "@/breeding-insight/model/DatasetMetadata";
+import {StringFormatters} from "../../breeding-insight/utils/StringFormatters";
 
 @Component({
   mixins: [validationMixin],
@@ -115,7 +116,7 @@ import {DatasetMetadata} from "@/breeding-insight/model/DatasetMetadata";
       updateSort: UPDATE_EXPERIMENT_SORT
     })
   },
-  data: () => ({Sort, BrAPIUtils})
+  data: () => ({Sort, BrAPIUtils, StringFormatters})
 })
 export default class ExperimentsObservationsTable extends Vue {
 

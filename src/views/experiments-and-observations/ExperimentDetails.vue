@@ -148,7 +148,7 @@
             tag="li"
             active-class="is-active"
           >
-            <a>{{ dataset.name }}</a>
+            <a>{{ StringFormatters.toStartCase(dataset.name) }}</a>
           </router-link>
         </ul>
       </nav>
@@ -185,6 +185,12 @@ import {DatasetModel} from "@/breeding-insight/model/DatasetModel";
 import ExperimentAddCollaboratorModal from "@/components/experiments/ExperimentAddCollaboratorModal.vue";
 import ExperimentCollaboratorRemovalModal from "@/components/experiments/ExperimentCollaboratorRemovalModal.vue";
 import {ProgramService} from "@/breeding-insight/service/ProgramService";
+import {ObservationUnitService} from "@/breeding-insight/service/ObservationUnitService";
+import {StringFormatters} from "@/breeding-insight/utils/StringFormatters";
+import {Observation} from "@/breeding-insight/model/Observation";
+import {Metadata} from "@/breeding-insight/model/BiResponse";
+import {ObservationService} from "@/breeding-insight/service/ObservationService";
+import {ProgramObservationLevel} from "@/breeding-insight/model/ProgramObservationLevel";
 
 @Component({
   components: {
@@ -203,7 +209,8 @@ import {ProgramService} from "@/breeding-insight/service/ProgramService";
   },
   directives: {
     ClickOutside
-  }
+  },
+  data: () => ({StringFormatters})
 })
 export default class ExperimentDetails extends ProgramsBase {
   private activeProgram: Program;
@@ -334,23 +341,27 @@ export default class ExperimentDetails extends ProgramsBase {
   @Watch('$route')
   async getProgramDatasetNames() {
     try {
-      const response = await ProgramService.getObservationLevels(this.activeProgram!.id!);
-      if (response) {
-        const [observationLevels, metadata] = response;
-        this.programDatasetNames = observationLevels.map(value => value.name!);
+      const response: Result<Error, [ProgramObservationLevel[], Metadata]> = await ObservationUnitService.getObservationLevels(this.activeProgram!.id!);
+      if(response.isErr()) {
+        this.$emit('show-error-notification', 'Unable to retrieve program dataset names');
+      }
+
+      if (response.isSuccess()) {
+        const [observationLevelNames, metadata] = response.value;
+        this.programDatasetNames = observationLevelNames.map(value => StringFormatters.toStartCase(value.name!));
         return;
       }
     } catch (error) {
-      this.$emit('show-error-notification', 'Unable to retrieve program entity names');
+      this.$emit('show-error-notification', 'Unable to retrieve program dataset names');
     }
-    this.$emit('show-error-notification', 'Unable to retrieve program entity names');
+    this.$emit('show-error-notification', 'Unable to retrieve program dataset names');
     return;
   }
 
   //Retrieves entity names in experiment
   @Watch('datasetMetadata')
   async getExperimentDatasetNames() {
-    this.experimentDatasetNames = this.datasetMetadata.map(value => value.name!);
+    this.experimentDatasetNames = this.datasetMetadata.map(value => StringFormatters.toStartCase(value.name!));
     return;
   }
 

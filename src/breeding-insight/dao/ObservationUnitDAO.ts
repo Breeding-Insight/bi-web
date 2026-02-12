@@ -37,4 +37,19 @@ export class ObservationUnitDAO {
       return ResultGenerator.err(error);
     }  
   }
+
+  static async getObservationLevels(programId: string): Promise<Result<Error, BiResponse>> {
+    try {
+      const { data } = await api.call({
+        url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/brapi/v2/observationlevels`,
+        method: 'get'
+      }) as Response;
+
+      return ResultGenerator.success(new BiResponse(data));
+
+    } catch (error) {
+      return ResultGenerator.err(error);
+    }
+  }
+
 }
