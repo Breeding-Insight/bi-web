@@ -64,7 +64,7 @@
               <template v-if="rows && rows.length > 0">
                 Title: {{ rows[0].trial.brAPIObject.trialName }}
                 <br>Description: {{ rows[0].trial.brAPIObject.trialDescription }}
-                <br>Experimental Unit: {{ rows[0].trial.brAPIObject.additionalInfo.defaultObservationLevel }}
+                <br>Experimental Unit: {{ StringFormatters.toStartCase(rows[0].trial.brAPIObject.additionalInfo.defaultObservationLevel) }}
                 <br>Type: {{ rows[0].trial.brAPIObject.additionalInfo.experimentType }}
                 <br>Experimental Design: Externally generated
               </template>
@@ -307,8 +307,14 @@ import ExpandableTable from "@/components/tables/expandableTable/ExpandableTable
 import {ImportObjectState} from "@/breeding-insight/model/import/ImportObjectState";
 import { GeoCoordinates } from '@/breeding-insight/model/GeoCoordinates';
 import {ExperimentUserInput} from "@/breeding-insight/model/ExperimentUserInput";
+import {StringFormatters} from "../../breeding-insight/utils/StringFormatters";
 
 @Component({
+  computed: {
+    StringFormatters() {
+      return StringFormatters
+    }
+  },
   components: {
     ImportInfoTemplateMessageBox, ConfirmImportMessageBox, ImportTemplate, AlertTriangleIcon, BasicInputField, ExpandableTable
   },

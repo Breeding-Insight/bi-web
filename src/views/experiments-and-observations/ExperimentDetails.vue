@@ -307,7 +307,7 @@ export default class ExperimentDetails extends ProgramsBase {
     if (!this.experiment.additionalInfo) {
       return '';
     }
-    return this.experiment.additionalInfo.defaultObservationLevel;
+    return StringFormatters.toStartCase(this.experiment.additionalInfo.defaultObservationLevel);
   }
 
   get experimentType(): string {
