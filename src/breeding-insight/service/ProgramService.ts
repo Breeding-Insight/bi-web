@@ -140,5 +140,13 @@ export class ProgramService {
     else return;
   }
 
+  static async getObservationLevelNames(programId: string): Promise<[ProgramObservationLevel[], Metadata] | void> {
+    if (programId) {
+      const { result: { data }, metadata } = await ProgramDAO.getObservationLevelNames(programId);
+      return [data, metadata];
+    }
+    else return;
+  }
+
 }
 
