@@ -46,7 +46,7 @@
         <template v-slot="validations">
           <div class="message is-success">
             <div class="message-body has-text-dark">
-              Prepare a dataset for repeated observations within {{ defaultObservationLevel }}.
+              Prepare a dataset for repeated observations within {{ StringFormatters.toStartCase(defaultObservationLevel) }}.
             </div>
           </div>
           <div class="columns is-multiline mb-4">
@@ -93,8 +93,14 @@ import DataForm from "@/components/forms/DataForm.vue";
 import {DatasetMetadata} from "@/breeding-insight/model/DatasetMetadata";
 import {SubEntityDatasetNewRequest} from "@/breeding-insight/model/SubEntityDatasetNewRequest";
 import {DataFormEventBusHandler} from "@/components/forms/DataFormEventBusHandler";
+import {StringFormatters} from "../../breeding-insight/utils/StringFormatters";
 
 @Component({
+  computed: {
+    StringFormatters() {
+      return StringFormatters
+    }
+  },
   mixins: [validationMixin],
   components: {DataForm, BasicSelectField, BasicInputField, AutoCompleteField, BaseModal}
 })
