@@ -51,30 +51,20 @@
         <div class="level-right">
 
           <div class="level-item">
-            <div v-if="showFullAffiliations" class="level-item">
-              <img
-                  src="../../assets/img/IFAS-logo.svg"
-                  alt="University of Florida IFAS Logo"
-                  width="168"
-              >
-            </div>
-            <div v-if="showFullAffiliations" class="level-item">
-              <img
-                  src="../../assets/img/cornell-logo.svg"
-                  alt="Cornell University Logo"
-                  width="254"
-              >
-            </div>
             <div class="level-item">
               <p class="has-text-right is-hidden-touch">
                 <strong>&copy; {{copyrightYear}} Breeding Insight</strong>
                 <br>
-                Funded by the USDA
+                Funded by the USDA through University of Florida/IFAS
+                <br>
+                Formerly funded through Cornell University
               </p>
               <p class="has-text-centered is-hidden-desktop">
                 <strong>&copy; {{copyrightYear}} Breeding Insight</strong>
                 <br>
-                Funded by the USDA
+                Funded by the USDA through University of Florida/IFAS
+                <br>
+                Formerly funded through Cornell University
               </p>
             </div>
             <div class="level-item">
@@ -82,6 +72,20 @@
                   src="../../assets/img/usda.svg"
                   alt="USDA Logo"
                   width="75"
+              >
+            </div>
+            <div class="level-item">
+              <img
+                  src="../../assets/img/UFIFASlogo.svg"
+                  alt="University of Florida IFAS Logo"
+                  width="120"
+              >
+            </div>
+            <div class="level-item">
+              <img
+                  src="../../assets/img/cornell_seal.svg"
+                  alt="Cornell University Logo"
+                  width="56"
               >
             </div>
           </div>
@@ -129,10 +133,6 @@ export default class Footer extends Vue {
     return this.showSidebarMobile && (this.$route.meta.layout == 'adminSideBar' || this.$route.meta.layout == 'userSideBar' ||
         (this.$route.meta.layout == 'infoSideBar' && process.env.VUE_APP_SANDBOX !== '') || this.$route.meta.layout == 'baseSideBar');
 
-  }
-
-  get showFullAffiliations(){
-    return !(this.$route.meta.layout == 'adminSideBar' || this.$route.meta.layout == 'userSideBar' || this.$route.meta.layout == 'baseSideBar');
   }
 }
 
