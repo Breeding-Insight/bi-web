@@ -308,12 +308,19 @@ import {ImportObjectState} from "@/breeding-insight/model/import/ImportObjectSta
 import { GeoCoordinates } from '@/breeding-insight/model/GeoCoordinates';
 import {ExperimentUserInput} from "@/breeding-insight/model/ExperimentUserInput";
 import {StringFormatters} from "../../breeding-insight/utils/StringFormatters";
+import {TraitService} from "@/breeding-insight/service/TraitService";
+import {mapGetters} from "vuex";
+import {Program} from "@/breeding-insight/model/Program";
+import {Trait} from "@/breeding-insight/model/Trait";
 
 @Component({
   computed: {
     StringFormatters() {
       return StringFormatters
-    }
+    },
+    ...mapGetters([
+      'activeProgram'
+    ]),
   },
   components: {
     ImportInfoTemplateMessageBox, ConfirmImportMessageBox, ImportTemplate, AlertTriangleIcon, BasicInputField, ExpandableTable
@@ -327,6 +334,15 @@ import {StringFormatters} from "../../breeding-insight/utils/StringFormatters";
 })
 export default class ImportExperiment extends ProgramsBase {
 
+  async mounted() {
+    // Hopefully no more than 100 ontology terms
+    let traitResponse = await TraitService.getTraits(this.activeProgram.id, {}, {pageSize: 100, page: 1});
+
+    this.traits = traitResponse.value.result.data.map(
+        (trait: any) => trait.observationVariableName
+    );
+  }
+
   private experimentImportTemplateName = 'ExperimentsTemplateMap';
   private confirmImportState: DataFormEventBusHandler = new DataFormEventBusHandler();
   private phenotypeColumns?: Array<String> = [];
@@ -334,6 +350,10 @@ export default class ImportExperiment extends ProgramsBase {
 
   private experimentUserInput: ExperimentUserInput = new ExperimentUserInput();
   private repeatObservationsCount = 10;
+
+  private activeProgram!: Program;
+  private traits : String[] = [];
+
   get showProceedDialog() {
     return this.experimentUserInput.overwrite;
   }
@@ -415,7 +435,15 @@ export default class ImportExperiment extends ProgramsBase {
   }
 
   previewDataLoaded(dynamicColumns: String[]) {
-    this.phenotypeColumns = dynamicColumns;
+
+    for (const dynCol of dynamicColumns) {
+      if (this.traits.includes(dynCol)) {
+        this.phenotypeColumns.push(dynCol);
+      } else {
+        console.log(`Dynamic column [${dynCol}] not found in the list of available traits for program [${this.activeProgram.name}]`)
+      }
+    }
+
     this.createObservationIndexMap();
   }
 
