@@ -436,6 +436,10 @@ export default class ImportExperiment extends ProgramsBase {
 
   previewDataLoaded(dynamicColumns: String[]) {
 
+    // To ensure correct phenotype mapping when multiple appends/create experiments on a single page load,
+    // reset the phenotypeColumns every time a new preview is loaded.
+    this.phenotypeColumns = [];
+
     for (const dynCol of dynamicColumns) {
       if (this.traits.includes(dynCol)) {
         this.phenotypeColumns.push(dynCol);
