@@ -83,7 +83,7 @@
                 <strong>Import Summary</strong>
               </p>
               <!-- just count the observation variables in dynamicColumns that do not start with "TS:"-->
-              <br>Observation Variables: {{ dynamicColumns.filter( obsVar => !obsVar.startsWith("TS:") ).length }}
+              <br>Observation Variables: {{ statistics.Observation_Variables.newObjectCount }}
               <span v-if="isExisting(rows)">
                 <br>New Observations: {{ statistics.Observations.newObjectCount }}
                 <br>Existing Observations: {{ statistics.Existing_Observations.newObjectCount }}
@@ -444,11 +444,13 @@ export default class ImportExperiment extends ProgramsBase {
       if (this.traits.includes(dynCol)) {
         this.phenotypeColumns.push(dynCol);
       } else {
-        console.log(`Dynamic column [${dynCol}] not found in the list of available traits for program [${this.activeProgram.name}]`)
+        console.log(`Dynamic column [${dynCol}] not found in the list of available traits for program [${this.activeProgram.name}]`);
       }
     }
 
     this.createObservationIndexMap();
+
+    return this.phenotypeColumns.length;
   }
 
   // Map phenotypeColumn indices to brapi observation indices for use in highlighting
