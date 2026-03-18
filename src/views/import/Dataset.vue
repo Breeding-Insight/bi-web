@@ -672,7 +672,7 @@ export default class Dataset extends ProgramsBase {
       this.createDatasetTableRows();
 
       // Set the obsUnitId label to include observation level
-      if (this.isSubEntity) this.subObservationUnit = this.datasetModel.observationUnits[0].additionalInfo.observationLevel;
+      if (this.isSubEntity) this.subObservationUnit = this.datasetModel.observationUnits[0].observationUnitPosition.observationLevel.levelName;
       this.setObsUnitIDLabel();
 
       //Initialize the paginationController
