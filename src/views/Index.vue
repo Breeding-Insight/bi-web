@@ -83,7 +83,7 @@
             <li>Analysis</li>
           </ul>
           <p>
-            Breeding Insight is funded by the U.S. Department of Agriculture (USDA) Agricultural Research Service (ARS) through Cornell University.
+            Breeding Insight is funded by the U.S. Department of Agriculture (USDA) Agricultural Research Service (ARS) through University of Florida/IFAS. Formerly funded through Cornell University.
           </p>
         </div>
       </div>
