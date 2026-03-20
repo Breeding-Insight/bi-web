@@ -338,6 +338,10 @@ export default class ImportExperiment extends ProgramsBase {
     // Hopefully no more than 100 ontology terms
     let traitResponse = await TraitService.getTraits(this.activeProgram.id, {}, {pageSize: 100, page: 1});
 
+    if (traitResponse.value.metadata.pagination.totalCount > 100) {
+      this.$log.error("More than 100 traits detected while loading experiment import preview");
+    }
+
     this.traits = traitResponse.value.result.data.map(
         (trait: any) => trait.observationVariableName
     );
@@ -444,13 +448,11 @@ export default class ImportExperiment extends ProgramsBase {
       if (this.traits.includes(dynCol)) {
         this.phenotypeColumns.push(dynCol);
       } else {
-        console.log(`Dynamic column [${dynCol}] not found in the list of available traits for program [${this.activeProgram.name}]`);
+        this.$log.info(`Dynamic column [${dynCol}] not found in the list of available traits for program [${this.activeProgram.name}]`);
       }
     }
 
     this.createObservationIndexMap();
-
-    return this.phenotypeColumns.length;
   }
 
   // Map phenotypeColumn indices to brapi observation indices for use in highlighting
