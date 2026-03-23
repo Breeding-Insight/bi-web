@@ -83,7 +83,7 @@
                 <strong>Import Summary</strong>
               </p>
               <!-- just count the observation variables in dynamicColumns that do not start with "TS:"-->
-              <br>Observation Variables: {{ dynamicColumns.filter( obsVar => !obsVar.startsWith("TS:") ).length }}
+              <br>Observation Variables: {{ statistics.Observation_Variables.newObjectCount }}
               <span v-if="isExisting(rows)">
                 <br>New Observations: {{ statistics.Observations.newObjectCount }}
                 <br>Existing Observations: {{ statistics.Existing_Observations.newObjectCount }}
@@ -308,12 +308,19 @@ import {ImportObjectState} from "@/breeding-insight/model/import/ImportObjectSta
 import { GeoCoordinates } from '@/breeding-insight/model/GeoCoordinates';
 import {ExperimentUserInput} from "@/breeding-insight/model/ExperimentUserInput";
 import {StringFormatters} from "../../breeding-insight/utils/StringFormatters";
+import {TraitService} from "@/breeding-insight/service/TraitService";
+import {mapGetters} from "vuex";
+import {Program} from "@/breeding-insight/model/Program";
+import {Trait} from "@/breeding-insight/model/Trait";
 
 @Component({
   computed: {
     StringFormatters() {
       return StringFormatters
-    }
+    },
+    ...mapGetters([
+      'activeProgram'
+    ]),
   },
   components: {
     ImportInfoTemplateMessageBox, ConfirmImportMessageBox, ImportTemplate, AlertTriangleIcon, BasicInputField, ExpandableTable
@@ -327,6 +334,19 @@ import {StringFormatters} from "../../breeding-insight/utils/StringFormatters";
 })
 export default class ImportExperiment extends ProgramsBase {
 
+  async mounted() {
+    // Hopefully no more than 100 ontology terms
+    let traitResponse = await TraitService.getTraits(this.activeProgram.id, {}, {pageSize: 100, page: 1});
+
+    if (traitResponse.value.metadata.pagination.totalCount > 100) {
+      this.$log.error("More than 100 traits detected while loading experiment import preview");
+    }
+
+    this.traits = traitResponse.value.result.data.map(
+        (trait: any) => trait.observationVariableName
+    );
+  }
+
   private experimentImportTemplateName = 'ExperimentsTemplateMap';
   private confirmImportState: DataFormEventBusHandler = new DataFormEventBusHandler();
   private phenotypeColumns?: Array<String> = [];
@@ -334,6 +354,10 @@ export default class ImportExperiment extends ProgramsBase {
 
   private experimentUserInput: ExperimentUserInput = new ExperimentUserInput();
   private repeatObservationsCount = 10;
+
+  private activeProgram!: Program;
+  private traits : String[] = [];
+
   get showProceedDialog() {
     return this.experimentUserInput.overwrite;
   }
@@ -415,7 +439,19 @@ export default class ImportExperiment extends ProgramsBase {
   }
 
   previewDataLoaded(dynamicColumns: String[]) {
-    this.phenotypeColumns = dynamicColumns;
+
+    // To ensure correct phenotype mapping when multiple appends/create experiments on a single page load,
+    // reset the phenotypeColumns every time a new preview is loaded.
+    this.phenotypeColumns = [];
+
+    for (const dynCol of dynamicColumns) {
+      if (this.traits.includes(dynCol)) {
+        this.phenotypeColumns.push(dynCol);
+      } else {
+        this.$log.info(`Dynamic column [${dynCol}] not found in the list of available traits for program [${this.activeProgram.name}]`);
+      }
+    }
+
     this.createObservationIndexMap();
   }
 
