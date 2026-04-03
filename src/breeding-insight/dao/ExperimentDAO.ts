@@ -146,6 +146,21 @@ export class ExperimentDAO {
         }
     }
 
+    static async getRecommendedSubEntityDatasetNames(programId: string, experimentId: string): Promise<Result<Error, string[]>> {
+        const config: any = {};
+        config.url = `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/experiments/${experimentId}/recommended-sub-entity-dataset-names`;
+        config.method = 'get';
+        config.programId = programId;
+        config.experimentId = experimentId;
+        try {
+            const res = await api.call(config) as Response;
+            const { result } = res.data;
+            return ResultGenerator.success(result);
+        } catch (error) {
+            return ResultGenerator.err(error);
+        }
+    }
+
     static async getDatasetById(programId: string, experimentId: string, datasetId: string, stats: boolean): Promise<Result<Error, DatasetModel>> {
         const config: any = {};
         config.url = `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/experiments/${experimentId}/dataset/${datasetId}`;
