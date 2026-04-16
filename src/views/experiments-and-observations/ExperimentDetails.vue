@@ -167,7 +167,6 @@
 import {Component, Watch} from "vue-property-decorator";
 import {mapGetters} from "vuex";
 import {Collaborator} from "@/breeding-insight/model/Collaborator";
-import {PlusCircleIcon} from 'vue-feather-icons'
 import {Program} from "@/breeding-insight/model/Program";
 import {Result} from "@/breeding-insight/model/Result";
 import {ExperimentService} from "@/breeding-insight/service/ExperimentService";
@@ -184,18 +183,11 @@ import {SubEntityDatasetNewRequest} from "@/breeding-insight/model/SubEntityData
 import {DatasetModel} from "@/breeding-insight/model/DatasetModel";
 import ExperimentAddCollaboratorModal from "@/components/experiments/ExperimentAddCollaboratorModal.vue";
 import ExperimentCollaboratorRemovalModal from "@/components/experiments/ExperimentCollaboratorRemovalModal.vue";
-import {ProgramService} from "@/breeding-insight/service/ProgramService";
-import {ObservationUnitService} from "@/breeding-insight/service/ObservationUnitService";
 import {StringFormatters} from "@/breeding-insight/utils/StringFormatters";
-import {Observation} from "@/breeding-insight/model/Observation";
-import {Metadata} from "@/breeding-insight/model/BiResponse";
-import {ObservationService} from "@/breeding-insight/service/ObservationService";
-import {ProgramObservationLevel} from "@/breeding-insight/model/ProgramObservationLevel";
 
 @Component({
   components: {
     SubEntityDatasetModal,
-    PlusCircleIcon,
     ExperimentObservationsDownloadModal,
     ExperimentDeleteModal,
     ExperimentAddCollaboratorModal,
@@ -337,18 +329,17 @@ export default class ExperimentDetails extends ProgramsBase {
   //   return this.experiment.additionalInfo.environmentsCount;
   // }
 
-  //Get program entity names for sub-entity modal suggestions
+  //Get experiment-scoped suggested names for sub-entity modal autocomplete
   @Watch('$route')
   async getProgramDatasetNames() {
     try {
-      const response: Result<Error, [ProgramObservationLevel[], Metadata]> = await ObservationUnitService.getObservationLevels(this.activeProgram!.id!);
+      const response: Result<Error, string[]> = await ExperimentService.getRecommendedSubEntityDatasetNames(this.activeProgram!.id!, this.experimentUUID);
       if(response.isErr()) {
         this.$emit('show-error-notification', 'Unable to retrieve program dataset names');
       }
 
       if (response.isSuccess()) {
-        const [observationLevelNames, metadata] = response.value;
-        this.programDatasetNames = observationLevelNames.map(value => StringFormatters.toStartCase(value.name!));
+        this.programDatasetNames = response.value.map(value => StringFormatters.toStartCase(value));
         return;
       }
     } catch (error) {
@@ -365,10 +356,10 @@ export default class ExperimentDetails extends ProgramsBase {
     return;
   }
 
-  //Retrieves program entity names minus any that already exist as entity names for the experiment
+  //The API already filters out names that exist in the experiment
   get datasetNameOptions(): String[] {
-    return this.programDatasetNames.filter((x) => !this.experimentDatasetNames.includes(x));
-}
+    return this.programDatasetNames;
+  }
 
   get experimentObservationUnit(): string | null {
     if (this.experiment && this.experiment.additionalInfo) {
