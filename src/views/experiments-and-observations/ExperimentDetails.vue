@@ -232,7 +232,6 @@ export default class ExperimentDetails extends ProgramsBase {
   mounted() {
     this.getExperiment();
     this.getDatasetMetadata();
-    this.getRecommendedSubEntityDatasetNames();
   }
 
   private importFile() {
@@ -277,8 +276,17 @@ export default class ExperimentDetails extends ProgramsBase {
     return true;
   }
 
-  private openSubEntityModal() {
+  private async openSubEntityModal(): Promise<void> {
+    await this.refreshSubEntityModalData();
     this.subEntityModalActive = true;
+  }
+
+  // get datasets and recommended names so we have latest data for validation and sub entity autocomplete
+  private async refreshSubEntityModalData(): Promise<void> {
+    await Promise.allSettled([
+      this.getDatasetMetadata(),
+      this.getRecommendedSubEntityDatasetNames()
+    ]);
   }
 
   get experimentUUID(): string {
@@ -329,8 +337,8 @@ export default class ExperimentDetails extends ProgramsBase {
   //   return this.experiment.additionalInfo.environmentsCount;
   // }
 
-  //Get experiment-scoped suggested names for sub-entity modal autocomplete
-  @Watch('$route')
+  // Get experiment-scoped suggested names for sub-entity modal autocomplete.
+  // This is only needed when the modal is opened.
   async getRecommendedSubEntityDatasetNames(): Promise<void> {
     try {
       const response: Result<Error, string[]> = await ExperimentService.getRecommendedSubEntityDatasetNames(this.activeProgram!.id!, this.experimentUUID);
