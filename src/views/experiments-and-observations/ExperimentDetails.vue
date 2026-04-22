@@ -232,7 +232,7 @@ export default class ExperimentDetails extends ProgramsBase {
   mounted() {
     this.getExperiment();
     this.getDatasetMetadata();
-    this.getProgramDatasetNames();
+    this.getRecommendedSubEntityDatasetNames();
   }
 
   private importFile() {
@@ -331,22 +331,22 @@ export default class ExperimentDetails extends ProgramsBase {
 
   //Get experiment-scoped suggested names for sub-entity modal autocomplete
   @Watch('$route')
-  async getProgramDatasetNames() {
+  async getRecommendedSubEntityDatasetNames(): Promise<void> {
     try {
       const response: Result<Error, string[]> = await ExperimentService.getRecommendedSubEntityDatasetNames(this.activeProgram!.id!, this.experimentUUID);
-      if(response.isErr()) {
-        this.$emit('show-error-notification', 'Unable to retrieve program dataset names');
-      }
-
-      if (response.isSuccess()) {
-        this.programDatasetNames = response.value.map(value => StringFormatters.toStartCase(value));
+      if (response.isErr()) {
+        this.showProgramDatasetNamesError();
         return;
       }
+
+      this.programDatasetNames = response.value.map(value => StringFormatters.toStartCase(value));
     } catch (error) {
-      this.$emit('show-error-notification', 'Unable to retrieve program dataset names');
+      this.showProgramDatasetNamesError();
     }
+  }
+
+  private showProgramDatasetNamesError(): void {
     this.$emit('show-error-notification', 'Unable to retrieve program dataset names');
-    return;
   }
 
   //Retrieves entity names in experiment

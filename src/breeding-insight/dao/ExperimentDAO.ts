@@ -154,8 +154,8 @@ export class ExperimentDAO {
         config.experimentId = experimentId;
         try {
             const res = await api.call(config) as Response;
-            const { result } = res.data;
-            return ResultGenerator.success(result);
+            const biResponse = new BiResponse(res.data);
+            return ResultGenerator.success(biResponse.result.data);
         } catch (error) {
             return ResultGenerator.err(error);
         }
