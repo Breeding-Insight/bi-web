@@ -31,7 +31,7 @@
 
       <template v-slot:importInfoTemplateMessageBox>
         <ImportInfoTemplateMessageBox v-bind:import-type-name="'Germplasm'"
-                                      v-bind:template-url="'https://www.dropbox.com/scl/fi/sezsc80x7vxaeor7i8vvn/bi_germplasm_import_template_v11.xls?rlkey=91gf971xi293zqn2x7ago1223&st=46nu0kte&dl=1'"
+                                      v-bind:template-url="'https://www.dropbox.com/scl/fi/qavhqq8tzxr058cldqzgw/bi_germplasm_import_template_v12.xls?rlkey=igc1rfim5pjadkpdeu67uno35&st=5h45utag&dl=1'"
                                       class="mb-5">
           <strong>Before You Import...</strong>
           <br/>
