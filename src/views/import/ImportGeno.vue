@@ -25,7 +25,7 @@
               <div class="has-text-dark">
                 <strong>Before You Import...</strong>
                 <br/>
-                Ensure that Sample IDs match to an Exp Unit ID within the chosen experiment
+                Ensure that the Sample IDs in the .vcf import file match to Sample IDs within the chosen sample submission.
               </div>
             </div>
           </div>
@@ -53,10 +53,10 @@
             <div class="columns is-vcentered">
               <div class="column">
                 <BasicSelectField
-                    v-model="upload.experimentId"
-                    v-bind:validations="validations.experimentId"
-                    v-bind:options="experimentOptions"
-                    v-bind:field-name="'Experiment'"
+                    v-model="upload.submissionId"
+                    v-bind:validations="validations.submissionId"
+                    v-bind:options="submissionOptions"
+                    v-bind:field-name="'Sample Submission Project Name'"
                 />
               </div>
             </div>
@@ -83,22 +83,20 @@
 import { Component } from 'vue-property-decorator';
 import ProgramsBase from '@/components/program/ProgramsBase.vue';
 import { DataFormEventBusHandler } from '@/components/forms/DataFormEventBusHandler';
-import { Trial } from '@/breeding-insight/model/Trial';
 import { mapGetters } from 'vuex';
 import { Program } from '@/breeding-insight/model/Program';
-import { BrAPIService, BrAPIType } from '@/breeding-insight/service/BrAPIService';
-import { SortOrder } from '@/breeding-insight/model/Sort';
 import NewDataForm from '@/components/forms/NewDataForm.vue';
 import BasicInputField from '@/components/forms/BasicInputField.vue';
 import BasicSelectField from '@/components/forms/BasicSelectField.vue';
 import FileSelector from '@/components/file-import/FileSelector.vue';
-import { BrAPIUtils } from '@/breeding-insight/utils/BrAPIUtils';
 import { required } from 'vuelidate/lib/validators';
 import { ImportResponse } from '@/breeding-insight/model/import/ImportResponse';
 import { GenoService } from '@/breeding-insight/service/GenoService';
 import { DEACTIVATE_ALL_NOTIFICATIONS } from '@/store/mutation-types';
 import { ImportMappingConfig } from '@/breeding-insight/model/import/ImportMapping';
 import { ImportService } from '@/breeding-insight/service/ImportService';
+import { SampleSubmission } from '@/breeding-insight/model/SampleSubmission';
+import { SampleSubmissionService } from '@/breeding-insight/service/SampleSubmissionService';
 
 @Component({
   components: {
@@ -112,7 +110,7 @@ import { ImportService } from '@/breeding-insight/service/ImportService';
 })
 export default class ImportExperiment extends ProgramsBase {
   private activeProgram?: Program;
-  private experimentOptions: Array<ExperimentOption> = [];
+  private submissionOptions: Array<SubmissionOption> = [];
   private importState: DataFormEventBusHandler = new DataFormEventBusHandler();
   private currentImport?: ImportResponse = new ImportResponse({});
   private systemImportTemplateId?: string;
@@ -120,33 +118,30 @@ export default class ImportExperiment extends ProgramsBase {
   upload: Upload = new Upload({});
 
   uploadValidations = {
-    experimentId: {required},
+    submissionId: {required},
     file: {required}
   }
 
   mounted() {
-    this.loadExperiments();
+    this.loadSampleSubmissions();
     this.getSystemImportTemplateMapping();
   }
 
-  async loadExperiments () {
-    let expResponse = await BrAPIService.get(BrAPIType.EXPERIMENT, this.activeProgram!.id!, { field: undefined, order: SortOrder.Ascending }, { page: 0, pageSize: 1000 }, {"metadata": false});
-    if (expResponse.result && expResponse.result.data) {
-      this.experimentOptions = expResponse.result.data.map((exp: Trial) => {
-        let breedingInsightId = BrAPIUtils.getBreedingInsightId(exp.externalReferences!, "/trials");
-        return new ExperimentOption({
-          id: breedingInsightId!,
-          name: exp.trialName!
+  async loadSampleSubmissions() {
+    const submissions = await SampleSubmissionService.getProgramSampleSubmissions(this.activeProgram!.id!);
+    this.submissionOptions = submissions.map((submission: SampleSubmission) => {
+        return new SubmissionOption({
+              id: submission.id!,
+              name: submission.name!
         });
       });
-      this.$log.debug(JSON.stringify(this.experimentOptions));
+    this.$log.debug(JSON.stringify(this.submissionOptions));
     }
-  }
 
   async save() {
     try {
       this.$store.commit( DEACTIVATE_ALL_NOTIFICATIONS );
-      this.currentImport = await GenoService.uploadData(this.activeProgram!.id!, this.upload.experimentId!, this.upload.file!);
+      this.currentImport = await GenoService.uploadData(this.activeProgram!.id!, this.upload.submissionId!, this.upload.file!);
       const response: ImportResponse = await this.getDataUpload();
       if (response.progress!.statuscode == 500) {
         this.$emit('show-error-notification', 'An unknown error has occurred when processing your import.');
@@ -208,22 +203,22 @@ export default class ImportExperiment extends ProgramsBase {
 
 }
 
-class ExperimentOption {
+class SubmissionOption {
   id: string;
   name: string;
 
-  constructor({id, name}: ExperimentOption) {
+  constructor({id, name}: SubmissionOption) {
     this.id = id;
     this.name = name;
   }
 }
 
 class Upload {
-  experimentId?: string;
+  submissionId?: string;
   file?: File;
 
-  constructor ({experimentId, file}: Upload) {
-    this.experimentId = experimentId;
+  constructor ({submissionId, file}: Upload) {
+    this.submissionId = submissionId;
     this.file = file;
   }
 }
