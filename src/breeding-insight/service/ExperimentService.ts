@@ -68,16 +68,13 @@ export class ExperimentService {
         if (!trial) {
             return ResultGenerator.err(new Error('Missing or invalid trial'));
         }
-        if (!trial.externalReferences) {
-            return ResultGenerator.err(new Error('Trial is missing external references'));
+
+        let trialDbId = trial.trialDbId;
+        // Throw if trial is missing trialDbId.
+        if (!trialDbId) {
+            return ResultGenerator.err(new Error("Trial is missing a brapi dbId."));
         }
-        // Try to get the /trials external reference.
-        let externalReferenceId = BrAPIUtils.getBreedingInsightId(trial.externalReferences, '/trials');
-        // Throw if trial is missing ExternalReferenceId.
-        if (!externalReferenceId) {
-            return ResultGenerator.err(new Error("Trial is missing external reference."));
-        }
-        return await ExperimentDAO.getDatasetMetadata(programId, externalReferenceId);
+        return await ExperimentDAO.getDatasetMetadata(programId, trialDbId);
     }
     
     static async getUnassignedCollaboratorsByExperiment(programId: string | undefined, experimentId: string): Promise<Result<Error, Collaborator[]>> {
