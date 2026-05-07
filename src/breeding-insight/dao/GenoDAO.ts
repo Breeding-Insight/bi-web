@@ -20,14 +20,14 @@ import { BiResponse, Response } from '@/breeding-insight/model/BiResponse';
 
 export class GenoDAO {
 
-  static async uploadData(programId: string, experimentId: string, file: File): Promise<any> {
+  static async uploadData(programId: string, submissionId: string, file: File): Promise<any> {
 
     var formData = new FormData();
     formData.append("file", file);
     formData.append("filename", file.name);
 
     const {data} = await api.call({
-      url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/experiments/${experimentId}/geno/import`,
+      url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/submissions/${submissionId}/geno/import`,
       method: 'post', data: formData}
     ) as Response;
 
