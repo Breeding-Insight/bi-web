@@ -48,6 +48,7 @@ const rolePermissions: Record<string, DefinePermissions> = {
     can('update', 'Trait');
     can('archive', 'Trait');
     can('create', 'Import');
+    can('create', 'SubEntityDataset');
     can('delete', 'Experiment');
     can('access', 'ProgramConfiguration');
     can('create', 'ProgramConfiguration');
