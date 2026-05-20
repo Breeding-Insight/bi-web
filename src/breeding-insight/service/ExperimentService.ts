@@ -54,6 +54,13 @@ export class ExperimentService {
         return await ExperimentDAO.getDatasetMetadata(programId, experimentId);
     }
 
+    static async getRecommendedSubEntityDatasetNames(programId: string, experimentId: string): Promise<Result<Error, string[]>> {
+        if (!programId) {
+            return ResultGenerator.err(new Error('Missing or invalid program id'));
+        }
+        return await ExperimentDAO.getRecommendedSubEntityDatasetNames(programId, experimentId);
+    }
+
     static async getDatasetMetadataByTrial(programId: string, trial: Trial): Promise<Result<Error, DatasetMetadata[]>> {
         if (!programId) {
             return ResultGenerator.err(new Error('Missing or invalid program id'));

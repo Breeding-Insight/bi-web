@@ -579,6 +579,10 @@ table tr.is-edited + .detail {
   margin-bottom: 7em;
 }
 
+.githubBtn {
+  margin: 1em auto;
+}
+
 .program-selection-level {
   .level-item:not(:last-child) {
     margin-right:0.5em !important;
@@ -621,7 +625,7 @@ a.is-underlined {
   text-decoration: underline;
 }
 
-#connect-orcid-button{
+#connect-orcid-button #connect-github-button {
   border: 1px solid #D3D3D3;
   padding: .3em;
   background-color: #fff;
@@ -635,7 +639,7 @@ a.is-underlined {
   vertical-align: middle;
 }
 
-#connect-orcid-button:hover{
+#connect-orcid-button:hover #connect-github-button:hover {
   border: 1px solid #338caf;
   color: #338caf;
 }

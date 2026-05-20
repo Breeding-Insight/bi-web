@@ -132,8 +132,21 @@
           {{ props.row.data.expUnitId }}
         </b-table-column>
         <b-table-column
+            v-if="isSubEntity"
+            v-slot="props"
+            field="data.subExpUnitId"
+            :custom-sort="sortSubUnitId"
+            label="Sub Unit ID"
+            sortable
+            searchable
+            :th-attrs="() => ({scope:'col'})"
+        >
+          {{ props.row.data.subExpUnitId }}
+        </b-table-column>
+        <b-table-column
             v-slot="props"
             field="data.expReplicate"
+            :custom-sort="sortExpReplicate"
             label="Exp Replicate #"
             sortable
             searchable
@@ -145,6 +158,7 @@
             v-slot="props"
             field="data.expBlock"
             label="Exp Block #"
+            :custom-sort="sortExpBlock"
             sortable
             searchable
             :th-attrs="() => ({scope:'col'})"
@@ -155,6 +169,7 @@
             v-slot="props"
             field="data.row"
             label="Row"
+            :custom-sort="sortRow"
             sortable
             searchable
             :th-attrs="() => ({scope:'col'})"
@@ -165,6 +180,8 @@
             v-slot="props"
             field="data.column"
             label="Column"
+            :custom-sort="sortColumn"
+
             sortable
             searchable
             :th-attrs="() => ({scope:'col'})"
@@ -231,12 +248,28 @@
         <b-table-column
             v-slot="props"
             field="data.obsUnitId"
-            label="ObsUnitID"
+            v-bind:label="obsUnitIDLabel"
+            width="320"
             sortable
             searchable
-            :th-attrs="() => ({scope:'col'})"
+            :th-attrs="() => ({scope:'col', class: 'uuid-column'})"
+            cell-class="uuid-column"
         >
-          {{ props.row.data.obsUnitId }}
+          <span class="uuid-value">{{ props.row.data.obsUnitId }}</span>
+        </b-table-column>
+
+        <b-table-column
+            v-if="isSubEntity"
+            v-slot="props"
+            field="data.subObsUnitId"
+            v-bind:label="subObsUnitIDLabel"
+            width="320"
+            sortable
+            searchable
+            :th-attrs="() => ({scope:'col', class: 'uuid-column'})"
+            cell-class="uuid-column"
+        >
+          <span class="uuid-value">{{ props.row.data.subObsUnitId }}</span>
         </b-table-column>
 
         <b-table-column
@@ -286,6 +319,7 @@ import {StudyService} from "@/breeding-insight/service/StudyService";
 import {BrAPIService, BrAPIType} from '@/breeding-insight/service/BrAPIService';
 import {SortOrder} from "@/breeding-insight/model/Sort";
 import {DatasetMetadata} from "@/breeding-insight/model/DatasetMetadata";
+import {StringFormatters} from "@/breeding-insight/utils/StringFormatters";
 
 @Component({
   components: {
@@ -307,6 +341,10 @@ export default class Dataset extends ProgramsBase {
   private paginationController: PaginationController = new PaginationController();
   private datasetTableRows: DatasetTableRow[] = [];
   private unitDbIdToTraitValues: any = {};
+  private obsUnitIDLabel :string = "ObsUnitID";
+  private subObsUnitIDLabel :string = "";
+  private isSubEntity = false;
+  private subObservationUnit = "";
 
   mounted() {
     this.load();
@@ -376,11 +414,8 @@ export default class Dataset extends ProgramsBase {
     first = first ? first : "";  //convert null or undefined to an empty string
     let second = b.data.traitValues[index];
     second = second ? second : "";  //convert null or undefined to an empty string
-    if (isAsc) {
-      return first.localeCompare(second);
-    } else {
-      return second.localeCompare(first);
-    }
+    return this.sortAlphaAsNumeric(first, second, isAsc);
+
   }
 
   //Filter GIDs by exact match
@@ -390,28 +425,54 @@ export default class Dataset extends ProgramsBase {
   }
 
   //sort GIDs numerically
+
   sortGID(a: any, b: any, isAsc: boolean){
     let first :number = parseInt(a.data.gid);
     let second :number = parseInt(b.data.gid);
-    if (isAsc) {
-      if( first > second){ return 1; }
-      else if (first < second){ return -1;}
-      else return 0;
-    } else {
-      if( second > first ){ return 1; }
-      else if ( second < first){ return -1;}
-      else return 0;
-    }
+    return this.sortAlphaAsNumeric(first, second, isAsc);
+  }
+  sortColumn(a: any, b: any, isAsc: boolean) {
+
+    let first: any = a.data.column;
+    let second: any = b.data.column;
+    return this.sortAlphaAsNumeric(first, second, isAsc);
+  }
+
+  sortRow(a: any, b: any, isAsc: boolean) {
+    let first: any = a.data.row;
+    let second: any = b.data.row;
+    return this.sortAlphaAsNumeric(first, second, isAsc);
+  }
+
+  sortExpBlock(a: any, b: any, isAsc: boolean) {
+    let first: any = a.data.expBlock;
+    let second: any = b.data.expBlock;
+    return this.sortAlphaAsNumeric(first, second, isAsc);
+  }
+  sortExpReplicate(a: any, b: any, isAsc: boolean){
+    let first :any = a.data.expReplicate;
+    let second :any = b.data.expReplicate;
+    return this.sortAlphaAsNumeric( first, second, isAsc);
   }
 
   // This sorts the Exp Unit ID's in Alphanumeric order (ie. B300,BO2, B1 would sort to B1, B02, B300)
   sortExpUnitId(a: any, b: any, isAsc: boolean){
-    let first :any = (a.data.expUnitId);
-    let second :any = (b.data.expUnitId);
+    let first :any = a.data.expUnitId;
+    let second :any = b.data.expUnitId;
+    return this.sortAlphaAsNumeric( first, second, isAsc);
+  }
+
+// This sorts the Sub Unit ID's in Alphanumeric order (ie. B300,BO2, B1 would sort to B1, B02, B300)
+  sortSubUnitId(a: any, b: any, isAsc: boolean) {
+    let first: any = a.data.subExpUnitId;
+    let second: any = b.data.subExpUnitId;
+    return this.sortAlphaAsNumeric( first, second, isAsc);
+  }
+  
+  private sortAlphaAsNumeric( first: number, second: number, isAsc: boolean)  {
     if (isAsc) {
       return first.toString().localeCompare(second.toString(), 'en', {numeric: true});
-    }
-    else {
+    } else {
       return second.toString().localeCompare(first.toString(), 'en', {numeric: true});
     }
   }
@@ -446,9 +507,17 @@ export default class Dataset extends ProgramsBase {
 
       datasetTableRow.env = this.removeUnique(unit.studyName);
       datasetTableRow.envLocation = this.removeUnique(unit.locationName);
-      datasetTableRow.expUnitId = this.removeUnique(unit.observationUnitName);
-      datasetTableRow.obsUnitId = BrAPIUtils.getBreedingInsightId(unit.externalReferences, "/observationunits");
 
+      if(!this.isSubEntity){
+        datasetTableRow.expUnitId = this.removeUnique(unit.observationUnitName);
+        datasetTableRow.obsUnitId = BrAPIUtils.getBreedingInsightId(unit.externalReferences, "/observationunits");
+      } else {
+        let parentObsInfo = unit.observationUnitPosition.observationLevelRelationships.find((val) => val.levelOrder === 0);
+        if (parentObsInfo) datasetTableRow.obsUnitId = this.removeUnique(parentObsInfo.levelCode);
+        datasetTableRow.expUnitId = unit.additionalInfo.expUnitID;
+        datasetTableRow.subExpUnitId = this.removeUnique(unit.observationUnitName);
+        datasetTableRow.subObsUnitId = BrAPIUtils.getBreedingInsightId(unit.externalReferences, "/observationunits");
+      }
 
       // Env Year
       datasetTableRow.envYear = "";
@@ -565,6 +634,11 @@ export default class Dataset extends ProgramsBase {
     }
   }
 
+  setObsUnitIDLabel(){
+    this.obsUnitIDLabel = StringFormatters.toStartCase(this.observationUnit) + " ObsUnitID"
+    if (this.isSubEntity) this.subObsUnitIDLabel = StringFormatters.toStartCase(this.subObservationUnit) + " ObsUnitID"
+  }
+
   @Watch('$route')
   async load() {
     try {
@@ -587,12 +661,19 @@ export default class Dataset extends ProgramsBase {
       if (response.isErr()) throw response.value;
       this.datasetModel = response.value;
 
+      // Use this.datasetModel to determine if this table is for a top level or sub entity dataset
+      if (this.datasetModel.observationUnits[0].observationUnitPosition.observationLevelRelationships.length > 2) this.isSubEntity = true;
+
       // Use this.datasetModel to initialize this.unitDbIdToTraitValues
       this.unitDbIdToTraitValues = this.createUnitDbIdToTraitValues();
 
 
       // Use this.datasetModel to initialize this.datasetTableRows
       this.createDatasetTableRows();
+
+      // Set the obsUnitId label to include observation level
+      if (this.isSubEntity) this.subObservationUnit = this.datasetModel.observationUnits[0].observationUnitPosition.observationLevel.levelName;
+      this.setObsUnitIDLabel();
 
       //Initialize the paginationController
       this.paginationController.totalCount = this.datasetModel.observationUnits.length;
@@ -611,3 +692,16 @@ export default class Dataset extends ProgramsBase {
 }
 
 </script>
+
+<style scoped>
+.uuid-column {
+  min-width: 22rem;
+  white-space: nowrap;
+  word-break: normal;
+  overflow-wrap: normal;
+}
+
+.uuid-value {
+  white-space: nowrap;
+}
+</style>

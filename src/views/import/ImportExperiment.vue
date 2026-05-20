@@ -18,25 +18,26 @@
 <template>
   <div id="import-experiment">
     <ImportTemplate
-        v-bind:abort-msg="'No records will be added, and the import in progress will be completely removed.'"
-        v-bind:system-import-template-name="experimentImportTemplateName"
-        v-bind:confirm-msg="'Preview Experimental Upload'"
-        v-bind:import-type-name="'Experiments & Observations'"
-        v-bind:confirm-import-state="confirmImportState"
-        v-bind:user-input="experimentUserInput"
-        v-bind:show-proceed-warning="showProceedDialog"
-        v-on="$listeners"
-        v-on:finished="importFinished"
-        v-on:preview-data-loaded="previewDataLoaded"
-        v-on:statistics-loaded="statisticsLoaded"
+      v-bind:abort-msg="'No records will be added, and the import in progress will be completely removed.'"
+      v-bind:system-import-template-name="experimentImportTemplateName"
+      v-bind:confirm-msg="'Preview Experimental Upload'"
+      v-bind:import-type-name="'Experiments & Observations'"
+      v-bind:confirm-import-state="confirmImportState"
+      v-bind:user-input="experimentUserInput"
+      v-bind:show-proceed-warning="showProceedDialog"
+      v-on="$listeners"
+      v-on:finished="importFinished"
+      v-on:preview-data-loaded="previewDataLoaded"
+      v-on:statistics-loaded="statisticsLoaded"
     >
-
       <template v-slot:importInfoTemplateMessageBox>
-        <ImportInfoTemplateMessageBox v-bind:import-type-name="'Experiments & Observations'"
-                                      v-bind:template-url="'https://cornell.box.com/shared/static/x53n1x8fhccgij8hroel0zuz3y4l31iu.xls'"
-                                      class="mb-5">
+        <ImportInfoTemplateMessageBox
+          v-bind:import-type-name="'Experiments & Observations'"
+          v-bind:template-url="'https://www.dropbox.com/scl/fi/5abbq8cxuxwepstlr3www/Experimental_Template_V08.xls?rlkey=ny3zavzqv4jyu0bl95hnpi7fz&st=3002jr3s&dl=1'"
+          class="mb-5"
+        >
           <strong>Before You Import...</strong>
-          <br/>
+          <br>
           Experimental germplasm and ontology terms must be created in the system before experiments can be created via import.
           See the import template for more information about data requirements. Importing phenotypic
           observations into existing experiments requires only Observation Unit IDs
@@ -45,145 +46,239 @@
       </template>
 
       <template v-slot:confirmImportMessageBox="{ statistics, dynamicColumns, abort, confirm, rows }">
-        <ConfirmImportMessageBox v-bind:num-records="getNumNewExperimentRecords(statistics)"
-                                 v-bind:import-type-name="'Experiments & Observations'"
-                                 v-bind:confirm-import-state="confirmImportState"
-                                 v-bind:show-loading-on-confirm="!showProceedDialog"
-                                 v-on:abort="abort"
-                                 v-on:confirm="confirm"
-                                 class="mb-4">
+        <ConfirmImportMessageBox
+          v-bind:num-records="getNumNewExperimentRecords(statistics)"
+          v-bind:import-type-name="'Experiments & Observations'"
+          v-bind:confirm-import-state="confirmImportState"
+          v-bind:show-loading-on-confirm="!showProceedDialog"
+          class="mb-4"
+          v-on:abort="abort"
+          v-on:confirm="confirm"
+        >
           <div>
             <p>Review your experimental data import before committing to the database.</p>
-          <div class = "left-confirm-column">
-            <p class="is-size-5 mb-2"><strong>Experiment</strong></p>
-            <template v-if="rows && rows.length > 0">
-              Title: {{ rows[0].trial.brAPIObject.trialName }}
-              <br>Description: {{ rows[0].trial.brAPIObject.trialDescription }}
-              <br>Experimental Unit: {{ rows[0].trial.brAPIObject.additionalInfo.defaultObservationLevel }}
-              <br>Type: {{ rows[0].trial.brAPIObject.additionalInfo.experimentType }}
-              <br>Experimental Design: Externally generated
-            </template>
-            <template v-if="isExisting(rows)"><br>User: {{ rows[0].trial.brAPIObject.additionalInfo.createdBy.userName }}</template>
-            <template v-if="isExisting(rows)"><br>Creation Date: {{ rows[0].trial.brAPIObject.additionalInfo.createdDate | dmy}}</template>
-          </div>
-          <div id="experiment-summary" class ="right-confirm-column">
-            <p class="is-size-5 mb-2"><strong>Import Summary</strong></p>
-            <br>Observation Variables: {{ dynamicColumns.length }}
-
-            <span v-if="isExisting(rows)" >
-              <br>New Observations: {{ statistics.Observations.newObjectCount }}
-              <br>Existing Observations: {{ statistics.Existing_Observations.newObjectCount }}
-              <br>Overwritten Observations: {{ statistics.Mutated_Observations.newObjectCount }}
-            </span>
-            <span v-else>
-              <br>Observations: {{ statistics.Observations.newObjectCount }}
-            </span>
-
-
-          </div>
+            <div class="left-confirm-column">
+              <p class="is-size-5 mb-2">
+                <strong>Experiment</strong>
+              </p>
+              <template v-if="rows && rows.length > 0">
+                Title: {{ rows[0].trial.brAPIObject.trialName }}
+                <br>Description: {{ rows[0].trial.brAPIObject.trialDescription }}
+                <br>Experimental Unit: {{ StringFormatters.toStartCase(rows[0].trial.brAPIObject.additionalInfo.defaultObservationLevel) }}
+                <br>Type: {{ rows[0].trial.brAPIObject.additionalInfo.experimentType }}
+                <br>Experimental Design: Externally generated
+              </template>
+              <template v-if="isExisting(rows)">
+                <br>User: {{ rows[0].trial.brAPIObject.additionalInfo.createdBy.userName }}
+              </template>
+              <template v-if="isExisting(rows)">
+                <br>Creation Date: {{ rows[0].trial.brAPIObject.additionalInfo.createdDate | dmy }}
+              </template>
+            </div>
+            <div
+              id="experiment-summary"
+              class="right-confirm-column"
+            >
+              <p class="is-size-5 mb-2">
+                <strong>Import Summary</strong>
+              </p>
+              <!-- just count the observation variables in dynamicColumns that do not start with "TS:"-->
+              <br>Observation Variables: {{ statistics.Observation_Variables.newObjectCount }}
+              <span v-if="isExisting(rows)">
+                <br>New Observations: {{ statistics.Observations.newObjectCount }}
+                <br>Existing Observations: {{ statistics.Existing_Observations.newObjectCount }}
+                <br>Overwritten Observations: {{ statistics.Mutated_Observations.newObjectCount }}
+              </span>
+              <span v-else>
+                <br>Observations: {{ statistics.Observations.newObjectCount }}
+              </span>
+            </div>
           </div>
         </ConfirmImportMessageBox>
       </template>
 
       <template v-slot:userInput>
         <!-- TODO: change to use mutated observations count when api ready -->
-        <form v-if="experimentUserInput.overwrite"
-            class="new-form"
-            novalidate="true"
+        <form
+          v-if="experimentUserInput.overwrite"
+          class="new-form"
+          novalidate="true"
         >
-        <p class="is-size-5 has-text-weight-bold mb-0">Overwrite Request</p>
-        {{ repeatObservationsCount }} values detected that repeat observations already saved to the system. If you
-        do not want to overwrite existing observations you will need to edit the import file.
-        <BasicInputField
-            class="pb-2"
+          <p class="is-size-5 has-text-weight-bold mb-0">
+            Overwrite Request
+          </p>
+          {{ repeatObservationsCount }} values detected that repeat observations already saved to the system. If you
+          do not want to overwrite existing observations you will need to edit the import file.
+          <BasicInputField
             v-model="experimentUserInput.overwriteReason"
+            class="pb-2"
             v-bind:field-name="'Reason for overwrite:'"
             v-bind:placeholder="'Reason'"
             v-bind:show-label="true"
-        />
+          />
         </form>
       </template>
 
       <template v-slot:importPreviewTable="previewData">
-
-
         <ExpandableTable
-            v-bind:records="previewData.import"
-            v-bind:loading="false"
-            v-bind:pagination="previewData.pagination"
-            v-on:show-error-notification="$emit('show-error-notification', $event)"
-            scrollable
+          v-bind:records="previewData.import"
+          v-bind:loading="false"
+          v-bind:pagination="previewData.pagination"
+          scrollable
+          v-on:show-error-notification="$emit('show-error-notification', $event)"
         >
           <!-- Germplasm Name -->
-          <b-table-column field="germplasmName" label="Germplasm Name" v-slot="props" :th-attrs="(column) => ({scope:'col'})"
-          :td-attrs="(row, column) => ({class: 'db-filled'})">
+          <b-table-column
+            v-slot="props"
+            field="germplasmName"
+            label="Germplasm Name"
+            :th-attrs="(column) => ({scope:'col'})"
+            :td-attrs="(row, column) => ({class: 'db-filled'})"
+          >
             {{ getField(props.row.data.germplasm, 'germplasmName') }}
           </b-table-column>
           <!-- Germplasm GID -->
-          <b-table-column field="germplasmGID" label="Germplasm GID" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+          <b-table-column
+            v-slot="props"
+            field="germplasmGID"
+            label="Germplasm GID"
+            :th-attrs="(column) => ({scope:'col'})"
+          >
             {{ getField(props.row.data.germplasm, 'accessionNumber') }}
           </b-table-column>
           <!-- Test or Check -->
-          <b-table-column field="testOrCheck" label="Test (T) or Check (C)" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+          <b-table-column
+            v-slot="props"
+            field="testOrCheck"
+            label="Test (T) or Check (C)"
+            :th-attrs="(column) => ({scope:'col'})"
+          >
             {{ getField(props.row.data.observationUnit, 'observationUnitPosition.entryType') }}
           </b-table-column>
           <!-- Env -->
-          <b-table-column field="env" label="Env" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+          <b-table-column
+            v-slot="props"
+            field="env"
+            label="Env"
+            :th-attrs="(column) => ({scope:'col'})"
+          >
             {{ getField(props.row.data.study, 'studyName', true) }}
           </b-table-column>
           <!-- Env Location -->
-          <b-table-column field="envLocation" label="Env Location" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+          <b-table-column
+            v-slot="props"
+            field="envLocation"
+            label="Env Location"
+            :th-attrs="(column) => ({scope:'col'})"
+          >
             {{ getField(props.row.data.location, 'name') }}
           </b-table-column>
           <!-- Env year -->
-          <b-table-column field="envYear" label="Env Year" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+          <b-table-column
+            v-slot="props"
+            field="envYear"
+            label="Env Year"
+            :th-attrs="(column) => ({scope:'col'})"
+          >
             {{ getField(props.row.data.study, 'additionalInfo.envYear') }}
           </b-table-column>
           <!-- Exp Unit ID -->
-          <b-table-column field="expUnitID" label="Exp Unit ID" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+          <b-table-column
+            v-slot="props"
+            field="expUnitID"
+            label="Exp Unit ID"
+            :th-attrs="(column) => ({scope:'col'})"
+          >
             {{ getField(props.row.data.observationUnit, 'observationUnitName', true) }}
           </b-table-column>
           <!-- Exp Replicate # -->
-          <b-table-column field="expRepNo" label="Exp Replicate #" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+          <b-table-column
+            v-slot="props"
+            field="expRepNo"
+            label="Exp Replicate #"
+            :th-attrs="(column) => ({scope:'col'})"
+          >
             {{ getObservationLevelRelationships(props.row.data.observationUnit, 'rep') }}
           </b-table-column>
           <!-- Exp Block # -->
-          <b-table-column field="expBlockNo" label="Exp Block #" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+          <b-table-column
+            v-slot="props"
+            field="expBlockNo"
+            label="Exp Block #"
+            :th-attrs="(column) => ({scope:'col'})"
+          >
             {{ getObservationLevelRelationships(props.row.data.observationUnit, 'block') }}
           </b-table-column>
           <!-- Row -->
-          <b-table-column field="row" label="Row" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+          <b-table-column
+            v-slot="props"
+            field="row"
+            label="Row"
+            :th-attrs="(column) => ({scope:'col'})"
+          >
             {{ getField(props.row.data.observationUnit, 'observationUnitPosition.positionCoordinateX') }}
           </b-table-column>
           <!-- Column -->
-          <b-table-column field="column" label="Column" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+          <b-table-column
+            v-slot="props"
+            field="column"
+            label="Column"
+            :th-attrs="(column) => ({scope:'col'})"
+          >
             {{ getField(props.row.data.observationUnit, 'observationUnitPosition.positionCoordinateY') }}
           </b-table-column>
           <!-- Geocoordinates -->
-          <b-table-column field="lat" label="Lat" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+          <b-table-column
+            v-slot="props"
+            field="lat"
+            label="Lat"
+            :th-attrs="(column) => ({scope:'col'})"
+          >
             {{ getGeoCoordinates(props.row.data.observationUnit).lat }}
           </b-table-column>
-          <b-table-column field="long" label="Long" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+          <b-table-column
+            v-slot="props"
+            field="long"
+            label="Long"
+            :th-attrs="(column) => ({scope:'col'})"
+          >
             {{ getGeoCoordinates(props.row.data.observationUnit).lon }}
           </b-table-column>
-          <b-table-column field="elevation" label="Elevation" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+          <b-table-column
+            v-slot="props"
+            field="elevation"
+            label="Elevation"
+            :th-attrs="(column) => ({scope:'col'})"
+          >
             {{ getGeoCoordinates(props.row.data.observationUnit).elevation }}
           </b-table-column>
-          <b-table-column field="rtk" label="RTK" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+          <b-table-column
+            v-slot="props"
+            field="rtk"
+            label="RTK"
+            :th-attrs="(column) => ({scope:'col'})"
+          >
             {{ getField(props.row.data.observationUnit, 'additionalInfo.rtk') }}
           </b-table-column>
           <!-- Treatment Factors -->
-          <b-table-column field="expTreatmentFactorName" label="Treatment Factors" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+          <b-table-column
+            v-slot="props"
+            field="expTreatmentFactorName"
+            label="Treatment Factors"
+            :th-attrs="(column) => ({scope:'col'})"
+          >
             {{ getTreatment(props.row.data.observationUnit) }}
           </b-table-column>
           <!-- Dynamic Phenotype and Timestamp Columns -->
-          <b-table-column v-for="(variable, index) in phenotypeColumns"
-                          v-slot="props"
-                          :key="variable"
-                          :label="variable"
-                          :th-attrs="(column) => ({scope:'col'})"
-                          :td-attrs="cellClassIfExisting"
-                          :meta="{'index': index}">
+          <b-table-column
+            v-for="(variable, index) in phenotypeColumns"
+            :key="variable"
+            v-slot="props"
+            :label="variable"
+            :th-attrs="(column) => ({scope:'col'})"
+            :td-attrs="cellClassIfExisting"
+            :meta="{'index': index}"
+          >
             <p> {{ retrieveDynamicColVal(props.row.data.observations, variable) }}</p>
           </b-table-column>
 
@@ -194,7 +289,6 @@
           </template>
         </ExpandableTable>
       </template>
-
     </ImportTemplate>
   </div>
 </template>
@@ -213,8 +307,21 @@ import ExpandableTable from "@/components/tables/expandableTable/ExpandableTable
 import {ImportObjectState} from "@/breeding-insight/model/import/ImportObjectState";
 import { GeoCoordinates } from '@/breeding-insight/model/GeoCoordinates';
 import {ExperimentUserInput} from "@/breeding-insight/model/ExperimentUserInput";
+import {StringFormatters} from "../../breeding-insight/utils/StringFormatters";
+import {TraitService} from "@/breeding-insight/service/TraitService";
+import {mapGetters} from "vuex";
+import {Program} from "@/breeding-insight/model/Program";
+import {Trait} from "@/breeding-insight/model/Trait";
 
 @Component({
+  computed: {
+    StringFormatters() {
+      return StringFormatters
+    },
+    ...mapGetters([
+      'activeProgram'
+    ]),
+  },
   components: {
     ImportInfoTemplateMessageBox, ConfirmImportMessageBox, ImportTemplate, AlertTriangleIcon, BasicInputField, ExpandableTable
   },
@@ -227,6 +334,19 @@ import {ExperimentUserInput} from "@/breeding-insight/model/ExperimentUserInput"
 })
 export default class ImportExperiment extends ProgramsBase {
 
+  async mounted() {
+    // Hopefully no more than 100 ontology terms
+    let traitResponse = await TraitService.getTraits(this.activeProgram.id, {}, {pageSize: 100, page: 1});
+
+    if (traitResponse.value.metadata.pagination.totalCount > 100) {
+      this.$log.error("More than 100 traits detected while loading experiment import preview");
+    }
+
+    this.traits = traitResponse.value.result.data.map(
+        (trait: any) => trait.observationVariableName
+    );
+  }
+
   private experimentImportTemplateName = 'ExperimentsTemplateMap';
   private confirmImportState: DataFormEventBusHandler = new DataFormEventBusHandler();
   private phenotypeColumns?: Array<String> = [];
@@ -234,6 +354,10 @@ export default class ImportExperiment extends ProgramsBase {
 
   private experimentUserInput: ExperimentUserInput = new ExperimentUserInput();
   private repeatObservationsCount = 10;
+
+  private activeProgram!: Program;
+  private traits : String[] = [];
+
   get showProceedDialog() {
     return this.experimentUserInput.overwrite;
   }
@@ -315,7 +439,19 @@ export default class ImportExperiment extends ProgramsBase {
   }
 
   previewDataLoaded(dynamicColumns: String[]) {
-    this.phenotypeColumns = dynamicColumns;
+
+    // To ensure correct phenotype mapping when multiple appends/create experiments on a single page load,
+    // reset the phenotypeColumns every time a new preview is loaded.
+    this.phenotypeColumns = [];
+
+    for (const dynCol of dynamicColumns) {
+      if (this.traits.includes(dynCol)) {
+        this.phenotypeColumns.push(dynCol);
+      } else {
+        this.$log.info(`Dynamic column [${dynCol}] not found in the list of available traits for program [${this.activeProgram.name}]`);
+      }
+    }
+
     this.createObservationIndexMap();
   }
 
@@ -357,7 +493,6 @@ export default class ImportExperiment extends ProgramsBase {
 
   cellClassIfExisting(row: any, column: any) {
     const index = column.meta.index
-
     if(row.data.observations[this.observationIndexMap.get(index)!].state === 'MUTATED') {
       return {'class': 'db-filled'};
     }

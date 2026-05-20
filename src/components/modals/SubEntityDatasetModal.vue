@@ -45,8 +45,8 @@
       >
         <template v-slot="validations">
           <div class="message is-success">
-            <div class="message-body">
-              Prepare a dataset for repeated observations within {{ defaultObservationLevel }}.
+            <div class="message-body has-text-dark">
+              Prepare a dataset for repeated observations within {{ StringFormatters.toStartCase(defaultObservationLevel) }}.
             </div>
           </div>
           <div class="columns is-multiline mb-4">
@@ -69,7 +69,7 @@
                 v-model="newSubEntity.repeatedMeasures"
                 v-bind:validations="validations.repeatedMeasures"
                 v-bind:field-name="'Repeated Measures'"
-                v-bind:field-help="'Maximum expected'"
+                v-bind:field-help="'Maximum expected between 1-50'"
               />
             </div>
           </div>
@@ -93,8 +93,14 @@ import DataForm from "@/components/forms/DataForm.vue";
 import {DatasetMetadata} from "@/breeding-insight/model/DatasetMetadata";
 import {SubEntityDatasetNewRequest} from "@/breeding-insight/model/SubEntityDatasetNewRequest";
 import {DataFormEventBusHandler} from "@/components/forms/DataFormEventBusHandler";
+import {StringFormatters} from "../../breeding-insight/utils/StringFormatters";
 
 @Component({
+  computed: {
+    StringFormatters() {
+      return StringFormatters
+    }
+  },
   mixins: [validationMixin],
   components: {DataForm, BasicSelectField, BasicInputField, AutoCompleteField, BaseModal}
 })
@@ -116,6 +122,8 @@ export default class SubEntityDatasetModal extends Vue {
   experiment!: Trial;
   @Prop()
   defaultObservationLevel?: string;
+  @Prop()
+  existingDatasetNames!: string[];
 
   // Reactive, private (would not be reactive if declared without initial values).
   private newSubEntity: SubEntityDatasetNewRequest = new SubEntityDatasetNewRequest();
@@ -130,7 +138,7 @@ export default class SubEntityDatasetModal extends Vue {
     repeatedMeasures: {
       required,
       integer,
-      between: between(1, 50),  // Note: capped at 50 for performance considerations.
+      between: between(1, 50),  // Note: capped at 50 for performance considerations
     }
   }
 
@@ -142,6 +150,14 @@ export default class SubEntityDatasetModal extends Vue {
   }
 
   async invokeCreate(){
+    //Check if sub-entity name is already in experiment
+    let nameAlreadyInExp = this.existingDatasetNames.map(y => y.toLowerCase()).includes(this.newSubEntity.name.toLowerCase());
+    if (nameAlreadyInExp) {
+      this.$emit('show-error-notification', `A ${this.newSubEntity.name} dataset already exists in ${this.experiment.trialName}.`);
+      this.newSubEntityFormState.bus.$emit(DataFormEventBusHandler.SAVE_COMPLETE_EVENT);
+      return;
+    }
+
     try {
       // Invoke the create prop, which returns true if create succeeded.
       await this.create(this.newSubEntity)

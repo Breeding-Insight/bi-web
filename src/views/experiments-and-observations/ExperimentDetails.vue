@@ -52,6 +52,7 @@
         v-bind:trial-id="experimentUUID"
         v-bind:active="subEntityModalActive"
         v-bind:create="createSubEntityDataset"
+        v-bind:existing-dataset-names="experimentDatasetNames"
         v-on:show-error-notification="$emit('show-error-notification', $event)"
         v-on:deactivate="subEntityModalActive = false"
     />
@@ -147,7 +148,7 @@
             tag="li"
             active-class="is-active"
           >
-            <a>{{ dataset.name }}</a>
+            <a>{{ StringFormatters.toStartCase(dataset.name) }}</a>
           </router-link>
         </ul>
       </nav>
@@ -166,7 +167,6 @@
 import {Component, Watch} from "vue-property-decorator";
 import {mapGetters} from "vuex";
 import {Collaborator} from "@/breeding-insight/model/Collaborator";
-import {PlusCircleIcon} from 'vue-feather-icons'
 import {Program} from "@/breeding-insight/model/Program";
 import {Result} from "@/breeding-insight/model/Result";
 import {ExperimentService} from "@/breeding-insight/service/ExperimentService";
@@ -183,11 +183,11 @@ import {SubEntityDatasetNewRequest} from "@/breeding-insight/model/SubEntityData
 import {DatasetModel} from "@/breeding-insight/model/DatasetModel";
 import ExperimentAddCollaboratorModal from "@/components/experiments/ExperimentAddCollaboratorModal.vue";
 import ExperimentCollaboratorRemovalModal from "@/components/experiments/ExperimentCollaboratorRemovalModal.vue";
+import {StringFormatters} from "@/breeding-insight/utils/StringFormatters";
 
 @Component({
   components: {
     SubEntityDatasetModal,
-    PlusCircleIcon,
     ExperimentObservationsDownloadModal,
     ExperimentDeleteModal,
     ExperimentAddCollaboratorModal,
@@ -201,7 +201,8 @@ import ExperimentCollaboratorRemovalModal from "@/components/experiments/Experim
   },
   directives: {
     ClickOutside
-  }
+  },
+  data: () => ({StringFormatters})
 })
 export default class ExperimentDetails extends ProgramsBase {
   private activeProgram: Program;
@@ -217,12 +218,14 @@ export default class ExperimentDetails extends ProgramsBase {
   private hasObsUnits: boolean = false;
   private obsCount: number = 0;
   private collaborators: Collaborator[] = [];
+  private programDatasetNames: string[] = [];
+  private experimentDatasetNames: string[] = [];
 
   private actions: ActionMenuItem[] = [
       new ActionMenuItem('experiment-import-file', 'import-file', 'Import file', this.$ability.can('create', 'Import')),
       new ActionMenuItem('experiment-download-file', 'download-file', 'Download file'),
       new ActionMenuItem('experiment-add-collaborator', 'add-collaborator', 'Add Collaborator',  this.$ability.can('manage', 'Collaborator')),
-      // new ActionMenuItem('experiment-create-sub-entity-dataset', 'create-sub-entity-dataset', 'Create Sub-Entity Dataset'),
+      new ActionMenuItem('experiment-create-sub-entity-dataset', 'create-sub-entity-dataset', 'Create Sub-Entity Dataset', this.$ability.can('create', 'SubEntityDataset')),
       new ActionMenuItem('experiment-delete', 'delete-experiment', 'Delete experiment', this.$ability.can('delete', 'Experiment'))
   ];
 
@@ -273,8 +276,17 @@ export default class ExperimentDetails extends ProgramsBase {
     return true;
   }
 
-  private openSubEntityModal() {
+  private async openSubEntityModal(): Promise<void> {
+    await this.refreshSubEntityModalData();
     this.subEntityModalActive = true;
+  }
+
+  // get datasets and recommended names so we have latest data for validation and sub entity autocomplete
+  private async refreshSubEntityModalData(): Promise<void> {
+    await Promise.allSettled([
+      this.getDatasetMetadata(),
+      this.getRecommendedSubEntityDatasetNames()
+    ]);
   }
 
   get experimentUUID(): string {
@@ -295,7 +307,7 @@ export default class ExperimentDetails extends ProgramsBase {
     if (!this.experiment.additionalInfo) {
       return '';
     }
-    return this.experiment.additionalInfo.defaultObservationLevel;
+    return StringFormatters.toStartCase(this.experiment.additionalInfo.defaultObservationLevel);
   }
 
   get experimentType(): string {
@@ -325,10 +337,36 @@ export default class ExperimentDetails extends ProgramsBase {
   //   return this.experiment.additionalInfo.environmentsCount;
   // }
 
+  // Get experiment-scoped suggested names for sub-entity modal autocomplete.
+  // This is only needed when the modal is opened.
+  async getRecommendedSubEntityDatasetNames(): Promise<void> {
+    try {
+      const response: Result<Error, string[]> = await ExperimentService.getRecommendedSubEntityDatasetNames(this.activeProgram!.id!, this.experimentUUID);
+      if (response.isErr()) {
+        this.showProgramDatasetNamesError();
+        return;
+      }
+
+      this.programDatasetNames = response.value.map(value => StringFormatters.toStartCase(value));
+    } catch (error) {
+      this.showProgramDatasetNamesError();
+    }
+  }
+
+  private showProgramDatasetNamesError(): void {
+    this.$emit('show-error-notification', 'Unable to retrieve program dataset names');
+  }
+
+  //Retrieves entity names in experiment
+  @Watch('datasetMetadata')
+  async getExperimentDatasetNames() {
+    this.experimentDatasetNames = this.datasetMetadata.map(value => StringFormatters.toStartCase(value.name!));
+    return;
+  }
+
+  //The API already filters out names that exist in the experiment
   get datasetNameOptions(): String[] {
-    // TODO: [BI-2182] fetch and return all sub-entity names for experiments in this program, excluding the current experiment.
-    // TODO: [BI-2182] exclude top level dataset names.
-    return [];
+    return this.programDatasetNames;
   }
 
   get experimentObservationUnit(): string | null {
