@@ -19,6 +19,7 @@ import { GenoDAO } from '@/breeding-insight/dao/GenoDAO';
 import { BiResponse } from '@/breeding-insight/model/BiResponse';
 import { ImportResponse } from '@/breeding-insight/model/import/ImportResponse';
 import { GermplasmGenotype } from '@/breeding-insight/model/GermplasmGenotype';
+import { GenotypeImport, GenotypeImportResponse } from '@/breeding-insight/model/GenotypeImport';
 
 export class GenoService {
 
@@ -46,5 +47,29 @@ export class GenoService {
     const resp = await GenoDAO.fetchGenotypeData(programId, germplasmId);
 
     return resp.result as GermplasmGenotype;
+  }
+
+  static async fetchGenotypeImports(programId: string): Promise<GenotypeImport[]> {
+    if (!programId) {
+      throw 'Program ID not provided';
+    }
+
+    const response = await GenoDAO.fetchGenotypeImports(programId);
+    const responseData = response.result && response.result.data ? response.result.data : response.result;
+
+    if (!Array.isArray(responseData)) {
+      return [];
+    }
+
+    return responseData
+        .map((record: GenotypeImportResponse) => new GenotypeImport(record))
+        .sort((first: GenotypeImport, second: GenotypeImport) => {
+          return this.dateValue(second.genotypingImportDate) - this.dateValue(first.genotypingImportDate);
+        });
+  }
+
+  private static dateValue(date?: string): number {
+    const value = Date.parse(date || '');
+    return Number.isNaN(value) ? 0 : value;
   }
 }
