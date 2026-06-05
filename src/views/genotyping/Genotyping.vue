@@ -16,112 +16,106 @@
   -->
 
 <template>
-  <div class="container genotyping">
-    <div class="columns is-centered">
-      <div class="column">
-        <h3 class="is-4 title">
-          Genotyping
-        </h3>
-        <div class="columns">
-          <div class="column is-whole has-text-right buttons">
-            <button
-              v-if="$ability.can('create', 'Import')"
-              class="button is-primary"
-              v-on:click="importGenotypingFile"
-            >
-              <span class="icon is-small">
-                <PlusCircleIcon
-                  size="1.5x"
-                  aria-hidden="true"
-                />
-              </span>
-              <span>
-                Import Genotyping File
-              </span>
-            </button>
-          </div>
-        </div>
+  <div class="genotyping">
+    <h1 class="title">
+      Genotyping
+    </h1>
+    <button
+      v-if="$ability.can('create', 'Import')"
+      class="button is-primary is-pulled-right has-text-weight-bold"
+      v-on:click="importGenotypingFile"
+    >
+      <span class="icon is-small">
+        <PlusCircleIcon
+          size="1.5x"
+          aria-hidden="true"
+        />
+      </span>
+      <span>
+        Import Genotyping File
+      </span>
+    </button>
 
-        <ExpandableTable
-          v-bind:records.sync="genotypeImports"
-          v-bind:loading="loading"
-          v-bind:pagination="paginationController"
-          v-bind:default-sort="['data.genotypingImportDate', 'desc']"
-          v-bind:debounce-search="400"
-          v-bind:editable="false"
-          v-bind:is-show-all-enabled="false"
-          backend-pagination
-          backend-sorting
-          v-on:click="navigateToSampleSubmission"
-          v-on:sort="setSort"
+    <div class="is-clearfix" />
+
+    <ExpandableTable
+      v-bind:records.sync="genotypeImports"
+      v-bind:loading="loading"
+      v-bind:pagination="paginationController"
+      v-bind:default-sort="['data.genotypingImportDate', 'desc']"
+      v-bind:debounce-search="400"
+      v-bind:editable="false"
+      v-bind:is-show-all-enabled="false"
+      backend-pagination
+      backend-sorting
+      v-on:click="navigateToSampleSubmission"
+      v-on:sort="setSort"
+    >
+      <b-table-column
+        v-slot="props"
+        field="data.projectNameForSampleSubmission"
+        label="Project Name"
+        sortable
+        searchable
+        v-bind:th-attrs="(column) => ({scope:'col'})"
+      >
+        <router-link
+          v-if="props.row.data.sampleSubmissionId"
+          v-bind:to="{name: 'submission-details', params: {programId: activeProgram.id, submissionId: props.row.data.sampleSubmissionId}}"
         >
-          <b-table-column
-            v-slot="props"
-            field="data.projectNameForSampleSubmission"
-            label="Project Name"
-            sortable
-            searchable
-            v-bind:th-attrs="(column) => ({scope:'col'})"
-          >
-            <router-link
-              v-if="props.row.data.sampleSubmissionId"
-              v-bind:to="{name: 'submission-details', params: {programId: activeProgram.id, submissionId: props.row.data.sampleSubmissionId}}"
-            >
-              {{ displayValue(props.row.data.projectNameForSampleSubmission) }}
-            </router-link>
-            <span v-if="!props.row.data.sampleSubmissionId">
-              {{ displayValue(props.row.data.projectNameForSampleSubmission) }}
-            </span>
-          </b-table-column>
-          <b-table-column
-            v-slot="props"
-            field="data.sampleSubmissionCreatedBy"
-            label="Sample Submission Created By"
-            sortable
-            searchable
-            v-bind:th-attrs="(column) => ({scope:'col'})"
-          >
-            {{ displayValue(props.row.data.sampleSubmissionCreatedBy) }}
-          </b-table-column>
-          <b-table-column
-            v-slot="props"
-            field="data.genotypingFileName"
-            label="Genotyping File Name"
-            sortable
-            searchable
-            v-bind:th-attrs="(column) => ({scope:'col'})"
-          >
-            {{ displayValue(props.row.data.genotypingFileName) }}
-          </b-table-column>
-          <b-table-column
-            v-slot="props"
-            field="data.genotypingImportDate"
-            label="Genotyping Import Date"
-            sortable
-            searchable
-            v-bind:th-attrs="(column) => ({scope:'col'})"
-          >
-            {{ displayValue(props.row.data.genotypingImportDate) }}
-          </b-table-column>
-          <b-table-column
-            v-slot="props"
-            field="data.genotypingImportBy"
-            label="Genotyping Imported By"
-            sortable
-            searchable
-            v-bind:th-attrs="(column) => ({scope:'col'})"
-          >
-            {{ displayValue(props.row.data.genotypingImportBy) }}
-          </b-table-column>
+          {{ displayValue(props.row.data.projectNameForSampleSubmission) }}
+        </router-link>
+        <span v-if="!props.row.data.sampleSubmissionId">
+          {{ displayValue(props.row.data.projectNameForSampleSubmission) }}
+        </span>
+      </b-table-column>
+      <b-table-column
+        v-slot="props"
+        field="data.sampleSubmissionCreatedBy"
+        label="Sample Submission Created By"
+        sortable
+        searchable
+        v-bind:th-attrs="(column) => ({scope:'col'})"
+      >
+        {{ displayValue(props.row.data.sampleSubmissionCreatedBy) }}
+      </b-table-column>
+      <b-table-column
+        v-slot="props"
+        field="data.genotypingFileName"
+        label="Genotyping File Name"
+        sortable
+        searchable
+        v-bind:th-attrs="(column) => ({scope:'col'})"
+      >
+        {{ displayValue(props.row.data.genotypingFileName) }}
+      </b-table-column>
+      <b-table-column
+        v-slot="props"
+        field="data.genotypingImportDate"
+        label="Genotyping Import Date"
+        sortable
+        searchable
+        v-bind:th-attrs="(column) => ({scope:'col'})"
+      >
+        {{ displayValue(props.row.data.genotypingImportDate) }}
+      </b-table-column>
+      <b-table-column
+        v-slot="props"
+        field="data.genotypingImportBy"
+        label="Genotyping Imported By"
+        sortable
+        searchable
+        v-bind:th-attrs="(column) => ({scope:'col'})"
+      >
+        {{ displayValue(props.row.data.genotypingImportBy) }}
+      </b-table-column>
 
-          <template v-slot:emptyMessage>
-            <p class="has-text-weight-bold">
-              No genotype imports were found
-            </p>
-          </template>
-        </ExpandableTable>
-      </div>
-    </div>
+      <template v-slot:emptyMessage>
+        <p class="has-text-weight-bold">
+          No genotype imports were found
+        </p>
+      </template>
+    </ExpandableTable>
   </div>
 </template>
 
