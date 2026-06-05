@@ -15,75 +15,27 @@
  * limitations under the License.
  */
 
-interface DisplayUser {
-  name?: string;
-  email?: string;
-}
-
-type DisplayUserValue = string | DisplayUser;
-
-export interface GenotypeImportResponse {
-  id?: string;
-  genotypeImportId?: string;
-  importerImportId?: string;
-  sampleSubmissionId?: string;
-  sampleSubmissionDbId?: string;
-  submissionId?: string;
-  projectName?: string;
-  sampleSubmissionName?: string;
-  sampleSubmissionCreatedBy?: DisplayUserValue;
-  sampleSubmissionCreatedByUser?: DisplayUserValue;
-  sampleSubmissionCreatedByName?: string;
-  genotypingFileName?: string;
-  fileName?: string;
-  uploadFileName?: string;
-  genotypingImportDate?: string;
-  genotypingImportedDate?: string;
-  importDate?: string;
-  importedAt?: string;
-  createdAt?: string;
-  genotypingImportedBy?: DisplayUserValue;
-  genotypingImportedByUser?: DisplayUserValue;
-  genotypingImportedByName?: string;
-  importedBy?: DisplayUserValue;
-  importedByUser?: DisplayUserValue;
-}
-
 export class GenotypeImport {
-  id?: string;
   sampleSubmissionId?: string;
-  projectName?: string;
+  projectNameForSampleSubmission?: string;
   sampleSubmissionCreatedBy?: string;
   genotypingFileName?: string;
   genotypingImportDate?: string;
-  genotypingImportedBy?: string;
+  genotypingImportBy?: string;
 
-  constructor(record: GenotypeImportResponse = {}) {
-    this.id = record.id || record.genotypeImportId || record.importerImportId;
-    this.sampleSubmissionId = record.sampleSubmissionId || record.sampleSubmissionDbId || record.submissionId;
-    this.projectName = record.projectName || record.sampleSubmissionName;
-    this.sampleSubmissionCreatedBy = GenotypeImport.displayUser(
-        record.sampleSubmissionCreatedBy || record.sampleSubmissionCreatedByUser || record.sampleSubmissionCreatedByName
-    );
-    this.genotypingFileName = record.genotypingFileName || record.fileName || record.uploadFileName;
-    this.genotypingImportDate = record.genotypingImportDate || record.genotypingImportedDate || record.importDate ||
-        record.importedAt || record.createdAt;
-    this.genotypingImportedBy = GenotypeImport.displayUser(
-        record.genotypingImportedBy || record.genotypingImportedByUser || record.genotypingImportedByName ||
-        record.importedBy || record.importedByUser
-    );
-  }
-
-  private static displayUser(value?: DisplayUserValue): string | undefined {
-    if (typeof value === 'string') {
-      return value;
-    }
-    if (value && value.name) {
-      return value.name;
-    }
-    if (value && value.email) {
-      return value.email;
-    }
-    return undefined;
+  constructor({
+                sampleSubmissionId,
+                projectNameForSampleSubmission,
+                sampleSubmissionCreatedBy,
+                genotypingFileName,
+                genotypingImportDate,
+                genotypingImportBy
+              }: GenotypeImport = {}) {
+    this.sampleSubmissionId = sampleSubmissionId;
+    this.projectNameForSampleSubmission = projectNameForSampleSubmission;
+    this.sampleSubmissionCreatedBy = sampleSubmissionCreatedBy;
+    this.genotypingFileName = genotypingFileName;
+    this.genotypingImportDate = genotypingImportDate;
+    this.genotypingImportBy = genotypingImportBy;
   }
 }

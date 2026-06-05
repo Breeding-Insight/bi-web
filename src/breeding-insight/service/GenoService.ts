@@ -19,7 +19,7 @@ import { GenoDAO } from '@/breeding-insight/dao/GenoDAO';
 import { BiResponse } from '@/breeding-insight/model/BiResponse';
 import { ImportResponse } from '@/breeding-insight/model/import/ImportResponse';
 import { GermplasmGenotype } from '@/breeding-insight/model/GermplasmGenotype';
-import { GenotypeImport, GenotypeImportResponse } from '@/breeding-insight/model/GenotypeImport';
+import { GenotypeImport } from '@/breeding-insight/model/GenotypeImport';
 
 export class GenoService {
 
@@ -62,7 +62,7 @@ export class GenoService {
     }
 
     return responseData
-        .map((record: GenotypeImportResponse) => new GenotypeImport(record))
+        .map((record: GenotypeImport) => new GenotypeImport(record))
         .sort((first: GenotypeImport, second: GenotypeImport) => {
           return this.dateValue(second.genotypingImportDate) - this.dateValue(first.genotypingImportDate);
         });

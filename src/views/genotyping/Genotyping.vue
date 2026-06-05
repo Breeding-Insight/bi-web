@@ -54,7 +54,7 @@
         >
           <b-table-column
             v-slot="props"
-            field="data.projectName"
+            field="data.projectNameForSampleSubmission"
             label="Project Name"
             sortable
             searchable
@@ -64,10 +64,10 @@
               v-if="props.row.data.sampleSubmissionId"
               v-bind:to="{name: 'submission-details', params: {programId: activeProgram.id, submissionId: props.row.data.sampleSubmissionId}}"
             >
-              {{ displayValue(props.row.data.projectName) }}
+              {{ displayValue(props.row.data.projectNameForSampleSubmission) }}
             </router-link>
             <span v-if="!props.row.data.sampleSubmissionId">
-              {{ displayValue(props.row.data.projectName) }}
+              {{ displayValue(props.row.data.projectNameForSampleSubmission) }}
             </span>
           </b-table-column>
           <b-table-column
@@ -102,13 +102,13 @@
           </b-table-column>
           <b-table-column
             v-slot="props"
-            field="data.genotypingImportedBy"
+            field="data.genotypingImportBy"
             label="Genotyping Imported By"
             sortable
             searchable
             v-bind:th-attrs="(column) => ({scope:'col'})"
           >
-            {{ displayValue(props.row.data.genotypingImportedBy) }}
+            {{ displayValue(props.row.data.genotypingImportBy) }}
           </b-table-column>
 
           <template v-slot:emptyMessage>
