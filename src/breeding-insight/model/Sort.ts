@@ -218,3 +218,21 @@ export class GermplasmListSort {
     this.order = order;
   }
 }
+
+export enum GenotypeImportSortField {
+  ProjectNameForSampleSubmission = 'projectNameForSampleSubmission',
+  SampleSubmissionCreatedBy = 'sampleSubmissionCreatedBy',
+  GenotypingFileName = 'genotypingFileName',
+  GenotypingImportDate = 'genotypingImportDate',
+  GenotypingImportBy = 'genotypingImportBy'
+}
+
+export class GenotypeImportSort {
+  field: GenotypeImportSortField;
+  order: SortOrder;
+
+  constructor(field: GenotypeImportSortField, order: SortOrder) {
+    this.field = field;
+    this.order = order;
+  }
+}

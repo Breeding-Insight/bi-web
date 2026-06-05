@@ -51,8 +51,10 @@
           v-bind:editable="false"
           v-bind:is-show-all-enabled="false"
           backend-pagination
+          backend-sorting
           hoverable
           v-on:click="navigateToSampleSubmission"
+          v-on:sort="setSort"
         >
           <b-table-column
             v-slot="props"
@@ -137,6 +139,12 @@ import {GenoService} from '@/breeding-insight/service/GenoService';
 import {TableRow} from '@/breeding-insight/model/view_models/TableRow';
 import {PaginationQuery} from '@/breeding-insight/model/PaginationQuery';
 import {CallStack} from '@/breeding-insight/utils/CallStack';
+import {
+  GenotypeImportSort,
+  GenotypeImportSortField,
+  Sort,
+  SortOrder
+} from '@/breeding-insight/model/Sort';
 
 @Component({
   components: {
@@ -155,10 +163,25 @@ export default class Genotyping extends ProgramsBase {
   private genotypeImports: Array<GenotypeImport> = new Array<GenotypeImport>();
   private paginationController: PaginationController = new PaginationController();
   private genotypeImportCallStack!: CallStack;
+  private genotypeImportSort = new GenotypeImportSort(
+      GenotypeImportSortField.GenotypingImportDate,
+      SortOrder.Descending
+  );
+  private fieldMap: {[key: string]: GenotypeImportSortField} = {
+    'data.projectNameForSampleSubmission': GenotypeImportSortField.ProjectNameForSampleSubmission,
+    'data.sampleSubmissionCreatedBy': GenotypeImportSortField.SampleSubmissionCreatedBy,
+    'data.genotypingFileName': GenotypeImportSortField.GenotypingFileName,
+    'data.genotypingImportDate': GenotypeImportSortField.GenotypingImportDate,
+    'data.genotypingImportBy': GenotypeImportSortField.GenotypingImportBy
+  };
 
   mounted() {
     this.genotypeImportCallStack = new CallStack((paginationQuery: PaginationQuery) => {
-      return GenoService.fetchGenotypeImports(this.activeProgram!.id!, paginationQuery);
+      return GenoService.fetchGenotypeImports(
+          this.activeProgram!.id!,
+          paginationQuery,
+          this.genotypeImportSort
+      );
     });
     this.paginationChanged();
   }
@@ -209,6 +232,13 @@ export default class Genotyping extends ProgramsBase {
       if (this.genotypeImportCallStack.isCurrentCall(callId)) {
         this.loading = false;
       }
+    }
+  }
+
+  setSort(field: string, order: string) {
+    if (field in this.fieldMap) {
+      this.genotypeImportSort = new GenotypeImportSort(this.fieldMap[field], Sort.orderAsBI(order));
+      this.fetchGenotypeImports(this.paginationController.currentCall!);
     }
   }
 

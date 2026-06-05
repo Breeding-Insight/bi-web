@@ -21,6 +21,7 @@ import { ImportResponse } from '@/breeding-insight/model/import/ImportResponse';
 import { GermplasmGenotype } from '@/breeding-insight/model/GermplasmGenotype';
 import { GenotypeImport } from '@/breeding-insight/model/GenotypeImport';
 import { PaginationQuery } from '@/breeding-insight/model/PaginationQuery';
+import { GenotypeImportSort } from '@/breeding-insight/model/Sort';
 
 export class GenoService {
 
@@ -52,30 +53,22 @@ export class GenoService {
 
   static async fetchGenotypeImports(
       programId: string,
-      paginationQuery: PaginationQuery
+      paginationQuery: PaginationQuery,
+      sort: GenotypeImportSort
   ): Promise<[GenotypeImport[], Metadata]> {
     if (!programId) {
       throw 'Program ID not provided';
     }
 
-    const response = await GenoDAO.fetchGenotypeImports(programId, paginationQuery);
+    const response = await GenoDAO.fetchGenotypeImports(programId, paginationQuery, sort);
     const responseData = response.result && response.result.data ? response.result.data : response.result;
 
     if (!Array.isArray(responseData)) {
       return [[], response.metadata];
     }
 
-    const genotypeImports = responseData
-        .map((record: GenotypeImport) => new GenotypeImport(record))
-        .sort((first: GenotypeImport, second: GenotypeImport) => {
-          return this.dateValue(second.genotypingImportDate) - this.dateValue(first.genotypingImportDate);
-        });
+    const genotypeImports = responseData.map((record: GenotypeImport) => new GenotypeImport(record));
 
     return [genotypeImports, response.metadata];
-  }
-
-  private static dateValue(date?: string): number {
-    const value = Date.parse(date || '');
-    return Number.isNaN(value) ? 0 : value;
   }
 }
