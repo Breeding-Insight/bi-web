@@ -21,7 +21,7 @@ import { ImportResponse } from '@/breeding-insight/model/import/ImportResponse';
 import { GermplasmGenotype } from '@/breeding-insight/model/GermplasmGenotype';
 import { GenotypeImport } from '@/breeding-insight/model/GenotypeImport';
 import { PaginationQuery } from '@/breeding-insight/model/PaginationQuery';
-import { GenotypeImportSort } from '@/breeding-insight/model/Sort';
+import { GenotypeImportFilters, GenotypeImportSort } from '@/breeding-insight/model/Sort';
 
 export class GenoService {
 
@@ -54,13 +54,14 @@ export class GenoService {
   static async fetchGenotypeImports(
       programId: string,
       paginationQuery: PaginationQuery,
-      sort: GenotypeImportSort
+      sort: GenotypeImportSort,
+      filters: GenotypeImportFilters
   ): Promise<[GenotypeImport[], Metadata]> {
     if (!programId) {
       throw 'Program ID not provided';
     }
 
-    const response = await GenoDAO.fetchGenotypeImports(programId, paginationQuery, sort);
+    const response = await GenoDAO.fetchGenotypeImports(programId, paginationQuery, sort, filters);
     const responseData = response.result && response.result.data ? response.result.data : response.result;
 
     if (!Array.isArray(responseData)) {

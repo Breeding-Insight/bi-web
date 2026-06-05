@@ -43,12 +43,14 @@
       v-bind:loading="loading"
       v-bind:pagination="paginationController"
       v-bind:default-sort="['data.genotypingImportDate', 'desc']"
-      v-bind:debounce-search="400"
+      v-bind:search-debounce="400"
       v-bind:editable="false"
       v-bind:is-show-all-enabled="false"
+      backend-filtering
       backend-pagination
       backend-sorting
       v-on:click="navigateToSampleSubmission"
+      v-on:search="initSearch"
       v-on:sort="setSort"
     >
       <b-table-column
@@ -133,6 +135,7 @@ import {TableRow} from '@/breeding-insight/model/view_models/TableRow';
 import {PaginationQuery} from '@/breeding-insight/model/PaginationQuery';
 import {CallStack} from '@/breeding-insight/utils/CallStack';
 import {
+  GenotypeImportFilters,
   GenotypeImportSort,
   GenotypeImportSortField,
   Sort,
@@ -156,6 +159,7 @@ export default class Genotyping extends ProgramsBase {
   private genotypeImports: Array<GenotypeImport> = new Array<GenotypeImport>();
   private paginationController: PaginationController = new PaginationController();
   private genotypeImportCallStack!: CallStack;
+  private filters: GenotypeImportFilters = {};
   private genotypeImportSort = new GenotypeImportSort(
       GenotypeImportSortField.GenotypingImportDate,
       SortOrder.Descending
@@ -169,11 +173,12 @@ export default class Genotyping extends ProgramsBase {
   };
 
   mounted() {
-    this.genotypeImportCallStack = new CallStack((paginationQuery: PaginationQuery) => {
+    this.genotypeImportCallStack = new CallStack((filters: GenotypeImportFilters) => {
       return GenoService.fetchGenotypeImports(
           this.activeProgram!.id!,
-          paginationQuery,
-          this.genotypeImportSort
+          this.paginationController.currentCall!,
+          this.genotypeImportSort,
+          filters
       );
     });
     this.paginationChanged();
@@ -199,12 +204,13 @@ export default class Genotyping extends ProgramsBase {
     }
 
     this.paginationController.setCurrentCall(paginationQuery);
-    this.fetchGenotypeImports(paginationQuery);
+    this.fetchGenotypeImports();
   }
 
-  async fetchGenotypeImports(paginationQuery: PaginationQuery) {
+  @Watch('filters', {deep: true})
+  async fetchGenotypeImports() {
     this.loading = true;
-    const {call, callId} = this.genotypeImportCallStack.makeCall(paginationQuery);
+    const {call, callId} = this.genotypeImportCallStack.makeCall(this.filters);
 
     try {
       const [genotypeImports, metadata] = await call;
@@ -231,8 +237,18 @@ export default class Genotyping extends ProgramsBase {
   setSort(field: string, order: string) {
     if (field in this.fieldMap) {
       this.genotypeImportSort = new GenotypeImportSort(this.fieldMap[field], Sort.orderAsBI(order));
-      this.fetchGenotypeImports(this.paginationController.currentCall!);
+      this.fetchGenotypeImports();
     }
+  }
+
+  initSearch(filters: {[key: string]: string}) {
+    this.filters = Object.keys(filters).reduce((normalizedFilters: GenotypeImportFilters, field: string) => {
+      if (field in this.fieldMap) {
+        normalizedFilters[this.fieldMap[field]] = filters[field];
+      }
+      return normalizedFilters;
+    }, {});
+    this.paginationController.updatePage(1);
   }
 
   importGenotypingFile() {

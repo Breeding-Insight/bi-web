@@ -227,6 +227,8 @@ export enum GenotypeImportSortField {
   GenotypingImportBy = 'genotypingImportBy'
 }
 
+export type GenotypeImportFilters = Partial<Record<GenotypeImportSortField, string>>;
+
 export class GenotypeImportSort {
   field: GenotypeImportSortField;
   order: SortOrder;
