@@ -49,6 +49,8 @@
           v-bind:default-sort="['data.genotypingImportDate', 'desc']"
           v-bind:debounce-search="400"
           v-bind:editable="false"
+          v-bind:is-show-all-enabled="false"
+          backend-pagination
           hoverable
           v-on:click="navigateToSampleSubmission"
         >
@@ -123,7 +125,7 @@
 </template>
 
 <script lang="ts">
-import {Component} from 'vue-property-decorator';
+import {Component, Watch} from 'vue-property-decorator';
 import {mapGetters} from 'vuex';
 import {PlusCircleIcon} from 'vue-feather-icons';
 import ProgramsBase from '@/components/program/ProgramsBase.vue';
@@ -133,6 +135,8 @@ import {PaginationController} from '@/breeding-insight/model/view_models/Paginat
 import {GenotypeImport} from '@/breeding-insight/model/GenotypeImport';
 import {GenoService} from '@/breeding-insight/service/GenoService';
 import {TableRow} from '@/breeding-insight/model/view_models/TableRow';
+import {PaginationQuery} from '@/breeding-insight/model/PaginationQuery';
+import {CallStack} from '@/breeding-insight/utils/CallStack';
 
 @Component({
   components: {
@@ -150,18 +154,61 @@ export default class Genotyping extends ProgramsBase {
   private loading = true;
   private genotypeImports: Array<GenotypeImport> = new Array<GenotypeImport>();
   private paginationController: PaginationController = new PaginationController();
+  private genotypeImportCallStack!: CallStack;
 
   mounted() {
-    this.fetchGenotypeImports();
+    this.genotypeImportCallStack = new CallStack((paginationQuery: PaginationQuery) => {
+      return GenoService.fetchGenotypeImports(this.activeProgram!.id!, paginationQuery);
+    });
+    this.paginationChanged();
   }
 
-  async fetchGenotypeImports() {
+  @Watch('paginationController', {deep: true})
+  paginationChanged() {
+    const currentCall = this.paginationController.currentCall;
+    let paginationQuery = this.paginationController.getPaginationSelections();
+
+    if (currentCall &&
+        currentCall.pageSize !== paginationQuery.pageSize &&
+        paginationQuery.page !== 1) {
+      this.paginationController.updatePage(1);
+      paginationQuery = this.paginationController.getPaginationSelections();
+    }
+
+    if (currentCall &&
+        currentCall.page === paginationQuery.page &&
+        currentCall.pageSize === paginationQuery.pageSize &&
+        currentCall.showAll === paginationQuery.showAll) {
+      return;
+    }
+
+    this.paginationController.setCurrentCall(paginationQuery);
+    this.fetchGenotypeImports(paginationQuery);
+  }
+
+  async fetchGenotypeImports(paginationQuery: PaginationQuery) {
+    this.loading = true;
+    const {call, callId} = this.genotypeImportCallStack.makeCall(paginationQuery);
+
     try {
-      this.genotypeImports = await GenoService.fetchGenotypeImports(this.activeProgram!.id!);
+      const [genotypeImports, metadata] = await call;
+
+      if (!this.genotypeImportCallStack.isCurrentCall(callId)) {
+        return;
+      }
+
+      if (this.paginationController.matchesCurrentRequest(metadata.pagination)) {
+        this.genotypeImports = genotypeImports;
+        this.paginationController.setPaginationInfo(metadata.pagination);
+      }
     } catch (e) {
-      this.$emit('show-error-notification', 'Error while trying to fetch genotype imports');
+      if (this.genotypeImportCallStack.isCurrentCall(callId)) {
+        this.$emit('show-error-notification', 'Error while trying to fetch genotype imports');
+      }
     } finally {
-      this.loading = false;
+      if (this.genotypeImportCallStack.isCurrentCall(callId)) {
+        this.loading = false;
+      }
     }
   }
 
