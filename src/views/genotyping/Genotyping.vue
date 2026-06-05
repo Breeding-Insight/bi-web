@@ -52,7 +52,6 @@
           v-bind:is-show-all-enabled="false"
           backend-pagination
           backend-sorting
-          hoverable
           v-on:click="navigateToSampleSubmission"
           v-on:sort="setSort"
         >
