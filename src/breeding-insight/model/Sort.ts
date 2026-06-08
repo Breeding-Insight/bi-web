@@ -168,6 +168,7 @@ export enum GermplasmSortField {
   Pedigree = "pedigree",
   FemaleParent = "femaleParentGID",
   MaleParent = "maleParentGID",
+  ExternalUID = "externalUID",
   CreatedDate = "createdDate",
   UserName = "createdByUserName"
 }
