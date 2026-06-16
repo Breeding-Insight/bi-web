@@ -49,7 +49,6 @@
       backend-filtering
       backend-pagination
       backend-sorting
-      v-on:click="navigateToSampleSubmission"
       v-on:search="initSearch"
       v-on:sort="setSort"
     >
@@ -131,7 +130,6 @@ import {Program} from '@/breeding-insight/model/Program';
 import {PaginationController} from '@/breeding-insight/model/view_models/PaginationController';
 import {GenotypeImport} from '@/breeding-insight/model/GenotypeImport';
 import {GenoService} from '@/breeding-insight/service/GenoService';
-import {TableRow} from '@/breeding-insight/model/view_models/TableRow';
 import {PaginationQuery} from '@/breeding-insight/model/PaginationQuery';
 import {CallStack} from '@/breeding-insight/utils/CallStack';
 import {
@@ -256,20 +254,6 @@ export default class Genotyping extends ProgramsBase {
       name: 'geno-import',
       params: {
         programId: this.activeProgram!.id!
-      }
-    });
-  }
-
-  navigateToSampleSubmission(row: TableRow<GenotypeImport>) {
-    if (!row.data.sampleSubmissionId) {
-      return;
-    }
-
-    this.$router.push({
-      name: 'submission-details',
-      params: {
-        programId: this.activeProgram!.id!,
-        submissionId: row.data.sampleSubmissionId
       }
     });
   }
