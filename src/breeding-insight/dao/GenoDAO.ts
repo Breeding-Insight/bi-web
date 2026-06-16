@@ -17,6 +17,8 @@
 
 import * as api from '@/util/api';
 import { BiResponse, Response } from '@/breeding-insight/model/BiResponse';
+import { PaginationQuery } from '@/breeding-insight/model/PaginationQuery';
+import { GenotypeImportFilters, GenotypeImportSort } from '@/breeding-insight/model/Sort';
 
 export class GenoDAO {
 
@@ -38,6 +40,27 @@ export class GenoDAO {
     const {data} = await api.call({
       url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/germplasm/${germplasmId}/genotype`,
       method: 'get'
+    }) as Response;
+
+    return new BiResponse(data);
+  }
+
+  static async fetchGenotypeImports(
+      programId: string,
+      {page, pageSize}: PaginationQuery,
+      {field, order}: GenotypeImportSort,
+      filters: GenotypeImportFilters
+  ): Promise<BiResponse> {
+    const {data} = await api.call({
+      url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/geno/imports`,
+      method: 'get',
+      params: {
+        ...filters,
+        page,
+        pageSize,
+        sortField: field,
+        sortOrder: order
+      }
     }) as Response;
 
     return new BiResponse(data);

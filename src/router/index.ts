@@ -73,6 +73,7 @@ import ImportGeno from "@/views/import/ImportGeno.vue";
 import ImportSample from "@/views/import/ImportSample.vue";
 import SampleManagement from '@/views/sample-mgmt/SampleManagement.vue';
 import SubmissionDetails from '@/views/sample-mgmt/SubmissionDetails.vue';
+import Genotyping from '@/views/genotyping/Genotyping.vue';
 
 Vue.use(VueRouter);
 
@@ -464,6 +465,16 @@ const routes = [
       layout: layouts.userSideBar
     },
     component: SampleManagement,
+    beforeEnter: processProgramNavigation
+  },
+  {
+    path: '/programs/:programId/genotyping',
+    name: 'genotyping',
+    meta: {
+      title: 'Genotyping',
+      layout: layouts.userSideBar
+    },
+    component: Genotyping,
     beforeEnter: processProgramNavigation
   },
   {
