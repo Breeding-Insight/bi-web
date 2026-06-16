@@ -47,6 +47,9 @@
             v-bind:germplasmGID="Pedigree.parsePedigreeStringWithUnknowns(props.row.data.pedigree,props.row.data.additionalInfo.femaleParentUnknown,props.row.data.additionalInfo.maleParentUnknown, props.row.data.accessionNumber).maleParent"
         > </GermplasmLink>
       </b-table-column>
+      <b-table-column field="externalUID" label="External UID" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
+        {{ GermplasmUtils.getExternalUID(props.row.data) }}
+      </b-table-column>
       <b-table-column field="createdDate" label="Created Date" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
         {{ GermplasmUtils.getCreatedDate(props.row.data) }}
       </b-table-column>
@@ -134,6 +137,7 @@ export default class GermplasmTable extends Vue {
     'seedSource': GermplasmSortField.SeedSource,
     'femaleParentGID': GermplasmSortField.FemaleParent,
     'maleParentGID': GermplasmSortField.MaleParent,
+    'externalUID' : GermplasmSortField.ExternalUID,
     'createdDate': GermplasmSortField.CreatedDate,
     'createdByUserName': GermplasmSortField.UserName,
   };
