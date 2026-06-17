@@ -219,7 +219,7 @@ export default class ExperimentsObservationsTable extends Vue {
   openDownloadModal(experiment: Trial) {
     this.downloadExperiment = experiment;
     this.downloadModalTitle = "Download " + experiment.trialName;
-    this.downloadTrialId = BrAPIUtils.getBreedingInsightId(experiment.externalReferences!, '/trials');
+    this.downloadTrialId = experiment.trialDbId;
     this.downloadModalActive = true;
   }
 
