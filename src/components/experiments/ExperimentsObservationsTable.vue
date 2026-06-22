@@ -43,7 +43,7 @@
       v-on:search="initSearch"
     >
       <b-table-column label="Title" field="name" cell-class="fixed-width-wrapped" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
-        <router-link v-bind:to="{name: 'experiment_dataset', params: {datasetId: getDefaultDataset(props.row.data).id, programId: activeProgram.id, experimentId: BrAPIUtils.getBreedingInsightId(props.row.data.externalReferences,'/trials')}}">
+        <router-link v-bind:to="{name: 'experiment_dataset', params: {datasetId: getDefaultDataset(props.row.data).id, programId: activeProgram.id, experimentId: props.row.data.trialDbId}}">
           {{ props.row.data.trialName }}
         </router-link>
 
