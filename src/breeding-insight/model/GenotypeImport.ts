@@ -16,6 +16,7 @@
  */
 
 export class GenotypeImport {
+  genotypeImportId?: string;
   sampleSubmissionId?: string;
   projectNameForSampleSubmission?: string;
   sampleSubmissionCreatedBy?: string;
@@ -24,6 +25,7 @@ export class GenotypeImport {
   genotypingImportBy?: string;
 
   constructor({
+                genotypeImportId,
                 sampleSubmissionId,
                 projectNameForSampleSubmission,
                 sampleSubmissionCreatedBy,
@@ -31,6 +33,7 @@ export class GenotypeImport {
                 genotypingImportDate,
                 genotypingImportBy
               }: GenotypeImport = {}) {
+    this.genotypeImportId = genotypeImportId;
     this.sampleSubmissionId = sampleSubmissionId;
     this.projectNameForSampleSubmission = projectNameForSampleSubmission;
     this.sampleSubmissionCreatedBy = sampleSubmissionCreatedBy;

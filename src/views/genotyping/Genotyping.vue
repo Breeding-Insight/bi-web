@@ -110,6 +110,9 @@
       >
         {{ displayValue(props.row.data.genotypingImportBy) }}
       </b-table-column>
+      <b-table-column field="data.genotypeImportId" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+        <a href="javascript:void(0)" v-on:click="downloadFile(props.row.data)"><DownloadIcon></DownloadIcon> Download</a>
+      </b-table-column>
 
       <template v-slot:emptyMessage>
         <p class="has-text-weight-bold">
@@ -123,7 +126,7 @@
 <script lang="ts">
 import {Component, Watch} from 'vue-property-decorator';
 import {mapGetters} from 'vuex';
-import {PlusCircleIcon} from 'vue-feather-icons';
+import {PlusCircleIcon, DownloadIcon} from 'vue-feather-icons';
 import ProgramsBase from '@/components/program/ProgramsBase.vue';
 import ExpandableTable from '@/components/tables/expandableTable/ExpandableTable.vue';
 import {Program} from '@/breeding-insight/model/Program';
@@ -143,7 +146,8 @@ import {
 @Component({
   components: {
     ExpandableTable,
-    PlusCircleIcon
+    PlusCircleIcon,
+    DownloadIcon
   },
   computed: {
     ...mapGetters([
@@ -260,6 +264,14 @@ export default class Genotyping extends ProgramsBase {
 
   displayValue(value?: string): string {
     return value || '';
+  }
+
+  private downloadFile(genotype: GenotypeImport) {
+    if (this.activeProgram) {
+      window.open(process.env.VUE_APP_BI_API_ROOT + '/v1/programs/' + this.activeProgram.id + '/geno/imports/' + genotype.genotypeImportId + '/download' , '_blank');
+      return true;
+    }
+    return false;
   }
 }
 </script>
