@@ -151,7 +151,9 @@ export default class ImportExperiment extends ProgramsBase {
         this.$emit('show-success-notification', `Genotypic data has uploaded and is being processed.  Check the 'Jobs' page for processing status`);
       }
     } catch (e) {
-      if (e.response && e.response.statusText && e.response.status != 500) {
+      if (e.response && e.response.status == 413) {
+        this.$emit('show-error-notification', 'Uploaded file exceeds the maximum allowed file size.');
+      } else if (e.response && e.response.statusText && e.response.status != 500) {
         this.$emit('show-error-notification', e.response.statusText);
       } else {
         this.$emit('show-error-notification', 'An unknown error has occurred when uploading your import.');
