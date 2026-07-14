@@ -26,7 +26,6 @@ export class GenoDAO {
 
     var formData = new FormData();
     formData.append("file", file);
-    formData.append("filename", file.name);
 
     const {data} = await api.call({
       url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/submissions/${submissionId}/geno/import`,

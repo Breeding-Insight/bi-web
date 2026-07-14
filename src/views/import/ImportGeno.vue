@@ -46,7 +46,7 @@
             v-bind:save-button-label="'Import'"
             v-bind:show-cancel-button="false"
             v-on:submit="save"
-            v-on:cancel="cancel"
+            v-on:cancel="clearForm"
             v-on:show-error-notification="$emit('show-error-notification', $event)"
         >
           <template v-slot="validations">
@@ -54,6 +54,7 @@
               <div class="column">
                 <BasicSelectField
                     v-model="upload.submissionId"
+                    v-bind:selected-id="upload.submissionId"
                     v-bind:validations="validations.submissionId"
                     v-bind:options="submissionOptions"
                     v-bind:field-name="'Sample Submission Project Name'"
@@ -146,9 +147,10 @@ export default class ImportExperiment extends ProgramsBase {
       if (response.progress!.statuscode == 500) {
         this.$emit('show-error-notification', 'An unknown error has occurred when processing your import.');
       } else if (response.progress!.statuscode !== 200) {
-        this.$emit('show-error-notification', `Error: ${response.progress!.message}`);
+        this.$emit('show-error-notification', `${response.progress!.message}`);
       } else {
-        this.$emit('show-success-notification', `Genotypic data has uploaded and is being processed.  Check the 'Jobs' page for processing status`);
+        this.$emit('show-success-notification', `Imported genotype data has been added to ${this.activeProgram!.name!}`);
+        this.clearForm();
       }
     } catch (e) {
       if (e.response && e.response.status == 413) {
@@ -159,12 +161,19 @@ export default class ImportExperiment extends ProgramsBase {
         this.$emit('show-error-notification', 'An unknown error has occurred when uploading your import.');
       }
     } finally {
+      if (this.upload.file) {
+        this.clearFile();
+      }
       this.importState.bus.$emit(DataFormEventBusHandler.SAVE_COMPLETE_EVENT);
     }
   }
 
-  cancel() {
+  clearForm() {
     this.upload = new Upload({});
+  }
+
+  clearFile() {
+    this.upload.clearFile();
   }
 
   async getSystemImportTemplateMapping() {
@@ -222,6 +231,10 @@ class Upload {
   constructor ({submissionId, file}: Upload) {
     this.submissionId = submissionId;
     this.file = file;
+  }
+
+  clearFile() {
+    this.file = undefined;
   }
 }
 </script>
