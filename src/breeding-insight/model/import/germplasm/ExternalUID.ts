@@ -18,17 +18,16 @@
 export class ExternalUID {
 
   /**
-   * Get ExternalUID value from germplasm BrAPI external references array based
-   * on the seedSource value
+   * Get ExternalUID value from germplasm BrAPI external references array using
+   * the canonical External UID reference source.
    *
    * @param externalReferences
-   * @param source
    */
-  public static getExternalUIDFromExternalReferences(externalReferences: Array<any>, source : string) : string | undefined {
-    if (externalReferences === undefined || source === undefined) {
+  public static getExternalUIDFromExternalReferences(externalReferences: Array<any>) : string | undefined {
+    if (externalReferences === undefined) {
       return undefined;
     }
-    const externalUID = externalReferences.find( ({ referenceSource }) => referenceSource === source );
+    const externalUID = externalReferences.find( ({ referenceSource }) => referenceSource === "External UID" );
     if (externalUID !== undefined) {
       return externalUID.referenceID;
     } else

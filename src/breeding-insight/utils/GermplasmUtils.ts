@@ -26,8 +26,8 @@ export const MOMENT_DATE_PERSISTED_FORMAT = 'DD/MM/YYYY h:mm:ss';
 export class GermplasmUtils {
     static getExternalUID(germplasm: Germplasm): string | undefined {
         let val;
-        if (germplasm.externalReferences && germplasm.seedSource) {
-            val = germplasm.externalReferences!.filter(ref => ref.referenceSource == germplasm.seedSource!)
+        if (germplasm.externalReferences) {
+            val = germplasm.externalReferences!.filter(ref => ref.referenceSource == "External UID")
                 .map(ref => ref.referenceID);
             return val ? val[0]: "";
         }
