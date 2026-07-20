@@ -26,7 +26,7 @@
       v-on:click="importGenotypingFile"
     >
       <span class="icon is-small">
-        <PlusCircleIcon
+        <UploadIcon
           size="1.5x"
           aria-hidden="true"
         />
@@ -110,7 +110,7 @@
       >
         {{ displayValue(props.row.data.genotypingImportBy) }}
       </b-table-column>
-      <b-table-column field="data.genotypeImportId" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+      <b-table-column width="150" field="data.genotypeImportId" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
         <a href="javascript:void(0)" v-on:click="downloadFile(props.row.data)"><DownloadIcon></DownloadIcon> Download</a>
       </b-table-column>
 
@@ -126,7 +126,7 @@
 <script lang="ts">
 import {Component, Watch} from 'vue-property-decorator';
 import {mapGetters} from 'vuex';
-import {PlusCircleIcon, DownloadIcon} from 'vue-feather-icons';
+import {UploadIcon, DownloadIcon} from 'vue-feather-icons';
 import ProgramsBase from '@/components/program/ProgramsBase.vue';
 import ExpandableTable from '@/components/tables/expandableTable/ExpandableTable.vue';
 import {Program} from '@/breeding-insight/model/Program';
@@ -146,8 +146,8 @@ import {
 @Component({
   components: {
     ExpandableTable,
-    PlusCircleIcon,
-    DownloadIcon
+    DownloadIcon,
+    UploadIcon
   },
   computed: {
     ...mapGetters([
