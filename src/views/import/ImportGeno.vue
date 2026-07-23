@@ -68,9 +68,12 @@
                     {{upload.file.name}}
                   </div>
                 </div>
-                <FileSelector v-model="upload.file"
-                              v-bind:fileTypes="['.vcf']">
-                </FileSelector>
+                <FileSelector
+                    v-bind:key="fileSelectorKey"
+                    v-bind:value="upload.file"
+                    v-bind:fileTypes="['.vcf']"
+                    v-on:input="handleFileSelected"
+                />
               </div>
             </div>
           </template>
@@ -115,12 +118,44 @@ export default class ImportExperiment extends ProgramsBase {
   private importState: DataFormEventBusHandler = new DataFormEventBusHandler();
   private currentImport?: ImportResponse = new ImportResponse({});
   private systemImportTemplateId?: string;
+  private fileSelectorKey: number = 0;
+  private defaultMaxGenotypeUploadMb: number = 800;
 
   upload: Upload = new Upload({});
 
   uploadValidations = {
     submissionId: {required},
     file: {required}
+  }
+
+  private getMaxGenotypeUploadLimitMb(): number {
+    const configuredLimit = Number(process.env.VUE_APP_MAX_GENOTYPE_UPLOAD_MB);
+    if (!Number.isFinite(configuredLimit) || configuredLimit <= 0) {
+      return this.defaultMaxGenotypeUploadMb;
+    }
+    return configuredLimit;
+  }
+
+  private getMaxGenotypeUploadBytes(): number {
+    return this.getMaxGenotypeUploadLimitMb() * 1024 * 1024;
+  }
+
+  private showMaxGenotypeUploadError() {
+    this.$emit(
+        'show-error-notification',
+        `Uploaded file exceeds the maximum file size limit of ${this.getMaxGenotypeUploadLimitMb()} MB.`
+    );
+  }
+
+  handleFileSelected(file: File) {
+    if (file.size > this.getMaxGenotypeUploadBytes()) {
+      this.clearFile();
+      this.fileSelectorKey += 1;
+      this.showMaxGenotypeUploadError();
+      return;
+    }
+
+    this.upload.file = file;
   }
 
   mounted() {
@@ -142,6 +177,12 @@ export default class ImportExperiment extends ProgramsBase {
   async save() {
     try {
       this.$store.commit( DEACTIVATE_ALL_NOTIFICATIONS );
+
+      if (this.upload.file!.size > this.getMaxGenotypeUploadBytes()) {
+        this.showMaxGenotypeUploadError();
+        return;
+      }
+
       this.currentImport = await GenoService.uploadData(this.activeProgram!.id!, this.upload.submissionId!, this.upload.file!);
       const response: ImportResponse = await this.getDataUpload();
       if (response.progress!.statuscode == 500) {
