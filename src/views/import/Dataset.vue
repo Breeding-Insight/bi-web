@@ -510,13 +510,13 @@ export default class Dataset extends ProgramsBase {
 
       if(!this.isSubEntity){
         datasetTableRow.expUnitId = this.removeUnique(unit.observationUnitName);
-        datasetTableRow.obsUnitId = BrAPIUtils.getBreedingInsightId(unit.externalReferences, "/observationunits");
+        datasetTableRow.obsUnitId = unit.observationUnitDbId;
       } else {
         let parentObsInfo = unit.observationUnitPosition.observationLevelRelationships.find((val) => val.levelOrder === 0);
         if (parentObsInfo) datasetTableRow.obsUnitId = this.removeUnique(parentObsInfo.levelCode);
         datasetTableRow.expUnitId = unit.additionalInfo.expUnitID;
         datasetTableRow.subExpUnitId = this.removeUnique(unit.observationUnitName);
-        datasetTableRow.subObsUnitId = BrAPIUtils.getBreedingInsightId(unit.externalReferences, "/observationunits");
+        datasetTableRow.subObsUnitId = unit.observationUnitDbId;
       }
 
       // Env Year
