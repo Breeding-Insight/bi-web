@@ -34,7 +34,7 @@
     </div>
     <article class="message is-warning" v-if="importState.saveStarted">
       <div class="message-body">
-        Your import is being processed. You can view its progress by going to the <router-link v-bind:to="{name: 'job-management', params:{programId: activeProgram.id}}">Jobs</router-link> page.
+        Leaving this page will interrupt file processing. Please wait until you receive a success message.
       </div>
     </article>
     <div class="card import-form">

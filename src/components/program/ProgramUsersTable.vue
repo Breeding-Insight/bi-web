@@ -115,6 +115,7 @@
         v-bind:archivable="$ability.can('archive', 'ProgramUser')"
         v-bind:pagination="paginationController"
         v-bind:data-form-state="editUserFormState"
+        v-bind:deactivate-link-text="removeUserLinkText"
         v-on:submit="updateUser($event)"
         v-on:remove="displayWarning($event)"
         v-on:show-error-notification="$emit('show-error-notification', $event)"
@@ -155,7 +156,7 @@
             You can add a user to your program from this panel. When you remove a user from your
             program, their account and membership in other programs is not affected.
           </p>
-          <p>You can add, edit, and delete users from your program from this panel.</p>
+          <p>You can add, edit, and remove users from your program from this panel.</p>
       </template>
     </ExpandableTable>
   </section>
@@ -240,6 +241,8 @@ export default class ProgramUsersTable extends Vue {
 
   private programUserSort!: UserSort;
   private updateSort!: (sort: UserSort) => void;
+
+  private removeUserLinkText: string = "Remove User";
 
   newUserValidations = {
     name: {required},
@@ -431,7 +434,7 @@ export default class ProgramUsersTable extends Vue {
 
     if (user){
       this.deleteUser = user;
-      this.deactivateWarningTitle = "Deactivate " + user.name + " from program " + this.activeProgram!.name + "?";
+      this.deactivateWarningTitle = "Remove " + user.name + " from program " + this.activeProgram!.name + "?";
       this.deactivateActive = true;
     } else {
       Vue.$log.error('Could not find object to delete')
