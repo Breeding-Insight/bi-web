@@ -40,6 +40,7 @@ export class StudyService {
       
       let response: Result<Error, BiResponse>;
       if (trial !== undefined && trial.externalReferences !== undefined) {
+        // TODO: Change to trialDbId when fixing bi-brapi study endpoint [BI-2962]
         let externalReferenceId = BrAPIUtils.getBreedingInsightId(trial.externalReferences, '/trials');
         // Throw if trial is missing ExternalReferenceId.
         if (externalReferenceId === undefined) throw new Error("Trial is missing external reference.");
