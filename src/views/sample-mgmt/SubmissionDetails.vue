@@ -166,7 +166,7 @@
               v-on:show-error-notification="$emit('show-error-notification', $event)"
               v-bind:is-show-all-enabled="false"
               sort-multiple
-              :sort-multiple-data="[{field:'data.plateName', order:'asc'}, {field:'data.row', order:'asc'}, {field:'data.column', order:'asc'}]"
+              :sort-multiple-data="[{field:'data.plateName', order:'asc'}, {field:'data.column', order:'asc'}, {field:'data.row', order:'asc'}]"
           >
             <b-table-column field="data.additionalInfo.germplasmName" label="Germplasm Name" v-slot="props" searchable
                             :th-attrs="(column) => ({scope:'col'})">
