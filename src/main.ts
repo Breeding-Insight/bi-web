@@ -31,6 +31,7 @@ import TreeView from "vue-json-tree-view";
 import VueQRCodeComponent from 'vue-qrcode-component'
 import VueFeatherIconPack from "./components/VueFeatherIconPack.vue";
 import VueGtag from "vue-gtag";
+import { install as VueMonacoEditorPlugin } from '@guolao/vue-monaco-editor'
 
 Vue.component("vue-feather-icon-pack", VueFeatherIconPack);
 
@@ -96,6 +97,13 @@ const options = {
 };
 
 Vue.use(VueLogger, options);
+
+Vue.use(VueMonacoEditorPlugin, {
+  paths: {
+    // The recommended CDN config
+    vs: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.43.0/min/vs'
+  },
+})
 
 // Vue constants
 const cookieNames = {
