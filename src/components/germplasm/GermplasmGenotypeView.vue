@@ -27,7 +27,7 @@
       <div class="column">
         <label for="callsets">Callsets: </label>
         <div class="select">
-          <select name="callsets" v-model="currentCallSetId" v-on:change="switchCallset($event.target.value)">
+          <select id="callsets" name="callsets" v-model="currentCallSetId" v-on:change="switchCallset($event.target.value)">
             <option v-for="callset in callsetOptions"
                     v-bind:key="callset.callSetDbId"
                     :value="callset.callSetDbId">
