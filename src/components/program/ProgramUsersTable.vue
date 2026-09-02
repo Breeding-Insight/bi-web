@@ -242,7 +242,7 @@ export default class ProgramUsersTable extends Vue {
   private programUserSort!: UserSort;
   private updateSort!: (sort: UserSort) => void;
 
-  private removeUserLinkText: string = "Remove User";
+  private removeUserLinkText: string = "Remove Access";
 
   newUserValidations = {
     name: {required},
