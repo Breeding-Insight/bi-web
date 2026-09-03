@@ -163,7 +163,6 @@ import {Metadata} from "@/breeding-insight/model/BiResponse";
 import {Study} from "@/breeding-insight/model/Study";
 import {StudyService} from "@/breeding-insight/service/StudyService";
 import {Result} from "@/breeding-insight/model/Result";
-import {BrAPIUtils} from "@/breeding-insight/utils/BrAPIUtils";
 import DownloadModal from "@/components/modals/DownloadModal.vue";
 import {DatasetMetadata} from "@/breeding-insight/model/DatasetMetadata";
 import {ExperimentService} from "@/breeding-insight/service/ExperimentService";
@@ -215,7 +214,7 @@ export default class ExperimentObservationsDownloadModal extends Vue {
       if(response.isErr()) throw response.value;
       let [studies, metadata] = response.value;
       // Set environment options.
-      this.environmentOptions = studies.map((s) => ({id: BrAPIUtils.getBreedingInsightId(s.externalReferences!, '/studies'), name: s.name}));
+      this.environmentOptions = studies.map((s) => ({id: s.id, name: s.name}));
       this.loadingStudyOptionsComplete = true;
     } catch (error) {
       // Display error that studies cannot be loaded
