@@ -140,6 +140,16 @@
                 Sample Management
               </router-link>
             </li>
+            <li
+              v-if="$ability.can('access', 'Genotyping')"
+            >
+              <router-link
+                v-bind:id="genotypingMenuId"
+                v-bind:to="{name: 'genotyping', params: {programId: activeProgram.id}}"
+              >
+                Genotyping
+              </router-link>
+            </li>
             <!--
             <li>
               <a>Labels</a>
@@ -243,6 +253,7 @@
     private homeMenuId: string = "usersidebarlayout-home-menu";
     private importFileMenuId: string = "usersidebarlayout-import-file-menu";
     private sampleMgmtMenuId: string = "usersidebarlayout-sample-management-menu";
+    private genotypingMenuId: string = "usersidebarlayout-genotyping-menu";
     private ontologyMenuId: string = "usersidebarlayout-ontology-menu";
     private programManagementMenuId: string = "usersidebarlayout-program-management-menu";
     private jobManagementMenuId: string = "usersidebarlayout-job-management-menu";

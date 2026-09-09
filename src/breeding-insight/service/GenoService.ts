@@ -16,21 +16,24 @@
  */
 
 import { GenoDAO } from '@/breeding-insight/dao/GenoDAO';
-import { BiResponse } from '@/breeding-insight/model/BiResponse';
+import { BiResponse, Metadata } from '@/breeding-insight/model/BiResponse';
 import { ImportResponse } from '@/breeding-insight/model/import/ImportResponse';
 import { GermplasmGenotype } from '@/breeding-insight/model/GermplasmGenotype';
+import { GenotypeImport } from '@/breeding-insight/model/GenotypeImport';
+import { PaginationQuery } from '@/breeding-insight/model/PaginationQuery';
+import { GenotypeImportFilters, GenotypeImportSort } from '@/breeding-insight/model/Sort';
 
 export class GenoService {
 
-  static async uploadData(programId: string, experimentId: string, file: File): Promise<ImportResponse> {
+  static async uploadData(programId: string, submissionId: string, file: File): Promise<ImportResponse> {
     if (!programId) {
       throw 'Program ID not provided';
     }
-    if (!experimentId) {
-      throw 'Experiment ID not provided';
+    if (!submissionId) {
+      throw 'Submission ID not provided';
     }
 
-    const response: BiResponse = await GenoDAO.uploadData(programId, experimentId, file);
+    const response: BiResponse = await GenoDAO.uploadData(programId, submissionId, file);
     const data: any = response.result;
     return new ImportResponse(data);
   }
@@ -46,5 +49,27 @@ export class GenoService {
     const resp = await GenoDAO.fetchGenotypeData(programId, germplasmId);
 
     return resp.result as GermplasmGenotype;
+  }
+
+  static async fetchGenotypeImports(
+      programId: string,
+      paginationQuery: PaginationQuery,
+      sort: GenotypeImportSort,
+      filters: GenotypeImportFilters
+  ): Promise<[GenotypeImport[], Metadata]> {
+    if (!programId) {
+      throw 'Program ID not provided';
+    }
+
+    const response = await GenoDAO.fetchGenotypeImports(programId, paginationQuery, sort, filters);
+    const responseData = response.result && response.result.data ? response.result.data : response.result;
+
+    if (!Array.isArray(responseData)) {
+      return [[], response.metadata];
+    }
+
+    const genotypeImports = responseData.map((record: GenotypeImport) => new GenotypeImport(record));
+
+    return [genotypeImports, response.metadata];
   }
 }

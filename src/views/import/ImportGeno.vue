@@ -25,7 +25,7 @@
               <div class="has-text-dark">
                 <strong>Before You Import...</strong>
                 <br/>
-                Ensure that Sample IDs match to an Exp Unit ID within the chosen experiment
+                Ensure that the Sample IDs in the .vcf import file match to Sample IDs within the chosen sample submission.
               </div>
             </div>
           </div>
@@ -34,7 +34,7 @@
     </div>
     <article class="message is-warning" v-if="importState.saveStarted">
       <div class="message-body">
-        Your import is being processed. You can view its progress by going to the <router-link v-bind:to="{name: 'job-management', params:{programId: activeProgram.id}}">Jobs</router-link> page.
+        Leaving this page will interrupt file processing. Please wait until you receive a success message.
       </div>
     </article>
     <div class="card import-form">
@@ -46,17 +46,18 @@
             v-bind:save-button-label="'Import'"
             v-bind:show-cancel-button="false"
             v-on:submit="save"
-            v-on:cancel="cancel"
+            v-on:cancel="clearForm"
             v-on:show-error-notification="$emit('show-error-notification', $event)"
         >
           <template v-slot="validations">
             <div class="columns is-vcentered">
               <div class="column">
                 <BasicSelectField
-                    v-model="upload.experimentId"
-                    v-bind:validations="validations.experimentId"
-                    v-bind:options="experimentOptions"
-                    v-bind:field-name="'Experiment'"
+                    v-model="upload.submissionId"
+                    v-bind:selected-id="upload.submissionId"
+                    v-bind:validations="validations.submissionId"
+                    v-bind:options="submissionOptions"
+                    v-bind:field-name="'Sample Submission Project Name'"
                 />
               </div>
             </div>
@@ -67,9 +68,12 @@
                     {{upload.file.name}}
                   </div>
                 </div>
-                <FileSelector v-model="upload.file"
-                              v-bind:fileTypes="['.vcf']">
-                </FileSelector>
+                <FileSelector
+                    v-bind:key="fileSelectorKey"
+                    v-bind:value="upload.file"
+                    v-bind:fileTypes="['.vcf']"
+                    v-on:input="handleFileSelected"
+                />
               </div>
             </div>
           </template>
@@ -83,22 +87,20 @@
 import { Component } from 'vue-property-decorator';
 import ProgramsBase from '@/components/program/ProgramsBase.vue';
 import { DataFormEventBusHandler } from '@/components/forms/DataFormEventBusHandler';
-import { Trial } from '@/breeding-insight/model/Trial';
 import { mapGetters } from 'vuex';
 import { Program } from '@/breeding-insight/model/Program';
-import { BrAPIService, BrAPIType } from '@/breeding-insight/service/BrAPIService';
-import { SortOrder } from '@/breeding-insight/model/Sort';
 import NewDataForm from '@/components/forms/NewDataForm.vue';
 import BasicInputField from '@/components/forms/BasicInputField.vue';
 import BasicSelectField from '@/components/forms/BasicSelectField.vue';
 import FileSelector from '@/components/file-import/FileSelector.vue';
-import { BrAPIUtils } from '@/breeding-insight/utils/BrAPIUtils';
 import { required } from 'vuelidate/lib/validators';
 import { ImportResponse } from '@/breeding-insight/model/import/ImportResponse';
 import { GenoService } from '@/breeding-insight/service/GenoService';
 import { DEACTIVATE_ALL_NOTIFICATIONS } from '@/store/mutation-types';
 import { ImportMappingConfig } from '@/breeding-insight/model/import/ImportMapping';
 import { ImportService } from '@/breeding-insight/service/ImportService';
+import { SampleSubmission } from '@/breeding-insight/model/SampleSubmission';
+import { SampleSubmissionService } from '@/breeding-insight/service/SampleSubmissionService';
 
 @Component({
   components: {
@@ -112,62 +114,107 @@ import { ImportService } from '@/breeding-insight/service/ImportService';
 })
 export default class ImportExperiment extends ProgramsBase {
   private activeProgram?: Program;
-  private experimentOptions: Array<ExperimentOption> = [];
+  private submissionOptions: Array<SubmissionOption> = [];
   private importState: DataFormEventBusHandler = new DataFormEventBusHandler();
   private currentImport?: ImportResponse = new ImportResponse({});
   private systemImportTemplateId?: string;
+  private fileSelectorKey: number = 0;
+  private defaultMaxGenotypeUploadMb: number = 800;
 
   upload: Upload = new Upload({});
 
   uploadValidations = {
-    experimentId: {required},
+    submissionId: {required},
     file: {required}
   }
 
+  private getMaxGenotypeUploadLimitMb(): number {
+    const configuredLimit = Number(process.env.VUE_APP_MAX_GENOTYPE_UPLOAD_MB);
+    if (!Number.isFinite(configuredLimit) || configuredLimit <= 0) {
+      return this.defaultMaxGenotypeUploadMb;
+    }
+    return configuredLimit;
+  }
+
+  private getMaxGenotypeUploadBytes(): number {
+    return this.getMaxGenotypeUploadLimitMb() * 1024 * 1024;
+  }
+
+  private showMaxGenotypeUploadError() {
+    this.$emit(
+        'show-error-notification',
+        `Uploaded file exceeds the maximum file size limit of ${this.getMaxGenotypeUploadLimitMb()} MB.`
+    );
+  }
+
+  handleFileSelected(file: File) {
+    if (file.size > this.getMaxGenotypeUploadBytes()) {
+      this.clearFile();
+      this.fileSelectorKey += 1;
+      this.showMaxGenotypeUploadError();
+      return;
+    }
+
+    this.upload.file = file;
+  }
+
   mounted() {
-    this.loadExperiments();
+    this.loadSampleSubmissions();
     this.getSystemImportTemplateMapping();
   }
 
-  async loadExperiments () {
-    let expResponse = await BrAPIService.get(BrAPIType.EXPERIMENT, this.activeProgram!.id!, { field: undefined, order: SortOrder.Ascending }, { page: 0, pageSize: 1000 }, {"metadata": false});
-    if (expResponse.result && expResponse.result.data) {
-      this.experimentOptions = expResponse.result.data.map((exp: Trial) => {
-        let breedingInsightId = BrAPIUtils.getBreedingInsightId(exp.externalReferences!, "/trials");
-        return new ExperimentOption({
-          id: breedingInsightId!,
-          name: exp.trialName!
+  async loadSampleSubmissions() {
+    const submissions = await SampleSubmissionService.getProgramSampleSubmissions(this.activeProgram!.id!);
+    this.submissionOptions = submissions.map((submission: SampleSubmission) => {
+        return new SubmissionOption({
+              id: submission.id!,
+              name: submission.name!
         });
       });
-      this.$log.debug(JSON.stringify(this.experimentOptions));
+    this.$log.debug(JSON.stringify(this.submissionOptions));
     }
-  }
 
   async save() {
     try {
       this.$store.commit( DEACTIVATE_ALL_NOTIFICATIONS );
-      this.currentImport = await GenoService.uploadData(this.activeProgram!.id!, this.upload.experimentId!, this.upload.file!);
+
+      if (this.upload.file!.size > this.getMaxGenotypeUploadBytes()) {
+        this.showMaxGenotypeUploadError();
+        return;
+      }
+
+      this.currentImport = await GenoService.uploadData(this.activeProgram!.id!, this.upload.submissionId!, this.upload.file!);
       const response: ImportResponse = await this.getDataUpload();
       if (response.progress!.statuscode == 500) {
         this.$emit('show-error-notification', 'An unknown error has occurred when processing your import.');
       } else if (response.progress!.statuscode !== 200) {
-        this.$emit('show-error-notification', `Error: ${response.progress!.message}`);
+        this.$emit('show-error-notification', `${response.progress!.message}`);
       } else {
-        this.$emit('show-success-notification', `Genotypic data has uploaded and is being processed.  Check the 'Jobs' page for processing status`);
+        this.$emit('show-success-notification', `Imported genotype data has been added to ${this.activeProgram!.name!}`);
+        this.clearForm();
       }
     } catch (e) {
-      if (e.response && e.response.statusText && e.response.status != 500) {
+      if (e.response && e.response.status == 413) {
+        this.$emit('show-error-notification', 'Uploaded file exceeds the maximum allowed file size.');
+      } else if (e.response && e.response.statusText && e.response.status != 500) {
         this.$emit('show-error-notification', e.response.statusText);
       } else {
         this.$emit('show-error-notification', 'An unknown error has occurred when uploading your import.');
       }
     } finally {
+      if (this.upload.file) {
+        this.clearFile();
+      }
       this.importState.bus.$emit(DataFormEventBusHandler.SAVE_COMPLETE_EVENT);
     }
   }
 
-  cancel() {
+  clearForm() {
     this.upload = new Upload({});
+  }
+
+  clearFile() {
+    this.upload.clearFile();
   }
 
   async getSystemImportTemplateMapping() {
@@ -208,23 +255,27 @@ export default class ImportExperiment extends ProgramsBase {
 
 }
 
-class ExperimentOption {
+class SubmissionOption {
   id: string;
   name: string;
 
-  constructor({id, name}: ExperimentOption) {
+  constructor({id, name}: SubmissionOption) {
     this.id = id;
     this.name = name;
   }
 }
 
 class Upload {
-  experimentId?: string;
+  submissionId?: string;
   file?: File;
 
-  constructor ({experimentId, file}: Upload) {
-    this.experimentId = experimentId;
+  constructor ({submissionId, file}: Upload) {
+    this.submissionId = submissionId;
     this.file = file;
+  }
+
+  clearFile() {
+    this.file = undefined;
   }
 }
 </script>

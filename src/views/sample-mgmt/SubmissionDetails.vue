@@ -764,7 +764,7 @@ export default class SubmissionDetails extends ProgramsBase {
           const response = result.value.response;
 
           if (response && response.status === 405) {
-            this.$emit('show-error-notification', `Cannot delete a submission with submitted or completed status`);
+            this.$emit('show-error-notification', response.data);
             return;
           }
           this.$emit('show-error-notification', `Unknown error deleting submission`);

@@ -24,7 +24,7 @@ export class ExperimentExportOptions {
     public fileExtension: string = FileTypeOption.xls.id;
     public datasetId: string;
     public environments: string[] = [];
-    public allEnvironments: boolean = false;
+    public allEnvironments: boolean = true;
     public includeTimestamps: string = 'No';
 
     public timestampsTrueFalseString(): string {
