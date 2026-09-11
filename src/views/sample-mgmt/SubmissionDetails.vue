@@ -76,7 +76,7 @@
                       v-bind:action-menu-items=actions
                       v-on:import-file="importFile()"
                       v-on:download-file="exportDArTFile()"
-                      v-on:download-lookup-file="exportLookupFile()"
+                      v-on:download-sample-submission="exportSampleSubmission()"
                       v-on:submit="startOrderSubmission()"
                       v-on:manual-update-status="startManualUpdate()"
                       v-on:check-status="checkVendorStatus()"
@@ -461,7 +461,7 @@ export default class SubmissionDetails extends ProgramsBase {
     }
 
     actionsMenuItems.push(new ActionMenuItem('submission-download-file', 'download-file', 'Generate and Download DArT file'));
-    actionsMenuItems.push(new ActionMenuItem('submission-download-lookup-file', 'download-lookup-file', 'Download Lookup file'));
+    actionsMenuItems.push(new ActionMenuItem('submission-download-sample-submission', 'download-sample-submission', 'Download Sample Submission'));
 
     if (this.$ability.can('submit', 'Submission') && !this.submission!.vendorOrderId) {
       actionsMenuItems.push(new ActionMenuItem('submission-manual-update-status', 'manual-update-status', 'Manually Update Status'));
@@ -580,6 +580,18 @@ export default class SubmissionDetails extends ProgramsBase {
           + '/submissions/'
           + this.submissionId
           + '/dart',
+          '_blank');
+    }
+  }
+
+  private exportSampleSubmission(){
+    if (this.activeProgram) {
+      window.open(process.env.VUE_APP_BI_API_ROOT
+          + '/v1/programs/'
+          + this.activeProgram.id
+          + '/submissions/'
+          + this.submissionId
+          + '/export',
           '_blank');
     }
   }
