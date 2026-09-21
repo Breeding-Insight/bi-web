@@ -18,7 +18,7 @@
 <template>
   <div class="genotyping">
     <h1 class="title">
-      Genotyping
+      Genotyping Results
     </h1>
     <button
       v-if="$ability.can('create', 'Import')"
@@ -111,7 +111,9 @@
         {{ displayValue(props.row.data.genotypingImportBy) }}
       </b-table-column>
       <b-table-column width="150" field="data.genotypeImportId" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-        <a href="javascript:void(0)" v-on:click="downloadFile(props.row.data)"><DownloadIcon></DownloadIcon> Download</a>
+        <b-tooltip label="Download" triggers="['hover', 'focus']" position="is-bottom" content-class="icon-tooltip" type="">
+        <a href="javascript:void(0)" v-on:click="downloadFile(props.row.data)" aria-label="Download"><DownloadIcon></DownloadIcon></a>
+        </b-tooltip>
       </b-table-column>
 
       <template v-slot:emptyMessage>
