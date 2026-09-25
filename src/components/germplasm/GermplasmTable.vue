@@ -13,7 +13,7 @@
         v-bind:search-debounce="400"
         v-bind:is-show-all-enabled="false"
     >
-      <b-table-column v-if="entryNumberVisible" field="importEntryNumber" label="Entry Number" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
+      <b-table-column v-if="entryNumberVisible" field="importEntryNumber" label="Entry Number" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
         {{ GermplasmUtils.getEntryNumber(props.row.data, referenceId) }}
       </b-table-column>
       <b-table-column field="accessionNumber" label="GID" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
