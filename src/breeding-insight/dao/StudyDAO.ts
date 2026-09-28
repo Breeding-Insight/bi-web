@@ -20,6 +20,8 @@ import * as api from "@/util/api";
 import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
 import {Result, Err, Success, ResultGenerator} from "@/breeding-insight/model/Result";
 
+const BRAPI_FETCH_PAGE_SIZE = Number(process.env.VUE_APP_BRAPI_FETCH_PAGE_SIZE);
+
 export class StudyDAO {
 
     static async getAllForTrial(programId: string, trialDbId: string): Promise<Result<Error, BiResponse>> {
@@ -29,7 +31,7 @@ export class StudyDAO {
             method: 'get',
             params: {
                 trialDbId: trialDbId,
-                pageSize: 65000
+                pageSize: BRAPI_FETCH_PAGE_SIZE
             }
         }) as Response;
 
@@ -43,7 +45,7 @@ export class StudyDAO {
                 method: 'get',
                 params: {
                     full,
-                    pageSize: 65000
+                    pageSize: BRAPI_FETCH_PAGE_SIZE
                 }
             }) as Response;
 
