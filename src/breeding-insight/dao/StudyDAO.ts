@@ -18,75 +18,54 @@
 import {BiResponse, Response} from "@/breeding-insight/model/BiResponse";
 import * as api from "@/util/api";
 import {PaginationQuery} from "@/breeding-insight/model/PaginationQuery";
-import { Result, Err, Success, ResultGenerator } from "@/breeding-insight/model/Result";
-import {BrAPIDAOUtil} from "@/breeding-insight/dao/BrAPIDAOUtil";
+import {Result, Err, Success, ResultGenerator} from "@/breeding-insight/model/Result";
 
 export class StudyDAO {
 
-  private static readonly MAX_BRAPI_PAGE_SIZE = 65000;
+    static async getAllForTrial(programId: string, trialDbId: string): Promise<Result<Error, BiResponse>> {
+        // Use GET endpoint to get all Studies for a single Trial by external reference.
+        const {data} = await api.call({
+            url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/brapi/v2/studies`,
+            method: 'get',
+            params: {
+                trialDbId: trialDbId,
+                pageSize: 65000
+            }
+        }) as Response;
 
-  private static async getAllPages(programId: string, params: any): Promise<BiResponse> {
-    let page = 0;
-    let totalPages = 1;
-    let responseData: any;
-    let studies: any[] = [];
-
-    do {
-      const { data } = await api.call({
-        url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/brapi/v2/studies`,
-        method: 'get',
-        params: {
-          ...params,
-          page,
-          pageSize: StudyDAO.MAX_BRAPI_PAGE_SIZE
-        }
-      }) as Response;
-
-      responseData = data;
-      studies = studies.concat(data.result.data);
-      totalPages = data.metadata.pagination.totalPages;
-      page++;
-    } while (page < totalPages);
-
-    responseData.result.data = studies;
-    responseData.metadata.pagination.currentPage = 0;
-    responseData.metadata.pagination.pageSize = studies.length;
-    responseData.metadata.pagination.totalCount = studies.length;
-    responseData.metadata.pagination.totalPages = studies.length === 0 ? 0 : 1;
-
-    return new BiResponse(responseData);
-  }
-
-  static async getAllForTrial(programId: string, trialDbId: string): Promise<Result<Error, BiResponse>> {
-    // Use GET endpoint to get all Studies for a single Trial by external reference.
-    const response = await StudyDAO.getAllPages(programId, { trialDbId });
-
-    return ResultGenerator.success(response);
-  }
-
-  static async getAll(programId: string, paginationQuery: PaginationQuery, full : boolean): Promise<Result<Error, BiResponse>> {
-    try {
-      const response = await StudyDAO.getAllPages(programId, { full });
-
-      return ResultGenerator.success(response);
-        
-    } catch (error) {
-      return ResultGenerator.err(error);
-    }  
-  }
-
-  static async getById(programId: string, studyId: string): Promise<Result<Error, BiResponse>> {
-    try {
-      const { data } = await api.call({
-        url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/brapi/v2/studies`,
-        method: 'get',
-        params: { studyDbId: studyId }
-      }) as Response;
-
-      return ResultGenerator.success(new BiResponse(data));
-        
-    } catch (error) {
-      return ResultGenerator.err(error);
+        return ResultGenerator.success(new BiResponse(data));
     }
-  }
+
+    static async getAll(programId: string, paginationQuery: PaginationQuery, full: boolean): Promise<Result<Error, BiResponse>> {
+        try {
+            const {data} = await api.call({
+                url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/brapi/v2/studies`,
+                method: 'get',
+                params: {
+                    full,
+                    pageSize: 65000
+                }
+            }) as Response;
+
+            return ResultGenerator.success(new BiResponse(data));
+
+        } catch (error) {
+            return ResultGenerator.err(error);
+        }
+    }
+
+    static async getById(programId: string, studyId: string): Promise<Result<Error, BiResponse>> {
+        try {
+            const {data} = await api.call({
+                url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/brapi/v2/studies`,
+                method: 'get',
+                params: {studyDbId: studyId}
+            }) as Response;
+
+            return ResultGenerator.success(new BiResponse(data));
+
+        } catch (error) {
+            return ResultGenerator.err(error);
+        }
+    }
 }
