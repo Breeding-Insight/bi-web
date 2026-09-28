@@ -110,8 +110,8 @@
       >
         {{ displayValue(props.row.data.genotypingImportBy) }}
       </b-table-column>
-      <b-table-column width="150" field="data.genotypeImportId" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-        <b-tooltip label="Download" triggers="['hover', 'focus']" position="is-bottom" content-class="icon-tooltip" type="">
+      <b-table-column field="data.genotypeImportId" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+        <b-tooltip label="Download" triggers="['hover', 'focus']" position="is-bottom" content-class="icon-tooltip">
         <a href="javascript:void(0)" v-on:click="downloadFile(props.row.data)" aria-label="Download"><DownloadIcon></DownloadIcon></a>
         </b-tooltip>
       </b-table-column>

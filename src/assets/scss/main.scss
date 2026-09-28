@@ -1095,8 +1095,13 @@ article.message.is-success *:not(button) {
 
 .icon-tooltip{
   font-weight: bold !important;
-  color: $white;
-  background-color: $tooltip-background;
+  color: $white !important;
+  background-color: $tooltip-background !important;
+  box-shadow: none !important;
+}
+
+.icon-tooltip::before {
+  border-bottom: $tooltip-background !important; //using this hides the default tooltip arrow so it's just a box
 }
 
 
