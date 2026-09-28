@@ -13,12 +13,12 @@
         v-bind:search-debounce="400"
         v-bind:is-show-all-enabled="false"
     >
-      <b-table-column v-if="entryNumberVisible" field="importEntryNumber" label="Entry Number" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
+      <b-table-column v-if="entryNumberVisible" field="importEntryNumber" label="Entry Number" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
         {{ GermplasmUtils.getEntryNumber(props.row.data, referenceId) }}
       </b-table-column>
       <b-table-column field="accessionNumber" label="GID" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
         <GermplasmLink
-            v-bind:germplasmUUID="BrAPIUtils.getBreedingInsightId(props.row.data.externalReferences)"
+            v-bind:germplasmUUID="props.row.data.germplasmDbId"
             v-bind:germplasmGID="props.row.data.accessionNumber"
         >
         </GermplasmLink>
@@ -54,7 +54,7 @@
         {{ props.row.data.additionalInfo.createdBy.userName }}
       </b-table-column>
       <b-table-column v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-        <router-link v-bind:to="{name: 'germplasm-details', params: {programId: activeProgram.id, germplasmId: BrAPIUtils.getBreedingInsightId(props.row.data.externalReferences)}}">
+        <router-link v-bind:to="{name: 'germplasm-details', params: {programId: activeProgram.id, germplasmId: props.row.data.germplasmDbId}}">
           Show Details
         </router-link>
       </b-table-column>

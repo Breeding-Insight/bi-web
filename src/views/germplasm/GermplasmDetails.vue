@@ -146,7 +146,7 @@ import { GermplasmSortField, SortOrder } from '@/breeding-insight/model/Sort';
     BrAPIService.get(BrAPIType.GERMPLASM, programId, { field: GermplasmSortField.AccessionNumber, order: SortOrder.Ascending }, { pageSize: 1, page: 0 }, { accessionNumber: gid }).then((germplasmResult) => {
       // Parse out the germplasm id
       const germplasm = germplasmResult.result.data[0];
-      const germplasmUUID = BrAPIUtils.getBreedingInsightId(germplasm.externalReferences);
+      const germplasmUUID = germplasm.germplasmDbId;
       next({ name: 'germplasm-details', params: { programId, germplasmId: germplasmUUID } });
       return;
     });
