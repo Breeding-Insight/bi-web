@@ -18,7 +18,7 @@
 <template>
   <div class="genotyping">
     <h1 class="title">
-      Genotyping Results
+      Genotypes
     </h1>
     <button
       v-if="$ability.can('create', 'Import')"
