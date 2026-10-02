@@ -51,6 +51,7 @@
         <div class="level-right">
 
           <div class="level-item">
+            <div class="level">
             <div v-if="showFullAffiliations" class="level-item">
               <img
                   src="../../assets/img/IFAS-logo.svg"
@@ -83,6 +84,7 @@
                   alt="USDA Logo"
                   width="75"
               >
+            </div>
             </div>
           </div>
         </div>
