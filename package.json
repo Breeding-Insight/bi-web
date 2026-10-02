@@ -96,5 +96,5 @@
     "vue-cli-plugin-axios": "0.0.4",
     "vue-template-compiler": "^2.7.14"
   },
-  "versionInfo": "https://github.com/Breeding-Insight/bi-web/commit/f1b555d0e86e9d66dca773b6e8b68de770a1975f"
+  "versionInfo": "https://github.com/Breeding-Insight/bi-web/releases/tag/v1.5.0+999"
 }
