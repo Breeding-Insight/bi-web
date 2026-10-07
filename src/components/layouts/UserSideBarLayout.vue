@@ -145,7 +145,7 @@
             >
               <router-link
                 v-bind:id="genotypingMenuId"
-                v-bind:to="{name: 'genotyping', params: {programId: activeProgram.id}}"
+                v-bind:to="{name: 'genotypes', params: {programId: activeProgram.id}}"
               >
                 Genotypes
               </router-link>
