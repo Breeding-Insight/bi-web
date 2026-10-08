@@ -468,10 +468,10 @@ const routes = [
     beforeEnter: processProgramNavigation
   },
   {
-    path: '/programs/:programId/genotyping',
-    name: 'genotyping',
+    path: '/programs/:programId/genotypes',
+    name: 'genotypes',
     meta: {
-      title: 'Genotyping',
+      title: 'Genotypes',
       layout: layouts.userSideBar
     },
     component: Genotyping,
