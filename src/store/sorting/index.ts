@@ -67,7 +67,7 @@ state = {
     germplasmSort: new GermplasmSort(GermplasmSortField.AccessionNumber, SortOrder.Descending),
 
     // germplasm (by list) table
-    germplasmByListSort: new GermplasmSort(GermplasmSortField.ImportEntryNumber, SortOrder.Ascending),
+    germplasmByListSort: new GermplasmSort(GermplasmSortField.ListEntryNumber, SortOrder.Ascending),
 
     // germplasm list table
     germplasmListSort: new GermplasmListSort(GermplasmListSortField.CreatedDate, SortOrder.Descending),

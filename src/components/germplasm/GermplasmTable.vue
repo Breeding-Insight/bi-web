@@ -7,13 +7,13 @@
         v-on:show-error-notification="$emit('show-error-notification', $event)"
         backend-sorting
         backend-filtering
-        v-bind:default-sort="entryNumberVisible ? [fieldMap['importEntryNumber'], 'ASC'] : [fieldMap['accessionNumber'], 'DESC']"
+        v-bind:default-sort="entryNumberVisible ? [fieldMap['listEntryNumber'], 'ASC'] : [fieldMap['accessionNumber'], 'DESC']"
         v-on:sort="setSort"
         v-on:search="initSearch"
         v-bind:search-debounce="400"
         v-bind:is-show-all-enabled="false"
     >
-      <b-table-column v-if="entryNumberVisible" field="importEntryNumber" label="Entry Number" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
+      <b-table-column v-if="entryNumberVisible" field="listEntryNumber" label="Entry Number" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
         {{ GermplasmUtils.getEntryNumber(props.row.data, referenceId) }}
       </b-table-column>
       <b-table-column field="accessionNumber" label="GID" sortable v-slot="props" :th-attrs="(column) => ({scope:'col'})" searchable>
@@ -127,7 +127,7 @@ export default class GermplasmTable extends Vue {
   private germplasmCallStack?: CallStack;
 
   private fieldMap: any = {
-    'importEntryNumber': GermplasmSortField.ImportEntryNumber,
+    'listEntryNumber': GermplasmSortField.ListEntryNumber,
     'accessionNumber': GermplasmSortField.AccessionNumber,
     'defaultDisplayName' : GermplasmSortField.DefaultDisplayName,
     'breedingMethod': GermplasmSortField.BreedingMethod,
