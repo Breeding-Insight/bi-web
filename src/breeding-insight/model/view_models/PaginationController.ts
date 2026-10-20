@@ -41,6 +41,8 @@ export class PaginationController {
   updatePageSize(pageSize: number) {
     this.showAll = false;
     this.updatePageSizeVals(pageSize);
+    // Reset to the first page when the page size changes so we never request a page past the last one
+    this.updatePage(1);
   }
 
   //This route taken to minimize disruption of all the pages that utilize BackendPaginationController
