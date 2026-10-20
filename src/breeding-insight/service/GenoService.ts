@@ -19,6 +19,7 @@ import { GenoDAO } from '@/breeding-insight/dao/GenoDAO';
 import { BiResponse, Metadata } from '@/breeding-insight/model/BiResponse';
 import { ImportResponse } from '@/breeding-insight/model/import/ImportResponse';
 import { GermplasmGenotype } from '@/breeding-insight/model/GermplasmGenotype';
+import { GenotypeCallsPage } from '@/breeding-insight/model/GenotypeCallsPage';
 import { GenotypeImport } from '@/breeding-insight/model/GenotypeImport';
 import { PaginationQuery } from '@/breeding-insight/model/PaginationQuery';
 import { GenotypeImportFilters, GenotypeImportSort } from '@/breeding-insight/model/Sort';
@@ -49,6 +50,27 @@ export class GenoService {
     const resp = await GenoDAO.fetchGenotypeData(programId, germplasmId);
 
     return resp.result as GermplasmGenotype;
+  }
+
+  static async fetchGenotypeCalls(
+      programId: string,
+      germplasmId: string,
+      callSetDbId: string,
+      paginationQuery: PaginationQuery
+  ): Promise<[GenotypeCallsPage, Metadata]> {
+    if (!programId) {
+      throw 'Program ID not provided';
+    }
+    if (!germplasmId) {
+      throw 'germplasm ID not provided';
+    }
+    if (!callSetDbId) {
+      throw 'callset ID not provided';
+    }
+
+    const response = await GenoDAO.fetchGenotypeCalls(programId, germplasmId, callSetDbId, paginationQuery);
+
+    return [new GenotypeCallsPage(response.result as GenotypeCallsPage), response.metadata];
   }
 
   static async fetchGenotypeImports(

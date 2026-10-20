@@ -17,19 +17,16 @@
 
 import { Germplasm } from '@/breeding-insight/brapi/model/germplasm';
 import { CallSet } from '@/breeding-insight/brapi/model/geno/callSet';
-import { Call } from '@/breeding-insight/brapi/model/geno/call';
-import { Variant } from '@/breeding-insight/brapi/model/geno/variant';
 
 export class GermplasmGenotype {
   germplasm?: Germplasm;
   callSets?: Map<string, CallSet>;
-  calls?: Map<string, Array<Call>>;
-  variants?: Map<string, Variant>;
+  // Calls are paged separately via GenoService.fetchGenotypeCalls when enabled on the server
+  callsEnabled?: boolean;
 
-  constructor({germplasm, callSets, calls, variants}: GermplasmGenotype) {
+  constructor({germplasm, callSets, callsEnabled}: GermplasmGenotype) {
     this.germplasm = germplasm;
     this.callSets = callSets;
-    this.calls = calls;
-    this.variants = variants;
+    this.callsEnabled = callsEnabled;
   }
 }

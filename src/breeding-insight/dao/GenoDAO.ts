@@ -44,6 +44,25 @@ export class GenoDAO {
     return new BiResponse(data);
   }
 
+  static async fetchGenotypeCalls(
+      programId: string,
+      germplasmId: string,
+      callSetDbId: string,
+      {page, pageSize}: PaginationQuery
+  ): Promise<BiResponse> {
+    const {data} = await api.call({
+      url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/germplasm/${germplasmId}/genotype/calls`,
+      method: 'get',
+      params: {
+        callSetDbId,
+        page,
+        pageSize
+      }
+    }) as Response;
+
+    return new BiResponse(data);
+  }
+
   static async fetchGenotypeImports(
       programId: string,
       {page, pageSize}: PaginationQuery,
