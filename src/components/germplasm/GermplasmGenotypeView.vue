@@ -111,6 +111,7 @@ import { Program } from '@/breeding-insight/model/Program';
 import { mapGetters } from 'vuex';
 import { GenoService } from '@/breeding-insight/service/GenoService';
 import { PaginationController } from '@/breeding-insight/model/view_models/PaginationController';
+import { PaginationQuery } from '@/breeding-insight/model/PaginationQuery';
 import { Call } from '@/breeding-insight/brapi/model/geno/call';
 import { CallSet } from '@/breeding-insight/brapi/model/geno/callSet';
 import ExpandableTable from '@/components/tables/expandableTable/ExpandableTable.vue';
@@ -234,7 +235,9 @@ export default class GermplasmGenotypeView extends GermplasmBase {
       this.currentVariants = callsPage.variants || {};
       this.updateCallColumns(calls);
       this.currentCalls = calls;
+      // the server may cap pageSize, so record the page actually returned to keep the watcher from refetching
       this.paginationController.setPaginationInfo(metadata.pagination);
+      this.paginationController.setCurrentCall(new PaginationQuery(metadata.pagination.currentPage, metadata.pagination.pageSize, false));
     } catch (e) {
       if(requestId === this.callsRequestId) {
         this.$log.error("An error occurred", e);
