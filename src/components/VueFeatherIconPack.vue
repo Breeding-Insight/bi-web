@@ -27,6 +27,8 @@ import { ArrowDownIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
   ChevronUpIcon,
+  DownloadIcon,
+  UploadIcon,
   LogOutIcon,
   UserIcon} from "vue-feather-icons";
 
@@ -39,7 +41,9 @@ export default {
     ArrowUpIcon,
     ArrowDownIcon,
     LogOutIcon,
-    UserIcon
+    UserIcon,
+    DownloadIcon,
+    UploadIcon
   },
   props: {
     icon: [String, Array],

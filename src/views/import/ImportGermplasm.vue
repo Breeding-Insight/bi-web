@@ -31,7 +31,7 @@
 
       <template v-slot:importInfoTemplateMessageBox>
         <ImportInfoTemplateMessageBox v-bind:import-type-name="'Germplasm'"
-                                      v-bind:template-url="'https://www.dropbox.com/scl/fi/sezsc80x7vxaeor7i8vvn/bi_germplasm_import_template_v11.xls?rlkey=91gf971xi293zqn2x7ago1223&st=46nu0kte&dl=1'"
+                                      v-bind:template-url="'https://www.dropbox.com/scl/fi/nc3h9vzidx4f6eg5fvw8o/bi_germplasm_import_template_v13.xls?rlkey=dxe2r2ijnixy29uyf40cle6k7&st=0o70d7gz&dl=1'"
                                       class="mb-5">
           <strong>Before You Import...</strong>
           <br/>
@@ -81,7 +81,7 @@
             <p>New Germplasm count: {{ statistics.Germplasm.newObjectCount }}</p>
             <p>New Pedigree Connections: {{ statistics["Pedigree Connections"].newObjectCount }}</p>
             <template v-if="duplicatesPresent(rows)">
-              <p>Duplicate names detected and are highlighted in yellow and show a <alert-triangle-icon size="1.2x" class="icon-align"/> icon.</p>
+              <p>Duplicated records detected and highlighted in yellow with a <alert-triangle-icon size="1.2x" class="icon-align"/> icon. If valid GID is specified, the existing record will be referenced in the new list. If no GID is specified, a new record with duplicated name will be created.</p>
             </template>
 
           </div>
@@ -136,7 +136,7 @@
             {{ props.row.data.brAPIObject.additionalInfo.maleParentEntryNo }}
           </b-table-column>
           <b-table-column field="externalUID" label="External UID" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-            {{ ExternalUID.getExternalUIDFromExternalReferences(props.row.data.brAPIObject.externalReferences, props.row.data.brAPIObject.seedSource) }}
+            {{ ExternalUID.getExternalUIDFromExternalReferences(props.row.data.brAPIObject.externalReferences) }}
           </b-table-column>
           <b-table-column field="synonyms" label="Synonyms" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
             {{ GermplasmUtils.formatSynonyms(props.row.data.brAPIObject.synonyms) }}

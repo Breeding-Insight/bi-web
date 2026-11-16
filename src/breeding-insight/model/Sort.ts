@@ -168,6 +168,7 @@ export enum GermplasmSortField {
   Pedigree = "pedigree",
   FemaleParent = "femaleParentGID",
   MaleParent = "maleParentGID",
+  ExternalUID = "externalUID",
   CreatedDate = "createdDate",
   UserName = "createdByUserName"
 }
@@ -214,6 +215,26 @@ export class GermplasmListSort {
   order: SortOrder;
 
   constructor(field: GermplasmListSortField, order: SortOrder) {
+    this.field = field;
+    this.order = order;
+  }
+}
+
+export enum GenotypeImportSortField {
+  ProjectNameForSampleSubmission = 'projectNameForSampleSubmission',
+  SampleSubmissionCreatedBy = 'sampleSubmissionCreatedBy',
+  GenotypingFileName = 'genotypingFileName',
+  GenotypingImportDate = 'genotypingImportDate',
+  GenotypingImportBy = 'genotypingImportBy'
+}
+
+export type GenotypeImportFilters = Partial<Record<GenotypeImportSortField, string>>;
+
+export class GenotypeImportSort {
+  field: GenotypeImportSortField;
+  order: SortOrder;
+
+  constructor(field: GenotypeImportSortField, order: SortOrder) {
     this.field = field;
     this.order = order;
   }

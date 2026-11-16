@@ -44,6 +44,7 @@ $pending: $applegreen;
 $pending-invert: #363636; // $grey-darker
 $error: $red;
 $error-invert: #FFFFFF;
+$tooltip-background: #3C3C3C;
 $custom-colors: (
   "pending": ($pending, $pending-invert), "error": ($error, $error-invert)
 );
@@ -1092,5 +1093,15 @@ article.message.is-success *:not(button) {
   color: mix(black, $success, 70%);
 }
 
+.icon-tooltip{
+  font-weight: bold !important;
+  color: $white !important;
+  background-color: $tooltip-background !important;
+  box-shadow: none !important;
+}
+
+.icon-tooltip::before {
+  border-bottom: $tooltip-background !important; //using this hides the default tooltip arrow so it's just a box
+}
 
 

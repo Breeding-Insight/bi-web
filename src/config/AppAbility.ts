@@ -19,8 +19,8 @@ import {Ability, AbilityClass} from '@casl/ability';
 
 type Actions = 'manage' | 'create' | 'read' | 'update' | 'delete' | 'archive' | 'access' | 'submit';
 type Subjects = 'ProgramUser' | 'Location' | 'User' | 'AdminSection' | 'Trait' | 'Import' | 'ProgramConfiguration' | 'Submission'
-    | 'Experiment' | 'Germplasm' | 'Ontology' | 'SampleManagement' | 'ProgramAdministration' | 'JobManagement' | 'Collaborator' | 'BrAPI'
-    | 'List';
+    | 'Experiment' | 'Germplasm' | 'Ontology' | 'SampleManagement' | 'Genotyping' | 'ProgramAdministration' | 'JobManagement' | 'Collaborator' | 'BrAPI'
+    | 'SubEntityDataset' | 'List';
 
 export type AppAbility = Ability<[Actions, Subjects]>;
 export const AppAbility = Ability as AbilityClass<AppAbility>;

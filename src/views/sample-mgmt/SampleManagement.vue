@@ -16,89 +16,83 @@
   -->
 
 <template>
-  <div class="container sample-mgmt">
-    <div class="columns is-centered">
-      <div class="column">
-        <h3 class="is-4 title">Sample Management</h3>
-        <div class="columns">
-          <div class="column is-whole has-text-right buttons">
-            <button
-                v-if="$ability.can('create', 'Import')"
-                class="button is-primary"
-                v-on:click="$router.push({name: 'sample-import', params: {programId: activeProgram.id}})"
-            >
-              <span class="icon is-small">
-                <PlusCircleIcon
-                    size="1.5x"
-                    aria-hidden="true"
-                />
-              </span>
-                    <span>
-                Import Sample Submission
-              </span>
-            </button>
-          </div>
-        </div>
+  <div class="sample-mgmt">
+    <h1 class="title">
+      Sample Management
+    </h1>
+    <button
+      v-if="$ability.can('create', 'Import')"
+      class="button is-primary is-pulled-right has-text-weight-bold"
+      v-on:click="$router.push({name: 'sample-import', params: {programId: activeProgram.id}})"
+    >
+      <span class="icon is-small">
+        <PlusCircleIcon
+          size="1.5x"
+          aria-hidden="true"
+        />
+      </span>
+      <span>
+        Import Sample Submission
+      </span>
+    </button>
 
+    <div class="is-clearfix" />
 
-        <ExpandableTable
-            v-bind:records.sync="submissions"
-            v-bind:loading="loading"
-            v-bind:pagination="paginationController"
-            v-bind:default-sort="['data.createdAt', 'desc']"
-            v-bind:debounce-search="400"
-            v-bind:editable="false"
+    <ExpandableTable
+      v-bind:records.sync="submissions"
+      v-bind:loading="loading"
+      v-bind:pagination="paginationController"
+      v-bind:default-sort="['data.createdAt', 'desc']"
+      v-bind:debounce-search="400"
+      v-bind:editable="false"
+    >
+      <b-table-column field="data.name" label="Project Name" sortable searchable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+        <router-link v-bind:to="{name: 'submission-details', params: {programId: activeProgram.id, submissionId: props.row.data.id}}">
+          {{ props.row.data.name }}
+        </router-link>
+      </b-table-column>
+      <b-table-column field="data.createdAt" label="Created Date" sortable searchable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+        {{ props.row.data.createdAt }}
+      </b-table-column>
+      <b-table-column field="data.createdByUser.name" label="Created By" sortable searchable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+        {{ props.row.data.createdByUser.name }}
+      </b-table-column>
+      <b-table-column field="data.submitted" label="Submission Status" sortable searchable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+        <span
+          v-if="props.row.data.vendorStatus"
+          class="tag"
+          :class="statusTagType()"
         >
+          {{ props.row.data.submitted ? "SUBMITTED" : "NOT SUBMITTED" }}
+        </span>
+      </b-table-column>
+      <b-table-column field="data.submittedDate" label="Submitted Date" sortable searchable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+        {{ props.row.data.submittedDate }}
+      </b-table-column>
+      <b-table-column field="data.vendorOrderId" label="Vendor Order ID" sortable searchable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+        {{ props.row.data.vendorOrderId }}
+      </b-table-column>
+      <b-table-column field="data.vendorStatus" label="Vendor Status" sortable searchable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+        <span
+          v-if="props.row.data.vendorStatus"
+          class="tag"
+          :class="statusTagType(props.row.data.vendorStatus)"
+        >
+          {{ props.row.data.vendorStatus }}
+        </span>
+      </b-table-column>
+      <b-table-column field="buttons" label="" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
+        <router-link v-bind:to="{name: 'submission-details', params: {programId: activeProgram.id, submissionId: props.row.data.id}}">
+          Details
+        </router-link>
+      </b-table-column>
 
-          <b-table-column field="data.name" label="Project Name" sortable searchable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-            <router-link v-bind:to="{name: 'submission-details', params: {programId: activeProgram.id, submissionId: props.row.data.id}}">
-              {{ props.row.data.name }}
-            </router-link>
-          </b-table-column>
-          <b-table-column field="data.createdAt" label="Created Date" sortable searchable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-            {{ props.row.data.createdAt }}
-          </b-table-column>
-          <b-table-column field="data.createdByUser.name" label="Created By" sortable searchable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-            {{ props.row.data.createdByUser.name }}
-          </b-table-column>
-          <b-table-column field="data.submitted" label="Submission Status" sortable searchable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-            <span
-                v-if="props.row.data.vendorStatus"
-                class="tag"
-                :class="statusTagType()"
-            >
-            {{ props.row.data.submitted ? "SUBMITTED" : "NOT SUBMITTED" }}
-            </span>
-          </b-table-column>
-          <b-table-column field="data.submittedDate" label="Submitted Date" sortable searchable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-            {{ props.row.data.submittedDate }}
-          </b-table-column>
-          <b-table-column field="data.vendorOrderId" label="Vendor Order ID" sortable searchable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-            {{ props.row.data.vendorOrderId }}
-          </b-table-column>
-          <b-table-column field="data.vendorStatus" label="Vendor Status" sortable searchable v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-            <span
-                v-if="props.row.data.vendorStatus"
-                class="tag"
-                :class="statusTagType(props.row.data.vendorStatus)"
-            >
-            {{ props.row.data.vendorStatus }}
-            </span>
-          </b-table-column>
-          <b-table-column field="buttons" label="" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
-            <router-link v-bind:to="{name: 'submission-details', params: {programId: activeProgram.id, submissionId: props.row.data.id}}">
-              Details
-            </router-link>
-          </b-table-column>
-
-          <template v-slot:emptyMessage>
-            <p class="has-text-weight-bold">
-              No samples have been submitted
-            </p>
-          </template>
-        </ExpandableTable>
-      </div>
-    </div>
+      <template v-slot:emptyMessage>
+        <p class="has-text-weight-bold">
+          No samples have been submitted
+        </p>
+      </template>
+    </ExpandableTable>
   </div>
 </template>
 

@@ -27,7 +27,7 @@
       <div class="column">
         <label for="callsets">Callsets: </label>
         <div class="select">
-          <select name="callsets" v-model="currentCallSetId" v-on:change="switchCallset($event.target.value)">
+          <select id="callsets" name="callsets" v-model="currentCallSetId" v-on:change="switchCallset($event.target.value)">
             <option v-for="callset in callsetOptions"
                     v-bind:key="callset.callSetDbId"
                     :value="callset.callSetDbId">
@@ -37,7 +37,8 @@
         </div>
       </div>
     </div>
-    <div class="columns metadata" v-if="!loading">
+    <!-- Genotypic Data Visualization Deprecated due to high memory usage, will revisit later -->
+    <!--<div class="columns metadata" v-if="!loading">
       <div class="column">
         <div v-for="metadata in currentMetadataColumns" :key="metadata.fieldAbbreviation">
           <span class="abbreviation has-text-weight-bold">{{ metadata.fieldAbbreviation }}:</span><span class="name">{{ metadata.fieldName }}</span>
@@ -72,7 +73,7 @@
       <b-table-column field="variantPosition"  label="Position" sortable :customSearch="(row, position) => filterVariantPosition(row, position)" :customSort="sortVariantPosition" :th-attrs="(column) => ({scope:'col'})">
         <template v-slot="props">
           {{ getVariant(props.row.data.variantDbId).start }}
-        </template>
+        </template> -->
 <!--        TODO plan for how to filter by position -->
 <!--        <template v-slot:searchable="props">-->
 <!--          <MultiSelectDropdown-->
@@ -81,7 +82,7 @@
 <!--              v-bind:multiple="true"-->
 <!--            />-->
 <!--        </template>-->
-      </b-table-column>
+<!--      </b-table-column>
       <b-table-column label="Ref" v-slot="props" :th-attrs="(column) => ({scope:'col'})">
         <span class="tag is-success">
             {{ getVariant(props.row.data.variantDbId).referenceBases }}
@@ -122,7 +123,7 @@
           No genotype has been recorded
         </p>
       </template>
-    </ExpandableTable>
+    </ExpandableTable> -->
   </div>
 </template>
 
@@ -182,6 +183,13 @@ export default class GermplasmGenotypeView extends GermplasmBase {
     }
 
     this.currentCallSetId = callsetId;
+
+    //Currently for memory usage fetching data visualization is deprecated and so calls aren't retrieved, which results in a null error.
+    //This skips functionality dependent on calls while keeping the code for future implementations o
+    if (!this.genotypeData!.calls!) {
+      this.loading = false;
+      return;
+    }
     const callsByCallset: Map<string, Array<Call>> = new Map(Object.entries(this.genotypeData!.calls!));
     const callSet = callsByCallset.get(callsetId);
 

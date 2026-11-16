@@ -76,7 +76,7 @@
                       v-bind:action-menu-items=actions
                       v-on:import-file="importFile()"
                       v-on:download-file="exportDArTFile()"
-                      v-on:download-lookup-file="exportLookupFile()"
+                      v-on:download-sample-submission="exportSampleSubmission()"
                       v-on:submit="startOrderSubmission()"
                       v-on:manual-update-status="startManualUpdate()"
                       v-on:check-status="checkVendorStatus()"
@@ -166,7 +166,7 @@
               v-on:show-error-notification="$emit('show-error-notification', $event)"
               v-bind:is-show-all-enabled="false"
               sort-multiple
-              :sort-multiple-data="[{field:'data.plateName', order:'asc'}, {field:'data.row', order:'asc'}, {field:'data.column', order:'asc'}]"
+              :sort-multiple-data="[{field:'data.plateName', order:'asc'}, {field:'data.column', order:'asc'}, {field:'data.row', order:'asc'}]"
           >
             <b-table-column field="data.additionalInfo.germplasmName" label="Germplasm Name" v-slot="props" searchable
                             :th-attrs="(column) => ({scope:'col'})">
@@ -461,7 +461,7 @@ export default class SubmissionDetails extends ProgramsBase {
     }
 
     actionsMenuItems.push(new ActionMenuItem('submission-download-file', 'download-file', 'Generate and Download DArT file'));
-    actionsMenuItems.push(new ActionMenuItem('submission-download-lookup-file', 'download-lookup-file', 'Download Lookup file'));
+    actionsMenuItems.push(new ActionMenuItem('submission-download-sample-submission', 'download-sample-submission', 'Download Sample Submission'));
 
     if (this.$ability.can('submit', 'Submission') && !this.submission!.vendorOrderId) {
       actionsMenuItems.push(new ActionMenuItem('submission-manual-update-status', 'manual-update-status', 'Manually Update Status'));
@@ -580,6 +580,18 @@ export default class SubmissionDetails extends ProgramsBase {
           + '/submissions/'
           + this.submissionId
           + '/dart',
+          '_blank');
+    }
+  }
+
+  private exportSampleSubmission(){
+    if (this.activeProgram) {
+      window.open(process.env.VUE_APP_BI_API_ROOT
+          + '/v1/programs/'
+          + this.activeProgram.id
+          + '/submissions/'
+          + this.submissionId
+          + '/export',
           '_blank');
     }
   }
@@ -764,7 +776,7 @@ export default class SubmissionDetails extends ProgramsBase {
           const response = result.value.response;
 
           if (response && response.status === 405) {
-            this.$emit('show-error-notification', `Cannot delete a submission with submitted or completed status`);
+            this.$emit('show-error-notification', response.data);
             return;
           }
           this.$emit('show-error-notification', `Unknown error deleting submission`);

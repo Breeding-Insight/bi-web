@@ -48,7 +48,12 @@
               </div>
               <div class="level-item  ml-2">
                 <div>
-                  <button class="button is-outlined" v-on:click="abort">Abort</button>
+                  <button
+                      class="button is-outlined"
+                      v-on:click="abort"
+                      v-bind:disabled="confirmImportState.saveStarted">
+                    Abort
+                  </button>
                 </div>
               </div>
             </div>

@@ -18,6 +18,7 @@
 import moment from "moment";
 import {Germplasm} from "@/breeding-insight/brapi/model/germplasm";
 import {MOMENT_BRAPI_DATE_FORMAT} from "@/breeding-insight/utils/BrAPIDateTime";
+import {ExternalReferences} from "@/breeding-insight/brapi/model/externalReferences";
 
 // The moment.js interpretable format for Date values sent and received via the BI API.
 export const MOMENT_DATE_PERSISTED_FORMAT = 'DD/MM/YYYY h:mm:ss';
@@ -25,8 +26,8 @@ export const MOMENT_DATE_PERSISTED_FORMAT = 'DD/MM/YYYY h:mm:ss';
 export class GermplasmUtils {
     static getExternalUID(germplasm: Germplasm): string | undefined {
         let val;
-        if (germplasm.externalReferences && germplasm.seedSource) {
-            val = germplasm.externalReferences!.filter(ref => ref.referenceSource == germplasm.seedSource!)
+        if (germplasm.externalReferences) {
+            val = germplasm.externalReferences!.filter(ref => ref.referenceSource == "External UID")
                 .map(ref => ref.referenceID);
             return val ? val[0]: "";
         }

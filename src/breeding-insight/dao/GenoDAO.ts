@@ -17,17 +17,18 @@
 
 import * as api from '@/util/api';
 import { BiResponse, Response } from '@/breeding-insight/model/BiResponse';
+import { PaginationQuery } from '@/breeding-insight/model/PaginationQuery';
+import { GenotypeImportFilters, GenotypeImportSort } from '@/breeding-insight/model/Sort';
 
 export class GenoDAO {
 
-  static async uploadData(programId: string, experimentId: string, file: File): Promise<any> {
+  static async uploadData(programId: string, submissionId: string, file: File): Promise<any> {
 
     var formData = new FormData();
     formData.append("file", file);
-    formData.append("filename", file.name);
 
     const {data} = await api.call({
-      url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/experiments/${experimentId}/geno/import`,
+      url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/submissions/${submissionId}/geno/import`,
       method: 'post', data: formData}
     ) as Response;
 
@@ -38,6 +39,27 @@ export class GenoDAO {
     const {data} = await api.call({
       url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/germplasm/${germplasmId}/genotype`,
       method: 'get'
+    }) as Response;
+
+    return new BiResponse(data);
+  }
+
+  static async fetchGenotypeImports(
+      programId: string,
+      {page, pageSize}: PaginationQuery,
+      {field, order}: GenotypeImportSort,
+      filters: GenotypeImportFilters
+  ): Promise<BiResponse> {
+    const {data} = await api.call({
+      url: `${process.env.VUE_APP_BI_API_V1_PATH}/programs/${programId}/geno/imports`,
+      method: 'get',
+      params: {
+        ...filters,
+        page,
+        pageSize,
+        sortField: field,
+        sortOrder: order
+      }
     }) as Response;
 
     return new BiResponse(data);
