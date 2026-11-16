@@ -1038,6 +1038,8 @@ tr:nth-child(odd) td.db-filled {
 .experiment-details {
   padding: 0;
   margin-bottom: 1.5rem;
+  // Same indent as the dataset tabs and .tab-content below it.
+  margin-left: 2em;
   // Flat, like the tabs, table and dataset summary around it.
   border: 1px solid $grey-lighter;
   box-shadow: none;
