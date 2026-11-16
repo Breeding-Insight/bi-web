@@ -37,7 +37,7 @@
                 }"
                 v-bind:class="{activesort: column.isSortable && column.currentSortField === column.sortLabel,
                                sortcolumn: column.isSortable}"
-                v-on:click="column.changeSortColumn(column.sortLabel)"
+                v-on:click="onHeaderClick(column)"
             >
               {{ column.label }}
               <span
@@ -162,6 +162,14 @@
 
       if (!repeated) {
         this.updatedColumns.push(column);
+      }
+    }
+
+    // Tells the parent the sort changed, so a bounded table can return to its first row.
+    onHeaderClick(column: TableColumn) {
+      column.changeSortColumn(column.sortLabel);
+      if (column.isSortable) {
+        this.$emit('sort-click', column.sortLabel);
       }
     }
 

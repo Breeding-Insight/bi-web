@@ -15,18 +15,39 @@
  * limitations under the License.
  */
 
-import {PaginationController} from "@/breeding-insight/model/view_models/PaginationController";
+/**
+ * The pagination fields the range needs. Both PaginationController and the server's Pagination have
+ * them; only PaginationController has showAll.
+ */
+export interface TablePageState {
+  currentPage: number;
+  pageSize: number;
+  totalCount: number;
+  showAll?: boolean;
+}
 
 /**
  * The rows a paginated table is showing: rows start to end of total (1-based), or all of them.
+ *
+ * When the table's own column filters narrow a single page of server results, the filter only sees
+ * that page: matchedOnPage of the page's pageCount rows match, and total is the server's total.
  */
 export class TableResultRange {
   constructor(
     public readonly start: number,
     public readonly end: number,
     public readonly total: number,
-    public readonly showAll: boolean
+    public readonly showAll: boolean,
+    public readonly matchedOnPage: number | null = null,
+    public readonly pageCount: number | null = null
   ) {}
+
+  static readonly EMPTY = new TableResultRange(0, 0, 0, false);
+
+  /** True when a column filter is narrowing one page of server results. */
+  get filteredOnPage(): boolean {
+    return this.matchedOnPage !== null;
+  }
 
   /**
    * Works out the range for a table whose records are either one page from the server, or every
@@ -36,29 +57,38 @@ export class TableResultRange {
    * @param recordCount the number of records passed to the table
    * @param filteredCount the number of records left after the table's own (client-side) filters
    */
-  static of(pagination: PaginationController, recordCount: number, filteredCount: number): TableResultRange {
+  static of(pagination: TablePageState, recordCount: number, filteredCount: number): TableResultRange {
     const pageSize = Math.max(pagination.pageSize, 1);
+    const showAll = !!pagination.showAll;
     // The server holds more rows than it sent, so the records are a single page of server results.
     const serverPaged = pagination.totalCount > recordCount;
-    const total = serverPaged ? pagination.totalCount : filteredCount;
 
-    if (total === 0) {
-      return new TableResultRange(0, 0, 0, pagination.showAll);
-    }
-
-    let start: number;
-    let end: number;
     if (serverPaged) {
-      start = (pagination.currentPage - 1) * pageSize + 1;
-      end = Math.min(start + recordCount - 1, total);
-    } else if (total <= pageSize) {
-      // Matches Buefy, which shows every row when they all fit on one page, whatever the current page.
-      start = 1;
-      end = total;
-    } else {
-      start = (pagination.currentPage - 1) * pageSize + 1;
-      end = Math.min(start + pageSize - 1, total);
+      // No rows yet, e.g. while the next page loads: say nothing rather than a range that isn't there.
+      if (recordCount === 0) {
+        return TableResultRange.EMPTY;
+      }
+      const total = pagination.totalCount;
+      if (filteredCount < recordCount) {
+        return new TableResultRange(0, 0, total, showAll, filteredCount, recordCount);
+      }
+      const start = Math.min((Math.max(pagination.currentPage, 1) - 1) * pageSize + 1, total);
+      const end = Math.max(Math.min(start + recordCount - 1, total), start);
+      return new TableResultRange(start, end, total, showAll);
     }
-    return new TableResultRange(start, end, total, pagination.showAll);
+
+    const total = filteredCount;
+    if (total === 0) {
+      return new TableResultRange(0, 0, 0, showAll);
+    }
+    if (showAll || total <= pageSize) {
+      // Matches Buefy, which shows every row when they all fit on one page, whatever the current page.
+      return new TableResultRange(1, total, total, showAll);
+    }
+    const lastPage = Math.ceil(total / pageSize);
+    const page = Math.min(Math.max(pagination.currentPage, 1), lastPage);
+    const start = (page - 1) * pageSize + 1;
+    const end = Math.min(start + pageSize - 1, total);
+    return new TableResultRange(start, end, total, showAll);
   }
 }

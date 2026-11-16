@@ -32,6 +32,7 @@ import { RoleDAO } from '@/breeding-insight/dao/RoleDAO';
 import { UserDAO } from '@/breeding-insight/dao/UserDAO';
 import ExpandableTable from '@/components/tables/expandableTable/ExpandableTable.vue';
 import BasicSelectField from '@/components/forms/BasicSelectField.vue';
+import { PaginationController } from '@/breeding-insight/model/view_models/PaginationController';
 
 jest.mock('@/breeding-insight/dao/ProgramUserDAO');
 jest.mock('@/breeding-insight/dao/RoleDAO');
@@ -369,3 +370,25 @@ async function openEditForm(wrapper: Wrapper<any>) {
   let editForm = wrapper.findComponent(EditDataRowForm);
   expect(editForm.exists()).toBeTruthy();
 }
+
+describe('Expandable table bounds its height by default', () => {
+
+  function mountTable(propsData: object = {}) {
+    return mount(ExpandableTable, {
+      localVue,
+      propsData: {records: [], loading: false, pagination: new PaginationController(), ...propsData}
+    });
+  }
+
+  it('Pins the header in a bounded scroll box by default', () => {
+    const wrapper = mountTable();
+    expect(wrapper.classes()).toContain('bounded-table');
+    expect(wrapper.find('.table-wrapper').classes()).toContain('has-sticky-header');
+  });
+
+  it('Opts out with bounded set to false', () => {
+    const wrapper = mountTable({bounded: false});
+    expect(wrapper.classes()).not.toContain('bounded-table');
+    expect(wrapper.find('.table-wrapper').classes()).not.toContain('has-sticky-header');
+  });
+});

@@ -24,4 +24,10 @@ export class StringFormatters {
     return undefined;
   }
 
+  /** A count with thousands separators, e.g. 25218 as "25,218". Values that aren't numbers pass through. */
+  static formatCount(value: number | string): string {
+    const count = Number(value);
+    return value === '' || isNaN(count) ? String(value) : count.toLocaleString('en-US');
+  }
+
 }

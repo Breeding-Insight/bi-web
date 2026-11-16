@@ -56,6 +56,7 @@
               v-bind:range="resultRange"
               v-bind:record-noun="recordNoun"
               v-bind:record-noun-singular="recordNounSingular"
+              v-bind:loading="loading"
           />
           <b-table
               :class="{'loading-active': loading}"
@@ -94,7 +95,6 @@
             <template v-slot:pagination>
                 <pagination-controls
                   v-show="records.length > 0"
-                  class="bounded-table-controls"
                   v-bind="$props"
                   v-on:paginate="paginate"
                   v-on:paginate-toggle-all="toggleShowAll"
@@ -129,7 +129,6 @@
       v-if="bounded"
       ref="floatingScrollbar"
       v-bind:scroll-target="boundedScrollElement"
-      v-bind:bottom-offset="boundedPinnedControlsHeight"
     />
   </div>
 </template>
@@ -269,7 +268,7 @@ export default class SidePanelTableBuefy extends Mixins(ValidationMixin, Bounded
   }
 
   mounted() {
-    this.watchBuefyTable(this.$refs[this.tableRef] as Vue);
+    this.watchBuefyTable(this.$refs[this.tableRef] as Vue | undefined);
   }
 
   get resultRange(): TableResultRange {

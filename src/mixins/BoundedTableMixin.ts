@@ -16,6 +16,7 @@
  */
 
 import {Component, Prop, Vue} from 'vue-property-decorator'
+import {FrameThrottle, LayoutUtils} from '@/breeding-insight/utils/LayoutUtils';
 
 // Smallest box worth scrolling in; below this the box fills the window under the header instead.
 const MIN_BOX_HEIGHT_PX = 320;
@@ -24,10 +25,10 @@ const BOTTOM_GAP_PX = 16;
 
 // The parts of Buefy's b-table internal state that watchBuefyTable() follows.
 interface BuefyTableState {
-  newData: Array<any>;
-  filters: object;
-  currentSortColumn: object;
-  isAsc: boolean;
+  newData?: Array<any>;
+  filters?: object;
+  currentSortColumn?: object;
+  isAsc?: boolean;
 }
 
 /**
@@ -37,7 +38,8 @@ interface BuefyTableState {
  * A table shorter than the box looks as it would unbounded. A taller one scrolls inside the box,
  * with the header pinned by the .bounded-table styles in main.scss. The box is sized so that, on
  * load, its bottom edge and the page controls under it fit in the window. If the table starts too
- * far down the page for that, the box fills the window below the sticky DeltaBreed header instead.
+ * far down the page for that, the box fills the window below the sticky DeltaBreed header instead,
+ * and FloatingScrollbar stands in for its horizontal scrollbar until the page is scrolled down.
  *
  * Opt out with :bounded="false" where the table already sits inside something that scrolls, such as
  * a modal.
@@ -52,9 +54,8 @@ export default class BoundedTableMixin extends Vue {
   filteredRecordCount: number = 0;
 
   private boundedMaxHeight: number | null = null;
-  private boundedFrame: number | null = null;
-  private pinFrame: number | null = null;
-  private pageResizeObserver: { observe: (el: Element) => void, disconnect: () => void } | null = null;
+  private boundedResize: FrameThrottle | null = null;
+  private stopPageResize: (() => void) | null = null;
 
   get boundedStyle(): { [key: string]: string } {
     return this.bounded && this.boundedMaxHeight !== null
@@ -78,6 +79,13 @@ export default class BoundedTableMixin extends Vue {
     return height;
   }
 
+  /** The element that scrolls, for FloatingScrollbar's scroll-target. */
+  boundedScrollElement(): HTMLElement | null {
+    return this.$el instanceof HTMLElement
+      ? this.$el.querySelector(this.boundedScrollSelector()) as HTMLElement | null
+      : null;
+  }
+
   /** Scrolls the box back to its first row, after a change of page, page size, sort or filter. */
   scrollBoundedToTop() {
     const scrollElement = this.boundedScrollElement();
@@ -91,89 +99,34 @@ export default class BoundedTableMixin extends Vue {
    * first row when the sort or a column filter changes. Buefy only emits filters-change for backend
    * filtering, so the table's state is watched instead of its events. Call once the table is mounted.
    */
-  watchBuefyTable(table: Vue) {
+  watchBuefyTable(table: Vue | undefined) {
+    if (!table) return;
     const state = table as unknown as BuefyTableState;
-    this.$watch(() => state.newData.length, (count: number) => {
+    this.$watch(() => (state.newData ? state.newData.length : 0), (count: number) => {
       this.filteredRecordCount = count;
     }, {immediate: true});
-    this.$watch(() => [state.currentSortColumn, state.isAsc, JSON.stringify(state.filters)], () => {
+    this.$watch(() => [state.currentSortColumn, state.isAsc, JSON.stringify(state.filters || {})], () => {
       this.scrollBoundedToTop();
     });
   }
 
   mounted() {
+    this.boundedResize = LayoutUtils.frameThrottle(() => this.updateBoundedMaxHeight());
     window.addEventListener('resize', this.scheduleBoundedResize);
-    window.addEventListener('scroll', this.schedulePinControls, {passive: true});
-    // Content elsewhere on the page, such as details collapsed above the table, can move the box
-    // without this component updating; the page's height changes when it does. ResizeObserver is in
-    // every supported browser, but not in this TypeScript version's DOM types.
-    const ResizeObserverClass = (window as any).ResizeObserver;
-    if (ResizeObserverClass) {
-      this.pageResizeObserver = new ResizeObserverClass(() => this.scheduleBoundedResize());
-      this.pageResizeObserver!.observe(document.body);
-    }
-    this.scheduleBoundedResize();
-  }
-
-  updated() {
-    // Rows, page controls or content above the table may have changed.
+    // Rows loading, page controls appearing, or content above the table collapsing all change the
+    // page's size, and may move the box or change the room it has.
+    this.stopPageResize = LayoutUtils.onPageResize(this.scheduleBoundedResize);
     this.scheduleBoundedResize();
   }
 
   beforeDestroy() {
     window.removeEventListener('resize', this.scheduleBoundedResize);
-    window.removeEventListener('scroll', this.schedulePinControls);
-    if (this.pageResizeObserver) {
-      this.pageResizeObserver.disconnect();
-    }
-    if (this.boundedFrame !== null) {
-      window.cancelAnimationFrame(this.boundedFrame);
-    }
-    if (this.pinFrame !== null) {
-      window.cancelAnimationFrame(this.pinFrame);
-    }
-  }
-
-  /** The table's page controls, marked with the bounded-table-controls class, while they are shown. */
-  boundedControlsElement(): HTMLElement | null {
-    const controls = this.$el instanceof HTMLElement
-      ? this.$el.querySelector('.bounded-table-controls') as HTMLElement | null
-      : null;
-    // offsetParent is null while the controls or the table are hidden.
-    return controls && controls.offsetParent !== null ? controls : null;
-  }
-
-  /**
-   * Height of the page controls while pinControls() holds them at the bottom of the window, or 0.
-   * Worked out from where the layout puts the controls, not where they have been moved to, so it
-   * gives the same answer whether or not they have been moved yet in this frame. FloatingScrollbar
-   * sits this far up from the bottom of the window.
-   */
-  boundedPinnedControlsHeight(): number {
-    const controls = this.boundedControlsElement();
-    const scrollElement = this.boundedScrollElement();
-    if (!this.bounded || !controls || !scrollElement) return 0;
-
-    const height = controls.offsetHeight;
-    const layoutBottom = BoundedTableMixin.layoutBottom(controls);
-    const belowWindow = layoutBottom > window.innerHeight;
-    const boxOnScreen = scrollElement.getBoundingClientRect().top < window.innerHeight - height;
-    return belowWindow && boxOnScreen ? height : 0;
-  }
-
-  /** The element that scrolls, for FloatingScrollbar's scroll-target. */
-  boundedScrollElement(): HTMLElement | null {
-    return this.$el instanceof HTMLElement
-      ? this.$el.querySelector(this.boundedScrollSelector()) as HTMLElement | null
-      : null;
+    if (this.stopPageResize) this.stopPageResize();
+    if (this.boundedResize) this.boundedResize.cancel();
   }
 
   private scheduleBoundedResize() {
-    if (!this.bounded || this.boundedFrame !== null) return;
-    this.boundedFrame = window.requestAnimationFrame(() => {
-      this.boundedFrame = null;
-      this.updateBoundedMaxHeight();
-    });
+    if (this.bounded && this.boundedResize) this.boundedResize.schedule();
   }
 
   private updateBoundedMaxHeight() {
@@ -203,51 +156,6 @@ export default class BoundedTableMixin extends Vue {
     if (maxHeight !== this.boundedMaxHeight) {
       this.boundedMaxHeight = maxHeight;
     }
-
-    // Content above the table, its rows or its page size may have moved the box and its controls.
-    this.schedulePinControls();
-  }
-
-  private schedulePinControls() {
-    if (!this.bounded || this.pinFrame !== null) return;
-    this.pinFrame = window.requestAnimationFrame(() => {
-      this.pinFrame = null;
-      this.pinControls();
-    });
-  }
-
-  /**
-   * While the box is on screen but its page controls are below the window, moves the controls up to
-   * the bottom of the window, so paging stays in reach on pages where content above the table pushes
-   * the box down. A transform leaves the layout alone, so nothing else on the page moves.
-   */
-  private pinControls() {
-    const controls = this.boundedControlsElement();
-    if (controls) {
-      const pinnedHeight = this.boundedPinnedControlsHeight();
-      const shift = pinnedHeight > 0 ? Math.round(BoundedTableMixin.layoutBottom(controls) - window.innerHeight) : 0;
-      if (shift !== BoundedTableMixin.pinShift(controls)) {
-        controls.style.transform = shift > 0 ? `translateY(-${shift}px)` : '';
-        controls.dataset.pinShift = String(shift);
-        controls.classList.toggle('is-pinned', shift > 0);
-      }
-    }
-
-    const floatingScrollbar = this.$refs.floatingScrollbar as Vue & { scheduleUpdate?: () => void } | undefined;
-    if (floatingScrollbar && floatingScrollbar.scheduleUpdate) {
-      floatingScrollbar.scheduleUpdate();
-    }
-  }
-
-  // How far pinControls() has moved the controls up from where the layout puts them. Kept on the
-  // element, so a re-rendered one starts from 0.
-  private static pinShift(controls: HTMLElement): number {
-    return Number(controls.dataset.pinShift || '0');
-  }
-
-  // Bottom edge of the controls, relative to the window, where the layout puts them.
-  private static layoutBottom(controls: HTMLElement): number {
-    return controls.getBoundingClientRect().top + BoundedTableMixin.pinShift(controls) + controls.offsetHeight;
   }
 
   private static outerHeight(element: HTMLElement): number {

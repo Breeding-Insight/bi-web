@@ -360,8 +360,7 @@ export default class Dataset extends ProgramsBase {
 
   // Thousands separators, as in the table's result count.
   formatCount(count: number | string): string {
-    const value = Number(count);
-    return isNaN(value) ? String(count) : value.toLocaleString('en-US');
+    return StringFormatters.formatCount(count);
   }
 
   // Total observations

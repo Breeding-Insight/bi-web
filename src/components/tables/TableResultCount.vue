@@ -17,7 +17,7 @@
 
 <template>
   <p
-    v-if="range.total > 0"
+    v-if="!loading && range.total > 0"
     class="table-result-count"
     aria-live="polite"
   >
@@ -28,6 +28,7 @@
 <script lang="ts">
 import {Component, Prop, Vue} from 'vue-property-decorator'
 import {TableResultRange} from '@/breeding-insight/model/view_models/TableResultRange';
+import {StringFormatters} from '@/breeding-insight/utils/StringFormatters';
 
 /**
  * The line above a table saying which rows it shows, e.g. "Showing 1–200 of 2,000 observation units".
@@ -43,21 +44,28 @@ export default class TableResultCount extends Vue {
   // Singular of recordNoun, e.g. "observation unit". Defaults to recordNoun.
   @Prop()
   recordNounSingular?: string;
+  // Hides the line while the table's rows are loading.
+  @Prop({default: false})
+  loading!: boolean;
 
   get message(): string {
-    const total = TableResultCount.formatNumber(this.range.total);
-    const noun = this.range.total === 1 && this.recordNounSingular ? this.recordNounSingular : this.recordNoun;
+    const format = StringFormatters.formatCount;
+    const total = format(this.range.total);
+    if (this.range.filteredOnPage) {
+      const matched = this.range.matchedOnPage as number;
+      return `Showing ${format(matched)} matching ${this.noun(matched)} of the ${format(this.range.pageCount as number)} on this page (${total} in all)`;
+    }
+    const noun = this.noun(this.range.total);
     if (this.range.showAll) {
       return `Showing all ${total} ${noun}`;
     }
-    const start = TableResultCount.formatNumber(this.range.start);
-    const end = TableResultCount.formatNumber(this.range.end);
-    const shown = this.range.start === this.range.end ? start : `${start}–${end}`;
+    const start = format(this.range.start);
+    const shown = this.range.start === this.range.end ? start : `${start}–${format(this.range.end)}`;
     return `Showing ${shown} of ${total} ${noun}`;
   }
 
-  private static formatNumber(value: number): string {
-    return value.toLocaleString('en-US');
+  private noun(count: number): string {
+    return count === 1 && this.recordNounSingular ? this.recordNounSingular : this.recordNoun;
   }
 }
 </script>

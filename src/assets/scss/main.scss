@@ -596,26 +596,6 @@ table tr.is-edited + .detail {
       background-color: $white;
     }
   }
-
-  // The gap above the page controls is theirs rather than the box's, so it stays the same whether
-  // they sit under the box or BoundedTableMixin has pinned them to the bottom of the window under the
-  // floating scrollbar. Pinning must not change their size, so the pinned edge is a shadow, not a border.
-  .table-wrapper.has-sticky-header:not(:last-child) {
-    margin-bottom: 0;
-  }
-
-  // Covers the rows the controls pass over while pinned: above the pinned header (2), below the
-  // sticky .main-header (30).
-  .bounded-table-controls {
-    position: relative;
-    z-index: 20;
-    padding-top: 0.75rem;
-    background-color: $white;
-
-    &.is-pinned {
-      box-shadow: inset 0 1px 0 $grey-lighter;
-    }
-  }
 }
 
 .table-result-count {
@@ -623,8 +603,7 @@ table tr.is-edited + .detail {
 }
 
 // Stand-in for a bounded table's horizontal scrollbar while the box's own is below the window
-// (FloatingScrollbar), just above any pinned page controls. Above the table's pinned header (2),
-// below the sticky .main-header (30).
+// (FloatingScrollbar). Above the table's pinned header (2), below the sticky .main-header (30).
 .floating-scrollbar {
   position: fixed;
   bottom: 0;

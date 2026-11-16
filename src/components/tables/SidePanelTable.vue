@@ -36,6 +36,12 @@
     <div class="side-panel-table table-min-height" v-bind:class="{'loading-indicator': loading}">
       <div class="columns is-mobile">
         <div class="column pr-0">
+          <TableResultCount
+              v-bind:range="resultRange"
+              v-bind:record-noun="recordNoun"
+              v-bind:record-noun-singular="recordNounSingular"
+              v-bind:loading="loading"
+          />
           <BaseTable
               v-show="records.length > 0"
               v-bind:show-expand-controls="true"
@@ -45,6 +51,7 @@
               v-on:tablet="collapseService.send(BreakpointEvent.TABLET)"
               v-on:desktop="collapseService.send(BreakpointEvent.DESKTOP)"
               v-on="$listeners"
+              v-on:sort-click="scrollBoundedToTop"
           >
 
             <!--
@@ -89,7 +96,6 @@
       </div>
       <PaginationControls v-show="records.length > 0"
                           ref="paginationControls"
-                          class="bounded-table-controls"
                           v-bind="$props"
                           v-on:paginate="closePanelAndReEmit('paginate', $event)"
                           v-on:paginate-toggle-all="closePanelAndReEmit('paginate-toggle-all', $event)"
@@ -103,7 +109,6 @@
       v-if="bounded"
       ref="floatingScrollbar"
       v-bind:scroll-target="boundedScrollElement"
-      v-bind:bottom-offset="boundedPinnedControlsHeight"
     />
   </div>
 </template>
@@ -120,6 +125,8 @@
   import WarningModal from "@/components/modals/WarningModal.vue";
   import BoundedTableMixin from "@/mixins/BoundedTableMixin";
   import FloatingScrollbar from "@/components/tables/FloatingScrollbar.vue";
+  import TableResultCount from "@/components/tables/TableResultCount.vue";
+  import {TableResultRange} from "@/breeding-insight/model/view_models/TableResultRange";
 
   enum CollapseColumnsState {
     SMALL_PANEL_OPEN = "SMALL_PANEL_OPEN",
@@ -146,7 +153,7 @@
 
   @Component({
     components: {
-      BaseTable, SidePanel, SidePanelTableRow, PaginationControls, WarningModal, FloatingScrollbar
+      BaseTable, SidePanel, SidePanelTableRow, PaginationControls, WarningModal, FloatingScrollbar, TableResultCount
     },
     data: () => ({})
   })
@@ -162,6 +169,11 @@
     sidePanelState!: SidePanelTableEventBusHandler;
     @Prop()
     loading!: boolean;
+    // What the rows are, for the result count above the table, e.g. "traits".
+    @Prop()
+    recordNoun?: string;
+    @Prop()
+    recordNounSingular?: string;
 
     private BreakpointEvent = BreakpointEvent;
     private state = CollapseColumnsState.NORMAL_PANEL_CLOSED;
@@ -252,6 +264,13 @@
     closePanelAndReEmit(eventType: string, event: any) {
       this.sidePanelState.bus.$emit(this.sidePanelState.closePanelEvent, () => {this.$emit(eventType, event)});
       this.scrollBoundedToTop();
+    }
+
+    // This table has no column filters of its own, so every record passed in is shown.
+    get resultRange(): TableResultRange {
+      if (!this.pagination) return TableResultRange.EMPTY;
+      const recordCount = this.records ? this.records.length : 0;
+      return TableResultRange.of(this.pagination, recordCount, recordCount);
     }
 
     boundedScrollSelector(): string {
