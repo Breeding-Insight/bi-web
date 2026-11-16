@@ -1,6 +1,7 @@
 <template>
   <section id="germplasmTable">
     <ExpandableTable
+        record-noun="germplasm"
         v-bind:records.sync="germplasm"
         v-bind:loading="this.germplasmLoading"
         v-bind:pagination="paginationController"

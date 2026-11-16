@@ -80,6 +80,8 @@
     </NewDataForm>
 
     <ExpandableTable
+      record-noun="locations"
+      record-noun-singular="location"
       v-bind:records.sync="locations"
       v-bind:loading="this.locationsLoading"
       v-bind:row-validations="locationValidations"

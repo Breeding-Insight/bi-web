@@ -16,7 +16,10 @@
   -->
 
 <template>
-  <div>
+  <div
+    v-bind:class="{'bounded-table': bounded}"
+    v-bind:style="boundedStyle"
+  >
     <WarningModal
         v-bind:active.sync="sidePanelState.closeEditModalActive"
         v-bind:msg-title="'Close edit panel?'"
@@ -49,6 +52,11 @@
     <div class="side-panel-table table-min-height" >
       <div class="columns is-mobile">
         <div class="column pr-0">
+          <TableResultCount
+              v-bind:range="resultRange"
+              v-bind:record-noun="recordNoun"
+              v-bind:record-noun-singular="recordNounSingular"
+          />
           <b-table
               :class="{'loading-active': loading}"
               :data.sync="tableRows"
@@ -61,6 +69,7 @@
               striped
               detailed
               :mobile-cards="false"
+              v-bind:sticky-header="bounded"
               :has-detailed-visible="detailsVisible"
               :opened-detailed="openDetail"
               v-on:details-open="detailsOpened"
@@ -83,7 +92,14 @@
             </template>
 
             <template v-slot:pagination>
-                <pagination-controls v-show="records.length > 0" v-bind="$props" v-on:paginate="paginate" v-on:paginate-toggle-all="toggleShowAll" v-on:paginate-page-size="updatePageSize" />
+                <pagination-controls
+                  v-show="records.length > 0"
+                  class="bounded-table-controls"
+                  v-bind="$props"
+                  v-on:paginate="paginate"
+                  v-on:paginate-toggle-all="toggleShowAll"
+                  v-on:paginate-page-size="updatePageSize"
+                />
             </template>
 
           </b-table>
@@ -109,6 +125,12 @@
         </div>
       </div>
     </div>
+    <FloatingScrollbar
+      v-if="bounded"
+      ref="floatingScrollbar"
+      v-bind:scroll-target="boundedScrollElement"
+      v-bind:bottom-offset="boundedPinnedControlsHeight"
+    />
   </div>
 </template>
 
@@ -126,12 +148,16 @@ import {SidePanelTableEventBusHandler} from "@/components/tables/SidePanelTableE
 import TraitDetailPanel from "@/components/trait/TraitDetailPanel.vue";
 import WarningModal from "@/components/modals/WarningModal.vue";
 import { PaginationController } from '@/breeding-insight/model/view_models/PaginationController';
+import BoundedTableMixin from '@/mixins/BoundedTableMixin';
+import TableResultCount from '@/components/tables/TableResultCount.vue';
+import FloatingScrollbar from '@/components/tables/FloatingScrollbar.vue';
+import { TableResultRange } from '@/breeding-insight/model/view_models/TableResultRange';
 
 @Component({
   components: { EditDataRowForm, PaginationControls, ChevronRightIcon, ChevronDownIcon, SidePanel, TraitDetailPanel,
-  WarningModal }
+  WarningModal, TableResultCount, FloatingScrollbar }
 })
-export default class SidePanelTableBuefy extends Mixins(ValidationMixin) {
+export default class SidePanelTableBuefy extends Mixins(ValidationMixin, BoundedTableMixin) {
 
   @Prop()
   sidePanelState!: SidePanelTableEventBusHandler;
@@ -161,6 +187,11 @@ export default class SidePanelTableBuefy extends Mixins(ValidationMixin) {
   searchDebounce!: number;
   @Prop({default: "Deactivate"})
   deactivateLinkText?: string;
+  // What the rows are, for the result count above the table, e.g. "ontology terms".
+  @Prop()
+  recordNoun?: string;
+  @Prop()
+  recordNounSingular?: string;
 
   private tableRows: Array<TableRow<any>> = new Array<TableRow<any>>();
   private openDetail: Array<TableRow<any>> = new Array<TableRow<any>>();
@@ -237,6 +268,14 @@ export default class SidePanelTableBuefy extends Mixins(ValidationMixin) {
     this.initialUpdate = true;
   }
 
+  mounted() {
+    this.watchBuefyTable(this.$refs[this.tableRef] as Vue);
+  }
+
+  get resultRange(): TableResultRange {
+    return TableResultRange.of(this.pagination, this.records ? this.records.length : 0, this.filteredRecordCount);
+  }
+
   cancelEditClicked(row:any) {
     this.cancelEdit(row);
     this.openDetail = [];
@@ -257,14 +296,17 @@ export default class SidePanelTableBuefy extends Mixins(ValidationMixin) {
 
   paginate(event: any) {
     this.pagination.updatePage(event);
+    this.scrollBoundedToTop();
   }
 
   toggleShowAll(event: any) {
     this.pagination.toggleShowAll()
+    this.scrollBoundedToTop();
   }
 
   updatePageSize(event: any) {
     this.pagination.updatePageSize(event);
+    this.scrollBoundedToTop();
   }
 }
 </script>

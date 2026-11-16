@@ -26,30 +26,14 @@
       <article
           class="message is-success"
       >
-        <div class="message-body has-text-dark">
-          <div class="columns">
-            <div class="column">
-              <div class="columns mb-0 pb-0 pt-0">
-                <div class="column has-text-right pr-0 pb-0">
-                  <b>Observation Variables:</b>
-                </div>
-                <div class="column pl-1 is-three-quarters pb-0">
-                  {{ phenotypesCount }}
-                </div>
-              </div>
-              <div class="columns mb-0 pb-0 pt-0">
-                <div class="column has-text-right pr-0 pb-0">
-                  <b>Total observations:</b>
-                </div>
-                <div class="column pl-1 is-three-quarters pb-0">
-                  {{ observationsWithData }}
-                </div>
-              </div>
-            </div>
-          </div>
+        <div class="message-body has-text-dark dataset-summary">
+          <span><b>Observation variables:</b> {{ formatCount(phenotypesCount) }}</span>
+          <span><b>Total observations:</b> {{ formatCount(observationsWithData) }}</span>
         </div>
       </article>
       <ExpandableTable
+          record-noun="observation units"
+          record-noun-singular="observation unit"
           scrollable
           v-bind:records.sync="datasetTableRows"
           v-bind:loading=false
@@ -372,6 +356,12 @@ export default class Dataset extends ProgramsBase {
       count = this.datasetModel.observationVariables.length;
     }
     return count
+  }
+
+  // Thousands separators, as in the table's result count.
+  formatCount(count: number | string): string {
+    const value = Number(count);
+    return isNaN(value) ? String(count) : value.toLocaleString('en-US');
   }
 
   // Total observations

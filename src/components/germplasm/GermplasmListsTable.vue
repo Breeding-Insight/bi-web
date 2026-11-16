@@ -18,6 +18,8 @@
 <template>
   <section id="germplasmListTableLabel">
     <ExpandableTable
+      record-noun="germplasm lists"
+      record-noun-singular="germplasm list"
       v-bind:records.sync="germplasmLists"
       v-bind:loading="this.germplasmListsLoading"
       v-bind:pagination="paginationController"

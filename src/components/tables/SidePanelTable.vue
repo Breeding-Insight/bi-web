@@ -1,5 +1,8 @@
 <template>
-  <div>
+  <div
+    v-bind:class="{'bounded-table': bounded}"
+    v-bind:style="boundedStyle"
+  >
     <WarningModal
         v-bind:active.sync="sidePanelState.closeEditModalActive"
         v-bind:msg-title="'Close edit panel?'"
@@ -85,6 +88,8 @@
         </div>
       </div>
       <PaginationControls v-show="records.length > 0"
+                          ref="paginationControls"
+                          class="bounded-table-controls"
                           v-bind="$props"
                           v-on:paginate="closePanelAndReEmit('paginate', $event)"
                           v-on:paginate-toggle-all="closePanelAndReEmit('paginate-toggle-all', $event)"
@@ -94,12 +99,17 @@
         <slot v-if="this.loading !== true" name="emptyMessage" />
       </template>
     </div>
-
+    <FloatingScrollbar
+      v-if="bounded"
+      ref="floatingScrollbar"
+      v-bind:scroll-target="boundedScrollElement"
+      v-bind:bottom-offset="boundedPinnedControlsHeight"
+    />
   </div>
 </template>
 
 <script lang="ts">
-  import {Component, Prop, Vue, Watch} from 'vue-property-decorator'
+  import {Component, Mixins, Prop, Vue, Watch} from 'vue-property-decorator'
   import {Pagination} from "@/breeding-insight/model/BiResponse";
   import BaseTable from '@/components/tables/BaseTable.vue'
   import SidePanel from '@/components/tables/SidePanel.vue'
@@ -108,6 +118,8 @@
   import { createMachine, interpret } from '@xstate/fsm';
   import {SidePanelTableEventBusHandler} from "@/components/tables/SidePanelTableEventBus";
   import WarningModal from "@/components/modals/WarningModal.vue";
+  import BoundedTableMixin from "@/mixins/BoundedTableMixin";
+  import FloatingScrollbar from "@/components/tables/FloatingScrollbar.vue";
 
   enum CollapseColumnsState {
     SMALL_PANEL_OPEN = "SMALL_PANEL_OPEN",
@@ -134,11 +146,11 @@
 
   @Component({
     components: {
-      BaseTable, SidePanel, SidePanelTableRow, PaginationControls, WarningModal
+      BaseTable, SidePanel, SidePanelTableRow, PaginationControls, WarningModal, FloatingScrollbar
     },
     data: () => ({})
   })
-  export default class SidePanelTable extends Vue {
+  export default class SidePanelTable extends Mixins(BoundedTableMixin) {
 
     @Prop()
     records!: Array<any>;
@@ -239,6 +251,17 @@
 
     closePanelAndReEmit(eventType: string, event: any) {
       this.sidePanelState.bus.$emit(this.sidePanelState.closePanelEvent, () => {this.$emit(eventType, event)});
+      this.scrollBoundedToTop();
+    }
+
+    boundedScrollSelector(): string {
+      return '.bounded-table-scroll';
+    }
+
+    // The page controls sit under the side panel columns rather than next to the scroll box.
+    boundedReservedHeight(): number {
+      const controls = this.$refs.paginationControls as Vue | undefined;
+      return controls && controls.$el instanceof HTMLElement ? controls.$el.offsetHeight : 0;
     }
 
   }
