@@ -36,6 +36,8 @@
     </WarningModal>
 
     <ExpandableTable
+      record-noun="observations"
+      record-noun-singular="observation"
       v-bind:records.sync="observations"
       v-bind:loading="this.observationsLoading"
       v-bind:row-validations="observationValidations"

@@ -20,9 +20,26 @@
       &lt; All Experiments
     </router-link>
     <div class="mb-4" />
-    <h1 class="title">
-      {{experiment.trialName}}
-    </h1>
+    <div class="columns is-vcentered mb-0">
+      <div class="column">
+        <h1 class="title">
+          {{ experiment.trialName }}
+        </h1>
+      </div>
+      <div class="column is-narrow">
+        <ActionMenu
+          v-bind:id="'manage-experiment-dropdown-button'"
+          v-bind:is-primary="true"
+          v-bind:button-text="'Manage Experiment'"
+          v-bind:action-menu-items="actions"
+          v-on:import-file="importFile()"
+          v-on:download-file="downloadFile()"
+          v-on:create-sub-entity-dataset="openSubEntityModal()"
+          v-on:add-collaborator="addCollaborator()"
+          v-on:delete-experiment="deleteExperiment()"
+        />
+      </div>
+    </div>
 
     <ExperimentObservationsDownloadModal
         v-bind:experiment="experiment"
@@ -79,65 +96,96 @@
         v-on:remove-collaborator="getAssignedCollaborators"
     />
 
-    <div v-if="!experimentLoading && experiment!=null">
+    <section
+      class="box experiment-details"
+      aria-label="Experiment details"
+    >
+      <button
+        type="button"
+        class="experiment-details-toggle"
+        aria-controls="experiment-details-body"
+        v-bind:aria-expanded="detailsExpanded ? 'true' : 'false'"
+        v-on:click="detailsExpanded = !detailsExpanded"
+      >
+        <ChevronDownIcon
+          v-if="detailsExpanded"
+          size="1x"
+          aria-hidden="true"
+        />
+        <ChevronRightIcon
+          v-else
+          size="1x"
+          aria-hidden="true"
+        />
+        Experiment details
+      </button>
 
-      <div class="columns is-multiline is-align-items-stretch mt-4">
-        <article class="column ">
-          <section>
-            <ul style="list-style-type: none;">
-              <li><b>Description: </b> {{experiment.trialDescription}}</li>
-              <li><b>Experimental unit: </b> {{ experimentalUnit }}</li>
-              <li><b>Type: </b> {{ experimentType }}</li>
-              <li><b>User: </b> {{ userName }}</li>
-              <li><b>Creation Date: </b> {{ createdDate }}</li>
-              <li><b>Experimental design: </b>Externally generated</li>
-            </ul>
-          </section>
-        </article>
-        <article class="column px-2">
-          <section>
-            <ul style="list-style-type: none;">
-              <li><b>Germplasm: </b> {{ germplasmCount }}</li>
+      <div
+        v-show="detailsExpanded"
+        id="experiment-details-body"
+        class="experiment-details-body"
+      >
+        <p
+          v-if="experiment.trialDescription"
+          class="experiment-description"
+        >
+          <b>Description: </b>{{ experiment.trialDescription }}
+        </p>
+
+        <div class="columns is-multiline is-align-items-stretch">
+          <article class="column is-narrow pr-6">
+            <section>
+              <ul style="list-style-type: none;">
+                <li><b>Experimental unit: </b> {{ experimentalUnit }}</li>
+                <li><b>Type: </b> {{ experimentType }}</li>
+                <li><b>Experimental design: </b>Externally generated</li>
+              </ul>
+            </section>
+          </article>
+          <article class="column is-narrow pr-6">
+            <section>
+              <ul style="list-style-type: none;">
+                <li><b>Germplasm: </b> {{ germplasmCount }}</li>
+                <li><b>User: </b> {{ userName }}</li>
+                <li><b>Creation Date: </b> {{ createdDate }}</li>
 <!--              the following may be revived later-->
 <!--              <li><b>Environments: </b> {{ environmentsCount }}</li>-->
-            </ul>
-          </section>
-        </article>
-        <article class="column">
-
-          <section>
-            <div class="collaborators-section">
-              <b class="collaborators-label">Collaborators:</b>
-              <ul class="collaborators-list">
-                <li v-for="collaborator in collaborators" :key="collaborator.collaboratorId" class="collaborator-item">
-                  <span class="collaborator-info has-text-right">{{ collaborator.name }}</span>
-                  <span class="collaborator-info">{{"(" + collaborator.email + ")"}}</span>
-                  <button
-                    v-show="$ability.can('manage', 'Collaborator')"
-                    v-on:click="removeCollaborator(collaborator)"
-                    type="button"
-                    class="delete">
-                  </button>
-                </li>
               </ul>
-            </div>
-          </section>
-        </article>
-        <article class="column is-narrow">
-          <ActionMenu v-bind:is-primary="true"
-                      v-bind:id="'manage-experiment-dropdown-button'"
-                      v-bind:button-text="'Manage Experiment'"
-                      v-bind:action-menu-items="actions"
-                      v-on:import-file="importFile()"
-                      v-on:download-file="downloadFile()"
-                      v-on:create-sub-entity-dataset="openSubEntityModal()"
-                      v-on:add-collaborator="addCollaborator()"
-                      v-on:delete-experiment="deleteExperiment()"
-          />
-        </article>
-      </div>
+            </section>
+          </article>
+          <article class="column">
 
-    </div>
+            <section>
+              <div class="collaborators-section">
+                <b class="collaborators-label">Collaborators:</b>
+                <span
+                  v-if="collaborators.length === 0"
+                  class="has-text-grey"
+                >
+                  None
+                </span>
+                <ul
+                  v-else
+                  class="collaborators-list"
+                >
+                  <li v-for="collaborator in collaborators" :key="collaborator.collaboratorId" class="collaborator-item">
+                    <span class="collaborator-info has-text-right">{{ collaborator.name }}</span>
+                    <span class="collaborator-info">{{"(" + collaborator.email + ")"}}</span>
+                    <button
+                      v-show="$ability.can('manage', 'Collaborator')"
+                      v-on:click="removeCollaborator(collaborator)"
+                      type="button"
+                      class="delete">
+                    </button>
+                  </li>
+                </ul>
+              </div>
+            </section>
+          </article>
+        </div>
+      </div>
+    </section>
+
     <section>
       <nav class="tabs is-boxed">
         <ul>
@@ -174,6 +222,7 @@ import ClickOutside from 'vue-click-outside';
 import {Trial} from "@/breeding-insight/model/Trial";
 import ProgramsBase from "@/components/program/ProgramsBase.vue";
 import ActionMenu from "@/components/layouts/menus/ActionMenu.vue";
+import {ChevronDownIcon, ChevronRightIcon} from 'vue-feather-icons';
 import {ActionMenuItem} from "@/breeding-insight/model/ActionMenuItem";
 import ExperimentObservationsDownloadModal from "@/components/experiments/ExperimentObservationsDownloadModal.vue";
 import ExperimentDeleteModal from "@/components/experiments/ExperimentDeleteModal.vue";
@@ -192,7 +241,9 @@ import {StringFormatters} from "@/breeding-insight/utils/StringFormatters";
     ExperimentDeleteModal,
     ExperimentAddCollaboratorModal,
     ExperimentCollaboratorRemovalModal,
-    ActionMenu
+    ActionMenu,
+    ChevronDownIcon,
+    ChevronRightIcon
   },
   computed: {
     ...mapGetters([
@@ -220,6 +271,8 @@ export default class ExperimentDetails extends ProgramsBase {
   private collaborators: Collaborator[] = [];
   private programDatasetNames: string[] = [];
   private experimentDatasetNames: string[] = [];
+  // The description and fields above the datasets, which can be collapsed to bring the data up.
+  private detailsExpanded: boolean = true;
 
   private actions: ActionMenuItem[] = [
       new ActionMenuItem('experiment-import-file', 'import-file', 'Import file', this.$ability.can('create', 'Import')),

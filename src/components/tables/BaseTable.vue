@@ -20,44 +20,46 @@
     <v-breakpoint v-on:mobile="emitAndUpdateIsMobile('mobile')"></v-breakpoint>
     <v-breakpoint v-on:tablet="emitAndUpdateIsMobile('tablet')"></v-breakpoint>
     <v-breakpoint v-on:desktop="emitAndUpdateIsMobile('desktop')"></v-breakpoint>
-    <table
-      class="table is-striped is-narrow is-hoverable is-fullwidth"
-    >
-      <thead v-if="updatedColumns.length">
-        <tr>
-          <!-- Header space for left row icon if desired -->
-          <th v-if="showRowIcon" width="40px" scope="col"/>
-          <th v-for="(column, index) in visibleColumns"
-              scope="col"
-              v-bind:key="index"
-              v-bind:style="{
-                width: column.width === undefined ? null :
-                (isNaN(column.width) ? column.width : column.width + 'px')
-              }"
-              v-bind:class="{activesort: column.isSortable && column.currentSortField === column.sortLabel,
-                             sortcolumn: column.isSortable}"
-              v-on:click="column.changeSortColumn(column.sortLabel)"
-          >
-            {{ column.label }}
-            <span
-                class="icon sort-control"
-                v-bind:style="{visibility: column.isSortable && column.currentSortField === column.sortLabel ? 'visible' : 'hidden' }"
-                v-bind:class="{ascending: column.order, descending: !column.order}"
-            ><ArrowUpIcon size="1x" aria-hidden="true"></ArrowUpIcon></span>
-          </th>
-          <!-- Add a header column to match spacing for row controls if specified -->
-          <template v-if="showExpandControls">
-            <td />
+    <div v-bind:class="{'bounded-table-scroll': bounded}">
+      <table
+        class="table is-striped is-narrow is-hoverable is-fullwidth"
+      >
+        <thead v-if="updatedColumns.length">
+          <tr>
+            <!-- Header space for left row icon if desired -->
+            <th v-if="showRowIcon" width="40px" scope="col"/>
+            <th v-for="(column, index) in visibleColumns"
+                scope="col"
+                v-bind:key="index"
+                v-bind:style="{
+                  width: column.width === undefined ? null :
+                  (isNaN(column.width) ? column.width : column.width + 'px')
+                }"
+                v-bind:class="{activesort: column.isSortable && column.currentSortField === column.sortLabel,
+                               sortcolumn: column.isSortable}"
+                v-on:click="onHeaderClick(column)"
+            >
+              {{ column.label }}
+              <span
+                  class="icon sort-control"
+                  v-bind:style="{visibility: column.isSortable && column.currentSortField === column.sortLabel ? 'visible' : 'hidden' }"
+                  v-bind:class="{ascending: column.order, descending: !column.order}"
+              ><ArrowUpIcon size="1x" aria-hidden="true"></ArrowUpIcon></span>
+            </th>
+            <!-- Add a header column to match spacing for row controls if specified -->
+            <template v-if="showExpandControls">
+              <td />
+            </template>
+          </tr>
+        </thead>
+        <tbody>
+          <template v-for="(row, index) in tableRows">
+            <!-- slot to customize each row in table -->
+            <slot name="row" v-bind:row="row" v-bind:index="index"></slot>
           </template>
-        </tr>
-      </thead>
-      <tbody>
-        <template v-for="(row, index) in tableRows">
-          <!-- slot to customize each row in table -->
-          <slot name="row" v-bind:row="row" v-bind:index="index"></slot>
-        </template>
-      </tbody>
-    </table>
+        </tbody>
+      </table>
+    </div>
   </div>
 </template>
 
@@ -90,6 +92,9 @@
     showExpandControls!: boolean;
     @Prop()
     showRowIcon!: boolean;
+    // Scroll the rows inside a box with the header pinned; the parent sizes the box (see BoundedTableMixin).
+    @Prop({default: false})
+    bounded!: boolean;
     
     private initialUpdate: boolean = false;
     private tableRows: Array<TableRow<any>> = new Array<TableRow<any>>();
@@ -157,6 +162,14 @@
 
       if (!repeated) {
         this.updatedColumns.push(column);
+      }
+    }
+
+    // Tells the parent the sort changed, so a bounded table can return to its first row.
+    onHeaderClick(column: TableColumn) {
+      column.changeSortColumn(column.sortLabel);
+      if (column.isSortable) {
+        this.$emit('sort-click', column.sortLabel);
       }
     }
 

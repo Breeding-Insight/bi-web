@@ -46,6 +46,8 @@
       </div>
     </div>
     <ExpandableTable
+        record-noun="variants"
+        record-noun-singular="variant"
         v-bind:records.sync="currentCallSet"
         v-bind:loading="loading"
         v-bind:pagination="pagination"

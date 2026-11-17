@@ -16,7 +16,16 @@
   -->
 
 <template>
-  <div>
+  <div
+    v-bind:class="{'bounded-table': bounded}"
+    v-bind:style="boundedStyle"
+  >
+    <TableResultCount
+        v-bind:range="resultRange"
+        v-bind:record-noun="recordNoun"
+        v-bind:record-noun-singular="recordNounSingular"
+        v-bind:loading="loading"
+    />
     <b-table
         :class="{'loading-active': loading}"
         :data.sync="tableRows"
@@ -29,6 +38,7 @@
         striped
         detailed
         :mobile-cards="false"
+        v-bind:sticky-header="bounded"
         :has-detailed-visible="detailsVisible"
         :opened-detailed="openDetail"
         v-on:details-open="detailsOpened"
@@ -103,11 +113,21 @@
       </template>
 
       <template v-slot:pagination>
-        <pagination-controls v-show="records.length > 0" v-bind="$props" v-on:paginate="paginate" v-on:paginate-toggle-all="toggleShowAll" v-on:paginate-page-size="updatePageSize" />
+        <pagination-controls
+          v-show="records.length > 0"
+          v-bind="$props"
+          v-on:paginate="paginate"
+          v-on:paginate-toggle-all="toggleShowAll"
+          v-on:paginate-page-size="updatePageSize"
+        />
       </template>
 
     </b-table>
-
+    <FloatingScrollbar
+      v-if="bounded"
+      ref="floatingScrollbar"
+      v-bind:scroll-target="boundedScrollElement"
+    />
   </div>
 </template>
 
@@ -122,11 +142,15 @@ import { DataFormEventBusHandler } from '@/components/forms/DataFormEventBusHand
 import {ChevronRightIcon, ChevronDownIcon} from 'vue-feather-icons'
 import { TableRow } from '@/breeding-insight/model/view_models/TableRow';
 import { PaginationController } from '@/breeding-insight/model/view_models/PaginationController';
+import BoundedTableMixin from '@/mixins/BoundedTableMixin';
+import TableResultCount from '@/components/tables/TableResultCount.vue';
+import FloatingScrollbar from '@/components/tables/FloatingScrollbar.vue';
+import { TableResultRange } from '@/breeding-insight/model/view_models/TableResultRange';
 
 @Component({
-  components: { EditDataRowForm, PaginationControls, ChevronRightIcon, ChevronDownIcon }
+  components: { EditDataRowForm, PaginationControls, ChevronRightIcon, ChevronDownIcon, TableResultCount, FloatingScrollbar }
 })
-export default class ExpandableTable extends Mixins(ValidationMixin) {
+export default class ExpandableTable extends Mixins(ValidationMixin, BoundedTableMixin) {
 
   @Prop()
   records!: Array<any>;
@@ -160,6 +184,11 @@ export default class ExpandableTable extends Mixins(ValidationMixin) {
   deactivateLinkText?: string;
   @Prop({default: true})
   isShowAllEnabled!: boolean;
+  // What the rows are, for the result count above the table, e.g. "observation units".
+  @Prop()
+  recordNoun?: string;
+  @Prop()
+  recordNounSingular?: string;
 
   private tableRows: Array<TableRow<any>> = new Array<TableRow<any>>();
   private openDetail: Array<TableRow<any>> = new Array<TableRow<any>>();
@@ -193,6 +222,14 @@ export default class ExpandableTable extends Mixins(ValidationMixin) {
 
   updated() {
     this.initialUpdate = true;
+  }
+
+  mounted() {
+    this.watchBuefyTable(this.$refs[this.tableRef] as Vue | undefined);
+  }
+
+  get resultRange(): TableResultRange {
+    return TableResultRange.of(this.pagination, this.records ? this.records.length : 0, this.filteredRecordCount);
   }
 
   @Watch('records', {immediate: true, deep:true})
@@ -267,14 +304,17 @@ export default class ExpandableTable extends Mixins(ValidationMixin) {
 
   paginate(event: any) {
     this.pagination.updatePage(event);
+    this.scrollBoundedToTop();
   }
 
   toggleShowAll(event: any) {
     this.pagination.toggleShowAll()
+    this.scrollBoundedToTop();
   }
 
   updatePageSize(event: any) {
     this.pagination.updatePageSize(event);
+    this.scrollBoundedToTop();
   }
 }
 </script>

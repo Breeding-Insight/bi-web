@@ -121,6 +121,8 @@
 
       <template v-slot:importPreviewTable="previewData">
         <ExpandableTable
+          record-noun="observation units"
+          record-noun-singular="observation unit"
           v-bind:records="previewData.import"
           v-bind:loading="false"
           v-bind:pagination="previewData.pagination"

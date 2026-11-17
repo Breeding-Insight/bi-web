@@ -122,6 +122,8 @@
     </NewDataForm>
 
     <ExpandableTable
+      record-noun="breeding methods"
+      record-noun-singular="breeding method"
       v-bind:records.sync="programBreedingMethods"
       v-bind:loading="loading"
       v-bind:pagination="paginationController"

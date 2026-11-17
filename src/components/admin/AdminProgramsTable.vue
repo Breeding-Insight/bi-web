@@ -119,6 +119,8 @@
     </NewDataForm>
 
     <ExpandableTable
+      record-noun="programs"
+      record-noun-singular="program"
       v-bind:records.sync="programs"
       v-bind:loading="this.speciesLoading || this.programsLoading"
       v-bind:row-validations="programEditValidations"

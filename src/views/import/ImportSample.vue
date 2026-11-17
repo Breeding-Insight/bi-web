@@ -74,6 +74,8 @@
 
       <template v-slot:importPreviewTable="previewData">
         <ExpandableTable
+            record-noun="samples"
+            record-noun-singular="sample"
             v-bind:records="previewData.import"
             v-bind:loading="false"
             v-bind:pagination="previewData.pagination"

@@ -39,6 +39,8 @@
     <div class="is-clearfix" />
 
     <ExpandableTable
+      record-noun="genotype imports"
+      record-noun-singular="genotype import"
       v-bind:records.sync="genotypeImports"
       v-bind:loading="loading"
       v-bind:pagination="paginationController"

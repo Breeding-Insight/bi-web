@@ -138,6 +138,8 @@
     </NewDataForm>
 
     <ExpandableTable
+      record-noun="users"
+      record-noun-singular="user"
       v-bind:records.sync="users"
       v-bind:loading="this.rolesLoading || this.usersLoading"
       v-bind:row-validations="userValidations"
