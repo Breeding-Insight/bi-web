@@ -244,7 +244,7 @@ export class UserService {
         const programResponse: any = programRole.program;
         let program: Program | undefined;
         if (programResponse){
-          if (programResponse.id && programResponse.name){
+          if (programResponse.id && programResponse.name && programRole.active){
             program = new Program(programResponse.id, programResponse.name);
           }
         }
