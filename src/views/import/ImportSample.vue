@@ -30,7 +30,7 @@
     >
       <template v-slot:importInfoTemplateMessageBox>
         <ImportInfoTemplateMessageBox v-bind:import-type-name="'Sample Submission'"
-                                      v-bind:template-url="'https://www.dropbox.com/scl/fi/tm9f5xznziaggzmfirjkv/bi_sample_submission_template_v02.xls?rlkey=rpn2wv7f6nfl3tjq54yqz8d3y&st=sk48hbiv&dl=1'"
+                                      v-bind:template-url="'https://www.dropbox.com/scl/fi/1cda3r7igm8i8nf2z9sv3/bi_sample_submission_template_v03.xls?rlkey=27i9bqu46r8okfrjjhc61bbeb&st=6rc631y2&dl=1'"
                                       class="mb-5">
           <strong>Before You Import...</strong>
           <br/>
