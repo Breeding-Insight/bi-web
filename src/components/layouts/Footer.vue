@@ -39,10 +39,18 @@
                 <a href="https://breedinginsight.org/docs-category/deltabreed">User Manual</a>
               </div>
               <div class="level-item">
-                <a href="https://breedinginsight.org/contact-us/">Contact Us</a>
+                <a href="https://breedinginsight.atlassian.net/servicedesk/customer/portals">Help Desk</a>
               </div>
               <div class="level-item">
                 <a href="https://breedinginsight.org/about-bi/">About</a>
+              </div>
+              <div v-if="showVersionInfo" class="level">
+                <div class="level-left">
+                  <div class="level-item is-size-7">
+                    <VersionInfo/>
+                  </div>
+                </div>
+                <div class="level-right"></div>
               </div>
             </div>
           </nav>
@@ -52,7 +60,26 @@
 
           <div class="level-item">
             <div class="level">
-            <div v-if="showFullAffiliations" class="level-item">
+              <div class="level-item">
+                <p class="has-text-right is-hidden-touch">
+                  <strong>&copy; {{copyrightYear}} Breeding Insight</strong>
+                  <br>
+                  Funded by the USDA
+                </p>
+                <p class="has-text-centered is-hidden-desktop">
+                  <strong>&copy; {{copyrightYear}} Breeding Insight</strong>
+                  <br>
+                  Funded by the USDA
+                </p>
+              </div>
+              <div class="level-item">
+                <img
+                    src="../../assets/img/usda.svg"
+                    alt="USDA Logo"
+                    width="75"
+                >
+              </div>
+              <div v-if="showFullAffiliations" class="level-item">
               <img
                   src="../../assets/img/IFAS-logo.svg"
                   alt="University of Florida IFAS Logo"
@@ -66,38 +93,10 @@
                   width="254"
               >
             </div>
-            <div class="level-item">
-              <p class="has-text-right is-hidden-touch">
-                <strong>&copy; {{copyrightYear}} Breeding Insight</strong>
-                <br>
-                Funded by the USDA
-              </p>
-              <p class="has-text-centered is-hidden-desktop">
-                <strong>&copy; {{copyrightYear}} Breeding Insight</strong>
-                <br>
-                Funded by the USDA
-              </p>
-            </div>
-            <div class="level-item">
-              <img
-                  src="../../assets/img/usda.svg"
-                  alt="USDA Logo"
-                  width="75"
-              >
-            </div>
             </div>
           </div>
         </div>
       </div>
-      <div v-if="showVersionInfo" class="level">
-        <div class="level-left">
-          <div class="level-item is-size-7">
-            <VersionInfo/>
-          </div>
-        </div>
-        <div class="level-right"></div>
-      </div>
-
       </div>
       </div>
     </div>
