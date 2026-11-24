@@ -18,8 +18,12 @@
 import {Component, Prop, Vue} from 'vue-property-decorator'
 import {FrameThrottle, LayoutUtils} from '@/breeding-insight/utils/LayoutUtils';
 
-// Smallest box worth scrolling in; below this the box fills the window under the header instead.
+// Smallest box worth scrolling in when it fills the window under the header.
 const MIN_BOX_HEIGHT_PX = 320;
+// Rows the box must show under its header row to be sized to fit the window as loaded.
+const MIN_VISIBLE_ROWS = 3;
+// Row height used before any rows have loaded.
+const DEFAULT_ROW_HEIGHT_PX = 33;
 // Space kept between the page controls and the bottom of the window.
 const BOTTOM_GAP_PX = 16;
 
@@ -37,8 +41,9 @@ interface BuefyTableState {
  *
  * A table shorter than the box looks as it would unbounded. A taller one scrolls inside the box,
  * with the header pinned by the .bounded-table styles in main.scss. The box is sized so that, on
- * load, its bottom edge and the page controls under it fit in the window. If the table starts too
- * far down the page for that, the box fills the window below the sticky DeltaBreed header instead,
+ * load, its bottom edge and the page controls under it fit in the window, as long as that leaves
+ * room for the header row and a few rows. If the table starts too far down the page for even that,
+ * the box fills the window below the sticky DeltaBreed header instead,
  * and FloatingScrollbar stands in for its horizontal scrollbar until the page is scrolled down.
  *
  * Opt out with :bounded="false" where the table already sits inside something that scrolls, such as
@@ -146,16 +151,24 @@ export default class BoundedTableMixin extends Vue {
     // Tallest the box can be without scrolling the page.
     const fitsOnLoad = window.innerHeight - top - reserved;
 
-    // Fit the box on screen as loaded when that leaves room for several rows. When content above the
-    // table pushes it too far down, fill the window below the header instead: one scroll of the page
-    // then brings the whole box, its horizontal scrollbar and the page controls into view.
-    const maxHeight = Math.round(Math.max(
-      fitsOnLoad >= MIN_BOX_HEIGHT_PX ? fitsOnLoad : fitsBelowHeader,
-      MIN_BOX_HEIGHT_PX
-    ));
+    // Fit the box on screen as loaded, so the page controls show without scrolling the page, whenever
+    // that leaves room for the header row and a few rows. When content above the table pushes it too
+    // far down for even that, fill the window below the header instead: one scroll of the page then
+    // brings the whole box, its horizontal scrollbar and the page controls into view.
+    const maxHeight = Math.round(fitsOnLoad >= BoundedTableMixin.minOnLoadHeight(scrollElement)
+      ? fitsOnLoad
+      : Math.max(fitsBelowHeader, MIN_BOX_HEIGHT_PX));
     if (maxHeight !== this.boundedMaxHeight) {
       this.boundedMaxHeight = maxHeight;
     }
+  }
+
+  /** Height of the box's header row (with any filter row) plus MIN_VISIBLE_ROWS rows. */
+  private static minOnLoadHeight(scrollElement: HTMLElement): number {
+    const head = scrollElement.querySelector('thead') as HTMLElement | null;
+    const row = scrollElement.querySelector('tbody tr') as HTMLElement | null;
+    const rowHeight = row && row.offsetHeight > 0 ? row.offsetHeight : DEFAULT_ROW_HEIGHT_PX;
+    return (head ? head.offsetHeight : 0) + MIN_VISIBLE_ROWS * rowHeight;
   }
 
   private static outerHeight(element: HTMLElement): number {
