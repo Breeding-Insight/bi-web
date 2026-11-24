@@ -97,6 +97,8 @@
     </NewDataForm>
 
     <SidePanelTableBuefy
+        record-noun="ontology terms"
+        record-noun-singular="ontology term"
         v-bind:records.sync="traits"
         v-bind:loading="traitsLoading"
         v-bind:pagination="paginationController"

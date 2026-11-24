@@ -31,6 +31,8 @@
     <div class="is-clearfix"></div>
 
     <ExpandableTable
+      record-noun="experiments"
+      record-noun-singular="experiment"
       v-bind:records.sync="experiments"
       v-bind:loading="this.experimentsLoading"
       v-bind:pagination="paginationController"

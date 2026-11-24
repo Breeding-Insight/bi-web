@@ -39,6 +39,8 @@
     <div class="is-clearfix" />
 
     <ExpandableTable
+      record-noun="submissions"
+      record-noun-singular="submission"
       v-bind:records.sync="submissions"
       v-bind:loading="loading"
       v-bind:pagination="paginationController"

@@ -90,6 +90,7 @@
 
       <template v-slot:importPreviewTable="previewData">
         <ExpandableTable
+            record-noun="germplasm"
             v-bind:records="processPreviewData(previewData.import)"
             v-bind:loading="false"
             v-bind:pagination="previewData.pagination"

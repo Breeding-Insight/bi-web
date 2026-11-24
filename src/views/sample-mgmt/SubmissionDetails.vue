@@ -159,6 +159,8 @@
             <div class="loading-indicator"></div>
           </template>
           <ExpandableTable
+              record-noun="samples"
+              record-noun-singular="sample"
               v-if="!submissionDetailsLoading"
               v-bind:records.sync="submission.samples"
               v-bind:loading="submissionDetailsLoading"

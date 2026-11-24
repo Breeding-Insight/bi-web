@@ -527,6 +527,98 @@ table tr.is-edited + .detail {
   min-height: 100px;
 }
 
+// Scrollbars that are always drawn. macOS (and Windows 11 by default) show overlay scrollbars only
+// while scrolling, which hides that a table scrolls sideways from mouse users. Chrome, Edge and Safari
+// draw these; Firefox keeps its own. Keep the size in step with MIN_BAR_HEIGHT_PX in FloatingScrollbar.
+// Setting scrollbar-width or scrollbar-color here would make Chrome ignore these rules.
+@mixin visible-scrollbars {
+  &::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+  }
+
+  &::-webkit-scrollbar-track,
+  &::-webkit-scrollbar-corner {
+    background-color: $white-ter;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: $grey-light;
+    border: 3px solid $white-ter;
+    border-radius: 6px;
+
+    &:hover {
+      background-color: $grey;
+    }
+  }
+}
+
+// Tables taller than the window scroll inside a box (sized by BoundedTableMixin) so the header row and
+// horizontal scrollbar stay on screen. Shorter tables look the same as unbounded ones.
+.bounded-table {
+  .table-wrapper.has-sticky-header,
+  .bounded-table-scroll {
+    // Buefy gives a sticky-header wrapper a fixed 300px height: cap the height instead.
+    height: auto;
+    max-height: var(--bounded-table-max-height, calc(100vh - 10rem));
+    overflow: auto;
+    @include visible-scrollbars;
+
+    // Collapsed borders belong to the table rather than the pinned header cells, so rows would show
+    // through them while scrolling. Bulma only draws bottom borders, so this looks the same.
+    > .table {
+      border-collapse: separate;
+      border-spacing: 0;
+    }
+
+    // The box scrolls on any overflow, so keep content that used to spill harmlessly past the table
+    // inside it: Buefy's sort arrow sits just past its label, and the empty message's Bulma columns
+    // have negative margins.
+    thead th:last-child .th-wrap {
+      padding-right: 1rem;
+    }
+
+    tr.is-empty > td {
+      overflow: hidden;
+    }
+  }
+
+  // Pin the whole header, including the column filter row, not only Buefy's first header row.
+  // Its z-index stays below the sticky .main-header (30).
+  .table-wrapper.has-sticky-header thead,
+  .bounded-table-scroll thead {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+
+    th,
+    td {
+      background-color: $white;
+    }
+  }
+}
+
+.table-result-count {
+  margin-bottom: 0.5rem;
+}
+
+// Stand-in for a bounded table's horizontal scrollbar while the box's own is below the window
+// (FloatingScrollbar). Above the table's pinned header (2), below the sticky .main-header (30).
+.floating-scrollbar {
+  position: fixed;
+  bottom: 0;
+  z-index: 20;
+  overflow-x: auto;
+  overflow-y: hidden;
+  background-color: $white;
+  border-top: 1px solid $grey-lighter;
+  @include visible-scrollbars;
+
+  > div {
+    height: 1px;
+  }
+}
+
 .menu-scroll {
   position: absolute;
   height: 100%;
@@ -918,6 +1010,70 @@ tr:nth-child(odd) td.db-filled {
       width: 90%;
     }
   }
+}
+
+// An experiment's description and fields, in a box whose header collapses it to bring the
+// datasets up. The header and body set their own padding so the header's hover fills the box.
+.experiment-details {
+  padding: 0;
+  margin-bottom: 1.5rem;
+  // Same indent as the dataset tabs and .tab-content below it.
+  margin-left: 2em;
+  // Flat, like the tabs, table and dataset summary around it.
+  border: 1px solid $grey-lighter;
+  box-shadow: none;
+}
+
+// A dataset's figures on one line above its table.
+.dataset-summary {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: 2.5rem;
+  row-gap: 0.25rem;
+}
+
+.experiment-details-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.75rem 1.25rem;
+  border: none;
+  border-radius: inherit;
+  background: none;
+  // Link blue, as DeltaBreed marks text actions.
+  color: $link;
+  font: inherit;
+  font-weight: $weight-bold;
+  text-align: left;
+  cursor: pointer;
+
+  &:hover {
+    background-color: $white-ter;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $link;
+    outline-offset: -2px;
+  }
+}
+
+.experiment-details-body {
+  padding: 1rem 1.25rem 0.5rem;
+  border-top: 1px solid $grey-lighter;
+
+  // Line the fields up with the description.
+  ul {
+    margin-left: 0;
+  }
+}
+
+// At a readable line length; long citations carry unbroken URLs.
+.experiment-description {
+  max-width: 60rem;
+  margin-bottom: 1rem;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .collaborators-section {

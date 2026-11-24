@@ -9,6 +9,9 @@
         <span class="has-text-weight-bold ml-1">File contains data errors</span>
 
         <ExpandableTable
+            v-bind:bounded="false"
+            record-noun="errors"
+            record-noun-singular="error"
             v-bind:records.sync="formattedErrors"
             v-bind:loading="this.errorsLoading"
             v-bind:pagination="paginationController"

@@ -19,6 +19,8 @@
   <section id="traitsImportTableLabel">
     <SidePanelTable
       v-if="loaded"
+      record-noun="ontology terms"
+      record-noun-singular="ontology term"
       v-bind:records.sync="traits"
       v-bind:editable="false"
       v-bind:pagination="traitsPagination"
